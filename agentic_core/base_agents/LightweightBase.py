@@ -191,7 +191,11 @@ Logger = logging.getLogger(__name__)
 
 
 class LightweightAgentBase(
-    CostGuardrailMixin, ContextManagementMixin, TracingMixin, CachingMixin, MetricsMixin,
+    CostGuardrailMixin,
+    ContextManagementMixin,
+    TracingMixin,
+    CachingMixin,
+    MetricsMixin,
 ):
     """
     Lightweight base agent with minimal infrastructure.
@@ -229,8 +233,11 @@ class LightweightAgentBase(
             RuntimeError: If any initialization check fails
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LightweightAgentBase.verify_lightweight_state")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LightweightAgentBase.verify_lightweight_state"
+        )
 
         errors = []
         if not getattr(self, "_lightweight_initialized", False):

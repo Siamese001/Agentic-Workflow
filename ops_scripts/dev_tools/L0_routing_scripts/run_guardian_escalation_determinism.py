@@ -315,7 +315,8 @@ def scan_escalation_patterns(
     return {
         "failure_signal_built_from_raw_notes": sorted(raw_note_viols, key=lambda v: (v["path"], v["line"])),
         "alternate_escalation_context_construction": sorted(
-            alt_ctx_viols, key=lambda v: (v["path"], v["line"]),
+            alt_ctx_viols,
+            key=lambda v: (v["path"], v["line"]),
         ),
         "escalation_context_mutation": sorted(mutation_viols, key=lambda v: (v["path"], v["line"])),
     }
@@ -344,7 +345,10 @@ def run_escalation_determinism_guardian(
         v = viols[check_id]
         if v:
             result.add_check(
-                check_id, CheckStatus.FAIL, f"{len(v)} violation(s)", evidence={"violations": v[:20]},
+                check_id,
+                CheckStatus.FAIL,
+                f"{len(v)} violation(s)",
+                evidence={"violations": v[:20]},
             )
         else:
             result.add_check(check_id, CheckStatus.PASS, "No violations detected")

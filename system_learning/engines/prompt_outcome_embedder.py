@@ -231,8 +231,11 @@ class PromptOutcomeEmbedder:
             The generated CorpusRecord.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOutcomeEmbedder.ingest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOutcomeEmbedder.ingest"
+        )
 
         text = record.to_embedding_text()
         content_hash = compute_content_hash(text.encode("utf-8"))
@@ -261,7 +264,8 @@ class PromptOutcomeEmbedder:
         return corpus_record
 
     def ingest_batch(
-        self, records: list[PromptOutcomeEmbeddingRecord],
+        self,
+        records: list[PromptOutcomeEmbeddingRecord],
     ) -> list[CorpusRecord]:
         """Ingest multiple PromptOutcomeEmbeddingRecords.
 
@@ -391,7 +395,10 @@ class PromptOutcomeEmbedder:
         return evicted
 
     def top_templates_by_outcome(
-        self, outcome: str, *, top_n: int = 5,
+        self,
+        outcome: str,
+        *,
+        top_n: int = 5,
     ) -> list[tuple[str, int]]:
         """Return the most-used template_ids for a given safety_outcome.
 
@@ -410,8 +417,7 @@ class PromptOutcomeEmbedder:
         """
         if outcome not in _VALID_SAFETY_OUTCOMES:
             raise ValueError(
-                f"outcome must be one of {sorted(_VALID_SAFETY_OUTCOMES)}, "
-                f"got {outcome!r}",
+                f"outcome must be one of {sorted(_VALID_SAFETY_OUTCOMES)}, got {outcome!r}",
             )
         top_n = min(top_n, 50)
         counts: dict[str, int] = {}
@@ -578,8 +584,7 @@ class PromptOutcomeEmbedder:
         """Convenience constructor that validates safety_outcome literal."""
         if safety_outcome not in _VALID_SAFETY_OUTCOMES:
             raise ValueError(
-                f"safety_outcome must be one of {sorted(_VALID_SAFETY_OUTCOMES)}, "
-                f"got {safety_outcome!r}",
+                f"safety_outcome must be one of {sorted(_VALID_SAFETY_OUTCOMES)}, got {safety_outcome!r}",
             )
         return PromptOutcomeEmbeddingRecord(
             record_id=record_id,

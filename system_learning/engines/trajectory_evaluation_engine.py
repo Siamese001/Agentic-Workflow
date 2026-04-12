@@ -207,11 +207,13 @@ class TrajectoryEvaluationEngine:
 
         result = TrajectoryEvaluationResult(
             artifact_type="TRAJECTORY_EVALUATION_RESULT",
-            result_id=stable_sha256_json({
-                "trace_id": trace_id,
-                "overall_score": overall_score,
-                "timestamp_utc": timestamp_utc,
-            }),
+            result_id=stable_sha256_json(
+                {
+                    "trace_id": trace_id,
+                    "overall_score": overall_score,
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             trace_id=trace_id,
             tool_selection=tool_selection,
             arg_correctness=arg_correctness,
@@ -414,11 +416,11 @@ class TrajectoryEvaluationEngine:
     ) -> float:
         """Calculate weighted overall trajectory score."""
         overall = (
-            self.weights["tool_selection"] * tool_selection +
-            self.weights["arg_correctness"] * arg_correctness +
-            self.weights["retry_thrashing"] * retry_thrashing +
-            self.weights["budget_discipline"] * budget_discipline +
-            self.weights["policy_compliance"] * policy_compliance
+            self.weights["tool_selection"] * tool_selection
+            + self.weights["arg_correctness"] * arg_correctness
+            + self.weights["retry_thrashing"] * retry_thrashing
+            + self.weights["budget_discipline"] * budget_discipline
+            + self.weights["policy_compliance"] * policy_compliance
         )
         return round(overall, 6)  # Deterministic rounding
 

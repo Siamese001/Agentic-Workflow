@@ -10,7 +10,9 @@ from pathlib import Path
 def run_pytest_with_fixture(test_file, timeout=60):
     """Run pytest with the cached_adg_scan fixture."""
     cmd = [
-        sys.executable, "-m", "pytest",
+        sys.executable,
+        "-m",
+        "pytest",
         "-s",  # Show stdout from fixtures
         "-v",  # Verbose
         "--tb=short",  # Short traceback
@@ -28,6 +30,7 @@ def run_pytest_with_fixture(test_file, timeout=60):
     end = time.time()
 
     return end - start, result.stdout, result.stderr, result.returncode
+
 
 def main():
     print("=== Phase 0 Performance Test ===")
@@ -52,7 +55,7 @@ def main():
             if "ADG Session Cache" in stdout:
                 print("  ✓ Session ADG fixture used")
                 # Extract cache stats
-                for line in stdout.split('\n'):
+                for line in stdout.split("\n"):
                     if "Nodes:" in line or "Edges:" in line or "Digest:" in line:
                         print(f"    {line.strip()}")
 
@@ -92,6 +95,7 @@ def main():
     print("Expected improvements:")
     print("  - Test collection: ~30s faster (reduced bootstrap overhead)")
     print("  - Test execution: 3-5 minutes saved per session (cached ADG)")
+
 
 if __name__ == "__main__":
     main()

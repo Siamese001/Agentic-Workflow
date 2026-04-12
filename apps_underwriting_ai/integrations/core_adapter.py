@@ -1,6 +1,7 @@
 """
 Core Adapter - Packages app results for handoff to agentic_core.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
@@ -10,6 +11,7 @@ from ..types import AuditTrace, DecisionMemo, DecisionPacket, UnderwritingReques
 @dataclass
 class CoreHandoffPayload:
     """Payload prepared for handoff to agentic_core."""
+
     app_name: str = "apps_underwriting_ai"
     request_id: str = ""
     domain_recommendation: str = ""
@@ -71,7 +73,9 @@ class CoreAdapter:
             "product_type": request.product_type,
             "decision_type": request.decision_type,
             "requested_amount": request.requested_amount,
-            "risk_grade": trace.derived_features.composite.normalized_risk_grade if trace.derived_features else None,
+            "risk_grade": trace.derived_features.composite.normalized_risk_grade
+            if trace.derived_features
+            else None,
             "review_required": packet.review_required,
         }
 

@@ -16,14 +16,17 @@ class TestImemorystoreprotocolAdg:
     def test_IMemoryStoreProtocol_adg_imports(self):
         """Test IMemoryStoreProtocol_adg module imports."""
         from agentic_core import IMemoryStoreProtocol_adg
+
         assert IMemoryStoreProtocol_adg is not None
 
     def test_IMemoryStoreProtocol_adg_class(self):
         """Test ImemorystoreprotocolAdg class exists."""
         from agentic_core import ImemorystoreprotocolAdg
+
         assert ImemorystoreprotocolAdg is not None
 
     def test_IMemoryStoreProtocol_adg_callable(self):
         """Test IMemoryStoreProtocol_adg functions are callable."""
         from agentic_core import validate_IMemoryStoreProtocol_adg
+
         assert callable(validate_IMemoryStoreProtocol_adg)

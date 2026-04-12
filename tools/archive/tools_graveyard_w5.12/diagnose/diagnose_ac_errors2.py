@@ -1,4 +1,5 @@
 """Diagnose agentic_core collection errors per subdirectory."""
+
 import os
 import re
 import subprocess
@@ -14,9 +15,23 @@ for sd in sorted(os.listdir(ac_dir)):
     if not os.path.isdir(sdp) or sd.startswith("_"):
         continue
     r = subprocess.run(
-        [sys.executable, "-m", "pytest", f"tests/unit/agentic_core/{sd}",
-         "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
-        capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root,
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            f"tests/unit/agentic_core/{sd}",
+            "-c",
+            "tools/pytest_minimal.ini",
+            "--co",
+            "--tb=short",
+            "-p",
+            "no:warnings",
+        ],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        cwd=root,
         timeout=60,
     )
     out = r.stdout + r.stderr
@@ -28,7 +43,7 @@ for sd in sorted(os.listdir(ac_dir)):
             # Get E   lines that follow
             src_file = ""
             e_msg = ""
-            for j in range(i+1, min(i+20, len(lines))):
+            for j in range(i + 1, min(i + 20, len(lines))):
                 l = lines[j].strip()
                 if l.startswith("E   "):
                     e_msg = l[4:]

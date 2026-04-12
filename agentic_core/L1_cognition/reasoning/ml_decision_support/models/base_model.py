@@ -19,6 +19,7 @@ from ..config.model_registry import DecisionMode
 
 class PredictionType(Enum):
     """Types of predictions models can make."""
+
     CLASSIFICATION = "classification"
     REGRESSION = "regression"
     RANKING = "ranking"
@@ -29,6 +30,7 @@ class PredictionType(Enum):
 @dataclass
 class ModelPrediction:
     """Single model prediction with full metadata."""
+
     prediction: Any  # The actual prediction
     confidence: float | None = None  # Confidence score (0-1)
     probability_distribution: dict[str, float] | None = None  # For classification
@@ -54,6 +56,7 @@ class ModelPrediction:
 @dataclass
 class ModelInput:
     """Model input with validation metadata."""
+
     features: dict[str, Any]
     feature_provenance: dict[str, Any]
     input_hash: str
@@ -194,9 +197,9 @@ class BaseMLModel(ABC):
 
         # Type conversions
         for key, value in processed_features.items():
-            if isinstance(value, str) and value.replace('.', '').replace('-', '').isdigit():
+            if isinstance(value, str) and value.replace(".", "").replace("-", "").isdigit():
                 # Convert string numbers to numeric
-                if '.' in value:
+                if "." in value:
                     processed_features[key] = float(value)
                     preprocessing_steps.append(f"type_conversion_float_{key}")
                 else:
@@ -304,20 +307,20 @@ class BaseMLModel(ABC):
         """Log prediction for audit and monitoring."""
         try:
             log_data = {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'prediction': prediction.prediction,
-                'confidence': prediction.confidence,
-                'decision_mode': prediction.decision_mode.value,
-                'threshold_used': prediction.threshold_used,
-                'input_hash': model_input.input_hash,
-                'feature_count': len(model_input.features),
-                'validation_status': model_input.validation_status,
-                'prediction_timestamp': prediction.prediction_timestamp.isoformat(),
-                'trace_id': prediction.trace_id,
-                'policy_hash': prediction.policy_hash,
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "prediction": prediction.prediction,
+                "confidence": prediction.confidence,
+                "decision_mode": prediction.decision_mode.value,
+                "threshold_used": prediction.threshold_used,
+                "input_hash": model_input.input_hash,
+                "feature_count": len(model_input.features),
+                "validation_status": model_input.validation_status,
+                "prediction_timestamp": prediction.prediction_timestamp.isoformat(),
+                "trace_id": prediction.trace_id,
+                "policy_hash": prediction.policy_hash,
             }
 
             # Log to execution trace
@@ -354,7 +357,7 @@ class BaseMLModel(ABC):
     def _get_training_data_digest(self) -> str:
         """Get training data digest."""
         # This should be set during model training
-        return getattr(self, '_training_data_digest', '')
+        return getattr(self, "_training_data_digest", "")
 
     def set_training_data_digest(self, digest: str) -> None:
         """Set training data digest."""
@@ -363,13 +366,13 @@ class BaseMLModel(ABC):
     def get_model_info(self) -> dict[str, Any]:
         """Get model information for registry."""
         return {
-            'model_name': self.model_name,
-            'model_version': self.model_version,
-            'model_type': self.model_type,
-            'prediction_type': self.prediction_type.value,
-            'is_loaded': self.is_loaded,
-            'feature_schema_digest': self._get_feature_digest(),
-            'training_data_digest': self._get_training_data_digest(),
+            "model_name": self.model_name,
+            "model_version": self.model_version,
+            "model_type": self.model_type,
+            "prediction_type": self.prediction_type.value,
+            "is_loaded": self.is_loaded,
+            "feature_schema_digest": self._get_feature_digest(),
+            "training_data_digest": self._get_training_data_digest(),
         }
 
     def __repr__(self) -> str:

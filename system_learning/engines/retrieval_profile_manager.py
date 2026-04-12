@@ -199,8 +199,11 @@ class RetrievalProfileManager:
             ValueError: If no active profile can be loaded or bootstrapped.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileManager.load_active_profile")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileManager.load_active_profile"
+        )
 
         if self._active_profile_cache is not None:
             return self._active_profile_cache
@@ -228,7 +231,9 @@ class RetrievalProfileManager:
         profile_bytes = profile_json.encode("utf-8")
         if self._l4_state_writer is not None:
             version_id = self._l4_state_writer.write_l4c_retrieval_profile(
-                payload_bytes=profile_bytes, component_name="meta-learning", created_utc=created_utc,
+                payload_bytes=profile_bytes,
+                component_name="meta-learning",
+                created_utc=created_utc,
             )
         else:
             version_id = f"noop_activation_{created_utc}"

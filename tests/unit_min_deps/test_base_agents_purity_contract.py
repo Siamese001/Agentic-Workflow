@@ -11,6 +11,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
+
 @pytest.mark.unit
 class TestBaseAgentsPurityContract:
     """Test BaseAgentsPurityContract functionality."""
@@ -25,4 +26,4 @@ class TestBaseAgentsPurityContract:
 
     def test_placeholder_3(self):
         """Placeholder test 3."""
-        assert True    # guardian: Parsing and encoding errors need separate handling strategies
+        assert True  # guardian: Parsing and encoding errors need separate handling strategies

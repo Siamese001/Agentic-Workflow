@@ -13,6 +13,7 @@ This script:
 3. Removes duplicate if canonical exists
 4. Reports files that need manual review
 """
+
 import sys
 from pathlib import Path
 
@@ -99,17 +100,32 @@ _emit_links_execution_to_snapshot("p4", "remove_duplicate_suffixes", "exec_snaps
 project_root = Path(__file__).parent.parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-PROBLEMATIC_SUFFIXES = ['_flat', '_from_utils', '_1', '_2', '_3', '_copy', '_backup', '_old', '_new', '_temp', '_tmp']
+PROBLEMATIC_SUFFIXES = [
+    "_flat",
+    "_from_utils",
+    "_1",
+    "_2",
+    "_3",
+    "_copy",
+    "_backup",
+    "_old",
+    "_new",
+    "_temp",
+    "_tmp",
+]
+
 
 def find_duplicate_files() -> list[Path]:
     """Find all files with problematic suffixes."""
     all_duplicates = []
     for suffix in PROBLEMATIC_SUFFIXES:
-        pattern = f'*{suffix}.py'
+        pattern = f"*{suffix}.py"
         files = list(project_root.rglob(pattern))
         files = [f for f in files if ARCHIVES_DIR not in str(f)]
         all_duplicates.extend(files)
     return all_duplicates
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -200,92 +216,97 @@ def analyze_duplicates(duplicate_files: list[Path]) -> dict[str, list[tuple[Path
 
     Each entry is (dup_path, canonical_path, suffix, canonical_exists)
     """
-    results = {'safe_to_delete': [], 'needs_review': []}
+    results = {"safe_to_delete": [], "needs_review": []}
     for dup_path in duplicate_files:
         canonical_path, suffix = get_canonical_path(dup_path)
         if suffix is None:
             continue
         canonical_exists = canonical_path.exists()
         if canonical_exists:
-            results['safe_to_delete'].append((dup_path, canonical_path, suffix, True))
+            results["safe_to_delete"].append((dup_path, canonical_path, suffix, True))
         else:
-            results['needs_review'].append((dup_path, canonical_path, suffix, False))
+            results["needs_review"].append((dup_path, canonical_path, suffix, False))
     return results
 
-def remove_duplicates(safe_to_delete: list[tuple[Path, Path, str, bool]], dry_run: bool=True) -> int:
+
+def remove_duplicates(safe_to_delete: list[tuple[Path, Path, str, bool]], dry_run: bool = True) -> int:
     """Remove duplicate files that have canonical versions."""
     removed_count = 0
     for dup_path, canonical_path, suffix, _ in safe_to_delete:
         rel_dup = dup_path.relative_to(project_root)
         rel_canonical = canonical_path.relative_to(project_root)
         if dry_run:
-            print(f'  [DRY-RUN] Would delete: {rel_dup} (suffix: {suffix})')
-            print(f'            Canonical exists: {rel_canonical}')
+            print(f"  [DRY-RUN] Would delete: {rel_dup} (suffix: {suffix})")
+            print(f"            Canonical exists: {rel_canonical}")
         else:
             try:
                 dup_path.unlink()
-                print(f'  ✓ Deleted: {rel_dup} (suffix: {suffix})')
+                print(f"  ✓ Deleted: {rel_dup} (suffix: {suffix})")
                 removed_count += 1
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                print(f'  ✗ Failed to delete {rel_dup}: {e}')
+                print(f"  ✗ Failed to delete {rel_dup}: {e}")
     return removed_count
 
-def main(dry_run: bool=True) -> int:
+
+def main(dry_run: bool = True) -> int:
     """
     Main execution.
 
     Returns:
         Exit code (0 for success)
     """
-    print('\n' + '=' * 70)
-    print('INTELLIGENT DUPLICATE SUFFIX REMOVAL TOOL')
-    print('=' * 70)
+    print("\n" + "=" * 70)
+    print("INTELLIGENT DUPLICATE SUFFIX REMOVAL TOOL")
+    print("=" * 70)
     print(f"Mode: {('DRY-RUN (no changes)' if dry_run else 'EXECUTE (will delete files)')}")
     print(f"Detecting suffixes: {', '.join(PROBLEMATIC_SUFFIXES)}")
-    print('=' * 70)
-    print('\n[1] Scanning for duplicate files with problematic suffixes...')
+    print("=" * 70)
+    print("\n[1] Scanning for duplicate files with problematic suffixes...")
     duplicate_files = find_duplicate_files()
-    print(f'    Found {len(duplicate_files)} files with problematic suffixes')
-    print('\n[2] Analyzing duplicates...')
+    print(f"    Found {len(duplicate_files)} files with problematic suffixes")
+    print("\n[2] Analyzing duplicates...")
     results = analyze_duplicates(duplicate_files)
-    safe_count = len(results['safe_to_delete'])
-    review_count = len(results['needs_review'])
+    safe_count = len(results["safe_to_delete"])
+    review_count = len(results["needs_review"])
     suffix_breakdown = {}
-    for _, _, suffix, _ in results['safe_to_delete']:
+    for _, _, suffix, _ in results["safe_to_delete"]:
         suffix_breakdown[suffix] = suffix_breakdown.get(suffix, 0) + 1
-    print(f'    Safe to delete: {safe_count} (canonical exists)')
-    print(f'    Breakdown by suffix: {suffix_breakdown}')
-    print(f'    Needs review: {review_count} (no canonical)')
+    print(f"    Safe to delete: {safe_count} (canonical exists)")
+    print(f"    Breakdown by suffix: {suffix_breakdown}")
+    print(f"    Needs review: {review_count} (no canonical)")
     if safe_count > 0:
         print(f"\n[3] {('Previewing' if dry_run else 'Removing')} safe duplicates...")
-        removed = remove_duplicates(results['safe_to_delete'], dry_run)
+        removed = remove_duplicates(results["safe_to_delete"], dry_run)
         if not dry_run:
-            print(f'\n✓ Removed {removed} duplicate files')
+            print(f"\n✓ Removed {removed} duplicate files")
     if review_count > 0:
-        print(f'\n[4] Files needing manual review ({review_count}):')
-        for dup_path, canonical_path, suffix, _ in results['needs_review']:
+        print(f"\n[4] Files needing manual review ({review_count}):")
+        for dup_path, canonical_path, suffix, _ in results["needs_review"]:
             rel_dup = dup_path.relative_to(project_root)
             rel_canonical = canonical_path.relative_to(project_root)
-            print(f'    • {rel_dup} (suffix: {suffix})')
-            print(f'      → Should rename to: {rel_canonical}')
-    print('\n' + '=' * 70)
+            print(f"    • {rel_dup} (suffix: {suffix})")
+            print(f"      → Should rename to: {rel_canonical}")
+    print("\n" + "=" * 70)
     if dry_run:
-        print('DRY-RUN COMPLETE')
-        print(f'  Would delete: {safe_count} files')
-        print(f'  Suffix breakdown: {suffix_breakdown}')
-        print(f'  Manual review: {review_count} files')
-        print('\nRun with --execute to perform actual deletion')
+        print("DRY-RUN COMPLETE")
+        print(f"  Would delete: {safe_count} files")
+        print(f"  Suffix breakdown: {suffix_breakdown}")
+        print(f"  Manual review: {review_count} files")
+        print("\nRun with --execute to perform actual deletion")
     else:
-        print('CLEANUP COMPLETE')
-        print(f'  Deleted: {removed} files')
-        print(f'  Suffix breakdown: {suffix_breakdown}')
-        print(f'  Manual review: {review_count} files')
-    print('=' * 70)
+        print("CLEANUP COMPLETE")
+        print(f"  Deleted: {removed} files")
+        print(f"  Suffix breakdown: {suffix_breakdown}")
+        print(f"  Manual review: {review_count} files")
+    print("=" * 70)
     return 0
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description='Remove duplicate files with _flat and _1 suffixes')
-    parser.add_argument('--execute', action='store_true', help='Actually delete files (default is dry-run)')
+
+    parser = argparse.ArgumentParser(description="Remove duplicate files with _flat and _1 suffixes")
+    parser.add_argument("--execute", action="store_true", help="Actually delete files (default is dry-run)")
     args = parser.parse_args()
     sys.exit(main(dry_run=not args.execute))

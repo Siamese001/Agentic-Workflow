@@ -1,6 +1,7 @@
 """
 Test Research Integrations.
 """
+
 import unittest
 
 from apps_research.integrations import ExecutionAdapter, ObservabilityAdapter

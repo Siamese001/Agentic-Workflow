@@ -212,9 +212,7 @@ class ComplexityAnalyzer:
         files = list(target.rglob("*.py"))
 
         for file_path in files:
-            if self.config.ignore_tests and (
-                "test" in file_path.name or "tests" in file_path.parts
-            ):
+            if self.config.ignore_tests and ("test" in file_path.name or "tests" in file_path.parts):
                 continue
             self.analyze_file(file_path)
 

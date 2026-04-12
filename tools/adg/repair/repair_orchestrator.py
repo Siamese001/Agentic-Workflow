@@ -262,7 +262,9 @@ class ADGRepairOrchestrator:
             self.deficiencies.append(deficiency)
 
         # Each unknown module can potentially be auto-fixed
-        for module in tqdm(unknown_modules[:50], desc="unknown modules", unit="module", leave=False):  # Limit to first 50
+        for module in tqdm(
+            unknown_modules[:50], desc="unknown modules", unit="module", leave=False
+        ):  # Limit to first 50
             module_path = module.get("resolved_path", "")
             if not module_path:
                 continue
@@ -290,7 +292,9 @@ class ADGRepairOrchestrator:
         """Extract deficiencies from edge density report."""
         critical_coverage = report.get("critical_edge_coverage", {})
 
-        for edge_type, count in tqdm(critical_coverage.items(), desc="edge coverage", unit="type", leave=False):
+        for edge_type, count in tqdm(
+            critical_coverage.items(), desc="edge coverage", unit="type", leave=False
+        ):
             if count == 0:
                 deficiency = Deficiency(
                     id=f"missing_critical_edge_{edge_type}",
@@ -429,15 +433,20 @@ class ADGRepairOrchestrator:
                 return layer
 
         # Check for apps
-        for app_prefix in tqdm((
-            "apps_eval",
-            "apps_exec",
-            "apps_lic",
-            "apps_research",
-            "apps_rfp",
-            "apps_rg",
-            "apps_shared",
-        ), desc="app prefixes", unit="app", leave=False):
+        for app_prefix in tqdm(
+            (
+                "apps_eval",
+                "apps_exec",
+                "apps_lic",
+                "apps_research",
+                "apps_rfp",
+                "apps_rg",
+                "apps_shared",
+            ),
+            desc="app prefixes",
+            unit="app",
+            leave=False,
+        ):
             if path_lower.startswith(app_prefix) or f"/{app_prefix}" in path_lower:
                 return "L_APP"
 

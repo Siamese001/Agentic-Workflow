@@ -300,7 +300,12 @@ class RecursionMonitor:
         Logger.info("[RecursionMonitor] Initialized with production settings")
 
     def record_spawn(
-        self, success: bool, depth: int, duration_ms: float, memory_bytes: int, cache_hit: bool,
+        self,
+        success: bool,
+        depth: int,
+        duration_ms: float,
+        memory_bytes: int,
+        cache_hit: bool,
     ) -> None:
         """
         Record a spawn operation for monitoring.
@@ -314,7 +319,9 @@ class RecursionMonitor:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RecursionMonitor.record_spawn",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "RecursionMonitor.record_spawn",
         )
         self._response_times.append(duration_ms)
         if len(self._response_times) > 1000:
@@ -363,7 +370,11 @@ class RecursionMonitor:
         avg_depth = sum(depths) / max(len(depths), 1) if depths else 0
         cache_hit_rate = cache_hits / max(cache_hits + cache_misses, 1)
         health_status = self._calculate_health_status(
-            active_recursions, success_rate, avg_depth, memory_bytes, cache_hit_rate,
+            active_recursions,
+            success_rate,
+            avg_depth,
+            memory_bytes,
+            cache_hit_rate,
         )
         snapshot = RecursionSnapshot(
             timestamp=datetime.now().isoformat(),
@@ -540,7 +551,11 @@ class RecursionMonitor:
             )
 
     def _create_alert(
-        self, severity: AlertSeverity, message: str, source: str, metadata: dict[str, Any] | None = None,
+        self,
+        severity: AlertSeverity,
+        message: str,
+        source: str,
+        metadata: dict[str, Any] | None = None,
     ) -> Alert:
         """Create and store an alert."""
         alert = Alert(
@@ -564,7 +579,9 @@ class RecursionMonitor:
         return alert
 
     def get_alerts(
-        self, severity: AlertSeverity | None = None, unacknowledged_only: bool = False,
+        self,
+        severity: AlertSeverity | None = None,
+        unacknowledged_only: bool = False,
     ) -> list[Alert]:
         """Get alerts with optional filtering."""
         alerts = self._alerts

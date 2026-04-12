@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Query ADG for antipattern violations - full reclassification analysis."""
+
 import os
 import sqlite3
 from pathlib import Path
@@ -48,7 +49,8 @@ critical_prefixes = (
     "agentic_core/L3_orchestration/",
 )
 all_low_kinds = [
-    r[0] for r in conn.execute(
+    r[0]
+    for r in conn.execute(
         "SELECT DISTINCT e.edge_kind FROM violations v JOIN edges e ON v.edge_id=e.id"
         " WHERE e.relation_type='antipattern' AND v.severity='LOW'",
     ).fetchall()

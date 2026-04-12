@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class Citation:
     """Individual citation."""
+
     doc_id: str
     content_snippet: str
     source: str
@@ -30,6 +31,7 @@ class Citation:
 @dataclass
 class EvidenceContract:
     """Evidence contract with citations and provenance."""
+
     query_id: str
     citations: list[Citation] = field(default_factory=list)
     context_packet: str = ""
@@ -72,7 +74,9 @@ class EvidenceContractBuilder:
         """
         trace_id = f"evidence_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "EvidenceContractBuilder.build_contract",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "EvidenceContractBuilder.build_contract",
         )
 
         # Build citations
@@ -114,16 +118,16 @@ class EvidenceContractBuilder:
     def _create_citation(self, doc: Any) -> Citation:
         """Create citation from document."""
         return Citation(
-            doc_id=getattr(doc, 'doc_id', 'unknown'),
-            content_snippet=getattr(doc, 'content', '')[:200],
-            source=getattr(doc, 'source', 'unknown'),
-            confidence=getattr(doc, 'rerank_score', 0.5),
+            doc_id=getattr(doc, "doc_id", "unknown"),
+            content_snippet=getattr(doc, "content", "")[:200],
+            source=getattr(doc, "source", "unknown"),
+            confidence=getattr(doc, "rerank_score", 0.5),
         )
 
     def _verify_provenance(self, citations: list[Citation]) -> bool:
         """Verify provenance of citations."""
         # Mock implementation - would check canonical store for provenance
-        return all(c.source != 'unknown' for c in citations)
+        return all(c.source != "unknown" for c in citations)
 
     def _calculate_support(self, query: str, citations: list[Citation]) -> float:
         """Calculate support score for query."""

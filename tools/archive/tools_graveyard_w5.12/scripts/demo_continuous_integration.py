@@ -59,11 +59,13 @@ class MockActivator:
 
         # Update state
         self.active_version = version
-        self.activation_history.append({
-            "version": version,
-            "timestamp": datetime.now(),
-            "success": result["success"],
-        })
+        self.activation_history.append(
+            {
+                "version": version,
+                "timestamp": datetime.now(),
+                "success": result["success"],
+            }
+        )
 
         print(f"✅ Version {version} activated successfully")
         return result
@@ -85,6 +87,7 @@ class MockActivator:
             )
 
         print("✅ Checkpoint stored")
+
 
 class MockConfigProvider:
     """Mock version of system_learning/stores/config_provider.py"""
@@ -140,6 +143,7 @@ class MockConfigProvider:
         else:
             return {"level": "LOW", "areas_affected": ["configuration"]}
 
+
 class MockMetaAdapter:
     """Mock version of system_learning/adapters/l1_meta_adapter.py"""
 
@@ -182,6 +186,7 @@ class MockMetaAdapter:
         # Store learning experience
         if self.pipeline:
             from tools.implement_unified_memory import LearningExperience
+
             experience = LearningExperience(
                 experience_type="meta_learning",
                 input_context=signal_data,
@@ -197,8 +202,11 @@ class MockMetaAdapter:
             self.pipeline.memory_manager.store_learning_experience(experience)
 
         self.processing_count += 1
-        print(f"✅ Signal processed: quality={result['quality_score']:.2f}, adaptations={len(result['adaptations'])}")
+        print(
+            f"✅ Signal processed: quality={result['quality_score']:.2f}, adaptations={len(result['adaptations'])}"
+        )
         return result
+
 
 class MockModelTrainer:
     """Mock model trainer with continuous learning integration."""
@@ -208,7 +216,7 @@ class MockModelTrainer:
         self.model_name = model_name
         self.training_session_id = f"session_{int(time.time())}"
         self.current_epoch = 0
-        self.best_loss = float('inf')
+        self.best_loss = float("inf")
 
     def train_epoch(self, epoch: int, num_batches: int = 10):
         """Mock training epoch with learning integration."""
@@ -301,6 +309,7 @@ class MockModelTrainer:
         model_id = self.pipeline.memory_manager.store_model_checkpoint(checkpoint)
         print(f"💾 Model checkpoint stored: epoch_{epoch} (ID: {model_id})")
 
+
 class MockUserInteractionLearner:
     """Mock user interaction learner with continuous learning."""
 
@@ -346,6 +355,7 @@ class MockUserInteractionLearner:
         # Store learning experience
         if self.pipeline:
             from tools.implement_unified_memory import LearningExperience
+
             experience = LearningExperience(
                 experience_type="user_interaction",
                 input_context={"user_input": user_input, "session_id": self.session_id},
@@ -364,8 +374,11 @@ class MockUserInteractionLearner:
             )
             self.pipeline.memory_manager.store_learning_experience(experience)
 
-        print(f"✅ Interaction processed: intent={interaction_data['intent']}, quality={interaction_data['quality_score']:.2f}")
+        print(
+            f"✅ Interaction processed: intent={interaction_data['intent']}, quality={interaction_data['quality_score']:.2f}"
+        )
         return interaction_data
+
 
 def demonstrate_component_integration():
     """Demonstrate integration with mock system components."""
@@ -498,6 +511,7 @@ def demonstrate_component_integration():
     print("  ✅ Performance metrics tracking")
     print("  ✅ Automated insight generation")
 
+
 def main():
     """Main demonstration function."""
     try:
@@ -508,7 +522,9 @@ def main():
     except (ValueError, TypeError, RuntimeError) as e:
         print(f"\n❌ Demonstration error: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 if __name__ == "__main__":
     main()

@@ -225,8 +225,11 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
             PermissionError: If the key has already been written to.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ImmutableStagingBuffer.write")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ImmutableStagingBuffer.write"
+        )
 
         if key in self._locked_keys:
             self._mcp_audit("write_violation", {"key": key, "agent": source_agent})

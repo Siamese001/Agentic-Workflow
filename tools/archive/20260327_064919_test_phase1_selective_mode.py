@@ -111,8 +111,10 @@ def test_selective_mode():
     finally:
         # Cleanup
         import shutil
+
         if cache_dir.exists():
             shutil.rmtree(cache_dir)
+
 
 if __name__ == "__main__":
     results = test_selective_mode()

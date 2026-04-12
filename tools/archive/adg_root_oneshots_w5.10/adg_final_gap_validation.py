@@ -39,8 +39,9 @@ class ADGFinalGapValidator:
 
     def _get_latest_sqlite(self) -> Path:
         """Get the latest SQLite database."""
-        sqlite_files = sorted(self.adg_dir.glob("adg_indexed_*.sqlite"),
-                             key=lambda p: p.stat().st_mtime, reverse=True)
+        sqlite_files = sorted(
+            self.adg_dir.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True
+        )
         if not sqlite_files:
             raise FileNotFoundError("No SQLite database found in artifacts/adg/")
         return sqlite_files[0]
@@ -67,7 +68,9 @@ class ADGFinalGapValidator:
         module_count = self._execute_query("SELECT COUNT(*) FROM nodes WHERE entity_type='module'")[0][0]
 
         # Get edge type distribution
-        edge_types = dict(self._execute_query("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type"))
+        edge_types = dict(
+            self._execute_query("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type")
+        )
 
         # Get layer distribution
         layer_dist = dict(self._execute_query("SELECT layer, COUNT(*) FROM nodes GROUP BY layer"))
@@ -87,17 +90,22 @@ class ADGFinalGapValidator:
             "nodes_match": node_count == report.get("generation_metrics", {}).get("total_entities", 0),
             "edges_match": edge_count == report.get("reconciliation", {}).get("db_edges", 0),
             "modules_match": module_count == report.get("generation_metrics", {}).get("modules_scanned", 0),
-            "edge_types_complete": set(edge_types.keys()) == set(edge_report.get("edge_distribution", {}).keys()),
+            "edge_types_complete": set(edge_types.keys())
+            == set(edge_report.get("edge_distribution", {}).keys()),
             "layer_distribution_match": layer_dist == layer_report.get("layer_distribution", {}),
             "all_edge_types_accounted": len(edge_types) > 0,
             "deterministic_sorting": self._check_report_sorting(),
         }
 
         if not reconciliation["nodes_match"]:
-            self.validation_errors.append(f"Node count mismatch: SQLite={node_count}, Report={reconciliation['report_nodes']}")
+            self.validation_errors.append(
+                f"Node count mismatch: SQLite={node_count}, Report={reconciliation['report_nodes']}"
+            )
 
         if not reconciliation["edges_match"]:
-            self.validation_errors.append(f"Edge count mismatch: SQLite={edge_count}, Report={reconciliation['report_edges']}")
+            self.validation_errors.append(
+                f"Edge count mismatch: SQLite={edge_count}, Report={reconciliation['report_edges']}"
+            )
 
         if not reconciliation["edge_types_complete"]:
             missing_types = set(edge_report.get("edge_distribution", {}).keys()) - set(edge_types.keys())
@@ -123,7 +131,8 @@ class ADGFinalGapValidator:
         print("[VALIDATION] Critical Path Boundary Zero-Leak...")
 
         # Query unresolved imports by layer
-        unresolved_by_layer = dict(self._execute_query("""
+        unresolved_by_layer = dict(
+            self._execute_query("""
             SELECT
                 CASE
                     WHEN resolved_path LIKE 'agentic_core/L0_%' THEN 'agentic_core/L0_'
@@ -139,22 +148,31 @@ class ADGFinalGapValidator:
                  resolved_path LIKE 'agentic_core/L2_%' OR
                  resolved_path LIKE 'agentic_core/L5_%')
             GROUP BY path_prefix
-        """))
+        """)
+        )
 
         # Get boundary edge counts
-        boundary_edge_types = ['internal_to_internal', 'internal_to_external',
-                              'external_to_internal', 'unresolved_boundary']
+        boundary_edge_types = [
+            "internal_to_internal",
+            "internal_to_external",
+            "external_to_internal",
+            "unresolved_boundary",
+        ]
         boundary_counts = {}
         for edge_type in boundary_edge_types:
-            count = self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", (edge_type,))[0][0]
+            count = self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", (edge_type,))[
+                0
+            ][0]
             boundary_counts[edge_type] = count
 
         # Validate boundary completeness
         total_edges = sum(boundary_counts.values())
         boundary_completeness = "complete" if total_edges > 0 else "incomplete"
 
-        critical_path_unresolved = sum(unresolved_by_layer.get(prefix, 0)
-                                      for prefix in ['agentic_core/L0_', 'agentic_core/L2_', 'agentic_core/L5_'])
+        critical_path_unresolved = sum(
+            unresolved_by_layer.get(prefix, 0)
+            for prefix in ["agentic_core/L0_", "agentic_core/L2_", "agentic_core/L5_"]
+        )
 
         validation = {
             "unresolved_by_layer": unresolved_by_layer,
@@ -179,13 +197,27 @@ class ADGFinalGapValidator:
 
         # Get determinism-related edges
         determinism_edges = {
-            'emits_determinism_digest': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('emits_determinism_digest',))[0][0],
-            'determinism_seed': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('determinism_seed',))[0][0],
-            'emits_replay_key': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('emits_replay_key',))[0][0],
-            'snapshots_state': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('snapshots_state',))[0][0],
-            'mutation_signature': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('mutation_signature',))[0][0],
-            'references_policy_hash': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('references_policy_hash',))[0][0],
-            'parent_snapshot_hash': self._execute_query("SELECT COUNT(*) FROM edges WHERE relation_type = ?", ('parent_snapshot_hash',))[0][0],
+            "emits_determinism_digest": self._execute_query(
+                "SELECT COUNT(*) FROM edges WHERE relation_type = ?", ("emits_determinism_digest",)
+            )[0][0],
+            "determinism_seed": self._execute_query(
+                "SELECT COUNT(*) FROM edges WHERE relation_type = ?", ("determinism_seed",)
+            )[0][0],
+            "emits_replay_key": self._execute_query(
+                "SELECT COUNT(*) FROM edges WHERE relation_type = ?", ("emits_replay_key",)
+            )[0][0],
+            "snapshots_state": self._execute_query(
+                "SELECT COUNT(*) FROM edges WHERE relation_type = ?", ("snapshots_state",)
+            )[0][0],
+            "mutation_signature": self._execute_query(
+                "SELECT COUNT(*) FROM edges WHERE relation_type = ?", ("mutation_signature",)
+            )[0][0],
+            "references_policy_hash": self._execute_query(
+                "SELECT COUNT(*) FROM edges WHERE relation_type = ?", ("references_policy_hash",)
+            )[0][0],
+            "parent_snapshot_hash": self._execute_query(
+                "SELECT COUNT(*) FROM edges WHERE relation_type = ?", ("parent_snapshot_hash",)
+            )[0][0],
         }
 
         # Calculate graph hashes
@@ -194,8 +226,12 @@ class ADGFinalGapValidator:
         mutation_hash = self._calculate_mutation_hash()
 
         # Check lineage completeness
-        lineage_edges = ['emits_replay_key', 'references_policy_hash',
-                        'mutation_signature', 'parent_snapshot_hash']
+        lineage_edges = [
+            "emits_replay_key",
+            "references_policy_hash",
+            "mutation_signature",
+            "parent_snapshot_hash",
+        ]
         lineage_complete = all(determinism_edges.get(edge, 0) > 0 for edge in lineage_edges)
 
         convergence = {
@@ -207,7 +243,7 @@ class ADGFinalGapValidator:
             },
             "lineage_complete": lineage_complete,
             "determinism_score": self._calculate_determinism_score(determinism_edges),
-            "replay_ready": lineage_complete and determinism_edges['emits_determinism_digest'] > 0,
+            "replay_ready": lineage_complete and determinism_edges["emits_determinism_digest"] > 0,
         }
 
         if not lineage_complete:
@@ -218,13 +254,17 @@ class ADGFinalGapValidator:
 
     def _calculate_node_hash(self) -> str:
         """Calculate hash of all node data."""
-        nodes = self._execute_query("SELECT adg_name, entity_type, layer, identity_kind FROM nodes ORDER BY adg_name")
+        nodes = self._execute_query(
+            "SELECT adg_name, entity_type, layer, identity_kind FROM nodes ORDER BY adg_name"
+        )
         hash_input = "\n".join(f"{row[0]}|{row[1]}|{row[2]}|{row[3]}" for row in nodes)
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
 
     def _calculate_edge_hash(self) -> str:
         """Calculate hash of all edge data."""
-        edges = self._execute_query("SELECT src_id, dst_id, relation_type, edge_kind FROM edges ORDER BY src_id, dst_id, relation_type")
+        edges = self._execute_query(
+            "SELECT src_id, dst_id, relation_type, edge_kind FROM edges ORDER BY src_id, dst_id, relation_type"
+        )
         hash_input = "\n".join(f"{row[0]}|{row[1]}|{row[2]}|{row[3]}" for row in edges)
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
 
@@ -241,7 +281,7 @@ class ADGFinalGapValidator:
 
     def _calculate_determinism_score(self, determinism_edges: dict[str, int]) -> float:
         """Calculate determinism coverage score."""
-        required_edges = ['emits_determinism_digest', 'determinism_seed', 'emits_replay_key']
+        required_edges = ["emits_determinism_digest", "determinism_seed", "emits_replay_key"]
         present = sum(1 for edge in required_edges if determinism_edges.get(edge, 0) > 0)
         return present / len(required_edges) if required_edges else 0.0
 
@@ -263,12 +303,14 @@ class ADGFinalGapValidator:
         """)
 
         # Count L_UNKNOWN by entity type
-        unknown_by_type = dict(self._execute_query("""
+        unknown_by_type = dict(
+            self._execute_query("""
             SELECT entity_type, COUNT(*)
             FROM nodes
             WHERE layer = 'L_UNKNOWN'
             GROUP BY entity_type
-        """))
+        """)
+        )
 
         # Get module-layer mapping for remaining L_UNKNOWN
         remaining_unknown = self._execute_query("""
@@ -285,7 +327,9 @@ class ADGFinalGapValidator:
 
         propagation = {
             "propagation_violations": len(violations),
-            "violation_details": [{"symbol": row[0], "symbol_layer": row[1], "module_layer": row[2]} for row in violations[:10]],
+            "violation_details": [
+                {"symbol": row[0], "symbol_layer": row[1], "module_layer": row[2]} for row in violations[:10]
+            ],
             "unknown_by_type": unknown_by_type,
             "remaining_unknown": len(remaining_unknown),
             "propagation_complete": len(violations) == 0,
@@ -305,9 +349,9 @@ class ADGFinalGapValidator:
 
         # Define critical edge types
         critical_edges = [
-            'emits_determinism_digest',  # determinism
-            'policy_verification',       # governance
-            'dispatches_execution_plan',  # execution
+            "emits_determinism_digest",  # determinism
+            "policy_verification",  # governance
+            "dispatches_execution_plan",  # execution
         ]
 
         # Get core modules (L0, L2, L5)
@@ -325,18 +369,21 @@ class ADGFinalGapValidator:
 
             coverage = {}
             for edge_type in critical_edges:
-                count = self._execute_query("""
+                count = self._execute_query(
+                    """
                     SELECT COUNT(*) FROM edges
                     WHERE (src_id = ? OR dst_id = ?) AND relation_type = ?
-                """, (module_id, module_id, edge_type))[0][0]
+                """,
+                    (module_id, module_id, edge_type),
+                )[0][0]
                 coverage[edge_type] = count
 
             module_coverage[module_adg] = {
                 "layer": layer,
                 "coverage": coverage,
-                "has_determinism": coverage.get('emits_determinism_digest', 0) > 0,
-                "has_governance": coverage.get('policy_verification', 0) > 0,
-                "has_execution": coverage.get('dispatches_execution_plan', 0) > 0,
+                "has_determinism": coverage.get("emits_determinism_digest", 0) > 0,
+                "has_governance": coverage.get("policy_verification", 0) > 0,
+                "has_execution": coverage.get("dispatches_execution_plan", 0) > 0,
             }
 
         # Calculate coverage metrics
@@ -354,11 +401,13 @@ class ADGFinalGapValidator:
                 "governance_coverage": modules_with_governance / total_modules if total_modules > 0 else 0,
                 "execution_coverage": modules_with_execution / total_modules if total_modules > 0 else 0,
             },
-            "minimum_achieved": all([
-                modules_with_determinism >= total_modules * 0.8,  # 80% threshold
-                modules_with_governance >= total_modules * 0.8,
-                modules_with_execution >= total_modules * 0.5,   # 50% for execution (not all need it)
-            ]),
+            "minimum_achieved": all(
+                [
+                    modules_with_determinism >= total_modules * 0.8,  # 80% threshold
+                    modules_with_governance >= total_modules * 0.8,
+                    modules_with_execution >= total_modules * 0.5,  # 50% for execution (not all need it)
+                ]
+            ),
         }
 
         if not distribution["minimum_achieved"]:
@@ -373,15 +422,18 @@ class ADGFinalGapValidator:
         print("[VALIDATION] Test Surface Hard Binding...")
 
         # Get test nodes
-        test_nodes = dict(self._execute_query("""
+        test_nodes = dict(
+            self._execute_query("""
             SELECT entity_type, COUNT(*)
             FROM nodes
             WHERE entity_type IN ('test_suite', 'test_case', 'invariant_family')
             GROUP BY entity_type
-        """))
+        """)
+        )
 
         # Get test edges
-        test_edges = dict(self._execute_query("""
+        test_edges = dict(
+            self._execute_query("""
             SELECT relation_type, COUNT(*)
             FROM edges
             WHERE relation_type IN (
@@ -390,7 +442,8 @@ class ADGFinalGapValidator:
                 'gates_promotion', 'detects_regression'
             )
             GROUP BY relation_type
-        """))
+        """)
+        )
 
         # Check critical module test linkage
         critical_modules = self._execute_query("""
@@ -404,16 +457,22 @@ class ADGFinalGapValidator:
             module_id = self._execute_query("SELECT id FROM nodes WHERE adg_name = ?", (module_adg,))[0][0]
 
             # Check for test linkage
-            test_case_links = self._execute_query("""
+            test_case_links = self._execute_query(
+                """
                 SELECT COUNT(*) FROM edges e
                 JOIN nodes t ON e.dst_id = t.id
                 WHERE e.src_id = ? AND t.entity_type = 'test_case'
-            """, (module_id,))[0][0]
+            """,
+                (module_id,),
+            )[0][0]
 
-            validation_links = self._execute_query("""
+            validation_links = self._execute_query(
+                """
                 SELECT COUNT(*) FROM edges
                 WHERE src_id = ? AND relation_type = 'records_validation_outcome'
-            """, (module_id,))[0][0]
+            """,
+                (module_id,),
+            )[0][0]
 
             module_test_linkage[module_adg] = {
                 "layer": layer,
@@ -498,11 +557,12 @@ class ADGFinalGapValidator:
 
     def _load_latest_report(self, report_prefix: str) -> dict[str, Any]:
         """Load the latest report by prefix."""
-        report_files = sorted(self.adg_dir.glob(f"{report_prefix}_*.json"),
-                             key=lambda p: p.stat().st_mtime, reverse=True)
+        report_files = sorted(
+            self.adg_dir.glob(f"{report_prefix}_*.json"), key=lambda p: p.stat().st_mtime, reverse=True
+        )
         if not report_files:
             return {}
-        with open(report_files[0], encoding='utf-8') as f:
+        with open(report_files[0], encoding="utf-8") as f:
             return json.load(f)
 
     def run_triple_build_validation(self) -> dict[str, Any]:
@@ -517,7 +577,7 @@ class ADGFinalGapValidator:
         hashes = {"nodes": [], "edges": [], "mutation": []}
 
         for i in range(3):
-            print(f"[BUILD] Running build {i+1}/3...")
+            print(f"[BUILD] Running build {i + 1}/3...")
 
             # Generate new ADG
             est = datetime.now().astimezone()
@@ -537,13 +597,15 @@ class ADGFinalGapValidator:
             hashes["edges"].append(edge_hash)
             hashes["mutation"].append(mutation_hash)
 
-            builds.append({
-                "build_number": i + 1,
-                "sqlite_file": new_sqlite.name,
-                "node_hash": node_hash,
-                "edge_hash": edge_hash,
-                "mutation_hash": mutation_hash,
-            })
+            builds.append(
+                {
+                    "build_number": i + 1,
+                    "sqlite_file": new_sqlite.name,
+                    "node_hash": node_hash,
+                    "edge_hash": edge_hash,
+                    "mutation_hash": mutation_hash,
+                }
+            )
 
         # Check hash consistency
         node_consistent = len(set(hashes["nodes"])) == 1
@@ -587,30 +649,32 @@ def main():
     print("=" * 80)
 
     print(f"Overall Score: {final_result['overall_metrics']['overall_score']:.1f}%")
-    print(f"Checks Passed: {final_result['overall_metrics']['checks_passed']}/{final_result['overall_metrics']['total_checks']}")
+    print(
+        f"Checks Passed: {final_result['overall_metrics']['checks_passed']}/{final_result['overall_metrics']['total_checks']}"
+    )
     print(f"System Locked: {final_result['overall_metrics']['system_locked']}")
     print(f"Validation Errors: {len(final_result['validation_errors'])}")
     print(f"Validation Warnings: {len(final_result['validation_warnings'])}")
 
-    if final_result['validation_errors']:
+    if final_result["validation_errors"]:
         print("\nVALIDATION ERRORS:")
-        for error in final_result['validation_errors']:
+        for error in final_result["validation_errors"]:
             print(f"  ❌ {error}")
 
-    if final_result['validation_warnings']:
+    if final_result["validation_warnings"]:
         print("\nVALIDATION WARNINGS:")
-        for warning in final_result['validation_warnings']:
+        for warning in final_result["validation_warnings"]:
             print(f"  ⚠️  {warning}")
 
     # Save validation report
     report_path = adg_dir / "final_gap_validation_report.json"
-    with open(report_path, 'w', encoding='utf-8') as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         json.dump(final_result, f, indent=2, sort_keys=True)
 
     print(f"\nValidation report saved: {report_path}")
 
     # Exit with appropriate code
-    if final_result['overall_metrics']['system_locked']:
+    if final_result["overall_metrics"]["system_locked"]:
         print("\n✅ ADG FINAL GAP CLOSURE VALIDATION PASSED")
         return 0
     else:

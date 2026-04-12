@@ -1,4 +1,5 @@
 """Check emits_determinism_digest and records_execution_trace edge counts in the latest ADG."""
+
 import glob
 import os
 import sqlite3
@@ -7,7 +8,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 ADG_DIR = os.path.join(ROOT, "artifacts", "adg")
 
 # Find latest sqlite
-candidates = sorted(glob.glob(os.path.join(ADG_DIR, "adg_indexed_*.sqlite")), key=lambda p: os.path.basename(p), reverse=True)
+candidates = sorted(
+    glob.glob(os.path.join(ADG_DIR, "adg_indexed_*.sqlite")), key=lambda p: os.path.basename(p), reverse=True
+)
 if not candidates:
     print("ERROR: No ADG SQLite found")
     exit(1)
@@ -61,12 +64,14 @@ for module in BLOCKERS:
         print(f"  OK      {module}")
 
 # Overall counts
-print(f"\n{'='*60}")
+print(f"\n{'=' * 60}")
 print("OVERALL ADG EDGE COUNTS")
-print(f"{'='*60}")
+print(f"{'=' * 60}")
 for rel in ["emits_determinism_digest", "records_execution_trace"]:
     count = c.execute("SELECT COUNT(*) FROM edges WHERE relation_type = ?", (rel,)).fetchone()[0]
-    modules = c.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = ?", (rel,)).fetchone()[0]
+    modules = c.execute(
+        "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = ?", (rel,)
+    ).fetchone()[0]
     print(f"  {rel}: {count} edges across {modules} modules")
 
 conn.close()

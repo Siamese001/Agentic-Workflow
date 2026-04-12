@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class FreshnessCheck:
     """Result of freshness verification."""
+
     is_fresh: bool
     age_seconds: float
     freshness_band: str
@@ -30,6 +31,7 @@ class FreshnessCheck:
 @dataclass
 class ACCheck:
     """Result of ACL verification."""
+
     allowed: bool
     user_perms: list[str] = field(default_factory=list)
     required_perms: list[str] = field(default_factory=list)
@@ -39,6 +41,7 @@ class ACCheck:
 @dataclass
 class PolicyResult:
     """Result of policy evaluation."""
+
     can_use_cache: bool
     freshness_ok: bool
     acl_ok: bool
@@ -57,10 +60,10 @@ class PolicyEvaluator:
     def __init__(self):
         """Initialize the policy evaluator."""
         self._freshness_bands = {
-            "realtime": 300,      # 5 minutes
-            "hourly": 3600,       # 1 hour
-            "daily": 86400,       # 24 hours
-            "weekly": 604800,     # 7 days
+            "realtime": 300,  # 5 minutes
+            "hourly": 3600,  # 1 hour
+            "daily": 86400,  # 24 hours
+            "weekly": 604800,  # 7 days
         }
         log.info("PolicyEvaluator initialized")
 
@@ -82,7 +85,9 @@ class PolicyEvaluator:
         """
         trace_id = f"policy_{hash(str(cache_entry)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "PolicyEvaluator.evaluate",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "PolicyEvaluator.evaluate",
         )
 
         reasons = []
@@ -151,7 +156,7 @@ class PolicyEvaluator:
         if entry_timestamp is None:
             return FreshnessCheck(
                 is_fresh=False,
-                age_seconds=float('inf'),
+                age_seconds=float("inf"),
                 freshness_band=freshness_band,
                 max_age_seconds=0,
                 reason="No timestamp available",

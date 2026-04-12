@@ -16,14 +16,17 @@ class TestCognitiveBatchProcessorUtilAdg:
     def test_cognitive_batch_processor_util_adg_imports(self):
         """Test cognitive_batch_processor_util_adg module imports."""
         from agentic_core import cognitive_batch_processor_util_adg
+
         assert cognitive_batch_processor_util_adg is not None
 
     def test_cognitive_batch_processor_util_adg_class(self):
         """Test CognitiveBatchProcessorUtilAdg class exists."""
         from agentic_core import CognitiveBatchProcessorUtilAdg
+
         assert CognitiveBatchProcessorUtilAdg is not None
 
     def test_cognitive_batch_processor_util_adg_callable(self):
         """Test cognitive_batch_processor_util_adg functions are callable."""
         from agentic_core import validate_cognitive_batch_processor_util_adg
+
         assert callable(validate_cognitive_batch_processor_util_adg)

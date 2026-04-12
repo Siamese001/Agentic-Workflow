@@ -1,6 +1,6 @@
 import redis
 
-r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
 
 subdirs = [
     "agentic_core/knowledge",
@@ -28,19 +28,19 @@ for subdir in subdirs:
     layer_counts = {}
     total = 0
     while True:
-        cursor, keys = r.scan(cursor, match=f'adg:nodes:by_file:{subdir}*', count=500)
+        cursor, keys = r.scan(cursor, match=f"adg:nodes:by_file:{subdir}*", count=500)
         for k in keys:
             node_ids = r.smembers(k)
             for nid in node_ids:
-                node = r.hgetall(f'adg:node:{nid}')
-                layer = node.get('layer', 'MISSING')
+                node = r.hgetall(f"adg:node:{nid}")
+                layer = node.get("layer", "MISSING")
                 layer_counts[layer] = layer_counts.get(layer, 0) + 1
                 total += 1
         if cursor == 0:
             break
 
-    unknown = layer_counts.get('L_UNKNOWN', 0)
-    correct = {k: v for k, v in layer_counts.items() if k != 'L_UNKNOWN'}
-    correct_str = ', '.join(f'{k}:{v}' for k, v in sorted(correct.items(), key=lambda x: -x[1]))
+    unknown = layer_counts.get("L_UNKNOWN", 0)
+    correct = {k: v for k, v in layer_counts.items() if k != "L_UNKNOWN"}
+    correct_str = ", ".join(f"{k}:{v}" for k, v in sorted(correct.items(), key=lambda x: -x[1]))
     status = "✓" if unknown == 0 else "✗ HAS L_UNKNOWN"
     print(f"{subdir:<40} {unknown:>10} {correct_str:>30} {total:>7}  {status}")

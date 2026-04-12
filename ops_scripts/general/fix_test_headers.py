@@ -2,6 +2,7 @@
 Fix test file headers that are causing parsing errors.
 The generated test files have problematic headers with Windows paths.
 """
+
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -9,23 +10,28 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 def fix_test_headers(project_root: Path):
     """Remove problematic headers from generated test files."""
-    test_dir = project_root / TESTS_DIR / 'unit'
+    test_dir = project_root / TESTS_DIR / "unit"
     fixed_count = 0
-    for test_file in test_dir.rglob('*.py'):
-        if test_file.name in ('__init__.py', 'conftest.py'):
+    for test_file in test_dir.rglob("*.py"):
+        if test_file.name in ("__init__.py", "conftest.py"):
             continue
         try:
-            content = test_file.read_text(encoding='utf-8')
-            if f'Source: {project_root}' in content:
-                lines = content.split('\n')
-                if len(lines) > 7 and 'Source:' in lines[4]:
-                    content = '\n'.join(lines[7:])
-                    test_file.write_text(content, encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
+            if f"Source: {project_root}" in content:
+                lines = content.split("\n")
+                if len(lines) > 7 and "Source:" in lines[4]:
+                    content = "\n".join(lines[7:])
+                    test_file.write_text(content, encoding="utf-8")
                     fixed_count += 1
-                    print(f'Fixed: {test_file.relative_to(project_root)}')
-        except (UnicodeDecodeError, OSError):    # guardian: File operations with encoding need error-specific handling
+                    print(f"Fixed: {test_file.relative_to(project_root)}")
+        except (
+            UnicodeDecodeError,
+            OSError,
+        ):  # guardian: File operations with encoding need error-specific handling
             continue
-    print(f'\nTotal files fixed: {fixed_count}')
-if __name__ == '__main__':
+    print(f"\nTotal files fixed: {fixed_count}")
+
+
+if __name__ == "__main__":
     project_root = Path(__file__).parent.parent.parent
     fix_test_headers(project_root)

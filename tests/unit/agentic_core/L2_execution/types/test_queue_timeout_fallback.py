@@ -16,14 +16,17 @@ class TestQueueTimeoutFallback:
     def test_queue_timeout_fallback_imports(self):
         """Test queue_timeout_fallback module imports."""
         from agentic_core import queue_timeout_fallback
+
         assert queue_timeout_fallback is not None
 
     def test_queue_timeout_fallback_class(self):
         """Test QueueTimeoutFallback class exists."""
         from agentic_core import QueueTimeoutFallback
+
         assert QueueTimeoutFallback is not None
 
     def test_queue_timeout_fallback_callable(self):
         """Test queue_timeout_fallback functions are callable."""
         from agentic_core import validate_queue_timeout_fallback
+
         assert callable(validate_queue_timeout_fallback)

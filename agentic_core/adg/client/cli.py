@@ -736,7 +736,10 @@ def main(argv: list[str] | None = None) -> int:
     hs_p = subparsers.add_parser("hotspots", help="Show fan-in/fan-out hotspot index (E14)")
     hs_p.add_argument("--top", type=int, default=20, help="Number of hotspots to show")
     hs_p.add_argument(
-        "--key", default="coupling", choices=["coupling", "fan_in", "fan_out", "instability"], help="Sort key",
+        "--key",
+        default="coupling",
+        choices=["coupling", "fan_in", "fan_out", "instability"],
+        help="Sort key",
     )
 
     subparsers.add_parser("test-gaps", help="Detect modules with no test coverage signal (E15)")
@@ -746,7 +749,8 @@ def main(argv: list[str] | None = None) -> int:
 
     # P6 prompt governance
     subparsers.add_parser(
-        "prompt-authority", help="Prompt authority DAG enforcement — slot hierarchy violations (E21)",
+        "prompt-authority",
+        help="Prompt authority DAG enforcement — slot hierarchy violations (E21)",
     )
     subparsers.add_parser("prompt-lifecycle", help="Prompt lifecycle graph — generates/consumes edges (E20)")
     pi_p = subparsers.add_parser("prompt-impact", help="Prompt blast radius for changed files (E24)")
@@ -754,18 +758,24 @@ def main(argv: list[str] | None = None) -> int:
 
     # P3 runtime / authority / mutation / policy
     subparsers.add_parser(
-        "runtime-graph", help="Runtime execution graph — AgentAction/ToolInvocation/LayerTransition (E26)",
+        "runtime-graph",
+        help="Runtime execution graph — AgentAction/ToolInvocation/LayerTransition (E26)",
     )
     subparsers.add_parser(
-        "layer-authority", help="Layer authority enforcement — behavioral contract violations (E27)",
+        "layer-authority",
+        help="Layer authority enforcement — behavioral contract violations (E27)",
     )
     subparsers.add_parser("mutation-paths", help="Mutation path verification — UWG bypass detection (E28)")
     sl_p = subparsers.add_parser("state-lineage", help="State lineage query — who mutated this state? (E29)")
     sl_p.add_argument(
-        "--query", default="", metavar="STATE_KEY", help="State symbol key to trace mutations for",
+        "--query",
+        default="",
+        metavar="STATE_KEY",
+        help="State symbol key to trace mutations for",
     )
     va_p = subparsers.add_parser(
-        "verify-architecture", help="Unified architecture verification across all planes (E30)",
+        "verify-architecture",
+        help="Unified architecture verification across all planes (E30)",
     )
     va_p.add_argument(
         "--skip-planes",

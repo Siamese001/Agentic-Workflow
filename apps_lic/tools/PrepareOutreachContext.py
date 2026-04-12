@@ -169,8 +169,11 @@ class PrepareOutreachContext:
     def format(self, data: str | dict, target: str | None = None) -> FormatResult:
         """Format input data into the required output structure."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PrepareOutreachContext.format")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PrepareOutreachContext.format"
+        )
 
         fmt = target or self.format_type
         transformed = self._transform(data)

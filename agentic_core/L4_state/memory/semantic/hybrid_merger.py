@@ -12,6 +12,7 @@ from typing import Any
 @dataclass
 class SearchResult:
     """Single search result."""
+
     doc_id: str
     score: float
     source: str  # 'sparse' or 'dense'
@@ -82,17 +83,19 @@ class HybridMerger:
             else:
                 source = "dense"
 
-            results.append(SearchResult(
-                doc_id=doc_id,
-                score=combined_s,
-                source=source,
-                metadata={
-                    "sparse_score": sparse_s,
-                    "dense_score": dense_s,
-                    "sparse_weight": self._sparse_weight,
-                    "dense_weight": self._dense_weight,
-                },
-            ))
+            results.append(
+                SearchResult(
+                    doc_id=doc_id,
+                    score=combined_s,
+                    source=source,
+                    metadata={
+                        "sparse_score": sparse_s,
+                        "dense_score": dense_s,
+                        "sparse_weight": self._sparse_weight,
+                        "dense_weight": self._dense_weight,
+                    },
+                )
+            )
 
         return results
 

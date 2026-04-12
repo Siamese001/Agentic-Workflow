@@ -253,7 +253,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> "Path | Non
                 continue
             try:
                 t_data = json.loads(t_path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):    # guardian: Add error context logging
+            except (OSError, json.JSONDecodeError):  # guardian: Add error context logging
                 continue
             meta = t_data.get("meta", {})
             metrics = t_data.get("metrics", {})
@@ -360,7 +360,8 @@ def _collect_llm_call_trace(state_mgr: Any, decision_engine: Any) -> dict:
                     "http_status": llm_ev.get("http_status"),
                     "proof": {
                         "request_hash": llm_ev.get(
-                            "proof_hash", "sha256:" + hashlib.sha256(req_payload.encode()).hexdigest(),
+                            "proof_hash",
+                            "sha256:" + hashlib.sha256(req_payload.encode()).hexdigest(),
                         ),
                         "response_hash": llm_ev.get("response_hash", ""),
                         "gateway_call_stack": llm_ev.get("gateway_call_stack", ""),
@@ -803,7 +804,10 @@ def _write_heal_run_complete(state_mgr: Any, decision_engine: Any) -> dict:
         import subprocess as _sp
 
         _r = _sp.run(
-            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT,
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=DEFAULT_TIMEOUT,
         )
         git_commit = _r.stdout.strip()
     # guardian: allow-silent-swallow - acceptable exception handling

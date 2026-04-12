@@ -157,46 +157,69 @@ _emit_stores_embedding("p4", "archive_duplicates", "embedding_store")
 _emit_updates_meta_learning_state("p4", "archive_duplicates", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "archive_duplicates", "exec_snapshot_link")
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-TARGETS = ['agentic_core/L5_safety/enforcement/CodeDetectorAgent.py', 'agentic_core/L5_safety/enforcement/CodeEnforcerAgent.py', 'agentic_core/L5_safety/enforcement/CodeHealerAgent.py', 'agentic_core/L5_safety/enforcement/CodeValidatorAgent.py', 'agentic_core/L5_safety/enforcement/ResourceManagerAgent.py', 'agentic_core/L5_safety/enforcement/SafetyDetectorAgent.py', 'agentic_core/L5_safety/enforcement/SafetyExecutorAgent.py', 'agentic_core/L5_safety/enforcement/SecurityManagerAgent.py', 'agentic_core/L5_safety/enforcement/StructureEnforcerAgent.py', 'agentic_core/L5_safety/enforcement/StructureHealerAgent.py', 'agentic_core/L5_safety/enforcement/StructureValidatorAgent.py', 'agentic_core/L2_execution/reasoning/ModelRouterAgent.py', 'apps_shared/base_agents/HygieneGuardianAgent.py']
+TARGETS = [
+    "agentic_core/L5_safety/enforcement/CodeDetectorAgent.py",
+    "agentic_core/L5_safety/enforcement/CodeEnforcerAgent.py",
+    "agentic_core/L5_safety/enforcement/CodeHealerAgent.py",
+    "agentic_core/L5_safety/enforcement/CodeValidatorAgent.py",
+    "agentic_core/L5_safety/enforcement/ResourceManagerAgent.py",
+    "agentic_core/L5_safety/enforcement/SafetyDetectorAgent.py",
+    "agentic_core/L5_safety/enforcement/SafetyExecutorAgent.py",
+    "agentic_core/L5_safety/enforcement/SecurityManagerAgent.py",
+    "agentic_core/L5_safety/enforcement/StructureEnforcerAgent.py",
+    "agentic_core/L5_safety/enforcement/StructureHealerAgent.py",
+    "agentic_core/L5_safety/enforcement/StructureValidatorAgent.py",
+    "agentic_core/L2_execution/reasoning/ModelRouterAgent.py",
+    "apps_shared/base_agents/HygieneGuardianAgent.py",
+]
+
 
 def main():
-    parser = argparse.ArgumentParser(description='Archive identified duplicate files via ArchivalGatekeeper.')
-    parser.add_argument('--dry-run', action='store_true', help='Show what would be archived without moving files')
+    parser = argparse.ArgumentParser(description="Archive identified duplicate files via ArchivalGatekeeper.")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be archived without moving files"
+    )
     args = parser.parse_args()
     dry_run = args.dry_run
-    print('[*] Starting Archive Operation via ArchivalGatekeeper')
+    print("[*] Starting Archive Operation via ArchivalGatekeeper")
     if dry_run:
-        print('[*] DRY RUN — no files will be moved')
+        print("[*] DRY RUN — no files will be moved")
     if not dry_run:
         # guardian: allow-global-mutation
-        os.environ['ARCHIVE_BATCH_ACCEPT'] = '1'
+        os.environ["ARCHIVE_BATCH_ACCEPT"] = "1"
     gk = ArchivalGatekeeper.get_instance()
     moved_count = 0
     missing_count = 0
     for rel_path in TARGETS:
         source_path = PROJECT_ROOT / rel_path
         if not source_path.exists():
-            print(f'[-] Skipped (Not Found): {rel_path}')
+            print(f"[-] Skipped (Not Found): {rel_path}")
             missing_count += 1
             continue
         if dry_run:
-            print(f'[DRY RUN] Would archive: {rel_path}')
+            print(f"[DRY RUN] Would archive: {rel_path}")
             moved_count += 1
         else:
-            result = gk.safe_archive(source_path, requester_agent='archive_duplicates', reason='Identified duplicate — Agent Overlap Analysis Report')
+            result = gk.safe_archive(
+                source_path,
+                requester_agent="archive_duplicates",
+                reason="Identified duplicate — Agent Overlap Analysis Report",
+            )
             if result.success:
-                print(f'[+] Archived: {rel_path}')
+                print(f"[+] Archived: {rel_path}")
                 moved_count += 1
             else:
-                print(f'[!] Failed to archive {rel_path}: {result.error}')
-    print('-' * 50)
-    print('SUMMARY:')
+                print(f"[!] Failed to archive {rel_path}: {result.error}")
+    print("-" * 50)
+    print("SUMMARY:")
     print(f"  {('Would move' if dry_run else 'Moved')}:   {moved_count}")
-    print(f'  Missing: {missing_count}')
-    print('-' * 50)
+    print(f"  Missing: {missing_count}")
+    print("-" * 50)
     if moved_count > 0:
-        print('✅ Archive operation completed successfully.' if not dry_run else '✅ Dry run complete.')
+        print("✅ Archive operation completed successfully." if not dry_run else "✅ Dry run complete.")
     else:
-        print('⚠️  No files were moved.')
-if __name__ == '__main__':
+        print("⚠️  No files were moved.")
+
+
+if __name__ == "__main__":
     main()

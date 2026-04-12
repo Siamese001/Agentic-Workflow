@@ -5,6 +5,7 @@ This layer provides execution, tool invocation, and operational contracts.
 No cognition, routing, or persistence logic belongs in this layer.
 Only execution contracts and tool contracts are exported.
 """
+
 from enum import Enum
 
 # Execution contracts and tool contracts

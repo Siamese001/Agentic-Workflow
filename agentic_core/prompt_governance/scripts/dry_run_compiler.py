@@ -11,7 +11,6 @@ from pathlib import Path
 try:
     from jinja2 import Environment, FileSystemLoader, TemplateError, TemplateSyntaxError
 except ImportError as e:
-
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     print("ERROR: Jinja2 not installed. Run: pip install jinja2")
     sys.exit(1)
@@ -45,7 +44,7 @@ def compile_template(env: Environment, template_path: Path, relative_to: Path) -
             "error": None,
         }
     except TemplateSyntaxError as e:
-        return {    # guardian: TemplateSyntaxError should be handled with specific context
+        return {  # guardian: TemplateSyntaxError should be handled with specific context
             "status": "FAIL",
             "template_path": relative_path,
             "full_path": str(template_path),
@@ -54,7 +53,7 @@ def compile_template(env: Environment, template_path: Path, relative_to: Path) -
             "error_type": "SYNTAX_ERROR",
         }
     except TemplateError as e:
-        return {    # guardian: TemplateError should be handled with specific context
+        return {  # guardian: TemplateError should be handled with specific context
             "status": "FAIL",
             "template_path": relative_path,
             "full_path": str(template_path),

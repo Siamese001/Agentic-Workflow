@@ -71,10 +71,7 @@ _PRODUCTION_EXCLUDES = frozenset(("tests/", "ops_scripts/", "tools/", ".py.bak")
 def _is_production(path: str) -> bool:
     """Check if path represents a production module (not test/ops/tool)."""
     norm = path.replace("\\", "/")
-    return not any(
-        norm.startswith(exclude) or norm.endswith(exclude)
-        for exclude in _PRODUCTION_EXCLUDES
-    )
+    return not any(norm.startswith(exclude) or norm.endswith(exclude) for exclude in _PRODUCTION_EXCLUDES)
 
 
 def _symbol_to_path(sym: str) -> str:
@@ -139,7 +136,9 @@ class ADGIndex:
                 self.imported_by[to].add(frm)
 
     def transitive_importers(
-        self, module_path: str, max_depth: int = DEFAULT_MAX_DEPTH,
+        self,
+        module_path: str,
+        max_depth: int = DEFAULT_MAX_DEPTH,
     ) -> set[str]:
         """Return all modules that (transitively) import module_path.
 
@@ -217,7 +216,7 @@ def cmd_gap(args: argparse.Namespace, idx: ADGIndex) -> int:
         entries = [e for e in entries if e.layer == args.layer]
 
     # Validate and apply top limit
-    top_n = max(1, getattr(args, 'top', DEFAULT_TOP_N))
+    top_n = max(1, getattr(args, "top", DEFAULT_TOP_N))
     entries = sorted(entries, key=lambda e: -e.fan_in)[:top_n]
 
     print(f"Coverage rate : {report.coverage_rate:.1%}")
@@ -497,7 +496,11 @@ def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> int:
 
     if not all_test_files:
         _logger.warning("No test files found")
-        print(json.dumps({"workers": [], "total_files": 0, "layers": {}}) if args.format == "json" else "No test files found")
+        print(
+            json.dumps({"workers": [], "total_files": 0, "layers": {}})
+            if args.format == "json"
+            else "No test files found"
+        )
         return 0
 
     # Group by layer
@@ -618,7 +621,11 @@ def _build_parser() -> argparse.ArgumentParser:
     # scope
     scope = sub.add_parser("scope", help="Emit test files covering changed modules")
     scope.add_argument(
-        "--changed", nargs="*", default=[], metavar="FILE", help="Changed file paths (relative to repo root)",
+        "--changed",
+        nargs="*",
+        default=[],
+        metavar="FILE",
+        help="Changed file paths (relative to repo root)",
     )
     scope.add_argument("--stdin", action="store_true", help="Read changed files from stdin (one per line)")
     scope.add_argument("--format", choices=["lines", "pytest", "json"], default="lines")
@@ -661,8 +668,7 @@ def main() -> int:
         return 1
 
     _logger.info(
-        f"Scan done in {time.time() - t0:.1f}s — "
-        f"{len(result.modules)} modules, {len(result.edges)} edges",
+        f"Scan done in {time.time() - t0:.1f}s — {len(result.modules)} modules, {len(result.edges)} edges",
     )
 
     idx = ADGIndex(result)

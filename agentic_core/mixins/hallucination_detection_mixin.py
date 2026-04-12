@@ -193,8 +193,11 @@ class HallucinationDetectionMixin:
             True if target exists, False if hallucinated
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HallucinationDetectionMixin.verify_target_exists")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HallucinationDetectionMixin.verify_target_exists"
+        )
 
         if not file_path.exists():
             logger.warning(f"Hallucination check: file does not exist: {file_path}")

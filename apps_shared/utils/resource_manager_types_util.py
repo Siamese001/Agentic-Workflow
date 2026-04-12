@@ -203,6 +203,7 @@ class ResourceKey:
     def parse(cls, key_string: str) -> ResourceKey:
         """Parse a key string into a ResourceKey."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResourceKey.parse")
 
@@ -210,7 +211,10 @@ class ResourceKey:
         if len(parts) != 4:
             raise ValueError(f"Invalid resource key format: {key_string}")
         return cls(
-            prefix=parts[0], namespace=ResourceNamespace(parts[1]), category=parts[2], identifier=parts[3],
+            prefix=parts[0],
+            namespace=ResourceNamespace(parts[1]),
+            category=parts[2],
+            identifier=parts[3],
         )
 
 
@@ -271,11 +275,19 @@ class ResourceManager:
     def _get_key(self, namespace: ResourceNamespace, category: str, identifier: str) -> ResourceKey:
         """Generate a resource key."""
         return ResourceKey(
-            namespace=namespace, category=category, identifier=identifier, prefix=self.config.namespace_prefix,
+            namespace=namespace,
+            category=category,
+            identifier=identifier,
+            prefix=self.config.namespace_prefix,
         )
 
     def set(
-        self, namespace: ResourceNamespace, category: str, identifier: str, value: Any, ttl: int | None = None,
+        self,
+        namespace: ResourceNamespace,
+        category: str,
+        identifier: str,
+        value: Any,
+        ttl: int | None = None,
     ) -> bool:
         """
         Set a resource value.
@@ -291,6 +303,7 @@ class ResourceManager:
             True if successful
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResourceManager.set")
 

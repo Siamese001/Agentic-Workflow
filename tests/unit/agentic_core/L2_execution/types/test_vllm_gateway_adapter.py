@@ -16,14 +16,17 @@ class TestVllmGatewayAdapter:
     def test_vllm_gateway_adapter_imports(self):
         """Test vllm_gateway_adapter module imports."""
         from agentic_core import vllm_gateway_adapter
+
         assert vllm_gateway_adapter is not None
 
     def test_vllm_gateway_adapter_class(self):
         """Test VllmGatewayAdapter class exists."""
         from agentic_core import VllmGatewayAdapter
+
         assert VllmGatewayAdapter is not None
 
     def test_vllm_gateway_adapter_callable(self):
         """Test vllm_gateway_adapter functions are callable."""
         from agentic_core import validate_vllm_gateway_adapter
+
         assert callable(validate_vllm_gateway_adapter)

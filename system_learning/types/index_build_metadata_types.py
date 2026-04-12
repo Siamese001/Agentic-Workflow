@@ -182,8 +182,11 @@ class IndexBuildMetadata:
         Result is suitable for hashing and replay determinism.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IndexBuildMetadata.to_canonical_json_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "IndexBuildMetadata.to_canonical_json_bytes"
+        )
 
         data = {
             "index_id": self.index_id,

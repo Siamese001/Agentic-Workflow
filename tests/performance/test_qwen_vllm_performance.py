@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class LoadTestResult:
     """Results from a load test."""
+
     test_name: str
     total_requests: int
     successful_requests: int
@@ -279,7 +280,7 @@ class QwenPerformanceTestSuite:
 
             latencies.append(batch_time / batch_size)  # Per-request latency
 
-            logger.info(f"    Batch time: {batch_time:.1f}ms, per-req: {batch_time/batch_size:.1f}ms")
+            logger.info(f"    Batch time: {batch_time:.1f}ms, per-req: {batch_time / batch_size:.1f}ms")
 
             await client.stop()
 
@@ -412,7 +413,9 @@ class QwenPerformanceTestSuite:
         """Print test result in formatted table."""
         logger.info(f"\n  Results for: {result.test_name}")
         logger.info(f"  {'─' * 50}")
-        logger.info(f"  Success Rate:     {result.success_rate:.1%} ({result.successful_requests}/{result.total_requests})")
+        logger.info(
+            f"  Success Rate:     {result.success_rate:.1%} ({result.successful_requests}/{result.total_requests})"
+        )
         logger.info(f"  Throughput:       {result.requests_per_second:.2f} req/s")
         logger.info(f"  Latency (mean):   {result.latency_mean_ms:.1f} ms")
         logger.info(f"  Latency (p50):    {result.latency_p50_ms:.1f} ms")
@@ -433,19 +436,19 @@ class QwenPerformanceTestSuite:
             "test_results": [r.to_dict() for r in self.results],
             "summary": {
                 "total_tests": len(self.results),
-                "avg_throughput": statistics.mean([
-                    float(r.requests_per_second) for r in self.results
-                ]) if self.results else 0,
-                "avg_latency_p50": statistics.mean([
-                    r.latency_p50_ms for r in self.results
-                ]) if self.results else 0,
+                "avg_throughput": statistics.mean([float(r.requests_per_second) for r in self.results])
+                if self.results
+                else 0,
+                "avg_latency_p50": statistics.mean([r.latency_p50_ms for r in self.results])
+                if self.results
+                else 0,
             },
         }
 
         json_report = json.dumps(report, indent=2)
 
         if output_path:
-            with open(output_path, 'w') as f:
+            with open(output_path, "w") as f:
                 f.write(json_report)
             logger.info(f"\nReport saved to: {output_path}")
 

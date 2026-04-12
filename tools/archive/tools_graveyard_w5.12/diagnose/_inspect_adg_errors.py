@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Inspect ADG artifact to understand the 285 syntax errors and 111 layer violations."""
+
 from __future__ import annotations
 
 import json

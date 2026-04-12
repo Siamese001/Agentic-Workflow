@@ -4,12 +4,12 @@
 import re
 
 # Read the file
-with open('agentic_core/adg/extraction/static_scanner.py', encoding='utf-8') as f:
+with open("agentic_core/adg/extraction/static_scanner.py", encoding="utf-8") as f:
     content = f.read()
 
 # Check if function already exists
-if 'def _get_call_name' in content:
-    print('_get_call_name already exists')
+if "def _get_call_name" in content:
+    print("_get_call_name already exists")
     exit(0)
 
 # Add the function after _sym_of function
@@ -32,7 +32,7 @@ def _get_call_name(node: ast.expr) -> str:
 '''
 
 # Find a good insertion point - after _sym_of function
-marker = 'def _sym_of(node: ast.expr) -> str:'
+marker = "def _sym_of(node: ast.expr) -> str:"
 if marker in content:
     # Find end of _sym_of function
     pattern = r'(def _sym_of\(node: ast\.expr\) -> str:.*?return "")'
@@ -40,12 +40,12 @@ if marker in content:
     if match:
         insert_pos = match.end()
         content = content[:insert_pos] + new_function + content[insert_pos:]
-        with open('agentic_core/adg/extraction/static_scanner.py', 'w', encoding='utf-8') as f:
+        with open("agentic_core/adg/extraction/static_scanner.py", "w", encoding="utf-8") as f:
             f.write(content)
-        print('Added _get_call_name function after _sym_of')
+        print("Added _get_call_name function after _sym_of")
     else:
-        print('Could not find insertion point')
+        print("Could not find insertion point")
         exit(1)
 else:
-    print('Could not find _sym_of function')
+    print("Could not find _sym_of function")
     exit(1)

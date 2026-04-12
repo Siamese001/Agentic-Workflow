@@ -1,6 +1,7 @@
 """
 Decision Packet Types - Domain contracts for decision output packages.
 """
+
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
@@ -13,6 +14,7 @@ class DecisionPacket(BaseModel):
     """
     Machine-readable decision packet for downstream systems.
     """
+
     request_id: str = Field(..., description="Reference to request")
     decision_state: DecisionState = Field(..., description="Decision outcome")
     recommended_structure: Dict[str, Any] = Field(default_factory=dict, description="Recommended structure")
@@ -29,6 +31,7 @@ class AuditTrace(BaseModel):
     """
     Complete audit trace for compliance and replay.
     """
+
     request_id: str = Field(..., description="Request ID")
     trace_id: str = Field(..., description="Trace ID from core")
     policy_hash: Optional[str] = Field(None, description="Policy version hash")

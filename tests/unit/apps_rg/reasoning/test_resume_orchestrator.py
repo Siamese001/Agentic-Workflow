@@ -3,6 +3,7 @@
 G5 Fix: Provides test coverage for ResumeOrchestrator's reasoning_profile
 integration with ADG-informed dynamic reasoning path selection.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch

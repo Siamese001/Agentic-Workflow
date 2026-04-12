@@ -225,7 +225,10 @@ class ConstitutionalRulesEngine:
 
             # Create report
             report = self._create_report(
-                content_id, content_type, checks, start_time,
+                content_id,
+                content_type,
+                checks,
+                start_time,
             )
 
             # Update statistics
@@ -434,8 +437,9 @@ class ConstitutionalRulesEngine:
             passed = failed_checks == 0
         else:
             # In non-strict mode, allow warnings
-            critical_failures = sum(1 for check in checks
-                                 if not check.passed and check.severity == GuardrailSeverity.CRITICAL)
+            critical_failures = sum(
+                1 for check in checks if not check.passed and check.severity == GuardrailSeverity.CRITICAL
+            )
             passed = critical_failures == 0
 
         # Calculate overall score

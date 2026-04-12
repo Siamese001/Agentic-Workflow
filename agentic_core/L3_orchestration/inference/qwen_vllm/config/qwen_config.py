@@ -5,7 +5,6 @@ Provides model configurations and prompt templates for L3 orchestration inferenc
 """
 # guardian: allow-config_with_logic - ADG violation exemption
 
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -19,6 +18,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 @dataclass(frozen=True)
 class QwenModelConfig:
     """Configuration for Qwen model in inference context."""
+
     model_id: str
     max_tokens: int
     temperature: float
@@ -29,6 +29,7 @@ class QwenModelConfig:
 @dataclass(frozen=True)
 class QwenPromptConfig:
     """Configuration for prompt templates by app."""
+
     app_name: str
     prompt_templates: dict[str, str]
     default_template: str

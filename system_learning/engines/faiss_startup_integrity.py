@@ -55,7 +55,10 @@ class IndexVerificationResult:
 
 
 def _verify_single_index(
-    index_id: str, index_dir: Path, *, expected_embedder_id: str | None,
+    index_id: str,
+    index_dir: Path,
+    *,
+    expected_embedder_id: str | None,
 ) -> IndexVerificationResult:
     """Verify one 3-file FAISS artifact and return its verification result.
 
@@ -71,7 +74,11 @@ def _verify_single_index(
     try:
         manifest_bytes = manifest_path.read_bytes()
         manifest = json.loads(manifest_bytes.decode("ascii"))
-    except (json.JSONDecodeError, UnicodeDecodeError, OSError) as exc:    # guardian: File operations with encoding need error-specific handling
+    except (
+        json.JSONDecodeError,
+        UnicodeDecodeError,
+        OSError,
+    ) as exc:  # guardian: File operations with encoding need error-specific handling
         raise StartupIntegrityError(f"[{index_id}] manifest.json parse error: {exc}") from exc
     required_fields = {
         "schema_version",
@@ -91,7 +98,7 @@ def _verify_single_index(
         )
     try:
         index_bytes = index_path.read_bytes()
-    except OSError as exc:    # guardian: Add error context logging
+    except OSError as exc:  # guardian: Add error context logging
         raise StartupIntegrityError(f"[{index_id}] Cannot read index.json: {exc}") from exc
     actual_sha_index = hashlib.sha256(index_bytes).hexdigest()
     if actual_sha_index != manifest["sha256_index"]:
@@ -100,7 +107,7 @@ def _verify_single_index(
         )
     try:
         meta_bytes = meta_path.read_bytes()
-    except OSError as exc:    # guardian: Add error context logging
+    except OSError as exc:  # guardian: Add error context logging
         raise StartupIntegrityError(f"[{index_id}] Cannot read meta.json: {exc}") from exc
     actual_sha_meta = hashlib.sha256(meta_bytes).hexdigest()
     if actual_sha_meta != manifest["sha256_meta_canonical"]:

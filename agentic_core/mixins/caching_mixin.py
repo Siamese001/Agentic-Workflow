@@ -215,12 +215,18 @@ class CachingMixin:
         Logger.debug(f"[CACHE] {self.__class__.__name__} caching initialized")
 
     def configure_cache(
-        self, enabled: bool | None = None, max_size: int | None = None, default_ttl: float | None = None,
+        self,
+        enabled: bool | None = None,
+        max_size: int | None = None,
+        default_ttl: float | None = None,
     ) -> None:
         """Configure caching settings."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CachingMixin.configure_cache")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CachingMixin.configure_cache"
+        )
 
         if max_size is not None and max_size <= 0:
             raise ValueError("max_size must be positive")
@@ -257,7 +263,8 @@ class CachingMixin:
             while len(self._cache_store) >= self._cache_config.max_size:
                 self._cache_store.popitem(last=False)
             self._cache_store[key] = CacheEntry(
-                value=value, ttl_seconds=ttl or self._cache_config.default_ttl,
+                value=value,
+                ttl_seconds=ttl or self._cache_config.default_ttl,
             )
 
     def cache_invalidate(self, key: str) -> bool:

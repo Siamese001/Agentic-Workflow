@@ -81,12 +81,13 @@ def _base64_high_confidence_decode(text: str) -> str | None:
         return None
     try:
         decoded = raw.decode("utf-8")
-    except UnicodeDecodeError:    # guardian: Encoding errors should specify fallback encoding strategy
+    except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
         return None
     if len(decoded) > MAX_DECODED_CHARS:
         return None
     printable_ratio = sum(1 for c in decoded if c.isprintable() or c in ("\n", "\r", "\t")) / max(
-        len(decoded), 1,
+        len(decoded),
+        1,
     )
     if printable_ratio < 0.8:
         return None

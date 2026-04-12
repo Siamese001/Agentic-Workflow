@@ -27,26 +27,47 @@ from typing import Any
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+
 class RuntimeStructuralBalanceError(Exception):
     """Raised when runtime/structural balance verification fails."""
+
     pass
+
 
 class ADGRuntimeStructuralBalanceVerifier:
     """Verifies runtime vs structural balance reporting."""
 
     # Runtime-semantic edge types
     RUNTIME_SEMANTIC_EDGES = {
-        "records_execution_trace", "signs_execution_trace", "emits_replay_key",
-        "execution_terminates_at_uwg", "validated_by_safety_plane", "validated_by_llm_gateway",
-        "writes_to", "writes_through", "invokes_provider", "invokes_dynamic",
-        "applies_guardrail", "verifies_policy", "stores_validation_artifact",
-        "captures_execution_output", "records_tool_invocation",
+        "records_execution_trace",
+        "signs_execution_trace",
+        "emits_replay_key",
+        "execution_terminates_at_uwg",
+        "validated_by_safety_plane",
+        "validated_by_llm_gateway",
+        "writes_to",
+        "writes_through",
+        "invokes_provider",
+        "invokes_dynamic",
+        "applies_guardrail",
+        "verifies_policy",
+        "stores_validation_artifact",
+        "captures_execution_output",
+        "records_tool_invocation",
     }
 
     # Structural edge types
     STRUCTURAL_EDGES = {
-        "imports", "calls", "belongs_to_layer", "implements", "instantiates",
-        "produces", "consumes", "decorated_by", "exports", "re_exports",
+        "imports",
+        "calls",
+        "belongs_to_layer",
+        "implements",
+        "instantiates",
+        "produces",
+        "consumes",
+        "decorated_by",
+        "exports",
+        "re_exports",
     }
 
     def __init__(self, adg_dir: Path):
@@ -87,13 +108,16 @@ class ADGRuntimeStructuralBalanceVerifier:
                     print(f"      {edge_type}: {count}")
 
                 # Get runtime edges by layer
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT n.layer, COUNT(*) FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE e.relation_type IN ({}) AND n.layer IS NOT NULL
                     GROUP BY n.layer
                     ORDER BY COUNT(*) DESC
-                """.format(','.join(['?' for _ in self.RUNTIME_SEMANTIC_EDGES])), list(self.RUNTIME_SEMANTIC_EDGES))
+                """.format(",".join(["?" for _ in self.RUNTIME_SEMANTIC_EDGES])),
+                    list(self.RUNTIME_SEMANTIC_EDGES),
+                )
 
                 runtime_by_layer = dict(cursor.fetchall())
 
@@ -130,17 +154,22 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 print(f"   📊 Structural edges found: {total_structural}")
                 print("   📊 Structural edge distribution:")
-                for edge_type, count in sorted(structural_counts.items(), key=lambda x: x[1], reverse=True)[:10]:
+                for edge_type, count in sorted(structural_counts.items(), key=lambda x: x[1], reverse=True)[
+                    :10
+                ]:
                     print(f"      {edge_type}: {count}")
 
                 # Get structural edges by layer
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT n.layer, COUNT(*) FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE e.relation_type IN ({}) AND n.layer IS NOT NULL
                     GROUP BY n.layer
                     ORDER BY COUNT(*) DESC
-                """.format(','.join(['?' for _ in self.STRUCTURAL_EDGES])), list(self.STRUCTURAL_EDGES))
+                """.format(",".join(["?" for _ in self.STRUCTURAL_EDGES])),
+                    list(self.STRUCTURAL_EDGES),
+                )
 
                 structural_by_layer = dict(cursor.fetchall())
 
@@ -170,15 +199,19 @@ class ADGRuntimeStructuralBalanceVerifier:
                 total_edges = cursor.fetchone()[0]
 
                 # Count runtime and structural edges
-                runtime_placeholders = ','.join(['?' for _ in self.RUNTIME_SEMANTIC_EDGES])
-                structural_placeholders = ','.join(['?' for _ in self.STRUCTURAL_EDGES])
+                runtime_placeholders = ",".join(["?" for _ in self.RUNTIME_SEMANTIC_EDGES])
+                structural_placeholders = ",".join(["?" for _ in self.STRUCTURAL_EDGES])
 
-                cursor.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({runtime_placeholders})",
-                             list(self.RUNTIME_SEMANTIC_EDGES))
+                cursor.execute(
+                    f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({runtime_placeholders})",
+                    list(self.RUNTIME_SEMANTIC_EDGES),
+                )
                 runtime_count = cursor.fetchone()[0]
 
-                cursor.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({structural_placeholders})",
-                             list(self.STRUCTURAL_EDGES))
+                cursor.execute(
+                    f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({structural_placeholders})",
+                    list(self.STRUCTURAL_EDGES),
+                )
                 structural_count = cursor.fetchone()[0]
 
                 # Calculate ratios
@@ -231,22 +264,28 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 for layer in layers:
                     # Count runtime edges in this layer
-                    runtime_placeholders = ','.join(['?' for _ in self.RUNTIME_SEMANTIC_EDGES])
-                    cursor.execute(f"""
+                    runtime_placeholders = ",".join(["?" for _ in self.RUNTIME_SEMANTIC_EDGES])
+                    cursor.execute(
+                        f"""
                         SELECT COUNT(*) FROM edges e
                         JOIN nodes n ON e.src_id = n.id
                         WHERE n.layer = ? AND e.relation_type IN ({runtime_placeholders})
-                    """, [layer] + list(self.RUNTIME_SEMANTIC_EDGES))
+                    """,
+                        [layer] + list(self.RUNTIME_SEMANTIC_EDGES),
+                    )
 
                     runtime_count = cursor.fetchone()[0]
 
                     # Count structural edges in this layer
-                    structural_placeholders = ','.join(['?' for _ in self.STRUCTURAL_EDGES])
-                    cursor.execute(f"""
+                    structural_placeholders = ",".join(["?" for _ in self.STRUCTURAL_EDGES])
+                    cursor.execute(
+                        f"""
                         SELECT COUNT(*) FROM edges e
                         JOIN nodes n ON e.src_id = n.id
                         WHERE n.layer = ? AND e.relation_type IN ({structural_placeholders})
-                    """, [layer] + list(self.STRUCTURAL_EDGES))
+                    """,
+                        [layer] + list(self.STRUCTURAL_EDGES),
+                    )
 
                     structural_count = cursor.fetchone()[0]
 
@@ -269,19 +308,23 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 for layer in sorted(layer_balance.keys()):
                     balance = layer_balance[layer]
-                    print(f"      {layer:6} | {balance['runtime_edges']:7} | {balance['structural_edges']:10} | "
-                          f"{balance['total_edges']:5} | {balance['runtime_percentage']:9.1f}% | "
-                          f"{balance['structural_percentage']:11.1f}%")
+                    print(
+                        f"      {layer:6} | {balance['runtime_edges']:7} | {balance['structural_edges']:10} | "
+                        f"{balance['total_edges']:5} | {balance['runtime_percentage']:9.1f}% | "
+                        f"{balance['structural_percentage']:11.1f}%"
+                    )
 
                 # Identify imbalanced layers
                 imbalanced_layers = []
                 for layer, balance in layer_balance.items():
                     if balance["runtime_percentage"] < 10 or balance["runtime_percentage"] > 90:
-                        imbalanced_layers.append({
-                            "layer": layer,
-                            "runtime_percentage": balance["runtime_percentage"],
-                            "structural_percentage": balance["structural_percentage"],
-                        })
+                        imbalanced_layers.append(
+                            {
+                                "layer": layer,
+                                "runtime_percentage": balance["runtime_percentage"],
+                                "structural_percentage": balance["structural_percentage"],
+                            }
+                        )
 
                 if imbalanced_layers:
                     print(f"   ⚠️  Imbalanced layers: {len(imbalanced_layers)}")
@@ -321,22 +364,28 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 for domain in domains:
                     # Count runtime edges in this domain
-                    runtime_placeholders = ','.join(['?' for _ in self.RUNTIME_SEMANTIC_EDGES])
-                    cursor.execute(f"""
+                    runtime_placeholders = ",".join(["?" for _ in self.RUNTIME_SEMANTIC_EDGES])
+                    cursor.execute(
+                        f"""
                         SELECT COUNT(*) FROM edges e
                         JOIN nodes n ON e.src_id = n.id
                         WHERE n.domain = ? AND e.relation_type IN ({runtime_placeholders})
-                    """, [domain] + list(self.RUNTIME_SEMANTIC_EDGES))
+                    """,
+                        [domain] + list(self.RUNTIME_SEMANTIC_EDGES),
+                    )
 
                     runtime_count = cursor.fetchone()[0]
 
                     # Count structural edges in this domain
-                    structural_placeholders = ','.join(['?' for _ in self.STRUCTURAL_EDGES])
-                    cursor.execute(f"""
+                    structural_placeholders = ",".join(["?" for _ in self.STRUCTURAL_EDGES])
+                    cursor.execute(
+                        f"""
                         SELECT COUNT(*) FROM edges e
                         JOIN nodes n ON e.src_id = n.id
                         WHERE n.domain = ? AND e.relation_type IN ({structural_placeholders})
-                    """, [domain] + list(self.STRUCTURAL_EDGES))
+                    """,
+                        [domain] + list(self.STRUCTURAL_EDGES),
+                    )
 
                     structural_count = cursor.fetchone()[0]
 
@@ -359,9 +408,11 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 for domain in sorted(domain_balance.keys()):
                     balance = domain_balance[domain]
-                    print(f"      {domain:7} | {balance['runtime_edges']:7} | {balance['structural_edges']:10} | "
-                          f"{balance['total_edges']:5} | {balance['runtime_percentage']:9.1f}% | "
-                          f"{balance['structural_percentage']:11.1f}%")
+                    print(
+                        f"      {domain:7} | {balance['runtime_edges']:7} | {balance['structural_edges']:10} | "
+                        f"{balance['total_edges']:5} | {balance['runtime_percentage']:9.1f}% | "
+                        f"{balance['structural_percentage']:11.1f}%"
+                    )
 
                 # Check for domain-specific issues
                 runtime_domain = domain_balance.get("runtime", {})
@@ -402,24 +453,30 @@ class ADGRuntimeStructuralBalanceVerifier:
                 cursor = conn.cursor()
 
                 # Count runtime edges for first-party modules
-                runtime_placeholders = ','.join(['?' for _ in self.RUNTIME_SEMANTIC_EDGES])
-                cursor.execute(f"""
+                runtime_placeholders = ",".join(["?" for _ in self.RUNTIME_SEMANTIC_EDGES])
+                cursor.execute(
+                    f"""
                     SELECT COUNT(*) FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE n.identity_kind NOT IN ('external_module', 'external_provider')
                     AND e.relation_type IN ({runtime_placeholders})
-                """, list(self.RUNTIME_SEMANTIC_EDGES))
+                """,
+                    list(self.RUNTIME_SEMANTIC_EDGES),
+                )
 
                 fp_runtime_count = cursor.fetchone()[0]
 
                 # Count structural edges for first-party modules
-                structural_placeholders = ','.join(['?' for _ in self.STRUCTURAL_EDGES])
-                cursor.execute(f"""
+                structural_placeholders = ",".join(["?" for _ in self.STRUCTURAL_EDGES])
+                cursor.execute(
+                    f"""
                     SELECT COUNT(*) FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE n.identity_kind NOT IN ('external_module', 'external_provider')
                     AND e.relation_type IN ({structural_placeholders})
-                """, list(self.STRUCTURAL_EDGES))
+                """,
+                    list(self.STRUCTURAL_EDGES),
+                )
 
                 fp_structural_count = cursor.fetchone()[0]
 
@@ -434,12 +491,16 @@ class ADGRuntimeStructuralBalanceVerifier:
                 print(f"      Total first-party edges: {total_fp_edges}")
 
                 # Compare with overall balance
-                cursor.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({runtime_placeholders})",
-                             list(self.RUNTIME_SEMANTIC_EDGES))
+                cursor.execute(
+                    f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({runtime_placeholders})",
+                    list(self.RUNTIME_SEMANTIC_EDGES),
+                )
                 total_runtime = cursor.fetchone()[0]
 
-                cursor.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({structural_placeholders})",
-                             list(self.STRUCTURAL_EDGES))
+                cursor.execute(
+                    f"SELECT COUNT(*) FROM edges WHERE relation_type IN ({structural_placeholders})",
+                    list(self.STRUCTURAL_EDGES),
+                )
                 total_structural = cursor.fetchone()[0]
 
                 overall_runtime_pct = (fp_runtime_count / max(1, total_runtime)) * 100
@@ -487,8 +548,7 @@ class ADGRuntimeStructuralBalanceVerifier:
 
         # Determine overall status
         critical_issues = (
-            balance.get("runtime_coverage_ratio", 0) < 10 or
-            balance.get("balance_score", 0) < 30
+            balance.get("runtime_coverage_ratio", 0) < 10 or balance.get("balance_score", 0) < 30
         )
 
         # Prepare result
@@ -537,6 +597,7 @@ class ADGRuntimeStructuralBalanceVerifier:
 
         return result
 
+
 def main():
     """CLI entry point."""
     import argparse
@@ -561,18 +622,21 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, 'w') as f:
+            with open(args.output, "w") as f:
                 json.dump(result, f, indent=2, default=str)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1
 
-    except RuntimeStructuralBalanceError as e:    # guardian: RuntimeStructuralBalanceError should be handled with specific context
+    except (
+        RuntimeStructuralBalanceError
+    ) as e:  # guardian: RuntimeStructuralBalanceError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:
         print(f"💥 Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

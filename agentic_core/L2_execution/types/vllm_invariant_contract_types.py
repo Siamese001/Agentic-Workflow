@@ -214,7 +214,9 @@ class InvariantViolation:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "InvariantViolation.canonical_json",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "InvariantViolation.canonical_json",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

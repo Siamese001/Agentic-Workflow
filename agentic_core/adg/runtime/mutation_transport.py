@@ -255,8 +255,11 @@ class MutationTransportReport:
 
     def phases_distribution(self) -> dict[str, int]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MutationTransportReport.phases_distribution")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MutationTransportReport.phases_distribution"
+        )
 
         counts: dict[str, int] = {}
         for p in self.packets:
@@ -296,8 +299,11 @@ class MutationTransport:
 
     def package_diff(self, patches: list[dict[str, Any]]) -> MutationPacket:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MutationTransport.package_diff")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MutationTransport.package_diff"
+        )
 
         packet = MutationPacket(run_id=self.report.run_id, agent_id=self.report.agent_id)
         for p in patches:
@@ -345,6 +351,7 @@ class MutationTransport:
         if packet.phase == CommitPhase.PHASE2_COMMITTED:
             packet.phase = CommitPhase.DISTRIBUTED
             packet.distributed_at = time.time()
+
 
 _emit_reads_through("l4", "mutation_transport", "urg_read_1")
 _emit_reads_through("l4", "mutation_transport", "urg_read_2")

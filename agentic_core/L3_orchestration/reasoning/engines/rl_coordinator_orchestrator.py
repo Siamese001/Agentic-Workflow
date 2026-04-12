@@ -211,7 +211,9 @@ class RLCoordinatorOrchestrator(WorkflowCoordinator):
     async def coordinate(self, context: WorkflowContext) -> WorkflowResult:
         """Execute RL-based coordination."""
         _emit_records_execution_trace(
-            context.workflow_id, LayerSegment.L3_ORCHESTRATION, "RLCoordinatorOrchestrator.coordinate",
+            context.workflow_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "RLCoordinatorOrchestrator.coordinate",
         )
         with get_trace_context().run_frame(
             layer="L3",
@@ -296,7 +298,9 @@ class TerritoryCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _map_territory(self, territory: str, context: WorkflowContext) -> dict:
@@ -361,7 +365,9 @@ class MCPCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _route_tool(self, tool: str, context: WorkflowContext) -> dict:
@@ -427,7 +433,9 @@ class MissionCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _run_mission(self, mission_id: str, context: WorkflowContext) -> dict:
@@ -504,7 +512,9 @@ class ModelCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _route_model(self, model: str, context: WorkflowContext) -> dict:
@@ -570,7 +580,9 @@ class HealthCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _health_check(self, context: WorkflowContext) -> dict:
@@ -638,7 +650,9 @@ class GovernanceCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _validate_registry(self, context: WorkflowContext) -> dict:
@@ -704,7 +718,9 @@ class UtilityCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _conversation_repair(self, context: WorkflowContext) -> dict:
@@ -762,7 +778,9 @@ class CachingCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     def get_capabilities(self) -> list[CoordinatorCapability]:
@@ -799,7 +817,9 @@ class SecurityCoordinator(WorkflowCoordinator):
         else:
             result = {"error": f"Unknown operation: {operation}"}
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.COMPLETED, output=result,
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.COMPLETED,
+            output=result,
         )
 
     async def _validate_security(self, context: WorkflowContext) -> dict:
@@ -849,6 +869,7 @@ def register_all_coordinators():
     for coordinator in coordinators:
         coordinator_registry.register(coordinator)
     return coordinators
+
 
 _emit_reads_through("l4", "rl_coordinator_orchestrator", "urg_read_1")
 _emit_reads_through("l4", "rl_coordinator_orchestrator", "urg_read_2")

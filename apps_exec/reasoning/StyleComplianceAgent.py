@@ -48,7 +48,9 @@ class StyleComplianceAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "StyleComplianceAgent.validate_style",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "StyleComplianceAgent.validate_style",
         )
         _emit_orchestrates_workflow("p3", "style_compliance_agent", "validation_workflow")
         _emit_dispatches_agent("p3", "style_compliance_agent", "validation_dispatch")
@@ -67,7 +69,9 @@ class StyleComplianceAgent:
 
         _log.info("Style validation %s: %d violations", "PASSED" if compliant else "FAILED", len(violations))
         _emit_records_telemetry_event(
-            "p4", "style_compliance_agent", f"validation_complete:{'compliant' if compliant else 'violations'}",
+            "p4",
+            "style_compliance_agent",
+            f"validation_complete:{'compliant' if compliant else 'violations'}",
         )
 
         return {

@@ -1,4 +1,5 @@
 """Tests for Qwen vLLM gateway module."""
+
 from __future__ import annotations
 
 import unittest
@@ -16,6 +17,7 @@ try:
         QwenInferenceRequest,
         QwenInferenceResponse,
     )
+
     QWEN_VLLM_AVAILABLE = True
 except ImportError:
     QWEN_VLLM_AVAILABLE = False

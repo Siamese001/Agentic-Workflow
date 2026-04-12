@@ -13,6 +13,7 @@ class TestImportErrorHandling:
 
     def test_import_error_in_test_function(self):
         """ImportError inside test function should be properly raised."""
+
         def test_with_bad_import():
             # This should raise ImportError
             pass
@@ -22,9 +23,11 @@ class TestImportErrorHandling:
 
     def test_import_error_with_nested_import(self):
         """Nested import failures should be properly handled."""
+
         def test_with_nested_bad_import():
             try:
                 from non_existent_module_12345 import something
+
                 something.use_it()
             except ImportError:
                 # This is expected error handling
@@ -35,6 +38,7 @@ class TestImportErrorHandling:
 
     def test_partial_import_failure(self):
         """Test when some imports succeed and others fail."""
+
         def test_with_mixed_imports():
             # This should work
             import tempfile
@@ -49,6 +53,7 @@ class TestImportErrorHandling:
 
     def test_import_error_message_preservation(self):
         """ImportError messages should be preserved for debugging."""
+
         def test_with_import_error():
             pass
 
@@ -67,7 +72,7 @@ class TestSyntaxErrorHandling:
     def test_syntax_error_detection(self):
         """Syntax errors should be detected during import."""
         # Create a temporary file with syntax error
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("""
 # This file has a syntax error
 def broken_function(
@@ -93,7 +98,7 @@ def broken_function(
     def test_syntax_error_in_imported_module(self):
         """Syntax errors in imported modules should be caught."""
         # Create a temporary file with syntax error
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("""
 def good_function():
     return "good"
@@ -112,6 +117,7 @@ def broken_function(
             try:
                 # Import the good function should work
                 from broken_module import good_function
+
                 assert good_function() == "good"
 
                 # Import the broken function should fail
@@ -183,9 +189,11 @@ class TestMissingDependencyHandling:
 
     def test_optional_import_handling(self):
         """Optional imports should handle missing dependencies gracefully."""
+
         def test_with_optional_import():
             try:
                 import non_existent_optional_lib
+
                 return "imported"
             except ImportError:
                 return "fallback"
@@ -195,6 +203,7 @@ class TestMissingDependencyHandling:
 
     def test_required_import_handling(self):
         """Required imports should fail fast when dependencies are missing."""
+
         def test_with_required_import():
             # This should fail immediately
             pass
@@ -202,11 +211,13 @@ class TestMissingDependencyHandling:
         with pytest.raises(ImportError):
             test_with_required_import()
 
-    @patch.dict('sys.modules', {'missing_dependency': None})
+    @patch.dict("sys.modules", {"missing_dependency": None})
     def test_mock_missing_dependency(self):
         """Test behavior when dependency exists but is None."""
+
         def test_with_none_dependency():
             import missing_dependency
+
             return missing_dependency
 
         # This should work but dependency is None
@@ -220,7 +231,7 @@ class TestImportSideEffects:
     def test_import_with_side_effects(self):
         """Imports with side effects should be handled carefully."""
         # Create a module with side effects
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write("""
 import os
 
@@ -242,14 +253,15 @@ def get_side_effect_value():
                 import side_effect_module
 
                 # Verify side effect occurred
-                assert side_effect_module.get_side_effect_value() == 'set_during_import'
+                assert side_effect_module.get_side_effect_value() == "set_during_import"
 
             finally:
                 sys.path[:] = original_path
                 # Clean up environment
                 import os
-                if 'TEST_IMPORT_SIDE_EFFECT' in os.environ:
-                    del os.environ['TEST_IMPORT_SIDE_EFFECT']
+
+                if "TEST_IMPORT_SIDE_EFFECT" in os.environ:
+                    del os.environ["TEST_IMPORT_SIDE_EFFECT"]
 
         finally:
             # Clean up
@@ -260,24 +272,24 @@ def get_side_effect_value():
         import os
 
         # Ensure environment is clean
-        if 'TEST_ISOLATION_VAR' in os.environ:
-            del os.environ['TEST_ISOLATION_VAR']
+        if "TEST_ISOLATION_VAR" in os.environ:
+            del os.environ["TEST_ISOLATION_VAR"]
 
         def test_with_side_effect():
             # Simulate import with side effect
-            os.environ['TEST_ISOLATION_VAR'] = 'set_in_test'
-            return os.environ['TEST_ISOLATION_VAR']
+            os.environ["TEST_ISOLATION_VAR"] = "set_in_test"
+            return os.environ["TEST_ISOLATION_VAR"]
 
         # Run test
         result = test_with_side_effect()
-        assert result == 'set_in_test'
+        assert result == "set_in_test"
 
         # Clean up
-        if 'TEST_ISOLATION_VAR' in os.environ:
-            del os.environ['TEST_ISOLATION_VAR']
+        if "TEST_ISOLATION_VAR" in os.environ:
+            del os.environ["TEST_ISOLATION_VAR"]
 
         # Verify cleanup worked
-        assert 'TEST_ISOLATION_VAR' not in os.environ
+        assert "TEST_ISOLATION_VAR" not in os.environ
 
 
 class TestImportPerformance:
@@ -327,6 +339,7 @@ class TestImportPerformance:
             import pathlib
             import sys
             import tempfile
+
             # Import some agentic_core modules if available
             try:
                 from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError

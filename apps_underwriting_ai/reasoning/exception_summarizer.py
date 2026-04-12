@@ -1,6 +1,7 @@
 """
 Exception Summarizer - Summarizes policy exceptions and escalations.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -10,6 +11,7 @@ from ..types import DecisionState, RiskFeatures, UnderwritingRequest
 @dataclass
 class ExceptionSummary:
     """Summary of exceptions and escalations."""
+
     has_exceptions: bool = False
     exception_count: int = 0
     exception_details: List[Dict[str, Any]] = field(default_factory=list)
@@ -79,41 +81,61 @@ class ExceptionSummarizer:
 
         # Check DSCR exception
         if policy.min_dscr and metrics.dscr_ttm and metrics.dscr_ttm < policy.min_dscr:
-            details.append({
-                "type": "dscr_below_minimum",
-                "description": f"DSCR of {metrics.dscr_ttm:.2f}x below policy minimum of {policy.min_dscr:.2f}x",
-                "severity": "moderate" if metrics.dscr_ttm >= 1.0 else "high",
-                "mitigants": ["strong_collateral", "guarantor_strength"] if features.collateral.collateral_quality_score >= 0.6 else [],
-            })
+            details.append(
+                {
+                    "type": "dscr_below_minimum",
+                    "description": f"DSCR of {metrics.dscr_ttm:.2f}x below policy minimum of {policy.min_dscr:.2f}x",
+                    "severity": "moderate" if metrics.dscr_ttm >= 1.0 else "high",
+                    "mitigants": ["strong_collateral", "guarantor_strength"]
+                    if features.collateral.collateral_quality_score >= 0.6
+                    else [],
+                }
+            )
 
         # Check leverage exception
-        if policy.max_debt_to_ebitda and metrics.debt_to_ebitda_ttm and metrics.debt_to_ebitda_ttm > policy.max_debt_to_ebitda:
-            details.append({
-                "type": "leverage_above_maximum",
-                "description": f"Debt/EBITDA of {metrics.debt_to_ebitda_ttm:.2f}x exceeds policy maximum of {policy.max_debt_to_ebitda:.2f}x",
-                "severity": "moderate" if metrics.debt_to_ebitda_ttm < 4.0 else "high",
-                "mitigants": [],
-            })
+        if (
+            policy.max_debt_to_ebitda
+            and metrics.debt_to_ebitda_ttm
+            and metrics.debt_to_ebitda_ttm > policy.max_debt_to_ebitda
+        ):
+            details.append(
+                {
+                    "type": "leverage_above_maximum",
+                    "description": f"Debt/EBITDA of {metrics.debt_to_ebitda_ttm:.2f}x exceeds policy maximum of {policy.max_debt_to_ebitda:.2f}x",
+                    "severity": "moderate" if metrics.debt_to_ebitda_ttm < 4.0 else "high",
+                    "mitigants": [],
+                }
+            )
 
         # Check FICO exception
-        if policy.min_fico and features.credit.personal_fico_min and features.credit.personal_fico_min < policy.min_fico:
-            details.append({
-                "type": "fico_below_minimum",
-                "description": f"FICO of {features.credit.personal_fico_min} below policy minimum of {policy.min_fico}",
-                "severity": "moderate",
-                "mitigants": ["strong_business_cash_flow"] if features.capacity.dscr_ttm and features.capacity.dscr_ttm >= 2.0 else [],
-            })
+        if (
+            policy.min_fico
+            and features.credit.personal_fico_min
+            and features.credit.personal_fico_min < policy.min_fico
+        ):
+            details.append(
+                {
+                    "type": "fico_below_minimum",
+                    "description": f"FICO of {features.credit.personal_fico_min} below policy minimum of {policy.min_fico}",
+                    "severity": "moderate",
+                    "mitigants": ["strong_business_cash_flow"]
+                    if features.capacity.dscr_ttm and features.capacity.dscr_ttm >= 2.0
+                    else [],
+                }
+            )
 
         # Check industry restriction
         if policy.restricted_industries:
             for restricted in policy.restricted_industries:
                 if request.borrower.industry_code.startswith(restricted):
-                    details.append({
-                        "type": "restricted_industry",
-                        "description": f"Industry code {request.borrower.industry_code} matches restricted category {restricted}",
-                        "severity": "high",
-                        "mitigants": [],
-                    })
+                    details.append(
+                        {
+                            "type": "restricted_industry",
+                            "description": f"Industry code {request.borrower.industry_code} matches restricted category {restricted}",
+                            "severity": "high",
+                            "mitigants": [],
+                        }
+                    )
 
         return details
 
@@ -128,20 +150,28 @@ class ExceptionSummarizer:
 
         # Policy exceptions
         if features.policy.policy_exception_count > 0:
-            reasons.append(f"{features.policy.policy_exception_count} policy exception(s) requiring human judgment")
+            reasons.append(
+                f"{features.policy.policy_exception_count} policy exception(s) requiring human judgment"
+            )
 
         # Authority limit
         if request.decision_constraints.max_auto_approval_amount:
             if request.requested_amount > request.decision_constraints.max_auto_approval_amount:
-                reasons.append(f"Request amount exceeds auto-approval authority of ${request.decision_constraints.max_auto_approval_amount:,.0f}")
+                reasons.append(
+                    f"Request amount exceeds auto-approval authority of ${request.decision_constraints.max_auto_approval_amount:,.0f}"
+                )
 
         # Low confidence
         if features.composite.confidence_score < 0.6:
-            reasons.append(f"Low confidence score ({features.composite.confidence_score:.0%}) in automated assessment")
+            reasons.append(
+                f"Low confidence score ({features.composite.confidence_score:.0%}) in automated assessment"
+            )
 
         # Borderline risk
         if features.composite.normalized_risk_grade in ["6", "7"]:
-            reasons.append(f"Borderline risk grade ({features.composite.normalized_risk_grade}) requires human review")
+            reasons.append(
+                f"Borderline risk grade ({features.composite.normalized_risk_grade}) requires human review"
+            )
 
         # Watchlist/sanctions
         if request.borrower.sanctions_or_watchlist_hits:

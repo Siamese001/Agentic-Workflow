@@ -190,8 +190,11 @@ class SovereignScanner:
     def reset_instance(cls) -> None:
         """Reset the singleton (useful for testing)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignScanner.reset_instance")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignScanner.reset_instance"
+        )
 
         cls._instance = None
         cls._initialized = False

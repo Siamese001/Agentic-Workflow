@@ -10,7 +10,10 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
     path = f"tests/unit/{subdir}"
     r = subprocess.run(
         ["python", "-m", "pytest", path, "--co", "-q", "-p", "no:logging", "--tb=line"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 

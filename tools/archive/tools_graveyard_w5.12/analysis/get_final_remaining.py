@@ -10,14 +10,14 @@ import pathlib
 def get_final_remaining():
     """Get final remaining broken test files."""
     broken_files = []
-    tests_dir = pathlib.Path('tests')
+    tests_dir = pathlib.Path("tests")
 
-    for f in sorted(tests_dir.rglob('test_*.py')):
-        if 'archive' in str(f).lower():
+    for f in sorted(tests_dir.rglob("test_*.py")):
+        if "archive" in str(f).lower():
             continue
 
         try:
-            content = f.read_text(encoding='utf-8', errors='replace')
+            content = f.read_text(encoding="utf-8", errors="replace")
             ast.parse(content)
         except SyntaxError:
             broken_files.append(f)
@@ -33,5 +33,6 @@ def get_final_remaining():
 
     return remaining
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     get_final_remaining()

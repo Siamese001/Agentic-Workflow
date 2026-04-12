@@ -264,7 +264,9 @@ def _compute_psi(baseline: list[float], treatment: list[float], bins: int = 10) 
 
 
 def _compute_mmd_rbf(
-    baseline: list[list[float]], treatment: list[list[float]], gamma: float | None = None,
+    baseline: list[list[float]],
+    treatment: list[list[float]],
+    gamma: float | None = None,
 ) -> float:
     """Compute MMD with RBF kernel (simplified).
 
@@ -310,7 +312,10 @@ class CovariateShiftDetector:
     psi_threshold: float = 0.2
 
     def detect_shift(
-        self, baseline: list[list[float]], treatment: list[list[float]], threshold: float | None = None,
+        self,
+        baseline: list[list[float]],
+        treatment: list[list[float]],
+        threshold: float | None = None,
     ) -> ShiftReport:
         """Run multivariate drift detection.
 
@@ -320,7 +325,9 @@ class CovariateShiftDetector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CovariateShiftDetector.detect_shift",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CovariateShiftDetector.detect_shift",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

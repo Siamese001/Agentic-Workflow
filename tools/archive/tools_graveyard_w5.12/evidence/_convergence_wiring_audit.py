@@ -4,6 +4,7 @@ Determines which modules already have emit_determinism_digest() calls
 (now scanner-visible after schema fix) and which need record_execution_trace()
 calls added.
 """
+
 from __future__ import annotations
 
 import json
@@ -23,11 +24,18 @@ DIGEST_PATTERN = re.compile(r"emit_determinism_digest\s*\(")
 TRACE_PATTERN = re.compile(r"record_execution_trace\s*\(")
 # Also check for EXECUTION_TRACE_CLASSES symbols
 EXEC_TRACE_CLASSES = {
-    "ExecutionTrace", "ExecutionProof", "DeterminismDigest",
-    "ProofArtifact", "SignedExecutionTrace", "ExecutionProofEmitter",
-    "ReasoningTraceArtifact", "reason_and_record",
-    "get_active_execution_trace", "generate_trace_id",
-    "get_trace_context", "TraceFeatureExtractor",
+    "ExecutionTrace",
+    "ExecutionProof",
+    "DeterminismDigest",
+    "ProofArtifact",
+    "SignedExecutionTrace",
+    "ExecutionProofEmitter",
+    "ReasoningTraceArtifact",
+    "reason_and_record",
+    "get_active_execution_trace",
+    "generate_trace_id",
+    "get_trace_context",
+    "TraceFeatureExtractor",
 }
 
 needs_digest_call = []

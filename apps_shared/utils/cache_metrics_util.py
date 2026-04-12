@@ -227,6 +227,7 @@ class CacheMetrics:
     def get_summary(self) -> dict[str, Any]:
         """Get high-level summary for dashboard."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CacheMetrics.get_summary")
 

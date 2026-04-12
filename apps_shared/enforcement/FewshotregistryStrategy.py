@@ -213,6 +213,7 @@ class FewShotRegistry(BaseModel):
             example: The example to add
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FewShotRegistry.add_example")
 
@@ -433,7 +434,9 @@ def get_examples_for_injection(instruction_id: str, context: str = "general", ma
 
 
 def enhance_with_examples(
-    base_prompt: str, injections: list[InjectionPattern], context: str = "general",
+    base_prompt: str,
+    injections: list[InjectionPattern],
+    context: str = "general",
 ) -> str:
     """Enhance a prompt with few-shot examples for each injection.
 

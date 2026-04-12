@@ -218,7 +218,10 @@ class semantic_cache:
         cached: Any = self.get(query)
         if cached:
             return CacheSufficiencyResult(
-                is_sufficient=True, cached_response=cached, confidence=1.0, reason="Exact cache hit",
+                is_sufficient=True,
+                cached_response=cached,
+                confidence=1.0,
+                reason="Exact cache hit",
             )
         return CacheSufficiencyResult(is_sufficient=False, reason="cache miss")
 
@@ -321,7 +324,9 @@ class KnowledgeGraphInjector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "KnowledgeGraphInjector.inject_context",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "KnowledgeGraphInjector.inject_context",
         )
 
         if not context.entities:

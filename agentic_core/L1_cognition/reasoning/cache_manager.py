@@ -109,7 +109,9 @@ class CacheStrategyManager:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "CacheStrategyManager.reset_instance",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "CacheStrategyManager.reset_instance",
         )
 
         global _csm_singleton

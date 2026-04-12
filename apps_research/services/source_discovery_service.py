@@ -60,7 +60,9 @@ class SourceDiscoveryService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "SourceDiscoveryService.discover_from_query",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "SourceDiscoveryService.discover_from_query",
         )
         _emit_routes_to_capability("p2", "source_discovery", "search_execute")
         _emit_validates_capability("p2", "source_discovery", "query_parsing")
@@ -105,7 +107,9 @@ class SourceDiscoveryService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "SourceDiscoveryService.discover_from_seed_list",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "SourceDiscoveryService.discover_from_seed_list",
         )
         _emit_routes_to_capability("p2", "source_discovery", "url_validation")
 

@@ -187,8 +187,11 @@ class DeepWikiHealingStrategy:
             List of fix dictionaries with action details
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeepWikiHealingStrategy.diagnose")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DeepWikiHealingStrategy.diagnose"
+        )
 
         fixes: Any = []
         if not config.DEEPWIKI_HEALING_ENABLED:
@@ -307,6 +310,7 @@ class DeepWikiHealingStrategy:
         try:
             import asyncio
             import builtins
+
             repo = getattr(config, "DEEPWIKI_DEFAULT_REPO", "Siamese001/Agentic-Workflow")
             ask_fn = getattr(builtins, "mcp3_ask_question", None)
             if ask_fn is None:

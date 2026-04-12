@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class GPUMemoryInfo:
     """GPU memory snapshot."""
+
     total_mb: float
     used_mb: float
     free_mb: float
@@ -28,6 +29,7 @@ class GPUMemoryInfo:
 @dataclass(frozen=True)
 class GPURecommendation:
     """Recommendations based on GPU memory state."""
+
     batch_size: int
     max_concurrent: int
     should_throttle: bool
@@ -50,10 +52,10 @@ class GPUMemoryMonitor:
     """
 
     # Memory pressure thresholds (percentages)
-    THRESHOLD_LOW = 50.0      # Normal operation
-    THRESHOLD_MEDIUM = 75.0   # Reduce batch sizes
-    THRESHOLD_HIGH = 85.0     # Throttle new requests
-    THRESHOLD_CRITICAL = 95.0 # Emergency cooldown
+    THRESHOLD_LOW = 50.0  # Normal operation
+    THRESHOLD_MEDIUM = 75.0  # Reduce batch sizes
+    THRESHOLD_HIGH = 85.0  # Throttle new requests
+    THRESHOLD_CRITICAL = 95.0  # Emergency cooldown
 
     def __init__(
         self,

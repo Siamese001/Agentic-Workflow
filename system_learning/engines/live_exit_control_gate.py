@@ -231,13 +231,15 @@ class LiveExitControlGate:
 
         result = ExitControlResult(
             artifact_type="EXIT_CONTROL_RESULT",
-            result_id=stable_sha256_json({
-                "trace_id": trace_id,
-                "allowed": allowed,
-                "exit_action": exit_action,
-                "safety_score": safety_score,
-                "timestamp_utc": timestamp_utc,
-            }),
+            result_id=stable_sha256_json(
+                {
+                    "trace_id": trace_id,
+                    "allowed": allowed,
+                    "exit_action": exit_action,
+                    "safety_score": safety_score,
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             trace_id=trace_id,
             allowed=allowed,
             exit_action=exit_action,
@@ -294,8 +296,14 @@ class LiveExitControlGate:
 
         # Check for harmful content indicators
         harmful_indicators = [
-            "harmful", "dangerous", "illegal", "malicious",
-            "attack", "exploit", "bypass", "hack",
+            "harmful",
+            "dangerous",
+            "illegal",
+            "malicious",
+            "attack",
+            "exploit",
+            "bypass",
+            "hack",
         ]
         for indicator in harmful_indicators:
             if indicator in response_lower:
@@ -303,8 +311,13 @@ class LiveExitControlGate:
 
         # Check for personal information leaks
         pii_indicators = [
-            "ssn", "social security", "credit card", "password",
-            "api key", "secret", "token",
+            "ssn",
+            "social security",
+            "credit card",
+            "password",
+            "api key",
+            "secret",
+            "token",
         ]
         for indicator in pii_indicators:
             if indicator in response_lower:
@@ -312,8 +325,13 @@ class LiveExitControlGate:
 
         # Check for refusal to answer (good safety signal)
         refusal_phrases = [
-            "i cannot", "i can't", "i'm not able", "i am not able",
-            "i apologize", "i'm unable", "i am unable",
+            "i cannot",
+            "i can't",
+            "i'm not able",
+            "i am not able",
+            "i apologize",
+            "i'm unable",
+            "i am unable",
         ]
         if any(phrase in response_lower for phrase in refusal_phrases):
             score += 0.1
@@ -340,8 +358,14 @@ class LiveExitControlGate:
 
         # Reduce confidence for hedging language
         hedging_phrases = [
-            "might", "maybe", "perhaps", "possibly", "could be",
-            "may be", "i think", "i believe",
+            "might",
+            "maybe",
+            "perhaps",
+            "possibly",
+            "could be",
+            "may be",
+            "i think",
+            "i believe",
         ]
         for phrase in hedging_phrases:
             if phrase in response_lower:
@@ -405,10 +429,7 @@ class LiveExitControlGate:
 
         # Critical violations result in immediate block
         critical_violations = ["content_policy", "instruction_following"]
-        has_critical = any(
-            any(cv in pv for cv in critical_violations)
-            for pv in policy_violations
-        )
+        has_critical = any(any(cv in pv for cv in critical_violations) for pv in policy_violations)
 
         if has_critical or safety_score < 0.3:
             return False, "BLOCK", f"Critical violations: {policy_violations}"

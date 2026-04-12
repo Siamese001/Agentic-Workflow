@@ -217,8 +217,11 @@ class DeepBrainHarvester:
             Upsert result
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeepBrainHarvester.harvest_flattening_pattern")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DeepBrainHarvester.harvest_flattening_pattern"
+        )
 
         Logger.info(" Harvesting Subatomic Flattening Pattern...")
         pattern: Any = get_flattening_pattern()
@@ -338,7 +341,9 @@ def main() -> Any:
     parser.add_argument("--pattern", choices=["flattening"], default="flattening", help="Pattern to harvest")
     parser.add_argument("--namespace", default="structural_patterns", help="Namespace for pattern storage")
     parser.add_argument(
-        "--index", default="canon-healing-patterns", help="Logical name for the in-memory index",
+        "--index",
+        default="canon-healing-patterns",
+        help="Logical name for the in-memory index",
     )
     parser.add_argument("--query", help="Query for existing patterns instead of upserting")
     args: Any = parser.parse_args()

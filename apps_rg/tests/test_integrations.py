@@ -1,6 +1,7 @@
 """
 Test RG Integrations.
 """
+
 import unittest
 
 from apps_rg.integrations import ExecutionAdapter, ObservabilityAdapter

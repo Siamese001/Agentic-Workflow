@@ -187,10 +187,12 @@ class ResumeEnhancementOrchestrator:
     async def _setup_event_subscriptions(self) -> None:
         """Setup event subscriptions for component coordination."""
         await self.infrastructure.event_bus.subscribe(
-            "events.resume_generation_started", self._handle_resume_generation_started,
+            "events.resume_generation_started",
+            self._handle_resume_generation_started,
         )
         await self.infrastructure.event_bus.subscribe(
-            "events.persona_analyzed", self._handle_persona_analyzed,
+            "events.persona_analyzed",
+            self._handle_persona_analyzed,
         )
         logger.info("Setup resume enhancement event subscriptions")
 
@@ -306,7 +308,9 @@ class ResumeEnhancementOrchestrator:
             import uuid
 
             trace_id = str(uuid.uuid4())
-        _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeEnhancementOrchestrator.generate_enhanced_resume")
+        _emit_records_execution_trace(
+            trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeEnhancementOrchestrator.generate_enhanced_resume"
+        )
         await self.infrastructure.event_bus.publish(
             "events.resume_enhancement_started",
             SystemEvent(
@@ -461,5 +465,9 @@ async def enhance_resume(
     """
     orchestrator = await get_resume_enhancement_orchestrator()
     return await orchestrator.generate_enhanced_resume(
-        job_description, candidate_history, resume_bullets, evidence_library_path, trace_id,
+        job_description,
+        candidate_history,
+        resume_bullets,
+        evidence_library_path,
+        trace_id,
     )

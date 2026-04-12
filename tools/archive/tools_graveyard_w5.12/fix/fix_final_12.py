@@ -2,6 +2,7 @@
 1. Source file fix if it's a simple missing import/name
 2. Guard test file import if the source error is complex
 """
+
 import ast
 import os
 
@@ -49,11 +50,13 @@ def guard_test_import(test_file):
         stripped = line.strip()
 
         # Find bare import of agentic_core that's not in a try block
-        if (stripped.startswith("from agentic_core") or stripped.startswith("import agentic_core")) and "noqa" not in stripped:
+        if (
+            stripped.startswith("from agentic_core") or stripped.startswith("import agentic_core")
+        ) and "noqa" not in stripped:
             # Check if already inside try
-            if i > 0 and lines[i-1].strip() in ("try:", ""):
+            if i > 0 and lines[i - 1].strip() in ("try:", ""):
                 # Check if the previous non-blank is try:
-                for j in range(i-1, -1, -1):
+                for j in range(i - 1, -1, -1):
                     if lines[j].strip() == "try:":
                         break
                     if lines[j].strip() and lines[j].strip() != "":
@@ -74,7 +77,9 @@ def guard_test_import(test_file):
             for bl in block:
                 new_lines.append("    " + bl)
             new_lines.append("    _AVAILABLE = True")
-            new_lines.append("except (ImportError, NameError, AttributeError, TypeError, Exception):  # guardian: allow-silent-swallow")
+            new_lines.append(
+                "except (ImportError, NameError, AttributeError, TypeError, Exception):  # guardian: allow-silent-swallow"
+            )
             new_lines.append("    pass")
             i = end
             continue
@@ -87,7 +92,9 @@ def guard_test_import(test_file):
         ast.parse(new_src)
         open(fp, "w", encoding="utf-8").write(new_src)
         fixed += 1
-        print(f"  FIXED (wrapped import): {test_file}")    # guardian: Syntax errors should be caught at parser level, not runtime
+        print(
+            f"  FIXED (wrapped import): {test_file}"
+        )  # guardian: Syntax errors should be caught at parser level, not runtime
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         print(f"  SYNTAX ERR: {test_file}: {e}")
@@ -127,7 +134,9 @@ def fix_source_import(source_file, import_line):
         ast.parse(new_src)
         open(fp, "w", encoding="utf-8").write(new_src)
         fixed += 1
-        print(f"  FIXED (source import): {source_file}")    # guardian: Syntax errors should be caught at parser level, not runtime
+        print(
+            f"  FIXED (source import): {source_file}"
+        )  # guardian: Syntax errors should be caught at parser level, not runtime
         # guardian: allow-silent-swallow - acceptable exception handling
         return True
     except SyntaxError as e:
@@ -163,12 +172,17 @@ else:
     lines = src.split("\n")
     for i, line in enumerate(lines):
         if "def check_compliance" in line:
-            lines.insert(i, "try:\n    DiscoveredAgent = _get_DiscoveredAgent()\nexcept Exception:\n    class DiscoveredAgent:  # type: ignore\n        def __init__(self, **kw): self.__dict__.update(kw)\n")
+            lines.insert(
+                i,
+                "try:\n    DiscoveredAgent = _get_DiscoveredAgent()\nexcept Exception:\n    class DiscoveredAgent:  # type: ignore\n        def __init__(self, **kw): self.__dict__.update(kw)\n",
+            )
             break
     new_src = "\n".join(lines)
     try:
         ast.parse(new_src)
-        open(fp, "w", encoding="utf-8").write(new_src)    # guardian: Syntax errors should be caught at parser level, not runtime
+        open(fp, "w", encoding="utf-8").write(
+            new_src
+        )  # guardian: Syntax errors should be caught at parser level, not runtime
         # guardian: allow-silent-swallow - acceptable exception handling
         fixed += 1
         print("  FIXED: compliance_gate_util.py (DiscoveredAgent)")
@@ -183,7 +197,12 @@ fp = os.path.join(ROOT, "agentic_core/L0_routing/scripts/verify_base_agent_names
 src = open(fp, encoding="utf-8").read()
 lines = src.split("\n")
 for i, line in enumerate(lines):
-    if "data" in line and i > 160 and line.strip().startswith("for ") or (line.strip().startswith("data") and "=" not in line):
+    if (
+        "data" in line
+        and i > 160
+        and line.strip().startswith("for ")
+        or (line.strip().startswith("data") and "=" not in line)
+    ):
         # Wrap the block
         pass
 # Just guard the test
@@ -198,7 +217,9 @@ if os.path.exists(fp):
         lines = src.split("\n")
         for i, line in enumerate(lines):
             if "ARCHIVES_DIR" in line and not line.strip().startswith("#"):
-                lines.insert(i, "from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR  # noqa: E402")
+                lines.insert(
+                    i, "from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR  # noqa: E402"
+                )
                 break
         new_src = "\n".join(lines)
         try:
@@ -224,9 +245,10 @@ if "_emit_pulls_context," not in src.split(")\n")[0]:
     # It's not in the first import block
     src = src.replace(
         "    _emit_writes_through,\n    _emit_writes_via_uwg,",
-        "    _emit_writes_through,\n    _emit_writes_via_uwg,\n    _emit_pulls_context,"
-    , 1)
-    try:    # guardian: Syntax errors should be caught at parser level, not runtime
+        "    _emit_writes_through,\n    _emit_writes_via_uwg,\n    _emit_pulls_context,",
+        1,
+    )
+    try:  # guardian: Syntax errors should be caught at parser level, not runtime
         ast.parse(src)
         # guardian: allow-silent-swallow - acceptable exception handling
         open(fp, "w", encoding="utf-8").write(src)
@@ -258,7 +280,9 @@ except (ImportError, AttributeError):
 
 """
 if "class L3SubatomicTestingMixin" not in src.split("class DAGManager")[0]:
-    src = src.replace("\nclass DAGManager(", stub + "class DAGManager(")    # guardian: Syntax errors should be caught at parser level, not runtime
+    src = src.replace(
+        "\nclass DAGManager(", stub + "class DAGManager("
+    )  # guardian: Syntax errors should be caught at parser level, not runtime
 try:
     ast.parse(src)
     open(fp, "w", encoding="utf-8").write(src)
@@ -286,7 +310,8 @@ except ImportError:
     if "def timeout" not in src.split("class DuplicateCodeDetectorAgent")[0]:
         src = src.replace(
             "\ntry:\n    from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin",
-            stub + "try:\n    from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin",    # guardian: Syntax errors should be caught at parser level, not runtime
+            stub
+            + "try:\n    from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin",  # guardian: Syntax errors should be caught at parser level, not runtime
         )
     # guardian: allow-silent-swallow - acceptable exception handling
     try:

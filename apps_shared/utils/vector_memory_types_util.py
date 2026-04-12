@@ -212,7 +212,11 @@ class VectorMemoryStore:
         return self.config.namespace or "__default__"
 
     def store(
-        self, text: str, embedding: list[float], metadata: dict[str, Any] | None = None, id: str | None = None,
+        self,
+        text: str,
+        embedding: list[float],
+        metadata: dict[str, Any] | None = None,
+        id: str | None = None,
     ) -> str:
         """
         Store text and embedding in vector memory.
@@ -227,6 +231,7 @@ class VectorMemoryStore:
             ID of stored vector
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "VectorMemoryStore.store")
 
@@ -240,7 +245,10 @@ class VectorMemoryStore:
         return id
 
     def search(
-        self, embedding: list[float], top_k: int | None = None, filter: dict[str, Any] | None = None,
+        self,
+        embedding: list[float],
+        top_k: int | None = None,
+        filter: dict[str, Any] | None = None,
     ) -> list[VectorSearchResult]:
         """
         Search for similar vectors.

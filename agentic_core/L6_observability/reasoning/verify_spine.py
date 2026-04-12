@@ -15,6 +15,7 @@ from typing import Any
 
 class SpineStage(Enum):
     """Verify spine stages."""
+
     S1_TIME_AUDIT = auto()
     S2_ISOLATION_CHECK = auto()
     S3_DRIFT_DETECTION = auto()
@@ -24,6 +25,7 @@ class SpineStage(Enum):
 @dataclass
 class SpineResult:
     """Result of spine verification."""
+
     stage: SpineStage
     passed: bool
     anomalies: list[str]
@@ -60,7 +62,7 @@ class VerifySpine:
         stamps = trace.get("timestamps", [])
         if len(stamps) >= 2:
             for i in range(1, len(stamps)):
-                if stamps[i] < stamps[i-1]:
+                if stamps[i] < stamps[i - 1]:
                     anomalies.append(f"non_monotonic_at_index_{i}")
 
             frozen_at = trace.get("frozen_clock")

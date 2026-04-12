@@ -41,14 +41,14 @@ def check_layer_violations():
         print(f"  ⚠️  {violation_count} violations remain")
 
         # Show sample violations
-        cursor.execute('''
+        cursor.execute("""
             SELECT e.src_id, e.dst_id, n1.adg_name as src_name, n2.adg_name as dst_name
             FROM edges e
             JOIN nodes n1 ON e.src_id = n1.id
             JOIN nodes n2 ON e.dst_id = n2.id
             WHERE e.relation_type="violates"
             LIMIT 5
-        ''')
+        """)
 
         violations = cursor.fetchall()
         print("\nSample violations:")
@@ -56,13 +56,13 @@ def check_layer_violations():
             print(f"  {src_name} -> {dst_name}")
 
     # Check layer assignments
-    cursor.execute('''
+    cursor.execute("""
         SELECT layer, COUNT(*) as count
         FROM nodes
         WHERE entity_type="layer"
         GROUP BY layer
         ORDER BY count DESC
-    ''')
+    """)
 
     layers = cursor.fetchall()
     print("\n🏗️  Layer distribution:")

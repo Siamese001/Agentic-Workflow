@@ -346,7 +346,9 @@ class VLLMReplayArtifact:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayArtifact.canonical_payload_hash",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "VLLMReplayArtifact.canonical_payload_hash",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -368,7 +370,10 @@ class VLLMReplayArtifact:
             True if all hashes match (artifact is untampered), False otherwise.
         """
         current_replay_hash = compute_replay_hash(
-            prompt=self.prompt, request=self.local_request, fingerprint=self.fingerprint, result=self.result,
+            prompt=self.prompt,
+            request=self.local_request,
+            fingerprint=self.fingerprint,
+            result=self.result,
         )
         return current_replay_hash == self.replay_hash
 
@@ -403,7 +408,9 @@ class VLLMReplayValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "VLLMReplayValidator.validate_and_report",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "VLLMReplayValidator.validate_and_report",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

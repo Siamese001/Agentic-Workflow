@@ -1,6 +1,7 @@
 """
 Test Exec Outputs.
 """
+
 import unittest
 
 from apps_exec.outputs import BriefRenderer, BriefSummaryRenderer, SectionRenderer

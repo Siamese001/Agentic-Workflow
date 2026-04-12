@@ -346,8 +346,11 @@ class AtomicExecutionMixin:
             AtomicExecutionError: If operation fails (after rollback)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AtomicExecutionMixin.atomic_transaction")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AtomicExecutionMixin.atomic_transaction"
+        )
 
         txn_id = self._generate_transaction_id()
         txn = AtomicTransaction(transaction_id=txn_id)
@@ -368,11 +371,17 @@ class AtomicExecutionMixin:
             self._rollback_transaction(txn)
             self._cleanup_transaction(txn)
             raise AtomicExecutionError(
-                f"Operation '{operation_name}' failed: {e}", txn_id, rolled_back=True,
+                f"Operation '{operation_name}' failed: {e}",
+                txn_id,
+                rolled_back=True,
             ) from e
 
     def atomic_write(
-        self, txn: AtomicTransaction, file_path: Path, content: str, encoding: str = "utf-8",
+        self,
+        txn: AtomicTransaction,
+        file_path: Path,
+        content: str,
+        encoding: str = "utf-8",
     ) -> None:
         """
         Write to a file within an atomic transaction.
@@ -385,7 +394,8 @@ class AtomicExecutionMixin:
         """
         if txn.committed or txn.rolled_back:
             raise AtomicExecutionError(
-                "Cannot write to committed/rolled-back transaction", txn.transaction_id,
+                "Cannot write to committed/rolled-back transaction",
+                txn.transaction_id,
             )
         if file_path.exists():
             self._backup_file(txn, file_path)
@@ -409,7 +419,8 @@ class AtomicExecutionMixin:
         """
         if txn.committed or txn.rolled_back:
             raise AtomicExecutionError(
-                "Cannot delete in committed/rolled-back transaction", txn.transaction_id,
+                "Cannot delete in committed/rolled-back transaction",
+                txn.transaction_id,
             )
         if not file_path.exists():
             return
@@ -432,7 +443,8 @@ class AtomicExecutionMixin:
         """
         if txn.committed or txn.rolled_back:
             raise AtomicExecutionError(
-                "Cannot rename in committed/rolled-back transaction", txn.transaction_id,
+                "Cannot rename in committed/rolled-back transaction",
+                txn.transaction_id,
             )
         if not src_path.exists():
             raise AtomicExecutionError(f"Source file does not exist: {src_path}", txn.transaction_id)
@@ -449,7 +461,8 @@ class AtomicExecutionMixin:
             logger.debug(f"Atomic rename {src_path} -> {dst_path}")
         except Exception as e:
             raise AtomicExecutionError(
-                f"Rename failed {src_path} -> {dst_path}: {e}", txn.transaction_id,
+                f"Rename failed {src_path} -> {dst_path}: {e}",
+                txn.transaction_id,
             ) from e
 
     def get_active_transactions(self) -> dict[str, AtomicTransaction]:

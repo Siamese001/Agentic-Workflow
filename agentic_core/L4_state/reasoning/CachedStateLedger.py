@@ -234,7 +234,9 @@ class CachedStateLedger(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "CachedStateLedger.cache_validation_context",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "CachedStateLedger.cache_validation_context",
         )
 
         full_key = f"{self.prefix_context}:{key}"
@@ -287,8 +289,9 @@ class CachedStateLedger(SovereignBaseAgent):
                 self.redis.rpush(f"{self.prefix_historian}:successful_traces", json.dumps(trace))
             # guardian: allow-silent-swallow
             except Exception as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("CachedStateLedger: Exception swallowed at L289: %s", e)
+                logging.getLogger(__name__).debug("CachedStateLedger: Exception swallowed at L289: %s", e)
         else:
             self._successful_traces.append(trace)
 

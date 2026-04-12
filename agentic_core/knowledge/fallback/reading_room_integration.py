@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class ReadingRoomResult:
     """Result from reading room processing."""
+
     final_output: str
     context_window_used: int
     reasoning_path: str
@@ -70,7 +71,9 @@ class ReadingRoomIntegration:
         """
         trace_id = f"reading_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ReadingRoomIntegration.process",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "ReadingRoomIntegration.process",
         )
 
         # Manage context window
@@ -113,7 +116,7 @@ class ReadingRoomIntegration:
 
         if len(tokens) > self.max_context_tokens:
             # Truncate context
-            truncated = " ".join(tokens[:self.max_context_tokens])
+            truncated = " ".join(tokens[: self.max_context_tokens])
             return truncated, True
 
         return context_packet, False
@@ -124,7 +127,7 @@ class ReadingRoomIntegration:
         # Would include: harmful content detection, PII detection, etc.
 
         # Simple check: query doesn't contain obvious harmful patterns
-        harmful_patterns = ['hack', 'exploit', 'bypass security']
+        harmful_patterns = ["hack", "exploit", "bypass security"]
 
         query_lower = query.lower()
         for pattern in harmful_patterns:
@@ -147,7 +150,7 @@ class ReadingRoomIntegration:
         if reasoning_path == "abstain":
             return "I cannot provide an answer to this query."
 
-        citations = getattr(evidence_contract, 'citations', [])
+        citations = getattr(evidence_contract, "citations", [])
 
         output_parts = [
             "Based on the available information, here's what I found:\n",

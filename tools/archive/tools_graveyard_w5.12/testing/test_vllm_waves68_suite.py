@@ -79,7 +79,9 @@ class VLLMWaves68TestSuite:
             ]
 
             result = await orchestrator.synthesize_research_with_qwen(
-                research_topic=research_topic, sources=sources, synthesis_type="comprehensive",
+                research_topic=research_topic,
+                sources=sources,
+                synthesis_type="comprehensive",
             )
 
             success = result.get("success", False)
@@ -140,7 +142,8 @@ class VLLMWaves68TestSuite:
             }
 
             result = await orchestrator.generate_proposal_with_qwen(
-                rfp_details=rfp_details, proposal_type="technical",
+                rfp_details=rfp_details,
+                proposal_type="technical",
             )
 
             success = result.get("success", False)
@@ -198,7 +201,9 @@ class VLLMWaves68TestSuite:
             }
 
             result = await orchestrator.plan_execution_with_qwen(
-                objectives=objectives, constraints=constraints, planning_type="strategic",
+                objectives=objectives,
+                constraints=constraints,
+                planning_type="strategic",
             )
 
             success = result.get("success", False)
@@ -247,7 +252,8 @@ class VLLMWaves68TestSuite:
             if manager.is_available():
                 # Test generation
                 result = await manager.generate_response(
-                    prompt="Analyze the benefits of AI in healthcare", metadata={"test_type": "wave7_shared"},
+                    prompt="Analyze the benefits of AI in healthcare",
+                    metadata={"test_type": "wave7_shared"},
                 )
 
                 # Test validation
@@ -304,7 +310,8 @@ class VLLMWaves68TestSuite:
 
             # Test industry templates
             healthcare_prompt = IndustryPromptTemplates.healthcare_analysis(
-                content="Patient shows symptoms of AI-assisted diagnosis", analysis_type="clinical",
+                content="Patient shows symptoms of AI-assisted diagnosis",
+                analysis_type="clinical",
             )
 
             finance_prompt = IndustryPromptTemplates.finance_proposal(
@@ -516,7 +523,8 @@ class VLLMWaves68TestSuite:
             for model_name in ["qwen-7b", "qwen-7b-creative"]:
                 if model_name in models:
                     result = await manager.generate_with_model(
-                        model_name=model_name, prompt="Briefly explain artificial intelligence",
+                        model_name=model_name,
+                        prompt="Briefly explain artificial intelligence",
                     )
                     test_results.append(result)
 

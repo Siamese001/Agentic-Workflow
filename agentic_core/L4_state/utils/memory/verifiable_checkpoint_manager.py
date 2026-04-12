@@ -206,7 +206,9 @@ class VerifiableCheckpointManager:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "VerifiableCheckpointManager.save_checkpoint",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "VerifiableCheckpointManager.save_checkpoint",
         )
 
         payload_str: Any = json.dumps(state, sort_keys=True)
@@ -227,7 +229,10 @@ class VerifiableCheckpointManager:
         return storage_etag
 
     async def load_checkpoint(
-        self, session_id: str, node_id: str, verify: bool = True,
+        self,
+        session_id: str,
+        node_id: str,
+        verify: bool = True,
     ) -> dict[str, Any] | None:
         """
         Loads and verifies a Checkpoint.
@@ -246,7 +251,7 @@ class VerifiableCheckpointManager:
         key: Any = f"checkpoints/{session_id}/{node_id}.json"
         try:
             data_bytes: Any = await self.storage.read_blob(key)
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             LOGGER.debug(f"Checkpoint not found: {session_id}/{node_id}")
             return None
         if verify:
@@ -356,7 +361,7 @@ class VerifiableCheckpointManager:
             state: Any = json.loads(data_bytes)
             LOGGER.info(f"Loaded snapshot: {session_id}/{snapshot_name}")
             return state
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             LOGGER.debug(f"Snapshot not found: {session_id}/{snapshot_name}")
             return None
 

@@ -373,7 +373,9 @@ class LICCodeInterpreter:
         Raises:
             ValueError: If function not registered
         """
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LicCodeInterpreter.execute:{function_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LicCodeInterpreter.execute:{function_name}"
+        )
         if function_name not in self.functions:
             raise ValueError(
                 f"Function '{function_name}' not registered. Available: {list(self.functions.keys())}",
@@ -402,7 +404,10 @@ class LICCodeInterpreter:
         return SimilarityResult(score=score, method=method, text1_length=len(text1), text2_length=len(text2))
 
     def run_scoring_competition(
-        self, candidates: list[str], strategic_brief: str, criteria: ScoringCriteria | None = None,
+        self,
+        candidates: list[str],
+        strategic_brief: str,
+        criteria: ScoringCriteria | None = None,
     ) -> list[ScoredCandidate]:
         """
         Score N candidate messages against strategic brief.
@@ -440,7 +445,10 @@ class LICCodeInterpreter:
             )
             scored.append(
                 ScoredCandidate(
-                    candidate_index=i, candidate_text=candidate, scores=scores, total_score=total_score,
+                    candidate_index=i,
+                    candidate_text=candidate,
+                    scores=scores,
+                    total_score=total_score,
                 ),
             )
         scored.sort(key=lambda x: x.total_score, reverse=True)
@@ -507,7 +515,10 @@ class LICCodeInterpreter:
         }
 
     def rank_by_metric(
-        self, items: list[dict[str, object]], metric_key: str, descending: bool = True,
+        self,
+        items: list[dict[str, object]],
+        metric_key: str,
+        descending: bool = True,
     ) -> list[dict[str, object]]:
         """
         Rank items by a specific Metric.

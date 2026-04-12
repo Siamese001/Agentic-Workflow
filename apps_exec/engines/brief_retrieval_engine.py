@@ -230,12 +230,14 @@ class BriefRetrievalEngine:
             filters={"audience_persona": audience_persona},
         )
 
-        self._query_history.append({
-            "query_type": "similar",
-            "audience": audience_persona,
-            "results_count": len(results),
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._query_history.append(
+            {
+                "query_type": "similar",
+                "audience": audience_persona,
+                "results_count": len(results),
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         return results
 
@@ -319,10 +321,7 @@ class BriefRetrievalEngine:
                     marker_sums[marker] = marker_sums.get(marker, 0.0) + value
                     marker_counts[marker] = marker_counts.get(marker, 0) + 1
 
-        marker_avgs = {
-            k: marker_sums[k] / marker_counts[k]
-            for k in marker_sums
-        }
+        marker_avgs = {k: marker_sums[k] / marker_counts[k] for k in marker_sums}
 
         return {
             "audience": audience,
@@ -360,11 +359,13 @@ class BriefRetrievalEngine:
         recommendations: list[dict[str, Any]] = []
         for section, freq in section_frequency.items():
             if section not in current_set:
-                recommendations.append({
-                    "section": section,
-                    "frequency_in_top_briefs": freq,
-                    "recommendation": f"Consider adding '{section}' section",
-                })
+                recommendations.append(
+                    {
+                        "section": section,
+                        "frequency_in_top_briefs": freq,
+                        "recommendation": f"Consider adding '{section}' section",
+                    }
+                )
 
         # Sort by frequency
         recommendations.sort(key=lambda x: x["frequency_in_top_briefs"], reverse=True)

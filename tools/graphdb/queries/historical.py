@@ -242,7 +242,9 @@ class HistoricalQueries:
         new_call_surfaces = []
 
         # Find tool/provider invocation edges in new graph
-        for u, v, attrs in tqdm(to_graph.edges(data=True), desc="tool/provider edges", unit="edge", leave=False):
+        for u, v, attrs in tqdm(
+            to_graph.edges(data=True), desc="tool/provider edges", unit="edge", leave=False
+        ):
             if attrs.get("graph_type") in ["INVOKES_PROVIDER", "INVOKES_TOOL"]:
                 v_attrs = to_graph.nodes[v]
 
@@ -279,7 +281,9 @@ class HistoricalQueries:
         new_cross_layer_deps = []
 
         # Find cross-layer edges in new graph
-        for u, v, attrs in tqdm(to_graph.edges(data=True), desc="cross-layer edges", unit="edge", leave=False):
+        for u, v, attrs in tqdm(
+            to_graph.edges(data=True), desc="cross-layer edges", unit="edge", leave=False
+        ):
             u_attrs = to_graph.nodes[u]
             v_attrs = to_graph.nodes[v]
 

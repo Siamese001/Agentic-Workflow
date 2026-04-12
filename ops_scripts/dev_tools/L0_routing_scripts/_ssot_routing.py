@@ -45,21 +45,27 @@ from ops_scripts.dev_tools.L0_routing_scripts._ssot_types import (
 
 _clock_cache = None
 
+
 def _get_clock():
     global _clock_cache
     if _clock_cache is None:
         try:
             from agentic_core.L2_execution.utils.providers import get_clock as _get_clock_impl
+
             _clock_cache = _get_clock_impl()
         except ImportError as e:
             logging.warning(f"L2 clock provider not available: {e}")
             # Return a minimal clock implementation
             import time
+
             class _MinimalClock:
                 def now_epoch(self):
                     return time.time()
+
             _clock_cache = _MinimalClock()
     return _clock_cache
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -332,7 +338,11 @@ class SovereignDecisionEngine:
 
         # guardian: allow-type-erasure
         def _arbiter(
-            agent_name: str, violation_types: list, territory: str, score: int = 0, gate: str = "",
+            agent_name: str,
+            violation_types: list,
+            territory: str,
+            score: int = 0,
+            gate: str = "",
         ) -> dict:
             script_wsl = INFERENCE_SCRIPT.replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
             repo_root_wsl = (
@@ -386,7 +396,10 @@ class SovereignDecisionEngine:
         return 0.5
 
     def _compute_novelty_score(
-        self, failure_type: "FailureType | None", territory: str, confidence: "ConfidenceScore",
+        self,
+        failure_type: "FailureType | None",
+        territory: str,
+        confidence: "ConfidenceScore",
     ) -> int:
         """Compute the novelty score N (0-3) for RoutingInputs.
 
@@ -762,7 +775,9 @@ class SovereignDecisionEngine:
         """
         import sys
 
-        border = "=" * 56    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        border = (
+            "=" * 56
+        )  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
         print(f"\n{border}")
         print(f"  HITL GATE  [{tier} CONFIDENCE]")
         print(border)
@@ -781,7 +796,10 @@ class SovereignDecisionEngine:
             return (False, reason)
         try:
             raw = input("  Choice [Y/N/D]: ").strip().upper()
-        except (EOFError, KeyboardInterrupt):    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        except (
+            EOFError,
+            KeyboardInterrupt,
+        ):  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             raw = "D"
         print(border + "\n")
         if raw == "Y":
@@ -792,12 +810,18 @@ class SovereignDecisionEngine:
             return (False, f"HITL-DEFER ({confidence.value:.2f})")
 
     async def analyze_violations_with_cognitive_disposition(
-        self, violations: list, territory: str, state_mgr,
+        self,
+        violations: list,
+        territory: str,
+        state_mgr,
     ):
         """Analyze violations using CognitiveDispositionAgent for enhanced confidence."""
         if not self.enable_cda:
             fallback_conf = self.calculate_healing_confidence(
-                len(violations), [str(v) for v in violations[:10]], territory, agent_name="location",
+                len(violations),
+                [str(v) for v in violations[:10]],
+                territory,
+                agent_name="location",
             )
             return ([], fallback_conf)
         try:
@@ -811,18 +835,23 @@ class SovereignDecisionEngine:
             if dispositions:
                 avg_confidence = sum(d.confidence for d in dispositions) / len(dispositions)
                 enhanced_confidence = ConfidenceScore(
-                    value=avg_confidence, reasoning=f"Cognitive analysis of {len(dispositions)} dispositions",
+                    value=avg_confidence,
+                    reasoning=f"Cognitive analysis of {len(dispositions)} dispositions",
                 )
             else:
                 enhanced_confidence = ConfidenceScore(
-                    value=0.5, reasoning="No cognitive dispositions generated",
+                    value=0.5,
+                    reasoning="No cognitive dispositions generated",
                 )
             return (dispositions, enhanced_confidence)
         # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("CognitiveDispositionAgent not available, using default confidence")
             bmg_conf = self.calculate_healing_confidence(
-                len(violations), [str(v) for v in violations[:10]], territory, agent_name="location",
+                len(violations),
+                [str(v) for v in violations[:10]],
+                territory,
+                agent_name="location",
             )
             return ([], bmg_conf)
         except (AttributeError, ValueError) as e:

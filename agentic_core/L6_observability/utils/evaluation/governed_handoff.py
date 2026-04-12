@@ -187,9 +187,7 @@ class GovernedHandoffAgent:
             token_id = token.token_id
 
             # Step 2: Validate scope + expiry (non-consuming check)
-            token_valid = token.is_valid_for_namespace(namespace) and not token.is_expired(
-                _PROOF_CLOCK_TICK
-            )
+            token_valid = token.is_valid_for_namespace(namespace) and not token.is_expired(_PROOF_CLOCK_TICK)
 
             # Step 3: Validate rollback metadata contract
             rollback_ok, rollback_error = _validate_rollback_metadata(packet)
@@ -221,9 +219,7 @@ class GovernedHandoffAgent:
                 rollout_published = get_telemetry_bus().publish(
                     bus_type=BusType.TELEMETRY,
                     signal_type=BUS_ROLLOUT_SIGNAL,
-                    payload=_packet_to_bus_payload(
-                        packet, token_id, dry_run, committed, commit_attempted
-                    ),
+                    payload=_packet_to_bus_payload(packet, token_id, dry_run, committed, commit_attempted),
                     trace_id=packet.packet_id,
                     priority=1,
                 )
@@ -232,9 +228,7 @@ class GovernedHandoffAgent:
                 rollout_published = get_telemetry_bus().publish(
                     bus_type=BusType.TELEMETRY,
                     signal_type=BUS_ROLLOUT_SIGNAL,
-                    payload=_packet_to_bus_payload(
-                        packet, token_id, dry_run, committed, commit_attempted
-                    ),
+                    payload=_packet_to_bus_payload(packet, token_id, dry_run, committed, commit_attempted),
                     trace_id=packet.packet_id,
                     priority=1,
                 )

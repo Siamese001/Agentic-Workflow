@@ -16,14 +16,17 @@ class TestSemanticCacheRedisHardening:
     def test_semantic_cache_redis_hardening_imports(self):
         """Test semantic_cache_redis_hardening module imports."""
         from agentic_core import semantic_cache_redis_hardening
+
         assert semantic_cache_redis_hardening is not None
 
     def test_semantic_cache_redis_hardening_class(self):
         """Test SemanticCacheRedisHardening class exists."""
         from agentic_core import SemanticCacheRedisHardening
+
         assert SemanticCacheRedisHardening is not None
 
     def test_semantic_cache_redis_hardening_callable(self):
         """Test semantic_cache_redis_hardening functions are callable."""
         from agentic_core import validate_semantic_cache_redis_hardening
+
         assert callable(validate_semantic_cache_redis_hardening)

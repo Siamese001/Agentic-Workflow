@@ -26,6 +26,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class TaskExample:
     """Single example for meta-learning tasks"""
@@ -37,6 +38,7 @@ class TaskExample:
     success: bool
     timestamp: float = field(default_factory=time.time)
     features: dict[str, float] | None = None
+
 
 @dataclass
 class MetaLearningTask:
@@ -50,6 +52,7 @@ class MetaLearningTask:
     priority: float = 1.0
     created_at: float = field(default_factory=time.time)
 
+
 @dataclass
 class AdaptationResult:
     """Result of model adaptation"""
@@ -62,6 +65,7 @@ class AdaptationResult:
     examples_used: int
     success: bool
     new_parameters: dict[str, Any] | None = None
+
 
 class BaseMetaLearner(ABC):
     """Abstract base class for meta-learning algorithms"""
@@ -105,6 +109,7 @@ class BaseMetaLearner(ABC):
         else:
             return "stable"
 
+
 class MAMLMetaLearner(BaseMetaLearner):
     """Model-Agnostic Meta-Learning implementation"""
 
@@ -132,8 +137,7 @@ class MAMLMetaLearner(BaseMetaLearner):
 
         # Create task-specific parameters (copy meta parameters)
         task_params = {
-            k: v.copy() if isinstance(v, np.ndarray) else v
-            for k, v in self.meta_parameters.items()
+            k: v.copy() if isinstance(v, np.ndarray) else v for k, v in self.meta_parameters.items()
         }
 
         # Inner loop adaptation on support examples
@@ -167,18 +171,28 @@ class MAMLMetaLearner(BaseMetaLearner):
         self.performance_history.append(performance_after)
 
         # Emit learning events
-        _emit_records_learning_event("maml_meta_learner", "adaptation_complete", {
-            "task_id": task.task_id,
-            "performance_improvement": performance_after - performance_before,
-            "adaptation_time": adaptation_time,
-            "success": success,
-        })
+        _emit_records_learning_event(
+            "maml_meta_learner",
+            "adaptation_complete",
+            {
+                "task_id": task.task_id,
+                "performance_improvement": performance_after - performance_before,
+                "adaptation_time": adaptation_time,
+                "success": success,
+            },
+        )
 
-        _emit_writes_learning_snapshot("maml_meta_learner", "adaptation_snapshot", {
-            "task_id": task.task_id,
-            "parameters": {k: v.tolist() if isinstance(v, np.ndarray) else v for k, v in task_params.items()},
-            "performance": performance_after,
-        })
+        _emit_writes_learning_snapshot(
+            "maml_meta_learner",
+            "adaptation_snapshot",
+            {
+                "task_id": task.task_id,
+                "parameters": {
+                    k: v.tolist() if isinstance(v, np.ndarray) else v for k, v in task_params.items()
+                },
+                "performance": performance_after,
+            },
+        )
 
         return result
 
@@ -213,9 +227,13 @@ class MAMLMetaLearner(BaseMetaLearner):
         self.meta_parameters = self._initialize_meta_parameters()
         self.task_specific_parameters.clear()
 
-        _emit_stores_learning_state("maml_meta_learner", "reset", {
-            "model_name": self.model_name,
-        })
+        _emit_stores_learning_state(
+            "maml_meta_learner",
+            "reset",
+            {
+                "model_name": self.model_name,
+            },
+        )
 
     def _evaluate_on_task(self, task: MetaLearningTask, parameters: dict[str, Any] | None = None) -> float:
         """Evaluate model performance on task"""
@@ -233,7 +251,9 @@ class MAMLMetaLearner(BaseMetaLearner):
 
         return correct / total if total > 0 else 0.0
 
-    def _predict_with_parameters(self, query: str, context: dict[str, Any], parameters: dict[str, Any]) -> tuple[str, float]:
+    def _predict_with_parameters(
+        self, query: str, context: dict[str, Any], parameters: dict[str, Any]
+    ) -> tuple[str, float]:
         """Predict with specific parameters"""
         query_embedding = self._encode_query(query)
         hidden = query_embedding @ parameters["embedding_weights"]
@@ -282,6 +302,7 @@ class MAMLMetaLearner(BaseMetaLearner):
                 updated[key] = parameters[key]
         return updated
 
+
 class ContinualLearner(BaseMetaLearner):
     """Continual learning with experience replay and elastic weight consolidation"""
 
@@ -314,8 +335,7 @@ class ContinualLearner(BaseMetaLearner):
         # Store optimal parameters before adaptation
         if not self.optimal_parameters:
             self.optimal_parameters = {
-                k: v.copy() if isinstance(v, np.ndarray) else v
-                for k, v in self.current_parameters.items()
+                k: v.copy() if isinstance(v, np.ndarray) else v for k, v in self.current_parameters.items()
             }
 
         # Get current performance
@@ -351,18 +371,26 @@ class ContinualLearner(BaseMetaLearner):
         self.performance_history.append(performance_after)
 
         # Emit learning events
-        _emit_records_learning_event("continual_learner", "adaptation_complete", {
-            "task_id": task.task_id,
-            "performance_improvement": performance_after - performance_before,
-            "replay_buffer_size": len(self.replay_buffer),
-            "success": success,
-        })
+        _emit_records_learning_event(
+            "continual_learner",
+            "adaptation_complete",
+            {
+                "task_id": task.task_id,
+                "performance_improvement": performance_after - performance_before,
+                "replay_buffer_size": len(self.replay_buffer),
+                "success": success,
+            },
+        )
 
-        _emit_improves_agent_policy("continual_learner", "policy_update", {
-            "task_id": task.task_id,
-            "new_performance": performance_after,
-            "buffer_utilization": len(self.replay_buffer) / self.memory_size,
-        })
+        _emit_improves_agent_policy(
+            "continual_learner",
+            "policy_update",
+            {
+                "task_id": task.task_id,
+                "new_performance": performance_after,
+                "buffer_utilization": len(self.replay_buffer) / self.memory_size,
+            },
+        )
 
         return result
 
@@ -391,10 +419,14 @@ class ContinualLearner(BaseMetaLearner):
         self.fisher_information.clear()
         self.optimal_parameters.clear()
 
-        _emit_stores_learning_state("continual_learner", "reset", {
-            "model_name": self.model_name,
-            "memory_cleared": True,
-        })
+        _emit_stores_learning_state(
+            "continual_learner",
+            "reset",
+            {
+                "model_name": self.model_name,
+                "memory_cleared": True,
+            },
+        )
 
     def _continual_learning_step(self, task: MetaLearningTask):
         """Perform continual learning step"""
@@ -468,6 +500,7 @@ class ContinualLearner(BaseMetaLearner):
             if param_name in self.current_parameters:
                 self.current_parameters[param_name] -= self.adaptation_rate * gradient[param_name]
 
+
 class TaskScheduler:
     """Scheduler for meta-learning tasks"""
 
@@ -486,12 +519,16 @@ class TaskScheduler:
         # Sort queue by priority
         self.task_queue.sort(key=lambda t: t.priority, reverse=True)
 
-        _emit_records_learning_event("task_scheduler", "task_added", {
-            "task_id": task.task_id,
-            "task_type": task.task_type,
-            "priority": task.priority,
-            "queue_size": len(self.task_queue),
-        })
+        _emit_records_learning_event(
+            "task_scheduler",
+            "task_added",
+            {
+                "task_id": task.task_id,
+                "task_type": task.task_type,
+                "priority": task.priority,
+                "queue_size": len(self.task_queue),
+            },
+        )
 
     def get_next_task(self) -> MetaLearningTask | None:
         """Get next task to process"""
@@ -512,11 +549,15 @@ class TaskScheduler:
             task = self.active_tasks.pop(task_id)
             self.completed_tasks.append(task)
 
-            _emit_records_learning_event("task_scheduler", "task_completed", {
-                "task_id": task_id,
-                "active_tasks": len(self.active_tasks),
-                "completed_tasks": len(self.completed_tasks),
-            })
+            _emit_records_learning_event(
+                "task_scheduler",
+                "task_completed",
+                {
+                    "task_id": task_id,
+                    "active_tasks": len(self.active_tasks),
+                    "completed_tasks": len(self.completed_tasks),
+                },
+            )
 
     def get_task_statistics(self) -> dict[str, Any]:
         """Get task processing statistics"""
@@ -535,6 +576,7 @@ class TaskScheduler:
             distribution[task.task_type] += 1
 
         return dict(distribution)
+
 
 class MetaLearningFramework:
     """
@@ -573,10 +615,14 @@ class MetaLearningFramework:
                 "continual": ContinualLearner("continual"),
             }
 
-        _emit_stores_learning_state("meta_learning_framework", "initialization", {
-            "meta_learners": list(self.meta_learners.keys()),
-            "adaptation_threshold": adaptation_threshold,
-        })
+        _emit_stores_learning_state(
+            "meta_learning_framework",
+            "initialization",
+            {
+                "meta_learners": list(self.meta_learners.keys()),
+                "adaptation_threshold": adaptation_threshold,
+            },
+        )
 
     def create_adaptation_task(
         self,
@@ -617,12 +663,16 @@ class MetaLearningFramework:
                 if result.success:
                     self.adaptation_history.append(result)
 
-                _emit_records_learning_event("meta_learning_framework", "learner_adapted", {
-                    "learner": learner_name,
-                    "task_id": task.task_id,
-                    "success": result.success,
-                    "performance_improvement": result.performance_after - result.performance_before,
-                })
+                _emit_records_learning_event(
+                    "meta_learning_framework",
+                    "learner_adapted",
+                    {
+                        "learner": learner_name,
+                        "task_id": task.task_id,
+                        "success": result.success,
+                        "performance_improvement": result.performance_after - result.performance_before,
+                    },
+                )
 
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Meta-learner {learner_name} failed: {e}")
@@ -640,7 +690,7 @@ class MetaLearningFramework:
             return "none"
 
         best_learner = None
-        best_performance = -float('inf')
+        best_performance = -float("inf")
 
         for learner_name, learner in self.meta_learners.items():
             if learner.performance_history:
@@ -666,7 +716,9 @@ class MetaLearningFramework:
             "framework_performance": {
                 "avg_improvement": np.mean(self.framework_performance) if self.framework_performance else 0.0,
                 "total_adaptations": len(self.adaptation_history),
-                "success_rate": np.mean([r.success for r in self.adaptation_history]) if self.adaptation_history else 0.0,
+                "success_rate": np.mean([r.success for r in self.adaptation_history])
+                if self.adaptation_history
+                else 0.0,
             },
         }
 
@@ -674,7 +726,9 @@ class MetaLearningFramework:
             stats["meta_learners"][learner_name] = {
                 "performance_trend": learner.get_performance_trend(),
                 "adaptations": len(learner.adaptation_history),
-                "avg_performance": np.mean(learner.performance_history) if learner.performance_history else 0.0,
+                "avg_performance": np.mean(learner.performance_history)
+                if learner.performance_history
+                else 0.0,
             }
 
         return stats
@@ -702,13 +756,18 @@ class MetaLearningFramework:
             "task_scheduler": self.task_scheduler.get_task_statistics(),
         }
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(state, f, indent=2)
 
-        _emit_stores_learning_state("meta_learning_framework", "state_saved", {
-            "filepath": filepath,
-            "total_adaptations": len(self.adaptation_history),
-        })
+        _emit_stores_learning_state(
+            "meta_learning_framework",
+            "state_saved",
+            {
+                "filepath": filepath,
+                "total_adaptations": len(self.adaptation_history),
+            },
+        )
+
 
 # Utility functions
 def create_few_shot_task(
@@ -739,11 +798,12 @@ def create_few_shot_task(
     return MetaLearningTask(
         task_id=task_id,
         task_name=task_name,
-        support_examples=task_examples[:max(1, len(task_examples)//2)],
-        query_examples=task_examples[max(1, len(task_examples)//2):],
+        support_examples=task_examples[: max(1, len(task_examples) // 2)],
+        query_examples=task_examples[max(1, len(task_examples) // 2) :],
         task_type="few_shot",
         priority=priority,
     )
+
 
 def create_default_meta_framework() -> MetaLearningFramework:
     """Create default meta-learning framework"""
@@ -757,6 +817,7 @@ def create_default_meta_framework() -> MetaLearningFramework:
         meta_learners=meta_learners,
         adaptation_threshold=0.1,
     )
+
 
 __all__ = [
     "MetaLearningFramework",

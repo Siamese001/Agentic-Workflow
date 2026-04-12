@@ -1,7 +1,7 @@
 import collections
 import sqlite3
 
-db_path = r'C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03132026_1902.sqlite'
+db_path = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03132026_1902.sqlite"
 conn = sqlite3.connect(db_path)
 conn.row_factory = sqlite3.Row
 cur = conn.cursor()
@@ -12,37 +12,47 @@ total = cur.fetchone()[0]
 print(f"Total L_UNKNOWN nodes: {total}")
 
 # 2. Breakdown by entity_type
-cur.execute("SELECT entity_type, COUNT(*) as cnt FROM nodes WHERE layer='L_UNKNOWN' GROUP BY entity_type ORDER BY cnt DESC")
+cur.execute(
+    "SELECT entity_type, COUNT(*) as cnt FROM nodes WHERE layer='L_UNKNOWN' GROUP BY entity_type ORDER BY cnt DESC"
+)
 print("\n--- By entity_type ---")
 for row in cur.fetchall():
     print(f"  {row['entity_type']}: {row['cnt']}")
 
 # 3. Breakdown by identity_kind
-cur.execute("SELECT identity_kind, COUNT(*) as cnt FROM nodes WHERE layer='L_UNKNOWN' GROUP BY identity_kind ORDER BY cnt DESC")
+cur.execute(
+    "SELECT identity_kind, COUNT(*) as cnt FROM nodes WHERE layer='L_UNKNOWN' GROUP BY identity_kind ORDER BY cnt DESC"
+)
 print("\n--- By identity_kind ---")
 for row in cur.fetchall():
     print(f"  {row['identity_kind']}: {row['cnt']}")
 
 # 4. Breakdown by confidence
-cur.execute("SELECT confidence, COUNT(*) as cnt FROM nodes WHERE layer='L_UNKNOWN' GROUP BY confidence ORDER BY cnt DESC")
+cur.execute(
+    "SELECT confidence, COUNT(*) as cnt FROM nodes WHERE layer='L_UNKNOWN' GROUP BY confidence ORDER BY cnt DESC"
+)
 print("\n--- By confidence ---")
 for row in cur.fetchall():
     print(f"  {row['confidence']}: {row['cnt']}")
 
 # 5. Top resolved_path prefixes (first 2 path segments) — all L_UNKNOWN
-cur.execute("SELECT resolved_path FROM nodes WHERE layer='L_UNKNOWN' AND resolved_path IS NOT NULL AND resolved_path != ''")
+cur.execute(
+    "SELECT resolved_path FROM nodes WHERE layer='L_UNKNOWN' AND resolved_path IS NOT NULL AND resolved_path != ''"
+)
 paths = [row[0] for row in cur.fetchall()]
 prefix_counts = collections.Counter()
 for p in paths:
-    parts = p.replace('\\', '/').split('/')
-    prefix = '/'.join(parts[:2]) if len(parts) >= 2 else parts[0]
+    parts = p.replace("\\", "/").split("/")
+    prefix = "/".join(parts[:2]) if len(parts) >= 2 else parts[0]
     prefix_counts[prefix] += 1
 print("\n--- Top path prefixes (first 2 segments, all L_UNKNOWN with resolved_path) ---")
 for prefix, cnt in prefix_counts.most_common(30):
     print(f"  {prefix}: {cnt}")
 
 # 6. NULL or empty resolved_path count
-cur.execute("SELECT COUNT(*) FROM nodes WHERE layer='L_UNKNOWN' AND (resolved_path IS NULL OR resolved_path = '')")
+cur.execute(
+    "SELECT COUNT(*) FROM nodes WHERE layer='L_UNKNOWN' AND (resolved_path IS NULL OR resolved_path = '')"
+)
 null_paths = cur.fetchone()[0]
 print(f"\nL_UNKNOWN with null/empty resolved_path: {null_paths}")
 
@@ -67,8 +77,8 @@ cur.execute("""
 rm_paths = [row[0] for row in cur.fetchall()]
 rm_prefix_counts = collections.Counter()
 for p in rm_paths:
-    parts = p.replace('\\', '/').split('/')
-    prefix = parts[0] if parts else '(empty)'
+    parts = p.replace("\\", "/").split("/")
+    prefix = parts[0] if parts else "(empty)"
     rm_prefix_counts[prefix] += 1
 print(f"\n--- L_UNKNOWN repo_module nodes: {len(rm_paths)} total ---")
 print("  Grouped by top-level directory:")
@@ -86,8 +96,8 @@ cur.execute("""
 is_paths = [row[0] for row in cur.fetchall()]
 is_prefix_counts = collections.Counter()
 for p in is_paths:
-    parts = p.replace('\\', '/').split('/')
-    prefix = parts[0] if parts else '(empty)'
+    parts = p.replace("\\", "/").split("/")
+    prefix = parts[0] if parts else "(empty)"
     is_prefix_counts[prefix] += 1
 print(f"\n--- L_UNKNOWN inferred_symbol nodes with resolved_path: {len(is_paths)} total ---")
 print("  Grouped by top-level directory:")

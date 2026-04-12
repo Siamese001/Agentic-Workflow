@@ -224,11 +224,13 @@ class OutcomeEvaluationEngine:
 
         result = OutcomeEvaluationResult(
             artifact_type="OUTCOME_EVALUATION_RESULT",
-            result_id=stable_sha256_json({
-                "trace_id": trace_id,
-                "overall_score": overall_score,
-                "timestamp_utc": timestamp_utc,
-            }),
+            result_id=stable_sha256_json(
+                {
+                    "trace_id": trace_id,
+                    "overall_score": overall_score,
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             trace_id=trace_id,
             task_completion=task_completion,
             groundedness=groundedness,
@@ -435,12 +437,12 @@ class OutcomeEvaluationEngine:
     ) -> float:
         """Calculate weighted overall outcome score."""
         overall = (
-            self.weights["task_completion"] * task_completion +
-            self.weights["groundedness"] * groundedness +
-            self.weights["citation_support"] * citation_support +
-            self.weights["abstain_correctness"] * abstain_correctness +
-            self.weights["escalation_correctness"] * escalation_correctness +
-            self.weights["answer_relevance"] * answer_relevance
+            self.weights["task_completion"] * task_completion
+            + self.weights["groundedness"] * groundedness
+            + self.weights["citation_support"] * citation_support
+            + self.weights["abstain_correctness"] * abstain_correctness
+            + self.weights["escalation_correctness"] * escalation_correctness
+            + self.weights["answer_relevance"] * answer_relevance
         )
         return round(overall, 6)  # Deterministic rounding
 

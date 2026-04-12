@@ -28,7 +28,10 @@ import json
 
 
 def compute_meta_learning_state_digest(
-    *, faiss_index_digests: dict[str, str], strategy_weights_digest: str, embedding_model_version: str,
+    *,
+    faiss_index_digests: dict[str, str],
+    strategy_weights_digest: str,
+    embedding_model_version: str,
 ) -> str:
     """Compute a single deterministic digest covering the full meta-learning state.
 
@@ -65,7 +68,10 @@ def compute_meta_learning_state_digest(
 
 
 def emit_meta_learning_state_digest(
-    *, faiss_index_digests: dict[str, str], strategy_weights_digest: str, embedding_model_version: str,
+    *,
+    faiss_index_digests: dict[str, str],
+    strategy_weights_digest: str,
+    embedding_model_version: str,
 ) -> str:
     """Compute and print ``META_LEARNING_STATE_DIGEST`` to stdout.
 

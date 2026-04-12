@@ -112,7 +112,9 @@ class PromptTemplateManager:
 
         # Template storage
         self.templates: dict[str, PromptTemplate] = {}
-        self.templates_path = templates_path or Path(__file__).parent.parent.parent.parent / "templates" / "rag"
+        self.templates_path = (
+            templates_path or Path(__file__).parent.parent.parent.parent / "templates" / "rag"
+        )
 
         # Initialize default templates
         self._initialize_default_templates()
@@ -206,7 +208,7 @@ class PromptTemplateManager:
 
         for template_file in self.templates_path.glob("*.json"):
             try:
-                with open(template_file, encoding='utf-8') as f:
+                with open(template_file, encoding="utf-8") as f:
                     template_data = json.load(f)
 
                 template = PromptTemplate(
@@ -373,7 +375,7 @@ class PromptTemplateManager:
         import re
 
         # Find all {placeholder} patterns
-        placeholders = re.findall(r'\{([^}]+)\}', template_text)
+        placeholders = re.findall(r"\{([^}]+)\}", template_text)
         return set(placeholders)
 
     def save_template_to_disk(self, template: PromptTemplate) -> bool:
@@ -397,7 +399,7 @@ class PromptTemplateManager:
                 "version": template.version,
             }
 
-            with open(template_file, 'w', encoding='utf-8') as f:
+            with open(template_file, "w", encoding="utf-8") as f:
                 json.dump(template_data, f, indent=2)
 
             return True

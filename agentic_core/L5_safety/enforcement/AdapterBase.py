@@ -98,7 +98,10 @@ class AdapterBase(ABC, Generic[T]):
     """
 
     def __init__(
-        self, legacy_agent: T, service_name: str, circuit_breaker_config: dict[str, Any] | None = None,
+        self,
+        legacy_agent: T,
+        service_name: str,
+        circuit_breaker_config: dict[str, Any] | None = None,
     ):
         """
         Initialize adapter with legacy agent.
@@ -341,13 +344,19 @@ class AdapterBase(ABC, Generic[T]):
             if not self._validate_output(raw_result, context):
                 self._log_audit("output_validation_failed", context)
                 return AdapterResult(
-                    success=False, data=raw_result, error="Output validation failed", audit_trail=audit_trail,
+                    success=False,
+                    data=raw_result,
+                    error="Output validation failed",
+                    audit_trail=audit_trail,
                 )
         # guardian: allow-silent-swallow
         except (RuntimeError, OSError) as e:
             logger.error(f"Output validation error: {e}")
             return AdapterResult(
-                success=False, data=raw_result, error=f"Output validation error: {e}", audit_trail=audit_trail,
+                success=False,
+                data=raw_result,
+                error=f"Output validation error: {e}",
+                audit_trail=audit_trail,
             )
         final_result = self._post_execute_hook(raw_result, context)
         audit_trail["completed_at"] = datetime.utcnow().isoformat()
@@ -405,7 +414,9 @@ class HealingAdapter(AdapterBase[T]):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HealingAdapter.verify_healing_target",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HealingAdapter.verify_healing_target",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

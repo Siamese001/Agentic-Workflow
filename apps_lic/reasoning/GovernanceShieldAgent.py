@@ -7,6 +7,7 @@ address security, privacy, and evaluation frameworks.
 
 from __future__ import annotations
 
+import json
 import logging
 import re
 from dataclasses import dataclass, field
@@ -15,28 +16,21 @@ from typing import Any
 
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
-# guardian: allow-silent-degradation -- Qwen vLLM is optional for governance analysis; graceful fallback to rule-based checks
+# guardian: allow-silent-degradation -- Qwen vLLM is optional for governance analysis; import failure is logged and captured in _qwen_init_error
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
-        AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-    from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
-        AppsQwenModelConfig,
-        AppsQwenPromptConfig,
-    )
 
     _QWEN_AVAILABLE = True
-except ImportError:
+except ImportError as _qwen_import_err:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
-    AppsQwenInferenceWorker = None  # type: ignore[assignment]
     apps_qwen_telemetry = None  # type: ignore[assignment]
-    AppsQwenModelConfig = None  # type: ignore[assignment]
-    AppsQwenPromptConfig = None  # type: ignore[assignment]
     _QWEN_AVAILABLE = False
+    _QWEN_IMPORT_ERROR: str | None = str(_qwen_import_err)
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -225,34 +219,33 @@ class GovernanceShieldAgent(LICAgentBase):
         """Initialize Sovereign Capabilities."""
         super().__post_init__()
 
-        # Initialize Qwen vLLM for governance analysis
+        # Initialize Qwen vLLM for governance analysis (opt-in; never silently disables)
         self._qwen_gateway = None
-        self._qwen_inference_worker = None
         self._qwen_session_id = None
+        self._qwen_init_error: str | None = None
 
-        if self.qwen_enabled and _QWEN_AVAILABLE:
+        if not _QWEN_AVAILABLE:
+            self._qwen_init_error = globals().get("_QWEN_IMPORT_ERROR", "qwen_vllm package unavailable")
+            logger.error(
+                "GovernanceShieldAgent: Qwen package unavailable — explicit Qwen calls will raise. reason=%s",
+                self._qwen_init_error,
+            )
+        elif self.qwen_enabled:
             try:
-                # Initialize Qwen gateway for governance analysis
                 self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
 
-                # Initialize inference worker with governance-specific config
-                model_config = AppsQwenModelConfig(
-                    model_id="Qwen/Qwen2.5-7B-Instruct",
-                    max_tokens=1536,
-                    temperature=0.1,  # Very low temperature for consistent governance analysis
-                )
-                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
-
-                # Start telemetry session
                 if apps_qwen_telemetry is not None:
                     self._qwen_session_id = apps_qwen_telemetry.start_session("apps_lic")
 
                 _emit_records_execution_trace("GovernanceShieldAgent", "L2_EXECUTION", "qwen_vllm_init")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all captured in _qwen_init_error
                 _emit_records_telemetry_event("GovernanceShieldAgent", "L2_EXECUTION", "qwen_init_error")
-                logger.warning(f"Failed to initialize Qwen vLLM: {e}")
-                self.qwen_enabled = False
+                self._qwen_init_error = str(e)
+                logger.error(
+                    "GovernanceShieldAgent: Qwen gateway init failed — explicit Qwen calls will raise. reason=%s",
+                    e,
+                )
 
         self.naive_patterns = {
             "absolute_accuracy": [
@@ -349,7 +342,9 @@ class GovernanceShieldAgent(LICAgentBase):
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "GovernanceShieldAgent.generate_safety_protocol",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "GovernanceShieldAgent.generate_safety_protocol",
         )
         try:
             if risk_profile.is_high_risk:
@@ -478,7 +473,9 @@ class GovernanceShieldAgent(LICAgentBase):
         return content
 
     async def analyze_governance_with_qwen(
-        self, content: str, context: dict[str, Any] = None,
+        self,
+        content: str,
+        context: dict[str, Any] = None,
     ) -> dict[str, Any]:
         """Analyze content for governance compliance using Qwen vLLM.
 
@@ -487,10 +484,110 @@ class GovernanceShieldAgent(LICAgentBase):
             context: Additional context for analysis (industry, compliance requirements, etc.)
 
         Returns:
-            Dictionary with governance analysis results and recommendations
+            Dictionary with governance analysis results and recommendations.
+            Always includes ``local_first_disposition`` when routing was evaluated.
         """
-        if not self.qwen_enabled or self._qwen_gateway is None:
-            return {"success": False, "error": "qwen_disabled", "analysis": None}
+        if not self.qwen_enabled:
+            logger.info(
+                "GovernanceShieldAgent: Qwen not enabled — skipping governance analysis (opt-in path)"
+            )
+            return {"success": False, "error": "qwen_not_enabled", "analysis": None}
+
+        import uuid as _uuid  # noqa: PLC0415
+        from agentic_core.L2_execution.types.local_first_disposition import LocalFirstDisposition  # noqa: PLC0415
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter  # noqa: PLC0415
+        from agentic_core.L4_state.config.vllm_routing_predicates import Provider  # noqa: PLC0415
+        from agentic_core.L4_state.config.vllm_routing_predicates import evaluate as evaluate_routing  # noqa: PLC0415
+
+        # requires_policy_read / iteration_count / invalid_ast: repair-domain predicates.
+        # Generation apps are single-pass pipelines with no policy-read concept, no retry
+        # iterations, and no AST output — False/0/100 are semantically correct here, not
+        # placeholders.  Wire these only if a retry loop or policy-read path is introduced.
+        routing_ctx: dict[str, object] = {
+            "requires_policy_read": False,
+            "iteration_count": 0,
+            "max_iterations": 100,
+            "invalid_ast": False,
+            "routing_version": "1",
+        }
+        routing_decision = evaluate_routing(routing_ctx)
+        _dsp_run_id = str(_uuid.uuid4())
+        _dsp: LocalFirstDisposition | None = None
+
+        if routing_decision.provider != Provider.LOCAL_VLLM:
+            _dsp = LocalFirstDisposition.for_skip(
+                orchestrator="GovernanceShieldAgent",
+                run_id=_dsp_run_id,
+                provider_value=routing_decision.provider.value,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                reason_code="predicate_selected_opus",
+            )
+            logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+            return {
+                "success": False,
+                "error": "predicate_selected_opus",
+                "analysis": None,
+                "local_first_disposition": _dsp.as_dict(),
+            }
+
+        if self._qwen_init_error is not None:
+            _dsp = LocalFirstDisposition.for_fail_init(
+                orchestrator="GovernanceShieldAgent",
+                run_id=_dsp_run_id,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                init_error=self._qwen_init_error,
+            )
+            logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+            raise RuntimeError(
+                f"GovernanceShieldAgent.analyze_governance_with_qwen invoked but Qwen init failed: {self._qwen_init_error}"
+            )
+
+        if self._qwen_gateway is None:
+            logger.error(
+                "GovernanceShieldAgent: gateway is None despite qwen_enabled=True — escalating to rule-based fallback"
+            )
+            _dsp = LocalFirstDisposition.for_skip(
+                orchestrator="GovernanceShieldAgent",
+                run_id=_dsp_run_id,
+                provider_value="LOCAL_VLLM",
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                reason_code="gateway_not_initialized",
+            )
+            logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+            return {
+                "success": False,
+                "error": "qwen_gateway_unavailable",
+                "analysis": None,
+                "local_first_disposition": _dsp.as_dict(),
+            }
+
+        # Adapter enforces token budget, backpressure, and circuit breaker
+        _adapter = VLLMGatewayAdapter()
+        _prompt_preview = content[:512]
+        _adapter_result = _adapter.evaluate(
+            prompt=_prompt_preview,
+            task_class="governance_analysis",
+            severity="medium",
+        )
+        _telem = _adapter_result.telemetry.as_dict() if _adapter_result.telemetry is not None else {}
+
+        if _adapter_result.route_to_gemini:
+            _dsp = LocalFirstDisposition.for_escalate(
+                orchestrator="GovernanceShieldAgent",
+                run_id=_dsp_run_id,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                telem=_telem,
+            )
+            logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+            _emit_records_telemetry_event("GovernanceShieldAgent", "L2_EXECUTION", "adapter_escalate")
+            return {
+                "success": False,
+                "error": "adapter_escalated_to_gemini",
+                "analysis": None,
+                "local_first_disposition": _dsp.as_dict(),
+            }
+
+        _emit_records_telemetry_event("GovernanceShieldAgent", "L2_EXECUTION", "adapter_allow")
 
         try:
             # Prepare governance analysis prompt
@@ -536,7 +633,22 @@ class GovernanceShieldAgent(LICAgentBase):
                         error_message=response.error_message or "unknown_error",
                     )
 
+            _adapter.record_local_success(severity="medium")
             _emit_captures_evaluation_metric("apps_lic", "GovernanceShieldAgent", "governance_analysis")
+            _emit_records_execution_trace(
+                str(_uuid.uuid4()),
+                LayerSegment.L3_ORCHESTRATION,
+                "GovernanceShieldAgent.analyze_governance_with_qwen.qwen_local",
+            )
+
+            _dsp = LocalFirstDisposition.for_allow(
+                orchestrator="GovernanceShieldAgent",
+                run_id=_dsp_run_id,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                telem=_telem,
+                qwen_result_present=response.success,
+            )
+            logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
 
             return {
                 "success": response.success,
@@ -545,11 +657,24 @@ class GovernanceShieldAgent(LICAgentBase):
                 "model_used": response.model_used,
                 "latency_ms": response.latency_ms,
                 "error_message": response.error_message,
+                "local_first_disposition": _dsp.as_dict(),
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- inference errors span aiohttp, RuntimeError, TimeoutError; all surfaced explicitly
+            _adapter.record_local_failure(severity="medium")
+            _dsp = LocalFirstDisposition.for_fail_exec(
+                orchestrator="GovernanceShieldAgent",
+                run_id=_dsp_run_id,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                telem=_telem,
+                exc=e,
+            )
+            logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
             _emit_records_telemetry_event("apps_lic", "GovernanceShieldAgent", "governance_analysis_error")
-            return {"success": False, "error": f"analysis_failed: {str(e)}", "analysis": None}
+            logger.error("GovernanceShieldAgent: Qwen inference failed: %s", e)
+            raise RuntimeError(
+                f"GovernanceShieldAgent.analyze_governance_with_qwen inference failed: {e}"
+            ) from e
 
     def _prepare_governance_analysis_prompt(self, content: str, context: dict[str, Any] = None) -> str:
         """Prepare prompt for governance analysis using Qwen.

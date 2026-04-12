@@ -371,7 +371,9 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         9. UTILITY  - No class definitions
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "PascalSovereigntyAgent.classify_file", "L5_POLICY",
+            str(uuid.uuid4()),
+            "PascalSovereigntyAgent.classify_file",
+            "L5_POLICY",
         )
         if path.name == "conftest.py" or path.name == "__init__.py":
             return "IGNORE"
@@ -386,14 +388,18 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
 
         try:
             if not path.exists() or path.stat().st_size == 0:
-                return "IGNORE"    # guardian: Parsing and encoding errors need separate handling strategies
+                return "IGNORE"  # guardian: Parsing and encoding errors need separate handling strategies
             content = path.read_text(encoding="utf-8")
 
             if "NOT_AN_AGENT" in content or "# NOT_AN_AGENT" in content:
                 return "STUB"
 
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError):    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+            OSError,
+        ):  # guardian: Parsing and encoding errors need separate handling strategies
             return "IGNORE"
 
         is_structural_test = "tests" in path.parts or path.name.startswith("test_")
@@ -495,7 +501,8 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
                 import winreg
 
                 key = winreg.OpenKey(
-                    winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\FileSystem",
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SYSTEM\CurrentControlSet\Control\FileSystem",
                 )
                 value, _ = winreg.QueryValueEx(key, "LongPathsEnabled")
                 if value != 1:
@@ -529,14 +536,14 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         if dest.exists():
             try:
                 src_resolved = src.resolve()
-                dest_resolved = dest.resolve()    # guardian: Add error context logging
+                dest_resolved = dest.resolve()  # guardian: Add error context logging
 
                 if src_resolved == dest_resolved:
                     print("  [INFO] Source and destination are the same file (case-insensitive match)")
                     return False
                 else:
                     is_collision = True
-            except OSError as e:    # guardian: Add error context logging
+            except OSError as e:  # guardian: Add error context logging
                 print(f"  [WARNING] Could not resolve paths for comparison: {e}")
                 is_collision = True
 
@@ -708,7 +715,9 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         """Heal Pascal naming violations."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PascalSovereigntyAgent.heal",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "PascalSovereigntyAgent.heal",
         )
         from agentic_core.base_agents.decorators import standard_heal
 

@@ -132,7 +132,14 @@ class ResumeSummaryRenderer:
         if summary.error:
             lines.extend(["## Error", "", f"```\n{summary.error}\n```", ""])
 
-        lines.extend(["## Provenance", "", f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```", ""])
+        lines.extend(
+            [
+                "## Provenance",
+                "",
+                f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 

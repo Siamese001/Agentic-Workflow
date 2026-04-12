@@ -253,13 +253,7 @@ def _detect_type_patterns(tree: ast.AST, path: Path) -> dict[str, bool]:
                     typevar_count += 1
 
     # Determine if type collection based on patterns
-    if (
-        enum_count > 1
-        or typevar_count > 0
-        or protocol_count > 0
-        or dataclass_count > 1
-        or model_count > 1
-    ):
+    if enum_count > 1 or typevar_count > 0 or protocol_count > 0 or dataclass_count > 1 or model_count > 1:
         indicators["is_types"] = True
 
     return indicators
@@ -355,8 +349,7 @@ def _detect_validator_patterns(
                 if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                     method_name = item.name.lower()
                     if any(
-                        word in method_name
-                        for word in ("validate", "check", "verify", "ensure", "assert")
+                        word in method_name for word in ("validate", "check", "verify", "ensure", "assert")
                     ):
                         validation_methods += 1
 
@@ -378,8 +371,7 @@ def _detect_validator_patterns(
             for node in ast.walk(tree)
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
             and any(
-                w in node.name.lower()
-                for w in ("validate", "check", "verify", "ensure", "scrub", "sanitize")
+                w in node.name.lower() for w in ("validate", "check", "verify", "ensure", "scrub", "sanitize")
             )
         )
         if validation_methods < 4:
@@ -393,7 +385,10 @@ def _detect_validator_patterns(
 
 
 def _detect_orchestrator_patterns(
-    tree: ast.AST, path: Path, content: str, primary_name: str,
+    tree: ast.AST,
+    path: Path,
+    content: str,
+    primary_name: str,
 ) -> bool:
     """Distinguish between L0 routers and L3 orchestrators based on behavioral patterns.
 
@@ -421,9 +416,7 @@ def _detect_orchestrator_patterns(
                     return True
 
     coordinator_class_count = sum(
-        1
-        for node in ast.walk(tree)
-        if isinstance(node, ast.ClassDef) and node.name.endswith("Coordinator")
+        1 for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and node.name.endswith("Coordinator")
     )
     if coordinator_class_count >= 3:
         return True
@@ -737,7 +730,10 @@ def _load_adg_behavioral_profile(path: Path) -> tuple[float, list[str]]:
 
 
 def _fuzzy_match_name_or_content(
-    name: str, path: Path, content: str, patterns: list[str],
+    name: str,
+    path: Path,
+    content: str,
+    patterns: list[str],
 ) -> bool:
     """Fuzzy matching for names and content patterns.
 

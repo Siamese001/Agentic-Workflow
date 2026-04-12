@@ -359,7 +359,9 @@ class SurgicalCSTHealerMixin:
             Dict with healing results
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CSTHealerMixin.heal_surgical_cst")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CSTHealerMixin.heal_surgical_cst"
+        )
         try:
             # Verification Gate pre-check to prevent Epistemic Cascade
             if hasattr(self, "gate"):

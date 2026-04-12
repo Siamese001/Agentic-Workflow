@@ -16,14 +16,17 @@ class TestPowershellBanAdg:
     def test_powershell_ban_adg_imports(self):
         """Test powershell_ban_adg module imports."""
         from agentic_core import powershell_ban_adg
+
         assert powershell_ban_adg is not None
 
     def test_powershell_ban_adg_class(self):
         """Test PowershellBanAdg class exists."""
         from agentic_core import PowershellBanAdg
+
         assert PowershellBanAdg is not None
 
     def test_powershell_ban_adg_callable(self):
         """Test powershell_ban_adg functions are callable."""
         from agentic_core import validate_powershell_ban_adg
+
         assert callable(validate_powershell_ban_adg)

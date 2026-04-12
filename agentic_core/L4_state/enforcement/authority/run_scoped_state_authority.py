@@ -222,7 +222,11 @@ class RunScopedStateAuthority:
                 stage_completion=True,  # Every write in scoped authority is a stage boundary
                 expected_previous_version=expected_previous_version,
             )
-        except (StateNamespaceError, StateVersionMissingError, StateConflictError) as exc:    # guardian: Multiple exceptions (StateNamespaceError, StateVersionMissingError) need specific handling
+        except (
+            StateNamespaceError,
+            StateVersionMissingError,
+            StateConflictError,
+        ) as exc:  # guardian: Multiple exceptions (StateNamespaceError, StateVersionMissingError) need specific handling
             logger.error(
                 "RUN_SCOPED_STATE_AUTHORITY commit_versioned_state_transition failed: %s (namespace=%s key=%s)",
                 exc,
@@ -286,7 +290,10 @@ class RunScopedStateAuthority:
                     versioned.source_hash,
                 )
                 return versioned.value
-            except (StateVersionMissingError, UnversionedStateError) as exc:    # guardian: Multiple exceptions (StateVersionMissingError, UnversionedStateError) need specific handling
+            except (
+                StateVersionMissingError,
+                UnversionedStateError,
+            ) as exc:  # guardian: Multiple exceptions (StateVersionMissingError, UnversionedStateError) need specific handling
                 logger.warning(
                     "RUN_SCOPED_STATE_AUTHORITY versioned_read failed, falling back: %s (namespace=%s key=%s)",
                     exc,

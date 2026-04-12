@@ -180,8 +180,11 @@ class RetrievalProfileProposal:
     def to_canonical_json(self) -> str:
         """Convert to canonical JSON for deterministic serialization."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileProposal.to_canonical_json")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileProposal.to_canonical_json"
+        )
 
         data = {
             "base_profile_id": self.base_profile_id,

@@ -210,13 +210,15 @@ def guardian_status() -> dict[str, Any]:
         status = cache_entry["status"]
         status_counts[status] = status_counts.get(status, 0) + 1
 
-        guardian_details.append({
-            "name": guardian_name,
-            "status": status,
-            "last_run": cache_entry["last_run"],
-            "issues_found": cache_entry["issues_found"],
-            "summary": cache_entry["summary"],
-        })
+        guardian_details.append(
+            {
+                "name": guardian_name,
+                "status": status,
+                "last_run": cache_entry["last_run"],
+                "issues_found": cache_entry["issues_found"],
+                "summary": cache_entry["summary"],
+            }
+        )
 
     result = {
         "timestamp": int(time.time()),
@@ -297,11 +299,14 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
         # Refresh cache after execution
         _refresh_guardian_cache()
 
-        logger.info("guardian_run_executed", extra={
-            "guardian_name": guardian_name,
-            "success": execution_result["success"],
-            "return_code": result.returncode,
-        })
+        logger.info(
+            "guardian_run_executed",
+            extra={
+                "guardian_name": guardian_name,
+                "success": execution_result["success"],
+                "return_code": result.returncode,
+            },
+        )
 
         return execution_result
 
@@ -313,10 +318,13 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
             "script": script_name,
         }
     except Exception as e:
-        logger.error("guardian_run_error", extra={
-            "guardian_name": guardian_name,
-            "error": str(e),
-        })
+        logger.error(
+            "guardian_run_error",
+            extra={
+                "guardian_name": guardian_name,
+                "error": str(e),
+            },
+        )
         return {
             "success": False,
             "error": str(e),
@@ -452,9 +460,11 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
     target_guardian = None
 
     for guardian_name, cache_entry in _guardian_cache.items():
-        if (guardian_name == failure_id or
-            cache_entry.get("status") == "failed" or
-            cache_entry.get("issues_found", 0) > 0):
+        if (
+            guardian_name == failure_id
+            or cache_entry.get("status") == "failed"
+            or cache_entry.get("issues_found", 0) > 0
+        ):
             target_guardian = guardian_name
             break
 
@@ -482,19 +492,25 @@ def guardian_healing(failure_id: str, healing_type: str = "automatic") -> dict[s
         if healing_result["success"]:
             _refresh_guardian_cache()
 
-        logger.info("guardian_healing_triggered", extra={
-            "failure_id": failure_id,
-            "target_guardian": target_guardian,
-            "success": healing_response["success"],
-        })
+        logger.info(
+            "guardian_healing_triggered",
+            extra={
+                "failure_id": failure_id,
+                "target_guardian": target_guardian,
+                "success": healing_response["success"],
+            },
+        )
 
         return healing_response
 
     except Exception as e:
-        logger.error("guardian_healing_error", extra={
-            "failure_id": failure_id,
-            "error": str(e),
-        })
+        logger.error(
+            "guardian_healing_error",
+            extra={
+                "failure_id": failure_id,
+                "error": str(e),
+            },
+        )
         return {
             "success": False,
             "error": str(e),
@@ -520,14 +536,16 @@ def guardian_audit(time_window_hours: int = 24) -> dict[str, Any]:
     _refresh_guardian_cache()
     for guardian_name, cache_entry in _guardian_cache.items():
         if cache_entry.get("last_run", 0) >= cutoff_time:
-            audit_events.append({
-                "timestamp": cache_entry["last_run"],
-                "event_type": "guardian_execution",
-                "guardian_name": guardian_name,
-                "status": cache_entry["status"],
-                "issues_found": cache_entry["issues_found"],
-                "summary": cache_entry["summary"],
-            })
+            audit_events.append(
+                {
+                    "timestamp": cache_entry["last_run"],
+                    "event_type": "guardian_execution",
+                    "guardian_name": guardian_name,
+                    "status": cache_entry["status"],
+                    "issues_found": cache_entry["issues_found"],
+                    "summary": cache_entry["summary"],
+                }
+            )
 
     # Sort by timestamp (most recent first)
     audit_events.sort(key=lambda x: x["timestamp"], reverse=True)
@@ -628,11 +646,13 @@ def guardian_registry() -> dict[str, Any]:
         _refresh_guardian_cache()
         if guardian_name in _guardian_cache:
             cache_entry = _guardian_cache[guardian_name]
-            metadata.update({
-                "current_status": cache_entry["status"],
-                "last_run": cache_entry["last_run"],
-                "issues_found": cache_entry["issues_found"],
-            })
+            metadata.update(
+                {
+                    "current_status": cache_entry["status"],
+                    "last_run": cache_entry["last_run"],
+                    "issues_found": cache_entry["issues_found"],
+                }
+            )
 
         registry.append(metadata)
 
@@ -648,6 +668,7 @@ def guardian_registry() -> dict[str, Any]:
 
 
 # Helper functions
+
 
 def _get_guardian_category(guardian_name: str) -> str:
     """Get guardian category based on name."""

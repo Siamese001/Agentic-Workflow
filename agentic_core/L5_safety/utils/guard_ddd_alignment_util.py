@@ -170,7 +170,6 @@ _emit_proposal_commits_routing("p1", "guard_ddd_alignment_util", "routing_commit
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import SCRIPTS_DIR, TESTS_DIR
 except ImportError as e:
-
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
     SCRIPTS_DIR = "ops_scripts"
     TESTS_DIR = "tests"
@@ -217,7 +216,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
         try:
             code = py_file.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(code, filename=str(py_file))
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             violations.append(
                 {
                     "file": str(relative_path),
@@ -229,7 +228,6 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
             )
             continue
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             violations.append(
                 {
@@ -362,7 +360,11 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                 complex_methods = 0
                 for method in methods:
                     method_complexity = len(
-                        [n for n in ast.walk(method) if isinstance(n, ast.If | ast.For | ast.While | ast.Try)],
+                        [
+                            n
+                            for n in ast.walk(method)
+                            if isinstance(n, ast.If | ast.For | ast.While | ast.Try)
+                        ],
                     )
                     if method_complexity > 8:
                         complex_methods += 1

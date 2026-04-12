@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Check what the empty layer field means in the ADG."""
+
 import sqlite3
 from pathlib import Path
 

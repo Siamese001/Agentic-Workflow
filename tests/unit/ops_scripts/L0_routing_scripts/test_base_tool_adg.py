@@ -42,5 +42,5 @@ class GeneratedTest(unittest.TestCase):
         self.assertEqual(instance.name, "functional")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

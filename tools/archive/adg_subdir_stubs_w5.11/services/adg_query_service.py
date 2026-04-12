@@ -30,11 +30,13 @@ logger = logging.getLogger(__name__)
 
 class SnapshotNotFoundError(Exception):
     """Raised when requested snapshot does not exist."""
+
     pass
 
 
 class CacheParityError(Exception):
     """Raised when Redis cache does not match SQLite for snapshot."""
+
     pass
 
 
@@ -108,9 +110,7 @@ class ADGQueryService:
         # Verify Redis parity
         redis_meta = self._get_redis_metadata()
         if redis_meta:
-            meta.projection_coherent = (
-                meta.sqlite_digest == redis_meta.get("redis_digest")
-            )
+            meta.projection_coherent = meta.sqlite_digest == redis_meta.get("redis_digest")
             meta.redis_digest = redis_meta.get("redis_digest")
         else:
             meta.projection_coherent = False
@@ -155,6 +155,7 @@ class ADGQueryService:
     def _compute_file_digest(self, path: Path) -> str:
         """Compute SHA256 digest of file."""
         import hashlib
+
         h = hashlib.sha256()
         h.update(path.read_bytes())
         return h.hexdigest()[:16]
@@ -349,18 +350,20 @@ class ADGQueryService:
                 data = self.redis_client.hgetall(detail_key)
 
             if data:
-                edges.append(Edge(
-                    id=int(edge_id),
-                    src_id=int(data.get("src_id", src_id)),
-                    dst_id=int(data.get("dst_id", 0)),
-                    relation_type=data.get("relation_type", relation_type),
-                    edge_kind=data.get("edge_kind", "direct"),
-                    symbol=data.get("symbol"),
-                    source_file=data.get("source_file"),
-                    line_no=int(data.get("line_no", 0)) if data.get("line_no") else None,
-                    semantic_type=data.get("semantic_type"),
-                    confidence_score=float(data.get("confidence_score", 1.0)),
-                ))
+                edges.append(
+                    Edge(
+                        id=int(edge_id),
+                        src_id=int(data.get("src_id", src_id)),
+                        dst_id=int(data.get("dst_id", 0)),
+                        relation_type=data.get("relation_type", relation_type),
+                        edge_kind=data.get("edge_kind", "direct"),
+                        symbol=data.get("symbol"),
+                        source_file=data.get("source_file"),
+                        line_no=int(data.get("line_no", 0)) if data.get("line_no") else None,
+                        semantic_type=data.get("semantic_type"),
+                        confidence_score=float(data.get("confidence_score", 1.0)),
+                    )
+                )
 
         return edges
 
@@ -381,15 +384,17 @@ class ADGQueryService:
 
         edges = []
         for row in cursor.fetchall():
-            edges.append(Edge(
-                id=row[0],
-                src_id=row[1],
-                dst_id=row[2],
-                relation_type=row[3],
-                symbol=row[4],
-                source_file=row[5],
-                line_no=row[6],
-            ))
+            edges.append(
+                Edge(
+                    id=row[0],
+                    src_id=row[1],
+                    dst_id=row[2],
+                    relation_type=row[3],
+                    symbol=row[4],
+                    source_file=row[5],
+                    line_no=row[6],
+                )
+            )
 
         return edges
 
@@ -439,16 +444,18 @@ class ADGQueryService:
 
         unresolved = []
         for row in cursor.fetchall():
-            unresolved.append(UnresolvedImport(
-                edge_id=row[0],
-                src_module=row[6],
-                src_file=row[4] or "",
-                line_no=row[5] or 0,
-                symbol=row[3] or "",
-                dst_id=row[2],
-                dst_entity_type=row[7],
-                reason="destination_not_module",
-            ))
+            unresolved.append(
+                UnresolvedImport(
+                    edge_id=row[0],
+                    src_module=row[6],
+                    src_file=row[4] or "",
+                    line_no=row[5] or 0,
+                    symbol=row[3] or "",
+                    dst_id=row[2],
+                    dst_entity_type=row[7],
+                    reason="destination_not_module",
+                )
+            )
 
         return unresolved
 

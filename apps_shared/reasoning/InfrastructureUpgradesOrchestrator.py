@@ -180,8 +180,11 @@ class InfrastructureUpgradesOrchestrator:
     async def initialize(self) -> None:
         """Initialize all components."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InfrastructureUpgradesOrchestrator.initialize")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InfrastructureUpgradesOrchestrator.initialize"
+        )
 
         if self._initialized:
             return
@@ -197,7 +200,8 @@ class InfrastructureUpgradesOrchestrator:
     async def _setup_event_subscriptions(self) -> None:
         """Setup event subscriptions for component coordination."""
         await self.infrastructure.event_bus.subscribe(
-            "events.content_generated", self._handle_content_generated,
+            "events.content_generated",
+            self._handle_content_generated,
         )
         await self.infrastructure.event_bus.subscribe("events.cache_miss", self._handle_cache_miss)
         await self.infrastructure.event_bus.subscribe("events.tone_violation", self._handle_tone_violation)
@@ -355,7 +359,10 @@ class InfrastructureUpgradesOrchestrator:
         )
         try:
             result = await self.infrastructure.execute_with_infrastructure(
-                task_type, prompt, complexity_score=5, trace_id=trace_id,
+                task_type,
+                prompt,
+                complexity_score=5,
+                trace_id=trace_id,
             )
             content = result["result"]
             tone_violations = []
@@ -381,7 +388,10 @@ class InfrastructureUpgradesOrchestrator:
             if use_cache:
                 cache_key = f"{task_type.value}:{prompt}"
                 self.global_cache.put(
-                    cache_key, result, text_for_embedding=prompt, source_engine="InfrastructureUpgrades",
+                    cache_key,
+                    result,
+                    text_for_embedding=prompt,
+                    source_engine="InfrastructureUpgrades",
                 )
             await self.infrastructure.event_bus.publish(
                 "events.upgraded_generation_complete",
@@ -498,7 +508,13 @@ async def generate_with_consistency(
     """
     orchestrator = await get_infrastructure_upgrades_orchestrator()
     return await orchestrator.generate_with_upgrades(
-        task_type, prompt, tone_voice, verify_facts, enforce_tone, True, trace_id,
+        task_type,
+        prompt,
+        tone_voice,
+        verify_facts,
+        enforce_tone,
+        True,
+        trace_id,
     )
 
 

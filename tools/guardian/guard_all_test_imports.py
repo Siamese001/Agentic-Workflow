@@ -4,6 +4,7 @@ Strategy: For each test file with a collection error, rewrite it so that ALL
 imports from agentic_core are inside a single try/except block that sets
 _AVAILABLE = False on failure. Tests use @pytest.mark.skipif(not _AVAILABLE).
 """
+
 import ast
 import os
 import re
@@ -23,11 +24,26 @@ def get_erroring_test_files():
         if not os.path.isdir(p) or sd.startswith("_"):
             continue
         r = subprocess.run(
-            [sys.executable, "-m", "pytest", f"tests/unit/agentic_core/{sd}",
-             "-c", "tools/pytest_minimal.ini", "--co", "--tb=line", "-p", "no:warnings",
-             f"--ignore={IGNORE}"],
-            capture_output=True, text=True, encoding="utf-8", errors="replace",
-            cwd=ROOT, timeout=60, stdin=subprocess.DEVNULL,
+            [
+                sys.executable,
+                "-m",
+                "pytest",
+                f"tests/unit/agentic_core/{sd}",
+                "-c",
+                "tools/pytest_minimal.ini",
+                "--co",
+                "--tb=line",
+                "-p",
+                "no:warnings",
+                f"--ignore={IGNORE}",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=ROOT,
+            timeout=60,
+            stdin=subprocess.DEVNULL,
         )
         for line in r.stdout.splitlines():
             s = line.strip()
@@ -65,9 +81,12 @@ def rewrite_test_file(fp):
 
         if phase == "preamble":
             # Stay in preamble until we hit an agentic_core import or try block containing one
-            if ("from agentic_core" in stripped or "import agentic_core" in stripped
-                or (stripped == "try:" and i + 1 < len(lines) and "agentic_core" in lines[i+1])
-                or (stripped == "_AVAILABLE = False" and i + 1 < len(lines) and "try:" in lines[i+1])):
+            if (
+                "from agentic_core" in stripped
+                or "import agentic_core" in stripped
+                or (stripped == "try:" and i + 1 < len(lines) and "agentic_core" in lines[i + 1])
+                or (stripped == "_AVAILABLE = False" and i + 1 < len(lines) and "try:" in lines[i + 1])
+            ):
                 phase = "imports"
                 continue  # re-process this line in imports phase
             else:
@@ -77,7 +96,11 @@ def rewrite_test_file(fp):
 
         if phase == "imports":
             # Collect everything that's import-related
-            if stripped.startswith("@pytest.mark") or stripped.startswith("class ") or stripped.startswith("def test_"):
+            if (
+                stripped.startswith("@pytest.mark")
+                or stripped.startswith("class ")
+                or stripped.startswith("def test_")
+            ):
                 phase = "body"
                 continue  # re-process in body phase
 
@@ -101,7 +124,12 @@ def rewrite_test_file(fp):
     for line in ac_imports:
         stripped = line.strip()
         # Skip blank, try/except, _AVAILABLE, pass, comments, class stubs
-        if not stripped or stripped in ("try:", "pass", "except ImportError:", "except (ImportError, NameError, AttributeError, TypeError, Exception):  # guardian: allow-silent-swallow"):
+        if not stripped or stripped in (
+            "try:",
+            "pass",
+            "except ImportError:",
+            "except (ImportError, NameError, AttributeError, TypeError, Exception):  # guardian: allow-silent-swallow",
+        ):
             continue
         if stripped.startswith("_AVAILABLE"):
             continue

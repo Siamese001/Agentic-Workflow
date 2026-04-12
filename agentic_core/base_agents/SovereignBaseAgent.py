@@ -350,7 +350,9 @@ class SovereignBaseAgent(
         HARDENED: Returns capability map with security metadata.
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignBaseAgent.get_sovereign_capabilities")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignBaseAgent.get_sovereign_capabilities"
+        )
         if not self._initialized:
             raise SovereignError("SovereignBaseAgent not properly initialized")
 
@@ -525,8 +527,11 @@ class SovereignBaseAgent(
                                 _st = _os.stat(_fp)
                                 _fs_parts.append(f"{_fp}:{_st.st_mtime_ns}:{_st.st_size}")
                             except OSError as e:
+                                import logging
 
-                                import logging; logging.getLogger(__name__).debug("SovereignBaseAgent: OSError swallowed at L527: %s", e)
+                                logging.getLogger(__name__).debug(
+                                    "SovereignBaseAgent: OSError swallowed at L527: %s", e
+                                )
                             if len(_fs_parts) >= 200:
                                 break
                     if len(_fs_parts) >= 200:
@@ -534,7 +539,7 @@ class SovereignBaseAgent(
             _fs_hash = _hl.sha256("\n".join(_fs_parts).encode()).hexdigest()
 
             # git_hash: SHA-256 of .git/HEAD content
-            _git_head = self.project_root / ".git" / "HEAD"    # guardian: Add error context logging
+            _git_head = self.project_root / ".git" / "HEAD"  # guardian: Add error context logging
             # guardian: allow-silent-swallow - acceptable exception handling
             try:
                 _git_bytes = _git_head.read_bytes()

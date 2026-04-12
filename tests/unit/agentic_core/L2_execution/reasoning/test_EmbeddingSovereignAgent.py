@@ -16,14 +16,17 @@ class TestEmbeddingsovereignagent:
     def test_EmbeddingSovereignAgent_imports(self):
         """Test EmbeddingSovereignAgent module imports."""
         from agentic_core import EmbeddingSovereignAgent
+
         assert EmbeddingSovereignAgent is not None
 
     def test_EmbeddingSovereignAgent_class(self):
         """Test Embeddingsovereignagent class exists."""
         from agentic_core import Embeddingsovereignagent
+
         assert Embeddingsovereignagent is not None
 
     def test_EmbeddingSovereignAgent_callable(self):
         """Test EmbeddingSovereignAgent functions are callable."""
         from agentic_core import validate_EmbeddingSovereignAgent
+
         assert callable(validate_EmbeddingSovereignAgent)

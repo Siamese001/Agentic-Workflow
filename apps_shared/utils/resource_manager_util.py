@@ -214,6 +214,7 @@ class ResourceManager:
     async def start(self) -> None:
         """Start the resource manager."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResourceManager.start")
 
@@ -370,7 +371,8 @@ class ResourceManager:
             File handle
         """
         resource_id = self.register_resource(
-            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode},
+            ResourceType.FILE_HANDLE,
+            metadata={"path": str(file_path), "mode": mode},
         )
         try:
             with open(file_path, mode) as f:
@@ -391,7 +393,8 @@ class ResourceManager:
             Async file handle
         """
         resource_id = self.register_resource(
-            ResourceType.FILE_HANDLE, metadata={"path": str(file_path), "mode": mode},
+            ResourceType.FILE_HANDLE,
+            metadata={"path": str(file_path), "mode": mode},
         )
         try:
             async with aiofiles.open(file_path, mode) as f:

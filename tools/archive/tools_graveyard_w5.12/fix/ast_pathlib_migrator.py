@@ -184,16 +184,17 @@ class PathlibTransformer(ast.NodeTransformer):
         if isinstance(node.func, ast.Attribute):
             if isinstance(node.func.value, ast.Attribute):
                 # os.path.join() pattern
-                if (node.func.value.attr == 'path' and
-                    isinstance(node.func.value.value, ast.Name) and
-                    node.func.value.value.id == 'os' and
-                    node.func.attr == 'join'):
-
+                if (
+                    node.func.value.attr == "path"
+                    and isinstance(node.func.value.value, ast.Name)
+                    and node.func.value.value.id == "os"
+                    and node.func.attr == "join"
+                ):
                     # Convert to Path() / operator chain
                     if len(node.args) >= 2:
                         # Start with Path(first_arg)
                         result = ast.Call(
-                            func=ast.Name(id='Path', ctx=ast.Load()),
+                            func=ast.Name(id="Path", ctx=ast.Load()),
                             args=[node.args[0]],
                             keywords=[],
                         )
@@ -208,62 +209,70 @@ class PathlibTransformer(ast.NodeTransformer):
 
                         self.modified = True
                         self.needs_pathlib_import = True
-                        self.modifications.append({
-                            'type': 'os.path.join',
-                            'line': getattr(node, 'lineno', 0),
-                        })
+                        self.modifications.append(
+                            {
+                                "type": "os.path.join",
+                                "line": getattr(node, "lineno", 0),
+                            }
+                        )
                         return result
 
                 # os.path.basename() pattern
-                elif (node.func.value.attr == 'path' and
-                      isinstance(node.func.value.value, ast.Name) and
-                      node.func.value.value.id == 'os' and
-                      node.func.attr == 'basename'):
-
+                elif (
+                    node.func.value.attr == "path"
+                    and isinstance(node.func.value.value, ast.Name)
+                    and node.func.value.value.id == "os"
+                    and node.func.attr == "basename"
+                ):
                     if len(node.args) == 1:
                         # Convert to Path(arg).name
                         result = ast.Attribute(
                             value=ast.Call(
-                                func=ast.Name(id='Path', ctx=ast.Load()),
+                                func=ast.Name(id="Path", ctx=ast.Load()),
                                 args=[node.args[0]],
                                 keywords=[],
                             ),
-                            attr='name',
+                            attr="name",
                             ctx=ast.Load(),
                         )
 
                         self.modified = True
                         self.needs_pathlib_import = True
-                        self.modifications.append({
-                            'type': 'os.path.basename',
-                            'line': getattr(node, 'lineno', 0),
-                        })
+                        self.modifications.append(
+                            {
+                                "type": "os.path.basename",
+                                "line": getattr(node, "lineno", 0),
+                            }
+                        )
                         return result
 
                 # os.path.dirname() pattern
-                elif (node.func.value.attr == 'path' and
-                      isinstance(node.func.value.value, ast.Name) and
-                      node.func.value.value.id == 'os' and
-                      node.func.attr == 'dirname'):
-
+                elif (
+                    node.func.value.attr == "path"
+                    and isinstance(node.func.value.value, ast.Name)
+                    and node.func.value.value.id == "os"
+                    and node.func.attr == "dirname"
+                ):
                     if len(node.args) == 1:
                         # Convert to Path(arg).parent
                         result = ast.Attribute(
                             value=ast.Call(
-                                func=ast.Name(id='Path', ctx=ast.Load()),
+                                func=ast.Name(id="Path", ctx=ast.Load()),
                                 args=[node.args[0]],
                                 keywords=[],
                             ),
-                            attr='parent',
+                            attr="parent",
                             ctx=ast.Load(),
                         )
 
                         self.modified = True
                         self.needs_pathlib_import = True
-                        self.modifications.append({
-                            'type': 'os.path.dirname',
-                            'line': getattr(node, 'lineno', 0),
-                        })
+                        self.modifications.append(
+                            {
+                                "type": "os.path.dirname",
+                                "line": getattr(node, "lineno", 0),
+                            }
+                        )
                         return result
 
         return self.generic_visit(node)
@@ -281,9 +290,9 @@ class PathlibImportAdder(ast.NodeTransformer):
         # Check existing imports
         for stmt in node.body:
             if isinstance(stmt, ast.ImportFrom):
-                if stmt.module == 'pathlib':
+                if stmt.module == "pathlib":
                     for alias in stmt.names:
-                        if alias.name == 'Path':
+                        if alias.name == "Path":
                             self.has_pathlib_import = True
                             return node
 
@@ -299,8 +308,8 @@ class PathlibImportAdder(ast.NodeTransformer):
 
             # Create import
             new_import = ast.ImportFrom(
-                module='pathlib',
-                names=[ast.alias(name='Path', asname=None)],
+                module="pathlib",
+                names=[ast.alias(name="Path", asname=None)],
                 level=0,
             )
 
@@ -313,7 +322,7 @@ class PathlibImportAdder(ast.NodeTransformer):
 def migrate_file(file_path: Path, dry_run: bool = True) -> dict:
     """Migrate a file to use pathlib."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(file_path))
 
         # Transform os.path calls
@@ -321,7 +330,7 @@ def migrate_file(file_path: Path, dry_run: bool = True) -> dict:
         tree = transformer.visit(tree)
 
         if not transformer.modified:
-            return {'status': 'skipped', 'reason': 'no_os_path_calls'}
+            return {"status": "skipped", "reason": "no_os_path_calls"}
 
         # Add pathlib import if needed
         if transformer.needs_pathlib_import:
@@ -335,28 +344,28 @@ def migrate_file(file_path: Path, dry_run: bool = True) -> dict:
         new_source = ast.unparse(tree)
 
         if not dry_run:
-            file_path.write_text(new_source, encoding='utf-8')
+            file_path.write_text(new_source, encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'modifications': transformer.modifications,
-            'added_import': import_adder.added_import if transformer.needs_pathlib_import else False,
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "modifications": transformer.modifications,
+            "added_import": import_adder.added_import if transformer.needs_pathlib_import else False,
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': f'SyntaxError: {e}',
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": f"SyntaxError: {e}",
         }
     except (ValueError, TypeError, RuntimeError) as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
         }
 
 
@@ -364,9 +373,9 @@ def main():
     """Main execution."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Migrate os.path to pathlib')
-    parser.add_argument('--execute', action='store_true', help='Actually write changes')
-    parser.add_argument('--limit', type=int, default=50, help='Max files to process')
+    parser = argparse.ArgumentParser(description="Migrate os.path to pathlib")
+    parser.add_argument("--execute", action="store_true", help="Actually write changes")
+    parser.add_argument("--limit", type=int, default=50, help="Max files to process")
 
     args = parser.parse_args()
 
@@ -375,13 +384,13 @@ def main():
 
     # Load files with path_fragility violations
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if 'path_fragility' in line:
-                file_path = line.split(':')[0]
+            if "path_fragility" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
-    unique_files = sorted(set(violations))[:args.limit]
+    unique_files = sorted(set(violations))[: args.limit]
 
     print(f"[INFO] Processing {len(unique_files)} files")
     print(f"[MODE] {'EXECUTE' if args.execute else 'DRY RUN'}")
@@ -395,17 +404,17 @@ def main():
         result = migrate_file(file_path, dry_run=not args.execute)
         results.append(result)
 
-        if result['status'] == 'success':
-            mod_types = [m['type'] for m in result['modifications']]
-            mod_summary = ', '.join(set(mod_types))
+        if result["status"] == "success":
+            mod_types = [m["type"] for m in result["modifications"]]
+            mod_summary = ", ".join(set(mod_types))
             print(f"✓ {result['file']}")
             print(f"  Fixed: {mod_summary} ({len(result['modifications'])} changes)")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
 
-    success = len([r for r in results if r['status'] == 'success'])
-    errors = len([r for r in results if r['status'] == 'error'])
-    skipped = len([r for r in results if r['status'] == 'skipped'])
+    success = len([r for r in results if r["status"] == "success"])
+    errors = len([r for r in results if r["status"] == "error"])
+    skipped = len([r for r in results if r["status"] == "skipped"])
 
     print()
     print(f"[SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}")
@@ -416,5 +425,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

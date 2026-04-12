@@ -15,14 +15,17 @@ def get_unused_import_details(db_path: str, target_dir: str) -> dict:
     results = {}
 
     # Query for unused import edges in target directory
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT e.src_id, e.dst_id, e.source_file, e.line_no, e.symbol
         FROM edges e
         JOIN nodes n ON e.src_id = n.id
         WHERE e.relation_type = 'unused_import'
         AND n.resolved_path LIKE ?
         ORDER BY e.source_file, e.line_no
-    """, (f"%{target_dir}%",))
+    """,
+        (f"%{target_dir}%",),
+    )
 
     edges = cursor.fetchall()
 
@@ -31,20 +34,25 @@ def get_unused_import_details(db_path: str, target_dir: str) -> dict:
             results[source_file] = []
 
         # Get the import name from the destination node
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT adg_name, resolved_path
             FROM nodes
             WHERE id = ?
-        """, (dst_id,))
+        """,
+            (dst_id,),
+        )
 
         dst_node = cursor.fetchone()
 
-        results[source_file].append({
-            'line': line_no,
-            'symbol': symbol,
-            'import_name': dst_node[0] if dst_node else 'unknown',
-            'import_path': dst_node[1] if dst_node else 'unknown',
-        })
+        results[source_file].append(
+            {
+                "line": line_no,
+                "symbol": symbol,
+                "import_name": dst_node[0] if dst_node else "unknown",
+                "import_path": dst_node[1] if dst_node else "unknown",
+            }
+        )
 
     conn.close()
 
@@ -81,11 +89,11 @@ def main():
         output_path = Path(output_file)
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
 
         print(f"\nDetailed report saved to: {output_file}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

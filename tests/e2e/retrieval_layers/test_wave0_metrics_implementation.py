@@ -68,6 +68,7 @@ def test_metrics_server_start_stop() -> bool:
     except Exception as e:
         print(f"✗ Metrics server start/stop test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -102,7 +103,7 @@ def test_metrics_endpoint() -> bool:
         url = "http://127.0.0.1:18001/metrics"
         req = urllib.request.Request(url)  # noqa: S310
         with urllib.request.urlopen(req, timeout=5) as response:  # noqa: S310
-            content = response.read().decode('utf-8')
+            content = response.read().decode("utf-8")
 
             # Verify content contains expected metrics
             checks = [
@@ -127,6 +128,7 @@ def test_metrics_endpoint() -> bool:
     except Exception as e:
         print(f"✗ Metrics endpoint test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -154,6 +156,7 @@ def main() -> int:
         except Exception as e:
             print(f"✗ Test crashed: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((name, False))
 

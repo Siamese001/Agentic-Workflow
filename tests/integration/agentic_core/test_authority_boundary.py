@@ -1,6 +1,4 @@
-"""Phase 5: Authority-Boundary Validation Sweep.
-
-"""
+"""Phase 5: Authority-Boundary Validation Sweep."""
 
 from __future__ import annotations
 
@@ -18,15 +16,14 @@ def _classify(tmp_path: Path, file_path: Path):
     return fca.classify_file(file_path)
 
 
-
-
 class TestEnforcerBoundary:
     def test_enforcer_suffix_not_orchestrator(self, tmp_path):
-                class PolicyEnforcer:
-                    def enforce(self, ctx):
-                        if not ctx.allowed:
-                            raise PermissionError("blocked")
-                """
+        class PolicyEnforcer:
+            def enforce(self, ctx):
+                if not ctx.allowed:
+                    raise PermissionError("blocked")
+
+        """
 
 
     def test_guard_suffix_not_orchestrator(self, tmp_path):
@@ -36,13 +33,12 @@ class TestEnforcerBoundary:
         """
 
 
-
-
 class TestSeamBoundary:
     def test_seam_suffix_not_orchestrator(self, tmp_path):
         class DataSeam:
             def bridge(self, src, dst):
                 return dst.accept(src.export())
+
         """
 
 
@@ -58,17 +54,17 @@ class TestOrchestratorBoundary:
         """
 
 
-
-
 class TestRouterBoundary:
     def test_router_is_engine_not_orchestrator(self, tmp_path):
         try:
             from engines import handler_engine
         except ImportError:
             pytest.skip("engines module not available")
+
         class RequestRouter:
             def route_to(self, target):
                 return target.handle()
+
         """
 
     def test_router_class_name_is_engine(self, tmp_path):
@@ -78,13 +74,12 @@ class TestRouterBoundary:
         """
 
 
-
-
 class TestNegativeBoundary:
     def test_plain_class_not_enforcer(self, tmp_path):
         class DataProcessor:
             def process(self, data):
                 return [x * 2 for x in data]
+
         """
 
     def test_plain_utility_not_router(self, tmp_path):

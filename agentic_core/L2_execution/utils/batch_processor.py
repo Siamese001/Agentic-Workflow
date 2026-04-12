@@ -18,13 +18,14 @@ from agentic_core.L2_execution.utils.cpu_optimizer import (
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
-R = TypeVar('R')
+T = TypeVar("T")
+R = TypeVar("R")
 
 
 @dataclass
 class BatchResult(Generic[T, R]):
     """Result from batch processing."""
+
     items: list[T]
     results: list[R]
     processing_time_ms: float
@@ -35,11 +36,12 @@ class BatchResult(Generic[T, R]):
 @dataclass
 class BatchMetrics:
     """Metrics for batch processing."""
+
     total_batches: int = 0
     total_items: int = 0
     total_time_ms: float = 0.0
     avg_batch_time_ms: float = 0.0
-    min_batch_time_ms: float = float('inf')
+    min_batch_time_ms: float = float("inf")
     max_batch_time_ms: float = 0.0
     _batch_times: list[float] = field(default_factory=list)
 
@@ -63,8 +65,7 @@ class BatchMetrics:
             "min_batch_time_ms": self.min_batch_time_ms,
             "max_batch_time_ms": self.max_batch_time_ms,
             "items_per_second": (
-                self.total_items / (self.total_time_ms / 1000)
-                if self.total_time_ms > 0 else 0
+                self.total_items / (self.total_time_ms / 1000) if self.total_time_ms > 0 else 0
             ),
         }
 
@@ -103,7 +104,7 @@ class BatchProcessor(Generic[T, R]):
         logger.info(f"Processing {total} items in batches of {self.batch_size}")
 
         for i in range(0, total, self.batch_size):
-            batch = items[i:i + self.batch_size]
+            batch = items[i : i + self.batch_size]
             batch_num = i // self.batch_size + 1
             total_batches = (total + self.batch_size - 1) // self.batch_size
 
@@ -125,8 +126,7 @@ class BatchProcessor(Generic[T, R]):
             self.metrics.record_batch(len(batch), elapsed_ms)
 
             logger.debug(
-                f"Batch {batch_num}/{total_batches}: "
-                f"{len(batch)} items in {elapsed_ms:.1f}ms",
+                f"Batch {batch_num}/{total_batches}: {len(batch)} items in {elapsed_ms:.1f}ms",
             )
 
         logger.info(f"Processed {total} items in {self.metrics.total_batches} batches")
@@ -159,7 +159,7 @@ class BatchProcessor(Generic[T, R]):
         logger.info(f"Parallel processing {total} items with {self.optimizer.get_optimal_workers()} workers")
 
         for i in range(0, total, self.batch_size):
-            batch = items[i:i + self.batch_size]
+            batch = items[i : i + self.batch_size]
 
             start = time.time()
 
@@ -222,8 +222,8 @@ class StreamingBatchProcessor(Generic[T, R]):
         if not self._buffer:
             return []
 
-        batch = self._buffer[:self.batch_size]
-        self._buffer = self._buffer[self.batch_size:]
+        batch = self._buffer[: self.batch_size]
+        self._buffer = self._buffer[self.batch_size :]
 
         start = time.time()
 
@@ -245,11 +245,13 @@ class StreamingBatchProcessor(Generic[T, R]):
 
 # Predefined batch processors for common ADG operations
 
+
 class JSONBatchProcessor(BatchProcessor[str, Any]):
     """Batch processor for JSON files."""
 
     def __init__(self, batch_size: int = 500):
         import json
+
         super().__init__(
             processor_func=lambda path: json.load(open(path)),
             batch_size=batch_size,
@@ -259,13 +261,13 @@ class JSONBatchProcessor(BatchProcessor[str, Any]):
 class FileHashBatchProcessor(BatchProcessor[str, str]):
     """Batch processor for computing file hashes."""
 
-    def __init__(self, algorithm: str = 'sha256', batch_size: int = 200):
+    def __init__(self, algorithm: str = "sha256", batch_size: int = 200):
         import hashlib
 
         def compute_hash(path: str) -> str:
             hasher = hashlib.new(algorithm)
-            with open(path, 'rb') as f:
-                for chunk in iter(lambda: f.read(8192), b''):
+            with open(path, "rb") as f:
+                for chunk in iter(lambda: f.read(8192), b""):
                     hasher.update(chunk)
             return hasher.hexdigest()
 

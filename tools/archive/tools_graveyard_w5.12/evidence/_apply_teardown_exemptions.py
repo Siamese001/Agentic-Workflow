@@ -13,6 +13,7 @@ Usage:
     python tools/evidence/_apply_teardown_exemptions.py           # dry-run
     python tools/evidence/_apply_teardown_exemptions.py --apply   # write changes
 """
+
 from __future__ import annotations
 
 import json
@@ -70,7 +71,7 @@ def apply_exemptions(dry_run: bool = True) -> None:
             continue
 
         # Build new line
-        ending = original_line[len(stripped):]  # preserve \n
+        ending = original_line[len(stripped) :]  # preserve \n
         new_line = f"{stripped}  # guardian: {guardian_type} -- {TEARDOWN_JUSTIFICATION}{ending}"
 
         print(f"  {'DRY' if dry_run else 'APPLY'}  {entry['source_file']}:{entry['line_no']}")

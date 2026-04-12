@@ -120,16 +120,18 @@ class StateManager:
         (self.memory_root / "checkpoints").mkdir(exist_ok=True)
 
         if not self.manifest_path.exists():
-            self._write_manifest_raw({
-                "version": "2.0",
-                "created_at": datetime.now().isoformat(),
-                "entries": {},
-                "stats": {
-                    "total_entries": 0,
-                    "last_cleanup": None,
-                    "last_integrity_check": None,
-                },
-            })
+            self._write_manifest_raw(
+                {
+                    "version": "2.0",
+                    "created_at": datetime.now().isoformat(),
+                    "entries": {},
+                    "stats": {
+                        "total_entries": 0,
+                        "last_cleanup": None,
+                        "last_integrity_check": None,
+                    },
+                }
+            )
 
     @property
     def manifest_path(self) -> Path:
@@ -163,6 +165,7 @@ class StateManager:
                 if self.manifest_backup.exists():
                     Logger.info("Attempting to restore from backup...")
                     import shutil
+
                     shutil.copy2(self.manifest_backup, self.manifest_path)
                     self._load_manifest()
 
@@ -171,6 +174,7 @@ class StateManager:
         with self._lock:
             if self.manifest_path.exists():
                 import shutil
+
                 shutil.copy2(self.manifest_path, self.manifest_backup)
 
             data = {
@@ -352,8 +356,11 @@ class StateManager:
                         if current_hash != entry.file_hash:
                             hash_mismatches.append(key)
                     except OSError as e:
+                        import logging
 
-                        import logging; logging.getLogger(__name__).debug("state_management_util: OSError swallowed at L354: %s", e)
+                        logging.getLogger(__name__).debug(
+                            "state_management_util: OSError swallowed at L354: %s", e
+                        )
 
             # Log findings
             if ghost_files:
@@ -451,10 +458,7 @@ class StateManager:
             cutoff = datetime.now() - __import__("datetime").timedelta(days=retention_days)
             cleaned = {"entries_removed": 0, "files_deleted": 0, "bytes_freed": 0}
 
-            keys_to_remove = [
-                key for key, entry in self._manifest.items()
-                if entry.updated_at < cutoff
-            ]
+            keys_to_remove = [key for key, entry in self._manifest.items() if entry.updated_at < cutoff]
 
             for key in keys_to_remove:
                 entry = self._manifest[key]
@@ -508,7 +512,9 @@ def heal_repository(
     if not report.is_healthy and not dry_run:
         repaired = manager.repair_integrity(report)
         return {
-            "violations_found": len(report.ghost_files) + len(report.orphan_entries) + len(report.hash_mismatches),
+            "violations_found": len(report.ghost_files)
+            + len(report.orphan_entries)
+            + len(report.hash_mismatches),
             "violations_fixed": sum(repaired.values()),
             "errors": 0,
             "skipped": 0,
@@ -516,7 +522,9 @@ def heal_repository(
         }
 
     return {
-        "violations_found": 0 if report.is_healthy else len(report.ghost_files) + len(report.orphan_entries) + len(report.hash_mismatches),
+        "violations_found": 0
+        if report.is_healthy
+        else len(report.ghost_files) + len(report.orphan_entries) + len(report.hash_mismatches),
         "violations_fixed": 0,
         "errors": 0,
         "skipped": 0,
@@ -537,6 +545,7 @@ def heal(violation: dict[str, Any], project_root: Path | None = None) -> dict[st
         try:
             if manager.manifest_path.exists():
                 import shutil
+
                 shutil.copy2(manager.manifest_path, manager.manifest_backup)
             manager._load_manifest()
             return {

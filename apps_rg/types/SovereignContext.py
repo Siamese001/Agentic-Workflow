@@ -204,8 +204,11 @@ class SovereignContext:
         Stage data in the airlock. It is NOT visible to the main app yet.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignContext.write_to_airlock")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignContext.write_to_airlock"
+        )
 
         self._airlock[key] = value
         logger.debug(f"Staged {key} in airlock.")

@@ -309,7 +309,7 @@ def scan_file_for_ptc_invariants(file_path: Path) -> list[tuple[int, str, str]]:
         visitor.visit(tree)
         violations.extend(visitor.violations)
 
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         violations.append(
             (e.lineno or 0, "PTC_SYNTAX_ERROR", f"Syntax error: {e.msg}"),
         )  # guardian: allow-silent-swallower

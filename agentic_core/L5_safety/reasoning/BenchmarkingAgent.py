@@ -28,7 +28,10 @@ class BenchmarkResult:
     """DEPRECATED: Use benchmarking_util.BenchmarkResult instead."""
 
     def __init__(self, **kwargs):
-        warnings.warn("BenchmarkResult is deprecated. Use benchmarking_util.BenchmarkResult instead.", DeprecationWarning)
+        warnings.warn(
+            "BenchmarkResult is deprecated. Use benchmarking_util.BenchmarkResult instead.",
+            DeprecationWarning,
+        )
         self._impl = _BenchmarkResult(**kwargs)
 
 
@@ -36,7 +39,9 @@ class BenchmarkSuite:
     """DEPRECATED: Use benchmarking_util.BenchmarkSuite instead."""
 
     def __init__(self, **kwargs):
-        warnings.warn("BenchmarkSuite is deprecated. Use benchmarking_util.BenchmarkSuite instead.", DeprecationWarning)
+        warnings.warn(
+            "BenchmarkSuite is deprecated. Use benchmarking_util.BenchmarkSuite instead.", DeprecationWarning
+        )
         self._impl = _BenchmarkSuite(**kwargs)
 
 

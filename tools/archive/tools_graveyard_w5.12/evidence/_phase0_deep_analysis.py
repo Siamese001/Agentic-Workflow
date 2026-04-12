@@ -1,4 +1,5 @@
 """Phase 0 Deep Analysis: Classify the 'other' bucket and agreed true gaps."""
+
 import json
 import re
 from collections import defaultdict
@@ -6,14 +7,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent.parent
 
-accel = json.loads((ROOT / "docs/reports/plans/adg_coverage_report_03122026.json").read_text(encoding="utf-8"))
+accel = json.loads(
+    (ROOT / "docs/reports/plans/adg_coverage_report_03122026.json").read_text(encoding="utf-8")
+)
 gap_summary = accel["gap_summary"]
 accel_covered = set(gap_summary["covered_modules"])
 
 sqlite_gaps_raw = json.loads((ROOT / "tools/evidence/coverage_gaps.json").read_text(encoding="utf-8"))
 
+
 def strip(s):
     return s.replace("ADG::Module::", "")
+
 
 sqlite_gap_paths = set(strip(e[1]) for e in sqlite_gaps_raw)
 layer_map = {strip(e[1]): e[0] for e in sqlite_gaps_raw}
@@ -28,46 +33,48 @@ print(f"False gaps (SQLite wrong): {len(false_gaps)}")
 
 # ── Deep classify all SQLite gap paths ───────────────────────────────────────
 PATTERNS = [
-    ("l0_scripts_util",      re.compile(r'L0_routing/scripts/.*_util\.py$')),
-    ("l0_scripts_runner",    re.compile(r'L0_routing/scripts/run_')),
-    ("l0_scripts_verify",    re.compile(r'L0_routing/scripts/verify_')),
-    ("l0_scripts_other",     re.compile(r'L0_routing/scripts/')),
-    ("l0_utils",             re.compile(r'L0_routing/utils/')),
-    ("l0_types",             re.compile(r'L0_routing/types/')),
-    ("l0_seams",             re.compile(r'L0_routing/seams/')),
-    ("l0_enforcement",       re.compile(r'L0_routing/enforcement/')),
-    ("l0_engines",           re.compile(r'L0_routing/engines/')),
-    ("l0_meta_control",      re.compile(r'L0_routing/meta_control/')),
-    ("l0_reasoning",         re.compile(r'L0_routing/reasoning/')),
-    ("l0_other",             re.compile(r'agentic_core/L0')),
-    ("l1_all",               re.compile(r'agentic_core/L1')),
-    ("l2_all",               re.compile(r'agentic_core/L2')),
-    ("l3_all",               re.compile(r'agentic_core/L3')),
-    ("l4_all",               re.compile(r'agentic_core/L4')),
-    ("l5_all",               re.compile(r'agentic_core/L5')),
-    ("l6_all",               re.compile(r'agentic_core/L6')),
-    ("adg_all",              re.compile(r'agentic_core/adg')),
-    ("adg_cache_runtime",    re.compile(r'agentic_core/(cache|runtime)')),
-    ("adg_enforcement",      re.compile(r'agentic_core/enforcement')),
-    ("adg_utils_types",      re.compile(r'agentic_core/(utils|types)')),
-    ("apps_lic_reasoning",   re.compile(r'apps_lic/reasoning/')),
-    ("apps_lic_other",       re.compile(r'apps_lic/')),
-    ("apps_rg_reasoning",    re.compile(r'apps_rg/reasoning/')),
-    ("apps_rg_engines",      re.compile(r'apps_rg/engines/')),
-    ("apps_rg_other",        re.compile(r'apps_rg/')),
-    ("apps_shared",          re.compile(r'apps_shared/')),
-    ("system_learning",      re.compile(r'system_learning/')),
-    ("ops_scripts",          re.compile(r'ops_scripts/')),
-    ("tools",                re.compile(r'^tools/')),
-    ("data",                 re.compile(r'^data/')),
-    ("root_level",           re.compile(r'^[^/]+\.py$')),
+    ("l0_scripts_util", re.compile(r"L0_routing/scripts/.*_util\.py$")),
+    ("l0_scripts_runner", re.compile(r"L0_routing/scripts/run_")),
+    ("l0_scripts_verify", re.compile(r"L0_routing/scripts/verify_")),
+    ("l0_scripts_other", re.compile(r"L0_routing/scripts/")),
+    ("l0_utils", re.compile(r"L0_routing/utils/")),
+    ("l0_types", re.compile(r"L0_routing/types/")),
+    ("l0_seams", re.compile(r"L0_routing/seams/")),
+    ("l0_enforcement", re.compile(r"L0_routing/enforcement/")),
+    ("l0_engines", re.compile(r"L0_routing/engines/")),
+    ("l0_meta_control", re.compile(r"L0_routing/meta_control/")),
+    ("l0_reasoning", re.compile(r"L0_routing/reasoning/")),
+    ("l0_other", re.compile(r"agentic_core/L0")),
+    ("l1_all", re.compile(r"agentic_core/L1")),
+    ("l2_all", re.compile(r"agentic_core/L2")),
+    ("l3_all", re.compile(r"agentic_core/L3")),
+    ("l4_all", re.compile(r"agentic_core/L4")),
+    ("l5_all", re.compile(r"agentic_core/L5")),
+    ("l6_all", re.compile(r"agentic_core/L6")),
+    ("adg_all", re.compile(r"agentic_core/adg")),
+    ("adg_cache_runtime", re.compile(r"agentic_core/(cache|runtime)")),
+    ("adg_enforcement", re.compile(r"agentic_core/enforcement")),
+    ("adg_utils_types", re.compile(r"agentic_core/(utils|types)")),
+    ("apps_lic_reasoning", re.compile(r"apps_lic/reasoning/")),
+    ("apps_lic_other", re.compile(r"apps_lic/")),
+    ("apps_rg_reasoning", re.compile(r"apps_rg/reasoning/")),
+    ("apps_rg_engines", re.compile(r"apps_rg/engines/")),
+    ("apps_rg_other", re.compile(r"apps_rg/")),
+    ("apps_shared", re.compile(r"apps_shared/")),
+    ("system_learning", re.compile(r"system_learning/")),
+    ("ops_scripts", re.compile(r"ops_scripts/")),
+    ("tools", re.compile(r"^tools/")),
+    ("data", re.compile(r"^data/")),
+    ("root_level", re.compile(r"^[^/]+\.py$")),
 ]
+
 
 def classify(path):
     for label, pat in PATTERNS:
         if pat.search(path):
             return label
     return "unclassified"
+
 
 # Classify all SQLite gaps
 cat_counts = defaultdict(int)

@@ -15,16 +15,17 @@ from typing import Any
 
 
 class ComplexityLevel(Enum):
-    TRIVIAL = "trivial"      # No reasoning needed
-    SIMPLE = "simple"        # Simple reasoning
-    MODERATE = "moderate"    # Some structure helpful
-    COMPLEX = "complex"      # Sequential thinking recommended
-    CRITICAL = "critical"    # Sequential thinking required
+    TRIVIAL = "trivial"  # No reasoning needed
+    SIMPLE = "simple"  # Simple reasoning
+    MODERATE = "moderate"  # Some structure helpful
+    COMPLEX = "complex"  # Sequential thinking recommended
+    CRITICAL = "critical"  # Sequential thinking required
 
 
 @dataclass
 class TaskAnalysis:
     """Analysis of a task to determine if sequential thinking is needed."""
+
     complexity: ComplexityLevel
     confidence: float  # 0.0 to 1.0
     reasoning_required: bool
@@ -47,73 +48,124 @@ class TaskComplexityAnalyzer:
     # Complexity indicators with scores
     COMPLEXITY_INDICATORS = {
         # Architecture & Design (high complexity)
-        'architecture': 5, 'design': 4, 'system': 3, 'structure': 3,
-        'pattern': 3, 'framework': 3, 'infrastructure': 4,
-
+        "architecture": 5,
+        "design": 4,
+        "system": 3,
+        "structure": 3,
+        "pattern": 3,
+        "framework": 3,
+        "infrastructure": 4,
         # Implementation (medium-high complexity)
-        'implement': 4, 'create': 3, 'build': 3, 'develop': 3,
-        'feature': 3, 'module': 3, 'component': 3, 'service': 3,
-
+        "implement": 4,
+        "create": 3,
+        "build": 3,
+        "develop": 3,
+        "feature": 3,
+        "module": 3,
+        "component": 3,
+        "service": 3,
         # Refactoring (high complexity)
-        'refactor': 4, 'restructure': 4, 'migrate': 4, 'modernize': 3,
-        'rewrite': 4, 'redesign': 4, 'consolidate': 3,
-
+        "refactor": 4,
+        "restructure": 4,
+        "migrate": 4,
+        "modernize": 3,
+        "rewrite": 4,
+        "redesign": 4,
+        "consolidate": 3,
         # Debugging (medium complexity)
-        'debug': 3, 'troubleshoot': 3, 'investigate': 3, 'diagnose': 3,
-        'fix': 2, 'resolve': 2, 'error': 2, 'bug': 2,
-
+        "debug": 3,
+        "troubleshoot": 3,
+        "investigate": 3,
+        "diagnose": 3,
+        "fix": 2,
+        "resolve": 2,
+        "error": 2,
+        "bug": 2,
         # Analysis (medium-high complexity)
-        'analyze': 3, 'analysis': 3, 'evaluate': 3, 'assess': 3,
-        'review': 3, 'audit': 4, 'inspect': 2,
-
+        "analyze": 3,
+        "analysis": 3,
+        "evaluate": 3,
+        "assess": 3,
+        "review": 3,
+        "audit": 4,
+        "inspect": 2,
         # Planning (high complexity)
-        'plan': 4, 'strategy': 4, 'roadmap': 4, 'approach': 3,
-        'organize': 3, 'coordinate': 3, 'orchestrate': 4,
-
+        "plan": 4,
+        "strategy": 4,
+        "roadmap": 4,
+        "approach": 3,
+        "organize": 3,
+        "coordinate": 3,
+        "orchestrate": 4,
         # Optimization (medium complexity)
-        'optimize': 3, 'improve': 2, 'enhance': 2, 'performance': 3,
-        'efficient': 2, 'scale': 3, 'benchmark': 2,
-
+        "optimize": 3,
+        "improve": 2,
+        "enhance": 2,
+        "performance": 3,
+        "efficient": 2,
+        "scale": 3,
+        "benchmark": 2,
         # Testing (medium complexity)
-        'test': 2, 'validate': 2, 'verify': 2, 'testcase': 2,
-        'coverage': 2, 'regression': 3, 'e2e': 3,
-
+        "test": 2,
+        "validate": 2,
+        "verify": 2,
+        "testcase": 2,
+        "coverage": 2,
+        "regression": 3,
+        "e2e": 3,
         # Decision making (medium complexity)
-        'decide': 3, 'choose': 2, 'select': 2, 'compare': 2,
-        'tradeoff': 4, 'prioritize': 3, 'balance': 2,
-
+        "decide": 3,
+        "choose": 2,
+        "select": 2,
+        "compare": 2,
+        "tradeoff": 4,
+        "prioritize": 3,
+        "balance": 2,
         # Multi-step indicators (high complexity)
-        'step': 1, 'phase': 2, 'stage': 2, 'iteration': 2,
-        'workflow': 3, 'pipeline': 3, 'process': 2,
-
+        "step": 1,
+        "phase": 2,
+        "stage": 2,
+        "iteration": 2,
+        "workflow": 3,
+        "pipeline": 3,
+        "process": 2,
         # Dependencies (high complexity)
-        'dependency': 3, 'dependent': 3, 'coupling': 4, 'integration': 3,
-        'interface': 2, 'contract': 2, 'api': 1,
-
+        "dependency": 3,
+        "dependent": 3,
+        "coupling": 4,
+        "integration": 3,
+        "interface": 2,
+        "contract": 2,
+        "api": 1,
         # Risk/Safety (high complexity)
-        'risk': 3, 'safety': 4, 'security': 3, 'compliance': 4,
-        'governance': 4, 'violation': 3, 'critical': 3,
+        "risk": 3,
+        "safety": 4,
+        "security": 3,
+        "compliance": 4,
+        "governance": 4,
+        "violation": 3,
+        "critical": 3,
     }
 
     # Trivial patterns - no reasoning needed
     TRIVIAL_PATTERNS = [
-        r'^what is\s+\d+\s*\+\s*\d+',  # Simple math
-        r'^\d+\s*\+\s*\d+',  # Just numbers
-        r'^hello|^hi$|^hey$',  # Greetings
-        r'^thank|^thanks$|^ok$|^okay$',  # Acknowledgments
-        r'^yes$|^no$|^maybe$',  # Simple responses
-        r'^(what|how) (is|are|was|were)\s+\w+\s*$',  # Simple definitions
+        r"^what is\s+\d+\s*\+\s*\d+",  # Simple math
+        r"^\d+\s*\+\s*\d+",  # Just numbers
+        r"^hello|^hi$|^hey$",  # Greetings
+        r"^thank|^thanks$|^ok$|^okay$",  # Acknowledgments
+        r"^yes$|^no$|^maybe$",  # Simple responses
+        r"^(what|how) (is|are|was|were)\s+\w+\s*$",  # Simple definitions
     ]
 
     # Always use sequential thinking for these
     ALWAYS_REASONING = [
-        r'plan|design|architecture|strategy|roadmap',
-        r'refactor|migrate|rewrite|restructure',
-        r'debug.*system|investigate.*issue|troubleshoot.*complex',
-        r'optimize.*performance|improve.*architecture',
-        r'test.*coverage|validate.*design|audit.*code',
-        r'compare.*approaches|evaluate.*options|decide.*between',
-        r'complex|multi-step|multi-phase|comprehensive',
+        r"plan|design|architecture|strategy|roadmap",
+        r"refactor|migrate|rewrite|restructure",
+        r"debug.*system|investigate.*issue|troubleshoot.*complex",
+        r"optimize.*performance|improve.*architecture",
+        r"test.*coverage|validate.*design|audit.*code",
+        r"compare.*approaches|evaluate.*options|decide.*between",
+        r"complex|multi-step|multi-phase|comprehensive",
     ]
 
     def analyze(self, prompt: str) -> TaskAnalysis:
@@ -186,7 +238,7 @@ class TaskComplexityAnalyzer:
                 return True
 
         # Very short prompts are often trivial
-        if len(prompt) < 30 and not any(c in prompt for c in ['?', 'how', 'why', 'explain']):
+        if len(prompt) < 30 and not any(c in prompt for c in ["?", "how", "why", "explain"]):
             return True
 
         return False
@@ -218,22 +270,22 @@ class TaskComplexityAnalyzer:
             factors.append(f"Medium prompt ({len(prompt)} chars) (+1)")
 
         # Question complexity
-        if 'how' in prompt and ('should' in prompt or 'would' in prompt or 'could' in prompt):
+        if "how" in prompt and ("should" in prompt or "would" in prompt or "could" in prompt):
             score += 2
             factors.append("Complex 'how' question (+2)")
 
-        if 'why' in prompt:
+        if "why" in prompt:
             score += 1
             factors.append("'Why' question requires explanation (+1)")
 
         # Multiple questions
-        question_count = prompt.count('?')
+        question_count = prompt.count("?")
         if question_count > 2:
             score += 2
             factors.append(f"Multiple questions ({question_count}) (+2)")
 
         # Conjunctions indicate complexity
-        conjunctions = ['and', 'but', 'or', 'however', 'therefore', 'because']
+        conjunctions = ["and", "but", "or", "however", "therefore", "because"]
         conj_count = sum(1 for c in conjunctions if c in prompt)
         if conj_count > 3:
             score += 2
@@ -258,8 +310,8 @@ class IntelligentSequentialThinker:
     def __init__(self):
         self.analyzer = TaskComplexityAnalyzer()
         self.invocation_count = 0
-        self.auto_invoke = os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'true').lower() == 'true'
-        self.threshold = os.environ.get('SEQUENTIAL_THINKING_COMPLEXITY_THRESHOLD', 'moderate')
+        self.auto_invoke = os.environ.get("SEQUENTIAL_THINKING_AUTO_TRIGGER", "true").lower() == "true"
+        self.threshold = os.environ.get("SEQUENTIAL_THINKING_COMPLEXITY_THRESHOLD", "moderate")
 
     def process_prompt(self, prompt: str) -> dict[str, Any]:
         """
@@ -278,16 +330,16 @@ class IntelligentSequentialThinker:
         should_invoke = self._should_invoke(analysis)
 
         result = {
-            'invoke_sequential_thinking': should_invoke,
-            'analysis': asdict(analysis),
-            'reasoning': self._explain_decision(analysis, should_invoke),
+            "invoke_sequential_thinking": should_invoke,
+            "analysis": asdict(analysis),
+            "reasoning": self._explain_decision(analysis, should_invoke),
         }
 
         if should_invoke:
             self.invocation_count += 1
-            result['tool_arguments'] = self._create_tool_arguments(prompt, analysis)
-            result['tool_name'] = 'mcp7_sequentialthinking'
-            result['method'] = 'sequentialthinking'
+            result["tool_arguments"] = self._create_tool_arguments(prompt, analysis)
+            result["tool_name"] = "mcp7_sequentialthinking"
+            result["method"] = "sequentialthinking"
 
         return result
 
@@ -302,11 +354,11 @@ class IntelligentSequentialThinker:
 
         # Invoke based on threshold
         threshold_map = {
-            'trivial': ComplexityLevel.TRIVIAL,
-            'simple': ComplexityLevel.SIMPLE,
-            'moderate': ComplexityLevel.MODERATE,
-            'complex': ComplexityLevel.COMPLEX,
-            'critical': ComplexityLevel.CRITICAL,
+            "trivial": ComplexityLevel.TRIVIAL,
+            "simple": ComplexityLevel.SIMPLE,
+            "moderate": ComplexityLevel.MODERATE,
+            "complex": ComplexityLevel.COMPLEX,
+            "critical": ComplexityLevel.CRITICAL,
         }
 
         threshold_level = threshold_map.get(self.threshold, ComplexityLevel.MODERATE)
@@ -327,7 +379,7 @@ class IntelligentSequentialThinker:
 
     def _explain_decision(self, analysis: TaskAnalysis, will_invoke: bool) -> str:
         """Generate explanation for the decision."""
-        factors_str = '\n'.join(f'  - {f}' for f in analysis.factors)
+        factors_str = "\n".join(f"  - {f}" for f in analysis.factors)
 
         if will_invoke:
             return f"""Sequential thinking will be invoked.
@@ -351,15 +403,15 @@ Factors:
     def _create_tool_arguments(self, prompt: str, analysis: TaskAnalysis) -> dict[str, Any]:
         """Create the tool arguments for sequential thinking invocation."""
         return {
-            'thought': f"Starting structured analysis of: {prompt[:200]}{'...' if len(prompt) > 200 else ''}",
-            'thoughtNumber': 1,
-            'totalThoughts': analysis.suggested_thoughts,
-            'nextThoughtNeeded': True,
-            'isRevision': False,
-            'revisesThought': None,
-            'branchFromThought': None,
-            'branchId': None,
-            'needsMoreThoughts': True,
+            "thought": f"Starting structured analysis of: {prompt[:200]}{'...' if len(prompt) > 200 else ''}",
+            "thoughtNumber": 1,
+            "totalThoughts": analysis.suggested_thoughts,
+            "nextThoughtNeeded": True,
+            "isRevision": False,
+            "revisesThought": None,
+            "branchFromThought": None,
+            "branchId": None,
+            "needsMoreThoughts": True,
         }
 
     def wrap_prompt_if_needed(self, prompt: str) -> tuple[str, bool]:
@@ -370,14 +422,14 @@ Factors:
         """
         result = self.process_prompt(prompt)
 
-        if result['invoke_sequential_thinking']:
-            wrapped = f"""{result['reasoning']}
+        if result["invoke_sequential_thinking"]:
+            wrapped = f"""{result["reasoning"]}
 
 Please invoke sequential thinking now using:
-Tool: {result['tool_name']}
-Method: {result['method']}
+Tool: {result["tool_name"]}
+Method: {result["method"]}
 Arguments: ```json
-{json.dumps(result['tool_arguments'], indent=2)}
+{json.dumps(result["tool_arguments"], indent=2)}
 ```
 
 Then proceed with the task:
@@ -403,7 +455,7 @@ def analyze_task(prompt: str) -> TaskAnalysis:
 def should_use_sequential_thinking(prompt: str) -> bool:
     """Quick check if sequential thinking should be used."""
     result = _thinker.process_prompt(prompt)
-    return result['invoke_sequential_thinking']
+    return result["invoke_sequential_thinking"]
 
 
 def intelligent_sequential_think(prompt: str) -> dict[str, Any]:
@@ -415,7 +467,7 @@ def intelligent_sequential_think(prompt: str) -> dict[str, Any]:
     return _thinker.process_prompt(prompt)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Test the analyzer
     test_prompts = [
         "What is 2+2?",
@@ -437,13 +489,13 @@ if __name__ == '__main__':
     for prompt in test_prompts:
         result = intelligent_sequential_think(prompt)
 
-        status = "🧠 INVOKE" if result['invoke_sequential_thinking'] else "💬 DIRECT"
+        status = "🧠 INVOKE" if result["invoke_sequential_thinking"] else "💬 DIRECT"
 
         print(f"\n{status}: {prompt[:50]}...")
         print(f"  Complexity: {result['analysis']['complexity']}")
         print(f"  Confidence: {result['analysis']['confidence']:.0%}")
 
-        if result['invoke_sequential_thinking']:
+        if result["invoke_sequential_thinking"]:
             print(f"  Thoughts: {result['tool_arguments']['totalThoughts']}")
 
     print("\n" + "=" * 80)

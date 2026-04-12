@@ -343,7 +343,9 @@ class StructuralQueries:
             "layer_analysis": {},
         }
 
-        for component, expected_layers in tqdm(expected_spine.items(), desc="spine check", unit="component", leave=False):
+        for component, expected_layers in tqdm(
+            expected_spine.items(), desc="spine check", unit="component", leave=False
+        ):
             found_nodes = []
 
             for layer in expected_layers:

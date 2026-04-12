@@ -211,6 +211,7 @@ class ServiceRegistry:
     def register(self, endpoint: ServiceEndpoint) -> None:
         """Register a service endpoint."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ServiceRegistry.register")
 
@@ -267,6 +268,7 @@ class ConfigurationLoader:
     def load(self, config_name: str, domain: AppDomain = AppDomain.SHARED) -> dict[str, Any]:
         """Load a configuration file."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigurationLoader.load")
 
@@ -352,8 +354,11 @@ class IntegrationBridge:
     def initialize(self) -> None:
         """Initialize the integration bridge."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IntegrationBridge.initialize")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "IntegrationBridge.initialize"
+        )
 
         if self._initialized:
             return
@@ -366,10 +371,14 @@ class IntegrationBridge:
         """Register default shared services."""
         default_services = [
             ServiceEndpoint(
-                name="config", domain=AppDomain.SHARED, metadata={"description": "Configuration service"},
+                name="config",
+                domain=AppDomain.SHARED,
+                metadata={"description": "Configuration service"},
             ),
             ServiceEndpoint(
-                name="logging", domain=AppDomain.SHARED, metadata={"description": "Logging service"},
+                name="logging",
+                domain=AppDomain.SHARED,
+                metadata={"description": "Logging service"},
             ),
             ServiceEndpoint(
                 name="metrics",

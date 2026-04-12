@@ -17,12 +17,14 @@ import pytest
 @pytest.fixture
 def token_estimator_classes():
     from tools.utils.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
+
     return ContextWindowEstimator, ContextSource, TokenEstimate
 
 
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
     from tools.utils.planning.preflight_hook import PlanningPreflightHook
+
     budget_file = tmp_path / "performance_budget.json"
     return PlanningPreflightHook(budget_file=budget_file)
 
@@ -36,6 +38,7 @@ class TestTokenEstimatorPerformance:
         import uuid
 
         from tools.utils.planning.preflight_hook import PlanningPreflightHook
+
         # Use unique temp directory per test to avoid parallel execution conflicts
         self.temp_dir = Path(tempfile.gettempdir()) / f"test_performance_{uuid.uuid4().hex[:8]}"
         self.temp_dir.mkdir(parents=True, exist_ok=True)
@@ -49,12 +52,16 @@ class TestTokenEstimatorPerformance:
         """Cleanup test fixtures"""
         import shutil
         import time
+
         # Wait a moment for file handles to close (Windows)
         time.sleep(0.1)
         if self.temp_dir.exists():
             try:
                 shutil.rmtree(self.temp_dir, ignore_errors=True)
-            except (OSError, PermissionError):  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                PermissionError,
+            ):  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 pass  # Ignore cleanup errors on Windows
 
     def test_performance_small_payloads(self):
@@ -79,7 +86,7 @@ class TestTokenEstimatorPerformance:
             times.append(end_time - start_time)
 
             assert estimate.total_projected_tokens < 50000  # Should be small
-            assert estimate.status == 'green'
+            assert estimate.status == "green"
 
         avg_time = sum(times) / len(times)
         max_time = max(times)
@@ -214,13 +221,19 @@ class TestTokenEstimatorPerformance:
     def test_compression_performance(self):
         """Test compression performance with large payloads"""
         from tools.utils.planning.token_estimator import ContextSource, ContextWindowEstimator, TokenEstimate
+
         estimator = ContextWindowEstimator()
 
         # Create sources that will trigger compression
         large_sources = [
-            ContextSource('file', 'x' * 50000, 17500, metadata={'path': 'large.py', 'lines': 5000}),
-            ContextSource('log', 'ERROR: Error\n' * 1000, 5000, metadata={'source': 'large.log'}),
-            ContextSource('retrieval', ''.join(f'chunk_{i}' * 1000 for i in range(30)), 15000, metadata={'chunk_id': 'chunk_0'}),
+            ContextSource("file", "x" * 50000, 17500, metadata={"path": "large.py", "lines": 5000}),
+            ContextSource("log", "ERROR: Error\n" * 1000, 5000, metadata={"source": "large.log"}),
+            ContextSource(
+                "retrieval",
+                "".join(f"chunk_{i}" * 1000 for i in range(30)),
+                15000,
+                metadata={"chunk_id": "chunk_0"},
+            ),
         ]
 
         estimate = TokenEstimate(
@@ -229,8 +242,8 @@ class TestTokenEstimatorPerformance:
             reserved_output_tokens=12000,
             safety_buffer_tokens=8000,
             total_projected_tokens=57500,
-            status='yellow',
-            action='compress',
+            status="yellow",
+            action="compress",
             top_contributors=[],
             recommended_reductions=[],
         )
@@ -292,7 +305,9 @@ class TestTokenEstimatorPerformance:
         assert summary_time < 0.1, f"Summary generation too slow: {summary_time:.4f}s"
         assert clear_time < 0.05, f"History clearing too slow: {clear_time:.4f}s"
 
-        print(f"History performance: avg_preflight={avg_time:.4f}s, summary={summary_time:.4f}s, clear={clear_time:.4f}s")
+        print(
+            f"History performance: avg_preflight={avg_time:.4f}s, summary={summary_time:.4f}s, clear={clear_time:.4f}s"
+        )
         print(f"History entries: {summary['total_steps']}")
 
     def test_concurrent_performance_simulation(self):
@@ -339,21 +354,28 @@ class TestTokenEstimatorPerformance:
 
         # All estimates should be valid
         assert all(e.total_projected_tokens < 200000 for e in results)
-        assert all(e.status in ['green', 'yellow'] for e in results)
+        assert all(e.status in ["green", "yellow"] for e in results)
 
-        print(f"Concurrent performance: avg={avg_time:.4f}s, min={min_time:.4f}s, max={max_time:.4f}s, p95={p95_time:.4f}s")
+        print(
+            f"Concurrent performance: avg={avg_time:.4f}s, min={min_time:.4f}s, max={max_time:.4f}s, p95={p95_time:.4f}s"
+        )
 
     def test_token_estimation_performance(self):
         """Test raw token estimation performance"""
         from tools.utils.planning.token_estimator import ContextWindowEstimator
+
         estimator = ContextWindowEstimator()
 
         # Test different content types and sizes
         test_cases = [
             ("small_code", "def hello():\n    return 'world'", "code"),
             ("medium_text", "This is a medium text " * 100, "text"),
-            ("large_json", '{"key": "' + 'value' * 1000 + '"}', "json"),
-            ("mixed_content", "Code: def test()\nText: " + "text " * 500 + "\nJSON: {\"data\": " + "x" * 200 + "}", "auto"),
+            ("large_json", '{"key": "' + "value" * 1000 + '"}', "json"),
+            (
+                "mixed_content",
+                "Code: def test()\nText: " + "text " * 500 + '\nJSON: {"data": ' + "x" * 200 + "}",
+                "auto",
+            ),
         ]
 
         times = []

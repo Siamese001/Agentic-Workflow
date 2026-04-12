@@ -28,7 +28,7 @@ from agentic_core.L0_routing.types.determinism_types import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "meta_apply")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

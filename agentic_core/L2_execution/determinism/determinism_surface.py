@@ -16,37 +16,42 @@ from typing import Any, Callable
 
 class ClockMode(Enum):
     """Clock mode for determinism."""
+
     WALL_CLOCK = auto()  # Non-deterministic
-    RUN_CLOCK = auto()   # Deterministic from envelope
-    FROZEN = auto()      # Fixed timestamp
+    RUN_CLOCK = auto()  # Deterministic from envelope
+    FROZEN = auto()  # Fixed timestamp
 
 
 class RandomMode(Enum):
     """Random mode for determinism."""
-    RAW_RANDOM = auto()   # Non-deterministic
-    SEEDED = auto()       # Deterministic from seed
-    FROZEN = auto()       # Fixed sequence
+
+    RAW_RANDOM = auto()  # Non-deterministic
+    SEEDED = auto()  # Deterministic from seed
+    FROZEN = auto()  # Fixed sequence
 
 
 class IDMode(Enum):
     """ID generation mode."""
-    UUID4 = auto()        # Non-deterministic
-    STABLE = auto()       # Deterministic from counter
-    HASHED = auto()       # Deterministic from content
+
+    UUID4 = auto()  # Non-deterministic
+    STABLE = auto()  # Deterministic from counter
+    HASHED = auto()  # Deterministic from content
 
 
 class NetworkMode(Enum):
     """Network access mode."""
-    LIVE = auto()         # Non-deterministic
-    PHOTOCOPY = auto()    # Recorded/replayed
-    MOCKED = auto()       # Deterministic mock
+
+    LIVE = auto()  # Non-deterministic
+    PHOTOCOPY = auto()  # Recorded/replayed
+    MOCKED = auto()  # Deterministic mock
 
 
 class StateMode(Enum):
     """State access mode."""
-    MIXED = auto()        # Non-deterministic
-    ONE_SNAPSHOT = auto() # Fixed snapshot
-    PROPOSAL_ONLY = auto() # Pending commit only
+
+    MIXED = auto()  # Non-deterministic
+    ONE_SNAPSHOT = auto()  # Fixed snapshot
+    PROPOSAL_ONLY = auto()  # Pending commit only
 
 
 @dataclass
@@ -61,6 +66,7 @@ class DeterminismSurface:
     5. One Snapshot Only
     6. Proposal Only
     """
+
     clock_mode: ClockMode = ClockMode.RUN_CLOCK
     random_mode: RandomMode = RandomMode.SEEDED
     id_mode: IDMode = IDMode.STABLE
@@ -98,6 +104,7 @@ class DeterminismSurface:
             return f"{prefix}{self.id_counter:08d}"
         elif self.id_mode == IDMode.HASHED:
             import hashlib
+
             data = f"{prefix}:{self.entropy_seed}:{self.id_counter}"
             return hashlib.sha256(data.encode()).hexdigest()[:16]
         else:

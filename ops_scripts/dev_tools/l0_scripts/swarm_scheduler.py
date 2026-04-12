@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-'\nSwarmScheduler - L3 Task Scheduling System\n\nManages Task scheduling and execution across the agentic swarm.\nOptimizes resource utilization and ensures fair Task distribution.\n'
+"\nSwarmScheduler - L3 Task Scheduling System\n\nManages Task scheduling and execution across the agentic swarm.\nOptimizes resource utilization and ensures fair Task distribution.\n"
 import asyncio
 import logging
 from collections.abc import Callable
@@ -97,25 +97,31 @@ _emit_reads_through("l4", "swarm_scheduler", "urg_read_67")
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
 
+
 class TaskPriority(Enum):
     """Task priority levels."""
+
     LOW: Any = 1
     MEDIUM: Any = 2
     HIGH: Any = 3
     CRITICAL: Any = 4
 
+
 class TaskStatus(Enum):
     """Task status values."""
-    PENDING: Any = 'PENDING'
-    QUEUED: Any = 'QUEUED'
-    RUNNING: Any = 'RUNNING'
-    COMPLETED: Any = 'COMPLETED'
-    FAILED: Any = 'FAILED'
-    CANCELLED: Any = 'CANCELLED'
+
+    PENDING: Any = "PENDING"
+    QUEUED: Any = "QUEUED"
+    RUNNING: Any = "RUNNING"
+    COMPLETED: Any = "COMPLETED"
+    FAILED: Any = "FAILED"
+    CANCELLED: Any = "CANCELLED"
+
 
 @dataclass
 class Task:
     """A Task to be executed."""
+
     id: str
     name: str
     func: Callable
@@ -135,7 +141,19 @@ class Task:
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
-        return {'id': self.id, 'name': self.name, 'priority': self.priority.value, 'status': self.status.value, 'dependencies': list(self.dependencies), 'retry_count': self.retry_count, 'created_at': self.created_at.isoformat(), 'started_at': self.started_at.isoformat() if self.started_at else None, 'completed_at': self.completed_at.isoformat() if self.completed_at else None, 'error': self.error}
+        return {
+            "id": self.id,
+            "name": self.name,
+            "priority": self.priority.value,
+            "status": self.status.value,
+            "dependencies": list(self.dependencies),
+            "retry_count": self.retry_count,
+            "created_at": self.created_at.isoformat(),
+            "started_at": self.started_at.isoformat() if self.started_at else None,
+            "completed_at": self.completed_at.isoformat() if self.completed_at else None,
+            "error": self.error,
+        }
+
 
 class TaskQueue:
     """Priority queue for tasks."""
@@ -189,6 +207,7 @@ class TaskQueue:
         """Get all tasks."""
         return self._tasks.copy()
 
+
 class SwarmScheduler:
     """
     Schedules and manages Task execution across the swarm.
@@ -202,7 +221,7 @@ class SwarmScheduler:
     """
 
     # guardian: allow-magic-config
-    def __init__(self, max_workers: int=4):
+    def __init__(self, max_workers: int = 4):
         """
         Initialize the SwarmScheduler.
 
@@ -213,10 +232,16 @@ class SwarmScheduler:
         self.queue = TaskQueue()
         self.running_tasks: dict[str, asyncio.Task] = {}
         self.completed_tasks: dict[str, Task] = {}
-        self.stats = {'total_tasks': 0, 'completed': 0, 'failed': 0, 'cancelled': 0, 'avg_execution_time': 0.0}
+        self.stats = {
+            "total_tasks": 0,
+            "completed": 0,
+            "failed": 0,
+            "cancelled": 0,
+            "avg_execution_time": 0.0,
+        }
         self.running = False
         self.scheduler_task: asyncio.Task | None = None
-        LOGGER.info(f'SwarmScheduler initialized with {max_workers} workers')
+        LOGGER.info(f"SwarmScheduler initialized with {max_workers} workers")
 
     async def start(self) -> Any:
         """Start the scheduler."""
@@ -224,7 +249,7 @@ class SwarmScheduler:
             return
         self.running = True
         self.scheduler_task = asyncio.create_task(self._scheduler_loop())
-        LOGGER.info('SwarmScheduler started')
+        LOGGER.info("SwarmScheduler started")
 
     async def stop(self) -> Any:
         """Stop the scheduler."""
@@ -240,10 +265,20 @@ class SwarmScheduler:
             queued_task: Any = self.queue.get_task(task_id)
             if queued_task:
                 queued_task.status = TaskStatus.CANCELLED
-        LOGGER.info('SwarmScheduler stopped')
+        LOGGER.info("SwarmScheduler stopped")
 
     # guardian: allow-magic-config
-    def submit_task(self, task_id: str, name: str, func: Callable, args: tuple=(), kwargs: dict=None, priority: TaskPriority=TaskPriority.MEDIUM, dependencies: set[str]=None, timeout: float=300.0) -> str:
+    def submit_task(
+        self,
+        task_id: str,
+        name: str,
+        func: Callable,
+        args: tuple = (),
+        kwargs: dict = None,
+        priority: TaskPriority = TaskPriority.MEDIUM,
+        dependencies: set[str] = None,
+        timeout: float = 300.0,
+    ) -> str:
         """
         Submit a Task for execution.
 
@@ -260,10 +295,19 @@ class SwarmScheduler:
         Returns:
             Task ID
         """
-        Task: Any = Task(id=task_id, name=name, func=func, args=args, kwargs=kwargs or {}, priority=priority, dependencies=dependencies or set(), timeout=timeout)
+        Task: Any = Task(
+            id=task_id,
+            name=name,
+            func=func,
+            args=args,
+            kwargs=kwargs or {},
+            priority=priority,
+            dependencies=dependencies or set(),
+            timeout=timeout,
+        )
         self.queue.add(Task)
-        self.stats['total_tasks'] += 1
-        LOGGER.debug(f'Submitted Task: {task_id} ({name})')
+        self.stats["total_tasks"] += 1
+        LOGGER.debug(f"Submitted Task: {task_id} ({name})")
         return task_id
 
     async def _scheduler_loop(self):
@@ -281,16 +325,16 @@ class SwarmScheduler:
                 break
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
-                LOGGER.error(f'Error in scheduler loop: {e}')
+                LOGGER.error(f"Error in scheduler loop: {e}")
                 await asyncio.sleep(DEFAULT_SLEEP)
 
     async def _start_task(self, Task: Task):
         """Start executing a Task."""
         Task.status = TaskStatus.RUNNING
         Task.started_at = datetime.utcnow()
-        worker_task = asyncio.create_task(self._execute_task(Task), name=f'worker-{Task.id}')
+        worker_task = asyncio.create_task(self._execute_task(Task), name=f"worker-{Task.id}")
         self.running_tasks[Task.id] = worker_task
-        LOGGER.debug(f'Started Task: {Task.id}')
+        LOGGER.debug(f"Started Task: {Task.id}")
 
     async def _execute_task(self, Task: Task):
         """Execute a single Task."""
@@ -299,21 +343,21 @@ class SwarmScheduler:
             Task.result = result
             Task.status = TaskStatus.COMPLETED
             Task.completed_at = datetime.utcnow()
-            self.stats['completed'] += 1
-            LOGGER.debug(f'Task completed: {Task.id}')
+            self.stats["completed"] += 1
+            LOGGER.debug(f"Task completed: {Task.id}")
         except asyncio.TimeoutError:
-            Task.error = f'Task timed out after {Task.timeout}s'
+            Task.error = f"Task timed out after {Task.timeout}s"
             Task.status = TaskStatus.FAILED
             Task.completed_at = datetime.utcnow()
-            self.stats['failed'] += 1
-            LOGGER.warning(f'Task timed out: {Task.id}')
+            self.stats["failed"] += 1
+            LOGGER.warning(f"Task timed out: {Task.id}")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             Task.error = str(e)
             Task.status = TaskStatus.FAILED
             Task.completed_at = datetime.utcnow()
-            self.stats['failed'] += 1
-            LOGGER.error(f'Task failed: {Task.id} - {e}')
+            self.stats["failed"] += 1
+            LOGGER.error(f"Task failed: {Task.id} - {e}")
         finally:
             if Task.started_at and Task.completed_at:
                 duration = (Task.completed_at - Task.started_at).total_seconds()
@@ -334,11 +378,13 @@ class SwarmScheduler:
 
     def _update_avg_execution_time(self, duration: float):
         """Update average execution time."""
-        completed = self.stats['completed']
+        completed = self.stats["completed"]
         if completed == 1:
-            self.stats['avg_execution_time'] = duration
+            self.stats["avg_execution_time"] = duration
         else:
-            self.stats['avg_execution_time'] = (self.stats['avg_execution_time'] * (completed - 1) + duration) / completed
+            self.stats["avg_execution_time"] = (
+                self.stats["avg_execution_time"] * (completed - 1) + duration
+            ) / completed
 
     def get_task_status(self, task_id: str) -> dict | None:
         """Get status of a specific Task."""
@@ -364,19 +410,26 @@ class SwarmScheduler:
             Task: Any = self.queue.get_task(task_id)
             if Task:
                 Task.status = TaskStatus.CANCELLED
-                self.stats['cancelled'] += 1
+                self.stats["cancelled"] += 1
             return True
         Task: Any = self.queue.get_task(task_id)
         if Task and Task.status == TaskStatus.PENDING:
             Task.status = TaskStatus.CANCELLED
             self.queue.remove(task_id)
-            self.stats['cancelled'] += 1
+            self.stats["cancelled"] += 1
             return True
         return False
 
     def get_queue_status(self) -> dict:
         """Get current queue status."""
-        return {'running': self.running, 'workers_active': len(self.running_tasks), 'workers_available': self.max_workers - len(self.running_tasks), 'pending_tasks': self.queue.get_pending_count(), 'total_queued': len(self.queue.get_all_tasks()), 'statistics': self.stats.copy()}
+        return {
+            "running": self.running,
+            "workers_active": len(self.running_tasks),
+            "workers_available": self.max_workers - len(self.running_tasks),
+            "pending_tasks": self.queue.get_pending_count(),
+            "total_queued": len(self.queue.get_all_tasks()),
+            "statistics": self.stats.copy(),
+        }
 
     def get_pending_tasks(self) -> list[dict]:
         """Get all pending tasks."""
@@ -390,7 +443,10 @@ class SwarmScheduler:
             if Task:
                 running.append(Task.to_dict())
         return running
+
+
 _swarm_scheduler: SwarmScheduler | None = None
+
 
 def get_swarm_scheduler() -> SwarmScheduler:
     """Get or create the global SwarmScheduler instance."""
@@ -399,8 +455,9 @@ def get_swarm_scheduler() -> SwarmScheduler:
         _swarm_scheduler = SwarmScheduler()
     return _swarm_scheduler
 
+
 # guardian: allow-magic-config
-async def initialize_swarm_scheduler(max_workers: int=4) -> Any:
+async def initialize_swarm_scheduler(max_workers: int = 4) -> Any:
     """
     Initialize the SwarmScheduler system.
 
@@ -409,9 +466,17 @@ async def initialize_swarm_scheduler(max_workers: int=4) -> Any:
     """
     scheduler: Any = get_swarm_scheduler()
     await scheduler.start()
-    LOGGER.info('SwarmScheduler system initialized')
+    LOGGER.info("SwarmScheduler system initialized")
 
-async def submit_task(task_id: str, name: str, func: Callable, args: tuple=(), kwargs: dict=None, priority: TaskPriority=TaskPriority.MEDIUM) -> str:
+
+async def submit_task(
+    task_id: str,
+    name: str,
+    func: Callable,
+    args: tuple = (),
+    kwargs: dict = None,
+    priority: TaskPriority = TaskPriority.MEDIUM,
+) -> str:
     """Submit a Task for execution."""
     scheduler: Any = get_swarm_scheduler()
     return scheduler.submit_task(task_id, name, func, args, kwargs, priority)

@@ -164,7 +164,6 @@ _emit_proposal_commits_routing("p1", "filesystem_mcp", "routing_commit")
 try:
     from .filesystem_mcp import FilesystemMCP
 except ImportError as e:
-
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
     class FilesystemMCP:

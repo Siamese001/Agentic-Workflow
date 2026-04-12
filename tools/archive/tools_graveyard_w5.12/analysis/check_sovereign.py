@@ -14,4 +14,4 @@ except SyntaxError as e:
         end = min(len(lines), e.lineno + 2)
         for i in range(start, end):
             marker = ">>>" if i == e.lineno - 1 else "   "
-            print(f"{marker} {i+1}: {lines[i]}")
+            print(f"{marker} {i + 1}: {lines[i]}")

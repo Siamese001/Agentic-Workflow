@@ -263,7 +263,10 @@ class KXNodeExecutor:
         self.registry = get_kx_registry()
 
     def execute_node(
-        self, node_key: str, context: KXExecutionContext, system_prompt: str | None = None,
+        self,
+        node_key: str,
+        context: KXExecutionContext,
+        system_prompt: str | None = None,
     ) -> KXExecutionResult:
         """Execute a K.X node.
 
@@ -276,6 +279,7 @@ class KXNodeExecutor:
             KXExecutionResult with generated content
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "KXNodeExecutor.execute_node")
 
@@ -323,10 +327,13 @@ class KXNodeExecutor:
         query_embedding = [0.1] * 1536
         try:
             collection = create_chroma_collection(
-                context.vector_store, context.metadata.get("collection_name", "knowledge_base"),
+                context.vector_store,
+                context.metadata.get("collection_name", "knowledge_base"),
             )
             results = search_vectors_chroma(
-                collection, query_embeddings=[query_embedding], n_results=config.rag_config.max_retrievers,
+                collection,
+                query_embeddings=[query_embedding],
+                n_results=config.rag_config.max_retrievers,
             )
             sources = []
             if results and "documents" in results:
@@ -351,7 +358,10 @@ class KXNodeExecutor:
             return []
 
     def _build_messages(
-        self, config: KNodeConfig, context: KXExecutionContext, rag_sources: list[dict[str, Any]],
+        self,
+        config: KNodeConfig,
+        context: KXExecutionContext,
+        rag_sources: list[dict[str, Any]],
     ) -> list[AgentMessage]:
         """Build messages for agent execution.
 
@@ -444,7 +454,10 @@ class KXNodeExecutor:
         return None
 
     def _validate_output(
-        self, config: KNodeConfig, content: str, context: KXExecutionContext,
+        self,
+        config: KNodeConfig,
+        content: str,
+        context: KXExecutionContext,
     ) -> list[dict[str, Any]]:
         """Validate generated output against rules.
 
@@ -463,7 +476,11 @@ class KXNodeExecutor:
         return results
 
     def _apply_validation_rule(
-        self, rule: str, content: str, config: KNodeConfig, context: KXExecutionContext,
+        self,
+        rule: str,
+        content: str,
+        config: KNodeConfig,
+        context: KXExecutionContext,
     ) -> dict[str, Any]:
         """Apply a single validation rule.
 

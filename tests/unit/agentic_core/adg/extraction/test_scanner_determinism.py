@@ -12,6 +12,7 @@ This test is intentionally placed in the scanner extraction unit suite so it
 runs with the normal test collection.  It uses subprocess (not threading) to
 guarantee each run gets an independent hash seed.
 """
+
 from __future__ import annotations
 
 import os
@@ -76,8 +77,7 @@ class TestScannerDeterminism:
             cwd=str(REPO_ROOT),
         )
         assert proc.returncode == 0, (
-            f"Probe failed (seed={seed}):\nSTDOUT:\n{proc.stdout[-2000:]}\n"
-            f"STDERR:\n{proc.stderr[-2000:]}"
+            f"Probe failed (seed={seed}):\nSTDOUT:\n{proc.stdout[-2000:]}\nSTDERR:\n{proc.stderr[-2000:]}"
         )
         edges = digest = None
         for line in proc.stdout.splitlines():
@@ -175,8 +175,12 @@ class TestScannerDeterminism:
 
         def _make_edge(fr, rel, to, kind="static"):
             return Edge(
-                from_name=fr, relation_type=rel, to_name=to,
-                edge_kind=kind, source_file="", line_no=0,
+                from_name=fr,
+                relation_type=rel,
+                to_name=to,
+                edge_kind=kind,
+                source_file="",
+                line_no=0,
             )
 
         mod_a = "ADG::Module::apps_rg/bad.py"

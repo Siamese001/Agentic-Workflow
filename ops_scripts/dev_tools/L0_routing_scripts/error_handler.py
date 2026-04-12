@@ -213,7 +213,10 @@ class ErrorHandler:
         self.max_retries = 3
 
     async def handle_error(
-        self, error: Exception, context: WorkflowContext, recovery_type: str = "retry",
+        self,
+        error: Exception,
+        context: WorkflowContext,
+        recovery_type: str = "retry",
     ) -> WorkflowResult:
         """Handle workflow error with recovery strategy."""
         import uuid as _uuid  # noqa: PLC0415
@@ -259,7 +262,9 @@ class ErrorHandler:
     async def _abort_strategy(self, error: Exception, context: WorkflowContext) -> WorkflowResult:
         """Abort workflow."""
         return WorkflowResult(
-            workflow_id=context.workflow_id, status=ExecutionStatus.FAILED, error=str(error),
+            workflow_id=context.workflow_id,
+            status=ExecutionStatus.FAILED,
+            error=str(error),
         )
 
 
@@ -350,7 +355,10 @@ class UnifiedWorkflowEngine:
                 del self.active_workflows[workflow_id]
 
     async def execute_with_coordinator(
-        self, coordinator_name: str, input_data: dict[str, Any], metadata: dict[str, Any] | None = None,
+        self,
+        coordinator_name: str,
+        input_data: dict[str, Any],
+        metadata: dict[str, Any] | None = None,
     ) -> WorkflowResult:
         """
         Execute workflow using specific coordinator.

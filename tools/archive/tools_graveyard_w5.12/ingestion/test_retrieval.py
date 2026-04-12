@@ -34,6 +34,7 @@ def test_retrieval():
 
     # Generate a simple mock embedding for testing
     import random
+
     query_embedding = [[random.uniform(-1, 1) for _ in range(1536)]]
 
     try:
@@ -45,8 +46,10 @@ def test_retrieval():
         print(f"✅ Retrieved {len(results['ids'][0])} results")
 
         # Show first few results
-        for i, (doc_id, document, metadata) in enumerate(zip(results['ids'][0][:3], results['documents'][0][:3], results['metadatas'][0][:3])):
-            print(f"\nResult {i+1}:")
+        for i, (doc_id, document, metadata) in enumerate(
+            zip(results["ids"][0][:3], results["documents"][0][:3], results["metadatas"][0][:3])
+        ):
+            print(f"\nResult {i + 1}:")
             print(f"  ID: {doc_id}")
             print(f"  Type: {metadata.get('doc_type', 'unknown')}")
             print(f"  Layer: {metadata.get('layer', 'unknown')}")

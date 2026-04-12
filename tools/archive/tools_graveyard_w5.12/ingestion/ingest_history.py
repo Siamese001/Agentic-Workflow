@@ -59,7 +59,8 @@ class HistoryIngestion:
         try:
             # Get git log
             git_log_cmd = [
-                "git", "log",
+                "git",
+                "log",
                 "--pretty=format:%H|%an|%ad|%s|%b",
                 "--date=iso",
                 "--name-only",
@@ -71,7 +72,7 @@ class HistoryIngestion:
                 cwd=self.repo_root,
                 capture_output=True,
                 text=True,
-                encoding='utf-8',
+                encoding="utf-8",
             )
 
             if result.returncode != 0:
@@ -92,10 +93,10 @@ class HistoryIngestion:
                 doc_content += f"Files changed: {len(commit['files'])}\n"
                 doc_content += f"File types: {', '.join(commit['file_types'])}\n"
 
-                if commit['components']:
+                if commit["components"]:
                     doc_content += f"Components: {', '.join(commit['components'])}\n"
 
-                if commit['layers']:
+                if commit["layers"]:
                     doc_content += f"Layers: {', '.join(commit['layers'])}\n"
 
                 doc_content += f"\nMessage:\n{commit['body'][:500]}..."
@@ -112,7 +113,7 @@ class HistoryIngestion:
                     "file_types": commit["file_types"],
                     "components": commit["components"],
                     "layers": commit["layers"],
-                    "canonical_digest": hashlib.sha256(commit['hash'].encode()).hexdigest()[:16],
+                    "canonical_digest": hashlib.sha256(commit["hash"].encode()).hexdigest()[:16],
                 }
 
                 # Only add non-empty list fields
@@ -133,9 +134,9 @@ class HistoryIngestion:
         if documents:
             batch_size = 100  # Smaller batch size
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 try:
                     self.chroma.add_documents(
@@ -144,9 +145,9 @@ class HistoryIngestion:
                         metadatas=batch_metas,
                         ids=batch_ids,
                     )
-                    logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} commits")
+                    logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} commits")
                 except Exception as e:
-                    logger.error(f"Failed to add batch {i//batch_size + 1}: {e}")
+                    logger.error(f"Failed to add batch {i // batch_size + 1}: {e}")
                     continue
 
             logger.info(f"Ingested {len(documents)} git commits total")
@@ -192,11 +193,11 @@ class HistoryIngestion:
         logger.info(f"Found {len(incident_files)} incident/RCA files")
 
         for file_path in incident_files:
-            if file_path.name.startswith('.'):
+            if file_path.name.startswith("."):
                 continue
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 if not content.strip():
@@ -212,16 +213,16 @@ class HistoryIngestion:
                 doc_content += f"Date: {incident_info['date']}\n"
                 doc_content += f"Status: {incident_info['status']}\n"
 
-                if incident_info['components']:
+                if incident_info["components"]:
                     doc_content += f"Components: {', '.join(incident_info['components'])}\n"
 
-                if incident_info['layers']:
+                if incident_info["layers"]:
                     doc_content += f"Layers: {', '.join(incident_info['layers'])}\n"
 
-                if incident_info['root_causes']:
+                if incident_info["root_causes"]:
                     doc_content += f"Root causes: {len(incident_info['root_causes'])}\n"
 
-                if incident_info['symptoms']:
+                if incident_info["symptoms"]:
                     doc_content += f"Symptoms: {len(incident_info['symptoms'])}\n"
 
                 doc_content += f"\nContent:\n{content[:1500]}..."
@@ -263,9 +264,9 @@ class HistoryIngestion:
         if documents:
             batch_size = 100  # Smaller batch size
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 try:
                     self.chroma.add_documents(
@@ -274,9 +275,9 @@ class HistoryIngestion:
                         metadatas=batch_metas,
                         ids=batch_ids,
                     )
-                    logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} incidents")
+                    logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} incidents")
                 except Exception as e:
-                    logger.error(f"Failed to add batch {i//batch_size + 1}: {e}")
+                    logger.error(f"Failed to add batch {i // batch_size + 1}: {e}")
                     continue
 
             logger.info(f"Ingested {len(documents)} incident RCA files total")
@@ -398,9 +399,9 @@ class HistoryIngestion:
         if documents:
             batch_size = 100  # Smaller batch size
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 try:
                     self.chroma.add_documents(
@@ -409,9 +410,9 @@ class HistoryIngestion:
                         metadatas=batch_metas,
                         ids=batch_ids,
                     )
-                    logger.info(f"Added synthetic batch {i//batch_size + 1}: {len(batch_docs)} incidents")
+                    logger.info(f"Added synthetic batch {i // batch_size + 1}: {len(batch_docs)} incidents")
                 except Exception as e:
-                    logger.error(f"Failed to add synthetic batch {i//batch_size + 1}: {e}")
+                    logger.error(f"Failed to add synthetic batch {i // batch_size + 1}: {e}")
                     continue
 
             logger.info(f"Ingested {len(documents)} synthetic incidents total")
@@ -424,16 +425,16 @@ class HistoryIngestion:
         current_commit = None
         parsing_files = False
 
-        for line in log_output.split('\n'):
+        for line in log_output.split("\n"):
             if not line.strip():
                 continue
 
-            if '|' in line and not parsing_files:
+            if "|" in line and not parsing_files:
                 # New commit
                 if current_commit:
                     commits.append(current_commit)
 
-                parts = line.split('|', 4)
+                parts = line.split("|", 4)
                 if len(parts) >= 4:
                     current_commit = {
                         "hash": parts[0],
@@ -448,31 +449,40 @@ class HistoryIngestion:
                     }
                 parsing_files = False
 
-            elif current_commit and line.startswith('    '):
+            elif current_commit and line.startswith("    "):
                 # Commit body continuation
                 current_commit["body"] += line.strip() + "\n"
 
-            elif current_commit and not line.startswith('    ') and line.strip():
+            elif current_commit and not line.startswith("    ") and line.strip():
                 # File list starts
                 parsing_files = True
                 file_path = line.strip()
                 current_commit["files"].append(file_path)
 
                 # Extract file type
-                if '.' in file_path:
-                    file_ext = file_path.split('.')[-1]
+                if "." in file_path:
+                    file_ext = file_path.split(".")[-1]
                     current_commit["file_types"].append(file_ext)
 
                 # Extract components and layers from path
-                path_parts = file_path.split('/')
+                path_parts = file_path.split("/")
 
                 # Layer detection
                 for part in path_parts:
-                    if part.startswith('L') and part[1:].isdigit():
+                    if part.startswith("L") and part[1:].isdigit():
                         current_commit["layers"].append(part)
 
                 # Component detection
-                for component in ["UWG", "ADG", "Scanner", "Router", "Gateway", "Agent", "Orchestrator", "Guardrail"]:
+                for component in [
+                    "UWG",
+                    "ADG",
+                    "Scanner",
+                    "Router",
+                    "Gateway",
+                    "Agent",
+                    "Orchestrator",
+                    "Guardrail",
+                ]:
                     if component.lower() in file_path.lower():
                         current_commit["components"].append(component)
 
@@ -505,7 +515,7 @@ class HistoryIngestion:
             incident_info["type"] = "incident"
 
         # Parse content for key information
-        lines = content.split('\n')
+        lines = content.split("\n")
         current_section = None
 
         for line in lines:
@@ -518,7 +528,7 @@ class HistoryIngestion:
                 current_section = "symptoms"
             elif any(keyword in line_lower for keyword in ["fix", "solution", "resolution", "action"]):
                 current_section = "fixes"
-            elif line_lower.startswith('#') or line_lower.startswith('##'):
+            elif line_lower.startswith("#") or line_lower.startswith("##"):
                 current_section = None
 
             # Extract severity
@@ -531,22 +541,32 @@ class HistoryIngestion:
 
             # Extract date
             import re
-            date_match = re.search(r'(\d{4}-\d{2}-\d{2})', line)
+
+            date_match = re.search(r"(\d{4}-\d{2}-\d{2})", line)
             if date_match:
                 incident_info["date"] = date_match.group(1)
 
             # Extract components
-            for component in ["UWG", "ADG", "Scanner", "Router", "Gateway", "Agent", "Orchestrator", "Guardrail"]:
+            for component in [
+                "UWG",
+                "ADG",
+                "Scanner",
+                "Router",
+                "Gateway",
+                "Agent",
+                "Orchestrator",
+                "Guardrail",
+            ]:
                 if component.lower() in line_lower:
                     incident_info["components"].append(component)
 
             # Extract layers
-            layer_match = re.search(r'L[0-6]', line)
+            layer_match = re.search(r"L[0-6]", line)
             if layer_match:
                 incident_info["layers"].append(layer_match.group())
 
             # Extract section content
-            if current_section and line.strip() and not line.startswith('#'):
+            if current_section and line.strip() and not line.startswith("#"):
                 if current_section == "root_causes":
                     if line.strip() and len(line.strip()) > 5:
                         incident_info["root_causes"].append(line.strip())
@@ -601,7 +621,9 @@ def main():
     parser = argparse.ArgumentParser(description="Wave 3: History Ingestion")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--chroma-dir", default="artifacts/chromadb", help="ChromaDB persistence directory")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be ingested without actually doing it")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
+    )
     args = parser.parse_args()
 
     # Run ingestion

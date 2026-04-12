@@ -54,7 +54,13 @@ class Node:
     """Represents an ADG node with metadata."""
 
     def __init__(
-        self, node_id: str, label: str, layer: str, entity_type: str, file_path: str | None = None, **kwargs,
+        self,
+        node_id: str,
+        label: str,
+        layer: str,
+        entity_type: str,
+        file_path: str | None = None,
+        **kwargs,
     ):
         self.node_id = node_id
         self.label = label
@@ -71,7 +77,12 @@ class Violation:
     """Represents an ADG anti-pattern violation."""
 
     def __init__(
-        self, file_path: str, line_number: int, category: str, evidence: str, symbol: str | None = None,
+        self,
+        file_path: str,
+        line_number: int,
+        category: str,
+        evidence: str,
+        symbol: str | None = None,
     ):
         self.file_path = file_path
         self.line_number = line_number
@@ -272,7 +283,8 @@ class ADGQueryBridge:
                         rel_path = str(dir_path.relative_to(self.repo_root))
                         pattern = f"{rel_path}%"
                         results = self._query_sqlite(
-                            "SELECT DISTINCT resolved_path FROM nodes WHERE resolved_path LIKE ?", (pattern,),
+                            "SELECT DISTINCT resolved_path FROM nodes WHERE resolved_path LIKE ?",
+                            (pattern,),
                         )
                         for r in results:
                             file_path = self.repo_root / r["resolved_path"]

@@ -2,6 +2,7 @@
 
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
+
 from __future__ import annotations
 
 import ast

@@ -294,7 +294,9 @@ class CostGuardrailMixin:
             ValueError: If any parameter is invalid (negative or out of range)
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CostMixin.configure_budget")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CostMixin.configure_budget"
+        )
         if max_tokens_per_request is not None and max_tokens_per_request <= 0:
             raise ValueError("max_tokens_per_request must be positive")
         if max_tokens_per_session is not None and max_tokens_per_session <= 0:
@@ -340,7 +342,10 @@ class CostGuardrailMixin:
         return input_cost + output_cost
 
     def record_token_usage(
-        self, prompt_tokens: int, completion_tokens: int, model: str = "unknown",
+        self,
+        prompt_tokens: int,
+        completion_tokens: int,
+        model: str = "unknown",
     ) -> TokenUsage:
         """
         Record token usage for an operation.
@@ -361,17 +366,23 @@ class CostGuardrailMixin:
         with self._cost_lock:
             if total_tokens > self._budget_config.max_tokens_per_request:
                 raise BudgetExceededError(
-                    "tokens_per_request", total_tokens, self._budget_config.max_tokens_per_request,
+                    "tokens_per_request",
+                    total_tokens,
+                    self._budget_config.max_tokens_per_request,
                 )
             new_session_total = self._total_session_tokens + total_tokens
             if new_session_total > self._budget_config.max_tokens_per_session:
                 raise BudgetExceededError(
-                    "tokens_per_session", new_session_total, self._budget_config.max_tokens_per_session,
+                    "tokens_per_session",
+                    new_session_total,
+                    self._budget_config.max_tokens_per_session,
                 )
             new_session_cost = self._total_session_cost + estimated_cost
             if new_session_cost > self._budget_config.max_cost_per_session_usd:
                 raise BudgetExceededError(
-                    "cost_per_session", new_session_cost, self._budget_config.max_cost_per_session_usd,
+                    "cost_per_session",
+                    new_session_cost,
+                    self._budget_config.max_cost_per_session_usd,
                 )
             usage = TokenUsage(
                 prompt_tokens=prompt_tokens,
@@ -419,7 +430,9 @@ class CostGuardrailMixin:
             current_depth = self._call_stack.count(operation_id)
             if current_depth >= self._budget_config.max_recursive_depth:
                 raise RecursionLimitError(
-                    "recursive_depth", current_depth, self._budget_config.max_recursive_depth,
+                    "recursive_depth",
+                    current_depth,
+                    self._budget_config.max_recursive_depth,
                 )
             self._call_stack.append(operation_id)
 
@@ -451,7 +464,9 @@ class CostGuardrailMixin:
             current_count = self._loop_counters.get(loop_id, 0) + 1
             if current_count > self._budget_config.max_loop_iterations:
                 raise RecursionLimitError(
-                    "loop_iterations", current_count, self._budget_config.max_loop_iterations,
+                    "loop_iterations",
+                    current_count,
+                    self._budget_config.max_loop_iterations,
                 )
             self._loop_counters[loop_id] = current_count
             return current_count

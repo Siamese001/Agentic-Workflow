@@ -79,7 +79,10 @@ class CIIntegration:
             if skill_compliance["syntax_valid"]:
                 try:
                     result = subprocess.run(
-                        ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=5,
+                        ["python", str(main_script), "--help"],
+                        capture_output=True,
+                        text=True,
+                        timeout=5,
                     )
                     # Consider it executable if it runs (even with wrong args)
                     skill_compliance["executable"] = True
@@ -371,7 +374,10 @@ if __name__ == "__main__":
         # Test 1: Syntax check
         try:
             result = subprocess.run(
-                ["python", "-m", "py_compile", str(main_script)], capture_output=True, text=True, timeout=10,
+                ["python", "-m", "py_compile", str(main_script)],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
             if result.returncode == 0:
                 test_result["tests_passed"] += 1
@@ -386,7 +392,10 @@ if __name__ == "__main__":
         # Test 2: Help command
         try:
             result = subprocess.run(
-                ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=5,
+                ["python", str(main_script), "--help"],
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             test_result["tests_passed"] += 1
             test_result["details"].append("✅ Help command executed")
@@ -400,7 +409,10 @@ if __name__ == "__main__":
         # Test 3: Invalid args handling
         try:
             result = subprocess.run(
-                ["python", str(main_script), "invalid", "args"], capture_output=True, text=True, timeout=5,
+                ["python", str(main_script), "invalid", "args"],
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             test_result["tests_passed"] += 1
             test_result["details"].append("✅ Invalid args handled gracefully")

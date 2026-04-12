@@ -182,7 +182,6 @@ def debug_dashboard():
     try:
         from playwright.sync_api import sync_playwright
     except ImportError as e:
-
         raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
         print("❌ Playwright not installed")
         return False

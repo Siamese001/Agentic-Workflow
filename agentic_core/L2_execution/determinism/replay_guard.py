@@ -15,12 +15,13 @@ from typing import Any, Callable, TypeVar
 from .determinism_surface import DeterminismSurface
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 @dataclass
 class InvocationRecord:
     """Record of a guarded invocation."""
+
     function_name: str
     args_hash: str
     kwargs_hash: str
@@ -37,9 +38,17 @@ class ReplayGuard:
     """
 
     INTERCEPTED_FUNCTIONS = {
-        'time.time', 'time.monotonic', 'datetime.now', 'datetime.utcnow',
-        'random.random', 'random.randint', 'random.choice', 'uuid.uuid4',
-        'uuid.uuid1', 'os.urandom', 'secrets.token_bytes',
+        "time.time",
+        "time.monotonic",
+        "datetime.now",
+        "datetime.utcnow",
+        "random.random",
+        "random.randint",
+        "random.choice",
+        "uuid.uuid4",
+        "uuid.uuid1",
+        "os.urandom",
+        "secrets.token_bytes",
     }
 
     def __init__(self, surface: DeterminismSurface | None = None) -> None:
@@ -49,6 +58,7 @@ class ReplayGuard:
 
     def wrap(self, func: Callable[..., T]) -> Callable[..., T]:
         """Wrap a function with replay guard."""
+
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> T:
             # Check if this is a non-deterministic function
@@ -73,39 +83,35 @@ class ReplayGuard:
             return True
 
         # Check just function name
-        simple_name = func_name.split('.')[-1]
+        simple_name = func_name.split(".")[-1]
         for pattern in self.INTERCEPTED_FUNCTIONS:
             if pattern.endswith(simple_name):
                 return True
 
         return False
 
-    def _provide_deterministic_alternative(
-        self, func_name: str, args: Any, kwargs: Any
-    ) -> Any:
+    def _provide_deterministic_alternative(self, func_name: str, args: Any, kwargs: Any) -> Any:
         """Provide deterministic alternative to intercepted function."""
-        if 'time' in func_name:
+        if "time" in func_name:
             return self.surface.get_timestamp()
-        elif 'random' in func_name:
+        elif "random" in func_name:
             rand = self.surface.get_random()
-            if 'random' in func_name:
+            if "random" in func_name:
                 return rand.random()
-            elif 'randint' in func_name:
+            elif "randint" in func_name:
                 return rand.randint(args[0], args[1]) if len(args) >= 2 else 0
-            elif 'choice' in func_name:
+            elif "choice" in func_name:
                 return rand.choice(args[0]) if args else None
             return rand.random()
-        elif 'uuid' in func_name:
-            return self.surface.generate_id('id-')
-        elif 'urandom' in func_name or 'token' in func_name:
+        elif "uuid" in func_name:
+            return self.surface.generate_id("id-")
+        elif "urandom" in func_name or "token" in func_name:
             # Return deterministic bytes
-            return b'\x00' * kwargs.get('nbytes', 32)
+            return b"\x00" * kwargs.get("nbytes", 32)
 
         return None
 
-    def _record_invocation(
-        self, func_name: str, args: Any, kwargs: Any, result: Any
-    ) -> None:
+    def _record_invocation(self, func_name: str, args: Any, kwargs: Any, result: Any) -> None:
         """Record an invocation for replay verification."""
         args_hash = hashlib.sha256(str(args).encode()).hexdigest()[:16]
         kwargs_hash = hashlib.sha256(str(kwargs).encode()).hexdigest()[:16]

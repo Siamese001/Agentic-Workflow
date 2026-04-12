@@ -221,7 +221,9 @@ class SubAtomicEngineImpl:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SubAtomicEngineImpl.resilient_mutation",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SubAtomicEngineImpl.resilient_mutation",
         )
 
         prompt = kwargs.get("prompt", "") or (args[0] if args else "")

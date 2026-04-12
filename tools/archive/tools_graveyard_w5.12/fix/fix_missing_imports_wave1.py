@@ -11,14 +11,14 @@ import os
 import re
 
 TARGET_FUNCS = [
-    '_emit_observes_runtime_state',
-    '_emit_escalates_to_human',
-    '_emit_transcripts_response',
-    '_emit_signs_execution_trace',
+    "_emit_observes_runtime_state",
+    "_emit_escalates_to_human",
+    "_emit_transcripts_response",
+    "_emit_signs_execution_trace",
 ]
 
 IMPORT_PATTERN = re.compile(
-    r'from\s+agentic_core\.L_CONTRACTS\.lifecycle_trace_contract\s+import\s*\(([^)]+)\)',
+    r"from\s+agentic_core\.L_CONTRACTS\.lifecycle_trace_contract\s+import\s*\(([^)]+)\)",
     re.DOTALL,
 )
 
@@ -26,7 +26,7 @@ IMPORT_PATTERN = re.compile(
 def find_missing_imports(filepath):
     """Find which target functions are used but not imported."""
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
     except Exception:
         return []
@@ -41,7 +41,7 @@ def find_missing_imports(filepath):
 
     for func in TARGET_FUNCS:
         # Check if function is called in the file
-        if func + '(' in content or func + ' (' in content:
+        if func + "(" in content or func + " (" in content:
             # Check if it's in the import block
             if func not in import_block:
                 used_funcs.append(func)
@@ -51,7 +51,7 @@ def find_missing_imports(filepath):
 
 def fix_file(filepath, missing_funcs):
     """Add missing imports to file."""
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
 
     match = IMPORT_PATTERN.search(content)
@@ -59,7 +59,7 @@ def fix_file(filepath, missing_funcs):
         return False
 
     old_import = match.group(0)
-    import_items = [item.strip() for item in match.group(1).split(',') if item.strip()]
+    import_items = [item.strip() for item in match.group(1).split(",") if item.strip()]
 
     # Add missing functions in alphabetical order
     for func in missing_funcs:
@@ -68,26 +68,28 @@ def fix_file(filepath, missing_funcs):
 
     # Sort and format
     import_items.sort()
-    new_import_inner = ',\n'.join(f'    {item}' for item in import_items)
-    new_import = f'from agentic_core.runtime.contracts.lifecycle_trace_contract import (\n{new_import_inner}\n)'
+    new_import_inner = ",\n".join(f"    {item}" for item in import_items)
+    new_import = (
+        f"from agentic_core.runtime.contracts.lifecycle_trace_contract import (\n{new_import_inner}\n)"
+    )
 
     # Replace in content
     new_content = content.replace(old_import, new_import)
 
-    with open(filepath, 'w', encoding='utf-8') as f:
+    with open(filepath, "w", encoding="utf-8") as f:
         f.write(new_content)
 
     return True
 
 
 def main():
-    root = 'agentic_core'
+    root = "agentic_core"
     fixed_count = 0
     error_count = 0
 
     for dirpath, dirnames, filenames in os.walk(root):
         for filename in filenames:
-            if not filename.endswith('.py'):
+            if not filename.endswith(".py"):
                 continue
             filepath = os.path.join(dirpath, filename)
 
@@ -96,13 +98,13 @@ def main():
                 try:
                     if fix_file(filepath, missing):
                         fixed_count += 1
-                        print(f'Fixed: {filepath} ({len(missing)} imports)')
+                        print(f"Fixed: {filepath} ({len(missing)} imports)")
                 except Exception as e:
                     error_count += 1
-                    print(f'Error fixing {filepath}: {e}')
+                    print(f"Error fixing {filepath}: {e}")
 
-    print(f'\nWave 1 Complete: {fixed_count} files fixed, {error_count} errors')
+    print(f"\nWave 1 Complete: {fixed_count} files fixed, {error_count} errors")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

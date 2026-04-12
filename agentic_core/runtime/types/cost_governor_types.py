@@ -193,7 +193,11 @@ class CostGovernor:
         self.on_exceeded: Callable | None = None
 
     def track_usage(
-        self, model: str, input_tokens: int, output_tokens: int, OPERATION: str = "completion",
+        self,
+        model: str,
+        input_tokens: int,
+        output_tokens: int,
+        OPERATION: str = "completion",
     ) -> float:
         """ """
         with self._lock:
@@ -232,7 +236,9 @@ class CostGovernor:
             if self.on_exceeded:
                 self.on_exceeded(self.current_spend, self.LIMIT)
             raise BudgetExceededError(
-                f"Budget limit ${self.current_spend:.2f})", self.current_spend, self.LIMIT,
+                f"Budget limit ${self.current_spend:.2f})",
+                self.current_spend,
+                self.LIMIT,
             )
 
     def get_spend(self) -> float:
@@ -277,6 +283,7 @@ class CostGovernor:
     def update_pricing(self, model: str, input_price: float, output_price: float) -> Any:
         """Update pricing for a model."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CostGovernor.update_pricing")
 
@@ -349,8 +356,11 @@ class CostGovernorManager:
     def get_governor(self) -> Any:
         """Get or create the CostGovernor instance"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CostGovernorManager.get_governor")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CostGovernorManager.get_governor"
+        )
 
         if self._instance is None:
             self._instance = CostGovernor()

@@ -42,7 +42,7 @@ async def test_rag_pipeline():
 
         print(f"[TEST] Retrieved {len(results)} results:")
         for i, result in enumerate(results[:3]):
-            print(f"  {i+1}. Score: {result.get('score', 0):.3f}")
+            print(f"  {i + 1}. Score: {result.get('score', 0):.3f}")
             print(f"     Content: {result.get('content', '')[:100]}...")
 
         print("[TEST] RAG pipeline smoke test completed successfully!")
@@ -58,6 +58,7 @@ async def test_rag_pipeline():
         # Cleanup
         if test_doc.exists():
             test_doc.unlink()
+
 
 if __name__ == "__main__":
     asyncio.run(test_rag_pipeline())

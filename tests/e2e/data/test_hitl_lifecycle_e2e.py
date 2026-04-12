@@ -88,6 +88,7 @@ try:
         HITLMixin,
         RiskLevel,
     )
+
     HITL_AVAILABLE = True
 except ImportError:
     HITL_AVAILABLE = False
@@ -108,6 +109,7 @@ from system_learning.engines.rlhf_optimizer_impl import (
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def temp_hitl_dir(tmp_path: Path) -> Path:
@@ -172,6 +174,7 @@ def reset_global_state() -> None:
 # =============================================================================
 # Test Class: HITL Full Lifecycle
 # =============================================================================
+
 
 @pytest.mark.skipif(not HITL_AVAILABLE, reason="HITL modules not available")
 class TestHITLFullLifecycle:
@@ -382,7 +385,9 @@ class TestHITLFullLifecycle:
             )
 
             result = escalation_activator.requires_human_review(req)
-            assert result == requires_human, f"Priority {priority.value}: expected {requires_human}, got {result}"
+            assert result == requires_human, (
+                f"Priority {priority.value}: expected {requires_human}, got {result}"
+            )
 
     def test_hitl_checkpoint_timeout(
         self,
@@ -471,7 +476,11 @@ class TestHITLFullLifecycle:
             {"original_plan_hash": "test"},  # Missing structured_patch_schema and reviewer_signature
             {"structured_patch_schema": {}},  # Missing original_plan_hash and reviewer_signature
             {"reviewer_signature": "test"},  # Missing others
-            {"original_plan_hash": "", "structured_patch_schema": {}, "reviewer_signature": ""},  # Empty values
+            {
+                "original_plan_hash": "",
+                "structured_patch_schema": {},
+                "reviewer_signature": "",
+            },  # Empty values
         ]
 
         for patch in invalid_patches:
@@ -513,10 +522,26 @@ class TestHITLFullLifecycle:
         # Create batch with enough pairs to trigger proposal
         dpo_batch = {
             "pairs": [
-                {"chosen": {"threshold": 0.9}, "rejected": {"threshold": 0.5}, "surface": "routing_min_confidence"},
-                {"chosen": {"threshold": 0.85}, "rejected": {"threshold": 0.45}, "surface": "routing_min_confidence"},
-                {"chosen": {"threshold": 0.88}, "rejected": {"threshold": 0.48}, "surface": "routing_min_confidence"},
-                {"chosen": {"threshold": 0.87}, "rejected": {"threshold": 0.47}, "surface": "routing_min_confidence"},
+                {
+                    "chosen": {"threshold": 0.9},
+                    "rejected": {"threshold": 0.5},
+                    "surface": "routing_min_confidence",
+                },
+                {
+                    "chosen": {"threshold": 0.85},
+                    "rejected": {"threshold": 0.45},
+                    "surface": "routing_min_confidence",
+                },
+                {
+                    "chosen": {"threshold": 0.88},
+                    "rejected": {"threshold": 0.48},
+                    "surface": "routing_min_confidence",
+                },
+                {
+                    "chosen": {"threshold": 0.87},
+                    "rejected": {"threshold": 0.47},
+                    "surface": "routing_min_confidence",
+                },
             ],
         }
 
@@ -584,6 +609,7 @@ class TestHITLFullLifecycle:
 
         # Verify decision count
         from system_learning.engines.hitl_decision_logger import get_decision_count
+
         assert get_decision_count() == 1
 
     def test_hitl_decision_logger_persistence(
@@ -698,7 +724,10 @@ class TestHITLFullLifecycle:
         # After max escalation reached, escalate raises error
         with pytest.raises(ValueError) as exc_info:
             agent.escalate(request.request_id)  # Already at max
-        assert "maximum" in str(exc_info.value).lower() or "escalation level reached" in str(exc_info.value).lower()
+        assert (
+            "maximum" in str(exc_info.value).lower()
+            or "escalation level reached" in str(exc_info.value).lower()
+        )
 
         # Create new request for rejection test
         request2 = agent.create_approval_request("critical_operation")
@@ -806,6 +835,7 @@ class TestHITLFullLifecycle:
 # Test Class: Edge Cases and Fail-Closed
 # =============================================================================
 
+
 @pytest.mark.skipif(not HITL_AVAILABLE, reason="HITL modules not available")
 class TestHITLEdgeCases:
     """Edge case and fail-closed behavior tests."""
@@ -891,6 +921,7 @@ class TestHITLEdgeCases:
 # =============================================================================
 # Integration Tests
 # =============================================================================
+
 
 @pytest.mark.skipif(not HITL_AVAILABLE, reason="HITL modules not available")
 class TestHITLIntegration:
@@ -1004,11 +1035,13 @@ class TestHITLIntegration:
 
         # Add more pairs for threshold
         for i in range(3):
-            dpo_batch["pairs"].append({
-                "chosen": {"threshold": 0.85},
-                "rejected": {"threshold": 0.55},
-                "surface": "healing_proposal_validation",
-            })
+            dpo_batch["pairs"].append(
+                {
+                    "chosen": {"threshold": 0.85},
+                    "rejected": {"threshold": 0.55},
+                    "surface": "healing_proposal_validation",
+                }
+            )
 
         proposal = rlhf_optimizer.propose_from_dpo(
             dpo_batch_bytes=json.dumps(dpo_batch).encode("utf-8"),

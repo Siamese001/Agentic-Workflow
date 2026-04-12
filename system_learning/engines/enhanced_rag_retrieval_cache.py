@@ -57,7 +57,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 # Lazy import to avoid L_SL->L_RUNTIME gravity violation
 def _get_cache_entry_types():
     from agentic_core.runtime.types.cache_entry_types import SemanticCacheHit
+
     return SemanticCacheHit
+
 
 # Module-level telemetry emission
 _emit_applies_guardrail("p0", "enhanced_rag_retrieval_cache", "p0_governance")
@@ -114,7 +116,7 @@ class EnhancedRagRetrievalCache:
         embedding_client: EmbeddingClient | None = None,
         semantic_similarity_threshold: float = _DEFAULT_SEMANTIC_SIMILARITY_THRESHOLD,
         max_cache_entries: int = _DEFAULT_MAX_CACHE_ENTRIES,
-        enable_semantic_matching: bool = True,
+        enable_semantic_matching: bool = False,
         enable_policy_aware_caching: bool = True,
     ) -> None:
         """Initialize enhanced RAG retrieval cache."""
@@ -122,7 +124,9 @@ class EnhancedRagRetrievalCache:
         self._cache = cache or get_hot_cache()
         self._semantic_similarity_threshold = semantic_similarity_threshold
         self._max_cache_entries = max_cache_entries
-        self._enable_semantic_matching = enable_semantic_matching
+        # D3 semantic matching is architecturally forbidden — all semantic cache goes through the D2
+        # gate (SemanticCacheManager.recall). The parameter is kept for backward compatibility only.
+        self._enable_semantic_matching = False
         self._enable_policy_aware_caching = enable_policy_aware_caching
 
         # Initialize embedding client
@@ -166,9 +170,13 @@ class EnhancedRagRetrievalCache:
                 provider="openai",
                 model="text-embedding-3-large",
                 dimensions=1536,
-            )    # guardian: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
+            )  # guardian: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
 
-        except (EmbeddingDisabledError, NotImplementedError, Exception) as e:    # guardian: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
+        except (
+            EmbeddingDisabledError,
+            NotImplementedError,
+            Exception,
+        ) as e:  # guardian: Multiple exceptions (EmbeddingDisabledError, NotImplementedError) need specific handling
             logger.warning(f"Failed to initialize embedding client: {e}")
             return None
 
@@ -203,12 +211,19 @@ class EnhancedRagRetrievalCache:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedRagRetrievalCache.get",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "EnhancedRagRetrievalCache.get",
         )
 
         # Build cache key with policy awareness
         cache_key = self._build_enhanced_cache_key(
-            u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash,
+            u0_hash,
+            embedder_version,
+            seed_pack_manifest_hash,
+            k,
+            cutoff,
+            policy_hash,
         )
 
         # Try exact match first
@@ -217,20 +232,6 @@ class EnhancedRagRetrievalCache:
             self._metrics["cache_hits"] += 1
             _emit_records_telemetry_event("p4", "enhanced_rag_retrieval_cache", "exact_cache_hit")
             return result
-
-        # Try semantic matching if enabled and query text provided
-        if (
-            self._enable_semantic_matching
-            and self._semantic_cache
-            and query_text
-            and self._embedding_client
-            and not replay_mode
-        ):
-            semantic_result = await self._try_semantic_match(query_text, cache_key, k, cutoff)
-            if semantic_result:
-                self._metrics["semantic_hits"] += 1
-                _emit_records_telemetry_event("p4", "enhanced_rag_retrieval_cache", "semantic_cache_hit")
-                return semantic_result
 
         # Cache miss
         self._metrics["cache_misses"] += 1
@@ -245,24 +246,7 @@ class EnhancedRagRetrievalCache:
         cutoff: float,
     ) -> list[dict[str, Any]] | None:
         """Try semantic similarity matching for cache hits."""
-        try:
-            # Create guarded text for embedding
-            guarded_text = GuardedText(query_text)
-
-            # Get query embedding
-            query_embedding = await self._embedding_client.get_embedding(guarded_text)
-            self._metrics["embedding_calls"] += 1
-            _emit_stores_embedding("p4", "enhanced_rag_retrieval_cache", "query_embedding")
-
-            # Skip semantic cache for now (not available)
-            return None
-
-        except Exception as e:
-            logger.debug(f"Semantic matching failed: {e}")
-            self._metrics["fallback_activations"] += 1
-            _emit_captures_runtime_anomaly("p4obs", "enhanced_rag_retrieval_cache", "semantic_match_failure")
-
-        return None
+        raise NotImplementedError("semantic match must go through D2 gate, not D3 path")
 
     def _meets_similarity_threshold(
         self,
@@ -311,20 +295,16 @@ class EnhancedRagRetrievalCache:
 
             # Build enhanced cache key
             cache_key = self._build_enhanced_cache_key(
-                u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash,
+                u0_hash,
+                embedder_version,
+                seed_pack_manifest_hash,
+                k,
+                cutoff,
+                policy_hash,
             )
 
             # Store in exact cache
             self._cache.set_json(cache_key, results, ttl_seconds=self._ttl)
-
-            # Store in semantic cache if enabled
-            if (
-                self._enable_semantic_matching
-                and self._semantic_cache
-                and query_text
-                and self._embedding_client
-            ):
-                await self._store_semantic_entry(query_text, results)
 
             _emit_records_learning_event("p3lm", "enhanced_rag_retrieval_cache", "cache_entry_stored")
             _emit_writes_learning_snapshot("p3lm", "enhanced_rag_retrieval_cache", "cache_snapshot")
@@ -341,12 +321,10 @@ class EnhancedRagRetrievalCache:
         query_text: str,
         results: list[dict[str, Any]],
     ) -> None:
-        """Store entry in semantic cache for similarity matching."""
-        try:
-            # Skip semantic cache storage for now (not available)
-            pass
-        except Exception as e:
-            logger.debug(f"Failed to store semantic entry: {e}")
+        """D3 semantic store is forbidden — semantic cache writes go through D2 gate only."""
+        raise NotImplementedError(
+            "D3 semantic store is forbidden — semantic cache writes go through D2 gate only"
+        )
 
     def _build_enhanced_cache_key(
         self,
@@ -403,7 +381,12 @@ class EnhancedRagRetrievalCache:
     ) -> None:
         """Invalidate cache entry."""
         cache_key = self._build_enhanced_cache_key(
-            u0_hash, embedder_version, seed_pack_manifest_hash, k, cutoff, policy_hash,
+            u0_hash,
+            embedder_version,
+            seed_pack_manifest_hash,
+            k,
+            cutoff,
+            policy_hash,
         )
         self._cache.delete(cache_key)
         _emit_records_healing_outcome("p3", "enhanced_rag_retrieval_cache", "cache_entry_invalidated")

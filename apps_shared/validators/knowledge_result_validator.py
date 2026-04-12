@@ -259,13 +259,18 @@ class L5ConsolidatedKnowledge:
             KnowledgeResult with retrieved data
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L5ConsolidatedKnowledge.search_knowledge")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L5ConsolidatedKnowledge.search_knowledge"
+        )
 
         if types is None:
             types: Any = ["profile", "template"]
         result: Any = KnowledgeResult(
-            user_profile=None, template=None, metadata={"query": query, "types": types},
+            user_profile=None,
+            template=None,
+            metadata={"query": query, "types": types},
         )
         if "profile" in types:
             result.user_profile = self._get_user_profile(query)
@@ -294,7 +299,9 @@ class L5ConsolidatedKnowledge:
         if self.pinecone_client:
             try:
                 templates = self.pinecone_client.query(
-                    vector=self._embed_query(query), top_k=1, include_metadata=True,
+                    vector=self._embed_query(query),
+                    top_k=1,
+                    include_metadata=True,
                 )
                 if templates:
                     Logger.info("Retrieved template from Pinecone")
@@ -484,7 +491,8 @@ _consolidated_knowledge = None
 
 
 def get_consolidated_knowledge(
-    memory_client: Any = None, pinecone_client: Any = None,
+    memory_client: Any = None,
+    pinecone_client: Any = None,
 ) -> L5ConsolidatedKnowledge:
     """Get singleton instance of consolidated knowledge."""
     global _consolidated_knowledge

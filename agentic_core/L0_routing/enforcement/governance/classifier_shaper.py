@@ -12,6 +12,7 @@ from typing import Any
 
 class RouteCategory(Enum):
     """Categories for route classification."""
+
     CACHE_HIT = auto()
     RAG_GROUNDED = auto()
     TOOL_CALL = auto()
@@ -22,6 +23,7 @@ class RouteCategory(Enum):
 
 class RiskTier(Enum):
     """Risk tiers for routing."""
+
     LOW = auto()
     MEDIUM = auto()
     HIGH = auto()
@@ -31,6 +33,7 @@ class RiskTier(Enum):
 @dataclass
 class ShapedBundle:
     """Output bundle after classification and shaping."""
+
     category: RouteCategory
     risk_tier: RiskTier
     route_target: str

@@ -230,7 +230,10 @@ class MCPToolServer:
     """MCP tool server for managing and executing tools."""
 
     def __init__(
-        self, name: str = "agentic-workflow-tools", *, allow_legacy_capability_enforcer: bool = False,
+        self,
+        name: str = "agentic-workflow-tools",
+        *,
+        allow_legacy_capability_enforcer: bool = False,
     ):
         """Initialize MCP tool server.
 
@@ -260,7 +263,9 @@ class MCPToolServer:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MCPServerConfig.set_capability_enforcer",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "MCPServerConfig.set_capability_enforcer",
         )
         if not self._allow_legacy_capability_enforcer:
             raise ValueError(
@@ -341,7 +346,11 @@ class MCPToolServer:
 
     @runtime_guard("B.execute_tool.mcp_tool_types")
     def execute_tool(
-        self, name: str, arguments: dict[str, Any], *, capability_token: Any | None = None,
+        self,
+        name: str,
+        arguments: dict[str, Any],
+        *,
+        capability_token: Any | None = None,
     ) -> MCPToolResult:
         """Execute a tool.
 
@@ -592,7 +601,10 @@ def execute_tool_with_capability(
 
 
 def execute_tool_calls(
-    server: MCPToolServer, tool_calls: list[dict[str, Any]], *, capability_token: Any | None = None,
+    server: MCPToolServer,
+    tool_calls: list[dict[str, Any]],
+    *,
+    capability_token: Any | None = None,
 ) -> list[MCPToolResult]:
     """Execute multiple tool calls.
 

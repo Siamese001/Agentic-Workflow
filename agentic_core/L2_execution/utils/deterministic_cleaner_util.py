@@ -205,7 +205,9 @@ class DeterministicCleaner:
         if self.enable_isort and (not self.has_isort):
             LOGGER.warning("isort not available - import sorting disabled")
             self.enable_isort = False
-        if self.enable_autopep8 and (not self.has_autopep8):    # guardian: File operations should check existence before access
+        if self.enable_autopep8 and (
+            not self.has_autopep8
+        ):  # guardian: File operations should check existence before access
             LOGGER.warning("autopep8 not available - PEP8 formatting disabled")
             self.enable_autopep8 = False
 
@@ -214,7 +216,10 @@ class DeterministicCleaner:
         try:
             safe_execute([tool_name, "--version"], capture_output=True, check=True)
             return True
-        except (subprocess.CalledProcessError, FileNotFoundError):    # guardian: File operations should check existence before access
+        except (
+            subprocess.CalledProcessError,
+            FileNotFoundError,
+        ):  # guardian: File operations should check existence before access
             return False
 
     def deterministic_clean(self, code: str, file_path: str | None = None) -> tuple[str, bool]:
@@ -232,7 +237,9 @@ class DeterministicCleaner:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DeterministicCleaner.deterministic_clean",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "DeterministicCleaner.deterministic_clean",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -284,7 +291,10 @@ class DeterministicCleaner:
                 temp_file = f.name
             try:
                 safe_execute(
-                    ["isort", "--profile", "black", temp_file], capture_output=True, text=True, check=True,
+                    ["isort", "--profile", "black", temp_file],
+                    capture_output=True,
+                    text=True,
+                    check=True,
                 )
                 with open(temp_file) as f:
                     return f.read()
@@ -298,7 +308,11 @@ class DeterministicCleaner:
         """Apply autopep8 for PEP8 formatting."""
         try:
             result = safe_execute(
-                ["autopep8", "--", "-"], input=code, capture_output=True, text=True, check=True,
+                ["autopep8", "--", "-"],
+                input=code,
+                capture_output=True,
+                text=True,
+                check=True,
             )
             return result.stdout
         except subprocess.CalledProcessError as e:
@@ -375,7 +389,9 @@ class CompliantFileWriter:
 
     def _check_root_hygiene(self, file_path: Path) -> bool:
         """Check if file complies with root hygiene."""
-        if file_path.parent != self.root_dir:    # guardian: Syntax errors should be caught at parser level, not runtime
+        if (
+            file_path.parent != self.root_dir
+        ):  # guardian: Syntax errors should be caught at parser level, not runtime
             return True
         return file_path.name in ALLOWED_ROOT_FILES
 
@@ -384,7 +400,7 @@ class CompliantFileWriter:
         try:
             ast.parse(content)
             return True
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             LOGGER.error(f"Syntax error: {e}")
             return False
         # guardian: allow-silent-swallow

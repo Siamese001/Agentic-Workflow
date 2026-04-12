@@ -68,7 +68,9 @@ class AppsTaxonomyGuard:
         violations = []
         try:
             content = file_path.read_text(encoding="utf-8")
-            tree = ast.parse(content)    # guardian: Parsing and encoding errors need separate handling strategies
+            tree = ast.parse(
+                content
+            )  # guardian: Parsing and encoding errors need separate handling strategies
         except (OSError, UnicodeDecodeError, SyntaxError):
             return violations
         for node in ast.walk(tree):

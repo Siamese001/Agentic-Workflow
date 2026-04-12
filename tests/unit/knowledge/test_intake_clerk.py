@@ -27,6 +27,7 @@ class TestIntakeClerk:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_detect_modality_text_only(self):
@@ -276,6 +277,7 @@ class TestCanonicalStore:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_store_and_retrieve_unit(self):

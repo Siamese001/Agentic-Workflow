@@ -126,7 +126,9 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
 
         # Return type annotation
         if node.returns:
-            for name in tqdm(self._extract_annotation_names(node.returns), desc="return ann", unit="name", leave=False):
+            for name in tqdm(
+                self._extract_annotation_names(node.returns), desc="return ann", unit="name", leave=False
+            ):
                 self.edges.append(
                     _Edge(
                         from_name=self._module_adg_name,
@@ -142,7 +144,12 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
         # Argument annotations
         for arg in tqdm(node.args.args + node.args.kwonlyargs, desc="arg ann", unit="arg", leave=False):
             if arg.annotation:
-                for name in tqdm(self._extract_annotation_names(arg.annotation), desc="  ann names", unit="name", leave=False):
+                for name in tqdm(
+                    self._extract_annotation_names(arg.annotation),
+                    desc="  ann names",
+                    unit="name",
+                    leave=False,
+                ):
                     self.edges.append(
                         _Edge(
                             from_name=self._module_adg_name,
@@ -163,7 +170,9 @@ class _TypeAnnotationVisitor(BaseStructuralVisitor):
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
         if node.annotation:
-            for name in tqdm(self._extract_annotation_names(node.annotation), desc="var ann", unit="name", leave=False):
+            for name in tqdm(
+                self._extract_annotation_names(node.annotation), desc="var ann", unit="name", leave=False
+            ):
                 self.edges.append(
                     _Edge(
                         from_name=self._module_adg_name,

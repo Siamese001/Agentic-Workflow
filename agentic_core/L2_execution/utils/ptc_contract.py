@@ -285,7 +285,9 @@ class PTCContractEnforcer:
             )
         try:
             envelope.verify(self.secret)
-        except SignatureVerificationError as exc:    # guardian: SignatureVerificationError should be handled with specific context
+        except (
+            SignatureVerificationError
+        ) as exc:  # guardian: SignatureVerificationError should be handled with specific context
             self._violation_count += 1
             raise PTCContractViolation(
                 f"PTC contract violation: envelope signature invalid -- {exc}",

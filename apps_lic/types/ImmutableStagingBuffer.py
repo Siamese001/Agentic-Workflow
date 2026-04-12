@@ -84,14 +84,18 @@ try:
     class MCPHardenedMixin(mcp_hardened_mixin):
         pass
 except ImportError:
+
     class MCPHardenedMixin:
         pass
+
 
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
+
     class HealerMixin:
         pass
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -198,8 +202,11 @@ class ImmutableStagingBuffer(MCPHardenedMixin, HealerMixin):
             ValueError: If the key has already been written to.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ImmutableStagingBuffer.write_once")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ImmutableStagingBuffer.write_once"
+        )
 
         if key in self._locked_keys:
             raise ValueError(f"Key '{key}' is immutable - already written.")

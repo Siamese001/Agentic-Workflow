@@ -3,31 +3,62 @@ ADG retrieval wiring validation — uses actual schema:
   nodes(id, adg_name, entity_type, layer, resolved_path, ...)
   edges(id, src_id, dst_id, relation_type, source_file, ...)
 """
+
 import os
 import sqlite3
 
 SQLITE_PATH = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03312026_1808.sqlite"
 
 RETRIEVAL_RELATIONS = [
-    "pulls_context", "reads_from", "writes_to", "reads_through", "writes_through",
-    "validated_by_safety_plane", "calls", "routes_through", "emits_metric_event",
+    "pulls_context",
+    "reads_from",
+    "writes_to",
+    "reads_through",
+    "writes_through",
+    "validated_by_safety_plane",
+    "calls",
+    "routes_through",
+    "emits_metric_event",
     "execution_terminates_at_uwg",
 ]
 
 AGENTIC_CORE_LAYERS = [
-    "L0_routing", "L1_cognition", "L2_execution",
-    "L3_orchestration", "L4_state", "L5_safety", "L6_observability",
+    "L0_routing",
+    "L1_cognition",
+    "L2_execution",
+    "L3_orchestration",
+    "L4_state",
+    "L5_safety",
+    "L6_observability",
 ]
 
 APPS_PACKAGES = [
-    "apps_lic", "apps_rg", "apps_eval", "apps_exec",
-    "apps_research", "apps_rfp", "apps_shared", "apps_underwriting_ai",
+    "apps_lic",
+    "apps_rg",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_shared",
+    "apps_underwriting_ai",
 ]
 
 RETRIEVAL_KEYWORDS = [
-    "retrieval", "chunk", "embed", "vector", "faiss", "chroma",
-    "rag", "graphrag", "context_assembl", "query_intent", "semantic_cache",
-    "ingestion", "enrich", "parent_child", "adaptive_retrieval",
+    "retrieval",
+    "chunk",
+    "embed",
+    "vector",
+    "faiss",
+    "chroma",
+    "rag",
+    "graphrag",
+    "context_assembl",
+    "query_intent",
+    "semantic_cache",
+    "ingestion",
+    "enrich",
+    "parent_child",
+    "adaptive_retrieval",
 ]
 
 
@@ -61,13 +92,15 @@ def run():
     layer_gaps = []
     for layer in AGENTIC_CORE_LAYERS:
         pat = f"%{layer}%"
-        cur.execute("""
+        cur.execute(
+            """
             SELECT relation_type, COUNT(*) FROM edges
             WHERE source_file LIKE ?
               AND relation_type IN ({})
             GROUP BY relation_type
         """.format(",".join("?" * len(RETRIEVAL_RELATIONS))),
-        [pat] + RETRIEVAL_RELATIONS)
+            [pat] + RETRIEVAL_RELATIONS,
+        )
         rows = cur.fetchall()
         total = sum(r[1] for r in rows)
         status = "OK  " if total > 0 else "GAP "
@@ -80,13 +113,15 @@ def run():
     apps_gaps = []
     for app in APPS_PACKAGES:
         pat = f"%{app}%"
-        cur.execute("""
+        cur.execute(
+            """
             SELECT relation_type, COUNT(*) FROM edges
             WHERE source_file LIKE ?
               AND relation_type IN ({})
             GROUP BY relation_type
         """.format(",".join("?" * len(RETRIEVAL_RELATIONS))),
-        [pat] + RETRIEVAL_RELATIONS)
+            [pat] + RETRIEVAL_RELATIONS,
+        )
         rows = cur.fetchall()
         total = sum(r[1] for r in rows)
         status = "OK  " if total > 0 else "GAP "
@@ -122,13 +157,16 @@ def run():
         ("L6_observability", "L4_state"),
     ]
     for src_l, tgt_l in cross_pairs:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT COUNT(*) FROM edges e
             JOIN nodes n_src ON e.src_id = n_src.id
             JOIN nodes n_dst ON e.dst_id = n_dst.id
             WHERE (n_src.id LIKE ? AND n_dst.id LIKE ?)
                OR (n_src.id LIKE ? AND n_dst.id LIKE ?)
-        """, (f"%{src_l}%", f"%{tgt_l}%", f"%{tgt_l}%", f"%{src_l}%"))
+        """,
+            (f"%{src_l}%", f"%{tgt_l}%", f"%{tgt_l}%", f"%{src_l}%"),
+        )
         count = cur.fetchone()[0]
         status = "OK  " if count > 0 else "GAP "
         print(f"  [{status}] {src_l} <-> {tgt_l}: {count:,}")
@@ -138,21 +176,31 @@ def run():
     for app in APPS_PACKAGES:
         app_gaps = []
         for layer in ["L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety"]:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT COUNT(*) FROM edges
                 WHERE source_file LIKE ?
-            """, (f"%{app}%",))
+            """,
+                (f"%{app}%",),
+            )
             # Use source_file for app side, node id for layer side
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT COUNT(*) FROM edges e
                 JOIN nodes n_src ON e.src_id = n_src.id
                 JOIN nodes n_dst ON e.dst_id = n_dst.id
                 WHERE (e.source_file LIKE ? AND (n_src.id LIKE ? OR n_dst.id LIKE ?))
                    OR (e.source_file LIKE ? AND (n_src.id LIKE ? OR n_dst.id LIKE ?))
-            """, (
-                f"%{app}%", f"%{layer}%", f"%{layer}%",
-                f"%{layer}%", f"%{app}%", f"%{app}%",
-            ))
+            """,
+                (
+                    f"%{app}%",
+                    f"%{layer}%",
+                    f"%{layer}%",
+                    f"%{layer}%",
+                    f"%{app}%",
+                    f"%{app}%",
+                ),
+            )
             count = cur.fetchone()[0]
             if count == 0:
                 app_gaps.append(layer)

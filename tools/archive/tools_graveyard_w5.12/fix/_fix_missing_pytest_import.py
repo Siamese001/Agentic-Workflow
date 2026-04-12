@@ -1,4 +1,5 @@
 """Add missing 'import pytest' to stub test files that call pytest.skip without importing pytest."""
+
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent

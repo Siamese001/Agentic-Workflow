@@ -215,7 +215,12 @@ class TelemetryEvent:
 
     @classmethod
     def create(
-        cls, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any],
+        cls,
+        trace_id: str,
+        stage: str,
+        kind: str,
+        commit_tick: int,
+        details: dict[str, Any],
     ) -> "TelemetryEvent":
         """
         Create a new TelemetryEvent with deterministic event_hash.
@@ -266,7 +271,13 @@ class TelemetryEmitter:
         record_fn(event)
 
     def build_event(
-        self, *, trace_id: str, stage: str, kind: str, commit_tick: int, details: dict[str, Any],
+        self,
+        *,
+        trace_id: str,
+        stage: str,
+        kind: str,
+        commit_tick: int,
+        details: dict[str, Any],
     ) -> TelemetryEvent:
         """
         Convenience constructor for TelemetryEvent.

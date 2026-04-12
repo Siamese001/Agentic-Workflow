@@ -16,14 +16,17 @@ class TestArtifactValidateCompatTypesAdg:
     def test_artifact_validate_compat_types_adg_imports(self):
         """Test artifact_validate_compat_types_adg module imports."""
         from agentic_core import artifact_validate_compat_types_adg
+
         assert artifact_validate_compat_types_adg is not None
 
     def test_artifact_validate_compat_types_adg_class(self):
         """Test ArtifactValidateCompatTypesAdg class exists."""
         from agentic_core import ArtifactValidateCompatTypesAdg
+
         assert ArtifactValidateCompatTypesAdg is not None
 
     def test_artifact_validate_compat_types_adg_callable(self):
         """Test artifact_validate_compat_types_adg functions are callable."""
         from agentic_core import validate_artifact_validate_compat_types_adg
+
         assert callable(validate_artifact_validate_compat_types_adg)

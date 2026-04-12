@@ -250,8 +250,11 @@ class HTMLDocumentLoader:
             Visible text content with tags stripped, or "" on any failure.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HTMLDocumentLoader.load_file")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HTMLDocumentLoader.load_file"
+        )
 
         text = _try_load_text(file_path)
         return text if text is not None else ""

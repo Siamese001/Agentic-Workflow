@@ -183,7 +183,10 @@ def assert_no_apps_imports(caller_module: str) -> None:
 
 
 def validate_layer_direction(
-    source_module: str, target_module: str, source_layer: int | None = None, target_layer: int | None = None,
+    source_module: str,
+    target_module: str,
+    source_layer: int | None = None,
+    target_layer: int | None = None,
 ) -> None:
     """Raise SovereigntyViolationError if import direction violates layer gravity.
 

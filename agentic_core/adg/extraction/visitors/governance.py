@@ -254,6 +254,7 @@ class _SandboxAirlockVisitor(BaseStructuralVisitor):
         """Emit a sandbox airlock edge."""
         from agentic_core.adg.contracts.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+
         self.edges.append(
             _Edge(
                 from_name=self._module_adg_name,

@@ -3,6 +3,7 @@
 Final Sequential Thinking MCP Test - Show All Results
 """
 
+
 def test_all_components():
     """Test all sequential thinking components and show results."""
 
@@ -13,15 +14,16 @@ def test_all_components():
     print("\n1️⃣ Environment Variables Test")
     print("-" * 30)
     import os
+
     env_vars = {
-        'SEQUENTIAL_THINKING_ENABLED': os.environ.get('SEQUENTIAL_THINKING_ENABLED', 'false'),
-        'SEQUENTIAL_THINKING_PRIORITY': os.environ.get('SEQUENTIAL_THINKING_PRIORITY', 'not set'),
-        'WINDSURF_TOOL_PREFERENCE': os.environ.get('WINDSURF_TOOL_PREFERENCE', 'not set'),
-        'SWE15_SEQUENTIAL_THINKING': os.environ.get('SWE15_SEQUENTIAL_THINKING', 'false'),
+        "SEQUENTIAL_THINKING_ENABLED": os.environ.get("SEQUENTIAL_THINKING_ENABLED", "false"),
+        "SEQUENTIAL_THINKING_PRIORITY": os.environ.get("SEQUENTIAL_THINKING_PRIORITY", "not set"),
+        "WINDSURF_TOOL_PREFERENCE": os.environ.get("WINDSURF_TOOL_PREFERENCE", "not set"),
+        "SWE15_SEQUENTIAL_THINKING": os.environ.get("SWE15_SEQUENTIAL_THINKING", "false"),
     }
 
     for var, value in env_vars.items():
-        status = "✅" if value != 'false' and value != 'not set' else "❌"
+        status = "✅" if value != "false" and value != "not set" else "❌"
         print(f"   {status} {var}: {value}")
 
     # Test 2: MCP Configuration
@@ -29,13 +31,16 @@ def test_all_components():
     print("-" * 30)
     try:
         import json
+
         with open("C:\\Users\\amita\\.codeium\\windsurf\\mcp_config.json") as f:
             config = json.load(f)
 
         seq_thinking = config.get("mcpServers", {}).get("sequential-thinking", {})
         if seq_thinking and not seq_thinking.get("disabled", True):
             print("   ✅ Sequential thinking configured and enabled")
-            print(f"   📊 Server position: {list(config.get('mcpServers', {}).keys()).index('sequential-thinking') + 1}")
+            print(
+                f"   📊 Server position: {list(config.get('mcpServers', {}).keys()).index('sequential-thinking') + 1}"
+            )
         else:
             print("   ❌ Sequential thinking not properly configured")
     except Exception as e:
@@ -65,6 +70,7 @@ def test_all_components():
     print("-" * 30)
     try:
         from apps_shared.prompts.sequential_thinking_templates import get_all_templates
+
         templates = get_all_templates()
         print(f"   ✅ {len(templates)} templates available")
 
@@ -82,6 +88,7 @@ def test_all_components():
     print("-" * 30)
     try:
         from tools.monitoring.mcp_usage_tracker import MCPUsageTracker
+
         tracker = MCPUsageTracker()
         metrics = tracker.get_sequential_thinking_metrics()
         print("   ✅ Usage tracker operational")
@@ -106,17 +113,24 @@ def test_all_components():
             {"name": "memory", "description": "Memory management"},
         ]
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump({"tools": test_tools}, f)
             input_file = f.name
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             output_file = f.name
 
         # Run booster
-        result = subprocess.run([
-            "python", "tools/mcp/sequential_thinking_booster.py", input_file, output_file,
-        ], capture_output=True, text=True)
+        result = subprocess.run(
+            [
+                "python",
+                "tools/mcp/sequential_thinking_booster.py",
+                input_file,
+                output_file,
+            ],
+            capture_output=True,
+            text=True,
+        )
 
         if result.returncode == 0 and Path(output_file).exists():
             with open(output_file) as f:
@@ -183,6 +197,7 @@ def test_all_components():
     print("   1. Restart Windsurf to load new configuration")
     print("   2. Test with real SWE 1.5 tasks")
     print("   3. Monitor usage with: python tools/monitoring/mcp_usage_tracker.py --report")
+
 
 if __name__ == "__main__":
     test_all_components()

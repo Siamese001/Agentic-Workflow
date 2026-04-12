@@ -13,6 +13,7 @@ Strategy:
 - Remove _AVAILABLE flag and stub assignments
 - Keep actual test logic intact
 """
+
 from __future__ import annotations
 
 import ast
@@ -22,11 +23,23 @@ import re
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
-FIRST_PARTY_TOPS = frozenset({
-    "agentic_core", "apps_lic", "apps_rg", "apps_shared", "apps_exec",
-    "apps_rfp", "apps_research", "apps_eval", "system_learning",
-    "infrastructure", "tools", "ops_scripts", "data",
-})
+FIRST_PARTY_TOPS = frozenset(
+    {
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "apps_exec",
+        "apps_rfp",
+        "apps_research",
+        "apps_eval",
+        "system_learning",
+        "infrastructure",
+        "tools",
+        "ops_scripts",
+        "data",
+    }
+)
 
 
 def _is_first_party(module_name: str) -> bool:
@@ -51,11 +64,11 @@ def fix_broken_template(filepath: pathlib.Path) -> dict:
     # Extract the import target
     import_match = None
     for line in lines:
-        m = re.match(r'\s+import\s+([\w.]+)\s+as\s+_mod', line)
+        m = re.match(r"\s+import\s+([\w.]+)\s+as\s+_mod", line)
         if m:
             import_match = m.group(1)
             break
-        m = re.match(r'\s+from\s+([\w.]+)\s+import', line)
+        m = re.match(r"\s+from\s+([\w.]+)\s+import", line)
         if m:
             import_match = m.group(1)
             break
@@ -105,14 +118,18 @@ def fix_broken_template(filepath: pathlib.Path) -> dict:
     else:
         new_lines.append(f"import {import_match}  # noqa: F401")
 
-    new_lines.extend([
-        "",
-        "",
-        "def test_module_importable():",
-        f'    """Module {module_name} must be importable."""',
-        "    assert _mod is not None" if "as _mod" in source else f"    assert {import_match} is not None",
-        "",
-    ])
+    new_lines.extend(
+        [
+            "",
+            "",
+            "def test_module_importable():",
+            f'    """Module {module_name} must be importable."""',
+            "    assert _mod is not None"
+            if "as _mod" in source
+            else f"    assert {import_match} is not None",
+            "",
+        ]
+    )
 
     new_source = "\n".join(new_lines)
     filepath.write_text(new_source, encoding="utf-8")
@@ -161,11 +178,17 @@ def fix_stub_pattern(filepath: pathlib.Path) -> dict:
         for handler in node.handlers:
             if handler.type is None:
                 continue
-            if isinstance(handler.type, ast.Name) and handler.type.id in ("ImportError", "ModuleNotFoundError"):
+            if isinstance(handler.type, ast.Name) and handler.type.id in (
+                "ImportError",
+                "ModuleNotFoundError",
+            ):
                 import_error_handler = handler
                 break
             if isinstance(handler.type, ast.Tuple):
-                if any(isinstance(e, ast.Name) and e.id in ("ImportError", "ModuleNotFoundError") for e in handler.type.elts):
+                if any(
+                    isinstance(e, ast.Name) and e.id in ("ImportError", "ModuleNotFoundError")
+                    for e in handler.type.elts
+                ):
                     import_error_handler = handler
                     break
 
@@ -193,7 +216,7 @@ def fix_stub_pattern(filepath: pathlib.Path) -> dict:
         import_source_lines = []
         for imp_node in import_lines:
             start = imp_node.lineno - 1
-            end = (imp_node.end_lineno or imp_node.lineno)
+            end = imp_node.end_lineno or imp_node.lineno
             for ln in range(start, end):
                 if ln < len(lines):
                     # Remove indentation from try block (typically 4 spaces)
@@ -213,11 +236,13 @@ def fix_stub_pattern(filepath: pathlib.Path) -> dict:
         # (keep only import lines)
         replacement = "\n".join(import_source_lines)
 
-        edits.append({
-            "start": try_start,
-            "end": try_end,
-            "replacement": replacement,
-        })
+        edits.append(
+            {
+                "start": try_start,
+                "end": try_end,
+                "replacement": replacement,
+            }
+        )
 
     if not edits:
         return {"file": str(filepath), "status": "skip", "reason": "no first-party try/except found"}
@@ -246,18 +271,18 @@ def fix_stub_pattern(filepath: pathlib.Path) -> dict:
 
     # Remove _AVAILABLE references in simple assertions
     new_source = re.sub(
-        r'\n\s*assert _AVAILABLE or not _AVAILABLE\n',
+        r"\n\s*assert _AVAILABLE or not _AVAILABLE\n",
         "\n",
         new_source,
     )
 
     # Remove standalone _AVAILABLE = True lines that may remain
-    new_source = re.sub(r'\n\s*_AVAILABLE = True\n', "\n", new_source)
+    new_source = re.sub(r"\n\s*_AVAILABLE = True\n", "\n", new_source)
 
     # Remove test_module_importable that just checks _AVAILABLE
     new_source = re.sub(
         r'\ndef test_module_importable\(\):\n\s*"""[^"]*"""\n\s*assert _AVAILABLE or not _AVAILABLE\n',
-        "\ndef test_module_importable():\n    \"\"\"Module must be importable.\"\"\"\n    pass  # Import verified at module level\n",
+        '\ndef test_module_importable():\n    """Module must be importable."""\n    pass  # Import verified at module level\n',
         new_source,
     )
 
@@ -289,10 +314,16 @@ def fix_pass_or_flag_pattern(filepath: pathlib.Path) -> dict:
         for handler in node.handlers:
             if handler.type is None:
                 continue
-            if isinstance(handler.type, ast.Name) and handler.type.id in ("ImportError", "ModuleNotFoundError"):
+            if isinstance(handler.type, ast.Name) and handler.type.id in (
+                "ImportError",
+                "ModuleNotFoundError",
+            ):
                 has_import_error = True
             if isinstance(handler.type, ast.Tuple):
-                if any(isinstance(e, ast.Name) and e.id in ("ImportError", "ModuleNotFoundError") for e in handler.type.elts):
+                if any(
+                    isinstance(e, ast.Name) and e.id in ("ImportError", "ModuleNotFoundError")
+                    for e in handler.type.elts
+                ):
                     has_import_error = True
 
         if not has_import_error:
@@ -328,11 +359,13 @@ def fix_pass_or_flag_pattern(filepath: pathlib.Path) -> dict:
                         text = text[4:]
                     import_source.append(text)
 
-        edits.append({
-            "start": node.lineno,
-            "end": node.end_lineno or node.lineno,
-            "replacement": "\n".join(import_source),
-        })
+        edits.append(
+            {
+                "start": node.lineno,
+                "end": node.end_lineno or node.lineno,
+                "replacement": "\n".join(import_source),
+            }
+        )
 
     if not edits:
         return {"file": str(filepath), "status": "skip", "reason": "no first-party try/except found"}
@@ -356,9 +389,9 @@ def fix_pass_or_flag_pattern(filepath: pathlib.Path) -> dict:
         "",
         new_source,
     )
-    new_source = re.sub(r'\n\s*_AVAILABLE = True\n', "\n", new_source)
+    new_source = re.sub(r"\n\s*_AVAILABLE = True\n", "\n", new_source)
     new_source = re.sub(
-        r'\n\s*assert _AVAILABLE or not _AVAILABLE\n',
+        r"\n\s*assert _AVAILABLE or not _AVAILABLE\n",
         "\n",
         new_source,
     )
@@ -454,9 +487,9 @@ def main():
         except Exception as e:
             results["errors"].append({"file": fp, "error": str(e)})
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("WAVE 1 RESULTS")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Fixed: {results['fixed']}")
     print(f"Skipped: {results['skipped']}")
     print(f"Errors: {len(results['errors'])}")

@@ -63,7 +63,9 @@ class DriftDetector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DriftDetector.register_context_hash",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "DriftDetector.register_context_hash",
         )
 
         if replay_key in self._context_registry:
@@ -80,8 +82,9 @@ class DriftDetector:
                     _adg_score = _gbp(_Path(__file__).resolve(), _root).behavioral_score
                 # guardian: allow-silent-swallow
                 except Exception as e:
+                    import logging
 
-                    import logging; logging.getLogger(__name__).debug("drift_detector: Exception swallowed at L82: %s", e)
+                    logging.getLogger(__name__).debug("drift_detector: Exception swallowed at L82: %s", e)
                 # guardian: allow-direct-prompt-compilation
                 logger.warning(
                     "C0 context drift detected for replay key %s: old_hash=%s..., "

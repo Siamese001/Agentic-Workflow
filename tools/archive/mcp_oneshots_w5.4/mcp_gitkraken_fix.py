@@ -24,8 +24,11 @@ class MCPGitKrakenFix:
 
         try:
             result = subprocess.run(
-                cmd, shell=True, cwd=str(self.repo_root),
-                capture_output=True, text=True,
+                cmd,
+                shell=True,
+                cwd=str(self.repo_root),
+                capture_output=True,
+                text=True,
                 timeout=timeout,
             )
 
@@ -70,25 +73,25 @@ class MCPGitKrakenFix:
         # First attempt with --no-verify to avoid hook issues
         if use_no_verify:
             result = self.run_git_command(f'git commit --no-verify -m "{message}"')
-            if result['success']:
+            if result["success"]:
                 return result
 
         # Second attempt without --no-verify but with hook handling
         result = self.run_git_command(f'git commit -m "{message}"')
 
-        if not result['success']:
-            stderr = result['stderr'].lower()
+        if not result["success"]:
+            stderr = result["stderr"].lower()
 
             # Check if hooks modified files
-            if 'modified by this hook' in stderr or 'files were modified' in stderr:
+            if "modified by this hook" in stderr or "files were modified" in stderr:
                 # Re-stage all changes and try again
-                self.run_git_command('git add .')
+                self.run_git_command("git add .")
                 result = self.run_git_command(f'git commit -m "{message}"')
 
             # Check for trailing whitespace issues
-            elif 'trailing-whitespace' in stderr or 'end-of-file-fixer' in stderr:
+            elif "trailing-whitespace" in stderr or "end-of-file-fixer" in stderr:
                 # Let hooks fix the files, then re-stage and commit
-                self.run_git_command('git add .')
+                self.run_git_command("git add .")
                 result = self.run_git_command(f'git commit --no-verify -m "{message}"')
 
         return result
@@ -115,8 +118,8 @@ class MCPGitKrakenFix:
             }
 
         # Add files
-        files_str = ' '.join(f'"{f}"' for f in files)
-        return self.run_git_command(f'git add {files_str}')
+        files_str = " ".join(f'"{f}"' for f in files)
+        return self.run_git_command(f"git add {files_str}")
 
     def safe_commit_with_fallback(self, message: str, files: list[str] | None = None) -> dict:
         """Safe commit with multiple fallback strategies"""
@@ -124,27 +127,28 @@ class MCPGitKrakenFix:
         if files:
             # Add files first
             add_result = self.smart_add(files)
-            if not add_result['success']:
+            if not add_result["success"]:
                 return add_result
 
         # Try smart commit first
         result = self.smart_commit(message)
 
-        if result['success']:
+        if result["success"]:
             return result
 
         # Fallback 1: Try with bash-style command
         bash_cmd = f'cd "{self.repo_root}" && git commit --no-verify -m "{message}"'
         result = self.run_git_command(bash_cmd)
 
-        if result['success']:
+        if result["success"]:
             return result
 
         # Fallback 2: Try with explicit staging
-        self.run_git_command('git add -A')
+        self.run_git_command("git add -A")
         result = self.run_git_command(f'git commit --no-verify -m "{message}"')
 
         return result
+
 
 def test_mcp_fixes():
     """Test the MCP GitKraken fixes"""
@@ -160,8 +164,8 @@ def test_mcp_fixes():
     small_file = repo_root / "test_small_fix.txt"
 
     # Create files
-    with open(large_file, 'w') as f:
-        f.write('x' * (101 * 1024 * 1024))  # 101MB
+    with open(large_file, "w") as f:
+        f.write("x" * (101 * 1024 * 1024))  # 101MB
     small_file.write_text("Small test file\n")
 
     # Try to add both
@@ -186,7 +190,7 @@ def test_mcp_fixes():
     print(f"✅ Smart commit: {result['success']}")
 
     # Clean up
-    if result['success']:
+    if result["success"]:
         fix.run_git_command("git reset --hard HEAD~1")
     test_file.unlink(missing_ok=True)
 
@@ -199,11 +203,12 @@ def test_mcp_fixes():
     print(f"✅ Safe commit with fallbacks: {result['success']}")
 
     # Clean up
-    if result['success']:
+    if result["success"]:
         fix.run_git_command("git reset --hard HEAD~1")
     test_file.unlink(missing_ok=True)
 
     return True
+
 
 def create_mcp_wrapper_script():
     """Create a wrapper script that can replace MCP GitKraken functions"""
@@ -277,10 +282,11 @@ if __name__ == "__main__":
 '''
 
     wrapper_file = Path(__file__).parent / "mcp_git_wrapper.py"
-    with open(wrapper_file, 'w') as f:
+    with open(wrapper_file, "w") as f:
         f.write(wrapper_script)
 
     return wrapper_file
+
 
 def main():
     """Main function"""
@@ -320,8 +326,8 @@ def main():
     print(f"✅ Wrapper commit: {commit_result['success']}")
 
     # Clean up
-    if commit_result['success']:
-        subprocess.run('git reset --hard HEAD~1', cwd=str(repo_root), shell=True)
+    if commit_result["success"]:
+        subprocess.run("git reset --hard HEAD~1", cwd=str(repo_root), shell=True)
     test_file.unlink(missing_ok=True)
 
     print("\n=== Summary ===")
@@ -332,6 +338,7 @@ def main():
     print("✅ Fallback strategies ensure robust operation")
 
     return True
+
 
 if __name__ == "__main__":
     main()

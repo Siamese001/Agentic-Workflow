@@ -68,7 +68,8 @@ class TimeshiftRoutingDecision:
 
 
 def evaluate_timeshift_routing(
-    execution_start_tick: int, routing_config: object | None = None,
+    execution_start_tick: int,
+    routing_config: object | None = None,
 ) -> TimeshiftRoutingDecision:
     """
     Evaluate routing mode using ONLY prior committed signals.

@@ -181,8 +181,11 @@ class L1ModelChangePackage:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L1ModelChangePackage.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L1ModelChangePackage.canonical_bytes"
+        )
 
         data = {
             "surface_name": self.surface_name,
@@ -202,7 +205,14 @@ class L1ModelProposer:
     """Concrete L1 proposer conforming to the L1Proposer Protocol."""
 
     def propose(
-        self, snapshot: Any, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any,
+        self,
+        snapshot: Any,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
     ) -> L1ModelChangePackage | None:
         """Propose L1 model calibration changes.
 
@@ -215,6 +225,7 @@ class L1ModelProposer:
             Current L1 config with ``"temperature"``.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L1ModelProposer.propose")
 

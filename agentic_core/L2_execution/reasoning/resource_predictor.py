@@ -239,7 +239,9 @@ class DefaultDeterministicResourcePredictor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DefaultDeterministicResourcePredictor.predict",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "DefaultDeterministicResourcePredictor.predict",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -360,6 +362,7 @@ class DefaultDeterministicResourcePredictor:
         """
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             # Calculate accuracy metrics

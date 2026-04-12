@@ -58,16 +58,15 @@ class IdempotentWave:
         if state:
             print(f"📋 Using previous results for {self.wave_name}")
             return {
-                'wave_name': self.wave_name,
-                'execution_id': state.execution_id,
-                'timestamp': state.timestamp,
-                'metrics': state.metrics,
-                'files_modified': list(state.files_modified.keys()),
-                'patterns_applied': {
-                    pattern_type: list(patterns)
-                    for pattern_type, patterns in state.patterns_applied.items()
+                "wave_name": self.wave_name,
+                "execution_id": state.execution_id,
+                "timestamp": state.timestamp,
+                "metrics": state.metrics,
+                "files_modified": list(state.files_modified.keys()),
+                "patterns_applied": {
+                    pattern_type: list(patterns) for pattern_type, patterns in state.patterns_applied.items()
                 },
-                'idempotent': True,
+                "idempotent": True,
             }
         return {}
 
@@ -101,28 +100,30 @@ class IdempotentWave2a(IdempotentWave):
 
         # Find target files
         target_files = self._find_target_files()
-        self.record_metric('target_files', len(target_files))
+        self.record_metric("target_files", len(target_files))
 
         files_modified = 0
         skips_removed = 0
 
         for file_path in target_files:
             # Apply file modifications idempotently
-            was_modified = self.modify_file_idempotently(file_path, lambda: self._remove_first_party_skips(file_path))
+            was_modified = self.modify_file_idempotently(
+                file_path, lambda: self._remove_first_party_skips(file_path)
+            )
 
             if was_modified:
                 files_modified += 1
                 skips_removed += self._count_removed_skips(file_path)
 
-        self.record_metric('files_modified', files_modified)
-        self.record_metric('skips_removed', skips_removed)
+        self.record_metric("files_modified", files_modified)
+        self.record_metric("skips_removed", skips_removed)
 
         return {
-            'wave_name': self.wave_name,
-            'target_files': len(target_files),
-            'files_modified': files_modified,
-            'skips_removed': skips_removed,
-            'idempotent': True,
+            "wave_name": self.wave_name,
+            "target_files": len(target_files),
+            "files_modified": files_modified,
+            "skips_removed": skips_removed,
+            "idempotent": True,
         }
 
     def _find_target_files(self) -> list[Path]:
@@ -158,7 +159,7 @@ class IdempotentWave5c(IdempotentWave):
         conftest_files = list(Path("tests").rglob("conftest.py"))
         conftest_files.append(Path("conftest.py"))
 
-        self.record_metric('target_files', len(conftest_files))
+        self.record_metric("target_files", len(conftest_files))
 
         files_modified = 0
         improvements_added = 0
@@ -166,21 +167,23 @@ class IdempotentWave5c(IdempotentWave):
         for conftest_file in conftest_files:
             if conftest_file.exists():
                 # Apply modifications idempotently
-                was_modified = self.modify_file_idempotently(conftest_file, lambda: self._harden_conftest(conftest_file))
+                was_modified = self.modify_file_idempotently(
+                    conftest_file, lambda: self._harden_conftest(conftest_file)
+                )
 
                 if was_modified:
                     files_modified += 1
                     improvements_added += self._count_improvements(conftest_file)
 
-        self.record_metric('files_modified', files_modified)
-        self.record_metric('improvements_added', improvements_added)
+        self.record_metric("files_modified", files_modified)
+        self.record_metric("improvements_added", improvements_added)
 
         return {
-            'wave_name': self.wave_name,
-            'target_files': len(conftest_files),
-            'files_modified': files_modified,
-            'improvements_added': improvements_added,
-            'idempotent': True,
+            "wave_name": self.wave_name,
+            "target_files": len(conftest_files),
+            "files_modified": files_modified,
+            "improvements_added": improvements_added,
+            "idempotent": True,
         }
 
     def _harden_conftest(self, conftest_file: Path) -> bool:
@@ -248,5 +251,5 @@ def main():
     print(f"\nExecution Summary: {summary}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

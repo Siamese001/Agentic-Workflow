@@ -309,7 +309,7 @@ def ast_scan_wall_clock(source: str, file_path: str = "<string>") -> list[WallCl
     violations: list[WallClockViolation] = []
     try:
         tree = ast.parse(source, filename=file_path)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return violations
 
     for node in ast.walk(tree):

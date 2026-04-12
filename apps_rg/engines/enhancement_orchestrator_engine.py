@@ -168,14 +168,19 @@ class EnhancementOrchestratorEngine(BaseRGEngine):
         super().__init__(ctx, node_id="ORCHESTRATION.ENHANCEMENT")
 
     async def execute(
-        self, resume_data: dict[str, Any], enhancement_config: dict[str, Any],
+        self,
+        resume_data: dict[str, Any],
+        enhancement_config: dict[str, Any],
     ) -> dict[str, Any]:
         """
         Coordinate external enhancement tools.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancementOrchestratorEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancementOrchestratorEngine.execute"
+        )
 
         self._mcp_audit("enhancement_start")
         enhanced_data = resume_data.copy()

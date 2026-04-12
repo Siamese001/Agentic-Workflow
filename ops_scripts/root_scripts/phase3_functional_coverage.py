@@ -213,7 +213,10 @@ def analyze_module_structure(module_path: pathlib.Path) -> dict:
             "functions": functions,
             "constants": constants,
         }
-    except (SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies
+    except (
+        SyntaxError,
+        UnicodeDecodeError,
+    ):  # guardian: Parsing and encoding errors need separate handling strategies
         return {"classes": [], "functions": [], "constants": []}
 
 

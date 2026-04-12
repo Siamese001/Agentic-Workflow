@@ -213,6 +213,7 @@ class BM25Scorer:
             documents: List of document texts
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BM25Scorer.build_index")
 
@@ -283,8 +284,11 @@ class HybridScorer:
             documents: List of document dictionaries with 'id' and 'content'
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HybridScorer.index_documents")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HybridScorer.index_documents"
+        )
 
         self.documents = documents
         doc_texts = [doc["content"] for doc in documents]

@@ -17,6 +17,7 @@ from typing import Any
 @dataclass
 class SequentialThinkingRequest:
     """Request to invoke sequential thinking MCP."""
+
     thought: str
     thoughtNumber: int = 1
     totalThoughts: int = 25
@@ -37,15 +38,15 @@ class SequentialThinkingMCPInvoker:
 
     def __init__(self):
         self.node_path = os.environ.get(
-            'NODE_PATH',
-            r'C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node.exe',
+            "NODE_PATH",
+            r"C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node.exe",
         )
         self.server_path = os.environ.get(
-            'SEQUENTIAL_THINKING_SERVER',
-            r'C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node_modules\@modelcontextprotocol\server-sequential-thinking\dist\index.js',
+            "SEQUENTIAL_THINKING_SERVER",
+            r"C:\Users\amita\AppData\Roaming\fnm\node-versions\v24.13.0\installation\node_modules\@modelcontextprotocol\server-sequential-thinking\dist\index.js",
         )
         self.invocation_count = 0
-        self.is_enabled = os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'false').lower() == 'true'
+        self.is_enabled = os.environ.get("SEQUENTIAL_THINKING_AUTO_TRIGGER", "false").lower() == "true"
 
     def is_available(self) -> bool:
         """Check if sequential thinking server is available."""
@@ -85,7 +86,7 @@ class SequentialThinkingMCPInvoker:
 I am analyzing this request using structured sequential thinking:
 
 **Request Summary:**
-{prompt[:200]}{'...' if len(prompt) > 200 else ''}
+{prompt[:200]}{"..." if len(prompt) > 200 else ""}
 
 **Complexity Assessment:** {complexity}
 
@@ -104,8 +105,17 @@ Understanding the full scope of the request and identifying key components that 
     def _assess_complexity(self, prompt: str) -> str:
         """Quick complexity assessment."""
         complexity_indicators = [
-            'plan', 'design', 'architecture', 'implement', 'refactor',
-            'migrate', 'debug', 'optimize', 'analyze', 'test', 'validate',
+            "plan",
+            "design",
+            "architecture",
+            "implement",
+            "refactor",
+            "migrate",
+            "debug",
+            "optimize",
+            "analyze",
+            "test",
+            "validate",
         ]
 
         prompt_lower = prompt.lower()
@@ -170,7 +180,7 @@ Before answering, you MUST use the sequential thinking tool.
 **Method:** `sequentialthinking`
 **Parameters:**
 ```json
-{json.dumps(tool_call['arguments'], indent=2)}
+{json.dumps(tool_call["arguments"], indent=2)}
 ```
 
 **After invoking the tool, proceed with your analysis.**
@@ -189,16 +199,35 @@ Before answering, you MUST use the sequential thinking tool.
     def should_force_sequential_thinking(self, prompt: str) -> bool:
         """Determine if this prompt requires sequential thinking."""
         # Always force in aggressive mode
-        if os.environ.get('SEQUENTIAL_THINKING_AGGRESSIVE_MODE') == 'enabled':
+        if os.environ.get("SEQUENTIAL_THINKING_AGGRESSIVE_MODE") == "enabled":
             return True
 
         # Check for complexity indicators
         complexity_words = [
-            'plan', 'design', 'architecture', 'implement', 'create', 'build',
-            'refactor', 'migrate', 'debug', 'troubleshoot', 'fix',
-            'optimize', 'improve', 'analyze', 'investigate',
-            'test', 'validate', 'verify', 'review', 'audit',
-            'strategy', 'approach', 'method', 'solution',
+            "plan",
+            "design",
+            "architecture",
+            "implement",
+            "create",
+            "build",
+            "refactor",
+            "migrate",
+            "debug",
+            "troubleshoot",
+            "fix",
+            "optimize",
+            "improve",
+            "analyze",
+            "investigate",
+            "test",
+            "validate",
+            "verify",
+            "review",
+            "audit",
+            "strategy",
+            "approach",
+            "method",
+            "solution",
         ]
 
         prompt_lower = prompt.lower()
@@ -207,7 +236,7 @@ Before answering, you MUST use the sequential thinking tool.
         has_complexity = any(word in prompt_lower for word in complexity_words)
 
         # Check for question patterns
-        has_question = any(word in prompt_lower for word in ['how', 'why', 'what', 'should', 'best way'])
+        has_question = any(word in prompt_lower for word in ["how", "why", "what", "should", "best way"])
 
         # Check length
         is_long = len(prompt) > 150
@@ -217,10 +246,10 @@ Before answering, you MUST use the sequential thinking tool.
 
 class CascadeChatIntegration:
     """
-    Integration point for cascade chat to use sequential thinking.
+        Integration point for cascade chat to use sequential thinking.
 
-    This is the main entry point that should be called at the start of
-cascade chat sessions with Kimi K2.5.
+        This is the main entry point that should be called at the start of
+    cascade chat sessions with Kimi K2.5.
     """
 
     def __init__(self):
@@ -269,19 +298,19 @@ Type your request to begin.
             tool_call = self.wrapper.invoker.get_mcp_tool_call(prompt)
 
             return {
-                'original_prompt': prompt,
-                'wrapped_prompt': wrapped,
-                'should_invoke': True,
-                'tool_call': tool_call,
-                'instruction': 'Use mcp7_sequentialthinking.sequentialthinking() before responding',
+                "original_prompt": prompt,
+                "wrapped_prompt": wrapped,
+                "should_invoke": True,
+                "tool_call": tool_call,
+                "instruction": "Use mcp7_sequentialthinking.sequentialthinking() before responding",
             }
         else:
             return {
-                'original_prompt': prompt,
-                'wrapped_prompt': prompt,
-                'should_invoke': False,
-                'tool_call': None,
-                'instruction': None,
+                "original_prompt": prompt,
+                "wrapped_prompt": prompt,
+                "should_invoke": False,
+                "tool_call": None,
+                "instruction": None,
             }
 
     def get_tool_invocation_reminder(self) -> str:
@@ -312,7 +341,7 @@ def wrap_kimi_k25_prompt(prompt: str) -> str:
     This is the main function to use when processing user prompts.
     """
     result = cascade_integration.process_user_prompt(prompt)
-    return result['wrapped_prompt']
+    return result["wrapped_prompt"]
 
 
 def force_sequential_thinking_in_cascade(prompt: str) -> dict[str, Any]:
@@ -327,12 +356,12 @@ def force_sequential_thinking_in_cascade(prompt: str) -> dict[str, Any]:
 # Setup function for initialization
 def setup_kimi_k2_5_sequential_thinking():
     """Setup the environment for Kimi K2.5 with sequential thinking."""
-    os.environ['SEQUENTIAL_THINKING_AUTO_TRIGGER'] = 'true'
-    os.environ['SEQUENTIAL_THINKING_AGGRESSIVE_MODE'] = 'enabled'
-    os.environ['SEQUENTIAL_THINKING_MAX_THOUGHTS'] = '25'
-    os.environ['SEQUENTIAL_THINKING_TOKEN_BUDGET'] = '50000'
-    os.environ['KIMI_K2_5_SEQUENTIAL_THINKING_REQUIRED'] = 'true'
-    os.environ['MCP_FORCE_SEQUENTIAL_THINKING'] = 'true'
+    os.environ["SEQUENTIAL_THINKING_AUTO_TRIGGER"] = "true"
+    os.environ["SEQUENTIAL_THINKING_AGGRESSIVE_MODE"] = "enabled"
+    os.environ["SEQUENTIAL_THINKING_MAX_THOUGHTS"] = "25"
+    os.environ["SEQUENTIAL_THINKING_TOKEN_BUDGET"] = "50000"
+    os.environ["KIMI_K2_5_SEQUENTIAL_THINKING_REQUIRED"] = "true"
+    os.environ["MCP_FORCE_SEQUENTIAL_THINKING"] = "true"
 
     print("=" * 70)
     print("🧠 KIMI K2.5 SEQUENTIAL THINKING INTEGRATION ACTIVATED 🧠")
@@ -351,7 +380,7 @@ def setup_kimi_k2_5_sequential_thinking():
     print("=" * 70)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Test the integration
     setup_kimi_k2_5_sequential_thinking()
 
@@ -368,11 +397,11 @@ if __name__ == '__main__':
     for i, prompt in enumerate(test_prompts, 1):
         result = cascade_integration.process_user_prompt(prompt)
 
-        status = "✅ TRIGGERED" if result['should_invoke'] else "❌ SKIPPED"
+        status = "✅ TRIGGERED" if result["should_invoke"] else "❌ SKIPPED"
 
         print(f"{i}. {status}: {prompt[:40]}...")
 
-        if result['should_invoke']:
+        if result["should_invoke"]:
             print(f"   Tool call: {result['tool_call'].get('name', 'N/A')}")
             print()
 

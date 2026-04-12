@@ -225,7 +225,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                         method_count += 1
                                         method_names.append(item.name)
                         agents.append(
-                            AgentInfo(    # guardian: Syntax errors should be caught at parser level, not runtime
+                            AgentInfo(  # guardian: Syntax errors should be caught at parser level, not runtime
                                 name=class_name,
                                 file_path=str(py_file),
                                 layer=extract_layer(str(py_file)),
@@ -234,7 +234,9 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                                 method_names=method_names,
                             ),
                         )
-                    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+                    except (
+                        SyntaxError
+                    ):  # guardian: Syntax errors should be caught at parser level, not runtime
                         agents.append(
                             AgentInfo(
                                 name=class_name,
@@ -265,7 +267,9 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
             return ("NO_CLASS_FOUND", "")
         module = ast.Module(body=[target_class], type_ignores=[])
         normalizer = ASTNormalizer()
-        normalized = normalizer.visit(module)    # guardian: Syntax errors should be caught at parser level, not runtime
+        normalized = normalizer.visit(
+            module
+        )  # guardian: Syntax errors should be caught at parser level, not runtime
         ast.fix_missing_locations(normalized)
         try:
             normalized_code = ast.unparse(normalized)
@@ -274,7 +278,7 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
             normalized_code = ast.dump(normalized)
         fingerprint = hashlib.sha256(normalized_code.encode()).hexdigest()[:16]
         return (fingerprint, normalized_code)
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         return ("SYNTAX_ERROR", str(e))
     # guardian: allow-silent-swallow
     except (RuntimeError, OSError) as e:

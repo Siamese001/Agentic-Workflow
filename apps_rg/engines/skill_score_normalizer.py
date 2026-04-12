@@ -172,8 +172,11 @@ class SkillScoreNormalizer(BaseRGEngine):
         Normalize skill scores to 0-1 range.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SkillScoreNormalizer.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SkillScoreNormalizer.execute"
+        )
 
         self._mcp_audit("score_normalization")
         if not raw_scores:

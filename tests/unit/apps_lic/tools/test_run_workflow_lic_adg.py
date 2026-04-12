@@ -16,14 +16,17 @@ class TestRunWorkflowLicAdg:
     def test_run_workflow_lic_adg_imports(self):
         """Test run_workflow_lic_adg module imports."""
         from agentic_core import run_workflow_lic_adg
+
         assert run_workflow_lic_adg is not None
 
     def test_run_workflow_lic_adg_class(self):
         """Test RunWorkflowLicAdg class exists."""
         from agentic_core import RunWorkflowLicAdg
+
         assert RunWorkflowLicAdg is not None
 
     def test_run_workflow_lic_adg_callable(self):
         """Test run_workflow_lic_adg functions are callable."""
         from agentic_core import validate_run_workflow_lic_adg
+
         assert callable(validate_run_workflow_lic_adg)

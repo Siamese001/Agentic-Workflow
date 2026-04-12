@@ -37,6 +37,7 @@ from agentic_core.adg.extraction.static_scanner import (
 @dataclass(frozen=True, order=True)
 class Edge:
     """A single directed dependency edge in the ADG."""
+
     from_name: str
     relation_type: str
     to_name: str
@@ -67,15 +68,17 @@ class CleanImportVisitor(ast.NodeVisitor):
             else:
                 edge_kind = "stdlib"
 
-            self.edges.append(Edge(
-                from_name=self.module_adg_name,
-                relation_type="imports",
-                to_name=to_name,
-                edge_kind=edge_kind,
-                source_file=self.source_file,
-                line_no=node.lineno,
-                symbol=imported,
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="imports",
+                    to_name=to_name,
+                    edge_kind=edge_kind,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=imported,
+                )
+            )
 
     def visit_ImportFrom(self, node: ast.ImportFrom):
         module = node.module or ""
@@ -90,15 +93,17 @@ class CleanImportVisitor(ast.NodeVisitor):
             else:
                 edge_kind = "stdlib"
 
-            self.edges.append(Edge(
-                from_name=self.module_adg_name,
-                relation_type="imports",
-                to_name=to_name,
-                edge_kind=edge_kind,
-                source_file=self.source_file,
-                line_no=node.lineno,
-                symbol=module,
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="imports",
+                    to_name=to_name,
+                    edge_kind=edge_kind,
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=module,
+                )
+            )
 
 
 class CleanInheritanceVisitor(ast.NodeVisitor):
@@ -125,15 +130,17 @@ class CleanInheritanceVisitor(ast.NodeVisitor):
                 else:
                     edge_kind = "stdlib"
 
-                self.edges.append(Edge(
-                    from_name=class_adg,
-                    relation_type="implements",
-                    to_name=to_name,
-                    edge_kind=edge_kind,
-                    source_file=self.source_file,
-                    line_no=node.lineno,
-                    symbol=base_name,
-                ))
+                self.edges.append(
+                    Edge(
+                        from_name=class_adg,
+                        relation_type="implements",
+                        to_name=to_name,
+                        edge_kind=edge_kind,
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=base_name,
+                    )
+                )
 
 
 class CleanCallVisitor(ast.NodeVisitor):
@@ -165,15 +172,17 @@ class CleanCallVisitor(ast.NodeVisitor):
             if base in self._internal_imports:
                 to_name = canonical_name("Symbol", sym)
 
-                self.edges.append(Edge(
-                    from_name=self.module_adg_name,
-                    relation_type="calls",
-                    to_name=to_name,
-                    edge_kind="internal",
-                    source_file=self.source_file,
-                    line_no=node.lineno,
-                    symbol=sym,
-                ))
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="calls",
+                        to_name=to_name,
+                        edge_kind="internal",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
 
     def _extract_symbol(self, node: ast.expr) -> str | None:
         """Extract symbol name from call node."""
@@ -203,15 +212,17 @@ class CleanLayerVisitor(ast.NodeVisitor):
         layer = self._infer_layer()
         if layer:
             layer_node = canonical_name("Layer", layer)
-            self.edges.append(Edge(
-                from_name=module_adg_name,
-                relation_type="belongs_to_layer",
-                to_name=layer_node,
-                edge_kind="layer_membership",
-                source_file=self.source_file,
-                line_no=0,
-                symbol=layer,
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_adg_name,
+                    relation_type="belongs_to_layer",
+                    to_name=layer_node,
+                    edge_kind="layer_membership",
+                    source_file=self.source_file,
+                    line_no=0,
+                    symbol=layer,
+                )
+            )
 
     def _infer_layer(self) -> str | None:
         """Infer layer from file path."""
@@ -309,21 +320,50 @@ def create_truly_clean_static_adg() -> None:
 
     # Verify no runtime contamination
     runtime_relations = {
-        "records_execution_trace", "emits_determinism_digest", "emits_replay_key",
-        "signs_execution_trace", "snapshots_state", "applies_guardrail",
-        "validated_by_safety_plane", "verifies_policy", "reads_policy_state",
-        "observes_runtime_state", "reads_runtime_state", "pulls_context",
-        "writes_through", "agent_executes_agent", "orchestrates_workflow",
-        "dispatches_execution_plan", "dispatches_healing_run", "escalates_to_human",
-        "captures_pattern", "records_learning_event", "feeds_meta_learning",
-        "updates_routing_strategy", "emits_metric_event", "records_incident_event",
-        "captures_runtime_anomaly", "writes_observability_log", "triggers_alert",
-        "invokes_eval", "invokes_evaluation", "gated_by_confidence",
-        "execution_terminates_at_uwg", "checks_agent_registry",
-        "validates_agent_capability", "routes_to_agent", "coordinates_agents",
-        "records_tool_invocation", "captures_execution_output", "authorize_and_execute",
-        "writes_via_uwg", "blocks_direct_write", "transcripts_response",
-        "proposal_commits_routing", "references_policy_hash", "stores_embedding",
+        "records_execution_trace",
+        "emits_determinism_digest",
+        "emits_replay_key",
+        "signs_execution_trace",
+        "snapshots_state",
+        "applies_guardrail",
+        "validated_by_safety_plane",
+        "verifies_policy",
+        "reads_policy_state",
+        "observes_runtime_state",
+        "reads_runtime_state",
+        "pulls_context",
+        "writes_through",
+        "agent_executes_agent",
+        "orchestrates_workflow",
+        "dispatches_execution_plan",
+        "dispatches_healing_run",
+        "escalates_to_human",
+        "captures_pattern",
+        "records_learning_event",
+        "feeds_meta_learning",
+        "updates_routing_strategy",
+        "emits_metric_event",
+        "records_incident_event",
+        "captures_runtime_anomaly",
+        "writes_observability_log",
+        "triggers_alert",
+        "invokes_eval",
+        "invokes_evaluation",
+        "gated_by_confidence",
+        "execution_terminates_at_uwg",
+        "checks_agent_registry",
+        "validates_agent_capability",
+        "routes_to_agent",
+        "coordinates_agents",
+        "records_tool_invocation",
+        "captures_execution_output",
+        "authorize_and_execute",
+        "writes_via_uwg",
+        "blocks_direct_write",
+        "transcripts_response",
+        "proposal_commits_routing",
+        "references_policy_hash",
+        "stores_embedding",
     }
 
     found_runtime = []
@@ -342,6 +382,7 @@ def create_truly_clean_static_adg() -> None:
     output_dir.mkdir(exist_ok=True)
 
     from datetime import datetime, timedelta, timezone
+
     est = timezone(timedelta(hours=-4))
     now_est = datetime.now(est)
     ts = now_est.strftime("%m%d%Y_%H%M")
@@ -398,7 +439,13 @@ def create_truly_clean_static_adg() -> None:
     for edge in all_edges:
         for node_name in [edge.from_name, edge.to_name]:
             if node_name not in node_id_map:
-                entity_type = "symbol" if "::" in node_name else "layer" if edge.relation_type == "belongs_to_layer" else "module"
+                entity_type = (
+                    "symbol"
+                    if "::" in node_name
+                    else "layer"
+                    if edge.relation_type == "belongs_to_layer"
+                    else "module"
+                )
                 cursor.execute(
                     "INSERT OR IGNORE INTO nodes (adg_name, entity_type, identity_kind, confidence) VALUES (?, ?, ?, ?)",
                     (node_name, entity_type, entity_type, 1.0),

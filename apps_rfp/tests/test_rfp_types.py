@@ -1,6 +1,7 @@
 """
 Test RFP Pydantic Types.
 """
+
 import unittest
 
 from pydantic import ValidationError

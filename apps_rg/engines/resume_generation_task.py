@@ -172,8 +172,11 @@ class ResumeGenerationTask(BaseRGEngine):
         Synthesize final resume from K-node outputs.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeGenerationTask.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeGenerationTask.execute"
+        )
 
         self._mcp_audit("resume_synthesis_start")
         sections = []

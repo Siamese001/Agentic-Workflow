@@ -165,6 +165,7 @@ logger = logging.getLogger(__name__)
 
 class BackendType(Enum):
     """Storage backend type."""
+
     FILE = "file"
     REDIS = "redis"
     SQLITE = "sqlite"
@@ -172,6 +173,7 @@ class BackendType(Enum):
 
 class SystemTelemetry:
     """Stub telemetry collector."""
+
     pass
 
 
@@ -242,8 +244,11 @@ class AtomicStateManager:
             StatePersistenceError: If checkpoint fails
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AtomicStateManager.checkpoint")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AtomicStateManager.checkpoint"
+        )
 
         start_time = time.time()
         checkpoint_id = f"{workflow_id}_{int(time.time() * 1000)}"

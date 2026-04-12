@@ -179,7 +179,9 @@ class V15ExecutionGateway:
         """
         _emit_agent_executes_agent(str(uuid.uuid4()), "V15ExecutionGateway", "V15ExecutionGateway.execute")
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L0_ROUTING, f"execution_gateway.execute:{agent_id}",
+            trace_id,
+            LayerSegment.L0_ROUTING,
+            f"execution_gateway.execute:{agent_id}",
         )
         _gw = get_routing_gateway(trace_id)
         self._pipe_violations = []
@@ -428,12 +430,16 @@ class V15ExecutionGateway:
             )
 
     def _pipe_advance(
-        self, pipe: PipeOrderEnforcer, step: str, trace_id: str, observed_steps: list[str] | None = None,
+        self,
+        pipe: PipeOrderEnforcer,
+        step: str,
+        trace_id: str,
+        observed_steps: list[str] | None = None,
     ) -> None:
         """Advance pipe to *step*. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
         if observed_steps is not None:
             observed_steps.append(step)
-        try:    # guardian: PipeOrderViolation should be handled with specific context
+        try:  # guardian: PipeOrderViolation should be handled with specific context
             # guardian: allow-silent-swallow - acceptable exception handling
             pipe.advance(step)
         except PipeOrderViolation as pov:
@@ -452,7 +458,7 @@ class V15ExecutionGateway:
             Logger.warning("[V15-GW] §2.5 pipe order violation (non-blocking): %s", record)
 
     def _policy_check(self, guard: PolicyConfigGuard, current_config: dict[str, Any], trace_id: str) -> None:
-        """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""    # guardian: PolicyMutationIncident should be handled with specific context
+        """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""  # guardian: PolicyMutationIncident should be handled with specific context
         # guardian: allow-silent-swallow - acceptable exception handling
         try:
             guard.read_config(current_config)

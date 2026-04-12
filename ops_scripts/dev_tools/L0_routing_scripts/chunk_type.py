@@ -242,12 +242,13 @@ def _get_source_segment(lines: list[str], start: int, end: int) -> str:
     return "\n".join(lines[start - 1 : end])
     # guardian: Syntax errors should be caught at parser level, not runtime
 
+
 def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
     """Parse Python file to semantic chunks using ast."""
     chunks = []
     lines = text.splitlines()
     try:
-        tree = ast.parse(text)    # guardian: Syntax errors should be caught at parser level, not runtime
+        tree = ast.parse(text)  # guardian: Syntax errors should be caught at parser level, not runtime
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         print(f" [!] AST parse failed for {file_path}: {e}. Falling back to line-based.")

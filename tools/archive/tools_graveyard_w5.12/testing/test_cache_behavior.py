@@ -5,7 +5,7 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.append('tools')
+sys.path.append("tools")
 from generate_full_adg import generate_full_adg
 
 
@@ -46,6 +46,7 @@ def test_cache_behavior():
             print("   ⚠️  Cache providing modest acceleration")
         else:
             print("   ❌ Cache not providing expected acceleration")
+
 
 if __name__ == "__main__":
     test_cache_behavior()

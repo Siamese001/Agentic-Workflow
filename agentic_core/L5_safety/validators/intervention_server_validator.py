@@ -351,7 +351,9 @@ class InterventionServer:
         """Start the intervention server in background."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "InterventionServer.start_server",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "InterventionServer.start_server",
         )
         if not FASTAPI_AVAILABLE:
             Logger.warning("FastAPI not available - server not started")
@@ -368,8 +370,11 @@ class InterventionServer:
             try:
                 await self._server_task
             except asyncio.CancelledError as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("intervention_server_validator: Exception swallowed at L370: %s", e)
+                logging.getLogger(__name__).debug(
+                    "intervention_server_validator: Exception swallowed at L370: %s", e
+                )
             self._server_task = None
             Logger.info("Intervention server stopped")
 

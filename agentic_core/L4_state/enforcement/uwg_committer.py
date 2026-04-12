@@ -18,6 +18,7 @@ from .uwg_clerk import WriteRequest, WriteReceipt
 @dataclass
 class CommitRecord:
     """A committed write record in the UWG ledger."""
+
     ledger_index: int
     request_hash: str
     commit_hash: str
@@ -37,6 +38,7 @@ class CommitRecord:
 @dataclass
 class HashChainLink:
     """Link in the hash chain."""
+
     index: int
     record_hash: str
     previous_hash: str
@@ -84,9 +86,7 @@ class UWGCommitter:
             index=receipt.ledger_index,
             record_hash=receipt.commit_hash,
             previous_hash=self._last_hash,
-            combined_hash=hashlib.sha256(
-                f"{receipt.commit_hash}:{self._last_hash}".encode()
-            ).hexdigest(),
+            combined_hash=hashlib.sha256(f"{receipt.commit_hash}:{self._last_hash}".encode()).hexdigest(),
         )
         self._chain.append(link)
 
@@ -99,7 +99,7 @@ class UWGCommitter:
             actor_id=request.actor_id,
             operation=request.operation,
             path=request.path,
-            data_hash=request.data_hash if hasattr(request, 'data_hash') else None,
+            data_hash=request.data_hash if hasattr(request, "data_hash") else None,
             timestamp=receipt.timestamp,
             replay_key=request.replay_key,
         )

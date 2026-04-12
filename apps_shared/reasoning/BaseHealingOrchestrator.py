@@ -218,8 +218,11 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
     def heal(self, violation: dict[str, Any], **kwargs: Any) -> dict[str, Any]:
         """Heal a single violation. Override in subclasses."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseHealingOrchestrator.heal")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "BaseHealingOrchestrator.heal"
+        )
 
         violation_type = violation.get("type", "unknown")
         return {
@@ -255,7 +258,9 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
             strategy = None
             if similar_patterns:
                 best_pattern = max(
-                    similar_patterns, key=lambda p: getattr(p, "success_count", 0), default=None,
+                    similar_patterns,
+                    key=lambda p: getattr(p, "success_count", 0),
+                    default=None,
                 )
                 if best_pattern:
                     strategy = getattr(best_pattern, "healing_strategy", None)
@@ -308,7 +313,9 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
                 "success_rate": results["fixed"] / results["total"],
             }
             self.cache_pattern_with_metadata(
-                self._cycle_results_key(), f"cycle_{len(self.cycle_results)}", cycle_pattern,
+                self._cycle_results_key(),
+                f"cycle_{len(self.cycle_results)}",
+                cycle_pattern,
             )
             self.cycle_results.append(results)
         self._persist_healing_cycle(results)
@@ -330,12 +337,15 @@ class BaseHealingOrchestrator(SovereignBaseAgent):
             bridge.add_observation(entity_name=self.__class__.__name__, observation=obs)
             if fixed > 0:
                 bridge.create_relation(
-                    from_entity=self.__class__.__name__, to_entity="HealingCycle", relation_type="HEALED",
+                    from_entity=self.__class__.__name__,
+                    to_entity="HealingCycle",
+                    relation_type="HEALED",
                 )
 
             # Wave C-1: Emit cross-domain healing events for pattern sharing
             try:
                 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
                 sl_bridge = get_sl_memory_bridge()
 
                 # Emit cross-domain healing event

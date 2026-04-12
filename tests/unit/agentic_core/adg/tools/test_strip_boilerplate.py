@@ -51,7 +51,7 @@ def behavioral_function():
     remaining_calls = []
     for node in ast.walk(stripped_tree):
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            if node.func.id.startswith('_emit_'):
+            if node.func.id.startswith("_emit_"):
                 remaining_calls.append(node.func.id)
 
     assert len(remaining_calls) == 0
@@ -111,7 +111,7 @@ class BehavioralClass:
 def test_safe_stripper_clean_file():
     """Test safe stripper on cleanable file."""
     # Create temporary file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 import os
 import json
@@ -139,7 +139,7 @@ def behavioral_function():
 def test_safe_stripper_becomes_hollow():
     """Test safe stripper when file would become hollow."""
     # Create temporary file with only boilerplate
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 import os
 import json
@@ -163,7 +163,7 @@ _emit_applies_guardrail("test", "test", "test")
 def test_safe_stripper_no_boilerplate():
     """Test safe stripper on file with no boilerplate."""
     # Create temporary file with only behavioral code
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 def behavioral_function():
     x = 1 + 1
@@ -188,7 +188,7 @@ class BehavioralClass:
 def test_safe_stripper_syntax_error():
     """Test safe stripper on file with syntax error."""
     # Create temporary file with syntax error
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("def broken(\n")  # Missing closing parenthesis
         temp_path = Path(f.name)
 
@@ -202,7 +202,7 @@ def test_safe_stripper_syntax_error():
         temp_path.unlink()
 
 
-@patch('tools.adg.strip_boilerplate.SafeBoilerplateStripper.strip_file_boilerplate')
+@patch("tools.adg.strip_boilerplate.SafeBoilerplateStripper.strip_file_boilerplate")
 def test_strip_directory(mock_strip):
     """Test directory stripping."""
     # Mock file results
@@ -212,10 +212,10 @@ def test_strip_directory(mock_strip):
         StripResult(action="deleted", reason="became hollow"),
     ]
 
-    with patch('pathlib.Path.rglob') as mock_rglob:
+    with patch("pathlib.Path.rglob") as mock_rglob:
         mock_rglob.return_value = [Path("file1.py"), Path("file2.py"), Path("file3.py")]
 
-        with patch('pathlib.Path.exists', return_value=True):
+        with patch("pathlib.Path.exists", return_value=True):
             stripper = SafeBoilerplateStripper(Path("."))
             results = stripper.strip_directory(Path("."), dry_run=True, recursive=True)
 

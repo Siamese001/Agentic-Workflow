@@ -30,6 +30,7 @@ from tests.e2e.conftest import (
 # BUS C: Control Bus Tests
 # =============================================================================
 
+
 class TestBusCControl:
     """Test BUS C: Control bus for real-time reroute (L6 → L0).
 
@@ -133,6 +134,7 @@ class TestBusCControl:
 # BUS D: Deny Bus Tests
 # =============================================================================
 
+
 class TestBusDDeny:
     """Test BUS D: Deny bus for safety fail → re-entry (L5 → L1).
 
@@ -235,6 +237,7 @@ class TestBusDDeny:
 # =============================================================================
 # BUS E: Escalation Bus Tests
 # =============================================================================
+
 
 class TestBusEEscalation:
     """Test BUS E: Escalation bus for drift → Path D.
@@ -358,6 +361,7 @@ class TestBusEEscalation:
 # BUS T: Telemetry Bus Tests
 # =============================================================================
 
+
 class TestBusTTelemetry:
     """Test BUS T: Telemetry bus for read-only signals.
 
@@ -468,6 +472,7 @@ class TestBusTTelemetry:
 # BUS P: Preference Bus Tests
 # =============================================================================
 
+
 class TestBusPPreference:
     """Test BUS P: Preference bus for eval/DPO signals.
 
@@ -550,6 +555,7 @@ class TestBusPPreference:
 # BUS U: Updates Bus Tests
 # =============================================================================
 
+
 class TestBusUUpdates:
     """Test BUS U: Updates bus for governed ML commits.
 
@@ -622,6 +628,7 @@ class TestBusUUpdates:
 # =============================================================================
 # Cross-Bus Integration Tests
 # =============================================================================
+
 
 class TestCrossBusIntegration:
     """Test interactions between multiple buses."""

@@ -335,7 +335,11 @@ class FeedbackAggregator:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CrossEngineFeedbackAggregator.add_feedback:{feedback.category.value}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"CrossEngineFeedbackAggregator.add_feedback:{feedback.category.value}",
+        )
         with self._lock:
             self._feedback.append(feedback)
             self._category_counts[feedback.category.value] += 1

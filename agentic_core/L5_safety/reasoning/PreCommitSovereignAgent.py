@@ -183,9 +183,10 @@ def purge_repository_cache(target_path=None) -> None:
     for f in __import__("pathlib").Path(root).rglob("*.pyc"):
         try:
             f.unlink()
-        except OSError:    # guardian: Add error context logging
+        except OSError:  # guardian: Add error context logging
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("PreCommitSovereignAgent: OSError swallowed at L186: %s", e)
+            logging.getLogger(__name__).debug("PreCommitSovereignAgent: OSError swallowed at L186: %s", e)
 
 
 @dataclass
@@ -235,7 +236,9 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PreCommitSovereignAgent.heal_repository",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "PreCommitSovereignAgent.heal_repository",
         )
         super().heal_repository(**kwargs)
         if hasattr(self, "validate_staged_files"):
@@ -289,7 +292,7 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
         except subprocess.CalledProcessError as e:
             print(f"Warning: Could not get staged files: {e}")
             return []
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             print("Warning: Git not found. Skipping pre-commit validation.")
             return []
 
@@ -340,7 +343,9 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
             Dictionary with validation results.
         """
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "PreCommitSovereignAgent.validate_staged_files", "L5_POLICY",
+            str(uuid.uuid4()),
+            "PreCommitSovereignAgent.validate_staged_files",
+            "L5_POLICY",
         )
         print("SOVEREIGN PRE-FLIGHT: Purging temporary artifacts...")
         purge_repository_cache(target_path=self.root)

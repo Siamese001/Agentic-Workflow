@@ -16,14 +16,17 @@ class TestCitationBundleModel:
     def test_citation_bundle_imports(self):
         """Test citation bundle module imports."""
         from agentic_core.L1_cognition import citation_bundle_model
+
         assert citation_bundle_model is not None
 
     def test_citation_bundle_class(self):
         """Test citation bundle class exists."""
         from agentic_core.L1_cognition.citation_bundle_model import CitationBundle
+
         assert CitationBundle is not None
 
     def test_validate_citation_bundle(self):
         """Test validate citation bundle function."""
         from agentic_core.L1_cognition.citation_bundle_model import validate_citation_bundle
+
         assert callable(validate_citation_bundle)

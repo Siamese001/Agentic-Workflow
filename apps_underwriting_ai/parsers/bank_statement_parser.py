@@ -1,6 +1,7 @@
 """
 Bank Statement Parser - Parses bank statement data.
 """
+
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import List, Optional
 @dataclass
 class MonthlySummary:
     """Monthly bank statement summary."""
+
     month: str
     total_deposits: Optional[float] = None
     total_withdrawals: Optional[float] = None
@@ -21,6 +23,7 @@ class MonthlySummary:
 @dataclass
 class ParsedBankStatement:
     """Result of parsing bank statements."""
+
     account_number: Optional[str] = None
     bank_name: Optional[str] = None
     statement_months: List[MonthlySummary] = field(default_factory=list)
@@ -80,8 +83,8 @@ class BankStatementParser:
         """Extract bank name from statement."""
         # Common bank names
         bank_patterns = [
-            r'(JPMorgan Chase|Bank of America|Wells Fargo|Citibank|PNC|TD Bank|\\w+ Bank)',
-            r'(Bank:\s*([^\n]+))',
+            r"(JPMorgan Chase|Bank of America|Wells Fargo|Citibank|PNC|TD Bank|\\w+ Bank)",
+            r"(Bank:\s*([^\n]+))",
         ]
 
         for pattern in bank_patterns:
@@ -92,11 +95,11 @@ class BankStatementParser:
 
     def _extract_account_number(self, text: str) -> Optional[str]:
         """Extract account number."""
-        pattern = r'(?:Account|Acct)[\s#:]+(\d[\d\-]+)'
+        pattern = r"(?:Account|Acct)[\s#:]+(\d[\d\-]+)"
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             # Mask for security
-            acct = match.group(1).replace('-', '').replace(' ', '')
+            acct = match.group(1).replace("-", "").replace(" ", "")
             return f"****{acct[-4:]}" if len(acct) > 4 else acct
         return None
 
@@ -106,8 +109,8 @@ class BankStatementParser:
 
         # Look for deposit/balance patterns
         # Simplified pattern matching
-        deposit_pattern = r'(?:Total Deposits|Deposits)[\s:]*[$]?([\d,\.]+)'
-        balance_pattern = r'(?:Ending Balance|Balance)[\s:]*[$]?([\d,\.]+)'
+        deposit_pattern = r"(?:Total Deposits|Deposits)[\s:]*[$]?([\d,\.]+)"
+        balance_pattern = r"(?:Ending Balance|Balance)[\s:]*[$]?([\d,\.]+)"
 
         # In production, would parse statement by statement period
         # For now, return simplified extraction

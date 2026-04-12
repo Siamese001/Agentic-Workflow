@@ -1,6 +1,7 @@
 """
 Collateral Summary Parser - Parses appraisal and collateral documents.
 """
+
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import Optional
 @dataclass
 class ParsedCollateralSummary:
     """Result of parsing collateral summary or appraisal."""
+
     collateral_type: Optional[str] = None
     appraised_value: Optional[float] = None
     estimated_value: Optional[float] = None
@@ -54,22 +56,22 @@ class CollateralSummaryParser:
     def _extract_appraised_value(self, text: str) -> Optional[float]:
         """Extract appraised value."""
         patterns = [
-            r'(?:Appraised Value|Fair Market Value|Value)[\s:]*[$]?([\d,\.]+)',
-            r'(?:As of|Report Date)[^\n]*?\$?([\d,\.]{6,})',
+            r"(?:Appraised Value|Fair Market Value|Value)[\s:]*[$]?([\d,\.]+)",
+            r"(?:As of|Report Date)[^\n]*?\$?([\d,\.]{6,})",
         ]
 
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
                 try:
-                    return float(match.group(1).replace(',', ''))
+                    return float(match.group(1).replace(",", ""))
                 except ValueError:
                     continue
         return None
 
     def _extract_appraisal_date(self, text: str) -> Optional[str]:
         """Extract appraisal date."""
-        pattern = r'(?:Appraisal Date|Report Date|Date of Value)[:\s]+([A-Z][a-z]+ \d{1,2},? \d{4}|\d{4}-\d{2}-\d{2})'
+        pattern = r"(?:Appraisal Date|Report Date|Date of Value)[:\s]+([A-Z][a-z]+ \d{1,2},? \d{4}|\d{4}-\d{2}-\d{2})"
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             return match.group(1)
@@ -77,7 +79,7 @@ class CollateralSummaryParser:
 
     def _extract_appraiser(self, text: str) -> Optional[str]:
         """Extract appraiser name."""
-        pattern = r'(?:Appraiser|Prepared By)[:\s]+([^\n]+)'
+        pattern = r"(?:Appraiser|Prepared By)[:\s]+([^\n]+)"
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             return match.group(1).strip()
@@ -86,11 +88,11 @@ class CollateralSummaryParser:
     def _extract_collateral_type(self, text: str) -> Optional[str]:
         """Extract collateral type."""
         types = [
-            ('real estate', 'real_estate'),
-            ('equipment', 'equipment'),
-            ('inventory', 'inventory'),
-            ('accounts receivable', 'ar'),
-            ('ar', 'ar'),
+            ("real estate", "real_estate"),
+            ("equipment", "equipment"),
+            ("inventory", "inventory"),
+            ("accounts receivable", "ar"),
+            ("ar", "ar"),
         ]
 
         text_lower = text.lower()
@@ -101,7 +103,7 @@ class CollateralSummaryParser:
 
     def _extract_condition_rating(self, text: str) -> Optional[str]:
         """Extract condition rating."""
-        pattern = r'(?:Condition|Rating)[:\s]+(Good|Fair|Poor|Excellent|New)'
+        pattern = r"(?:Condition|Rating)[:\s]+(Good|Fair|Poor|Excellent|New)"
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             return match.group(1)

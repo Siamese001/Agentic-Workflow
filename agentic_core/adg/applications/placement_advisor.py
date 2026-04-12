@@ -377,7 +377,11 @@ class PlacementAdvisor:
 
     def suggest_placement(self, kind: str, name: str) -> PlacementSuggestion:
         """Suggest canonical placement for a new file/symbol of the given kind."""
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PlacementAdvisor.suggest_placement:{kind}/{name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"PlacementAdvisor.suggest_placement:{kind}/{name}",
+        )
         from agentic_core.adg.schema import ALLOWED_LAYER_EDGES, module_path_to_layer
 
         self._build_deps()

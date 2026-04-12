@@ -17,7 +17,7 @@ class TestMigrationSyntaxValidity:
 
         for test_file in test_files:
             try:
-                content = test_file.read_text(encoding='utf-8')
+                content = test_file.read_text(encoding="utf-8")
                 ast.parse(content)
             except SyntaxError as e:
                 syntax_errors.append(f"{test_file}: {e}")
@@ -37,15 +37,15 @@ class TestTopLevelImportElimination:
 
         # Pattern to match top-level imports from target modules
         top_level_import_pattern = re.compile(
-            r'^(from\s+agentic_core\.\S*|import\s+agentic_core\.\S+)',
+            r"^(from\s+agentic_core\.\S*|import\s+agentic_core\.\S+)",
             re.MULTILINE,
         )
 
         for test_file in test_files:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
 
             # Skip if it's a demo file or migration script
-            if 'demo' in test_file.name or 'migrator' in test_file.name:
+            if "demo" in test_file.name or "migrator" in test_file.name:
                 continue
 
             # Look for top-level imports outside of test functions
@@ -54,14 +54,14 @@ class TestTopLevelImportElimination:
 
             for i, line in enumerate(lines):
                 # Track if we're in a test function
-                if re.match(r'^\s*def\s+test_\w+\s*\(', line):
+                if re.match(r"^\s*def\s+test_\w+\s*\(", line):
                     in_test_function = True
-                elif re.match(r'^\s*(def|class|@)', line) and not line.strip().startswith('def test_'):
+                elif re.match(r"^\s*(def|class|@)", line) and not line.strip().startswith("def test_"):
                     in_test_function = False
 
                 # Check for top-level imports
                 if not in_test_function and top_level_import_pattern.match(line.strip()):
-                    violations.append(f"{test_file}:{i+1}: {line.strip()}")
+                    violations.append(f"{test_file}:{i + 1}: {line.strip()}")
 
         assert not violations, "Top-level agentic_core imports found:\n" + "\n".join(violations)
 
@@ -71,27 +71,27 @@ class TestTopLevelImportElimination:
         violations = []
 
         top_level_import_pattern = re.compile(
-            r'^(from\s+apps_\S*|import\s+apps_\S+)',
+            r"^(from\s+apps_\S*|import\s+apps_\S+)",
             re.MULTILINE,
         )
 
         for test_file in test_files:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
 
-            if 'demo' in test_file.name or 'migrator' in test_file.name:
+            if "demo" in test_file.name or "migrator" in test_file.name:
                 continue
 
             lines = content.splitlines()
             in_test_function = False
 
             for i, line in enumerate(lines):
-                if re.match(r'^\s*def\s+test_\w+\s*\(', line):
+                if re.match(r"^\s*def\s+test_\w+\s*\(", line):
                     in_test_function = True
-                elif re.match(r'^\s*(def|class|@)', line) and not line.strip().startswith('def test_'):
+                elif re.match(r"^\s*(def|class|@)", line) and not line.strip().startswith("def test_"):
                     in_test_function = False
 
                 if not in_test_function and top_level_import_pattern.match(line.strip()):
-                    violations.append(f"{test_file}:{i+1}: {line.strip()}")
+                    violations.append(f"{test_file}:{i + 1}: {line.strip()}")
 
         assert not violations, "Top-level apps_* imports found:\n" + "\n".join(violations)
 
@@ -101,27 +101,27 @@ class TestTopLevelImportElimination:
         violations = []
 
         top_level_import_pattern = re.compile(
-            r'^(from\s+system_learning\.\S*|import\s+system_learning\.\S+)',
+            r"^(from\s+system_learning\.\S*|import\s+system_learning\.\S+)",
             re.MULTILINE,
         )
 
         for test_file in test_files:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
 
-            if 'demo' in test_file.name or 'migrator' in test_file.name:
+            if "demo" in test_file.name or "migrator" in test_file.name:
                 continue
 
             lines = content.splitlines()
             in_test_function = False
 
             for i, line in enumerate(lines):
-                if re.match(r'^\s*def\s+test_\w+\s*\(', line):
+                if re.match(r"^\s*def\s+test_\w+\s*\(", line):
                     in_test_function = True
-                elif re.match(r'^\s*(def|class|@)', line) and not line.strip().startswith('def test_'):
+                elif re.match(r"^\s*(def|class|@)", line) and not line.strip().startswith("def test_"):
                     in_test_function = False
 
                 if not in_test_function and top_level_import_pattern.match(line.strip()):
-                    violations.append(f"{test_file}:{i+1}: {line.strip()}")
+                    violations.append(f"{test_file}:{i + 1}: {line.strip()}")
 
         assert not violations, "Top-level system_learning imports found:\n" + "\n".join(violations)
 
@@ -135,32 +135,37 @@ class TestImportPlacementCorrectness:
         files_without_function_imports = []
 
         for test_file in test_files:
-            if 'demo' in test_file.name or 'migrator' in test_file.name:
+            if "demo" in test_file.name or "migrator" in test_file.name:
                 continue
 
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
 
             # Check if file has any target imports
-            has_target_imports = bool(re.search(
-                r'from\s+(agentic_core|apps_|system_learning)\.\S*|import\s+(agentic_core|apps_|system_learning)\.\S+',
-                content,
-            ))
+            has_target_imports = bool(
+                re.search(
+                    r"from\s+(agentic_core|apps_|system_learning)\.\S*|import\s+(agentic_core|apps_|system_learning)\.\S+",
+                    content,
+                )
+            )
 
             if has_target_imports:
                 # Check if imports are inside test functions
-                has_function_imports = bool(re.search(
-                    r'def\s+test_\w+.*?\n\s+from\s+(agentic_core|apps_|system_learning)',
-                    content,
-                    re.DOTALL,
-                ))
+                has_function_imports = bool(
+                    re.search(
+                        r"def\s+test_\w+.*?\n\s+from\s+(agentic_core|apps_|system_learning)",
+                        content,
+                        re.DOTALL,
+                    )
+                )
 
                 if not has_function_imports:
                     files_without_function_imports.append(str(test_file))
 
         # Allow some files to not have imports (they might be clean)
         # But if they have target imports, those should be in functions
-        assert len(files_without_function_imports) < 50, \
+        assert len(files_without_function_imports) < 50, (
             f"Too many files ({len(files_without_function_imports)}) have imports but not in test functions"
+        )
 
 
 class TestLegacyCommentCleanup:
@@ -172,12 +177,12 @@ class TestLegacyCommentCleanup:
         files_with_legacy_comments = []
 
         for test_file in test_files:
-            if 'demo' in test_file.name:
+            if "demo" in test_file.name:
                 continue  # Demo files can keep comments for reference
 
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
 
-            if '#  # MOVED:' in content:
+            if "#  # MOVED:" in content:
                 files_with_legacy_comments.append(str(test_file))
 
         # Allow some legacy comments for now, but flag the issue
@@ -195,24 +200,24 @@ class TestDuplicateImportElimination:
         duplicate_issues = []
 
         for test_file in test_files:
-            if 'demo' in test_file.name or 'migrator' in test_file.name:
+            if "demo" in test_file.name or "migrator" in test_file.name:
                 continue
 
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
 
             # Find test functions
             test_functions = re.finditer(
-                r'(def\s+test_\w+\s*\([^)]*\).*?)(?=def\s+test_\w+|\Z)',
+                r"(def\s+test_\w+\s*\([^)]*\).*?)(?=def\s+test_\w+|\Z)",
                 content,
                 re.DOTALL,
             )
 
             for func_match in test_functions:
                 func_content = func_match.group(1)
-                func_name = re.search(r'def\s+(test_\w+)', func_content).group(1)
+                func_name = re.search(r"def\s+(test_\w+)", func_content).group(1)
 
                 # Find all import statements in this function
-                imports = re.findall(r'from\s+\S+|import\s+\S+', func_content)
+                imports = re.findall(r"from\s+\S+|import\s+\S+", func_content)
 
                 # Check for duplicates
                 seen_imports = set()

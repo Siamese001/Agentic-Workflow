@@ -146,6 +146,12 @@ class RfpResult(BaseModel):
     provenance: dict = Field(default_factory=dict, description="Provenance metadata")
     run_summary_path: str = Field("", description="Summary output path")
     error: str = Field("", description="Error message")
+    qwen_inference_result: dict | None = Field(
+        None, description="Local Qwen vLLM inference result when LOCAL_VLLM routing selected"
+    )
+    local_first_disposition: dict | None = Field(
+        None, description="Current-run routing disposition packet for local-first Qwen lane"
+    )
 
     @property
     def passed_gate(self) -> bool:

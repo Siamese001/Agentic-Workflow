@@ -44,7 +44,7 @@ class PerformanceMetrics:
     total_duration_ms: float = 0.0
     avg_node_duration_ms: float = 0.0
     max_node_duration_ms: float = 0.0
-    min_node_duration_ms: float = float('inf')
+    min_node_duration_ms: float = float("inf")
     bottleneck_nodes: list[dict[str, Any]] = field(default_factory=list)
     slow_operations: list[dict[str, Any]] = field(default_factory=list)
     fast_operations: list[dict[str, Any]] = field(default_factory=list)
@@ -163,33 +163,39 @@ class AdvancedADGAnalytics:
             threshold = statistics.quantile(durations, 0.9)
             for node in snapshot.nodes:
                 if node.duration_ms and node.duration_ms >= threshold:
-                    metrics.bottleneck_nodes.append({
-                        "node_id": node.node_id,
-                        "component": node.component,
-                        "layer": node.layer,
-                        "duration_ms": node.duration_ms,
-                        "operation": node.kind,
-                    })
+                    metrics.bottleneck_nodes.append(
+                        {
+                            "node_id": node.node_id,
+                            "component": node.component,
+                            "layer": node.layer,
+                            "duration_ms": node.duration_ms,
+                            "operation": node.kind,
+                        }
+                    )
 
         # Identify slow and fast operations
         for node in snapshot.nodes:
             if node.duration_ms:
                 if node.duration_ms > self._anomaly_thresholds["slow_operation_threshold_ms"]:
-                    metrics.slow_operations.append({
-                        "node_id": node.node_id,
-                        "component": node.component,
-                        "layer": node.layer,
-                        "duration_ms": node.duration_ms,
-                        "operation": node.kind,
-                    })
+                    metrics.slow_operations.append(
+                        {
+                            "node_id": node.node_id,
+                            "component": node.component,
+                            "layer": node.layer,
+                            "duration_ms": node.duration_ms,
+                            "operation": node.kind,
+                        }
+                    )
                 elif node.duration_ms < self._anomaly_thresholds["fast_operation_threshold_ms"]:
-                    metrics.fast_operations.append({
-                        "node_id": node.node_id,
-                        "component": node.component,
-                        "layer": node.layer,
-                        "duration_ms": node.duration_ms,
-                        "operation": node.kind,
-                    })
+                    metrics.fast_operations.append(
+                        {
+                            "node_id": node.node_id,
+                            "component": node.component,
+                            "layer": node.layer,
+                            "duration_ms": node.duration_ms,
+                            "operation": node.kind,
+                        }
+                    )
 
         # Calculate critical path duration
         metrics.critical_path_duration_ms = self._calculate_critical_path(snapshot)
@@ -209,19 +215,23 @@ class AdvancedADGAnalytics:
             patterns.layer_distribution[node.layer] = patterns.layer_distribution.get(node.layer, 0) + 1
 
             # Component distribution
-            patterns.component_distribution[node.component] = patterns.component_distribution.get(node.component, 0) + 1
+            patterns.component_distribution[node.component] = (
+                patterns.component_distribution.get(node.component, 0) + 1
+            )
 
             # Span type distribution
             patterns.span_type_distribution[node.kind] = patterns.span_type_distribution.get(node.kind, 0) + 1
 
             # Error patterns
-            if hasattr(node, 'status') and node.status == "error":
-                patterns.error_patterns.append({
-                    "node_id": node.node_id,
-                    "component": node.component,
-                    "layer": node.layer,
-                    "operation": node.kind,
-                })
+            if hasattr(node, "status") and node.status == "error":
+                patterns.error_patterns.append(
+                    {
+                        "node_id": node.node_id,
+                        "component": node.component,
+                        "layer": node.layer,
+                        "operation": node.kind,
+                    }
+                )
 
         # Edge-based patterns
         for edge in snapshot.edges:
@@ -237,7 +247,8 @@ class AdvancedADGAnalytics:
                     "duration_ms": node.duration_ms,
                 }
                 for node in snapshot.nodes
-                if node.duration_ms and node.duration_ms > self._anomaly_thresholds["slow_operation_threshold_ms"]
+                if node.duration_ms
+                and node.duration_ms > self._anomaly_thresholds["slow_operation_threshold_ms"]
             ],
             "fast_operations": [
                 {
@@ -246,7 +257,8 @@ class AdvancedADGAnalytics:
                     "duration_ms": node.duration_ms,
                 }
                 for node in snapshot.nodes
-                if node.duration_ms and node.duration_ms < self._anomaly_thresholds["fast_operation_threshold_ms"]
+                if node.duration_ms
+                and node.duration_ms < self._anomaly_thresholds["fast_operation_threshold_ms"]
             ],
         }
 
@@ -263,79 +275,93 @@ class AdvancedADGAnalytics:
         perf = insights.performance_metrics
 
         if perf.bottleneck_nodes:
-            recommendations.append({
-                "type": "performance",
-                "priority": "high",
-                "title": "Optimize Bottleneck Operations",
-                "description": f"Found {len(perf.bottleneck_nodes)} bottleneck operations",
-                "actions": [
-                    "Profile slow operations for optimization opportunities",
-                    "Consider caching frequently accessed data",
-                    "Review algorithmic complexity",
-                ],
-                "affected_nodes": perf.bottleneck_nodes[:5],  # Top 5
-            })
+            recommendations.append(
+                {
+                    "type": "performance",
+                    "priority": "high",
+                    "title": "Optimize Bottleneck Operations",
+                    "description": f"Found {len(perf.bottleneck_nodes)} bottleneck operations",
+                    "actions": [
+                        "Profile slow operations for optimization opportunities",
+                        "Consider caching frequently accessed data",
+                        "Review algorithmic complexity",
+                    ],
+                    "affected_nodes": perf.bottleneck_nodes[:5],  # Top 5
+                }
+            )
 
         if perf.slow_operations:
-            recommendations.append({
-                "type": "performance",
-                "priority": "medium",
-                "title": "Investigate Slow Operations",
-                "description": f"Found {len(perf.slow_operations)} slow operations (>1s)",
-                "actions": [
-                    "Add performance monitoring",
-                    "Consider async processing",
-                    "Review resource allocation",
-                ],
-                "affected_operations": perf.slow_operations[:3],
-            })
+            recommendations.append(
+                {
+                    "type": "performance",
+                    "priority": "medium",
+                    "title": "Investigate Slow Operations",
+                    "description": f"Found {len(perf.slow_operations)} slow operations (>1s)",
+                    "actions": [
+                        "Add performance monitoring",
+                        "Consider async processing",
+                        "Review resource allocation",
+                    ],
+                    "affected_operations": perf.slow_operations[:3],
+                }
+            )
 
         # Pattern recommendations
         patterns = insights.pattern_metrics
 
         if patterns.error_patterns:
-            error_rate = len(patterns.error_patterns) / len(patterns.layer_distribution) if patterns.layer_distribution else 0
+            error_rate = (
+                len(patterns.error_patterns) / len(patterns.layer_distribution)
+                if patterns.layer_distribution
+                else 0
+            )
             if error_rate > self._anomaly_thresholds["error_rate_threshold"]:
-                recommendations.append({
-                    "type": "reliability",
-                    "priority": "high",
-                    "title": "High Error Rate Detected",
-                    "description": f"Error rate: {error_rate:.2%}",
-                    "actions": [
-                        "Implement better error handling",
-                        "Add circuit breakers",
-                        "Review input validation",
-                    ],
-                    "error_patterns": patterns.error_patterns,
-                })
+                recommendations.append(
+                    {
+                        "type": "reliability",
+                        "priority": "high",
+                        "title": "High Error Rate Detected",
+                        "description": f"Error rate: {error_rate:.2%}",
+                        "actions": [
+                            "Implement better error handling",
+                            "Add circuit breakers",
+                            "Review input validation",
+                        ],
+                        "error_patterns": patterns.error_patterns,
+                    }
+                )
 
         # Complexity recommendations
         if insights.complexity_score > self._anomaly_thresholds["complexity_threshold"]:
-            recommendations.append({
-                "type": "architecture",
-                "priority": "medium",
-                "title": "High Complexity Detected",
-                "description": f"Complexity score: {insights.complexity_score:.1f}",
-                "actions": [
-                    "Consider breaking down complex operations",
-                    "Review service boundaries",
-                    "Implement design patterns for simplification",
-                ],
-            })
+            recommendations.append(
+                {
+                    "type": "architecture",
+                    "priority": "medium",
+                    "title": "High Complexity Detected",
+                    "description": f"Complexity score: {insights.complexity_score:.1f}",
+                    "actions": [
+                        "Consider breaking down complex operations",
+                        "Review service boundaries",
+                        "Implement design patterns for simplification",
+                    ],
+                }
+            )
 
         # Parallelism recommendations
         if perf.parallelism_factor < 0.5:
-            recommendations.append({
-                "type": "performance",
-                "priority": "low",
-                "title": "Low Parallelism Detected",
-                "description": f"Parallelism factor: {perf.parallelism_factor:.2f}",
-                "actions": [
-                    "Identify opportunities for parallel execution",
-                    "Review sequential dependencies",
-                    "Consider async processing patterns",
-                ],
-            })
+            recommendations.append(
+                {
+                    "type": "performance",
+                    "priority": "low",
+                    "title": "Low Parallelism Detected",
+                    "description": f"Parallelism factor: {perf.parallelism_factor:.2f}",
+                    "actions": [
+                        "Identify opportunities for parallel execution",
+                        "Review sequential dependencies",
+                        "Consider async processing patterns",
+                    ],
+                }
+            )
 
         return recommendations
 
@@ -348,44 +374,56 @@ class AdvancedADGAnalytics:
 
         # Performance risks
         if perf.max_node_duration_ms > 5000:  # > 5 seconds
-            risks.append({
-                "type": "performance",
-                "severity": "high",
-                "description": "Very slow operation detected",
-                "impact": "May cause timeouts and poor user experience",
-                "mitigation": "Implement timeout handling and optimization",
-            })
+            risks.append(
+                {
+                    "type": "performance",
+                    "severity": "high",
+                    "description": "Very slow operation detected",
+                    "impact": "May cause timeouts and poor user experience",
+                    "mitigation": "Implement timeout handling and optimization",
+                }
+            )
 
         # Reliability risks
-        error_rate = len(patterns.error_patterns) / len(patterns.layer_distribution) if patterns.layer_distribution else 0
+        error_rate = (
+            len(patterns.error_patterns) / len(patterns.layer_distribution)
+            if patterns.layer_distribution
+            else 0
+        )
         if error_rate > 0.1:  # > 10% error rate
-            risks.append({
-                "type": "reliability",
-                "severity": "high",
-                "description": "High error rate",
-                "impact": "System instability and poor reliability",
-                "mitigation": "Implement comprehensive error handling",
-            })
+            risks.append(
+                {
+                    "type": "reliability",
+                    "severity": "high",
+                    "description": "High error rate",
+                    "impact": "System instability and poor reliability",
+                    "mitigation": "Implement comprehensive error handling",
+                }
+            )
 
         # Complexity risks
         if insights.complexity_score > 200:
-            risks.append({
-                "type": "maintainability",
-                "severity": "medium",
-                "description": "High complexity",
-                "impact": "Difficult to maintain and debug",
-                "mitigation": "Refactor and simplify architecture",
-            })
+            risks.append(
+                {
+                    "type": "maintainability",
+                    "severity": "medium",
+                    "description": "High complexity",
+                    "impact": "Difficult to maintain and debug",
+                    "mitigation": "Refactor and simplify architecture",
+                }
+            )
 
         # Resource risks
         if len(patterns.layer_distribution) > 50:
-            risks.append({
-                "type": "resource",
-                "severity": "medium",
-                "description": "High resource utilization",
-                "impact": "Potential resource exhaustion",
-                "mitigation": "Implement resource monitoring and limits",
-            })
+            risks.append(
+                {
+                    "type": "resource",
+                    "severity": "medium",
+                    "description": "High resource utilization",
+                    "impact": "Potential resource exhaustion",
+                    "mitigation": "Implement resource monitoring and limits",
+                }
+            )
 
         return risks
 
@@ -477,14 +515,16 @@ class AdvancedADGAnalytics:
 
         # This is a simplified version - real implementation would be more sophisticated
         for node in snapshot.nodes:
-            if hasattr(node, 'start_time') and hasattr(node, 'end_time'):
+            if hasattr(node, "start_time") and hasattr(node, "end_time"):
                 # Count overlapping operations
                 concurrent_ops += 1
                 max_concurrent = max(max_concurrent, concurrent_ops)
 
         return max_concurrent / len(snapshot.nodes) if snapshot.nodes else 0.0
 
-    def _detect_anomalies(self, snapshot: RuntimeADGSnapshot, patterns: PatternMetrics) -> list[dict[str, Any]]:
+    def _detect_anomalies(
+        self, snapshot: RuntimeADGSnapshot, patterns: PatternMetrics
+    ) -> list[dict[str, Any]]:
         """Detect anomalies in the snapshot."""
         anomalies = []
 
@@ -498,25 +538,29 @@ class AdvancedADGAnalytics:
                 if node.duration_ms:
                     z_score = abs(node.duration_ms - mean_duration) / std_duration if std_duration > 0 else 0
                     if z_score > 3:  # 3 standard deviations
-                        anomalies.append({
-                            "type": "duration_anomaly",
-                            "node_id": node.node_id,
-                            "component": node.component,
-                            "duration_ms": node.duration_ms,
-                            "z_score": z_score,
-                        })
+                        anomalies.append(
+                            {
+                                "type": "duration_anomaly",
+                                "node_id": node.node_id,
+                                "component": node.component,
+                                "duration_ms": node.duration_ms,
+                                "z_score": z_score,
+                            }
+                        )
 
         # Component frequency anomalies
         total_operations = sum(patterns.layer_distribution.values())
         for component, count in patterns.component_distribution.items():
             frequency = count / total_operations if total_operations > 0 else 0
             if frequency > 0.5:  # Component appears in >50% of operations
-                anomalies.append({
-                    "type": "frequency_anomaly",
-                    "component": component,
-                    "frequency": frequency,
-                    "description": "Component appears unusually frequently",
-                })
+                anomalies.append(
+                    {
+                        "type": "frequency_anomaly",
+                        "component": component,
+                        "frequency": frequency,
+                        "description": "Component appears unusually frequently",
+                    }
+                )
 
         return anomalies
 

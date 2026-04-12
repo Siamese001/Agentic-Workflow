@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 @dataclass
 class LayerContext:
     """Context passed between layers."""
+
     query: str
     query_hash: str
     intent_vector: list[float] = field(default_factory=list)
@@ -117,10 +118,7 @@ class TestLayer2To3Handoff:
 
     def _mock_faiss_search(self, vector: list[float]) -> list[dict]:
         """Mock FAISS vector search."""
-        return [
-            {"chunk_id": f"chunk_{i}", "score": 0.9 - (i * 0.1)}
-            for i in range(min(5, len(vector)))
-        ]
+        return [{"chunk_id": f"chunk_{i}", "score": 0.9 - (i * 0.1)} for i in range(min(5, len(vector)))]
 
     def test_l2_hit_does_not_trigger_l3(self):
         """L2 semantic hit short-circuits, does not trigger L3."""
@@ -307,6 +305,7 @@ class TestErrorHandlingIntegration:
 
         class L1CacheError(Exception):
             """Simulated L1 cache error."""
+
             pass
 
         def execute_l1_with_fallback():

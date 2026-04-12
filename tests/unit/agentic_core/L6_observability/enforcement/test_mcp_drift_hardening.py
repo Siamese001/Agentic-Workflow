@@ -280,6 +280,7 @@ class TestMCPL6ObservabilityStoreHardening:
 
         # Mock Path.mkdir to simulate disk full during save
         original_mkdir = Path.mkdir
+
         def mock_mkdir(self, *args, **kwargs):
             if "snapshots" in str(self) or "test-snap" in str(self):
                 raise OSError(28, "No space left on device")
@@ -410,14 +411,21 @@ class TestMCPDriftMonitorHardening:
 
         # Create initial config
         with open(config_path, "w") as f:
-            json.dump({"mcpServers": {"server1": {
-                "command": "python",
-                "args": ["s1.py"],
-                "env": {},
-                "capabilities": ["tools"],
-                "deploymentMode": "local",
-                "layer": "L6",
-            }}}, f)
+            json.dump(
+                {
+                    "mcpServers": {
+                        "server1": {
+                            "command": "python",
+                            "args": ["s1.py"],
+                            "env": {},
+                            "capabilities": ["tools"],
+                            "deploymentMode": "local",
+                            "layer": "L6",
+                        }
+                    }
+                },
+                f,
+            )
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
         monitor = MCPDriftMonitor(config_path=config_path, store=store)
@@ -441,6 +449,7 @@ class TestMCPDriftMonitorHardening:
 
         # Mock open to simulate permission denied
         original_open = open
+
         def mock_open_permission_error(filepath, *args, **kwargs):
             if str(filepath) == str(config_path):
                 raise PermissionError(13, "Permission denied", str(config_path))
@@ -454,21 +463,31 @@ class TestMCPDriftMonitorHardening:
             baseline = monitor.start_monitoring()
             assert baseline is not None
             assert "error" in baseline.metadata
-            assert "permission" in baseline.metadata["error"].lower() or "denied" in baseline.metadata["error"].lower()
+            assert (
+                "permission" in baseline.metadata["error"].lower()
+                or "denied" in baseline.metadata["error"].lower()
+            )
 
     def test_monitor_baseline_corruption(self, tmp_path):
         """Test monitor behavior with corrupted baseline."""
         config_path = tmp_path / "config.json"
 
         with open(config_path, "w") as f:
-            json.dump({"mcpServers": {"server1": {
-                "command": "python",
-                "args": ["s1.py"],
-                "env": {},
-                "capabilities": ["tools"],
-                "deploymentMode": "local",
-                "layer": "L6",
-            }}}, f)
+            json.dump(
+                {
+                    "mcpServers": {
+                        "server1": {
+                            "command": "python",
+                            "args": ["s1.py"],
+                            "env": {},
+                            "capabilities": ["tools"],
+                            "deploymentMode": "local",
+                            "layer": "L6",
+                        }
+                    }
+                },
+                f,
+            )
 
         store = MCPL6ObservabilityStore(MCPL6PersistenceConfig(base_dir=str(tmp_path)))
         monitor = MCPDriftMonitor(config_path=config_path, store=store)
@@ -493,20 +512,42 @@ class TestMCPDriftMonitorHardening:
 
         # Start monitoring
         with open(config_path, "w") as f:
-            json.dump({"mcpServers": {"server1": {
-                "command": "python", "args": ["s1.py"], "env": {},
-                "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6",
-            }}}, f)
+            json.dump(
+                {
+                    "mcpServers": {
+                        "server1": {
+                            "command": "python",
+                            "args": ["s1.py"],
+                            "env": {},
+                            "capabilities": ["tools"],
+                            "deploymentMode": "local",
+                            "layer": "L6",
+                        }
+                    }
+                },
+                f,
+            )
         monitor.start_monitoring()
 
         # Rapid changes
         reports = []
         for i in range(20):
             with open(config_path, "w") as f:
-                json.dump({"mcpServers": {f"server{i}": {
-                    "command": "python", "args": [f"s{i}.py"], "env": {},
-                    "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6",
-                }}}, f)
+                json.dump(
+                    {
+                        "mcpServers": {
+                            f"server{i}": {
+                                "command": "python",
+                                "args": [f"s{i}.py"],
+                                "env": {},
+                                "capabilities": ["tools"],
+                                "deploymentMode": "local",
+                                "layer": "L6",
+                            }
+                        }
+                    },
+                    f,
+                )
 
             report = monitor.check_drift()
             if report:
@@ -636,11 +677,17 @@ class TestResilienceAndRecovery:
             snapshot_id="valid-1",
             timestamp=time.time(),
             source_file="/tmp/valid.json",
-            servers={"s1": MCPServerState(
-                name="s1", command="python", args=("s1.py",), env=tuple(),
-                capabilities=("tools",), target_layer="L6",
-                disabled=False,
-            )},
+            servers={
+                "s1": MCPServerState(
+                    name="s1",
+                    command="python",
+                    args=("s1.py",),
+                    env=tuple(),
+                    capabilities=("tools",),
+                    target_layer="L6",
+                    disabled=False,
+                )
+            },
             metadata={},
         )
 
@@ -682,10 +729,21 @@ class TestResilienceAndRecovery:
 
         # Restore config and verify system works again
         with open(config_path, "w") as f:
-            json.dump({"mcpServers": {"new_server": {
-                "command": "python", "args": ["new.py"], "env": {},
-                "capabilities": ["tools"], "deploymentMode": "local", "layer": "L6",
-            }}}, f)
+            json.dump(
+                {
+                    "mcpServers": {
+                        "new_server": {
+                            "command": "python",
+                            "args": ["new.py"],
+                            "env": {},
+                            "capabilities": ["tools"],
+                            "deploymentMode": "local",
+                            "layer": "L6",
+                        }
+                    }
+                },
+                f,
+            )
 
         # Should work after recovery - returns a report
         report = monitor.check_drift()

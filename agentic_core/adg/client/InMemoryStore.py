@@ -178,7 +178,9 @@ class _InMemoryStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemoryStore.upsert_entity",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "_InMemoryStore.upsert_entity",
         )
 
         if name not in self._entities:
@@ -232,7 +234,9 @@ class _InMemoryStore:
 
     def to_json(self) -> str:
         return json.dumps(
-            {"entities": self.get_entities(), "relations": self.get_relations()}, indent=2, sort_keys=True,
+            {"entities": self.get_entities(), "relations": self.get_relations()},
+            indent=2,
+            sort_keys=True,
         )
 
 

@@ -182,8 +182,11 @@ class DriftSummary:
     def to_canonical_json(self) -> str:
         """Convert to canonical JSON for deterministic serialization."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DriftSummary.to_canonical_json")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DriftSummary.to_canonical_json"
+        )
 
         data = {
             "profile_id": self.profile_id,
@@ -203,7 +206,11 @@ class ShadowDriftAnalyzer:
         self._drift_threshold = drift_threshold
 
     def analyze_batch(
-        self, *, shadow_records: list[dict[str, Any]], profile_id: str, now_utc: int,
+        self,
+        *,
+        shadow_records: list[dict[str, Any]],
+        profile_id: str,
+        now_utc: int,
     ) -> DriftSummary:
         """Analyze a batch of shadow telemetry records for drift.
 
@@ -216,8 +223,11 @@ class ShadowDriftAnalyzer:
             DriftSummary with deterministic digest
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowDriftAnalyzer.analyze_batch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowDriftAnalyzer.analyze_batch"
+        )
 
         if not shadow_records:
             return DriftSummary(
@@ -249,6 +259,7 @@ class ShadowDriftAnalyzer:
         drift_source = "embedding_cosine"
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
             current_count, previous_count = bridge.get_latest_violation_counts()
             if current_count > 0 and previous_count > 0:
@@ -257,9 +268,10 @@ class ShadowDriftAnalyzer:
                     # Violations increased - this is structural drift
                     drift_source = "adg_structural"
         except Exception as e:
-
             # ADG data unavailable - continue with embedding-only analysis
-            import logging; logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L259: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L259: %s", e)
 
         mean_cosine = statistics.mean(cosine_values)
         p95_cosine = self._compute_percentile(cosine_values, 95)
@@ -373,6 +385,7 @@ class ShadowDriftAnalyzer:
             Infrastructure drift analysis
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_verifies_policy(str(_uuid.uuid4()), "Module.analyze_infrastructure_drift", "L4_STATE")
         _emit_observes_runtime_state(str(_uuid.uuid4()), "Module.analyze_infrastructure_drift", "L4_STATE")
@@ -419,6 +432,7 @@ class ShadowDriftAnalyzer:
         # Persist infrastructure drift analysis
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             bridge.persist_infrastructure_drift_analysis(
@@ -430,9 +444,10 @@ class ShadowDriftAnalyzer:
                 timestamp_utc=now_utc,
             )
         except Exception as e:
-
             # Bridge unavailable - continue without it
-            import logging; logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L431: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L431: %s", e)
 
         return analysis
 

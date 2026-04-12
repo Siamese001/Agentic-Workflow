@@ -13,11 +13,27 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 # Known undefined type annotation symbols from the error analysis
 UNDEFINED_TYPES = {
-    "RefinementResult", "ScoreResult", "ExecutionResult", "FormatResult",
-    "DiagnosticReport", "OperationResult", "RetrievalResult", "ValidationResult",
-    "SystemEvent", "RoutingPolicy", "RGFlowRouter", "Provider", "AgentRole",
-    "RateLimitMixin", "RetryResult", "SignalAssessment", "CircuitBreaker",
-    "WorkflowOrchestrator", "SubatomicHopConfig", "EngineType", "ReasoningMode",
+    "RefinementResult",
+    "ScoreResult",
+    "ExecutionResult",
+    "FormatResult",
+    "DiagnosticReport",
+    "OperationResult",
+    "RetrievalResult",
+    "ValidationResult",
+    "SystemEvent",
+    "RoutingPolicy",
+    "RGFlowRouter",
+    "Provider",
+    "AgentRole",
+    "RateLimitMixin",
+    "RetryResult",
+    "SignalAssessment",
+    "CircuitBreaker",
+    "WorkflowOrchestrator",
+    "SubatomicHopConfig",
+    "EngineType",
+    "ReasoningMode",
 }
 
 fixed = 0
@@ -45,11 +61,11 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
             needs_fix = False
             for sym in UNDEFINED_TYPES:
                 # Type annotation patterns: -> Sym, : Sym, : Sym =
-                if re.search(r'(?:->|:)\s*' + re.escape(sym) + r'\b', content):
+                if re.search(r"(?:->|:)\s*" + re.escape(sym) + r"\b", content):
                     # Make sure it's not imported or defined
                     if f"import {sym}" in content or f"class {sym}" in content:
                         continue
-                    if re.search(r'^\s+' + re.escape(sym) + r'\s*[,)]', content, re.MULTILINE):
+                    if re.search(r"^\s+" + re.escape(sym) + r"\s*[,)]", content, re.MULTILINE):
                         continue
                     needs_fix = True
                     break

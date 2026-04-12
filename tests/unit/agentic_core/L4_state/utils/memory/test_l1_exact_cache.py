@@ -1,6 +1,5 @@
 """Tests for L1 Exact Cache implementation."""
 
-
 import pytest
 
 # Check if l1_exact_cache is available
@@ -13,6 +12,7 @@ try:
         l1_cache_get,
         l1_cache_set,
     )
+
     L1_CACHE_AVAILABLE = True
 except ImportError:
     L1_CACHE_AVAILABLE = False
@@ -51,7 +51,7 @@ class TestL1ExactCache:
         assert hit is not None
         assert isinstance(hit, CacheHit)
         assert hit.response == response
-        assert hit.query_hash == hit.cache_key[len("l1_exact:"):]
+        assert hit.query_hash == hit.cache_key[len("l1_exact:") :]
 
     def test_cache_miss(self):
         """Test cache miss handling."""
@@ -103,7 +103,7 @@ class TestL1ExactCache:
         stats = self.cache.get_stats()
         assert stats["hit_count"] == 2
         assert stats["miss_count"] == 1
-        assert stats["hit_rate"] == 2/3
+        assert stats["hit_rate"] == 2 / 3
         assert stats["cache_type"] == "local"
 
     def test_cache_ttl(self):

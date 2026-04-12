@@ -312,8 +312,11 @@ class CompletenessRAGProposer:
         proposal is warranted.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CompletenessRAGProposer.propose")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CompletenessRAGProposer.propose"
+        )
 
         if signals.observation_count < _MIN_OBSERVATIONS:
             return []

@@ -270,7 +270,9 @@ class StructuralValidatorAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "StructuralValidatorAgent.validate_structure",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "StructuralValidatorAgent.validate_structure",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -319,7 +321,9 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         """CONSOLIDATED: Delegates to shared L4 utility."""
         return extract_layer_from_module(module)
 
-    def _check_gravity(self, file_path: Path, content: str) -> list[StructureViolation]:    # guardian: Syntax errors should be caught at parser level, not runtime
+    def _check_gravity(
+        self, file_path: Path, content: str
+    ) -> list[StructureViolation]:  # guardian: Syntax errors should be caught at parser level, not runtime
         violations = []
         source_layer = self._extract_layer(file_path)
         if not source_layer:
@@ -327,7 +331,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
         try:
             tree = ast.parse(content)
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in tree.body:
             if isinstance(node, ast.ImportFrom) and node.module:
@@ -362,7 +366,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                     ):
                         violations.append(
                             StructureViolation(
-                                file_path=file_path,    # guardian: Syntax errors should be caught at parser level, not runtime
+                                file_path=file_path,  # guardian: Syntax errors should be caught at parser level, not runtime
                                 line_number=node.lineno,
                                 violation_type=StructureViolationType.NAMING,
                                 message=f"Class '{node.name}' in agent file must end with '{self.config.agent_suffix}'",
@@ -370,14 +374,21 @@ class StructuralValidatorAgent(SovereignBaseAgent):
                                 auto_fixable=True,
                             ),
                         )
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("StructuralValidatorAgent: SyntaxError swallowed at L373: %s", e)
+            logging.getLogger(__name__).debug(
+                "StructuralValidatorAgent: SyntaxError swallowed at L373: %s", e
+            )
         return violations
 
     # guardian: allow-type-erasure
     def force_rename_class(
-        self, file_path: Path, old_name: str, new_name: str, dry_run: bool = True,
+        self,
+        file_path: Path,
+        old_name: str,
+        new_name: str,
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """Safely renames a class using Atomic Writes."""
         if not file_path.exists():
@@ -427,7 +438,10 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         try:
             if violation_type == "naming" and violation.get("old_name") and violation.get("new_name"):
                 result = self.force_rename_class(
-                    Path(path), violation["old_name"], violation["new_name"], dry_run=False,
+                    Path(path),
+                    violation["old_name"],
+                    violation["new_name"],
+                    dry_run=False,
                 )
                 if "error" not in result:
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}

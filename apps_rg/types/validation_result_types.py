@@ -194,6 +194,7 @@ class AdaptiveRecoveryLoop:
 
     def reset(self, temp):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AdaptiveRecoveryLoop.reset")
 
@@ -280,7 +281,10 @@ class SectionScopeIntegrator:
         )
 
     def generate_overview(
-        self, bullets: list[str], master_baseline: str, context: dict[str, Any],
+        self,
+        bullets: list[str],
+        master_baseline: str,
+        context: dict[str, Any],
     ) -> SectionIntegratorResult:
         """
         Generate section overview with anti-prefix and deduplication validation.
@@ -294,8 +298,11 @@ class SectionScopeIntegrator:
             SectionIntegratorResult with overview and validation details
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SectionScopeIntegrator.generate_overview")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SectionScopeIntegrator.generate_overview"
+        )
 
         self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results = []
@@ -333,7 +340,9 @@ class SectionScopeIntegrator:
             validation_results.append(dedup_result)
             if not dedup_result.passed:
                 recovery = self.recovery_loop.record_failure(
-                    gate_id=dedup_result.gate_id, message=dedup_result.message, details=dedup_result.details,
+                    gate_id=dedup_result.gate_id,
+                    message=dedup_result.message,
+                    details=dedup_result.details,
                 )
                 if not recovery.should_retry:
                     break
@@ -357,7 +366,11 @@ class SectionScopeIntegrator:
         )
 
     def _generate_content(
-        self, bullets: list[str], context: dict[str, Any], temperature: float, attempt: int,
+        self,
+        bullets: list[str],
+        context: dict[str, Any],
+        temperature: float,
+        attempt: int,
     ) -> str:
         """
         Generate overview content using LLM.

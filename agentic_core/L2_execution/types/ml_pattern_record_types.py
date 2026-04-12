@@ -322,7 +322,10 @@ class MLPatternRecord:
 
 
 def enforce_pattern_compatibility(
-    record: MLPatternRecord, query_domain_id: str, active_policy_hash: str, active_model_hash: str,
+    record: MLPatternRecord,
+    query_domain_id: str,
+    active_policy_hash: str,
+    active_model_hash: str,
 ) -> None:
     """
     Enforce domain isolation + policy/model hash compatibility.

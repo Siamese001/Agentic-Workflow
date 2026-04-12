@@ -161,7 +161,6 @@ _emit_updates_meta_learning_state("p4", "reasoning_toggles_config", "meta_learni
 _emit_links_execution_to_snapshot("p4", "reasoning_toggles_config", "exec_snapshot_link")
 
 
-
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192
@@ -170,6 +169,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 class ReasoningToggles(BaseModel):
     """
@@ -198,8 +198,11 @@ class ReasoningToggles(BaseModel):
     @classmethod
     def validate_branches(cls, v: int) -> int:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningToggles.validate_branches")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningToggles.validate_branches"
+        )
 
         if not 1 <= v <= 5:
             raise ValueError(f"tot_branches must be between 1 and 5. Got {v}.")

@@ -292,8 +292,7 @@ class UnifiedQueryRouter:
     def __init__(self, l4_rate_limit_per_minute: int = 30):
         self.load_balancers: dict[LayerType, LoadBalancer] = {}
         self.circuit_breakers: dict[LayerType, CircuitBreaker] = {
-            layer_type: CircuitBreaker(layer_type, CircuitBreakerConfig())
-            for layer_type in LayerType
+            layer_type: CircuitBreaker(layer_type, CircuitBreakerConfig()) for layer_type in LayerType
         }
         self.health_checker = HealthChecker()
         self.query_stats = defaultdict(lambda: {"total": 0, "success": 0, "failed": 0})
@@ -339,7 +338,9 @@ class UnifiedQueryRouter:
                 security_context = request.security_context or {}
                 user_id = security_context.get("user_id") or request.query_id
                 self.contract_guard.enforce_l4_rate_limit(user_id)
-        except FourLayerContractError as e:    # guardian: FourLayerContractError should be handled with specific context
+        except (
+            FourLayerContractError
+        ) as e:  # guardian: FourLayerContractError should be handled with specific context
             fail_layer = target_layers[0] if target_layers else LayerType.REDIS_EXACT_MATCH
             return [
                 LayerResponse(
@@ -369,7 +370,9 @@ class UnifiedQueryRouter:
                 logger.error(f"Error routing query to {layer_type}: {e}")
 
                 error_response = LayerResponse(
-                    layer_type=layer_type, status=QueryStatus.FAILED, error_message=str(e),
+                    layer_type=layer_type,
+                    status=QueryStatus.FAILED,
+                    error_message=str(e),
                 )
                 responses.append(error_response)
                 break
@@ -411,7 +414,10 @@ class UnifiedQueryRouter:
                 return LayerResponse(layer_type=layer_type, status=QueryStatus.FAILED, error_message=str(e))
 
     async def _simulate_layer_execution(
-        self, request: QueryRequest, layer_type: LayerType, instance: LayerInstance,
+        self,
+        request: QueryRequest,
+        layer_type: LayerType,
+        instance: LayerInstance,
     ) -> LayerResponse:
         """Simulate layer execution (placeholder for actual implementation)."""
         start_time = time.time()

@@ -84,7 +84,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-record_execution_trace("format_observability_context_plan_type_util", "format_observability_context_plan_type_util_trace")
+record_execution_trace(
+    "format_observability_context_plan_type_util", "format_observability_context_plan_type_util_trace"
+)
 
 
 _emit_emits_metric_event("format_observability_context_plan_type_util", "p4obs", "metric_1")
@@ -219,8 +221,11 @@ class FormatObservabilityContextPlanImpl(FormatObservabilityContextPlanProcessor
     def process(self, input_data: dict[str, object]) -> FormatObservabilityContextPlanResult:
         """Process input following L5 architecture principles"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FormatObservabilityContextPlanImpl.process")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FormatObservabilityContextPlanImpl.process"
+        )
 
         self.logger.info(f"Processing {input_data}")
         self._validate_input(input_data)
@@ -307,8 +312,11 @@ class FormatObservabilityContextPlanFactory:
     def create_processor(safety_level: str = "strict") -> FormatObservabilityContextPlanInterface:
         """Create configured engine"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FormatObservabilityContextPlanFactory.create_processor")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FormatObservabilityContextPlanFactory.create_processor"
+        )
 
         constraints = FormatObservabilityContextPlanConstraints(safety_level=safety_level)
         engine = FormatObservabilityContextPlanImpl(constraints)
@@ -338,7 +346,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = format_observability_context(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:    # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

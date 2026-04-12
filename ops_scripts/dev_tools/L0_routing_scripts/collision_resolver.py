@@ -7,7 +7,6 @@ Rationale:
     This tool finds these specific cases and reports them for manual adjudication.
 """
 
-
 import ast
 import sys
 from collections import defaultdict
@@ -101,6 +100,7 @@ _emit_links_execution_to_snapshot("p4", "collision_resolver", "exec_snapshot_lin
 
 try:
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
+
     _SSOT_DISCOVERY_AVAILABLE = True
 except ImportError as e:
     _SSOT_DISCOVERY_AVAILABLE = False
@@ -109,6 +109,7 @@ except ImportError as e:
     def get_python_files(root: Path):
         """Fallback implementation when ssot_discovery_validator is unavailable."""
         return list(root.rglob("*.py"))
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,

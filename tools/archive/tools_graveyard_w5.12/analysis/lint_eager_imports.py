@@ -53,19 +53,13 @@ class EagerImportLinter:
         """Check if import is from a risky root."""
         if not module_name:
             return False
-        return any(
-            module_name.startswith(root) or module_name == root
-            for root in self.risky_roots
-        )
+        return any(module_name.startswith(root) or module_name == root for root in self.risky_roots)
 
     def is_safe_import(self, module_name: str) -> bool:
         """Check if import is explicitly safe."""
         if not module_name:
             return False
-        return any(
-            module_name.startswith(root) or module_name == root
-            for root in self.safe_roots
-        )
+        return any(module_name.startswith(root) or module_name == root for root in self.safe_roots)
 
     def lint_file(self, file_path: Path) -> list[Violation]:
         """Lint a single test file for eager import violations."""
@@ -74,26 +68,30 @@ class EagerImportLinter:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source, filename=str(file_path))
         except SyntaxError as e:
-            violations.append(Violation(
-                file=str(file_path),
-                line=e.lineno or 1,
-                col=e.offset or 0,
-                rule_id="SYNTAX_ERROR",
-                import_name=None,
-                reason=f"Syntax error: {e.msg}",
-                remediation="Fix syntax error before linting",
-            ))
+            violations.append(
+                Violation(
+                    file=str(file_path),
+                    line=e.lineno or 1,
+                    col=e.offset or 0,
+                    rule_id="SYNTAX_ERROR",
+                    import_name=None,
+                    reason=f"Syntax error: {e.msg}",
+                    remediation="Fix syntax error before linting",
+                )
+            )
             return violations
         except Exception as e:
-            violations.append(Violation(
-                file=str(file_path),
-                line=1,
-                col=0,
-                rule_id="READ_ERROR",
-                import_name=None,
-                reason=f"Failed to read file: {e}",
-                remediation="Check file permissions and encoding",
-            ))
+            violations.append(
+                Violation(
+                    file=str(file_path),
+                    line=1,
+                    col=0,
+                    rule_id="READ_ERROR",
+                    import_name=None,
+                    reason=f"Failed to read file: {e}",
+                    remediation="Check file permissions and encoding",
+                )
+            )
             return violations
 
         for node in ast.iter_child_nodes(tree):

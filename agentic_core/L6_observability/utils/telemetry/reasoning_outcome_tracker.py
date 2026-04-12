@@ -116,7 +116,9 @@ class ReasoningOutcomeTracker:
             f.write(json.dumps(asdict(outcome), default=str) + "\n")
 
     def get_aggregates(
-        self, window_seconds: float = 300.0, min_samples: int = 5,
+        self,
+        window_seconds: float = 300.0,
+        min_samples: int = 5,
     ) -> list[OutcomeAggregate]:
         """
         Get aggregated outcomes for L0 calibration feedback.

@@ -14,11 +14,5 @@ class TestAdgCoverageFinalPush:
     """Test ADG coverage final push functionality."""
 
 
-
-
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

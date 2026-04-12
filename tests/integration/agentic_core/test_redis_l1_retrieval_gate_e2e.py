@@ -35,6 +35,7 @@ try:
         L4AgenticActions,
         RetrievalOrchestrator,
     )
+
     RETRIEVAL_AVAILABLE = True
 except ImportError:
     RETRIEVAL_AVAILABLE = False
@@ -120,7 +121,7 @@ class TestL1ExactCache(unittest.TestCase):
         self.assertEqual(stats["layer"], "L1_Exact_Cache")
         self.assertEqual(stats["hit_count"], 1)
         self.assertEqual(stats["miss_count"], 2)
-        self.assertEqual(stats["hit_rate"], 1/3)
+        self.assertEqual(stats["hit_rate"], 1 / 3)
         self.assertEqual(stats["ttl_seconds"], 3600)
 
 
@@ -185,6 +186,7 @@ class TestL3SemanticRAG(unittest.TestCase):
     def tearDown(self):
         """Clean up temporary directory."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_l3_rag_initialization(self):
@@ -293,6 +295,7 @@ class TestRetrievalOrchestrator(unittest.TestCase):
     def tearDown(self):
         """Clean up."""
         import shutil
+
         reset_cache_singletons()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -379,6 +382,7 @@ class TestRedisL1RetrievalGateE2E(unittest.TestCase):
     def tearDown(self):
         """Clean up test environment."""
         import shutil
+
         reset_cache_singletons()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
@@ -450,11 +454,13 @@ class TestRedisL1RetrievalGateE2E(unittest.TestCase):
         note_key = f"agent_note:{task_id}"
 
         # Agent writes note to Redis (conscious action)
-        note_content = json.dumps({
-            "step_completed": 2,
-            "anomaly_found": True,
-            "next_action": "escalate",
-        })
+        note_content = json.dumps(
+            {
+                "step_completed": 2,
+                "anomaly_found": True,
+                "next_action": "escalate",
+            }
+        )
 
         cache = get_hot_cache()
         cache.set(note_key, note_content.encode(), ttl_seconds=300)
@@ -525,6 +531,7 @@ class TestRedisIntegration(unittest.TestCase):
         cls.redis_available = False
         try:
             from agentic_core.cache import check_redis_health
+
             health = check_redis_health()
             cls.redis_available = health.get("healthy", False)
         except Exception:

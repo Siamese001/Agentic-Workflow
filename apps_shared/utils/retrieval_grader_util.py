@@ -217,7 +217,10 @@ class RetrievalGrader:
         )
 
     async def grade_documents(
-        self, query: str, documents: list[str], document_ids: list[str] | None = None,
+        self,
+        query: str,
+        documents: list[str],
+        document_ids: list[str] | None = None,
     ) -> RetrievalGrade:
         """Grade documents for relevance to the query.
 
@@ -230,8 +233,11 @@ class RetrievalGrader:
             RetrievalGrade with assessment
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalGrader.grade_documents")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalGrader.grade_documents"
+        )
 
         start_time = time.time()
         self.stats["total_gradings"] += 1

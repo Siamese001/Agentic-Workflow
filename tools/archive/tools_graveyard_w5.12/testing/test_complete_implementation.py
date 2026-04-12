@@ -17,6 +17,7 @@ print("=" * 80)
 print(f"Repository: {ROOT}")
 print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
+
 def test_continuous_learning_pipeline():
     """Test the continuous learning pipeline."""
     print("\n🔄 TESTING CONTINUOUS LEARNING PIPELINE")
@@ -59,11 +60,14 @@ def test_continuous_learning_pipeline():
 
         # Wait for processing
         import time
+
         time.sleep(2)
 
         # Get statistics
         stats = pipeline.get_pipeline_stats()
-        print(f"✅ Pipeline statistics: events={stats['events_processed']}, signals={stats['signals_processed']}")
+        print(
+            f"✅ Pipeline statistics: events={stats['events_processed']}, signals={stats['signals_processed']}"
+        )
 
         # Stop pipeline
         pipeline.stop_pipeline()
@@ -74,6 +78,7 @@ def test_continuous_learning_pipeline():
     except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Pipeline test failed: {e}")
         return False
+
 
 def test_unified_memory():
     """Test the unified memory database."""
@@ -88,6 +93,7 @@ def test_unified_memory():
 
         # Test model checkpoint storage
         from tools.implement_unified_memory import ModelCheckpoint
+
         checkpoint = ModelCheckpoint(
             model_name="test_model",
             version="1.0.0",
@@ -111,6 +117,7 @@ def test_unified_memory():
 
         # Test learning experience storage
         from tools.implement_unified_memory import LearningExperience
+
         experience = LearningExperience(
             experience_type="test_experience",
             input_context={"test": True},
@@ -153,6 +160,7 @@ def test_unified_memory():
         print(f"❌ Memory database test failed: {e}")
         return False
 
+
 def test_migration_status():
     """Test current migration status."""
     print("\n📊 TESTING MIGRATION STATUS")
@@ -168,22 +176,26 @@ def test_migration_status():
         # Print summary
         print(f"✅ Unified memory database exists: {results['unified_memory_exists']}")
 
-        total_unmigrated = sum(len(files) for files in results['unmigrated_files'].values())
+        total_unmigrated = sum(len(files) for files in results["unmigrated_files"].values())
         print(f"📊 Files remaining to migrate: {total_unmigrated}")
 
-        integrated_components = sum(1 for status in results['learning_components_status'].values()
-                                  if status != "Not integrated")
-        total_components = len(results['learning_components_status'])
+        integrated_components = sum(
+            1 for status in results["learning_components_status"].values() if status != "Not integrated"
+        )
+        total_components = len(results["learning_components_status"])
         if total_components > 0:
             integration_rate = (integrated_components / total_components) * 100
-            print(f"🔧 Component integration: {integration_rate:.1f}% ({integrated_components}/{total_components})")
+            print(
+                f"🔧 Component integration: {integration_rate:.1f}% ({integrated_components}/{total_components})"
+            )
 
-        high_priority = [r for r in results['recommendations'] if r['priority'] in ["CRITICAL", "HIGH"]]
+        high_priority = [r for r in results["recommendations"] if r["priority"] in ["CRITICAL", "HIGH"]]
         print(f"📋 High priority actions: {len(high_priority)}")
 
         # Database statistics
-        if results['unified_memory_exists']:
+        if results["unified_memory_exists"]:
             from tools.implement_unified_memory import UnifiedMemoryManager
+
             memory_manager = UnifiedMemoryManager()
             db_stats = memory_manager.get_database_stats()
 
@@ -201,6 +213,7 @@ def test_migration_status():
     except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Migration status test failed: {e}")
         return False
+
 
 def test_system_learning_availability():
     """Test system_learning component availability."""
@@ -248,6 +261,7 @@ def test_system_learning_availability():
 
     return available_files > 0
 
+
 def main():
     """Run all tests."""
     print("🚀 STARTING COMPLETE IMPLEMENTATION TEST")
@@ -288,6 +302,7 @@ def main():
     else:
         print("⚠️ SOME TESTS FAILED - Review implementation")
         exit(1)
+
 
 if __name__ == "__main__":
     main()

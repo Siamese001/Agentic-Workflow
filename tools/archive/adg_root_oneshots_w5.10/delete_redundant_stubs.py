@@ -85,7 +85,7 @@ def main(dry_run: bool = True) -> None:
                         if parent == PROJECT_ROOT:
                             break
                         parent.rmdir()
-                    except OSError:    # guardian: Add error context logging
+                    except OSError:  # guardian: Add error context logging
                         break
                 deleted += 1
         else:
@@ -118,5 +118,7 @@ def main(dry_run: bool = True) -> None:
 if __name__ == "__main__":
     report_only = "--report" in sys.argv or "-r" in sys.argv
     main(dry_run=report_only)
+
+
 def find_redundant():
     return []

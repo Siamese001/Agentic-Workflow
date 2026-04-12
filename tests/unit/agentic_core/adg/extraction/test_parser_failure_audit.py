@@ -33,12 +33,13 @@ class TestParserFailureLogging:
         assert caplog.records, "Expected ERROR logs but none found"
 
         error_records = [r for r in caplog.records if r.levelno >= logging.ERROR]
-        assert error_records, f"Expected at least one ERROR record, found: {[r.levelname for r in caplog.records]}"
+        assert error_records, (
+            f"Expected at least one ERROR record, found: {[r.levelname for r in caplog.records]}"
+        )
 
         # Verify the error message contains specific context
         syntax_error_found = any(
-            "SyntaxError" in r.message or "line" in r.message.lower()
-            for r in error_records
+            "SyntaxError" in r.message or "line" in r.message.lower() for r in error_records
         )
         assert syntax_error_found, (
             f"ERROR log should mention 'SyntaxError' and line info. Got: {[r.message for r in error_records]}"
@@ -82,7 +83,8 @@ class TestParserFailureLogging:
 
         # Check for any DEBUG-level syntax error logs (these are the old bad pattern)
         debug_syntax_logs = [
-            r for r in caplog.records
+            r
+            for r in caplog.records
             if r.levelno == logging.DEBUG and ("syntax" in r.message.lower() or "parse" in r.message.lower())
         ]
 
@@ -122,7 +124,6 @@ class TestParseFailureVisibility:
         error_messages = " ".join([r.message for r in caplog.records if r.levelno >= logging.ERROR])
         # Should mention a line number (2 or 3 in this case)
         import re
-        has_line_number = bool(re.search(r'line\s+\d+', error_messages, re.IGNORECASE))
-        assert has_line_number, (
-            f"ERROR log should include line number. Got: {error_messages[:200]}"
-        )
+
+        has_line_number = bool(re.search(r"line\s+\d+", error_messages, re.IGNORECASE))
+        assert has_line_number, f"ERROR log should include line number. Got: {error_messages[:200]}"

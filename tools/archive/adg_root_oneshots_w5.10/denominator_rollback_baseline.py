@@ -1,4 +1,5 @@
 """Step 2: Capture pre-rollback denominator baseline from canonical SQLite."""
+
 import glob
 import json
 import os

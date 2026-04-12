@@ -21,8 +21,10 @@ def validate_schema_fields(file_path: str) -> tuple[bool, str, str]:
         path = Path.cwd() / path
 
     # Only check files in ops_scripts/ or tools/ directories
-    if not (str(path).startswith(str(Path.cwd() / "ops_scripts")) or
-            str(path).startswith(str(Path.cwd() / "tools"))):
+    if not (
+        str(path).startswith(str(Path.cwd() / "ops_scripts"))
+        or str(path).startswith(str(Path.cwd() / "tools"))
+    ):
         return True, "File not in schema validation scope", ""
 
     # Call the existing CI script

@@ -264,7 +264,11 @@ def build_cap_registry_key(cap_registry_hash: str) -> str:
 
 
 def build_compiled_prompt_key(
-    prompt_bom_hash: str, s0_hash: str, i0_hash: str, d0_hash: str, c0_hash: str,
+    prompt_bom_hash: str,
+    s0_hash: str,
+    i0_hash: str,
+    d0_hash: str,
+    c0_hash: str,
 ) -> str:
     """Key for a ``CompiledPromptArtifact`` (final assembled strings + token
     estimate + allowed tool schema + signature).
@@ -365,7 +369,11 @@ def build_tool_result_key(tool_call_hash: str) -> str:
 
 
 def build_rag_topk_key(
-    u0_hash: str, embedder_version: str, seed_pack_manifest_hash: str, k: int, cutoff: float,
+    u0_hash: str,
+    embedder_version: str,
+    seed_pack_manifest_hash: str,
+    k: int,
+    cutoff: float,
 ) -> str:
     """Key for a top-k retrieval result set (C0 informational payload only).
 

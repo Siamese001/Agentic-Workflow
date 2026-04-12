@@ -22,10 +22,13 @@ from typing import Any
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
+
 # Lazy import to avoid L0->L_RUNTIME gravity violation
 def _get_agent_registry():
     from agentic_core.runtime.utils.discovery_util import AgentRegistry
+
     return AgentRegistry
+
 
 from ops_scripts.dev_tools.L0_routing.manifest_guardian_util import ManifestGuardian
 
@@ -41,8 +44,10 @@ def check_compliance(agents):
     except TypeError as e:  # agents parameter not iterable
         # Log error but don't fail boot sequence
         import logging
+
         logging.getLogger(__name__).warning(f"Compliance check failed: {e}")
         return []
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -106,12 +111,14 @@ class BootSequence:
                     logger.error(
                         f"❌ Boot failed with {len(self.compliance_violations)} compliance violations.",
                     )
-                    boot_result["status"] = "failed"    # guardian: SystemExit should be handled with specific context
+                    boot_result["status"] = (
+                        "failed"  # guardian: SystemExit should be handled with specific context
+                    )
                     boot_result["errors"].extend(self.compliance_violations)
                     raise RuntimeError(f"Compliance violations detected: {self.compliance_violations}")
                 else:
                     logger.warning(
-                        f"⚠️  Continuing with {len(self.compliance_violations)} compliance violations.",    # guardian: SystemExit should be handled with specific context
+                        f"⚠️  Continuing with {len(self.compliance_violations)} compliance violations.",  # guardian: SystemExit should be handled with specific context
                     )
             else:
                 logger.info("✅ All agents pass compliance validation.")

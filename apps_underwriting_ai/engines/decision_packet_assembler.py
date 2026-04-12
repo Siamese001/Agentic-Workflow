@@ -1,6 +1,7 @@
 """
 Decision Packet Assembler - Merges hypothesis, features, validators into decision outputs.
 """
+
 from dataclasses import dataclass, field
 from typing import List, Optional
 
@@ -21,6 +22,7 @@ from ..types import (
 @dataclass
 class AssemblerInput:
     """Input for decision packet assembly."""
+
     request: UnderwritingRequest
     features: RiskFeatures
     recommended_decision: DecisionState
@@ -78,20 +80,26 @@ class DecisionPacketAssembler:
         evidence_items = []
         if input_data.evidence_register:
             for entry in input_data.evidence_register.entries:
-                evidence_items.append(EvidenceItem(
-                    claim_id=entry.entry_id,
-                    claim_text=entry.claim_text,
-                    evidence_type=entry.evidence_type,
-                    source_ref=entry.evidence_source,
-                    source_excerpt=entry.supporting_excerpt,
-                    confidence=entry.confidence,
-                ))
+                evidence_items.append(
+                    EvidenceItem(
+                        claim_id=entry.entry_id,
+                        claim_text=entry.claim_text,
+                        evidence_type=entry.evidence_type,
+                        source_ref=entry.evidence_source,
+                        source_excerpt=entry.supporting_excerpt,
+                        confidence=entry.confidence,
+                    )
+                )
 
         memo = DecisionMemo(
             request_id=request.request_id,
             recommended_decision=input_data.recommended_decision,
-            recommended_amount=request.requested_amount if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"] else None,
-            recommended_term_months=request.requested_term_months if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"] else None,
+            recommended_amount=request.requested_amount
+            if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"]
+            else None,
+            recommended_term_months=request.requested_term_months
+            if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"]
+            else None,
             conditions_precedent=input_data.conditions,
             covenants=input_data.covenants,
             key_strengths=input_data.key_strengths,
@@ -111,8 +119,12 @@ class DecisionPacketAssembler:
 
         # Build recommended structure
         recommended_structure = {
-            "amount": request.requested_amount if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"] else None,
-            "term_months": request.requested_term_months if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"] else None,
+            "amount": request.requested_amount
+            if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"]
+            else None,
+            "term_months": request.requested_term_months
+            if input_data.recommended_decision in ["APPROVE", "APPROVE_WITH_CONDITIONS", "COUNTER_OFFER"]
+            else None,
             "amortization_months": request.requested_structure.amortization_months,
             "interest_type": request.requested_structure.interest_type,
             "collateral_required": request.requested_structure.collateral_required,
@@ -121,8 +133,8 @@ class DecisionPacketAssembler:
 
         # Determine if human review is required
         review_required = (
-            input_data.recommended_decision == "ESCALATE_TO_HUMAN" or
-            input_data.human_review_reason is not None
+            input_data.recommended_decision == "ESCALATE_TO_HUMAN"
+            or input_data.human_review_reason is not None
         )
 
         packet = DecisionPacket(
@@ -147,12 +159,14 @@ class DecisionPacketAssembler:
         evidence_refs = []
         if input_data.evidence_register:
             for entry in input_data.evidence_register.entries:
-                evidence_refs.append({
-                    "entry_id": entry.entry_id,
-                    "claim_category": entry.claim_category,
-                    "evidence_source": entry.evidence_source,
-                    "confidence": entry.confidence,
-                })
+                evidence_refs.append(
+                    {
+                        "entry_id": entry.entry_id,
+                        "claim_category": entry.claim_category,
+                        "evidence_source": entry.evidence_source,
+                        "confidence": entry.confidence,
+                    }
+                )
 
         trace = AuditTrace(
             request_id=request.request_id,

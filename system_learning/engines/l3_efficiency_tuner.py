@@ -180,8 +180,11 @@ class EfficiencyBottleneck:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EfficiencyBottleneck.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EfficiencyBottleneck.canonical_bytes"
+        )
 
         data = {
             "component": self.component,
@@ -206,8 +209,11 @@ class EfficiencyReport:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EfficiencyReport.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EfficiencyReport.canonical_bytes"
+        )
 
         data = {
             "snapshot_id": self.snapshot_id,
@@ -265,12 +271,15 @@ class L3EfficiencyTuner:
             Advisory report with identified bottlenecks.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L3EfficiencyTuner.analyze")
 
         bottlenecks: list[EfficiencyBottleneck] = []
         total_agents = 0
-        for territory, time_ms in tqdm(sorted(territory_timings.items()), desc="territory timings", unit="territory", leave=False):
+        for territory, time_ms in tqdm(
+            sorted(territory_timings.items()), desc="territory timings", unit="territory", leave=False
+        ):
             if time_ms > self._slow_territory_ms:
                 bottlenecks.append(
                     EfficiencyBottleneck(
@@ -282,8 +291,12 @@ class L3EfficiencyTuner:
                         recommendation=f"Territory '{territory}' took {time_ms:.0f}ms (threshold: {self._slow_territory_ms:.0f}ms). Consider parallelizing or reducing agent count.",
                     ),
                 )
-        for territory, agents in tqdm(sorted(agent_timings.items()), desc="territory agents", unit="territory", leave=False):
-            for agent_name, time_ms in tqdm(sorted(agents.items()), desc="  agents", unit="agent", leave=False):
+        for territory, agents in tqdm(
+            sorted(agent_timings.items()), desc="territory agents", unit="territory", leave=False
+        ):
+            for agent_name, time_ms in tqdm(
+                sorted(agents.items()), desc="  agents", unit="agent", leave=False
+            ):
                 total_agents += 1
                 if time_ms > self._slow_agent_ms:
                     bottlenecks.append(

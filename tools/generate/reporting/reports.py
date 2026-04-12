@@ -397,6 +397,7 @@ def _print_defect_table(
     try:
         import subprocess as _sp
         import sys as _sys
+
         _gate_script = ROOT / "ops_scripts" / "ci" / "executor_theater_gate.py"
         if _gate_script.exists():
             _res = _sp.run(

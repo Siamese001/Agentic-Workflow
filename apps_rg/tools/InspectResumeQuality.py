@@ -168,8 +168,11 @@ class InspectResumeQuality:
     def diagnose(self, target: str | dict) -> DiagnosticReport:
         """Run diagnostics."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InspectResumeQuality.diagnose")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InspectResumeQuality.diagnose"
+        )
 
         issues = []
         metrics = {}

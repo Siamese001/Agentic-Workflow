@@ -336,6 +336,7 @@ class AgentExecutor:
             AgentResponse with completion
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentExecutor.execute")
 
@@ -369,7 +370,11 @@ class AgentExecutor:
         formatted_messages = self._format_messages(messages, system_prompt)
         model = self.config.model or self._get_default_model()
         gateway_response = self._try_execute_via_gateway(
-            formatted_messages, model, system_prompt, tools, **kwargs,
+            formatted_messages,
+            model,
+            system_prompt,
+            tools,
+            **kwargs,
         )
         if gateway_response is not None:
             return gateway_response
@@ -411,7 +416,9 @@ class AgentExecutor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "AgentExecutor.execute_via_governed_pipeline",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "AgentExecutor.execute_via_governed_pipeline",
         )
 
         # Import governed adapter
@@ -508,7 +515,9 @@ class AgentExecutor:
             return None
 
     def _format_messages(
-        self, messages: list[AgentMessage], system_prompt: str | None,
+        self,
+        messages: list[AgentMessage],
+        system_prompt: str | None,
     ) -> list[dict[str, str]]:
         """Format messages for provider."""
         formatted = []
@@ -526,7 +535,11 @@ class AgentExecutor:
         return formatted
 
     def _execute_openai(
-        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs,
+        self,
+        messages: list[dict[str, str]],
+        model: str,
+        tools: list[dict[str, Any]] | None,
+        **kwargs,
     ) -> AgentResponse:
         """Execute using OpenAI client."""
         client = self._get_client()
@@ -554,7 +567,11 @@ class AgentExecutor:
         )
 
     def _execute_anthropic(
-        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs,
+        self,
+        messages: list[dict[str, str]],
+        model: str,
+        tools: list[dict[str, Any]] | None,
+        **kwargs,
     ) -> AgentResponse:
         """Execute using Anthropic client."""
         client = self._get_client()
@@ -611,7 +628,12 @@ class AgentExecutor:
         client = self._get_client()
         if hasattr(client, "interactions"):
             return self._execute_google_interactions(
-                client, messages, model, tools, previous_interaction_id, **kwargs,
+                client,
+                messages,
+                model,
+                tools,
+                previous_interaction_id,
+                **kwargs,
             )
         else:
             return self._execute_google_legacy(client, messages, model, **kwargs)
@@ -668,7 +690,11 @@ class AgentExecutor:
         return _execute_with_retry()
 
     def _execute_google_legacy(
-        self, genai_module, messages: list[dict[str, str]], model: str, **kwargs,
+        self,
+        genai_module,
+        messages: list[dict[str, str]],
+        model: str,
+        **kwargs,
     ) -> AgentResponse:
         """Execute using legacy Google GenerativeAI SDK."""
         prompt = ""
@@ -689,7 +715,11 @@ class AgentExecutor:
         )
 
     def _execute_litellm(
-        self, messages: list[dict[str, str]], model: str, tools: list[dict[str, Any]] | None, **kwargs,
+        self,
+        messages: list[dict[str, str]],
+        model: str,
+        tools: list[dict[str, Any]] | None,
+        **kwargs,
     ) -> AgentResponse:
         """Execute using LiteLLM."""
         params = {"temperature": self.config.temperature, "max_tokens": self.config.max_tokens, **kwargs}
@@ -716,7 +746,11 @@ class AgentExecutor:
         return get_default_model(self.config.provider)
 
     def execute_structured(
-        self, messages: list[AgentMessage], response_model: Any, system_prompt: str | None = None, **kwargs,
+        self,
+        messages: list[AgentMessage],
+        response_model: Any,
+        system_prompt: str | None = None,
+        **kwargs,
     ) -> Any:
         """Execute agent with structured output using Instructor.
 
@@ -745,7 +779,11 @@ class AgentExecutor:
         return response
 
     def _execute_google_structured(
-        self, messages: list[AgentMessage], response_model: Any, system_prompt: str | None, **kwargs,
+        self,
+        messages: list[AgentMessage],
+        response_model: Any,
+        system_prompt: str | None,
+        **kwargs,
     ) -> Any:
         """Execute Google GenAI with structured JSON output using Interactions API."""
         import json
@@ -815,7 +853,10 @@ class AgentExecutor:
 
 
 def create_agent_executor(
-    provider: Provider = Provider.OPENAI, model: str | None = None, temperature: float = 0.7, **kwargs,
+    provider: Provider = Provider.OPENAI,
+    model: str | None = None,
+    temperature: float = 0.7,
+    **kwargs,
 ) -> AgentExecutor:
     """Factory function to create agent executor.
 

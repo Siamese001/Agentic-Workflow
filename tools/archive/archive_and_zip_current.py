@@ -32,8 +32,8 @@ def archive_current_artifacts():
             # Create gzipped archive
             archive_path = month_archive_dir / f"{file_path.name}.gz"
 
-            with open(file_path, 'rb') as f_in:
-                with gzip.open(archive_path, 'wb') as f_out:
+            with open(file_path, "rb") as f_in:
+                with gzip.open(archive_path, "wb") as f_out:
                     shutil.copyfileobj(f_in, f_out)
 
             print(f"  Archived: {file_path.name} -> {archive_path.name}")
@@ -53,14 +53,16 @@ def create_current_zip():
     # Get all current files (excluding archive and old zips)
     files_to_zip = []
     for file_path in ADG_DIR.iterdir():
-        if (file_path.is_file() and
-            not file_path.name.startswith('.') and
-            not file_path.name.endswith('.zip') and
-            file_path.name != 'README.md' and
-            '_archive' not in file_path.name):
+        if (
+            file_path.is_file()
+            and not file_path.name.startswith(".")
+            and not file_path.name.endswith(".zip")
+            and file_path.name != "README.md"
+            and "_archive" not in file_path.name
+        ):
             files_to_zip.append(file_path)
 
-    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         for file_path in files_to_zip:
             # Add file to zip with just the filename (no directory structure)
             zipf.write(file_path, file_path.name)

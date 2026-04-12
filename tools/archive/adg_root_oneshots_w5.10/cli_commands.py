@@ -1,4 +1,5 @@
 """ADG CLI Commands - Command line interface commands for ADG tools."""
+
 from __future__ import annotations
 
 from typing import Any

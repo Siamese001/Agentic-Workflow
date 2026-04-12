@@ -201,7 +201,8 @@ def canonical_hash(data: dict[str, Any]) -> str:
 
 
 def strip_nondeterministic(
-    data: dict[str, Any], excluded_fields: frozenset[str] | None = None,
+    data: dict[str, Any],
+    excluded_fields: frozenset[str] | None = None,
 ) -> dict[str, Any]:
     """
     Return a copy of data with nondeterministic fields removed.

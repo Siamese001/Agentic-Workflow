@@ -15,6 +15,7 @@ import math
 @dataclass
 class EmbeddingOutput:
     """Output from embedding forward pass."""
+
     embedding: list[float]
     dense_vector: list[float]  # BGE-M3 dense
     sparse_vector: dict[int, float] | None  # BGE-M3 lexical weights

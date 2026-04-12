@@ -5,8 +5,9 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 try:
     from agentic_core.L5_safety.base import L5SafetyBase
 except ImportError as e:
-
-    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-degradation - Optional L5 safety base
+    raise ImportError(
+        f"Required dependency missing: {e}"
+    )  # guardian: allow-silent-degradation - Optional L5 safety base
 
     class L5SafetyBase:  # type: ignore[no-redef]
         """Stub L5SafetyBase."""
@@ -223,7 +224,9 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ConstitutionalReviewerAgent.run_async",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "ConstitutionalReviewerAgent.run_async",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -236,7 +239,9 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
         if not self.config.agent_stacks.enable_constitutional_review:
             self.log_warning("Constitutional review is disabled. Passing by default.")
             return ConstitutionalReviewResult(
-                review_passed=True, violations_found=[], feedback="Review disabled",
+                review_passed=True,
+                violations_found=[],
+                feedback="Review disabled",
             )
         client = self.get_model_client("constitutional_review_model")
         prompt_template = self.prompt_manager.get_template("constitutional_review")
@@ -260,7 +265,9 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
                 f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft).",
             )
             return ConstitutionalReviewResult(
-                review_passed=True, violations_found=["VALIDATION_ERROR"], feedback=error,
+                review_passed=True,
+                violations_found=["VALIDATION_ERROR"],
+                feedback=error,
             )
         if not validated_output.review_passed:
             self.log_warning(f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}")
@@ -290,14 +297,14 @@ class ConstitutionalReviewerAgent(SovereignBaseAgent, L5SafetyBase):
         try:
             print(f"[{agent_name}] Operational guardrail - no healing required")
             return {"skipped": 1}
-        finally:    # guardian: AssertionError should be handled with specific context
+        finally:  # guardian: AssertionError should be handled with specific context
             _call_path.discard(agent_name)
 
     # guardian: allow-type-erasure
     def _run_self_tests(self) -> dict:
         """Run internal self-tests."""
         results = {"passed": 0, "failed": 0, "tests": []}
-        try:    # guardian: AssertionError should be handled with specific context
+        try:  # guardian: AssertionError should be handled with specific context
             assert self is not None
             results["passed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "passed"})

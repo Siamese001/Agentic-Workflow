@@ -257,7 +257,9 @@ class ReasonTraceEnvelope:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "ReasonTraceEnvelope.canonical_bytes",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "ReasonTraceEnvelope.canonical_bytes",
         )
 
         d = {
@@ -336,7 +338,9 @@ class PromptProvenanceRecord:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "PromptProvenanceRecord.canonical_bytes",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "PromptProvenanceRecord.canonical_bytes",
         )
 
         d = {

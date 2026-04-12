@@ -14,20 +14,23 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
     cursor = conn.cursor()
 
     results = {
-        'target_dir': target_dir,
-        'dead_imports': [],
-        'unused_imports': [],
-        'unreachable_code': [],
-        'duplicate_methods': [],
-        'orphans': [],
+        "target_dir": target_dir,
+        "dead_imports": [],
+        "unused_imports": [],
+        "unreachable_code": [],
+        "duplicate_methods": [],
+        "orphans": [],
     }
 
     # Query for nodes in target directory
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT id, adg_name, resolved_path
         FROM nodes
         WHERE resolved_path LIKE ?
-    """, (f"%{target_dir}%",))
+    """,
+        (f"%{target_dir}%",),
+    )
 
     nodes = cursor.fetchall()
     print(f"Found {len(nodes)} nodes in {target_dir}")
@@ -46,21 +49,26 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
     node_ids_with_dead_imports = set(edge[0] for edge in dead_import_edges)
 
     if node_ids_with_dead_imports:
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id, resolved_path, adg_name
             FROM nodes
             WHERE id IN ({})
-        """.format(','.join('?' for _ in node_ids_with_dead_imports)), list(node_ids_with_dead_imports))
+        """.format(",".join("?" for _ in node_ids_with_dead_imports)),
+            list(node_ids_with_dead_imports),
+        )
 
         nodes_with_dead_imports = cursor.fetchall()
 
         for node_id, resolved_path, adg_name in nodes_with_dead_imports:
             if resolved_path and target_dir in resolved_path:
-                results['dead_imports'].append({
-                    'node_id': node_id,
-                    'file_path': resolved_path,
-                    'name': adg_name,
-                })
+                results["dead_imports"].append(
+                    {
+                        "node_id": node_id,
+                        "file_path": resolved_path,
+                        "name": adg_name,
+                    }
+                )
 
     # Query for unused imports
     cursor.execute("""
@@ -75,21 +83,26 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
     node_ids_with_unused_imports = set(edge[0] for edge in unused_import_edges)
 
     if node_ids_with_unused_imports:
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id, resolved_path, adg_name
             FROM nodes
             WHERE id IN ({})
-        """.format(','.join('?' for _ in node_ids_with_unused_imports)), list(node_ids_with_unused_imports))
+        """.format(",".join("?" for _ in node_ids_with_unused_imports)),
+            list(node_ids_with_unused_imports),
+        )
 
         nodes_with_unused_imports = cursor.fetchall()
 
         for node_id, resolved_path, adg_name in nodes_with_unused_imports:
             if resolved_path and target_dir in resolved_path:
-                results['unused_imports'].append({
-                    'node_id': node_id,
-                    'file_path': resolved_path,
-                    'name': adg_name,
-                })
+                results["unused_imports"].append(
+                    {
+                        "node_id": node_id,
+                        "file_path": resolved_path,
+                        "name": adg_name,
+                    }
+                )
 
     # Query for unreachable code
     cursor.execute("""
@@ -104,21 +117,26 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
     node_ids_unreachable = set(edge[0] for edge in unreachable_edges)
 
     if node_ids_unreachable:
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id, resolved_path, adg_name
             FROM nodes
             WHERE id IN ({})
-        """.format(','.join('?' for _ in node_ids_unreachable)), list(node_ids_unreachable))
+        """.format(",".join("?" for _ in node_ids_unreachable)),
+            list(node_ids_unreachable),
+        )
 
         nodes_unreachable = cursor.fetchall()
 
         for node_id, resolved_path, adg_name in nodes_unreachable:
             if resolved_path and target_dir in resolved_path:
-                results['unreachable_code'].append({
-                    'node_id': node_id,
-                    'file_path': resolved_path,
-                    'name': adg_name,
-                })
+                results["unreachable_code"].append(
+                    {
+                        "node_id": node_id,
+                        "file_path": resolved_path,
+                        "name": adg_name,
+                    }
+                )
 
     # Query for duplicate methods
     cursor.execute("""
@@ -133,21 +151,26 @@ def query_adg_for_dead_code(db_path: str, target_dir: str) -> Dict[str, Any]:
     node_ids_duplicates = set(edge[0] for edge in duplicate_edges)
 
     if node_ids_duplicates:
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id, resolved_path, adg_name
             FROM nodes
             WHERE id IN ({})
-        """.format(','.join('?' for _ in node_ids_duplicates)), list(node_ids_duplicates))
+        """.format(",".join("?" for _ in node_ids_duplicates)),
+            list(node_ids_duplicates),
+        )
 
         nodes_duplicates = cursor.fetchall()
 
         for node_id, resolved_path, adg_name in nodes_duplicates:
             if resolved_path and target_dir in resolved_path:
-                results['duplicate_methods'].append({
-                    'node_id': node_id,
-                    'file_path': resolved_path,
-                    'name': adg_name,
-                })
+                results["duplicate_methods"].append(
+                    {
+                        "node_id": node_id,
+                        "file_path": resolved_path,
+                        "name": adg_name,
+                    }
+                )
 
     conn.close()
 
@@ -177,29 +200,29 @@ def main():
     print(f"  Unreachable code: {len(results['unreachable_code'])}")
     print(f"  Duplicate methods: {len(results['duplicate_methods'])}")
 
-    if results['dead_imports']:
+    if results["dead_imports"]:
         print(f"\nDead Imports ({len(results['dead_imports'])}):")
-        for item in results['dead_imports'][:10]:  # Show first 10
+        for item in results["dead_imports"][:10]:  # Show first 10
             print(f"  {item['file_path']}: {item['name']}")
-        if len(results['dead_imports']) > 10:
+        if len(results["dead_imports"]) > 10:
             print(f"  ... and {len(results['dead_imports']) - 10} more")
 
-    if results['unused_imports']:
+    if results["unused_imports"]:
         print(f"\nUnused Imports ({len(results['unused_imports'])}):")
-        for item in results['unused_imports'][:10]:
+        for item in results["unused_imports"][:10]:
             print(f"  {item['file_path']}: {item['name']}")
-        if len(results['unused_imports']) > 10:
+        if len(results["unused_imports"]) > 10:
             print(f"  ... and {len(results['unused_imports']) - 10} more")
 
     if output_file:
         output_path = Path(output_file)
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
 
         print(f"\nDetailed report saved to: {output_file}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

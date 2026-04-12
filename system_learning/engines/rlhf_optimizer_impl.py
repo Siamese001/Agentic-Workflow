@@ -182,8 +182,11 @@ class RLHFChangePackage:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RLHFChangePackage.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RLHFChangePackage.canonical_bytes"
+        )
 
         data = {
             "surface_name": self.surface_name,
@@ -209,7 +212,9 @@ class DefaultRLHFOptimizer:
     """
 
     def propose_from_dpo(
-        self, dpo_batch_bytes: bytes, snapshot_id: str = "unknown",
+        self,
+        dpo_batch_bytes: bytes,
+        snapshot_id: str = "unknown",
     ) -> RLHFChangePackage | None:
         """Propose threshold changes from DPO preference pairs.
 
@@ -233,12 +238,18 @@ class DefaultRLHFOptimizer:
             Proposal or None if preferences are weak/insufficient.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRLHFOptimizer.propose_from_dpo")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRLHFOptimizer.propose_from_dpo"
+        )
 
         try:
             batch = json.loads(dpo_batch_bytes.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):    # guardian: Encoding errors should specify fallback encoding strategy
+        except (
+            json.JSONDecodeError,
+            UnicodeDecodeError,
+        ):  # guardian: Encoding errors should specify fallback encoding strategy
             logger.debug("Failed to decode DPO batch bytes")
             return None
         pairs = batch.get("pairs", [])

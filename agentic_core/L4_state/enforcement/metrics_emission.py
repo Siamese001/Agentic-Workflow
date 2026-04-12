@@ -85,7 +85,9 @@ class MetricsEmissionEnforcer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "MetricsEmissionEnforcer.single_authoritative_emission",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "MetricsEmissionEnforcer.single_authoritative_emission",
         )
 
         emission_key = f"{trace_id}:{artifact_type}"
@@ -124,7 +126,11 @@ class MetricsEmissionEnforcer:
         """
         if hasattr(artifact, "__dict__"):
             mutable_attrs = sum(
-                (1 for k, v in artifact.__dict__.items() if not isinstance(v, (int, float, str, bool, tuple))),
+                (
+                    1
+                    for k, v in artifact.__dict__.items()
+                    if not isinstance(v, (int, float, str, bool, tuple))
+                ),
             )
             return mutable_attrs
         return 1
@@ -176,7 +182,9 @@ class BlastRadiusEnforcer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "BlastRadiusEnforcer.validate_blast_radius",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "BlastRadiusEnforcer.validate_blast_radius",
         )
 
         if state_surface_bytes > self.config.max_state_surface_bytes:

@@ -213,8 +213,11 @@ class LiveRunPipelineAdapter:
             PipelineDependencies ready for run_pipeline().
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LiveRunPipelineAdapter.build_pipeline_deps")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LiveRunPipelineAdapter.build_pipeline_deps"
+        )
 
         from system_learning.pipelines.pipeline_factory import build_pipeline_deps
 
@@ -260,7 +263,11 @@ class LiveRunPipelineAdapter:
         cfg = build_pipeline_config(proposal_only=proposal_only)
         deps = self.build_pipeline_deps(repo_root=repo_root)
         run_pipeline(
-            now_utc=now_utc, window_start_utc=window_start_utc, window_end_utc=now_utc, cfg=cfg, deps=deps,
+            now_utc=now_utc,
+            window_start_utc=window_start_utc,
+            window_end_utc=now_utc,
+            cfg=cfg,
+            deps=deps,
         )
         logger.info(
             "[LiveRunPipelineAdapter] run_pipeline completed (%d records, source=%s).",

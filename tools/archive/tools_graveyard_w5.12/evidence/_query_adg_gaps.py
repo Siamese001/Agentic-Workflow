@@ -89,7 +89,8 @@ for name in ["DAGManager", "Orchestrator", "ActionNode", "ToolIntentExecutor"]:
     print(f"  nodes containing '{name}': {cnt}")
     if cnt > 0 and cnt <= 5:
         c.execute(
-            "SELECT adg_name, entity_type, layer FROM nodes WHERE adg_name LIKE ? LIMIT 5", (f"%{name}%",),
+            "SELECT adg_name, entity_type, layer FROM nodes WHERE adg_name LIKE ? LIMIT 5",
+            (f"%{name}%",),
         )
         for row in c.fetchall():
             print(f"    -> {row}")

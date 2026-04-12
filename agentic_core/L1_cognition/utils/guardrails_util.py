@@ -233,7 +233,9 @@ class MetaLearningGuardrails:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "MetaLearningGuardrails.validate_cache_key", "state_snapshot",
+            str(_uuid.uuid4()),
+            "MetaLearningGuardrails.validate_cache_key",
+            "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -243,11 +245,15 @@ class MetaLearningGuardrails:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "MetaLearningGuardrails.validate_cache_key", "p0_governance",
+            str(_uuid.uuid4()),
+            "MetaLearningGuardrails.validate_cache_key",
+            "p0_governance",
         )
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardrailsUtil.validate_cache_key:{key[:32]}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"GuardrailsUtil.validate_cache_key:{key[:32]}",
         )
         if not key or not isinstance(key, str):
             return False
@@ -307,7 +313,7 @@ class MetaLearningGuardrails:
                 for item in obj:
                     if self._has_circular_refs(item, visited.copy()):
                         return True
-        except RecursionError:    # guardian: RecursionError should be handled with specific context
+        except RecursionError:  # guardian: RecursionError should be handled with specific context
             return True
         return False
 

@@ -41,7 +41,7 @@ class L0RouteRecommender(BaseMLModel):
         0: "Path_A",  # Basic - simple requests
         1: "Path_B",  # Standard - moderate complexity
         2: "Path_C",  # Advanced - high complexity
-        3: "Path_D",   # Expert - maximum complexity/escalation
+        3: "Path_D",  # Expert - maximum complexity/escalation
     }
 
     # Reverse mapping
@@ -81,13 +81,13 @@ class L0RouteRecommender(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.pipeline = model_data.get('pipeline')
-            self.feature_names = model_data.get('feature_names', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.pipeline = model_data.get("pipeline")
+            self.feature_names = model_data.get("feature_names", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -97,22 +97,22 @@ class L0RouteRecommender(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         model_data = {
-            'pipeline': self.pipeline,
-            'feature_names': self.feature_names,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
+            "pipeline": self.pipeline,
+            "feature_names": self.feature_names,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -171,10 +171,7 @@ class L0RouteRecommender(BaseMLModel):
             predicted_path = self.PATH_MAPPING.get(predicted_class, "Path_A")
 
             # Create probability distribution
-            prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            prob_distribution = {self.class_names[i]: float(prob) for i, prob in enumerate(probabilities)}
 
             # Calculate confidence (max probability)
             confidence = float(np.max(probabilities))
@@ -212,14 +209,16 @@ class L0RouteRecommender(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': int(predicted_class),
-                'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold,
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": int(predicted_class),
+                    "class_probabilities": [float(p) for p in probabilities],
+                    "thresholds_passed": passes_threshold,
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -244,7 +243,7 @@ class L0RouteRecommender(BaseMLModel):
 
         try:
             # Get coefficients from logistic regression
-            logistic_model = self.pipeline.named_steps['classifier']
+            logistic_model = self.pipeline.named_steps["classifier"]
             coefficients = logistic_model.coef_[0]  # First class for multiclass
 
             # Get feature names
@@ -262,20 +261,22 @@ class L0RouteRecommender(BaseMLModel):
             feature_importance = []
             for i, (name, score) in enumerate(zip(feature_names, importance_scores)):
                 if i < len(score):  # Ensure index is valid
-                    feature_importance.append({
-                        'feature_name': name,
-                        'importance_score': float(score),
-                        'coefficient_value': float(coefficients[i]) if i < len(coefficients) else 0.0,
-                        'feature_value': model_input.features.get(name),
-                        'rank': i + 1,
-                    })
+                    feature_importance.append(
+                        {
+                            "feature_name": name,
+                            "importance_score": float(score),
+                            "coefficient_value": float(coefficients[i]) if i < len(coefficients) else 0.0,
+                            "feature_value": model_input.features.get(name),
+                            "rank": i + 1,
+                        }
+                    )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -296,7 +297,7 @@ class L0RouteRecommender(BaseMLModel):
 
                 # Convert to numeric
                 if isinstance(value, str):
-                    if value.replace('.', '').isdigit():
+                    if value.replace(".", "").isdigit():
                         value = float(value)
                     else:
                         # Handle categorical variables
@@ -348,8 +349,8 @@ class L0RouteRecommender(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert path name to class index
             if isinstance(label, str):
@@ -367,15 +368,20 @@ class L0RouteRecommender(BaseMLModel):
         y = np.array(y)
 
         # Create pipeline with scaling and logistic regression
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', LogisticRegression(
-                multi_class='multinomial',
-                solver='lbfgs',
-                max_iter=1000,
-                random_state=42,
-            )),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    LogisticRegression(
+                        multi_class="multinomial",
+                        solver="lbfgs",
+                        max_iter=1000,
+                        random_state=42,
+                    ),
+                ),
+            ]
+        )
 
         # Train model
         self.pipeline.fit(X, y)

@@ -16,14 +16,17 @@ class TestInvokeMessageServiceAdg:
     def test_invoke_message_service_adg_imports(self):
         """Test invoke_message_service_adg module imports."""
         from agentic_core import invoke_message_service_adg
+
         assert invoke_message_service_adg is not None
 
     def test_invoke_message_service_adg_class(self):
         """Test InvokeMessageServiceAdg class exists."""
         from agentic_core import InvokeMessageServiceAdg
+
         assert InvokeMessageServiceAdg is not None
 
     def test_invoke_message_service_adg_callable(self):
         """Test invoke_message_service_adg functions are callable."""
         from agentic_core import validate_invoke_message_service_adg
+
         assert callable(validate_invoke_message_service_adg)

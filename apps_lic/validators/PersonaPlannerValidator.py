@@ -271,12 +271,16 @@ class PersonaPlanner:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "PersonaPlannerValidator.plan")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "PersonaPlannerValidator.plan"
+        )
         outreach_context: Any = outreach_context or {}
         base_persona: Any = self._get_base_persona(Archetype)
         seniority_adjusted: Any = self._apply_seniority_adjustments(base_persona, recipient_profile)
         industry_adjusted: Any = self._apply_industry_adjustments(
-            seniority_adjusted, recipient_profile, outreach_context,
+            seniority_adjusted,
+            recipient_profile,
+            outreach_context,
         )
         final_persona: Any = self._apply_grounding_refinements(industry_adjusted, grounding_plan)
         confidence_score: Any = self._calculate_confidence_score(Archetype, recipient_profile, final_persona)
@@ -316,7 +320,9 @@ class PersonaPlanner:
         return base
 
     def _apply_seniority_adjustments(
-        self, persona: dict[str, object], profile: dict[str, object],
+        self,
+        persona: dict[str, object],
+        profile: dict[str, object],
     ) -> dict[str, object]:
         """Apply seniority-based adjustments to persona."""
         seniority = profile.get("seniority", "").upper()
@@ -329,7 +335,10 @@ class PersonaPlanner:
         return adjusted
 
     def _apply_industry_adjustments(
-        self, persona: dict[str, object], profile: dict[str, object], context: dict[str, object],
+        self,
+        persona: dict[str, object],
+        profile: dict[str, object],
+        context: dict[str, object],
     ) -> dict[str, object]:
         """Apply industry-specific adjustments to persona."""
         industry = (
@@ -350,7 +359,9 @@ class PersonaPlanner:
         return adjusted
 
     def _apply_grounding_refinements(
-        self, persona: dict[str, object], grounding_plan: Any | None,
+        self,
+        persona: dict[str, object],
+        grounding_plan: Any | None,
     ) -> dict[str, object]:
         """Apply grounding-based refinements to persona."""
         if not grounding_plan:
@@ -378,7 +389,10 @@ class PersonaPlanner:
         return refined
 
     def _calculate_confidence_score(
-        self, Archetype: str, profile: dict[str, object], persona: dict[str, object],
+        self,
+        Archetype: str,
+        profile: dict[str, object],
+        persona: dict[str, object],
     ) -> float:
         """Calculate persona match confidence score."""
         base_score = 0.7

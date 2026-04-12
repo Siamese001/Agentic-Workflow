@@ -1,4 +1,5 @@
 """Quick subprocess probe: spawn each MCP server, wait 3s, check if still alive."""
+
 import subprocess
 import sys
 import time
@@ -8,13 +9,13 @@ PYTHON = sys.executable
 REPO = str(Path(__file__).resolve().parents[2])
 
 SERVERS = [
-    ("adg_sqlite",    Path(REPO) / "tools" / "adg" / "mcp" / "server.py"),
-    ("redis_mcp",     Path(REPO) / "tools" / "mcp" / "redis_mcp_server.py"),
+    ("adg_sqlite", Path(REPO) / "tools" / "adg" / "mcp" / "server.py"),
+    ("redis_mcp", Path(REPO) / "tools" / "mcp" / "redis_mcp_server.py"),
     ("enhanced_http", Path(REPO) / "tools" / "mcp" / "enhanced_http_server.py"),
-    ("pytest_mcp",    Path(REPO) / "tools" / "mcp" / "pytest_server.py"),
-    ("vector_db",     Path(REPO) / "tools" / "mcp" / "vector_db_server.py"),
-    ("otel_mcp",      Path(REPO) / "tools" / "otel" / "otel_mcp_server.py"),
-    ("memory_mcp",    Path(REPO) / "tools" / "memory" / "adg_memory_server.py"),
+    ("pytest_mcp", Path(REPO) / "tools" / "mcp" / "pytest_server.py"),
+    ("vector_db", Path(REPO) / "tools" / "mcp" / "vector_db_server.py"),
+    ("otel_mcp", Path(REPO) / "tools" / "otel" / "otel_mcp_server.py"),
+    ("memory_mcp", Path(REPO) / "tools" / "memory" / "adg_memory_server.py"),
 ]
 
 WAIT = 3  # seconds to wait before checking

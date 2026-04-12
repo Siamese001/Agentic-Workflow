@@ -128,7 +128,7 @@ def _find_import_end(lines):
             if last_import == -1:
                 quote = stripped[:3]
                 # Single-line docstring on this line?
-                rest = stripped[len(quote):]
+                rest = stripped[len(quote) :]
                 if rest.endswith(quote) and len(rest) >= len(quote):
                     # Single line — skip just this line
                     i += 1
@@ -236,10 +236,7 @@ def wire_module(filepath, missing_dims):
         cfg = DIM_CONFIG[dim]
         func = cfg["emit_func"]
         # Only skip import if the function is ACTUALLY imported (not just in docstring text)
-        already_imported = any(
-            CONTRACT in line and "import" in line and func in line
-            for line in lines
-        )
+        already_imported = any(CONTRACT in line and "import" in line and func in line for line in lines)
         if not already_imported:
             new_imports.append(cfg["import_from"] + "  # noqa: E402")
         call_line = cfg["call_code"].format(basename=basename)

@@ -178,8 +178,11 @@ class ResumePlanningEngine(BaseRGEngine):
         Create initial resume generation plan using delegated logic nodes.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResumePlanningEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ResumePlanningEngine.execute"
+        )
 
         self._mcp_audit("planning_start")
         section_analysis = self.section_node(job_description, candidate_profile)

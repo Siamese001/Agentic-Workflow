@@ -16,14 +16,17 @@ class TestUnifiedAgent:
     def test_unified_agent_imports(self):
         """Test unified_agent module imports."""
         from agentic_core import unified_agent
+
         assert unified_agent is not None
 
     def test_unified_agent_class(self):
         """Test UnifiedAgent class exists."""
         from agentic_core import UnifiedAgent
+
         assert UnifiedAgent is not None
 
     def test_unified_agent_callable(self):
         """Test unified_agent functions are callable."""
         from agentic_core import validate_unified_agent
+
         assert callable(validate_unified_agent)

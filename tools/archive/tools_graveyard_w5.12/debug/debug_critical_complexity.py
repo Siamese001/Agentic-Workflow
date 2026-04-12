@@ -22,9 +22,9 @@ def debug_critical_complexity():
 
     # Test critical complexity enforcement
     step_config = {
-        'type': 'implementation',
-        'complexity': 'critical',
-        'files': ['file.py'],
+        "type": "implementation",
+        "complexity": "critical",
+        "files": ["file.py"],
     }
 
     print(f"Testing: {step_config['type']} with {step_config['complexity']} complexity")
@@ -34,18 +34,18 @@ def debug_critical_complexity():
     print(f"   Critical Template: {ENFORCEMENT_RULES['complexity_enforcement']['critical']}")
 
     # Check if task type is in direct ADG tasks
-    in_direct = step_config['type'] in ENFORCEMENT_RULES['direct_adg_tasks']
+    in_direct = step_config["type"] in ENFORCEMENT_RULES["direct_adg_tasks"]
     print(f"   In Direct ADG Tasks: {in_direct}")
 
     # Check if task type is in SWE task mapping
-    in_swe = step_config['type'] in ENFORCEMENT_RULES['swe_task_mapping']
+    in_swe = step_config["type"] in ENFORCEMENT_RULES["swe_task_mapping"]
     print(f"   In SWE Task Mapping: {in_swe}")
 
     if in_swe:
         print(f"   SWE Mapped Template: {ENFORCEMENT_RULES['swe_task_mapping'][step_config['type']]}")
 
     # Get enforcement template
-    enforced_template = get_enforcement_template(step_config['type'], step_config)
+    enforced_template = get_enforcement_template(step_config["type"], step_config)
     print("\n🎯 Enforcement Result:")
     print("   Expected: SWE_SYSTEM_RESTRUCTURING")
     print(f"   Actual: {enforced_template}")
@@ -55,14 +55,14 @@ def debug_critical_complexity():
     print("\n🔧 Step-by-Step Logic:")
 
     # Step 1: Check direct ADG tasks
-    if step_config['type'] in ENFORCEMENT_RULES['direct_adg_tasks']:
+    if step_config["type"] in ENFORCEMENT_RULES["direct_adg_tasks"]:
         print("   1. ✅ Direct ADG task matched")
         print(f"      Would return: {ENFORCEMENT_RULES['direct_adg_tasks'][step_config['type']]}")
     else:
         print("   1. ❌ Direct ADG task not matched")
 
     # Step 2: Check SWE task mapping
-    if step_config['type'] in ENFORCEMENT_RULES['swe_task_mapping']:
+    if step_config["type"] in ENFORCEMENT_RULES["swe_task_mapping"]:
         print("   2. ✅ SWE task mapping matched")
         print(f"      Would return: {ENFORCEMENT_RULES['swe_task_mapping'][step_config['type']]}")
         print("   ⚠️  This is PREVENTING complexity enforcement!")
@@ -71,7 +71,7 @@ def debug_critical_complexity():
         print("   2. ❌ SWE task mapping not matched")
 
     # Step 3: Check complexity
-    if step_config and step_config.get('complexity', 'medium').lower() == 'critical':
+    if step_config and step_config.get("complexity", "medium").lower() == "critical":
         print("   3. ✅ Critical complexity detected")
         print(f"      Would return: {ENFORCEMENT_RULES['complexity_enforcement']['critical']}")
         print("   ❌ But never reached due to SWE mapping precedence!")
@@ -91,6 +91,7 @@ def debug_critical_complexity():
     print("   ✅ Critical complexity should override all other rules")
 
     return enforced_template
+
 
 if __name__ == "__main__":
     debug_critical_complexity()

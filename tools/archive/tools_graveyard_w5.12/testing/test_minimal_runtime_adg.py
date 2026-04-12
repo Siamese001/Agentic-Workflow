@@ -13,6 +13,7 @@ from typing import Any
 @dataclass
 class RuntimeSpan:
     """Minimal span representation."""
+
     span_id: str
     parent_span_id: str
     name: str
@@ -24,9 +25,11 @@ class RuntimeSpan:
     status: str
     attributes: dict[str, Any]
 
+
 @dataclass
 class RuntimeNode:
     """Runtime ADG node."""
+
     node_id: str
     name: str
     kind: str
@@ -37,22 +40,27 @@ class RuntimeNode:
     status: str
     attributes_json: str
 
+
 @dataclass
 class RuntimeEdge:
     """Runtime ADG edge."""
+
     src_id: str
     dst_id: str
     relation: str
 
+
 @dataclass
 class RuntimeSnapshot:
     """Runtime ADG snapshot."""
+
     trace_id: str
     mission: str
     started_at_utc: int
     ended_at_utc: int
     nodes: list[RuntimeNode]
     edges: list[RuntimeEdge]
+
 
 class MinimalTracer:
     """Minimal tracer implementation."""
@@ -74,6 +82,7 @@ class MinimalTracer:
         spans = [asdict(span) for span in self.spans]
         self.spans.clear()
         return spans
+
 
 class _TraceContext:
     """Context manager for tracing."""
@@ -121,13 +130,16 @@ class _TraceContext:
                     span.status = "error"
                 break
 
+
 class MinimalRuntimeADG:
     """Minimal runtime ADG implementation."""
 
     def __init__(self):
         self.snapshots = []
 
-    def materialize(self, spans: list[dict[str, Any]], mission: str = "", trace_id: str = "") -> RuntimeSnapshot:
+    def materialize(
+        self, spans: list[dict[str, Any]], mission: str = "", trace_id: str = ""
+    ) -> RuntimeSnapshot:
         """Materialize spans into a runtime ADG snapshot."""
         if not spans:
             return RuntimeSnapshot(
@@ -216,6 +228,7 @@ class MinimalRuntimeADG:
 
         return version_id
 
+
 async def test_minimal_runtime_adg():
     """Test minimal runtime ADG."""
     print("[TEST] Starting minimal runtime ADG test...")
@@ -268,6 +281,7 @@ async def test_minimal_runtime_adg():
     except Exception as e:
         print(f"[TEST] Minimal runtime ADG test failed: {e}")
         return False
+
 
 if __name__ == "__main__":
     asyncio.run(test_minimal_runtime_adg())

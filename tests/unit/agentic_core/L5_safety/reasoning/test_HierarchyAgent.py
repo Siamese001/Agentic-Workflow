@@ -16,14 +16,17 @@ class TestHierarchyagent:
     def test_HierarchyAgent_imports(self):
         """Test HierarchyAgent module imports."""
         from agentic_core import HierarchyAgent
+
         assert HierarchyAgent is not None
 
     def test_HierarchyAgent_class(self):
         """Test Hierarchyagent class exists."""
         from agentic_core import Hierarchyagent
+
         assert Hierarchyagent is not None
 
     def test_HierarchyAgent_callable(self):
         """Test HierarchyAgent functions are callable."""
         from agentic_core import validate_HierarchyAgent
+
         assert callable(validate_HierarchyAgent)

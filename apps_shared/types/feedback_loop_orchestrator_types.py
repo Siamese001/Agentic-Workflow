@@ -271,7 +271,11 @@ class FeedbackLoopOrchestrator:
         )
 
     async def execute_with_feedback(
-        self, generator: Callable, validator: Callable, initial_context: dict[str, Any], k_node_id: str,
+        self,
+        generator: Callable,
+        validator: Callable,
+        initial_context: dict[str, Any],
+        k_node_id: str,
     ) -> RegenerationResult:
         """Execute generation with feedback loop.
 
@@ -286,7 +290,9 @@ class FeedbackLoopOrchestrator:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "FeedbackLoopOrchestrator.execute_with_feedback")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "FeedbackLoopOrchestrator.execute_with_feedback"
+        )
         checkpoints = []
         temperature = self.adaptive_temperature_config["initial_temperature"]
         context = initial_context.copy()
@@ -340,7 +346,10 @@ class FeedbackLoopOrchestrator:
             if attempt < self.max_attempts:
                 temperature = self._adjust_temperature(temperature, failure_type)
                 context = self._build_regeneration_context(
-                    initial_context, validation_result, content, attempt,
+                    initial_context,
+                    validation_result,
+                    content,
+                    attempt,
                 )
         logger.error(f"Exhausted all {self.max_attempts} attempts for {k_node_id}")
         if self.reversion_enabled and checkpoints:
@@ -411,7 +420,8 @@ class FeedbackLoopOrchestrator:
             Adjusted temperature
         """
         escalation = self.adaptive_temperature_config["constraint_failure_types"].get(
-            failure_type.value, self.adaptive_temperature_config["escalation_per_retry"],
+            failure_type.value,
+            self.adaptive_temperature_config["escalation_per_retry"],
         )
         new_temp = current_temp + escalation
         max_temp = self.adaptive_temperature_config["max_temperature"]
@@ -422,7 +432,11 @@ class FeedbackLoopOrchestrator:
         return adjusted_temp
 
     def _build_regeneration_context(
-        self, initial_context: dict[str, Any], validation_result: Any, previous_content: str, attempt: int,
+        self,
+        initial_context: dict[str, Any],
+        validation_result: Any,
+        previous_content: str,
+        attempt: int,
     ) -> dict[str, Any]:
         """Build context for regeneration with exact failure details.
 
@@ -474,7 +488,11 @@ class FeedbackLoopOrchestrator:
         return "\n".join(summary_lines)
 
     def apply_message_transition(
-        self, current_route: str, target_route: str, content: str, context: dict[str, Any],
+        self,
+        current_route: str,
+        target_route: str,
+        content: str,
+        context: dict[str, Any],
     ) -> tuple[str, dict[str, Any]]:
         """Apply message type transition logic.
 

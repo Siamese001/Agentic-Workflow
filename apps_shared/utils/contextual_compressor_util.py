@@ -166,7 +166,10 @@ class CompressionResult(BaseModel):
     compressed_length: int = Field(..., description="Compressed text length in characters")
     compressed_text: str = Field(..., description="Compressed text content")
     compression_ratio: float = Field(
-        ..., ge=0.0, le=1.0, description="Compression ratio (compressed/original)",
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Compression ratio (compressed/original)",
     )
 
 
@@ -188,7 +191,8 @@ class ContextualCompressor:
         self.similarity_threshold = similarity_threshold
         self.use_llm = use_llm
         self.sentence_pattern = re.compile(
-            "(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s", re.MULTILINE,
+            "(?<!\\w\\.\\w.)(?<![A-Z][a-z]\\.)(?<=\\.|\\?|\\!)\\s",
+            re.MULTILINE,
         )
         self.entity_patterns = {
             "person": "\\b([A-Z][a-z]+ [A-Z][a-z]+)\\b",
@@ -340,8 +344,11 @@ class ContextualCompressor:
             CompressionResult with compressed text and metrics
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextualCompressor.compress")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ContextualCompressor.compress"
+        )
 
         original_text = " ".join(chunks)
         original_length = len(original_text)

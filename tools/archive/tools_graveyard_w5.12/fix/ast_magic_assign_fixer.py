@@ -169,23 +169,86 @@ _emit_gated_by_confidence("p1", "ast_magic_assign_fixer", "confidence_gate")
 WHITELIST_COMMENT = "# guardian: allow-magic-config"
 
 CONFIG_PARAM_NAMES = {
-    'timeout', 'max_retries', 'threshold', 'batch_size', 'max_depth',
-    'max_files', 'buffer_size', 'default_sleep', 'max_rounds', 'max_tokens',
-    'temperature', 'top_p', 'top_k', 'retry_delay', 'sleep', 'delay',
-    'limit', 'max_actions', 'max_steps', 'max_workers', 'max_attempts',
-    'failure_threshold', 'default_timeout', 'cot_min_paths', 'min_tot_depth',
-    'max_blocked_prompts', 'historical_success_rate', 'max_stack_depth',
-    'max_sentence_length', 'max_concurrency', 'timeout_s', 'max_memory_gb',
-    'max_lines', 'max_passive_voice_percent', 'min_confidence', 'min_relevance',
-    'max_cycles', 'max_cache_size', 'max_healing_depth', 'max_entries',
-    'min_length', 'max_examples', 'max_size', 'max_length', 'reset_timeout',
-    'budget_est', 'max_complexity', 'min_depth_score', 'max_blank_lines',
-    'max_file_size', 'min_tot', 'cot_min', 'max_', 'min_',
-    'interval', 'budget', 'count', 'token', 'model_len', 'cost_limit',
-    'update_interval', 'check_interval', 'reindex_interval', 'period',
-    'half_open', 'daily', 'span', 'result', 'output_token', 'regression',
-    'margin', 'configured', 'requested', 'observations', 'cluster',
-    'execution_interval', 'execution_timeout', 'seconds', '_sec', '_usd',
+    "timeout",
+    "max_retries",
+    "threshold",
+    "batch_size",
+    "max_depth",
+    "max_files",
+    "buffer_size",
+    "default_sleep",
+    "max_rounds",
+    "max_tokens",
+    "temperature",
+    "top_p",
+    "top_k",
+    "retry_delay",
+    "sleep",
+    "delay",
+    "limit",
+    "max_actions",
+    "max_steps",
+    "max_workers",
+    "max_attempts",
+    "failure_threshold",
+    "default_timeout",
+    "cot_min_paths",
+    "min_tot_depth",
+    "max_blocked_prompts",
+    "historical_success_rate",
+    "max_stack_depth",
+    "max_sentence_length",
+    "max_concurrency",
+    "timeout_s",
+    "max_memory_gb",
+    "max_lines",
+    "max_passive_voice_percent",
+    "min_confidence",
+    "min_relevance",
+    "max_cycles",
+    "max_cache_size",
+    "max_healing_depth",
+    "max_entries",
+    "min_length",
+    "max_examples",
+    "max_size",
+    "max_length",
+    "reset_timeout",
+    "budget_est",
+    "max_complexity",
+    "min_depth_score",
+    "max_blank_lines",
+    "max_file_size",
+    "min_tot",
+    "cot_min",
+    "max_",
+    "min_",
+    "interval",
+    "budget",
+    "count",
+    "token",
+    "model_len",
+    "cost_limit",
+    "update_interval",
+    "check_interval",
+    "reindex_interval",
+    "period",
+    "half_open",
+    "daily",
+    "span",
+    "result",
+    "output_token",
+    "regression",
+    "margin",
+    "configured",
+    "requested",
+    "observations",
+    "cluster",
+    "execution_interval",
+    "execution_timeout",
+    "seconds",
+    "_sec",
+    "_usd",
 }
 
 
@@ -203,7 +266,7 @@ def _is_config_name(var_name: str) -> bool:
     # Skip ALL_CAPS (SSOT constants)
     if var_name == var_name.upper() and var_name.isidentifier():
         return False
-    var_lower = var_name.lower().lstrip('_')
+    var_lower = var_name.lower().lstrip("_")
     return any(p in var_lower for p in CONFIG_PARAM_NAMES)
 
 
@@ -230,10 +293,10 @@ def _is_magic_func_default(node: ast.AST) -> list[int]:
     if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
         return results
     args = node.args
-    all_args = args.args + args.kwonlyargs + (args.posonlyargs if hasattr(args, 'posonlyargs') else [])
+    all_args = args.args + args.kwonlyargs + (args.posonlyargs if hasattr(args, "posonlyargs") else [])
     defaults = args.defaults + args.kw_defaults
     # Match args to defaults (defaults align to end of args)
-    paired = list(zip(all_args[-len(args.defaults):], args.defaults))
+    paired = list(zip(all_args[-len(args.defaults) :], args.defaults))
     for kwarg, default in zip(args.kwonlyargs, args.kw_defaults):
         if default is not None:
             paired.append((kwarg, default))
@@ -258,13 +321,13 @@ def _collect_target_lines(tree: ast.Module) -> set[int]:
         for lineno in _is_magic_func_default(node):
             targets.add(lineno)
         # Recurse into statement lists inside compound nodes
-        for body_attr in ('body', 'orelse', 'finalbody'):
+        for body_attr in ("body", "orelse", "finalbody"):
             stmts = getattr(node, body_attr, None)
             if isinstance(stmts, list):
                 for child in stmts:
                     _walk_node(child)
         # handlers for try/except
-        for handler in getattr(node, 'handlers', []):
+        for handler in getattr(node, "handlers", []):
             for child in handler.body:
                 _walk_node(child)
 
@@ -276,14 +339,14 @@ def _collect_target_lines(tree: ast.Module) -> set[int]:
 def fix_file(file_path: Path, dry_run: bool = True) -> dict:
     """Add whitelist comments to magic config assignment sites."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         lines = source.splitlines(keepends=True)
 
         tree = ast.parse(source, filename=str(file_path))
         target_lines = _collect_target_lines(tree)
 
         if not target_lines:
-            return {'status': 'skipped', 'reason': 'no_magic_assigns'}
+            return {"status": "skipped", "reason": "no_magic_assigns"}
 
         lines_to_fix = []
         for lineno in sorted(target_lines):
@@ -293,56 +356,57 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
             lines_to_fix.append(lineno)
 
         if not lines_to_fix:
-            return {'status': 'skipped', 'reason': 'already_whitelisted'}
+            return {"status": "skipped", "reason": "already_whitelisted"}
 
         if not dry_run:
             for lineno in sorted(lines_to_fix, reverse=True):
                 idx = lineno - 1
                 indent = len(lines[idx]) - len(lines[idx].lstrip())
-                comment_line = ' ' * indent + WHITELIST_COMMENT + '\n'
+                comment_line = " " * indent + WHITELIST_COMMENT + "\n"
                 lines.insert(idx, comment_line)
-            file_path.write_text(''.join(lines), encoding='utf-8')
+            file_path.write_text("".join(lines), encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'fixed_count': len(lines_to_fix),
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "fixed_count": len(lines_to_fix),
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': f'SyntaxError: {e}',
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": f"SyntaxError: {e}",
         }
     except (ValueError, TypeError, RuntimeError) as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
         }
 
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--execute', action='store_true')
-    parser.add_argument('--limit', type=int, default=500)
+    parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--limit", type=int, default=500)
     args = parser.parse_args()
 
     project_root = get_validated_project_root()
     baseline_file = project_root / "ops_scripts/hooks/landmine_baseline.txt"
 
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if ':magic_configuration:' in line:
-                file_path = line.split(':')[0]
+            if ":magic_configuration:" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
-    unique_files = sorted(set(violations))[:args.limit]
+    unique_files = sorted(set(violations))[: args.limit]
 
     print(f"[INFO] Processing {len(unique_files)} files")
     print(f"[MODE] {'EXECUTE' if args.execute else 'DRY RUN'}")
@@ -354,19 +418,19 @@ def main():
             continue
         result = fix_file(file_path, dry_run=not args.execute)
         results.append(result)
-        if result['status'] == 'success':
+        if result["status"] == "success":
             print(f"✓ {result['file']} ({result['fixed_count']} sites)")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
 
-    success = len([r for r in results if r['status'] == 'success'])
-    errors = len([r for r in results if r['status'] == 'error'])
-    skipped = len([r for r in results if r['status'] == 'skipped'])
+    success = len([r for r in results if r["status"] == "success"])
+    errors = len([r for r in results if r["status"] == "error"])
+    skipped = len([r for r in results if r["status"] == "skipped"])
     print(f"\n[SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}")
     if not args.execute and success > 0:
         print("[NEXT] Run with --execute to apply")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

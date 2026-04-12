@@ -95,7 +95,9 @@ class RagTelemetryCollector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "RagTelemetryCollector.record_query",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "RagTelemetryCollector.record_query",
         )
 
         self.metrics.total_queries += 1
@@ -183,10 +185,10 @@ class RagTelemetryCollector:
 
             # Look for RAG operation indicators
             is_rag_span = (
-                "rag" in name.lower() or
-                "retrieval" in name.lower() or
-                "embedding" in name.lower() or
-                attributes.get("rag.operation") is not None
+                "rag" in name.lower()
+                or "retrieval" in name.lower()
+                or "embedding" in name.lower()
+                or attributes.get("rag.operation") is not None
             )
 
             if is_rag_span:
@@ -209,7 +211,9 @@ class RagTelemetryCollector:
                 processed += 1
 
         _emit_records_telemetry_event(
-            "rag_telemetry_collector", "L6_OBSERVABILITY", "otel_spans_consumed",
+            "rag_telemetry_collector",
+            "L6_OBSERVABILITY",
+            "otel_spans_consumed",
             processed_count=processed,
             total_spans=len(spans),
         )

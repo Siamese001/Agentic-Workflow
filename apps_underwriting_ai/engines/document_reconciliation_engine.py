@@ -1,6 +1,7 @@
 """
 Document Reconciliation Engine - Compares structured values vs parsed document values.
 """
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, List, Optional
@@ -18,6 +19,7 @@ from ..types import UnderwritingRequest
 
 class ContradictionSeverity(Enum):
     """Severity levels for contradictions."""
+
     MINOR = "minor"  # Small variance, likely rounding
     MODERATE = "moderate"  # Noticeable difference, may need clarification
     MAJOR = "major"  # Significant variance, requires reconciliation
@@ -27,6 +29,7 @@ class ContradictionSeverity(Enum):
 @dataclass
 class Contradiction:
     """Single identified contradiction."""
+
     field_name: str
     structured_value: Any
     document_value: Any
@@ -39,6 +42,7 @@ class Contradiction:
 @dataclass
 class ReconciliationResult:
     """Result of document reconciliation."""
+
     contradictions: List[Contradiction] = field(default_factory=list)
     total_checked: int = 0
     match_count: int = 0
@@ -110,8 +114,7 @@ class DocumentReconciliationEngine:
             result.pass_rate = result.match_count / result.total_checked
 
         result.has_critical_issues = any(
-            c.severity == ContradictionSeverity.CRITICAL
-            for c in result.contradictions
+            c.severity == ContradictionSeverity.CRITICAL for c in result.contradictions
         )
 
         return result
@@ -125,9 +128,21 @@ class DocumentReconciliationEngine:
     ) -> None:
         """Reconcile financial statement values."""
         fields_to_check = [
-            ("revenue", request.financials.periods[0].revenue if request.financials.periods else None, parsed.revenue),
-            ("ebitda", request.financials.periods[0].ebitda if request.financials.periods else None, parsed.ebitda),
-            ("total_debt", request.financials.periods[0].total_debt if request.financials.periods else None, parsed.total_debt),
+            (
+                "revenue",
+                request.financials.periods[0].revenue if request.financials.periods else None,
+                parsed.revenue,
+            ),
+            (
+                "ebitda",
+                request.financials.periods[0].ebitda if request.financials.periods else None,
+                parsed.ebitda,
+            ),
+            (
+                "total_debt",
+                request.financials.periods[0].total_debt if request.financials.periods else None,
+                parsed.total_debt,
+            ),
             ("cash", request.financials.periods[0].cash if request.financials.periods else None, parsed.cash),
             ("ar", request.financials.periods[0].ar if request.financials.periods else None, parsed.ar),
             ("ap", request.financials.periods[0].ap if request.financials.periods else None, parsed.ap),

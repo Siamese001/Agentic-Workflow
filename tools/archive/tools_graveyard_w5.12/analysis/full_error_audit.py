@@ -1,4 +1,5 @@
 """Full audit of ALL collection errors across ALL test directories."""
+
 import os
 import re
 import subprocess
@@ -26,10 +27,13 @@ for td in test_dirs:
         continue
 
     r = subprocess.run(
-        ["python", "-m", "pytest", td, "--co", "--tb=short", "-q",
-         "--override-ini=testpaths=" + td],
-        capture_output=True, text=True, cwd=root, timeout=60,
-        encoding="utf-8", errors="replace",
+        ["python", "-m", "pytest", td, "--co", "--tb=short", "-q", "--override-ini=testpaths=" + td],
+        capture_output=True,
+        text=True,
+        cwd=root,
+        timeout=60,
+        encoding="utf-8",
+        errors="replace",
     )
     out = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 
@@ -48,7 +52,7 @@ for td in test_dirs:
             tf = test_file.group(1) if test_file else "unknown"
             src = ""
             cause = ""
-            for j in range(i+1, min(i+25, len(lines))):
+            for j in range(i + 1, min(i + 25, len(lines))):
                 s = lines[j].strip()
                 sm = re.match(r"((?:agentic_core|apps_\w+|system_learning)[/\\].+\.py):(\d+)", s)
                 if sm:

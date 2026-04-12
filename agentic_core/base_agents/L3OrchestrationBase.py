@@ -211,8 +211,11 @@ class L3OrchestrationBase(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """Invoke shared healing chain then allow subclass override."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L3OrchestrationBase.heal_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L3OrchestrationBase.heal_repository"
+        )
 
         if _call_path is None:
             _call_path = set()
@@ -287,8 +290,9 @@ class L3OrchestrationBase(SovereignBaseAgent):
             _adg_scope_widening = sorted(_bp.antipattern_signals)
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("L3OrchestrationBase: Exception swallowed at L289: %s", e)
+            logging.getLogger(__name__).debug("L3OrchestrationBase: Exception swallowed at L289: %s", e)
         return {
             "task": task,
             "plan": [],

@@ -601,7 +601,10 @@ class AdaptiveOptimizer:
         return score / weight_sum if weight_sum > 0 else 0.5
 
     def _calculate_improvement(
-        self, old_params: OptimizationParameters, new_params: OptimizationParameters, layer_type: LayerType,
+        self,
+        old_params: OptimizationParameters,
+        new_params: OptimizationParameters,
+        layer_type: LayerType,
     ) -> dict[str, float]:
         """Calculate expected improvement."""
         old_cost = self.cost_analyzer.predict_cost(layer_type, old_params)

@@ -23,6 +23,7 @@ except ImportError as e:
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+
 class RepoHygieneClassifier:
     def __init__(self, repo_root: str):
         self.repo_root = Path(repo_root)
@@ -57,13 +58,19 @@ class RepoHygieneClassifier:
             reasoning = "Named after transient phase - encodes when created, not what capability provides"
 
         # Check for root sprawl
-        elif file_path.parent == self.repo_root and file_path.suffix == ".py" and file_path.name not in ["README.md", ".gitignore"]:
+        elif (
+            file_path.parent == self.repo_root
+            and file_path.suffix == ".py"
+            and file_path.name not in ["README.md", ".gitignore"]
+        ):
             if any(prefix in file_path.name for prefix in ["analyze", "check", "test", "run", "build"]):
                 classification = "root_sprawl"
                 reasoning = "Capability-named script at repo root - should be in appropriate subdirectory"
 
         # Check for tools sprawl
-        elif "tools/" in path_str and any(pattern in file_path.name for pattern in ["temp", "tmp", "backup", "old", "legacy"]):
+        elif "tools/" in path_str and any(
+            pattern in file_path.name for pattern in ["temp", "tmp", "backup", "old", "legacy"]
+        ):
             classification = "tools_sprawl"
             reasoning = "Script in tools/ with temporary/legacy naming - should be cleaned up"
 
@@ -134,8 +141,16 @@ class RepoHygieneClassifier:
 
         stats["total_files"] = len(self.manifest)
         stats["python_files"] = len([item for item in self.manifest if item["path"].endswith(".py")])
-        stats["sprawl_percentage"] = (stats.get("phase_named", 0) + stats.get("root_sprawl", 0) +
-                                     stats.get("tools_sprawl", 0) + stats.get("ops_sprawl", 0)) / stats["total_files"] * 100
+        stats["sprawl_percentage"] = (
+            (
+                stats.get("phase_named", 0)
+                + stats.get("root_sprawl", 0)
+                + stats.get("tools_sprawl", 0)
+                + stats.get("ops_sprawl", 0)
+            )
+            / stats["total_files"]
+            * 100
+        )
 
         return stats
 
@@ -151,7 +166,7 @@ class RepoHygieneClassifier:
             "files": self.manifest,
         }
 
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(manifest_data, f, indent=2, ensure_ascii=False)
 
         logging.info(f"Manifest saved to {output_file}")
@@ -161,6 +176,7 @@ class RepoHygieneClassifier:
         logging.info(f"Summary: {stats['total_files']} total files, {stats['sprawl_percentage']:.1f}% sprawl")
 
         return output_file
+
 
 def main():
     """Main execution function."""
@@ -184,6 +200,7 @@ def main():
     logging.info(f"Estimated manifest size: {estimated_tokens:,} tokens")
 
     return output_path, estimated_tokens
+
 
 if __name__ == "__main__":
     main()

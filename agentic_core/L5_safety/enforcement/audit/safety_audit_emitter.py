@@ -30,7 +30,7 @@ from agentic_core.L5_safety.enforcement.audit.safety_audit_registry import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "safety_audit_emitter")
 logger = logging.getLogger(__name__)
@@ -246,6 +246,7 @@ def emit_safety_audit_record(
     # Emit safety audit to system learning for RCA clustering
     try:
         from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
         bridge = get_sl_memory_bridge()
 
         bridge.persist_safety_audit_record(

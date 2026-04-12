@@ -175,7 +175,10 @@ _emit_updates_meta_learning_state("p4", "late_chunking", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "late_chunking", "exec_snapshot_link")
 
 LateChunkingMode = Literal[
-    "standard_chunked", "late_chunked", "late_chunked_hybrid", "late_chunked_hybrid_reranked",
+    "standard_chunked",
+    "late_chunked",
+    "late_chunked_hybrid",
+    "late_chunked_hybrid_reranked",
 ]
 VALID_MODES: frozenset[str] = frozenset(
     {"standard_chunked", "late_chunked", "late_chunked_hybrid", "late_chunked_hybrid_reranked"},
@@ -240,8 +243,11 @@ class LateChunkingProfile:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LateChunkingProfile.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LateChunkingProfile.canonical_bytes"
+        )
 
         d = self.to_dict()
         d.pop("artifact_hash", None)
@@ -408,8 +414,11 @@ class EmbeddingLifecycleEvent:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingLifecycleEvent.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingLifecycleEvent.canonical_bytes"
+        )
 
         d = {
             "chunk_id": self.chunk_id,
@@ -440,7 +449,8 @@ class EmbeddingLifecycleEvent:
 
 
 def build_late_chunk_manifests_for_corpus(
-    documents: list[dict[str, Any]], config: LateChunkingPipelineConfig,
+    documents: list[dict[str, Any]],
+    config: LateChunkingPipelineConfig,
 ) -> list[LateChunkManifest]:
     """Build late chunk manifests for a corpus of documents.
 

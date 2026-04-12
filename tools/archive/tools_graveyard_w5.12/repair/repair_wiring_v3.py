@@ -7,6 +7,7 @@ STRATEGY:
   (match by exact content, not by broad pattern)
 - Insert missing import + call after the last top-level import
 """
+
 import ast
 import csv
 import sys
@@ -57,8 +58,12 @@ DIM_CONFIG = {
 }
 
 SKIP_PATTERNS = {
-    "_constants.py", "conftest.py", "structure_blueprint_config.py",
-    "ssot_tier_constants.py", "path_constants.py", "lifecycle_trace_contract.py",
+    "_constants.py",
+    "conftest.py",
+    "structure_blueprint_config.py",
+    "ssot_tier_constants.py",
+    "path_constants.py",
+    "lifecycle_trace_contract.py",
 }
 
 
@@ -136,8 +141,7 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
 
     # Which dims are missing from AST?
     called = ast_called_funcs(src)
-    dims_to_fix = [d for d in missing_dims if DIM_CONFIG.get(d) and
-                   DIM_CONFIG[d]["emit_func"] not in called]
+    dims_to_fix = [d for d in missing_dims if DIM_CONFIG.get(d) and DIM_CONFIG[d]["emit_func"] not in called]
 
     if not dims_to_fix:
         return "SKIP", "all in AST", []
@@ -199,7 +203,7 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
         return "SKIP", "nothing to insert", []
 
     to_insert = [""] + insert_lines + [""]
-    result = lines[: insert_after + 1] + to_insert + lines[insert_after + 1:]
+    result = lines[: insert_after + 1] + to_insert + lines[insert_after + 1 :]
     new_src = "\n".join(result)
 
     # Validate

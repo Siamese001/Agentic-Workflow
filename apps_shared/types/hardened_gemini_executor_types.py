@@ -386,7 +386,9 @@ class CircuitBreaker:
         """Check if a call is allowed through the circuit breaker."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.call_allowed")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.call_allowed"
+        )
         now = time.time()
 
         if self.state.state == "CLOSED":

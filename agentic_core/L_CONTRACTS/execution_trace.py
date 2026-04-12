@@ -47,7 +47,11 @@ class ExecutionTraceManager:
         self._lock = threading.RLock()
 
     def start_trace(
-        self, plan_hash: str, policy_hash: str, hierarchy_hash: str, metadata: dict[str, Any] | None = None,
+        self,
+        plan_hash: str,
+        policy_hash: str,
+        hierarchy_hash: str,
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """Start a new execution trace and return its trace_id."""
         with self._lock:
@@ -95,7 +99,10 @@ def get_execution_trace_manager() -> ExecutionTraceManager:
 
 
 def start_execution_trace(
-    plan_hash: str, policy_hash: str, hierarchy_hash: str, metadata: dict[str, Any] | None = None,
+    plan_hash: str,
+    policy_hash: str,
+    hierarchy_hash: str,
+    metadata: dict[str, Any] | None = None,
 ) -> str:
     """Start a new execution trace and return its trace_id."""
     return _execution_trace_manager.start_trace(plan_hash, policy_hash, hierarchy_hash, metadata)

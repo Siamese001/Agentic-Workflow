@@ -84,11 +84,13 @@ class ExecutionTrace:
     status: str = "pending"
 
     def record_step(self, step_name: str, step_data: Any = None) -> None:
-        self.steps.append({
-            "step_name": step_name,
-            "step_data": step_data,
-            "timestamp": time.time(),
-        })
+        self.steps.append(
+            {
+                "step_name": step_name,
+                "step_data": step_data,
+                "timestamp": time.time(),
+            }
+        )
 
     def finalize(self) -> str:
         self.end_time = time.time()
@@ -128,9 +130,7 @@ class ProofComparison:
             self.details = "Proof hashes match"
         else:
             matching_steps = sum(
-                1
-                for a, b in zip(self.trace_a.steps, self.trace_b.steps)
-                if a["step_name"] == b["step_name"]
+                1 for a, b in zip(self.trace_a.steps, self.trace_b.steps) if a["step_name"] == b["step_name"]
             )
             total_steps = max(len(self.trace_a.steps), len(self.trace_b.steps))
             if total_steps > 0 and matching_steps / total_steps > 0.5:
@@ -178,7 +178,9 @@ class ExecutionProofRecorder:
     def start_trace(self, run_id: str = "", input_data: str = "") -> ExecutionTrace:
         trace = ExecutionTrace(run_id=run_id)
         trace.replay_key = ReplayKey.create(
-            trace_id=trace.trace_id, run_id=run_id, input_data=input_data,
+            trace_id=trace.trace_id,
+            run_id=run_id,
+            input_data=input_data,
         )
         self._traces[trace.trace_id] = trace
         return trace

@@ -6,6 +6,7 @@ Verifies:
 3. Digest is sensitive: any change to entities or relations changes the digest.
 4. Digest is schema-version-sensitive: different schema_version -> different digest.
 """
+
 from __future__ import annotations
 
 from agentic_core.adg.artifact.builder_types import (

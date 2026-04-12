@@ -247,8 +247,11 @@ class BoundaryVerifierReport:
     @property
     def acceptance_rate(self) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BoundaryVerifierReport.acceptance_rate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "BoundaryVerifierReport.acceptance_rate"
+        )
 
         if not self.results:
             return 1.0
@@ -290,6 +293,7 @@ class L2BoundaryVerifier:
 
     def verify(self, packet: BoundaryPacket) -> BoundaryVerificationResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L2BoundaryVerifier.verify")
 
@@ -335,7 +339,10 @@ class L2BoundaryVerifier:
         return result
 
     def certify_envelope(
-        self, envelope_id: str, token_id: str, l5_cert_hash: str,
+        self,
+        envelope_id: str,
+        token_id: str,
+        l5_cert_hash: str,
     ) -> BoundaryVerificationResult:
         packet = BoundaryPacket(
             agent_id=self.report.agent_id,
@@ -356,8 +363,11 @@ class CapabilityChokepoint:
 
     def certify(self, token_id: str, l5_cert_hash: str) -> bool:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CapabilityChokepoint.certify")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CapabilityChokepoint.certify"
+        )
 
         if not token_id or not l5_cert_hash:
             self._rejected_tokens.add(token_id)

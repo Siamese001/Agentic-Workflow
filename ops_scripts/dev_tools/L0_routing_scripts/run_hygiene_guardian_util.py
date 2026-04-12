@@ -219,7 +219,7 @@ def scan_empty_folders(root: Path) -> list[Path]:
             _dirnames[:] = [d for d in _dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             current_dir = Path(dirpath)
             if ".git" in current_dir.parts:
-                continue    # guardian: Permission errors should validate access before operation
+                continue  # guardian: Permission errors should validate access before operation
             if current_dir.name in ALLOWED_ROOT_FOLDERS:
                 continue
             try:
@@ -247,7 +247,9 @@ def scan_folders_with_only_init(root: Path) -> list[Path]:
             if current_dir.name in ALLOWED_ROOT_FOLDERS:
                 continue
             try:
-                children = list(current_dir.iterdir())    # guardian: Permission errors should validate access before operation
+                children = list(
+                    current_dir.iterdir()
+                )  # guardian: Permission errors should validate access before operation
                 meaningful_children = [
                     x for x in children if x.name not in IGNORE_FILES and (not x.name.startswith("."))
                 ]

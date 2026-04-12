@@ -17,6 +17,7 @@ class TestSandboxEnvelope:
         """Test sandbox_envelope module imports."""
         try:
             from agentic_core import sandbox_envelope
+
             assert sandbox_envelope is not None
         except ImportError:
             pytest.skip("sandbox_envelope not available")
@@ -25,6 +26,7 @@ class TestSandboxEnvelope:
         """Test SandboxEnvelope class exists."""
         try:
             from agentic_core import SandboxEnvelope
+
             assert SandboxEnvelope is not None
         except ImportError:
             pytest.skip("SandboxEnvelope not available")
@@ -33,6 +35,7 @@ class TestSandboxEnvelope:
         """Test sandbox_envelope functions are callable."""
         try:
             from agentic_core import validate_sandbox_envelope
+
             assert callable(validate_sandbox_envelope)
         except ImportError:
             pytest.skip("validate_sandbox_envelope not available")

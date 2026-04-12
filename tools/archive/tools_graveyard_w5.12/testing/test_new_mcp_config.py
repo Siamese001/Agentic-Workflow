@@ -80,19 +80,19 @@ def test_prefix_consistency():
 
         # Check for correct prefixes in the config
         checks = [
-            ("gitkraken", "prefix: \"mcp0\""),
-            ("adg_sqlite", "prefix: \"mcp1\""),
-            ("brave_search", "prefix: \"mcp2\""),
-            ("deepwiki", "prefix: \"mcp3\""),
-            ("enhanced_http", "prefix: \"mcp4\""),
-            ("filesystem", "prefix: \"mcp5\""),
-            ("memory", "prefix: \"mcp6\""),
-            ("playwright", "prefix: \"mcp7\""),
-            ("vector_db", "prefix: \"mcp8\""),
-            ("otel_mcp", "prefix: \"mcp9\""),
-            ("task_manager", "prefix: \"mcp10\""),
-            ("redis_mcp", "prefix: \"mcp11\""),
-            ("pytest_mcp", "prefix: \"mcp12\""),
+            ("gitkraken", 'prefix: "mcp0"'),
+            ("adg_sqlite", 'prefix: "mcp1"'),
+            ("brave_search", 'prefix: "mcp2"'),
+            ("deepwiki", 'prefix: "mcp3"'),
+            ("enhanced_http", 'prefix: "mcp4"'),
+            ("filesystem", 'prefix: "mcp5"'),
+            ("memory", 'prefix: "mcp6"'),
+            ("playwright", 'prefix: "mcp7"'),
+            ("vector_db", 'prefix: "mcp8"'),
+            ("otel_mcp", 'prefix: "mcp9"'),
+            ("task_manager", 'prefix: "mcp10"'),
+            ("redis_mcp", 'prefix: "mcp11"'),
+            ("pytest_mcp", 'prefix: "mcp12"'),
         ]
 
         for server_name, expected_prefix in checks:
@@ -103,7 +103,21 @@ def test_prefix_consistency():
                 return False
 
     # Check validation rules
-    expected_valid = ["mcp0", "mcp1", "mcp2", "mcp3", "mcp4", "mcp5", "mcp6", "mcp7", "mcp8", "mcp9", "mcp10", "mcp11", "mcp12"]
+    expected_valid = [
+        "mcp0",
+        "mcp1",
+        "mcp2",
+        "mcp3",
+        "mcp4",
+        "mcp5",
+        "mcp6",
+        "mcp7",
+        "mcp8",
+        "mcp9",
+        "mcp10",
+        "mcp11",
+        "mcp12",
+    ]
 
     all_found = all(prefix in content for prefix in expected_valid)
     if all_found:
@@ -119,9 +133,11 @@ def test_enforcement_rule():
     """Test if enforcement rule was updated."""
     print("\n🔍 Testing enforcement rule update...")
 
-    rule_file = Path(__file__).parent.parent.parent / ".windsurf" / "rules" / "sequential-thinking-enforcement.md"
+    rule_file = (
+        Path(__file__).parent.parent.parent / ".windsurf" / "rules" / "sequential-thinking-enforcement.md"
+    )
     if rule_file.exists():
-        with open(rule_file, encoding='utf-8') as f:
+        with open(rule_file, encoding="utf-8") as f:
             content = f.read()
 
             if "Structured Reasoning & Task Management" in content:

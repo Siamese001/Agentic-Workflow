@@ -235,7 +235,10 @@ def main() -> int:
         help="Action to perform",
     )
     parser.add_argument(
-        "--project-root", type=str, default=None, help="Project root path (defaults to auto-detect)",
+        "--project-root",
+        type=str,
+        default=None,
+        help="Project root path (defaults to auto-detect)",
     )
     args = parser.parse_args()
     project_root = Path(args.project_root) if args.project_root else get_project_root()

@@ -76,7 +76,9 @@ class ADGComprehensiveE2ETest:
         # Calculate overall results
         self.results["test_end"] = datetime.now().isoformat()
         self.results["duration_seconds"] = time.time() - self.start_time
-        self.results["overall_success"] = all(check.get("success", False) for check in self.results["checks"].values())
+        self.results["overall_success"] = all(
+            check.get("success", False) for check in self.results["checks"].values()
+        )
 
         return self.results
 
@@ -270,7 +272,9 @@ class ADGComprehensiveE2ETest:
             null_identities = cur.fetchone()[0]
 
             # Test edge distribution
-            cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC LIMIT 10")
+            cur.execute(
+                "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC LIMIT 10"
+            )
             top_relations = dict(cur.fetchall())
 
             result["details"] = {
@@ -280,7 +284,9 @@ class ADGComprehensiveE2ETest:
                 "null_layers": null_layers,
                 "null_identities": null_identities,
                 "top_relations": top_relations,
-                "integrity_score": 100 - (null_layers + null_identities) * 100 // node_count if node_count > 0 else 0,
+                "integrity_score": 100 - (null_layers + null_identities) * 100 // node_count
+                if node_count > 0
+                else 0,
             }
 
             print("  Database structure: ✅")
@@ -383,7 +389,11 @@ class ADGComprehensiveE2ETest:
                 "analyzed_modules": analyzed_modules,
                 "error_modules": error_modules,
                 "cache_hit_rate": cache_hit_rate,
-                "cache_effectiveness": "high" if cache_hit_rate > 90 else "medium" if cache_hit_rate > 70 else "low",
+                "cache_effectiveness": "high"
+                if cache_hit_rate > 90
+                else "medium"
+                if cache_hit_rate > 70
+                else "low",
             }
 
             print("  Cache performance: ✅")
@@ -457,7 +467,7 @@ class ADGComprehensiveE2ETest:
         """Save test results to file."""
         results_file = self.adg_dir / f"comprehensive_e2e_test_results_{self.timestamp}.json"
 
-        with open(results_file, 'w') as f:
+        with open(results_file, "w") as f:
             json.dump(self.results, f, indent=2, sort_keys=True)
 
         print(f"\n📊 Test results saved to: {results_file}")

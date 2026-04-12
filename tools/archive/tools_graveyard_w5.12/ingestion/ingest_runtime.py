@@ -84,11 +84,11 @@ class RuntimeEvidenceIngestion:
         logger.info(f"Found {len(runtime_files)} runtime evidence files")
 
         for file_path in runtime_files:
-            if file_path.name.startswith('.'):
+            if file_path.name.startswith("."):
                 continue
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 if not content.strip():
@@ -105,10 +105,10 @@ class RuntimeEvidenceIngestion:
                 doc_content += f"Status: {evidence_info['status']}\n"
                 doc_content += f"Components: {', '.join(evidence_info['components'])}\n"
 
-                if evidence_info['errors']:
+                if evidence_info["errors"]:
                     doc_content += f"Errors: {len(evidence_info['errors'])}\n"
 
-                if evidence_info['metrics']:
+                if evidence_info["metrics"]:
                     doc_content += f"Metrics: {len(evidence_info['metrics'])}\n"
 
                 doc_content += f"\nContent:\n{content[:2000]}..."  # First 2000 chars
@@ -159,9 +159,9 @@ class RuntimeEvidenceIngestion:
         if documents:
             batch_size = 1000
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 self.chroma.add_documents(
                     collection_name="repo_runtime_evidence",
@@ -169,7 +169,7 @@ class RuntimeEvidenceIngestion:
                     metadatas=batch_metas,
                     ids=batch_ids,
                 )
-                logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} runtime files")
+                logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} runtime files")
 
             logger.info(f"Ingested {len(documents)} runtime evidence files total")
 
@@ -240,14 +240,14 @@ class RuntimeEvidenceIngestion:
             doc_content += f"Duration: {scenario['duration']}ms\n"
             doc_content += f"Operations: {', '.join(scenario['operations'])}\n"
 
-            if scenario.get('errors'):
+            if scenario.get("errors"):
                 doc_content += f"Errors: {', '.join(scenario['errors'])}\n"
 
             # Add synthetic execution details
             doc_content += "\nExecution Details:\n"
-            for j, operation in enumerate(scenario['operations']):
-                op_duration = scenario['duration'] // len(scenario['operations'])
-                doc_content += f"  Step {j+1}: {operation} ({op_duration}ms)\n"
+            for j, operation in enumerate(scenario["operations"]):
+                op_duration = scenario["duration"] // len(scenario["operations"])
+                doc_content += f"  Step {j + 1}: {operation} ({op_duration}ms)\n"
 
             metadata = {
                 "object_id": f"urn:agentic:synthetic:trace_{i}",
@@ -263,7 +263,7 @@ class RuntimeEvidenceIngestion:
                 "canonical_digest": hashlib.sha256(doc_content.encode()).hexdigest()[:16],
             }
 
-            if scenario.get('errors'):
+            if scenario.get("errors"):
                 metadata["errors"] = scenario["errors"]
                 metadata["error_count"] = len(scenario["errors"])
 
@@ -321,9 +321,9 @@ class RuntimeEvidenceIngestion:
         if documents:
             batch_size = 1000
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 self.chroma.add_documents(
                     collection_name="repo_runtime_evidence",
@@ -331,7 +331,7 @@ class RuntimeEvidenceIngestion:
                     metadatas=batch_metas,
                     ids=batch_ids,
                 )
-                logger.info(f"Added synthetic batch {i//batch_size + 1}: {len(batch_docs)} traces")
+                logger.info(f"Added synthetic batch {i // batch_size + 1}: {len(batch_docs)} traces")
 
             logger.info(f"Ingested {len(documents)} synthetic execution traces total")
 
@@ -362,11 +362,17 @@ class RuntimeEvidenceIngestion:
             if "status" in data:
                 evidence_info["status"] = data["status"]
             if "components" in data:
-                evidence_info["components"] = data["components"] if isinstance(data["components"], list) else [data["components"]]
+                evidence_info["components"] = (
+                    data["components"] if isinstance(data["components"], list) else [data["components"]]
+                )
             if "errors" in data:
-                evidence_info["errors"] = data["errors"] if isinstance(data["errors"], list) else [data["errors"]]
+                evidence_info["errors"] = (
+                    data["errors"] if isinstance(data["errors"], list) else [data["errors"]]
+                )
             if "metrics" in data:
-                evidence_info["metrics"] = data["metrics"] if isinstance(data["metrics"], list) else [data["metrics"]]
+                evidence_info["metrics"] = (
+                    data["metrics"] if isinstance(data["metrics"], list) else [data["metrics"]]
+                )
 
             # Determine type from structure
             if "trace" in str(file_path).lower() or "trace" in content.lower():
@@ -378,7 +384,7 @@ class RuntimeEvidenceIngestion:
 
         except json.JSONDecodeError:
             # Parse as text/log file
-            lines = content.split('\n')
+            lines = content.split("\n")
 
             for line in lines:
                 line_lower = line.lower()
@@ -391,7 +397,8 @@ class RuntimeEvidenceIngestion:
                 # Extract duration
                 if "duration" in line_lower or "took" in line_lower:
                     import re
-                    duration_match = re.search(r'(\d+)\s*ms', line)
+
+                    duration_match = re.search(r"(\d+)\s*ms", line)
                     if duration_match:
                         evidence_info["duration"] = int(duration_match.group(1))
 
@@ -449,7 +456,9 @@ def main():
     parser = argparse.ArgumentParser(description="Wave 3: Runtime Evidence Ingestion")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--chroma-dir", default="artifacts/chromadb", help="ChromaDB persistence directory")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be ingested without actually doing it")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
+    )
     args = parser.parse_args()
 
     # Run ingestion

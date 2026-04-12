@@ -152,7 +152,9 @@ _emit_stores_learning_state("cache_data_access_get_info_request_init_util", "p3l
 _emit_records_execution_trace("cache_data_access_get_info_request_init_util", "L0_ROUTING", "p2_trace_1")
 _emit_records_execution_trace("cache_data_access_get_info_request_init_util", "L1_REASONING", "p2_trace_2")
 _emit_records_execution_trace("cache_data_access_get_info_request_init_util", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("cache_data_access_get_info_request_init_util", "L3_ORCHESTRATION", "p2_trace_4")
+_emit_records_execution_trace(
+    "cache_data_access_get_info_request_init_util", "L3_ORCHESTRATION", "p2_trace_4"
+)
 _emit_records_execution_trace("cache_data_access_get_info_request_init_util", "L4_STATE", "p2_trace_5")
 _emit_reads_environ("cache_data_access_get_info_request_init_util", "env_read", "p2_env_1")
 _emit_reads_environ("cache_data_access_get_info_request_init_util", "env_read", "p2_env_2")

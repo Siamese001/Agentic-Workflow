@@ -16,14 +16,17 @@ class TestAppsLicEnginesInitAdg:
     def test_apps_lic_engines_init_adg_imports(self):
         """Test apps_lic_engines_init_adg module imports."""
         from apps_lic.engines import control_plane
+
         assert control_plane is not None
 
     def test_apps_lic_engines_init_adg_class(self):
         """Test ControlPlane class exists in engines."""
         from apps_lic.engines.control_plane import ControlPlane
+
         assert ControlPlane is not None
 
     def test_apps_lic_engines_init_adg_callable(self):
         """Test PolicyDecision is callable."""
         from apps_lic.engines.control_plane import PolicyDecision
+
         assert callable(PolicyDecision)

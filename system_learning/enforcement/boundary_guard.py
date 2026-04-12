@@ -6,6 +6,7 @@ AST-based boundary guard for the system_learning package.
 Verifies that no file inside system_learning imports from forbidden
 namespaces (apps_*, agentic_core.L*).  Uses AST parsing — no regex.
 """
+
 import ast
 from pathlib import Path
 
@@ -38,8 +39,11 @@ class _BoundaryVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_BoundaryVisitor.visit_Import")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_BoundaryVisitor.visit_Import"
+        )
 
         for alias in node.names:
             self._check_module(alias.name, node.lineno)
@@ -55,7 +59,7 @@ def check_file_isolation(file_path: Path) -> list[str]:
     """Return list of violation strings for a single file (empty = clean)."""
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
-    except SyntaxError as exc:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError: {exc}"]
     visitor = _BoundaryVisitor()
     visitor.visit(tree)

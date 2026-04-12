@@ -18,6 +18,7 @@ Edge cases covered:
 - print_summary() exit codes: 0=all pass, 1=any fail
 - HEALTH_PROBES registry completeness (all mandatory MCPs present)
 """
+
 from __future__ import annotations
 
 import json
@@ -45,6 +46,7 @@ REPO_ROOT = Path(r"C:\Git\Agentic-Workflow")
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_python_config(**overrides) -> dict:
     base = {
         "command": "python",
@@ -68,6 +70,7 @@ def _make_npx_config(**overrides) -> dict:
 # ===========================================================================
 # MCPHealthResult
 # ===========================================================================
+
 
 class TestMCPHealthResult:
     def test_defaults(self):
@@ -114,6 +117,7 @@ class TestMCPHealthResult:
 # probe_mcp_stdio — Windows npx misconfiguration
 # ===========================================================================
 
+
 class TestProbeWindowsNpxMisconfiguration:
     @pytest.mark.skipif(sys.platform != "win32", reason="Windows-only check")
     def test_bare_npx_returns_misconfigured_on_windows(self):
@@ -134,7 +138,10 @@ class TestProbeWindowsNpxMisconfiguration:
         mock_proc.terminate = MagicMock()
         with patch("ops_scripts.ci.mcp_health_monitor.subprocess.Popen", return_value=mock_proc):
             result = probe_mcp_stdio("seq_thinking", cfg)
-        assert result.error != "MISCONFIGURED: command='npx' on Windows — must be 'npx.cmd'. Run: python tools/adg/sync_yaml_to_global.py"
+        assert (
+            result.error
+            != "MISCONFIGURED: command='npx' on Windows — must be 'npx.cmd'. Run: python tools/adg/sync_yaml_to_global.py"
+        )
 
     @pytest.mark.skipif(sys.platform == "win32", reason="Non-Windows: npx allowed")
     def test_bare_npx_not_blocked_on_non_windows(self):
@@ -151,6 +158,7 @@ class TestProbeWindowsNpxMisconfiguration:
 # ===========================================================================
 # probe_mcp_stdio — MCP type classification
 # ===========================================================================
+
 
 class TestProbeClassification:
     def test_missing_cwd_blocks_probe(self):
@@ -176,6 +184,7 @@ class TestProbeClassification:
 # ===========================================================================
 # probe_mcp_stdio — Process lifecycle
 # ===========================================================================
+
 
 class TestProbeProcessLifecycle:
     def _make_proc(self, *, exits_immediately: bool, returncode: int = 1, stderr: str = "") -> MagicMock:
@@ -220,20 +229,25 @@ class TestProbeProcessLifecycle:
     def test_command_not_found_returns_error(self):
         cfg = {"command": "nonexistent_binary_xyz", "args": [], "cwd": str(REPO_ROOT)}
         # Manually set is_local_python_inline to get past classification
-        with patch("ops_scripts.ci.mcp_health_monitor.subprocess.Popen",
-                   side_effect=FileNotFoundError("[WinError 2] The system cannot find the file")):
+        with patch(
+            "ops_scripts.ci.mcp_health_monitor.subprocess.Popen",
+            side_effect=FileNotFoundError("[WinError 2] The system cannot find the file"),
+        ):
             # Need to trick the classifier — use python -c form
             cfg2 = {"command": "python", "args": ["-c", "pass"], "cwd": str(REPO_ROOT)}
-            with patch("ops_scripts.ci.mcp_health_monitor.subprocess.Popen",
-                       side_effect=FileNotFoundError("not found")):
+            with patch(
+                "ops_scripts.ci.mcp_health_monitor.subprocess.Popen",
+                side_effect=FileNotFoundError("not found"),
+            ):
                 result = probe_mcp_stdio("bad_mcp", cfg2)
         assert result.startup_ok is False
         assert "COMMAND_NOT_FOUND" in result.error
 
     def test_oserror_returns_os_error(self):
         cfg = _make_python_config()
-        with patch("ops_scripts.ci.mcp_health_monitor.subprocess.Popen",
-                   side_effect=OSError(13, "Permission denied")):
+        with patch(
+            "ops_scripts.ci.mcp_health_monitor.subprocess.Popen", side_effect=OSError(13, "Permission denied")
+        ):
             result = probe_mcp_stdio("pytest_mcp", cfg)
         assert result.startup_ok is False
         assert "OS_ERROR" in result.error
@@ -243,7 +257,7 @@ class TestProbeProcessLifecycle:
         proc = MagicMock()
         proc.wait.side_effect = [
             subprocess.TimeoutExpired(cmd=[], timeout=0.5),  # first wait → healthy
-            subprocess.TimeoutExpired(cmd=[], timeout=3),    # second wait after terminate → kill
+            subprocess.TimeoutExpired(cmd=[], timeout=3),  # second wait after terminate → kill
         ]
         proc.kill = MagicMock()
         cfg = _make_python_config()
@@ -293,13 +307,18 @@ class TestProbeProcessLifecycle:
 # run_health_probe — config loading
 # ===========================================================================
 
+
 class TestRunHealthProbe:
     def test_missing_config_returns_empty(self, tmp_path):
         result = run_health_probe(tmp_path / "nonexistent.json")
         assert result == []
 
     def test_disabled_server_skipped(self, tmp_path):
-        config = {"mcpServers": {"my_mcp": {"command": "python", "args": [], "cwd": str(tmp_path), "disabled": True}}}
+        config = {
+            "mcpServers": {
+                "my_mcp": {"command": "python", "args": [], "cwd": str(tmp_path), "disabled": True}
+            }
+        }
         cfg_file = tmp_path / "mcp_config.json"
         cfg_file.write_text(json.dumps(config), encoding="utf-8")
         results = run_health_probe(cfg_file)
@@ -328,6 +347,7 @@ class TestRunHealthProbe:
 # print_summary — exit code logic
 # ===========================================================================
 
+
 class TestPrintSummary:
     def _healthy(self, name: str) -> MCPHealthResult:
         r = MCPHealthResult(name)
@@ -343,7 +363,8 @@ class TestPrintSummary:
 
     def test_all_healthy_returns_0(self, tmp_path, monkeypatch):
         monkeypatch.setattr(
-            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT", tmp_path,
+            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT",
+            tmp_path,
         )
         (tmp_path / "artifacts" / "adg").mkdir(parents=True)
         results = [self._healthy("adg_redis"), self._healthy("redis_mcp")]
@@ -352,7 +373,8 @@ class TestPrintSummary:
 
     def test_any_failure_returns_1(self, tmp_path, monkeypatch):
         monkeypatch.setattr(
-            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT", tmp_path,
+            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT",
+            tmp_path,
         )
         (tmp_path / "artifacts" / "adg").mkdir(parents=True)
         results = [self._healthy("adg_redis"), self._failed("redis_mcp")]
@@ -361,7 +383,8 @@ class TestPrintSummary:
 
     def test_all_failed_returns_1(self, tmp_path, monkeypatch):
         monkeypatch.setattr(
-            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT", tmp_path,
+            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT",
+            tmp_path,
         )
         (tmp_path / "artifacts" / "adg").mkdir(parents=True)
         results = [self._failed("adg_redis"), self._failed("redis_mcp")]
@@ -370,7 +393,8 @@ class TestPrintSummary:
 
     def test_writes_health_report_json(self, tmp_path, monkeypatch):
         monkeypatch.setattr(
-            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT", tmp_path,
+            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT",
+            tmp_path,
         )
         (tmp_path / "artifacts" / "adg").mkdir(parents=True)
         results = [self._healthy("adg_redis")]
@@ -385,7 +409,8 @@ class TestPrintSummary:
     def test_skipped_servers_not_counted_as_failed(self, tmp_path, monkeypatch):
         """Servers with SKIPPED error (unknown type) must not inflate fail count."""
         monkeypatch.setattr(
-            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT", tmp_path,
+            "ops_scripts.ci.mcp_health_monitor.REPO_ROOT",
+            tmp_path,
         )
         (tmp_path / "artifacts" / "adg").mkdir(parents=True)
         skipped = MCPHealthResult("gitkraken")
@@ -400,6 +425,7 @@ class TestPrintSummary:
 # ===========================================================================
 # HEALTH_PROBES registry — mandatory MCP coverage
 # ===========================================================================
+
 
 class TestHealthProbesRegistry:
     MANDATORY_MCPS = {

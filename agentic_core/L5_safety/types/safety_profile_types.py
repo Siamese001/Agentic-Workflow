@@ -171,7 +171,8 @@ class SafetyProfile(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
     safety_tier: str = Field(
-        default="standard", description="Safety tier: standard | strict | relaxed | debug",
+        default="standard",
+        description="Safety tier: standard | strict | relaxed | debug",
     )
     pii_detection_enabled: bool = Field(default=True, description="PII detection toggle")
     policy_engine_enabled: bool = Field(default=True, description="Policy engine toggle")

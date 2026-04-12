@@ -183,8 +183,11 @@ class VoidComplianceEngine(BaseRGEngine):
         Scan architecture for forbidden legacy imports.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "VoidComplianceEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "VoidComplianceEngine.execute"
+        )
 
         # 1. LOGIC
         violations = []
@@ -223,7 +226,10 @@ class VoidComplianceEngine(BaseRGEngine):
                 if "import archives" in line or "from archives" in line:
                     return True
             return False
-        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: File operations with encoding need error-specific handling
             # Expected file reading errors
             self.logger.warning(f"Could not read file {file_path}: {e}")
             return False

@@ -12,6 +12,7 @@ from enum import Enum, auto
 
 class ExitDisposition(Enum):
     """Exit disposition types."""
+
     ALLOW = auto()
     DENY = auto()
     ESCALATE = auto()
@@ -21,6 +22,7 @@ class ExitDisposition(Enum):
 @dataclass
 class ExecutionTrace:
     """Execution trace record."""
+
     trace_id: str
     request_id: str
     layer_path: list[str]
@@ -38,9 +40,7 @@ class TraceReader:
 
     def __init__(self) -> None:
         self._traces: dict[str, ExecutionTrace] = {}
-        self._disposition_counts: dict[ExitDisposition, int] = {
-            disp: 0 for disp in ExitDisposition
-        }
+        self._disposition_counts: dict[ExitDisposition, int] = {disp: 0 for disp in ExitDisposition}
 
     def register_trace(self, trace: ExecutionTrace) -> None:
         """Register execution trace for L6 read surface."""
@@ -57,17 +57,12 @@ class TraceReader:
         limit: int = 100,
     ) -> list[ExecutionTrace]:
         """Query traces by exit disposition."""
-        results = [
-            t for t in self._traces.values()
-            if t.exit_disposition == disposition
-        ]
+        results = [t for t in self._traces.values() if t.exit_disposition == disposition]
         return results[:limit]
 
     def get_disposition_stats(self) -> dict[str, int]:
         """Get exit disposition statistics."""
-        return {
-            disp.name: count for disp, count in self._disposition_counts.items()
-        }
+        return {disp.name: count for disp, count in self._disposition_counts.items()}
 
     def get_telemetry_aggregate(
         self,
@@ -77,9 +72,11 @@ class TraceReader:
         """Aggregate telemetry metric across traces."""
         values: list[float] = []
 
-        traces = self._traces.values() if trace_ids is None else [
-            self._traces[tid] for tid in trace_ids if tid in self._traces
-        ]
+        traces = (
+            self._traces.values()
+            if trace_ids is None
+            else [self._traces[tid] for tid in trace_ids if tid in self._traces]
+        )
 
         for trace in traces:
             if metric_name in trace.telemetry:

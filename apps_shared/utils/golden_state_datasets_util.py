@@ -26,6 +26,7 @@ class GoldenCase:
     expected_keypoints: list[str] = field(default_factory=list)
     correctness_criteria: dict[str, object] = field(default_factory=dict)
 
+
 _BASE_DIR = Path(__file__).resolve().parent
 _BASELINES_DIR = _BASE_DIR / "baselines"
 

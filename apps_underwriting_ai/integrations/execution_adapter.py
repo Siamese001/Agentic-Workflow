@@ -1,6 +1,7 @@
 """
 Execution Adapter - Handles execution handoff to agentic_core.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
@@ -21,6 +22,7 @@ from ..types import UnderwritingRequest
 @dataclass
 class ExecutionRequest:
     """Request for execution handoff."""
+
     app_name: str = "apps_underwriting_ai"
     request_id: str = ""
     intent_type: str = "underwriting_decision"
@@ -79,6 +81,7 @@ class ExecutionAdapter:
 
         # Calculate SLA deadline
         from datetime import datetime, timedelta
+
         deadline = datetime.now() + timedelta(hours=request.decision_constraints.turnaround_sla_hours)
         exec_request.sla_deadline = deadline.isoformat()
 

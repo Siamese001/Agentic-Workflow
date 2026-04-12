@@ -7,6 +7,7 @@ Evidence contract per §2.2:
 - Verification: baseline state, new violations count
 - Exit code: 0 if proof succeeds, 1 if violations exist
 """
+
 from __future__ import annotations
 
 import subprocess

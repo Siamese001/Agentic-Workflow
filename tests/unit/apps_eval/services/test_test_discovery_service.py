@@ -84,7 +84,10 @@ class TestTestDiscoveryService:
 
         service = TestDiscoveryService()
 
-        with patch("apps_eval.services.test_discovery_service._emit_records_execution_trace", side_effect=Exception("ADG error")):
+        with patch(
+            "apps_eval.services.test_discovery_service._emit_records_execution_trace",
+            side_effect=Exception("ADG error"),
+        ):
             with pytest.raises(Exception, match="ADG error"):
                 service.discover_from_adg()
 

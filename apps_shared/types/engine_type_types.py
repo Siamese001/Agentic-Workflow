@@ -11,6 +11,7 @@ from __future__ import annotations
 # Stub classes for missing imports - defined before imports
 class FeedbackLoop:
     """Stub FeedbackLoop."""
+
     def __init__(self, name: str):
         self.name = name
 
@@ -20,11 +21,13 @@ class FeedbackLoop:
 
 class QualityThresholds:
     """Stub QualityThresholds."""
+
     MIN_QUALITY_SCORE = 0.7
 
 
 class SignalAssessment:
     """Stub SignalAssessment."""
+
     def __init__(self):
         self.domain_metrics = {}
         self.domain_validation = {}
@@ -33,6 +36,7 @@ class SignalAssessment:
 
 class signal_enhancer:
     """Stub signal_enhancer."""
+
     def __init__(self, name: str, thresholds=None):
         self.name = name
         self.thresholds = thresholds
@@ -380,7 +384,9 @@ class ResumeValidator(DomainValidator):
         """Validate resume content."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ResumeValidator.validate_domain_content")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ResumeValidator.validate_domain_content"
+        )
         results = {
             "has_achievements": self._has_achievements(content),
             "has_metrics": self._has_metrics(content),
@@ -683,7 +689,8 @@ class SharedSignalInfrastructure:
         enhancer_key = f"{engine_type.value}_{id(domain_config)}"
         if enhancer_key not in self._enhancers:
             enhancer = signal_enhancer(
-                name=f"{engine_type.value}_enhancer", thresholds=domain_config.quality_thresholds,
+                name=f"{engine_type.value}_enhancer",
+                thresholds=domain_config.quality_thresholds,
             )
             enhancer.domain_config = domain_config
             enhancer.domain_validator = self._validators.get(engine_type)
@@ -857,7 +864,9 @@ def get_shared_infrastructure() -> SharedSignalInfrastructure:
 
 
 def assess_resume_signal(
-    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True,
+    content: str,
+    context: dict[str, Any] | None = None,
+    strict_mode: bool = True,
 ) -> SignalAssessment:
     """Assess resume signal quality.
 
@@ -876,7 +885,9 @@ def assess_resume_signal(
 
 
 def assess_outreach_signal(
-    content: str, context: dict[str, Any] | None = None, strict_mode: bool = True,
+    content: str,
+    context: dict[str, Any] | None = None,
+    strict_mode: bool = True,
 ) -> SignalAssessment:
     """Assess outreach signal quality.
 

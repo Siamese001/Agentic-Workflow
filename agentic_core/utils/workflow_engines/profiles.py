@@ -176,6 +176,7 @@ PROFILE_HYBRID_RERANKED = "hybrid_reranked"
 @dataclass
 class RetrievalProfileConfig:
     """Configuration for a named retrieval profile."""
+
     mode: str
     lexical_k: int = 50
     vector_k: int = 50
@@ -205,8 +206,11 @@ class RetrievalProfileConfig:
     def load_from_file(cls, path: Path) -> RetrievalProfileConfig:
         """Load profile config from JSON file."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileConfig.load_from_file")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileConfig.load_from_file"
+        )
 
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
@@ -243,6 +247,7 @@ class RetrievalPipeline:
             Ranked list of Document objects
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalPipeline.retrieve")
 
@@ -284,9 +289,11 @@ class RetrievalPipeline:
 
     def to_retrieval_fn(self):
         """Return a callable compatible with OfflineEvaluationRunner.retrieval_fn."""
+
         def retrieval_fn(query: str) -> list[str]:
             docs = self.retrieve(query)
             return [d.doc_id for d in docs]
+
         return retrieval_fn
 
 

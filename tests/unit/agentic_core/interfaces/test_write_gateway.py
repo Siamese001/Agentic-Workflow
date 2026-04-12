@@ -16,14 +16,17 @@ class TestWriteGateway:
     def test_write_gateway_imports(self):
         """Test write_gateway module imports."""
         from agentic_core import write_gateway
+
         assert write_gateway is not None
 
     def test_write_gateway_class(self):
         """Test WriteGateway class exists."""
         from agentic_core import WriteGateway
+
         assert WriteGateway is not None
 
     def test_write_gateway_callable(self):
         """Test write_gateway functions are callable."""
         from agentic_core import validate_write_gateway
+
         assert callable(validate_write_gateway)

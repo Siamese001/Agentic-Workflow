@@ -66,6 +66,7 @@ class EvalGuard:
         """
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
+
         _tid = str(_uuid.uuid4())
         _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
         violations = self._scan(code)
@@ -92,7 +93,11 @@ class EvalGuard:
                 f"Eval guard blocked {operation}: {violations}",
             )
 
-        return {"verdict": verdict, "violations": violations, "timestamp": datetime.now(timezone.utc).isoformat()}
+        return {
+            "verdict": verdict,
+            "violations": violations,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }
 
     def get_execution_log(self) -> list[dict[str, Any]]:
         """Return the audit log of all checks."""

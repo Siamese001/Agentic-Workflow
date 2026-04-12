@@ -411,7 +411,9 @@ class GuardianPrioritizer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "GuardianPrioritizer.prioritize",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "GuardianPrioritizer.prioritize",
         )
 
         import hashlib

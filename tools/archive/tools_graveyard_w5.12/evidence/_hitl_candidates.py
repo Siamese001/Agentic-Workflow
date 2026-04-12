@@ -6,16 +6,17 @@ Prints teardown + has_reraise sub-categories that may qualify for
 Usage:
     python tools/evidence/_hitl_candidates.py
 """
+
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
 FILES = [
-    ("return_none_swallow",      "w2_return_none_swallow_subcategorized.json"),
-    ("log_and_swallow",          "log_and_swallow_subcategorized.json"),
+    ("return_none_swallow", "w2_return_none_swallow_subcategorized.json"),
+    ("log_and_swallow", "log_and_swallow_subcategorized.json"),
     ("silent_exception_swallow", "silent_exception_swallow_subcategorized.json"),
-    ("broad_exception_catch",    "broad_exception_catch_subcategorized.json"),
+    ("broad_exception_catch", "broad_exception_catch_subcategorized.json"),
 ]
 
 EXEMPT_SUBS = {"teardown", "has_reraise"}
@@ -29,13 +30,15 @@ def main() -> None:
         data: list[dict] = json.loads(path.read_text())
         for entry in data:
             if entry.get("sub_category") in EXEMPT_SUBS:
-                candidates.append({
-                    "kind": kind,
-                    "sub_category": entry["sub_category"],
-                    "source_file": entry["source_file"],
-                    "line_no": entry["line_no"],
-                    "func": entry.get("containing_function", ""),
-                })
+                candidates.append(
+                    {
+                        "kind": kind,
+                        "sub_category": entry["sub_category"],
+                        "source_file": entry["source_file"],
+                        "line_no": entry["line_no"],
+                        "func": entry.get("containing_function", ""),
+                    }
+                )
 
     print(f"Total guardian-exempt candidates: {len(candidates)}")
     print()

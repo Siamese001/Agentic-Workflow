@@ -158,7 +158,7 @@ def get_gap_files(layer, dim_config):
 def _has_wirable_functions(src):
     """Check if source has functions with body >= 3 lines."""
     try:
-        tree = ast.parse(src)    # guardian: Syntax errors should be caught at parser level, not runtime
+        tree = ast.parse(src)  # guardian: Syntax errors should be caught at parser level, not runtime
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return False
@@ -194,7 +194,7 @@ def _find_first_target(tree):
 def wire_file(filepath, dim_config, layer):
     """Wire emit call into first substantial function in file."""
     fp = str(PROJECT_ROOT / filepath)
-    try:    # guardian: Add error context logging
+    try:  # guardian: Add error context logging
         # guardian: allow-silent-swallow - acceptable exception handling
         src = open(fp, encoding="utf-8", errors="replace").read()
     except OSError:

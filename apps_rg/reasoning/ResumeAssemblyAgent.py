@@ -209,7 +209,9 @@ class ResumeAssemblyAgent:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeAssemblyAgent.assemble_resume")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeAssemblyAgent.assemble_resume"
+        )
         return self._prompt_loader.get_template("resume", "k7_assembly_agent", **payload)
 
     def generate_skills_section(self, payload: dict[str, Any]) -> str:
@@ -273,9 +275,12 @@ class ResumeAssemblyAgent:
         try:
             content = template_path.read_text(encoding="utf-8")
             return content.format(**payload)
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             raise ResumeTemplateError(f"Template file not found: {template_path}")
-        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: File operations with encoding need error-specific handling
             raise ResumeTemplateError(f"Error reading template file {template_path}: {e}")
         except KeyError as e:
             raise ResumeTemplateError(f"Missing template variable {e} in {template_path}")

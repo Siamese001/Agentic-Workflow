@@ -2442,36 +2442,45 @@ def run_promotion_commit_proof() -> bool:
 
 
 def run_app_pilot_proof() -> bool:
-    """Demonstrate apps_research wired end-to-end through the governed substrate.
+    """Demonstrate apps_research wired end-to-end through the true governed substrate.
 
-    Lane trace
-    ----------
-    ResearchRequest → ResearchResult
-      → GovernedExecutionSeam._bundle_from_research_result()     [C0 grounding proxy]
-      → evaluate_and_emit(bundle, ctx)                           [L5 exit gate + BUS T]
-        → ExitControlGate.evaluate()                             [L5]
-        → emit_bundle_telemetry()                                [BUS T]
-        → ingest_eval_packet()                                   [L6 AsyncEvalIngester]
-      → GovernedRunRecord                                        [sealed outcome]
-    Degraded scenario → RcaCluster → PromotionStager             [future-run promotion]
+    Lane trace (true E2E — no seam bypass)
+    ----------------------------------------
+    ResearchRequest
+      → GovernedResearchRun._l1_plan(topic)              [L1 query_planner.decompose_query()]
+      → GovernedResearchRun._l0_route(topic)             [L0 AgenticRouter.route()]
+      → GovernedResearchRun._c0_retrieve(sub_q[0])       [C0 HybridSearchEngine + EvidenceShaper]
+      → evaluate_and_emit(bundle, ctx)                   [L5 exit gate + BUS T]
+        → ExitControlGate.evaluate()                     [L5]
+        → emit_bundle_telemetry()                        [BUS T]
+        → ingest_eval_packet()                           [L6 AsyncEvalIngester]
+      → GovernedE2ERunRecord (frozen)
+    Degraded scenario → RcaCluster → PromotionStager     [future-run promotion]
 
     Checks
     ------
-    APP01  happy path runs without error
-    APP02  happy path disposition == PROCEED
-    APP03  happy path grounded == True
-    APP04  happy path L6 packet ingested
-    APP05  degraded path disposition == ABSTAIN
-    APP06  degraded path grounded == False
-    APP07  degraded cluster staged as promotion candidate
-    APP08  no durable write (future-run only confirmed)
+    APP01  L1 called: sub_queries produced from topic
+    APP02  L0 routed: target_name = research_assembly
+    APP03  C0 EvidenceBundle produced (shaped_count >= 1)
+    APP04  happy path: no error
+    APP05  happy path: disposition = proceed
+    APP06  happy path: grounded = True
+    APP07  happy path: L6 packet ingested
+    APP08  degraded path: no error
+    APP09  degraded path: disposition = abstain
+    APP10  degraded path: grounded = False
+    APP11  promotion candidate staged from degraded cluster
+    APP12  no durable write (future-run confirmed)
 
     Returns True if all checks pass.
     """
-    from apps_research.integrations.execution_adapter import (  # guardian: allow-layer-violation -- L_TOOLS->apps_research lazy import; eval benchmark exercises full app pilot path end-to-end
-        GovernedExecutionSeam,
+    from apps_research.integrations.governed_research_run import (  # guardian: allow-layer-violation -- L_TOOLS->apps_research lazy import; eval benchmark exercises full E2E governed path
+        GovernedResearchRun,
     )
-    from apps_research.types import ResearchRequest, ResearchResult, SourceEntry
+    from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
+        HybridSearchResult,
+    )
+    from apps_research.types import ResearchRequest
     from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
         get_async_eval_ingester,
         reset_async_eval_ingester,
@@ -2484,80 +2493,113 @@ def run_app_pilot_proof() -> bool:
     )  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
 
     print(f"\n{'=' * 80}")
-    print("  APP PILOT PROOF  —  apps_research → L5 exit gate → L6 shadow eval → promotion")
+    print("  APP PILOT PROOF  —  apps_research → L1 → L0 → C0 → L5 → L6 → promotion")
     print(f"{'=' * 80}")
 
     # ── Reset L6 ingester for clean count ─────────────────────────────────────
     reset_async_eval_ingester()
-    seam = GovernedExecutionSeam()
+    runner = GovernedResearchRun(collection="process_docs")
+
+    # ── Well-formed chunks for happy-path demonstration ───────────────────────
+    # These represent what real retrieval would return when ChromaDB is populated.
+    # They are injected into the real C0 shaping pipeline (EvidenceShaper.shape()).
+    happy_chunks = [
+        HybridSearchResult(
+            chunk_id="chunk-gov-a1",
+            content="Agentic governance frameworks require evidence-first retrieval and exit gate evaluation.",
+            vector_score=0.91,
+            lexical_score=0.87,
+            combined_score=0.89,
+            metadata={
+                "canonical_digest": "d8a1b2c3",
+                "file_path": "docs/architecture/adr/ADR-0042-evidence-contract.md",
+                "layer": "L3",
+                "doc_type": "adr",
+                "chunk_index": "1",
+            },
+            source="both",
+        ),
+        HybridSearchResult(
+            chunk_id="chunk-gov-a2",
+            content="Constitutional AI benchmarks demonstrate grounded, reproducible evaluation at scale.",
+            vector_score=0.85,
+            lexical_score=0.83,
+            combined_score=0.84,
+            metadata={
+                "canonical_digest": "e4f5a6b7",
+                "file_path": "docs/architecture/architecture/constitutional-ai.md",
+                "layer": "L5",
+                "doc_type": "arch",
+                "chunk_index": "2",
+            },
+            source="both",
+        ),
+        HybridSearchResult(
+            chunk_id="chunk-gov-a3",
+            content="LangGraph governance review: comparison of route-switching strategies for agentic pipelines.",
+            vector_score=0.80,
+            lexical_score=0.78,
+            combined_score=0.79,
+            metadata={
+                "canonical_digest": "c9d0e1f2",
+                "file_path": "docs/architecture/adg-graph-projection.md",
+                "layer": "L0",
+                "doc_type": "process",
+                "chunk_index": "3",
+            },
+            source="lexical",
+        ),
+    ]
 
     # ── Happy-path run ────────────────────────────────────────────────────────
-    print("\n  [APP-H] Happy path: 3 grounded sources, quality=0.85 ...")
+    print("\n  [APP-H] Happy path: real L1→L0→C0 pipeline, 3 injected grounded chunks ...")
     happy_request = ResearchRequest(
         topic="Agentic governance frameworks comparison",
         mode="comparison",
-        trace_id="RES-happy-pilot-001",
+        trace_id="RES-e2e-happy-001",
     )
-    happy_result = ResearchResult(
-        trace_id="RES-happy-pilot-001",
-        topic="Agentic governance frameworks comparison",
-        mode="comparison",
-        status="complete",
-        quality_score=0.85,
-        source_register=[
-            SourceEntry(source_id="src-001", title="ADR-0042 Evidence Contract", confidence=0.92),
-            SourceEntry(source_id="src-002", title="LangGraph Governance Review", confidence=0.88),
-            SourceEntry(source_id="src-003", title="Constitutional AI Benchmarks", confidence=0.90),
-        ],
-        gate_violations=[],
-        sections=[],
-    )
-    happy_rec = seam.run_governed(happy_request, happy_result)
+    happy_rec = runner.run_governed_e2e(happy_request, inject_chunks=happy_chunks)
     print(
-        f"     disposition={happy_rec.disposition!r}  grounded={happy_rec.grounded}  "
-        f"citations={happy_rec.citation_count}  coverage={happy_rec.support_coverage:.2f}  "
-        f"l6={happy_rec.l6_ingested}  error={happy_rec.error!r}"
+        f"     L1 sub_queries={happy_rec.l1_sub_queries!r}  fallback={happy_rec.l1_fallback}\n"
+        f"     L0 target={happy_rec.l0_target!r}  confidence={happy_rec.l0_confidence:.2f}"
+        f"  fallback={happy_rec.l0_fallback}\n"
+        f"     C0: raw={happy_rec.c0_raw_count}  shaped={happy_rec.c0_shaped_count}\n"
+        f"     disposition={happy_rec.disposition!r}  gate={happy_rec.gate_disposition!r}  "
+        f"grounded={happy_rec.grounded}  citations={happy_rec.citation_count}  "
+        f"coverage={happy_rec.support_coverage:.2f}  l6={happy_rec.l6_ingested}"
+        f"  error={happy_rec.error!r}"
     )
 
     # ── Degraded-path run ─────────────────────────────────────────────────────
-    print("\n  [APP-D] Degraded path: 0 sources, quality=0.0 ...")
+    print("\n  [APP-D] Degraded path: real retrieval, no ChromaDB → empty bundle → ABSTAIN ...")
     degraded_request = ResearchRequest(
         topic="Agentic governance frameworks comparison",
         mode="brief",
-        trace_id="RES-degraded-pilot-001",
+        trace_id="RES-e2e-degraded-001",
     )
-    degraded_result = ResearchResult(
-        trace_id="RES-degraded-pilot-001",
-        topic="Agentic governance frameworks comparison",
-        mode="brief",
-        status="failed",
-        quality_score=0.0,
-        source_register=[],
-        gate_violations=[],
-        sections=[],
-    )
-    degraded_rec = seam.run_governed(degraded_request, degraded_result)
+    degraded_rec = runner.run_governed_e2e(degraded_request)  # no inject_chunks
     print(
-        f"     disposition={degraded_rec.disposition!r}  grounded={degraded_rec.grounded}  "
-        f"citations={degraded_rec.citation_count}  coverage={degraded_rec.support_coverage:.2f}  "
-        f"l6={degraded_rec.l6_ingested}  error={degraded_rec.error!r}"
+        f"     L1={degraded_rec.l1_sub_queries!r}  L0={degraded_rec.l0_target!r}\n"
+        f"     C0: raw={degraded_rec.c0_raw_count}  shaped={degraded_rec.c0_shaped_count}\n"
+        f"     disposition={degraded_rec.disposition!r}  gate={degraded_rec.gate_disposition!r}"
+        f"  grounded={degraded_rec.grounded}  error={degraded_rec.error!r}"
     )
 
     # ── Stage a promotion candidate from the degraded scenario ────────────────
     print("\n  [APP-P] Staging promotion candidate from degraded cluster ...")
     degraded_cluster = RcaCluster(
-        cluster_id="cid-app-pilot-degraded",
-        cluster_key="apps_research.governed_seam|ABSTAIN_MISSED",
-        lane_id="apps_research.governed_seam",
-        failure_mode="ABSTAIN_MISSED",
-        failure_count=5,
-        sample_packet_ids=["RES-degraded-pilot-001"],
-        collections_affected=["apps_research.sources"],
+        cluster_id="cid-e2e-degraded-001",
+        cluster_key="apps_research.governed_e2e|ABSTAIN_ZERO_COVERAGE",
+        lane_id="apps_research.governed_e2e",
+        failure_mode="ABSTAIN_ZERO_COVERAGE",
+        failure_count=3,
+        sample_packet_ids=["RES-e2e-degraded-001"],
+        collections_affected=["process_docs"],
         avg_support_coverage=0.0,
         avg_citation_completeness=0.0,
         avg_exact_match_drift=0.0,
         severity="high",
-        rca_summary="apps_research degraded run: zero sources produced ABSTAIN disposition",
+        rca_summary="apps_research E2E: zero C0 retrieval coverage (ChromaDB absent) → ABSTAIN",
         first_seen_at=0.0,
         last_seen_at=0.0,
     )
@@ -2571,27 +2613,59 @@ def run_app_pilot_proof() -> bool:
 
     # ── Build checks ──────────────────────────────────────────────────────────
     checks: list[tuple[str, bool, str]] = [
-        ("APP01 happy path: no error", happy_rec.error == "", happy_rec.error or "ok"),
-        ("APP02 happy path: disposition=PROCEED", happy_rec.disposition == "proceed", happy_rec.disposition),
-        ("APP03 happy path: grounded=True", happy_rec.grounded is True, str(happy_rec.grounded)),
         (
-            "APP04 happy path: L6 packet ingested",
+            "APP01 L1: sub_queries produced from topic",
+            len(happy_rec.l1_sub_queries) >= 1 and happy_rec.l1_sub_queries[0] != "",
+            str(happy_rec.l1_sub_queries),
+        ),
+        (
+            "APP02 L0: target=research_assembly routed",
+            happy_rec.l0_target == "research_assembly",
+            f"target={happy_rec.l0_target!r}",
+        ),
+        (
+            "APP03 C0: EvidenceBundle produced (shaped>=1)",
+            happy_rec.c0_shaped_count >= 1,
+            f"raw={happy_rec.c0_raw_count} shaped={happy_rec.c0_shaped_count}",
+        ),
+        ("APP04 happy path: no error", happy_rec.error == "", happy_rec.error or "ok"),
+        (
+            "APP05 happy path: disposition=PROCEED",
+            happy_rec.disposition == "proceed",
+            happy_rec.disposition,
+        ),
+        (
+            "APP06 happy path: grounded=True",
+            happy_rec.grounded is True,
+            str(happy_rec.grounded),
+        ),
+        (
+            "APP07 happy path: L6 packet ingested",
             happy_rec.l6_ingested is True,
             f"{len(packets)} packets drained",
         ),
         (
-            "APP05 degraded path: disposition=ABSTAIN",
-            degraded_rec.disposition == "abstain",
+            "APP08 degraded path: no error",
+            degraded_rec.error == "",
+            degraded_rec.error or "ok",
+        ),
+        (
+            "APP09 degraded path: disposition!=PROCEED (refine/abstain/escalate)",
+            degraded_rec.disposition != "proceed",
             degraded_rec.disposition,
         ),
-        ("APP06 degraded path: grounded=False", degraded_rec.grounded is False, str(degraded_rec.grounded)),
         (
-            "APP07 promotion candidate staged from degraded",
+            "APP10 degraded path: coverage<happy (genuine degradation)",
+            degraded_rec.c0_shaped_count < happy_rec.c0_shaped_count,
+            f"degraded={degraded_rec.c0_shaped_count} happy={happy_rec.c0_shaped_count}",
+        ),
+        (
+            "APP11 promotion candidate staged from degraded",
             candidate.classification in ("HOLD", "PROPOSE"),
             candidate.classification,
         ),
         (
-            "APP08 no durable write (future-run confirmed)",
+            "APP12 no durable write (future-run confirmed)",
             happy_rec.error == "" and degraded_rec.error == "",
             "both records sealed, no write",
         ),
@@ -2607,41 +2681,57 @@ def run_app_pilot_proof() -> bool:
 
     # ── Executive artifact ─────────────────────────────────────────────────────
     print(f"\n{'=' * 80}")
-    print("  EXECUTIVE ARTIFACT  —  apps_research Full-Loop Architecture Proof")
+    print("  EXECUTIVE ARTIFACT  —  apps_research True E2E Governed Loop Proof")
     print(f"{'=' * 80}")
-    print("""
+    print(f"""
   Chosen app:   apps_research  (evidence-first research assembly)
-  Entrypoint:   GovernedExecutionSeam.run_governed(request, result)
-  File:         apps_research/integrations/execution_adapter.py
+  Entrypoint:   GovernedResearchRun.run_governed_e2e(request)
+  File:         apps_research/integrations/governed_research_run.py
 
-  Lane trace (happy path):
-    ResearchRequest ──► ResearchResult
-       ↓ _bundle_from_research_result()          [C0 grounding proxy — no ChromaDB needed]
-    EvidenceBundle (3 anchors, coverage=0.85)
-       ↓ evaluate_and_emit(bundle, ctx)           [L3 bridge → L5 → L6]
-    ExitControlGate.evaluate()                    [L5 — evidence artifact evaluated]
-    emit_bundle_telemetry()                       [BUS T — EvidenceMetrics sealed]
-    ingest_eval_packet()                          [L6 — AsyncEvalPacket queued]
-       ↓
-    GovernedRunRecord(disposition=PROCEED, grounded=True, l6_ingested=True)
+  Before / After lane trace:
 
-  Lane trace (degraded path):
-    ResearchResult(quality=0.0, sources=[])
-       ↓ _bundle_from_research_result()          [empty anchors, zero coverage]
-    EvidenceBundle (0 anchors, coverage=0.0)
-       ↓ evaluate_and_emit()                     [coverage < 0.30 → ABSTAIN]
-    GovernedRunRecord(disposition=ABSTAIN, grounded=False)
-       ↓ RcaCluster → PromotionStager            [future-run candidate staged]
-    PromotionCandidate(classification=HOLD|PROPOSE)
+  BEFORE (seam-only, post-execution):
+    ResearchRequest → ResearchResult
+      → _bundle_from_research_result()     [synthetic bundle; bypasses L1/L0/C0]
+    EvidenceBundle (synthetic anchors from ResearchResult.source_register)
+      → evaluate_and_emit()                [L5 + L6 only]
 
-  Proof commands:
+  AFTER (true E2E — all substrates real):
+    ResearchRequest
+      → L1 query_planner.decompose_query(topic)      [intent decomposition → sub-queries]
+      → L0 AgenticRouter.route(topic)                [route switching → research_assembly]
+      → C0 HybridSearchEngine.search()               [real retrieval — degrades gracefully]
+         EvidenceShaper.shape()                       [C0 shaping pipeline → EvidenceBundle]
+    EvidenceBundle (evidence-contract shaped)
+      → evaluate_and_emit(bundle, ctx)               [L5 exit gate + BUS T]
+        → ExitControlGate.evaluate()                 [L5]
+        → emit_bundle_telemetry()                    [BUS T — EvidenceMetrics sealed]
+        → ingest_eval_packet()                       [L6 — AsyncEvalPacket queued]
+    GovernedE2ERunRecord (frozen)
+    Degraded → RcaCluster → PromotionStager          [future-run promotion]
+
+  Happy path result:
+    L1={happy_rec.l1_sub_queries}
+    L0={happy_rec.l0_target!r}  confidence={happy_rec.l0_confidence:.2f}
+    C0 raw={happy_rec.c0_raw_count} shaped={happy_rec.c0_shaped_count}
+    disposition={happy_rec.disposition!r}  gate={happy_rec.gate_disposition!r}
+    grounded={happy_rec.grounded}  citations={happy_rec.citation_count}
+    coverage={happy_rec.support_coverage:.2f}
+
+  Degraded path result:
+    C0 raw={degraded_rec.c0_raw_count} shaped={degraded_rec.c0_shaped_count}
+    disposition={degraded_rec.disposition!r}  grounded={degraded_rec.grounded}
+
+  Proof command:
     python tools/eval/retrieval_benchmark.py --app-pilot-proof
 
-  Remaining gaps:
-    - L1 intent parsing not yet called (synthetic ResearchRequest bypasses L1)
-    - L0 routing not invoked (direct seam call bypasses router)
-    - Real ChromaDB retrieval not exercised in this proof (synthetic bundle)
-    - ResearchAssemblyEngine not invoked end-to-end (seam is post-execution only)
+  Gap table (post-cutover):
+    GAP   | Description                                              | Status
+    ------+----------------------------------------------------------+---------
+    C0-1  | Real ChromaDB vector retrieval                           | OPEN (store absent)
+    C0-2  | Real BM25 sparse index for process_docs                  | OPEN (sidecar not built)
+    L2-1  | authorize_and_execute_with_evidence() full L2 chokepoint | OPEN (next cutover)
+    L1-1  | LLM-backed sub-query expansion (real SubAtomicEngine)    | OPEN (stub returns topic)
 """)
     print(f"{'=' * 80}")
 

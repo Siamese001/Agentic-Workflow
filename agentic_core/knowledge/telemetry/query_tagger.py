@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class QueryTags:
     """Tags for a query."""
+
     intent: str = "unknown"
     domain: str = "general"
     complexity: str = "medium"
@@ -67,7 +68,9 @@ class QueryTagger:
         """
         trace_id = f"tag_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryTagger.tag",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "QueryTagger.tag",
         )
 
         query_lower = query.lower()
@@ -128,7 +131,7 @@ class QueryTagger:
 
     def _assess_urgency(self, query: str) -> str:
         """Assess query urgency."""
-        urgent_terms = ['urgent', 'asap', 'emergency', 'critical', 'blocker']
+        urgent_terms = ["urgent", "asap", "emergency", "critical", "blocker"]
 
         if any(term in query for term in urgent_terms):
             return "high"
@@ -137,8 +140,8 @@ class QueryTagger:
     def _extract_topics(self, query: str) -> list[str]:
         """Extract topic keywords."""
         # Simple keyword extraction
-        stop_words = {'the', 'a', 'an', 'is', 'are', 'was', 'were'}
-        words = re.findall(r'\b[a-z]{4,}\b', query)
+        stop_words = {"the", "a", "an", "is", "are", "was", "were"}
+        words = re.findall(r"\b[a-z]{4,}\b", query)
         keywords = [w for w in words if w not in stop_words]
 
         # Return unique keywords

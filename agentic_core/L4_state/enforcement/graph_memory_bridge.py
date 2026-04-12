@@ -285,7 +285,9 @@ class GraphMemoryBridge:
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphMemoryBridge.set_mcp_functions",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "GraphMemoryBridge.set_mcp_functions",
         )
         self._create_entities_fn = create_entities
         self._create_relations_fn = create_relations
@@ -332,7 +334,10 @@ class GraphMemoryBridge:
             return None
 
     def create_agent_entity(
-        self, agent_name: str, agent_type: str = "Agent", observations: list[str] | None = None,
+        self,
+        agent_name: str,
+        agent_type: str = "Agent",
+        observations: list[str] | None = None,
     ) -> bool:
         """
         Create an agent entity in the Knowledge Graph.
@@ -371,7 +376,10 @@ class GraphMemoryBridge:
         return False
 
     def create_mastered_task_relation(
-        self, agent_name: str, task_description: str, feedback_score: float,
+        self,
+        agent_name: str,
+        task_description: str,
+        feedback_score: float,
     ) -> bool:
         """
         Create a MASTERED_TASK relation when memory is promoted to Long-Term DNA.

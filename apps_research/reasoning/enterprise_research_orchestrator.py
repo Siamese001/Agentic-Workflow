@@ -285,7 +285,9 @@ class EnterpriseResearchOrchestrator:
         _emit_dispatches_agent("enterprise", "step_decompose", "L1")
 
         decomposition, summary = self.decomposition_agent.analyze_research_query(
-            topic, artifact_mode, target_audience,
+            topic,
+            artifact_mode,
+            target_audience,
         )
         exec_plan = self.decomposition_agent.get_research_execution_plan(decomposition)
 
@@ -356,7 +358,9 @@ class EnterpriseResearchOrchestrator:
         required_sections = self._get_required_sections(artifact_mode)
 
         validation, gates = self.validation_agent.validate_research(
-            mock_content, mock_sources, required_sections,
+            mock_content,
+            mock_sources,
+            required_sections,
         )
 
         return [asdict(validation)], [gates]

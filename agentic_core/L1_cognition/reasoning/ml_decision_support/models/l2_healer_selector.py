@@ -82,13 +82,13 @@ class L2HealerSelector(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.pipeline = model_data.get('pipeline')
-            self.feature_names = model_data.get('feature_names', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.pipeline = model_data.get("pipeline")
+            self.feature_names = model_data.get("feature_names", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -98,22 +98,22 @@ class L2HealerSelector(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         model_data = {
-            'pipeline': self.pipeline,
-            'feature_names': self.feature_names,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
+            "pipeline": self.pipeline,
+            "feature_names": self.feature_names,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -172,10 +172,7 @@ class L2HealerSelector(BaseMLModel):
             predicted_healer = self.HEALER_MAPPING.get(int(predicted_class), "Retry")
 
             # Create probability distribution
-            prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            prob_distribution = {self.class_names[i]: float(prob) for i, prob in enumerate(probabilities)}
 
             # Calculate confidence (max probability)
             confidence = float(np.max(probabilities))
@@ -213,16 +210,18 @@ class L2HealerSelector(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': int(predicted_class),
-                'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold,
-                'selected_healer': predicted_healer,
-                'requires_escalation': final_decision_mode == DecisionMode.ESCALATED,
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": int(predicted_class),
+                    "class_probabilities": [float(p) for p in probabilities],
+                    "thresholds_passed": passes_threshold,
+                    "selected_healer": predicted_healer,
+                    "requires_escalation": final_decision_mode == DecisionMode.ESCALATED,
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -266,10 +265,10 @@ class L2HealerSelector(BaseMLModel):
         if not available_healers:
             # No healers available
             return {
-                'selected_healer': None,
-                'confidence': 0.0,
-                'reason': 'No healers available',
-                'recommendations': ['Add more healing strategies', 'Implement default retry mechanism'],
+                "selected_healer": None,
+                "confidence": 0.0,
+                "reason": "No healers available",
+                "recommendations": ["Add more healing strategies", "Implement default retry mechanism"],
             }
 
         # Score each healer
@@ -308,31 +307,35 @@ class L2HealerSelector(BaseMLModel):
                     policy_hash=policy_hash,
                 )
 
-                healer_scores.append({
-                    'healer': healer,
-                    'healer_name': healer.get('name', f'Healer_{i}'),
-                    'healer_type': healer.get('type', 'unknown'),
-                    'selection_score': prediction.confidence,
-                    'confidence': prediction.confidence,
-                    'top_features': prediction.top_features,
-                    'decision_mode': prediction.decision_mode,
-                    'prediction_metadata': prediction.model_metadata,
-                })
+                healer_scores.append(
+                    {
+                        "healer": healer,
+                        "healer_name": healer.get("name", f"Healer_{i}"),
+                        "healer_type": healer.get("type", "unknown"),
+                        "selection_score": prediction.confidence,
+                        "confidence": prediction.confidence,
+                        "top_features": prediction.top_features,
+                        "decision_mode": prediction.decision_mode,
+                        "prediction_metadata": prediction.model_metadata,
+                    }
+                )
             else:
                 # Feature extraction failed
-                healer_scores.append({
-                    'healer': healer,
-                    'healer_name': healer.get('name', f'Healer_{i}'),
-                    'healer_type': healer.get('type', 'unknown'),
-                    'selection_score': 0.1,
-                    'confidence': 0.0,
-                    'top_features': [],
-                    'decision_mode': DecisionMode.BLOCKED,
-                    'prediction_metadata': {'error': 'Feature extraction failed'},
-                })
+                healer_scores.append(
+                    {
+                        "healer": healer,
+                        "healer_name": healer.get("name", f"Healer_{i}"),
+                        "healer_type": healer.get("type", "unknown"),
+                        "selection_score": 0.1,
+                        "confidence": 0.0,
+                        "top_features": [],
+                        "decision_mode": DecisionMode.BLOCKED,
+                        "prediction_metadata": {"error": "Feature extraction failed"},
+                    }
+                )
 
         # Sort by selection score
-        healer_scores.sort(key=lambda x: x['selection_score'], reverse=True)
+        healer_scores.sort(key=lambda x: x["selection_score"], reverse=True)
 
         # Select best healer
         best_healer = healer_scores[0]
@@ -345,16 +348,16 @@ class L2HealerSelector(BaseMLModel):
         )
 
         return {
-            'selected_healer': best_healer['healer'],
-            'healer_name': best_healer['healer_name'],
-            'healer_type': best_healer['healer_type'],
-            'confidence': best_healer['confidence'],
-            'selection_score': best_healer['selection_score'],
-            'top_factors': best_healer['top_features'],
-            'decision_mode': best_healer['decision_mode'],
-            'all_healer_scores': healer_scores,
-            'recommendations': recommendations,
-            'requires_escalation': best_healer['decision_mode'] == DecisionMode.ESCALATED,
+            "selected_healer": best_healer["healer"],
+            "healer_name": best_healer["healer_name"],
+            "healer_type": best_healer["healer_type"],
+            "confidence": best_healer["confidence"],
+            "selection_score": best_healer["selection_score"],
+            "top_factors": best_healer["top_features"],
+            "decision_mode": best_healer["decision_mode"],
+            "all_healer_scores": healer_scores,
+            "recommendations": recommendations,
+            "requires_escalation": best_healer["decision_mode"] == DecisionMode.ESCALATED,
         }
 
     def get_healing_strategy(
@@ -379,14 +382,14 @@ class L2HealerSelector(BaseMLModel):
             Comprehensive healing strategy
         """
         # Get error severity and characteristics
-        error_severity = error.get('severity', 'medium')
-        error_type = error.get('type', 'unknown')
+        error_severity = error.get("severity", "medium")
+        error_type = error.get("type", "unknown")
 
         # Generate healing strategy based on error characteristics
         strategy = self._generate_healing_strategy(error, context)
 
         # Get healer recommendations
-        available_healers = context.get('available_healers', [])
+        available_healers = context.get("available_healers", [])
         healer_selection = self.select_healer(
             error=error,
             available_healers=available_healers,
@@ -398,19 +401,19 @@ class L2HealerSelector(BaseMLModel):
 
         # Combine into comprehensive strategy
         return {
-            'error_analysis': {
-                'type': error_type,
-                'severity': error_severity,
-                'impact': error.get('impact', 'unknown'),
-                'recoverable': error.get('recoverable', True),
+            "error_analysis": {
+                "type": error_type,
+                "severity": error_severity,
+                "impact": error.get("impact", "unknown"),
+                "recoverable": error.get("recoverable", True),
             },
-            'healing_strategy': strategy,
-            'recommended_healer': healer_selection,
-            'fallback_options': self._get_fallback_options(error, context),
-            'monitoring_requirements': self._get_monitoring_requirements(error),
-            'success_probability': healer_selection.get('confidence', 0.5),
-            'estimated_recovery_time': self._estimate_recovery_time(error, healer_selection),
-            'resource_requirements': self._calculate_resource_requirements(error, healer_selection),
+            "healing_strategy": strategy,
+            "recommended_healer": healer_selection,
+            "fallback_options": self._get_fallback_options(error, context),
+            "monitoring_requirements": self._get_monitoring_requirements(error),
+            "success_probability": healer_selection.get("confidence", 0.5),
+            "estimated_recovery_time": self._estimate_recovery_time(error, healer_selection),
+            "resource_requirements": self._calculate_resource_requirements(error, healer_selection),
         }
 
     def _generate_healer_recommendations(
@@ -422,8 +425,8 @@ class L2HealerSelector(BaseMLModel):
         """Generate healer-specific recommendations."""
         recommendations = []
 
-        healer_type = best_healer.get('healer_type', 'unknown')
-        confidence = best_healer.get('confidence', 0.0)
+        healer_type = best_healer.get("healer_type", "unknown")
+        confidence = best_healer.get("confidence", 0.0)
 
         # Base recommendations by confidence
         if confidence < 0.3:
@@ -454,57 +457,61 @@ class L2HealerSelector(BaseMLModel):
             recommendations.append("Provide detailed error context for manual resolution")
 
         # Error-specific recommendations
-        error_type = error.get('type', '').lower()
-        if 'timeout' in error_type:
+        error_type = error.get("type", "").lower()
+        if "timeout" in error_type:
             recommendations.append("Review and adjust timeout configurations")
-        elif 'connection' in error_type:
+        elif "connection" in error_type:
             recommendations.append("Check network connectivity and service availability")
-        elif 'memory' in error_type or 'resource' in error_type:
+        elif "memory" in error_type or "resource" in error_type:
             recommendations.append("Monitor resource usage during healing")
 
         return recommendations
 
     def _generate_healing_strategy(self, error: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         """Generate healing strategy based on error characteristics."""
-        error_severity = error.get('severity', 'medium')
-        error_type = error.get('type', 'unknown')
-        impact_scope = error.get('impact_scope', 'local')
+        error_severity = error.get("severity", "medium")
+        error_type = error.get("type", "unknown")
+        impact_scope = error.get("impact_scope", "local")
 
         strategy = {
-            'primary_approach': 'automated',
-            'escalation_threshold': 'medium',
-            'monitoring_level': 'standard',
-            'rollback_plan': 'available',
+            "primary_approach": "automated",
+            "escalation_threshold": "medium",
+            "monitoring_level": "standard",
+            "rollback_plan": "available",
         }
 
         # Adjust strategy based on error severity
-        if error_severity == 'critical':
-            strategy.update({
-                'primary_approach': 'manual_intervention',
-                'escalation_threshold': 'immediate',
-                'monitoring_level': 'intensive',
-                'rollback_plan': 'required',
-            })
-        elif error_severity == 'high':
-            strategy.update({
-                'primary_approach': 'supervised_automated',
-                'escalation_threshold': 'low',
-                'monitoring_level': 'enhanced',
-                'rollback_plan': 'recommended',
-            })
+        if error_severity == "critical":
+            strategy.update(
+                {
+                    "primary_approach": "manual_intervention",
+                    "escalation_threshold": "immediate",
+                    "monitoring_level": "intensive",
+                    "rollback_plan": "required",
+                }
+            )
+        elif error_severity == "high":
+            strategy.update(
+                {
+                    "primary_approach": "supervised_automated",
+                    "escalation_threshold": "low",
+                    "monitoring_level": "enhanced",
+                    "rollback_plan": "recommended",
+                }
+            )
 
         # Adjust based on impact scope
-        if impact_scope == 'global':
-            strategy['escalation_threshold'] = 'immediate'
-            strategy['monitoring_level'] = 'intensive'
+        if impact_scope == "global":
+            strategy["escalation_threshold"] = "immediate"
+            strategy["monitoring_level"] = "intensive"
 
         # Adjust based on error type
-        if 'timeout' in error_type.lower():
-            strategy['timeout_handling'] = 'exponential_backoff'
-        elif 'connection' in error_type.lower():
-            strategy['connection_handling'] = 'retry_with_circuit_breaker'
-        elif 'data' in error_type.lower():
-            strategy['data_integrity_checks'] = 'required'
+        if "timeout" in error_type.lower():
+            strategy["timeout_handling"] = "exponential_backoff"
+        elif "connection" in error_type.lower():
+            strategy["connection_handling"] = "retry_with_circuit_breaker"
+        elif "data" in error_type.lower():
+            strategy["data_integrity_checks"] = "required"
 
         return strategy
 
@@ -512,17 +519,17 @@ class L2HealerSelector(BaseMLModel):
         """Get fallback healing options."""
         fallbacks = ["Retry with exponential backoff"]
 
-        error_type = error.get('type', '').lower()
+        error_type = error.get("type", "").lower()
 
-        if 'connection' in error_type:
+        if "connection" in error_type:
             fallbacks.append("Switch to alternative endpoint")
             fallbacks.append("Use cached response if available")
 
-        if 'timeout' in error_type:
+        if "timeout" in error_type:
             fallbacks.append("Increase timeout and retry")
             fallbacks.append("Execute with reduced scope")
 
-        if 'resource' in error_type:
+        if "resource" in error_type:
             fallbacks.append("Scale down resource requirements")
             fallbacks.append("Queue for later execution")
 
@@ -535,15 +542,17 @@ class L2HealerSelector(BaseMLModel):
         """Get monitoring requirements for healing."""
         requirements = ["Monitor healing success/failure"]
 
-        error_severity = error.get('severity', 'medium')
+        error_severity = error.get("severity", "medium")
 
-        if error_severity in ['high', 'critical']:
-            requirements.extend([
-                "Real-time performance monitoring",
-                "Resource usage tracking",
-                "Error rate monitoring",
-                "User impact assessment",
-            ])
+        if error_severity in ["high", "critical"]:
+            requirements.extend(
+                [
+                    "Real-time performance monitoring",
+                    "Resource usage tracking",
+                    "Error rate monitoring",
+                    "User impact assessment",
+                ]
+            )
 
         requirements.append("Log all healing attempts")
         requirements.append("Track recovery time")
@@ -552,23 +561,23 @@ class L2HealerSelector(BaseMLModel):
 
     def _estimate_recovery_time(self, error: dict[str, Any], healer_selection: dict[str, Any]) -> str:
         """Estimate recovery time based on error and healer."""
-        healer_type = healer_selection.get('healer_type', 'unknown')
-        error_severity = error.get('severity', 'medium')
+        healer_type = healer_selection.get("healer_type", "unknown")
+        error_severity = error.get("severity", "medium")
 
         # Base recovery times by healer type (in minutes)
         base_times = {
-            'Retry': 1,
-            'Rollback': 5,
-            'Alternative_Path': 3,
-            'Circuit_Breaker': 2,
-            'Fallback_Service': 4,
-            'Manual_Intervention': 30,
+            "Retry": 1,
+            "Rollback": 5,
+            "Alternative_Path": 3,
+            "Circuit_Breaker": 2,
+            "Fallback_Service": 4,
+            "Manual_Intervention": 30,
         }
 
         base_time = base_times.get(healer_type, 5)
 
         # Adjust based on error severity
-        severity_multipliers = {'low': 0.5, 'medium': 1.0, 'high': 2.0, 'critical': 5.0}
+        severity_multipliers = {"low": 0.5, "medium": 1.0, "high": 2.0, "critical": 5.0}
         multiplier = severity_multipliers.get(error_severity, 1.0)
 
         estimated_time = int(base_time * multiplier)
@@ -582,36 +591,40 @@ class L2HealerSelector(BaseMLModel):
             minutes = estimated_time % 60
             return f"~ {hours}h {minutes}m"
 
-    def _calculate_resource_requirements(self, error: dict[str, Any], healer_selection: dict[str, Any]) -> dict[str, Any]:
+    def _calculate_resource_requirements(
+        self, error: dict[str, Any], healer_selection: dict[str, Any]
+    ) -> dict[str, Any]:
         """Calculate resource requirements for healing."""
-        healer_type = healer_selection.get('healer_type', 'unknown')
+        healer_type = healer_selection.get("healer_type", "unknown")
 
         requirements = {
-            'cpu': 'low',
-            'memory': 'low',
-            'storage': 'minimal',
-            'network': 'low',
-            'human_intervention': 'none',
+            "cpu": "low",
+            "memory": "low",
+            "storage": "minimal",
+            "network": "low",
+            "human_intervention": "none",
         }
 
         # Adjust based on healer type
-        if healer_type == 'Rollback':
-            requirements.update({
-                'cpu': 'medium',
-                'memory': 'medium',
-                'storage': 'moderate',
-            })
-        elif healer_type == 'Manual_Intervention':
-            requirements['human_intervention'] = 'required'
-        elif healer_type == 'Fallback_Service':
-            requirements['network'] = 'medium'
+        if healer_type == "Rollback":
+            requirements.update(
+                {
+                    "cpu": "medium",
+                    "memory": "medium",
+                    "storage": "moderate",
+                }
+            )
+        elif healer_type == "Manual_Intervention":
+            requirements["human_intervention"] = "required"
+        elif healer_type == "Fallback_Service":
+            requirements["network"] = "medium"
 
         # Adjust based on error severity
-        error_severity = error.get('severity', 'medium')
-        if error_severity in ['high', 'critical']:
+        error_severity = error.get("severity", "medium")
+        if error_severity in ["high", "critical"]:
             for resource in requirements:
-                if requirements[resource] in ['low', 'medium']:
-                    requirements[resource] = 'high'
+                if requirements[resource] in ["low", "medium"]:
+                    requirements[resource] = "high"
 
         return requirements
 
@@ -622,7 +635,7 @@ class L2HealerSelector(BaseMLModel):
 
         try:
             # Get coefficients from logistic regression
-            logistic_model = self.pipeline.named_steps['classifier']
+            logistic_model = self.pipeline.named_steps["classifier"]
             coefficients = logistic_model.coef_[0]  # First class for multiclass
 
             # Get feature names
@@ -640,20 +653,22 @@ class L2HealerSelector(BaseMLModel):
             feature_importance = []
             for i, (name, score) in enumerate(zip(feature_names, importance_scores)):
                 if i < len(score):  # Ensure index is valid
-                    feature_importance.append({
-                        'feature_name': name,
-                        'importance_score': float(score),
-                        'coefficient_value': float(coefficients[i]) if i < len(coefficients) else 0.0,
-                        'feature_value': model_input.features.get(name),
-                        'rank': i + 1,
-                    })
+                    feature_importance.append(
+                        {
+                            "feature_name": name,
+                            "importance_score": float(score),
+                            "coefficient_value": float(coefficients[i]) if i < len(coefficients) else 0.0,
+                            "feature_value": model_input.features.get(name),
+                            "rank": i + 1,
+                        }
+                    )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -725,8 +740,8 @@ class L2HealerSelector(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert healer type string to class index
             if isinstance(label, str):
@@ -746,15 +761,20 @@ class L2HealerSelector(BaseMLModel):
         y = np.array(y)
 
         # Create pipeline with scaling and logistic regression
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', LogisticRegression(
-                multi_class='multinomial',
-                solver='lbfgs',
-                max_iter=1000,
-                random_state=42,
-            )),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    LogisticRegression(
+                        multi_class="multinomial",
+                        solver="lbfgs",
+                        max_iter=1000,
+                        random_state=42,
+                    ),
+                ),
+            ]
+        )
 
         # Train model
         self.pipeline.fit(X, y)

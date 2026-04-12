@@ -13,14 +13,21 @@ def main():
     changed_files = []
     try:
         # Get staged files
-        result = subprocess.run([
-            "git", "diff", "--cached", "--name-only", "--diff-filter=ACM",
-        ], capture_output=True, text=True)
+        result = subprocess.run(
+            [
+                "git",
+                "diff",
+                "--cached",
+                "--name-only",
+                "--diff-filter=ACM",
+            ],
+            capture_output=True,
+            text=True,
+        )
 
         if result.returncode == 0:
             changed_files = [
-                f for f in result.stdout.strip().split('\n')
-                if f.endswith('.py') and f.startswith('tests/')
+                f for f in result.stdout.strip().split("\n") if f.endswith(".py") and f.startswith("tests/")
             ]
     except Exception:
         pass
@@ -33,9 +40,14 @@ def main():
 
     # Run validation
     try:
-        result = subprocess.run([
-            sys.executable, "tools/validation_runner.py",
-        ], capture_output=True, text=True)
+        result = subprocess.run(
+            [
+                sys.executable,
+                "tools/validation_runner.py",
+            ],
+            capture_output=True,
+            text=True,
+        )
 
         if result.returncode != 0:
             print("ERROR: Validation failed!")
@@ -52,5 +64,6 @@ def main():
         print(f"ERROR: Validation error: {e}")
         return 1
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     sys.exit(main())

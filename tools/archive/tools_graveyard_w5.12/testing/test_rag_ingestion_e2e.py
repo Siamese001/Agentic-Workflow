@@ -155,6 +155,7 @@ PR-204,This claim/service is being held for review,276,1.8%
 
                 # Time the ingestion
                 import time
+
                 start_time = time.time()
 
                 # Ingest document
@@ -228,15 +229,15 @@ PR-204,This claim/service is being held for review,276,1.8%
                     retrieval_results[query] = {
                         "success": True,
                         "result_count": len(results),
-                        "top_score": results[0].get('score', 0) if results else 0,
+                        "top_score": results[0].get("score", 0) if results else 0,
                         "results": results[:3],  # Keep top 3 for validation
                     }
                     print(f"    ✓ Found {len(results)} results")
 
                     # Show top result snippet
                     if results:
-                        content = results[0].get('content', '')
-                        snippet = content[:100].replace('\n', ' ')
+                        content = results[0].get("content", "")
+                        snippet = content[:100].replace("\n", " ")
                         print(f"      Top: {snippet}...")
                 else:
                     retrieval_results[query] = {
@@ -304,6 +305,7 @@ PR-204,This claim/service is being held for review,276,1.8%
         test_dir = Path("test_rag_documents")
         if test_dir.exists():
             import shutil
+
             shutil.rmtree(test_dir)
             print("\n[CLEANUP] Test documents removed")
 
@@ -340,18 +342,22 @@ async def test_rag_ingestion_e2e():
         # Summary
         print("\n[RAG E2E] ✅ RAG pipeline ingestion validation completed!")
         print("[RAG E2E] Summary:")
-        print(f"  - Ingestion: {ingestion_result['successful']}/{ingestion_result['total']} "
-              f"({ingestion_result['success_rate']:.1%})")
-        print(f"  - Retrieval: {retrieval_result['successful']}/{retrieval_result['total']} "
-              f"({retrieval_result['success_rate']:.1%})")
+        print(
+            f"  - Ingestion: {ingestion_result['successful']}/{ingestion_result['total']} "
+            f"({ingestion_result['success_rate']:.1%})"
+        )
+        print(
+            f"  - Retrieval: {retrieval_result['successful']}/{retrieval_result['total']} "
+            f"({retrieval_result['success_rate']:.1%})"
+        )
         print(f"  - Avg content length: {quality_result['avg_content_length']:.0f} chars")
         print(f"  - Formats supported: {list(quality_result['format_coverage'].keys())}")
 
         # Success criteria
         success = (
-            ingestion_result['success_rate'] >= 0.75 and  # 75% ingestion success
-            retrieval_result['success_rate'] >= 0.50 and  # 50% retrieval success
-            quality_result['avg_content_length'] > 100     # Meaningful content
+            ingestion_result["success_rate"] >= 0.75  # 75% ingestion success
+            and retrieval_result["success_rate"] >= 0.50  # 50% retrieval success
+            and quality_result["avg_content_length"] > 100  # Meaningful content
         )
 
         if success:
@@ -367,11 +373,12 @@ async def test_rag_ingestion_e2e():
     except Exception as e:
         print(f"[RAG E2E] ❌ Validation failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
     finally:
         # Cleanup
-        if 'validator' in locals():
+        if "validator" in locals():
             validator.cleanup()
 
 

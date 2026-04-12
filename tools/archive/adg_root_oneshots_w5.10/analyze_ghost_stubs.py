@@ -21,7 +21,7 @@ def _parse_imports(path: Path) -> list[str]:
     """Return all imported module names from a Python file."""
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return []
     imports = []
     for node in ast.walk(tree):

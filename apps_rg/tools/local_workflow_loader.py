@@ -181,7 +181,9 @@ class execute_resume_generation:
     """Executor for resume domain."""
 
     def __init__(
-        self, config: dict[str, object] | None = None, WorkflowLoader: LocalWorkflowLoader | None = None,
+        self,
+        config: dict[str, object] | None = None,
+        WorkflowLoader: LocalWorkflowLoader | None = None,
     ):
         self.config = config or {}
         self.timeout = self.config.get("timeout", 30.0)
@@ -203,8 +205,11 @@ class execute_resume_generation:
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "execute_resume_generation.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "execute_resume_generation.execute"
+        )
 
         START: Any = time.time()
         try:

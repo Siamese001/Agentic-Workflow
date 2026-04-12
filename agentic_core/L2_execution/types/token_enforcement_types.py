@@ -263,7 +263,9 @@ class TokenBudgetStore:
         with self._lock:
             if trace_id not in self._budgets:
                 self._budgets[trace_id] = TokenBudgetContext(
-                    trace_id=trace_id, initial_budget=initial_budget, remaining_budget=initial_budget,
+                    trace_id=trace_id,
+                    initial_budget=initial_budget,
+                    remaining_budget=initial_budget,
                 )
             return self._budgets[trace_id]
 

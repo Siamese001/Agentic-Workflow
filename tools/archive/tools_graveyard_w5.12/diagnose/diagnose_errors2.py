@@ -7,7 +7,10 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/", "--co", "-q", "-p", "no:logging", "--tb=short"],
-    capture_output=True, text=True, cwd=ROOT, timeout=120,
+    capture_output=True,
+    text=True,
+    cwd=ROOT,
+    timeout=120,
 )
 
 # Combine stdout + stderr and strip ANSI
@@ -21,7 +24,9 @@ lines = clean.split("\n")
 for i, line in enumerate(lines):
     if "ERROR collecting" in line or "ERROR tests/" in line:
         error_collecting.append(line.strip())
-    if line.strip().startswith("E   ") and ("Error" in line or "cannot import" in line or "No module" in line):
+    if line.strip().startswith("E   ") and (
+        "Error" in line or "cannot import" in line or "No module" in line
+    ):
         error_messages.append(line.strip()[:200])
 
 # Deduplicate error messages

@@ -17,16 +17,18 @@ log = logging.getLogger(__name__)
 
 class CorpusType(Enum):
     """Type of document corpus."""
-    POLICY = "policy"                # Policy/long documents
+
+    POLICY = "policy"  # Policy/long documents
     INCIDENT_TRACE = "incident_trace"  # Incident logs, traces
-    CODE_CONFIG = "code_config"        # Code and configuration
-    VISUAL_TABLE = "visual_table"      # Visuals, tables, diagrams
-    GENERAL = "general"              # General unstructured text
+    CODE_CONFIG = "code_config"  # Code and configuration
+    VISUAL_TABLE = "visual_table"  # Visuals, tables, diagrams
+    GENERAL = "general"  # General unstructured text
 
 
 @dataclass
 class ClassificationResult:
     """Result of corpus classification."""
+
     corpus_type: CorpusType
     confidence: float
     indicators: list[str]
@@ -50,34 +52,34 @@ class CorpusClassifier:
         """Setup classification patterns."""
         # Policy document indicators
         self.policy_patterns = [
-            r'\b(policy|procedure|guideline|standard|compliance|regulation)\b',
-            r'\b(section|article|clause|provision)\s+\d+',
-            r'\b(approved|effective|version|revision)\s+date',
-            r'\b(responsible|owner|stakeholder)\s*:',
+            r"\b(policy|procedure|guideline|standard|compliance|regulation)\b",
+            r"\b(section|article|clause|provision)\s+\d+",
+            r"\b(approved|effective|version|revision)\s+date",
+            r"\b(responsible|owner|stakeholder)\s*:",
         ]
 
         # Incident/trace indicators
         self.incident_patterns = [
-            r'\b(incident|event|alert|error|exception|trace|log)\b',
-            r'\b(timestamp|datetime|occurred|detected)\s*:?\s*\d',
-            r'\b(severity|priority|impact|status)\s*:?\s*(high|medium|low|critical)',
-            r'\b(stack\s*trace|call\s*stack|exception\s*details)',
+            r"\b(incident|event|alert|error|exception|trace|log)\b",
+            r"\b(timestamp|datetime|occurred|detected)\s*:?\s*\d",
+            r"\b(severity|priority|impact|status)\s*:?\s*(high|medium|low|critical)",
+            r"\b(stack\s*trace|call\s*stack|exception\s*details)",
         ]
 
         # Code/config indicators
         self.code_patterns = [
-            r'```[\w\+\-]*\n',  # Code blocks
-            r'\b(function|def|class|method|import|from|const|var|let)\b',
-            r'[=:]+\s*[\{\[]',  # JSON/YAML-like structures
-            r'\b(config|configuration|settings|properties|yaml|json|xml)\b',
+            r"```[\w\+\-]*\n",  # Code blocks
+            r"\b(function|def|class|method|import|from|const|var|let)\b",
+            r"[=:]+\s*[\{\[]",  # JSON/YAML-like structures
+            r"\b(config|configuration|settings|properties|yaml|json|xml)\b",
         ]
 
         # Visual/table indicators
         self.visual_patterns = [
-            r'!\[.*?\]\(.*?\)',  # Markdown images
-            r'<img\s+',           # HTML images
-            r'\|[-:]+\|',        # Markdown tables
-            r'\b(chart|graph|diagram|figure|plot|visualization)\b',
+            r"!\[.*?\]\(.*?\)",  # Markdown images
+            r"<img\s+",  # HTML images
+            r"\|[-:]+\|",  # Markdown tables
+            r"\b(chart|graph|diagram|figure|plot|visualization)\b",
         ]
 
     def classify(
@@ -143,9 +145,24 @@ class CorpusClassifier:
         # Consider file extension
         if file_path:
             ext = file_path.suffix.lower()
-            code_exts = ['.py', '.js', '.ts', '.java', '.cpp', '.c', '.h', '.cs', '.rb', '.go', '.rs', '.swift', '.kt', '.scala']
-            config_exts = ['.yaml', '.yml', '.json', '.xml', '.toml', '.ini', '.conf', '.cfg']
-            doc_exts = ['.md', '.rst', '.txt']
+            code_exts = [
+                ".py",
+                ".js",
+                ".ts",
+                ".java",
+                ".cpp",
+                ".c",
+                ".h",
+                ".cs",
+                ".rb",
+                ".go",
+                ".rs",
+                ".swift",
+                ".kt",
+                ".scala",
+            ]
+            config_exts = [".yaml", ".yml", ".json", ".xml", ".toml", ".ini", ".conf", ".cfg"]
+            doc_exts = [".md", ".rst", ".txt"]
 
             if ext in code_exts:
                 scores[CorpusType.CODE_CONFIG] += 0.4

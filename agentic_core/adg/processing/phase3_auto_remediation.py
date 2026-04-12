@@ -96,7 +96,9 @@ class ExceptionTypeInference:
         # Analyze function body for patterns
         function_code = "\n".join(violation.surrounding_code)
 
-        for exc_type, patterns in tqdm(self.exception_patterns.items(), desc="exc patterns", unit="type", leave=False):
+        for exc_type, patterns in tqdm(
+            self.exception_patterns.items(), desc="exc patterns", unit="type", leave=False
+        ):
             score = 0.0
             evidence = []
 
@@ -255,7 +257,9 @@ class AutoRemediationEngine:
             """)
 
         violations = []
-        for file_path, line_no, evidence, severity in tqdm(cursor.fetchall(), desc="load violations", unit="row", leave=False):
+        for file_path, line_no, evidence, severity in tqdm(
+            cursor.fetchall(), desc="load violations", unit="row", leave=False
+        ):
             try:
                 # Load file context
                 full_path = Path(file_path)
@@ -305,7 +309,9 @@ class AutoRemediationEngine:
         class_name = None
 
         # Search backwards for function/class definition
-        for i in tqdm(range(line_no - 1, max(-1, line_no - 50), -1), desc="search context", unit="line", leave=False):
+        for i in tqdm(
+            range(line_no - 1, max(-1, line_no - 50), -1), desc="search context", unit="line", leave=False
+        ):
             if i < 0 or i >= len(lines):
                 break
 
@@ -388,7 +394,9 @@ class AutoRemediationEngine:
         )
 
     def _determine_strategy(
-        self, violation: ViolationContext, candidates: list[ExceptionType],
+        self,
+        violation: ViolationContext,
+        candidates: list[ExceptionType],
     ) -> RemediationStrategy:
         """Determine the best remediation strategy."""
 
@@ -405,7 +413,10 @@ class AutoRemediationEngine:
         return RemediationStrategy.ADD_LOGGING
 
     def _generate_remediated_line(
-        self, original: str, strategy: RemediationStrategy, candidates: list[ExceptionType],
+        self,
+        original: str,
+        strategy: RemediationStrategy,
+        candidates: list[ExceptionType],
     ) -> str:
         """Generate the remediated line based on strategy."""
 

@@ -23,7 +23,6 @@ HARDENED INVARIANTS:
 """
 # guardian: allow-silent_swallower - ADG violation exemption
 
-
 from __future__ import annotations
 
 import argparse
@@ -331,7 +330,9 @@ def build_class_bases_map(project_root: Path) -> dict[str, list[str]]:
 
 
 def resolve_full_mro(
-    direct_bases: list[str], class_map: dict[str, list[str]], _seen: set[str] | None = None,
+    direct_bases: list[str],
+    class_map: dict[str, list[str]],
+    _seen: set[str] | None = None,
 ) -> list[str]:
     """Recursively expand direct bases into a full transitive MRO chain.
 
@@ -385,7 +386,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
             record.selection_reason = "Stub sentinel detected in file header"
             return record
         try:
-            tree = ast.parse(content)    # guardian: Syntax errors should be caught at parser level, not runtime
+            tree = ast.parse(content)  # guardian: Syntax errors should be caught at parser level, not runtime
         except SyntaxError as e:  # guardian: allow-silent-swallow
             record.status = "SYNTAX_ERROR"
             record.parse_error = f"SyntaxError: {e}"
@@ -432,7 +433,8 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
 def get_git_commit(root: Path) -> str:
     try:
         out = _get_safe_subprocess_check_output()(
-            ["git", "-C", str(root), "rev-parse", "HEAD"], allow_protected_root_mutation=True,
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            allow_protected_root_mutation=True,
         )
         return out.decode("utf-8").strip()
     except (ValueError, TypeError):  # guardian: allow-silent-swallow
@@ -508,7 +510,8 @@ def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool 
     class_bases_map = build_class_bases_map(project_root)
     raw_candidates = load_agent_discovery(project_root, force_reload=True)
     raw_candidates = sorted(
-        raw_candidates, key=lambda c: (c.get("layer", ""), c.get("class_name", ""), c.get("file", "")),
+        raw_candidates,
+        key=lambda c: (c.get("layer", ""), c.get("class_name", ""), c.get("file", "")),
     )
     manifest = {
         "audit_meta": {
@@ -569,10 +572,12 @@ def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool 
         else:
             manifest["ignored_artifacts"].append(asdict(record))
     manifest["environment_under_test"] = sorted(
-        manifest["environment_under_test"], key=lambda r: (r["agent_name"], r["file_path"]),
+        manifest["environment_under_test"],
+        key=lambda r: (r["agent_name"], r["file_path"]),
     )
     manifest["ignored_artifacts"] = sorted(
-        manifest["ignored_artifacts"], key=lambda r: (r["agent_name"], r["file_path"]),
+        manifest["ignored_artifacts"],
+        key=lambda r: (r["agent_name"], r["file_path"]),
     )
     counts: dict[str, int] = {}
     for r in manifest["environment_under_test"] + manifest["ignored_artifacts"]:

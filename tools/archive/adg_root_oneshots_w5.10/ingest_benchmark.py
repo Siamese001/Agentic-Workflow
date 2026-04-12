@@ -2,6 +2,7 @@
 ADG Redis Ingest Performance Analysis
 RCA: Command Volume Explosion and Throughput Optimization
 """
+
 import json
 import sqlite3
 import time
@@ -11,16 +12,17 @@ import redis
 # Test configurations
 BATCH_SIZE = 5000
 REDIS_CONFIG = {
-    'host': 'localhost',
-    'port': 6379,
-    'db': 0,
-    'decode_responses': True,
-    'socket_keepalive': True,
-    'socket_connect_timeout': 5,
-    'socket_timeout': 30,
-    'health_check_interval': 30,
-    'max_connections': 20,
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "decode_responses": True,
+    "socket_keepalive": True,
+    "socket_connect_timeout": 5,
+    "socket_timeout": 30,
+    "health_check_interval": 30,
+    "max_connections": 20,
 }
+
 
 def profile_ingest_stages():
     """
@@ -34,7 +36,7 @@ def profile_ingest_stages():
     r = redis.Redis(**REDIS_CONFIG)
 
     # Connect to ADG SQLite
-    conn = sqlite3.connect(r'C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04022026_0905.sqlite')
+    conn = sqlite3.connect(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_04022026_0905.sqlite")
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
@@ -50,9 +52,9 @@ def profile_ingest_stages():
     for row in rows:
         d = dict(row)
         safe = {k: str(v) for k, v in d.items() if v is not None and str(v) != ""}
-        dicts.append((d.get('id'), safe))
+        dicts.append((d.get("id"), safe))
     t1 = time.time()
-    print(f"  Stage 1 (SQLite→dict): {t1-t0:.3f}s")
+    print(f"  Stage 1 (SQLite→dict): {t1 - t0:.3f}s")
 
     # Stage 2: Pipeline construction with hmset (original fast path)
     pipe = r.pipeline(transaction=False)
@@ -60,13 +62,13 @@ def profile_ingest_stages():
     for node_id, safe in dicts:
         pipe.hmset(f"adg:node:{node_id}", safe)
     t1 = time.time()
-    print(f"  Stage 2 (pipeline fill hmset): {t1-t0:.3f}s")
+    print(f"  Stage 2 (pipeline fill hmset): {t1 - t0:.3f}s")
 
     # Stage 3: Execute
     t0 = time.time()
     pipe.execute()
     t1 = time.time()
-    print(f"  Stage 3 (execute 1000 hmset): {t1-t0:.3f}s")
+    print(f"  Stage 3 (execute 1000 hmset): {t1 - t0:.3f}s")
 
     # Cleanup
     pipe = r.pipeline(transaction=False)
@@ -77,9 +79,10 @@ def profile_ingest_stages():
     conn.close()
 
     return {
-        'serialization': t1-t0,
-        'total_per_1k': (t1-t0) * 3,  # rough extrapolation
+        "serialization": t1 - t0,
+        "total_per_1k": (t1 - t0) * 3,  # rough extrapolation
     }
+
 
 def compare_write_layouts():
     """
@@ -92,14 +95,14 @@ def compare_write_layouts():
     r = redis.Redis(**REDIS_CONFIG)
 
     sample_data = {
-        'id': '12345',
-        'adg_name': 'test::module',
-        'entity_type': 'module',
-        'layer': 'L2',
-        'identity_kind': 'precise',
-        'confidence': '0.95',
-        'resolved_path': 'agentic_core/test.py',
-        'precision_type': 'full',
+        "id": "12345",
+        "adg_name": "test::module",
+        "entity_type": "module",
+        "layer": "L2",
+        "identity_kind": "precise",
+        "confidence": "0.95",
+        "resolved_path": "agentic_core/test.py",
+        "precision_type": "full",
     }
 
     results = {}
@@ -112,7 +115,7 @@ def compare_write_layouts():
         pipe.hmset(f"{key1}:{i}", sample_data)
     pipe.execute()
     t1 = time.time()
-    results['hmset'] = {'time': t1-t0, 'commands': 1000}
+    results["hmset"] = {"time": t1 - t0, "commands": 1000}
 
     # Cleanup
     pipe = r.pipeline(transaction=False)
@@ -129,7 +132,7 @@ def compare_write_layouts():
             pipe.hset(f"{key2}:{i}", k, v)
     pipe.execute()
     t1 = time.time()
-    results['hset-per-field'] = {'time': t1-t0, 'commands': 1000 * len(sample_data)}
+    results["hset-per-field"] = {"time": t1 - t0, "commands": 1000 * len(sample_data)}
 
     # Cleanup
     pipe = r.pipeline(transaction=False)
@@ -146,7 +149,7 @@ def compare_write_layouts():
         pipe.set(f"{key3}:{i}", json_blob)
     pipe.execute()
     t1 = time.time()
-    results['json-packed'] = {'time': t1-t0, 'commands': 1000}
+    results["json-packed"] = {"time": t1 - t0, "commands": 1000}
 
     # Cleanup
     pipe = r.pipeline(transaction=False)
@@ -156,12 +159,13 @@ def compare_write_layouts():
 
     # Print results
     print("\n=== Write Layout Comparison (1000 entities) ===")
-    baseline = results['hmset']['time']
+    baseline = results["hmset"]["time"]
     for name, data in results.items():
-        ratio = data['time'] / baseline
+        ratio = data["time"] / baseline
         print(f"{name:20s}: {data['time']:.3f}s ({ratio:.1f}x) - {data['commands']} commands")
 
     return results
+
 
 def estimate_full_ingest_time(layout_results, node_count=188713, edge_count=738603):
     """
@@ -170,10 +174,11 @@ def estimate_full_ingest_time(layout_results, node_count=188713, edge_count=7386
     print("\n=== Full Ingest Estimates ===")
 
     for name, data in layout_results.items():
-        time_per_1k = data['time']
+        time_per_1k = data["time"]
         total_entities = node_count + edge_count
         estimated_time = (total_entities / 1000) * time_per_1k
         print(f"{name:20s}: ~{estimated_time:.1f}s for {total_entities:,} entities")
+
 
 if __name__ == "__main__":
     print("=" * 60)

@@ -187,6 +187,26 @@ def _invoke_authorize_and_execute(execution_context, target_callable, capability
     return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
 
 
+def _evaluate_evidence_for_gate_and_telemetry(
+    evidence_bundle: Any,
+    execution_context: Any,
+    tool_name: str = "",
+) -> Any:
+    """Pre-authorization evidence gate + BUS T emission for the live execution lane.
+
+    Thin lane wrapper \u2014 delegates to the shared evaluate_and_emit() adapter in
+    evidence_eval_bridge so no bridge logic is duplicated here.
+
+    Returns:
+        (gate_result, disposition) from evaluate_and_emit().
+    """
+    from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (  # noqa: PLC0415
+        evaluate_and_emit,
+    )
+
+    return evaluate_and_emit(evidence_bundle, execution_context, tool_name)
+
+
 def _make_execution_context(run_id: str, capability_token: str, policy_hash: str, payload: Any, target: str):
     from agentic_core.L4_state.utils.context.execution_context import (  # noqa: PLC0415
         ActionClass,
@@ -222,8 +242,16 @@ class ExecutionGateway:
         policy_hash: str = "",
         prev_hash: str = "",
         transcript_hash: str = "",
+        evidence_bundle: Any = None,
     ) -> tuple[ExecutionTrace, Any]:
         """Execute tool_fn under budget caps and return trace + result.
+
+        Args:
+            evidence_bundle: Optional EvidenceBundle from shape_search().  When
+                provided, the evidence quality gate and BUS T telemetry are wired
+                in as a pre-authorization sidecar via
+                _evaluate_evidence_for_gate_and_telemetry().  Legacy callers that
+                omit this argument are completely unaffected.
 
         Returns:
             (ExecutionTrace, tool_result)
@@ -236,7 +264,9 @@ class ExecutionGateway:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ExecutionGateway.execute_with_trace",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ExecutionGateway.execute_with_trace",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -257,6 +287,8 @@ class ExecutionGateway:
             payload=envelope.tool_args,
             target=envelope.tool_name,
         )
+        if evidence_bundle is not None:
+            _evaluate_evidence_for_gate_and_telemetry(evidence_bundle, _ectx, envelope.tool_name)
         _invoke_authorize_and_execute(
             _ectx,
             lambda p: p,
@@ -266,10 +298,13 @@ class ExecutionGateway:
         )
         try:
             envelope.verify(get_current_secret())
-        except SignatureVerificationError:    # guardian: SignatureVerificationError should be handled with specific context
+        except (
+            SignatureVerificationError
+        ):  # guardian: SignatureVerificationError should be handled with specific context
             raise SignatureBoundaryError("Invalid SandboxEnvelope signature - execution blocked")
         builder = ExecutionTraceBuilder(
-            trace_id=envelope.envelope_id, instruction_packet_id=envelope.instruction_packet_id,
+            trace_id=envelope.envelope_id,
+            instruction_packet_id=envelope.instruction_packet_id,
         )
         builder.policy_hash = policy_hash
         builder.prev_hash = prev_hash
@@ -282,17 +317,21 @@ class ExecutionGateway:
         try:
             exit_code, stdout_bytes = self._budget_enforcer.run(envelope, tool_fn)
             tool_result = ToolResult.from_budget_enforcer(
-                exit_code=exit_code, stdout_bytes=stdout_bytes, stdout_bytes_cap=envelope.budget.stdout_bytes,
+                exit_code=exit_code,
+                stdout_bytes=stdout_bytes,
+                stdout_bytes_cap=envelope.budget.stdout_bytes,
             )
             builder.validation_decision = "PASS" if tool_result.exit_code == 0 else "FAIL"
             builder.error = (
                 None if tool_result.exit_code == 0 else f"Tool exited with code {tool_result.exit_code}"
             )
-        except BudgetExceeded as e:    # guardian: BudgetExceeded should be handled with specific context
+        except BudgetExceeded as e:  # guardian: BudgetExceeded should be handled with specific context
             builder.validation_decision = "FAIL"
             builder.error = f"Budget exceeded: {e}"
             raise
-        except ToolContractViolation as e:    # guardian: ToolContractViolation should be handled with specific context
+        except (
+            ToolContractViolation
+        ) as e:  # guardian: ToolContractViolation should be handled with specific context
             builder.validation_decision = "FAIL"
             builder.error = f"ToolContract violation: {e}"
             raise

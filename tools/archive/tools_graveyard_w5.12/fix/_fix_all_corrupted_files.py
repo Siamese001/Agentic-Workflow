@@ -2,6 +2,7 @@
 """
 Fix all corrupted Python files where config constants were inserted in imports.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -19,6 +20,7 @@ CONFIG_CONSTANTS = [
     "MAX_FILES = 1000",
     "DEFAULT_TIMEOUT = 300  # 5 minutes",
 ]
+
 
 def fix_python_file(file_path: Path) -> bool:
     """Fix a corrupted Python file."""
@@ -71,11 +73,11 @@ def fix_python_file(file_path: Path) -> bool:
 
         # Insert config constants
         new_lines = (
-            fixed_lines[:insert_pos] +
-            ["", "# Configuration constants"] +
-            extracted_constants +
-            [""] +
-            fixed_lines[insert_pos:]
+            fixed_lines[:insert_pos]
+            + ["", "# Configuration constants"]
+            + extracted_constants
+            + [""]
+            + fixed_lines[insert_pos:]
         )
 
         content = "\n".join(new_lines) + "\n"
@@ -96,8 +98,15 @@ def main() -> None:
 
     # Skip certain directories
     skip_dirs = {
-        ".git", ".venv", "venv", "__pycache__", ".pytest_cache",
-        "node_modules", ".nox", "archives", ".backup",
+        ".git",
+        ".venv",
+        "venv",
+        "__pycache__",
+        ".pytest_cache",
+        "node_modules",
+        ".nox",
+        "archives",
+        ".backup",
     }
 
     fixed_count = 0

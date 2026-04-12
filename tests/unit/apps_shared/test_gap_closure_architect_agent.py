@@ -26,6 +26,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 @pytest.fixture(autouse=True)
 def mock_external_services():
     """Mock all external services to prevent network calls."""
@@ -51,7 +52,6 @@ class TestGapClosureArchitectAgent:
         """Verify proper inheritance from SubatomicTestingMixin."""
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
         assert "SubatomicTestingMixin" in mro_names, "Should inherit from SubatomicTestingMixin"
-
 
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""

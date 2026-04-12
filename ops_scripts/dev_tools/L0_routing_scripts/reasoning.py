@@ -272,7 +272,10 @@ class ReasoningStrategyFactory:
     @classmethod
     # guardian: allow-magic-config
     def create(
-        cls, strategy_type: str, max_steps: int = 8, config: dict[str, Any] | None = None,
+        cls,
+        strategy_type: str,
+        max_steps: int = 8,
+        config: dict[str, Any] | None = None,
     ) -> ReasoningStrategy:
         """
         Create reasoning strategy instance.

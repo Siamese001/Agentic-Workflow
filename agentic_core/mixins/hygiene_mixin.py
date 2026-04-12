@@ -227,7 +227,9 @@ class HygieneMixin:
                         ast.parse(content)
                     # guardian: allow-silent-swallow - acceptable exception handling
                     except SyntaxError as e:
-                        results["syntax_errors"].append({"file": str(rel_path), "error": str(e)})    # guardian: File operations with encoding need error-specific handling
+                        results["syntax_errors"].append(
+                            {"file": str(rel_path), "error": str(e)}
+                        )  # guardian: File operations with encoding need error-specific handling
                 # guardian: allow-silent-swallow - acceptable exception handling
                 except (OSError, UnicodeDecodeError) as e:
                     self.logger.debug(f"Failed to scan {rel_path}: {e}")
@@ -246,7 +248,7 @@ class HygieneMixin:
             try:
                 file_path = self.project_root / item["file"]
                 if file_path.exists():
-                    file_path.unlink()    # guardian: Add error context logging
+                    file_path.unlink()  # guardian: Add error context logging
                     fixed += 1
             # guardian: allow-silent-swallow - acceptable exception handling
             except OSError as e:
@@ -255,7 +257,7 @@ class HygieneMixin:
         for item in violations.get("duplicate_files", []):
             try:
                 duplicate_path = self.project_root / item["file"]
-                if duplicate_path.exists():    # guardian: Add error context logging
+                if duplicate_path.exists():  # guardian: Add error context logging
                     duplicate_path.unlink()
                     # guardian: allow-silent-swallow - acceptable exception handling
                     fixed += 1
@@ -325,8 +327,11 @@ class HygieneMixin:
         SALVAGED: Individual file validation from legacy hygiene validators.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HygieneMixin.validate_file_hygiene")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HygieneMixin.validate_file_hygiene"
+        )
 
         if not file_path.exists():
             raise HygieneError(f"File not found: {file_path}")

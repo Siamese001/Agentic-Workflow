@@ -248,7 +248,9 @@ class AdversarialRedTeamerAgent(SovereignBaseAgent, SubAtomicAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "AdversarialRedTeamerAgent.execute",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "AdversarialRedTeamerAgent.execute",
         )
         Logger.info("🔴 Adversarial Red-Teamer: Initiating vulnerability scan...")
         await self._test_preservation_boundaries()

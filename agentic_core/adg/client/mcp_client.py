@@ -177,8 +177,11 @@ class _InMemoryStore:
 
     def upsert_entity(self, name: str, entity_type: str, observations: list[str]) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemoryStore.upsert_entity")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemoryStore.upsert_entity"
+        )
 
         if name not in self._entities:
             self._entities[name] = {"name": name, "entityType": entity_type, "observations": []}
@@ -231,7 +234,9 @@ class _InMemoryStore:
 
     def to_json(self) -> str:
         return json.dumps(
-            {"entities": self.get_entities(), "relations": self.get_relations()}, indent=2, sort_keys=True,
+            {"entities": self.get_entities(), "relations": self.get_relations()},
+            indent=2,
+            sort_keys=True,
         )
 
 
@@ -253,6 +258,7 @@ class ADGMCPClient:
     def upsert_entity(self, name: str, entity_type: str, observations: list[str] | None = None) -> None:
         """Create or update an entity. Idempotent."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGMCPClient.upsert_entity")
 

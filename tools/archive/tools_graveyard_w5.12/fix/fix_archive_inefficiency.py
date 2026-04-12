@@ -24,47 +24,51 @@ def analyze_archive_inefficiency():
     for file_path in ARCHIVE_DIR.rglob("*.gz"):
         if file_path.is_file():
             # Extract timestamp from filename
-            parts = file_path.stem.split('_')
+            parts = file_path.stem.split("_")
             if len(parts) >= 3:
-                timestamp = '_'.join(parts[-2:])  # Get MMDDYYYY_HHMM part
+                timestamp = "_".join(parts[-2:])  # Get MMDDYYYY_HHMM part
 
                 if timestamp not in timestamp_groups:
-                    timestamp_groups[timestamp] = {'individual': [], 'zip': None}
+                    timestamp_groups[timestamp] = {"individual": [], "zip": None}
 
-                if 'zip' in file_path.name:
-                    timestamp_groups[timestamp]['zip'] = file_path
+                if "zip" in file_path.name:
+                    timestamp_groups[timestamp]["zip"] = file_path
                     total_zip_size += file_path.stat().st_size
                 else:
-                    timestamp_groups[timestamp]['individual'].append(file_path)
+                    timestamp_groups[timestamp]["individual"].append(file_path)
                     total_individual_size += file_path.stat().st_size
 
     # Find runs with both individual files AND zip files
     for timestamp, files in timestamp_groups.items():
-        if files['individual'] and files['zip']:
-            individual_size = sum(f.stat().st_size for f in files['individual'])
-            zip_size = files['zip'].stat().st_size
+        if files["individual"] and files["zip"]:
+            individual_size = sum(f.stat().st_size for f in files["individual"])
+            zip_size = files["zip"].stat().st_size
             waste = individual_size
 
-            duplicate_runs.append({
-                'timestamp': timestamp,
-                'individual_files': len(files['individual']),
-                'individual_size': individual_size,
-                'zip_size': zip_size,
-                'waste': waste,
-            })
+            duplicate_runs.append(
+                {
+                    "timestamp": timestamp,
+                    "individual_files": len(files["individual"]),
+                    "individual_size": individual_size,
+                    "zip_size": zip_size,
+                    "waste": waste,
+                }
+            )
 
     # Print analysis
-    total_waste = sum(run['waste'] for run in duplicate_runs)
+    total_waste = sum(run["waste"] for run in duplicate_runs)
 
-    print(f"Total individual files size: {total_individual_size / (1024*1024):.1f} MB")
-    print(f"Total zip files size: {total_zip_size / (1024*1024):.1f} MB")
-    print(f"Total waste (duplicates): {total_waste / (1024*1024):.1f} MB")
+    print(f"Total individual files size: {total_individual_size / (1024 * 1024):.1f} MB")
+    print(f"Total zip files size: {total_zip_size / (1024 * 1024):.1f} MB")
+    print(f"Total waste (duplicates): {total_waste / (1024 * 1024):.1f} MB")
     print(f"Number of inefficient runs: {len(duplicate_runs)}")
 
     print("\n📊 INEFFICIENT RUNS:")
-    for run in sorted(duplicate_runs, key=lambda x: x['timestamp']):
-        print(f"  {run['timestamp']}: {run['individual_files']} files, "
-              f"{run['individual_size']/(1024*1024):.1f} MB wasted")
+    for run in sorted(duplicate_runs, key=lambda x: x["timestamp"]):
+        print(
+            f"  {run['timestamp']}: {run['individual_files']} files, "
+            f"{run['individual_size'] / (1024 * 1024):.1f} MB wasted"
+        )
 
     return duplicate_runs
 
@@ -81,16 +85,16 @@ def cleanup_archive_inefficiency(duplicate_runs, dry_run=True):
         print(f"\nProcessing run {run['timestamp']}:")
 
         # Get individual files for this timestamp
-        timestamp = run['timestamp']
+        timestamp = run["timestamp"]
         individual_files = []
 
         for file_path in ARCHIVE_DIR.rglob(f"*_{timestamp}.gz"):
-            if file_path.is_file() and 'zip' not in file_path.name:
+            if file_path.is_file() and "zip" not in file_path.name:
                 individual_files.append(file_path)
 
         for file_path in individual_files:
             file_size = file_path.stat().st_size
-            print(f"  Would remove: {file_path.name} ({file_size/(1024*1024):.1f} MB)")
+            print(f"  Would remove: {file_path.name} ({file_size / (1024 * 1024):.1f} MB)")
 
             if not dry_run:
                 file_path.unlink()
@@ -105,7 +109,7 @@ def cleanup_archive_inefficiency(duplicate_runs, dry_run=True):
         if zip_file:
             print(f"  Keeping: {zip_file.name}")
 
-    print(f"\n{'Would free' if dry_run else 'Freed'}: {total_freed/(1024*1024):.1f} MB")
+    print(f"\n{'Would free' if dry_run else 'Freed'}: {total_freed / (1024 * 1024):.1f} MB")
     print(f"{'Would remove' if dry_run else 'Removed'}: {files_removed} files")
 
     return total_freed, files_removed
@@ -161,7 +165,7 @@ def main():
     total_waste, files_removed = cleanup_archive_inefficiency(duplicate_runs, dry_run=True)
 
     # 3. Ask for confirmation
-    print(f"\n❓ Remove {files_removed} duplicate files to free {total_waste/(1024*1024):.1f} MB? (y/n)")
+    print(f"\n❓ Remove {files_removed} duplicate files to free {total_waste / (1024 * 1024):.1f} MB? (y/n)")
     # For automation, we'll proceed with cleanup
 
     print("🗑️  PROCEEDING WITH CLEANUP...")
@@ -176,7 +180,7 @@ def main():
     print("ARCHIVE EFFICIENCY FIX COMPLETE")
     print("=" * 80)
     print(f"Files removed: {files_removed}")
-    print(f"Space freed: {total_freed/(1024*1024):.1f} MB")
+    print(f"Space freed: {total_freed / (1024 * 1024):.1f} MB")
     print(f"Efficient archive: {efficient_archive}")
     print(f"Zip files preserved: {zip_count}")
     print("\n✅ Archive is now storage-efficient!")

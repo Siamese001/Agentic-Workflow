@@ -19,6 +19,7 @@ from typing import Any
 
 class ThresholdType(Enum):
     """Types of thresholds."""
+
     CONFIDENCE = "confidence"
     PROBABILITY = "probability"
     SCORE = "score"
@@ -29,6 +30,7 @@ class ThresholdType(Enum):
 
 class RollbackTrigger(Enum):
     """Automatic rollback trigger types."""
+
     PERFORMANCE_DEGRADATION = "performance_degradation"
     ERROR_RATE_SPIKE = "error_rate_spike"
     DRIFT_DETECTED = "drift_detected"
@@ -40,6 +42,7 @@ class RollbackTrigger(Enum):
 @dataclass
 class ThresholdDefinition:
     """Definition for a single threshold."""
+
     name: str
     threshold_type: ThresholdType
     description: str
@@ -57,6 +60,7 @@ class ThresholdDefinition:
 @dataclass
 class RollbackCondition:
     """Condition for automatic rollback."""
+
     trigger_type: RollbackTrigger
     threshold_value: float
     comparison_operator: str  # ">", "<", ">=", "<=", "=="
@@ -67,6 +71,7 @@ class RollbackCondition:
 @dataclass
 class ThresholdConfig:
     """Complete threshold configuration for a model."""
+
     model_name: str
     model_version: str
     config_version: str
@@ -84,29 +89,29 @@ class ThresholdConfig:
     def _compute_digest(self) -> str:
         """Compute SHA-256 digest of config."""
         config_dict = {
-            'model_name': self.model_name,
-            'model_version': self.model_version,
-            'config_version': self.config_version,
-            'thresholds': [
+            "model_name": self.model_name,
+            "model_version": self.model_version,
+            "config_version": self.config_version,
+            "thresholds": [
                 {
-                    'name': t.name,
-                    'type': t.threshold_type.value,
-                    'current_value': t.current_value,
-                    'min_value': t.min_value,
-                    'max_value': t.max_value,
-                    'rollout_percentage': t.rollout_percentage,
-                    'is_active': t.is_active,
-                    'version': t.version,
+                    "name": t.name,
+                    "type": t.threshold_type.value,
+                    "current_value": t.current_value,
+                    "min_value": t.min_value,
+                    "max_value": t.max_value,
+                    "rollout_percentage": t.rollout_percentage,
+                    "is_active": t.is_active,
+                    "version": t.version,
                 }
                 for t in self.thresholds
             ],
-            'rollback_conditions': [
+            "rollback_conditions": [
                 {
-                    'trigger_type': rc.trigger_type.value,
-                    'threshold_value': rc.threshold_value,
-                    'comparison_operator': rc.comparison_operator,
-                    'grace_period_minutes': rc.grace_period_minutes,
-                    'is_active': rc.is_active,
+                    "trigger_type": rc.trigger_type.value,
+                    "threshold_value": rc.threshold_value,
+                    "comparison_operator": rc.comparison_operator,
+                    "grace_period_minutes": rc.grace_period_minutes,
+                    "is_active": rc.is_active,
                 }
                 for rc in self.rollback_conditions
             ],
@@ -152,6 +157,7 @@ class ThresholdConfig:
         """Determine if request should use new threshold based on rollout."""
         # Simple hash-based rollout for consistency
         import hashlib
+
         hash_value = int(hashlib.md5(request_id.encode()).hexdigest(), 16)
         rollout_threshold = int(self.get_active_rollout_percentage() * 100)
 
@@ -159,10 +165,7 @@ class ThresholdConfig:
 
     def get_active_rollout_percentage(self) -> float:
         """Get maximum rollout percentage among active thresholds."""
-        active_rollouts = [
-            t.rollout_percentage for t in self.thresholds
-            if t.is_active
-        ]
+        active_rollouts = [t.rollout_percentage for t in self.thresholds if t.is_active]
         return max(active_rollouts) if active_rollouts else 0.0
 
 
@@ -190,50 +193,50 @@ class ThresholdConfig:
         """Load threshold configurations from disk."""
         if self.configs_file.exists():
             try:
-                with open(self.configs_file, encoding='utf-8') as f:
+                with open(self.configs_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 for config_key, config_data in data.items():
                     # Reconstruct thresholds
                     thresholds = []
-                    for t_data in config_data['thresholds']:
+                    for t_data in config_data["thresholds"]:
                         threshold = ThresholdDefinition(
-                            name=t_data['name'],
-                            threshold_type=ThresholdType(t_data['type']),
-                            description=t_data['description'],
-                            current_value=t_data['current_value'],
-                            min_value=t_data.get('min_value'),
-                            max_value=t_data.get('max_value'),
-                            rollout_percentage=t_data.get('rollout_percentage', 0.0),
-                            is_active=t_data.get('is_active', False),
-                            created_at=datetime.fromisoformat(t_data['created_at']),
-                            created_by=t_data.get('created_by', ''),
-                            version=t_data.get('version', '1.0'),
+                            name=t_data["name"],
+                            threshold_type=ThresholdType(t_data["type"]),
+                            description=t_data["description"],
+                            current_value=t_data["current_value"],
+                            min_value=t_data.get("min_value"),
+                            max_value=t_data.get("max_value"),
+                            rollout_percentage=t_data.get("rollout_percentage", 0.0),
+                            is_active=t_data.get("is_active", False),
+                            created_at=datetime.fromisoformat(t_data["created_at"]),
+                            created_by=t_data.get("created_by", ""),
+                            version=t_data.get("version", "1.0"),
                         )
                         thresholds.append(threshold)
 
                     # Reconstruct rollback conditions
                     rollback_conditions = []
-                    for rc_data in config_data.get('rollback_conditions', []):
+                    for rc_data in config_data.get("rollback_conditions", []):
                         condition = RollbackCondition(
-                            trigger_type=RollbackTrigger(rc_data['trigger_type']),
-                            threshold_value=rc_data['threshold_value'],
-                            comparison_operator=rc_data['comparison_operator'],
-                            grace_period_minutes=rc_data.get('grace_period_minutes', 5),
-                            is_active=rc_data.get('is_active', True),
+                            trigger_type=RollbackTrigger(rc_data["trigger_type"]),
+                            threshold_value=rc_data["threshold_value"],
+                            comparison_operator=rc_data["comparison_operator"],
+                            grace_period_minutes=rc_data.get("grace_period_minutes", 5),
+                            is_active=rc_data.get("is_active", True),
                         )
                         rollback_conditions.append(condition)
 
                     # Reconstruct config
                     config = ThresholdConfig(
-                        model_name=config_data['model_name'],
-                        model_version=config_data['model_version'],
-                        config_version=config_data['config_version'],
-                        description=config_data['description'],
+                        model_name=config_data["model_name"],
+                        model_version=config_data["model_version"],
+                        config_version=config_data["config_version"],
+                        description=config_data["description"],
                         thresholds=thresholds,
                         rollback_conditions=rollback_conditions,
-                        created_at=datetime.fromisoformat(config_data['created_at']),
-                        created_by=config_data.get('created_by', ''),
+                        created_at=datetime.fromisoformat(config_data["created_at"]),
+                        created_by=config_data.get("created_by", ""),
                     )
 
                     self._configs[config_key] = config
@@ -247,43 +250,43 @@ class ThresholdConfig:
         data = {}
         for config_key, config in self._configs.items():
             data[config_key] = {
-                'model_name': config.model_name,
-                'model_version': config.model_version,
-                'config_version': config.config_version,
-                'description': config.description,
-                'thresholds': [
+                "model_name": config.model_name,
+                "model_version": config.model_version,
+                "config_version": config.config_version,
+                "description": config.description,
+                "thresholds": [
                     {
-                        'name': t.name,
-                        'type': t.threshold_type.value,
-                        'description': t.description,
-                        'current_value': t.current_value,
-                        'min_value': t.min_value,
-                        'max_value': t.max_value,
-                        'rollout_percentage': t.rollout_percentage,
-                        'is_active': t.is_active,
-                        'created_at': t.created_at.isoformat(),
-                        'created_by': t.created_by,
-                        'version': t.version,
-                        'validation_rules': t.validation_rules,
+                        "name": t.name,
+                        "type": t.threshold_type.value,
+                        "description": t.description,
+                        "current_value": t.current_value,
+                        "min_value": t.min_value,
+                        "max_value": t.max_value,
+                        "rollout_percentage": t.rollout_percentage,
+                        "is_active": t.is_active,
+                        "created_at": t.created_at.isoformat(),
+                        "created_by": t.created_by,
+                        "version": t.version,
+                        "validation_rules": t.validation_rules,
                     }
                     for t in config.thresholds
                 ],
-                'rollback_conditions': [
+                "rollback_conditions": [
                     {
-                        'trigger_type': rc.trigger_type.value,
-                        'threshold_value': rc.threshold_value,
-                        'comparison_operator': rc.comparison_operator,
-                        'grace_period_minutes': rc.grace_period_minutes,
-                        'is_active': rc.is_active,
+                        "trigger_type": rc.trigger_type.value,
+                        "threshold_value": rc.threshold_value,
+                        "comparison_operator": rc.comparison_operator,
+                        "grace_period_minutes": rc.grace_period_minutes,
+                        "is_active": rc.is_active,
                     }
                     for rc in config.rollback_conditions
                 ],
-                'created_at': config.created_at.isoformat(),
-                'created_by': config.created_by,
-                'config_digest': config.config_digest,
+                "created_at": config.created_at.isoformat(),
+                "created_by": config.created_by,
+                "config_digest": config.config_digest,
             }
 
-        with open(self.configs_file, 'w', encoding='utf-8') as f:
+        with open(self.configs_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
     def _generate_config_key(self, model_name: str, model_version: str, config_version: str) -> str:
@@ -320,8 +323,7 @@ class ThresholdConfig:
         if config_key in self._configs:
             # Increment version
             existing_configs = [
-                key for key in self._configs.keys()
-                if key.startswith(f"{model_name}:{model_version}:")
+                key for key in self._configs.keys() if key.startswith(f"{model_name}:{model_version}:")
             ]
             config_version = str(len(existing_configs) + 1)
             config_key = self._generate_config_key(model_name, model_version, config_version)
@@ -340,12 +342,16 @@ class ThresholdConfig:
         self._save_configs()
 
         # Log to L4 canonical state
-        self._log_threshold_event("threshold_config_created", config_key, {
-            'model_name': model_name,
-            'model_version': model_version,
-            'config_version': config_version,
-            'threshold_count': len(thresholds),
-        })
+        self._log_threshold_event(
+            "threshold_config_created",
+            config_key,
+            {
+                "model_name": model_name,
+                "model_version": model_version,
+                "config_version": config_version,
+                "threshold_count": len(thresholds),
+            },
+        )
 
         return config_key
 
@@ -359,7 +365,8 @@ class ThresholdConfig:
         if config_version == "latest":
             # Find latest version
             matching_configs = [
-                (key, config) for key, config in self._configs.items()
+                (key, config)
+                for key, config in self._configs.items()
                 if config.model_name == model_name and config.model_version == model_version
             ]
 
@@ -391,12 +398,15 @@ class ThresholdConfig:
             self._save_configs()
 
             # Log rollout update
-            self._log_threshold_event("threshold_rollout_updated",
-                f"{model_name}:{model_version}", {
-                    'threshold_name': threshold_name,
-                    'rollout_percentage': rollout_percentage,
-                    'updated_by': updated_by,
-                })
+            self._log_threshold_event(
+                "threshold_rollout_updated",
+                f"{model_name}:{model_version}",
+                {
+                    "threshold_name": threshold_name,
+                    "rollout_percentage": rollout_percentage,
+                    "updated_by": updated_by,
+                },
+            )
 
         return success
 
@@ -468,10 +478,10 @@ class ThresholdConfig:
         """Log threshold events to L4 canonical state."""
         try:
             event = {
-                'event_type': event_type,
-                'config_key': config_key,
-                'timestamp': datetime.now().isoformat(),
-                'data': data,
+                "event_type": event_type,
+                "config_key": config_key,
+                "timestamp": datetime.now().isoformat(),
+                "data": data,
             }
 
             # Store in L4 canonical state

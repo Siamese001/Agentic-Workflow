@@ -17,16 +17,17 @@ def get_import_errors():
 
     # Extract ImportError patterns
     import_errors = []
-    for line in result.stderr.split('\n'):
-        if 'ImportError:' in line and 'cannot import name' in line:
+    for line in result.stderr.split("\n"):
+        if "ImportError:" in line and "cannot import name" in line:
             # Extract module and missing name
-            match = re.search(r'cannot import name \'([^\']+)\' from \'([^\']+)\'', line)
+            match = re.search(r"cannot import name \'([^\']+)\' from \'([^\']+)\'", line)
             if match:
                 missing_name = match.group(1)
                 from_module = match.group(2)
                 import_errors.append((missing_name, from_module))
 
     return import_errors
+
 
 def main():
     errors = get_import_errors()
@@ -44,6 +45,7 @@ def main():
     print("\nBy module:")
     for module, names in sorted(by_module.items()):
         print(f"  {module}: {', '.join(sorted(set(names)))}")
+
 
 if __name__ == "__main__":
     main()

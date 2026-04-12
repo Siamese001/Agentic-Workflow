@@ -16,14 +16,17 @@ class TestToolExecutor:
     def test_tool_executor_imports(self):
         """Test tool_executor module imports."""
         from agentic_core import tool_executor
+
         assert tool_executor is not None
 
     def test_tool_executor_class(self):
         """Test ToolExecutor class exists."""
         from agentic_core import ToolExecutor
+
         assert ToolExecutor is not None
 
     def test_tool_executor_callable(self):
         """Test tool_executor functions are callable."""
         from agentic_core import validate_tool_executor
+
         assert callable(validate_tool_executor)

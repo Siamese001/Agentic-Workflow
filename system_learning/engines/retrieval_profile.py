@@ -191,8 +191,11 @@ class RetrievalProfile:
             Canonical JSON string with sorted keys and fixed precision.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfile.to_canonical_json")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfile.to_canonical_json"
+        )
 
         data = asdict(self)
         data = {k: v for k, v in data.items() if v is not None}

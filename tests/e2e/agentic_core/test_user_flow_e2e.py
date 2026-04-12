@@ -16,14 +16,17 @@ class TestUserFlowE2e:
     def test_user_flow_e2e_imports(self):
         """Test user_flow_e2e module imports."""
         from agentic_core import user_flow_e2e
+
         assert user_flow_e2e is not None
 
     def test_user_flow_e2e_class(self):
         """Test UserFlowE2e class exists."""
         from agentic_core import UserFlowE2e
+
         assert UserFlowE2e is not None
 
     def test_user_flow_e2e_callable(self):
         """Test user_flow_e2e functions are callable."""
         from agentic_core import validate_user_flow_e2e
+
         assert callable(validate_user_flow_e2e)

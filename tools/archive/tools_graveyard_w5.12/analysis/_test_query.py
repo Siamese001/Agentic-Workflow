@@ -4,7 +4,12 @@ from pathlib import Path
 sqlite_path = Path("C:/Git/Agentic-Workflow/artifacts/adg/adg_indexed_04062026_1246.sqlite")
 
 pipeline_paths = ("tools/adg/", "tools/generate/", "agentic_core/adg/")
-swallow_types = ("silent_exception_swallow", "broad_exception_catch", "log_and_swallow", "return_none_swallow")
+swallow_types = (
+    "silent_exception_swallow",
+    "broad_exception_catch",
+    "log_and_swallow",
+    "return_none_swallow",
+)
 
 query = """
     SELECT COUNT(*)
@@ -24,6 +29,8 @@ with sqlite3.connect(str(sqlite_path)) as conn:
     print(f"Count: {count}")
 
     # Test with a simple match
-    cursor.execute("SELECT COUNT(*) FROM edges WHERE edge_kind='broad_exception_catch' AND source_file LIKE 'tools/adg%'")
+    cursor.execute(
+        "SELECT COUNT(*) FROM edges WHERE edge_kind='broad_exception_catch' AND source_file LIKE 'tools/adg%'"
+    )
     count2 = cursor.fetchone()[0]
     print(f"Simple match count: {count2}")

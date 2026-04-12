@@ -20,6 +20,7 @@ def add_status_if_missing(file_path: Path):
         print(f"Skipped {file_path} (status already present)")
         return False
 
+
 def main():
     """Main function to patch all RCA files in the plans directory."""
     plans_dir = Path("docs/reports/plans")
@@ -27,13 +28,14 @@ def main():
         print(f"ERROR: Directory not found: {plans_dir}")
         sys.exit(1)
 
-    rca_files = list(plans_dir.glob('RCA_*.md'))
+    rca_files = list(plans_dir.glob("RCA_*.md"))
     patched_count = 0
     for file_path in rca_files:
         if add_status_if_missing(file_path):
             patched_count += 1
 
     print(f"\nPatching complete. {patched_count} of {len(rca_files)} files were updated.")
+
 
 if __name__ == "__main__":
     main()

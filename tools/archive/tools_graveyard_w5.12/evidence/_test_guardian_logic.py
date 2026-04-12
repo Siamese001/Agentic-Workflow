@@ -1,4 +1,5 @@
 """Test guardian exemption logic."""
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -14,7 +15,7 @@ print(f"Exists: {src_path.exists()}")
 if src_path.exists():
     lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
     print(f"Total lines: {len(lines)}")
-    check_lines = lines[max(0, line_no - 2):line_no]
+    check_lines = lines[max(0, line_no - 2) : line_no]
     print(f"Checking lines {max(0, line_no - 2)}-{line_no}:")
     for i, ln in enumerate(check_lines, start=max(0, line_no - 2) + 1):
         print(f"  Line {i}: {ln}")

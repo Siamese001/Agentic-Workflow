@@ -174,8 +174,11 @@ class EmbeddingMixin:
     def embedding_gateway(self) -> Any:
         """Lazy-load embedding gateway singleton."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingMixin.embedding_gateway")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingMixin.embedding_gateway"
+        )
 
         if self._embedding_gateway is None:
             try:
@@ -190,16 +193,23 @@ class EmbeddingMixin:
         return self._embedding_gateway
 
     async def get_embedding(
-        self, content: str, provider: EmbeddingProvider = "bge-m3", use_cache: bool = True,
+        self,
+        content: str,
+        provider: EmbeddingProvider = "bge-m3",
+        use_cache: bool = True,
     ) -> list[float]:
         """Get embedding through gateway."""
         return await self.embedding_gateway.get_embedding(content, provider, use_cache)
 
     async def get_embeddings_batch(
-        self, contents: list[str], provider: EmbeddingProvider = "bge-m3",
+        self,
+        contents: list[str],
+        provider: EmbeddingProvider = "bge-m3",
     ) -> list[list[float]]:
         """Get batch embeddings through gateway."""
         try:
             return await self.embedding_gateway.get_embeddings_batch(contents, provider)
         except Exception as e:
-            import logging; logging.getLogger(__name__).debug("embedding_mixin: Exception swallowed at L204: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("embedding_mixin: Exception swallowed at L204: %s", e)

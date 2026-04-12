@@ -1,6 +1,7 @@
 """
 Evidence Register Engine - Collects and manages evidence for underwriting claims.
 """
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
@@ -11,6 +12,7 @@ from ..types import EvidenceEntry, UnderwritingRequest
 @dataclass
 class EvidenceRegister:
     """Internal evidence register for the underwriting process."""
+
     request_id: str
     entries: List[EvidenceEntry] = field(default_factory=list)
 
@@ -29,7 +31,7 @@ class EvidenceRegister:
     ) -> EvidenceEntry:
         """Add a new claim with evidence."""
         entry = EvidenceEntry(
-            entry_id=f"EV-{len(self.entries)+1:04d}",
+            entry_id=f"EV-{len(self.entries) + 1:04d}",
             claim_category=claim_category,
             claim_text=claim_text,
             evidence_source=evidence_source,

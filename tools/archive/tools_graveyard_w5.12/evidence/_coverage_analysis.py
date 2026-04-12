@@ -31,6 +31,7 @@ Two coverage modes:
                modules to mark transitively-reachable modules as covered.
                This resolves the 1,031 'false gaps' identified in Phase 0.
 """
+
 import json
 import sqlite3
 from pathlib import Path
@@ -104,7 +105,9 @@ prod_ids: set[int] = set(prod_id_to_name.keys())
 # Transitive coverage = symbol ADG::Symbol::agentic_core.L0_routing.config
 # implies ADG::Module::agentic_core/L0_routing/config/__init__.py is covered.
 
-cur.execute("SELECT DISTINCT n.adg_name FROM edges e JOIN nodes n ON n.id=e.dst_id WHERE e.relation_type='covers'")
+cur.execute(
+    "SELECT DISTINCT n.adg_name FROM edges e JOIN nodes n ON n.id=e.dst_id WHERE e.relation_type='covers'"
+)
 covered_symbol_names: list[str] = [r[0] for r in cur.fetchall()]
 
 prod_name_set: set[str] = set(prod_id_to_name.values())
@@ -154,17 +157,13 @@ transitive_covered = {name_to_id[n] for n in transitive_covered_names if n in na
 
 # ── 6. Direct gap ─────────────────────────────────────────────────────────────
 direct_gap_ids = prod_ids - direct_covered_prod
-direct_gap_rows = sorted(
-    (layer_from_path(prod_id_to_name[i]), prod_id_to_name[i])
-    for i in direct_gap_ids
-)
+direct_gap_rows = sorted((layer_from_path(prod_id_to_name[i]), prod_id_to_name[i]) for i in direct_gap_ids)
 uncovered_direct = len(direct_gap_rows)
 
 # ── 7. Transitive gap ─────────────────────────────────────────────────────────
 transitive_gap_ids = prod_ids - transitive_covered
 transitive_gap_rows = sorted(
-    (layer_from_path(prod_id_to_name[i]), prod_id_to_name[i])
-    for i in transitive_gap_ids
+    (layer_from_path(prod_id_to_name[i]), prod_id_to_name[i]) for i in transitive_gap_ids
 )
 uncovered_transitive = len(transitive_gap_rows)
 

@@ -20,22 +20,26 @@ def load_violations():
 def fix_high_severity_import_errors():
     """Fix ImportError violations - these should never be silent."""
     violations = load_violations()
-    high_severity = [v for v in violations['violations'] if v['severity'] == 'HIGH']
+    high_severity = [v for v in violations["violations"] if v["severity"] == "HIGH"]
 
-    import_errors = [v for v in high_severity if 'ImportError' in v['exception_type'] or 'ModuleNotFoundError' in v['exception_type']]
+    import_errors = [
+        v
+        for v in high_severity
+        if "ImportError" in v["exception_type"] or "ModuleNotFoundError" in v["exception_type"]
+    ]
 
     print(f"Fixing {len(import_errors)} ImportError violations...")
 
     for violation in import_errors[:10]:  # Show first 10 as examples
-        file_path = violation['file_path']
-        line_no = violation['line_number']
-        exception_type = violation['exception_type']
+        file_path = violation["file_path"]
+        line_no = violation["line_number"]
+        exception_type = violation["exception_type"]
 
         print(f"  {file_path}:{line_no} - {exception_type}")
 
         # Read file and suggest fix
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             if line_no <= len(lines):
@@ -49,15 +53,15 @@ def fix_high_severity_import_errors():
 def fix_high_severity_value_errors():
     """Fix ValueError violations - these should have proper validation."""
     violations = load_violations()
-    high_severity = [v for v in violations['violations'] if v['severity'] == 'HIGH']
+    high_severity = [v for v in violations["violations"] if v["severity"] == "HIGH"]
 
-    value_errors = [v for v in high_severity if 'ValueError' in v['exception_type']]
+    value_errors = [v for v in high_severity if "ValueError" in v["exception_type"]]
 
     print(f"\nFixing {len(value_errors)} ValueError violations...")
 
     for violation in value_errors[:10]:
-        file_path = violation['file_path']
-        line_no = violation['line_number']
+        file_path = violation["file_path"]
+        line_no = violation["line_number"]
 
         print(f"  {file_path}:{line_no} - ValueError")
         print("    Fix: Add input validation or proper error handling")
@@ -66,15 +70,15 @@ def fix_high_severity_value_errors():
 def fix_broad_exceptions():
     """Fix broad 'except Exception:' violations."""
     violations = load_violations()
-    medium_severity = [v for v in violations['violations'] if v['severity'] == 'MEDIUM']
+    medium_severity = [v for v in violations["violations"] if v["severity"] == "MEDIUM"]
 
-    broad_exceptions = [v for v in medium_severity if v['exception_type'] == 'Exception']
+    broad_exceptions = [v for v in medium_severity if v["exception_type"] == "Exception"]
 
     print(f"\nFixing {len(broad_exceptions)} broad exception violations...")
 
     for violation in broad_exceptions[:5]:
-        file_path = violation['file_path']
-        line_no = violation['line_number']
+        file_path = violation["file_path"]
+        line_no = violation["line_number"]
 
         print(f"  {file_path}:{line_no} - except Exception")
         print("    Fix: Replace with specific exception types")

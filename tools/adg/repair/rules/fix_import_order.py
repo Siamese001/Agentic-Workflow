@@ -38,23 +38,65 @@ class FixImportOrderRule(BaseRepairRule):
 
     # Standard library modules (common ones)
     STDLIB_MODULES = {
-        "abc", "argparse", "ast", "asyncio", "base64", "collections",
-        "concurrent", "contextlib", "copy", "csv", "dataclasses", "datetime",
-        "decimal", "enum", "functools", "glob", "hashlib", "html", "http",
-        "importlib", "inspect", "io", "itertools", "json", "logging",
-        "math", "multiprocessing", "operator", "os", "pathlib", "pickle",
-        "platform", "random", "re", "shutil", "signal", "socket", "sqlite3",
-        "string", "subprocess", "sys", "tempfile", "textwrap", "threading",
-        "time", "traceback", "typing", "unittest", "urllib", "uuid", "warnings",
-        "weakref", "xml", "zipfile",
+        "abc",
+        "argparse",
+        "ast",
+        "asyncio",
+        "base64",
+        "collections",
+        "concurrent",
+        "contextlib",
+        "copy",
+        "csv",
+        "dataclasses",
+        "datetime",
+        "decimal",
+        "enum",
+        "functools",
+        "glob",
+        "hashlib",
+        "html",
+        "http",
+        "importlib",
+        "inspect",
+        "io",
+        "itertools",
+        "json",
+        "logging",
+        "math",
+        "multiprocessing",
+        "operator",
+        "os",
+        "pathlib",
+        "pickle",
+        "platform",
+        "random",
+        "re",
+        "shutil",
+        "signal",
+        "socket",
+        "sqlite3",
+        "string",
+        "subprocess",
+        "sys",
+        "tempfile",
+        "textwrap",
+        "threading",
+        "time",
+        "traceback",
+        "typing",
+        "unittest",
+        "urllib",
+        "uuid",
+        "warnings",
+        "weakref",
+        "xml",
+        "zipfile",
     }
 
     def match(self, deficiency: Deficiency) -> bool:
         """Check if this rule applies."""
-        return (
-            deficiency.category == FixCategory.AUTO_FIX
-            and deficiency.issue_type in self.HANDLED_ISSUES
-        )
+        return deficiency.category == FixCategory.AUTO_FIX and deficiency.issue_type in self.HANDLED_ISSUES
 
     def can_fix(self, deficiency: Deficiency) -> tuple[bool, str]:
         """Determine if fix can be applied."""
@@ -110,7 +152,9 @@ class FixImportOrderRule(BaseRepairRule):
 
             # Reconstruct the file
             new_content = self._reconstruct_with_sorted_imports(
-                original_content, import_blocks, sorted_imports,
+                original_content,
+                import_blocks,
+                sorted_imports,
             )
 
             path.write_text(new_content, encoding="utf-8")

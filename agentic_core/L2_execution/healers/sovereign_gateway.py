@@ -14,6 +14,7 @@ from .failure_signal import FailureSignal
 @dataclass
 class RepairArtifact:
     """Sealed repair artifact."""
+
     artifact_id: str
     repair_type: str
     input_hash: str
@@ -78,6 +79,7 @@ class SovereignGateway:
         """Hash context for integrity."""
         import hashlib
         import json
+
         raw = json.dumps(context, sort_keys=True, default=str)
         return hashlib.sha256(raw.encode()).hexdigest()[:16]
 

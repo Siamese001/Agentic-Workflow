@@ -317,8 +317,11 @@ class LegacyArtifacts:
     def get_weak_opening_match(cls, text: str) -> str | None:
         """Scan text for any weak opening patterns without instance overhead."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LegacyArtifacts.get_weak_opening_match")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LegacyArtifacts.get_weak_opening_match"
+        )
 
         for name, pattern in WEAK_OPENING_PATTERNS.items():
             if pattern.search(text):

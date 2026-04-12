@@ -328,7 +328,9 @@ class RetrievalCompletenessMonitor:
 
     def snapshot(self, snapshot_id: str, system_version: str) -> RetrievalCompletenessSnapshot:
         """Emit a deterministic snapshot of accumulated observations."""
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CompletenessMonitor.snapshot:{snapshot_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CompletenessMonitor.snapshot:{snapshot_id}"
+        )
         n = len(self._records)
         if n == 0:
             return RetrievalCompletenessSnapshot(

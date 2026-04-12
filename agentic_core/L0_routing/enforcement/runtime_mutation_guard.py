@@ -230,7 +230,8 @@ class RuntimeMutationGuard:
         """Install the runtime mutation guard (REQ-417)."""
         # Check if disabled for testing
         import os
-        if os.environ.get('DISABLE_RUNTIME_MUTATION_GUARD') == '1':
+
+        if os.environ.get("DISABLE_RUNTIME_MUTATION_GUARD") == "1":
             return
 
         import uuid as _uuid  # noqa: PLC0415
@@ -303,15 +304,18 @@ def test_runtime_mutation_guard() -> bool:
         try:
 
             class TestProtected:
-                __module__ = "agentic_core.test"    # guardian: RuntimeMutationViolation should be handled with specific context
+                __module__ = "agentic_core.test"  # guardian: RuntimeMutationViolation should be handled with specific context
                 pass
 
             guard_setattr(TestProtected, "__class__", object)
             return False
         # guardian: allow-silent-swallow - acceptable exception handling
         except RuntimeMutationViolation as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("runtime_mutation_guard: RuntimeMutationViolation swallowed at L312: %s", e)
+            logging.getLogger(__name__).debug(
+                "runtime_mutation_guard: RuntimeMutationViolation swallowed at L312: %s", e
+            )
         try:
             import agentic_core
 
@@ -319,8 +323,11 @@ def test_runtime_mutation_guard() -> bool:
             # guardian: allow-silent-swallow - acceptable exception handling
             return False
         except RuntimeMutationViolation as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("runtime_mutation_guard: RuntimeMutationViolation swallowed at L320: %s", e)
+            logging.getLogger(__name__).debug(
+                "runtime_mutation_guard: RuntimeMutationViolation swallowed at L320: %s", e
+            )
 
         class TestUnprotected:
             pass

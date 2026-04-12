@@ -173,9 +173,7 @@ def materialize_phase_e(sqlite_path: Path) -> dict[str, int]:
           AND n2.resolved_path NOT LIKE 'tests/%'
     """)
 
-    cur.execute(
-        "CREATE INDEX IF NOT EXISTS idx_t_reach ON _t_reachability(node_a, node_b)"
-    )
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_t_reach ON _t_reachability(node_a, node_b)")
 
     # Find mutual reachability (clusters)
     cur.execute(f"""

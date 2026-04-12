@@ -314,6 +314,7 @@ class TracingMixin:
                 Logger.warning(
                     f"[TRACING] {self._tracing_service_name} initialization failed: {e}. Operating in degraded mode. Failures: {TracingMixin._circuit_breaker_failures}",
                 )
+
     def __post_init__(self) -> None:
         """
         Cooperative __post_init__ for dataclass agents.
@@ -322,7 +323,7 @@ class TracingMixin:
         instead of __init__. This method ensures tracing is properly initialized.
         """
         # Initialize tracing if not already done via __init__
-        if not hasattr(self, '_span_stack'):
+        if not hasattr(self, "_span_stack"):
             self._tracing_service_name: str = self.__class__.__name__
             self._tracing_initialized: bool = False
             self._tracing_degraded: bool = False
@@ -332,7 +333,7 @@ class TracingMixin:
             self._trace_buffer: list[dict[str, Any]] = []
             self._trace_buffer_max: int = 1000
         # Call parent's __post_init__ if it exists
-        if hasattr(super(), '__post_init__'):
+        if hasattr(super(), "__post_init__"):
             super().__post_init__()
 
     def _initialize_tracing_safe(self) -> None:
@@ -346,7 +347,9 @@ class TracingMixin:
 
     @contextmanager
     def start_span(
-        self, operation_name: str, attributes: dict[str, Any] | None = None,
+        self,
+        operation_name: str,
+        attributes: dict[str, Any] | None = None,
     ) -> Generator[SpanContext, None, None]:
         """
         Start a new tracing span.
@@ -364,6 +367,7 @@ class TracingMixin:
                 pass
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TracingMixin.start_span")
 
@@ -453,7 +457,7 @@ class TracingMixin:
         self._trace_buffer.clear()
 
         # Bridge to OpenTelemetry if available
-        if hasattr(self, '_otel_bridge_enabled') and getattr(self, '_otel_bridge_enabled', False):
+        if hasattr(self, "_otel_bridge_enabled") and getattr(self, "_otel_bridge_enabled", False):
             self._bridge_to_opentelemetry(traces)
 
         Logger.info(f"[TRACING] {self._tracing_service_name} - Flushed {len(traces)} traces")
@@ -496,7 +500,9 @@ class TracingMixin:
             # Determine span type based on operation
             if "cognitive" in operation_name.lower():
                 reasoning_mode = attributes.get("reasoning_mode", "react")
-                span_context = tracer.trace_cognitive(operation_name, reasoning_mode=reasoning_mode, metadata=attributes)
+                span_context = tracer.trace_cognitive(
+                    operation_name, reasoning_mode=reasoning_mode, metadata=attributes
+                )
             elif "tool" in operation_name.lower():
                 tool_name = attributes.get("tool_name", operation_name)
                 span_context = tracer.trace_tool(tool_name, attributes)

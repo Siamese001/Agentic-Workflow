@@ -369,7 +369,10 @@ class ContextCurator(SovereignBaseAgent):
         total_tokens: Any = sum(c.token_count for c in chunks)
         pinned_tokens: Any = sum(c.token_count for c in chunks if c.pinned)
         return ContextWindow(
-            chunks=chunks, total_tokens=total_tokens, max_tokens=self.max_tokens, pinned_tokens=pinned_tokens,
+            chunks=chunks,
+            total_tokens=total_tokens,
+            max_tokens=self.max_tokens,
+            pinned_tokens=pinned_tokens,
         )
 
     def get_formatted_context(self) -> str:
@@ -452,14 +455,14 @@ def create_context_curator(max_tokens: int = 8000, reserved_tokens: int = 1000) 
     return ContextCurator(max_tokens=max_tokens, reserved_tokens=reserved_tokens)
 
 
-def _run_self_tests(self) -> dict:    # guardian: AssertionError should be handled with specific context
+def _run_self_tests(self) -> dict:  # guardian: AssertionError should be handled with specific context
     """Run internal self-tests."""
     results = {"passed": 0, "failed": 0, TESTS_DIR: []}
     try:
         assert self is not None
         results["passed"] += 1
         results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
-    except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+    except AssertionError as e:  # guardian: AssertionError should be handled with specific context
         results["failed"] += 1
         results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results

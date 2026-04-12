@@ -131,7 +131,7 @@ class TestMetricAggregationEngine:
         # Add metrics at different times
         engine.add_metric("test_metric", 0.5, timestamp_utc=current_time - 7200)  # 2 hours ago
         engine.add_metric("test_metric", 0.7, timestamp_utc=current_time - 1800)  # 30 min ago
-        engine.add_metric("test_metric", 0.9, timestamp_utc=current_time - 300)   # 5 min ago
+        engine.add_metric("test_metric", 0.9, timestamp_utc=current_time - 300)  # 5 min ago
 
         # Last hour should only include last 2 points
         aggregated_hour = engine.get_aggregated_metrics("test_metric", TimeWindow.LAST_HOUR)

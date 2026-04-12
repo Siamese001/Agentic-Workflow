@@ -115,7 +115,10 @@ class TestDiscoveryEngine:
                     for item in node.body:
                         if isinstance(item, ast.FunctionDef) and item.name.startswith("test"):
                             test_info = self._analyze_test_function(
-                                item, test_file, TestFramework.UNITTEST, file_imports,
+                                item,
+                                test_file,
+                                TestFramework.UNITTEST,
+                                file_imports,
                             )
                             tests.append(test_info)
 
@@ -124,7 +127,12 @@ class TestDiscoveryEngine:
         except SyntaxError:
             # Fallback: use regex to find test function names when AST parse fails
             tests = []
-            for match in tqdm(list(re.finditer(r"^def (test\w+)\s*\(", content, re.MULTILINE)), desc="regex matches", unit="match", leave=False):
+            for match in tqdm(
+                list(re.finditer(r"^def (test\w+)\s*\(", content, re.MULTILINE)),
+                desc="regex matches",
+                unit="match",
+                leave=False,
+            ):
                 func_name = match.group(1)
                 line_no = content[: match.start()].count("\n") + 1
                 tests.append(
@@ -309,7 +317,9 @@ class TestCoverageAnalyzer:
         return violations
 
     def _analyze_single_violation_coverage(
-        self, violation: dict, all_tests: list[TestFunction],
+        self,
+        violation: dict,
+        all_tests: list[TestFunction],
     ) -> TestCoverageGap | None:
         """Analyze test coverage for a single violation."""
         violation_file = violation["file_path"]
@@ -488,7 +498,10 @@ class TestSkeletonGenerator:
         }
 
     def generate_test_skeleton(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
+        self,
+        gap: TestCoverageGap,
+        exception_type: str,
+        remediation_strategy: str,
     ) -> str:
         """Generate a test skeleton for a coverage gap."""
         test_type = gap.missing_test_types[0] if gap.missing_test_types else "unit"
@@ -496,7 +509,10 @@ class TestSkeletonGenerator:
         return template(gap, exception_type, remediation_strategy)
 
     def _unit_test_template(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
+        self,
+        gap: TestCoverageGap,
+        exception_type: str,
+        remediation_strategy: str,
     ) -> str:
         """Generate a unit test template."""
         function_name = gap.violation_function or "target_function"
@@ -523,7 +539,10 @@ class TestSkeletonGenerator:
         return template
 
     def _integration_test_template(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
+        self,
+        gap: TestCoverageGap,
+        exception_type: str,
+        remediation_strategy: str,
     ) -> str:
         """Generate an integration test template."""
         function_name = gap.violation_function or "target_function"
@@ -546,7 +565,10 @@ class TestSkeletonGenerator:
         return template
 
     def _property_test_template(
-        self, gap: TestCoverageGap, exception_type: str, remediation_strategy: str,
+        self,
+        gap: TestCoverageGap,
+        exception_type: str,
+        remediation_strategy: str,
     ) -> str:
         """Generate a property-based test template."""
         function_name = gap.violation_function or "target_function"

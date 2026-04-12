@@ -249,7 +249,10 @@ class ADGRuntimeQueryEngine:
                 class_name = parts[-1] if len(parts) >= 3 else from_mod
                 module_path = parts[2] if len(parts) >= 4 else ""
                 cap = AgentCapability(
-                    agent_class=class_name, module_path=module_path, layer=layer, composed_symbol=sym,
+                    agent_class=class_name,
+                    module_path=module_path,
+                    layer=layer,
+                    composed_symbol=sym,
                 )
                 if sym not in self._composition_index:
                     self._composition_index[sym] = []
@@ -290,8 +293,11 @@ class ADGRuntimeQueryEngine:
         Speedup vs full codebase scan: 50-500x.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ADGRuntimeQueryEngine.compute_blast_radius")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ADGRuntimeQueryEngine.compute_blast_radius"
+        )
 
         from agentic_core.adg.contracts.schema_util import canonical_name
 
@@ -359,7 +365,8 @@ class ADGRuntimeQueryEngine:
 
 
 def get_runtime_query_engine(
-    repo_root: str | None = None, force_fresh: bool = False,
+    repo_root: str | None = None,
+    force_fresh: bool = False,
 ) -> ADGRuntimeQueryEngine:
     """R1: Singleton accessor — load from cache or scan, then build indexes.
 

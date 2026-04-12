@@ -1,4 +1,5 @@
 """Event Bus Integration - Re-export from enforcement for reasoning compatibility."""
+
 from apps_shared.enforcement.core.event_bus import EventType, SystemEvent
 from apps_shared.enforcement.HardenedeventbusStrategy import (
     HardenedEventBus,

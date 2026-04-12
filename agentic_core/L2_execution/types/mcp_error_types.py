@@ -184,7 +184,9 @@ class MCPClientInitializationError(MCPError):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "MCPClientInitializationError.__init__",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "MCPClientInitializationError.__init__",
         )
         super().__init__(message)
         self.client_name = client_name

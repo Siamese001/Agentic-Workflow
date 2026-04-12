@@ -45,13 +45,23 @@ class BriefRenderer:
                 lines.extend([f"### {section.heading}", "", section.body, ""])
                 if section.why_this_matters:
                     lines.extend([f"**Why this matters:** {section.why_this_matters}", ""])
-                lines.append(f"*Word count: {section.word_count} | Evidence: {len(section.evidence_anchors)}*")
+                lines.append(
+                    f"*Word count: {section.word_count} | Evidence: {len(section.evidence_anchors)}*"
+                )
                 lines.append("")
 
         if result.capabilities_extracted:
             lines.extend(["## Platform Capabilities", ""])
             for cap in result.capabilities_extracted:
-                lines.extend([f"### {cap.label}", "", f"**Description:** {cap.description}", f"**Layer:** {cap.layer}", ""])
+                lines.extend(
+                    [
+                        f"### {cap.label}",
+                        "",
+                        f"**Description:** {cap.description}",
+                        f"**Layer:** {cap.layer}",
+                        "",
+                    ]
+                )
 
         if result.gate_violations:
             lines.extend(["## Gate Violations", ""])
@@ -120,7 +130,14 @@ class BriefSummaryRenderer:
         if summary.error:
             lines.extend(["## Error", "", f"```\n{summary.error}\n```", ""])
 
-        lines.extend(["## Provenance", "", f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```", ""])
+        lines.extend(
+            [
+                "## Provenance",
+                "",
+                f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 

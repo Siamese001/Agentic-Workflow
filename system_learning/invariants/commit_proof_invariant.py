@@ -196,6 +196,7 @@ class CommitProofInvariant:
     def verify(self) -> None:
         """Verify all invariant conditions.  Raises CommitProofViolation on any failure."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CommitProofInvariant.verify")
 
@@ -226,7 +227,10 @@ class CommitProofInvariant:
 
     @classmethod
     def from_package(
-        cls, version_id: str, package: object, commit_timestamp_utc: int,
+        cls,
+        version_id: str,
+        package: object,
+        commit_timestamp_utc: int,
     ) -> CommitProofInvariant:
         """Create and immediately verify a proof for a committed package.
 
@@ -258,7 +262,9 @@ class CommitProofInvariant:
                 f"COMMIT_PROOF_VIOLATION: version_id {version_id!r} does not match SHA-256(canonical_bytes()) = {impl_hash!r} -- proof not bound to implementation",
             )
         proof = cls(
-            version_id=version_id, implementation_hash=impl_hash, commit_timestamp_utc=commit_timestamp_utc,
+            version_id=version_id,
+            implementation_hash=impl_hash,
+            commit_timestamp_utc=commit_timestamp_utc,
         )
         proof.verify()
         return proof
@@ -270,7 +276,9 @@ def verify_commit_proof(version_id: str, package: object, commit_timestamp_utc: 
     Raises CommitProofViolation if any invariant fails.
     """
     return CommitProofInvariant.from_package(
-        version_id=version_id, package=package, commit_timestamp_utc=commit_timestamp_utc,
+        version_id=version_id,
+        package=package,
+        commit_timestamp_utc=commit_timestamp_utc,
     )
 
 

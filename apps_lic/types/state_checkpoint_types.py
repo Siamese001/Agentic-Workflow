@@ -192,7 +192,10 @@ class LICStateManager:
     SCHEMA_VERSION = "13.0"
 
     def __init__(
-        self, mission_id: str, state_directory: str = "state", create_if_missing: bool = True,
+        self,
+        mission_id: str,
+        state_directory: str = "state",
+        create_if_missing: bool = True,
     ) -> None:
         """
         Initialize state coordinator for a mission.
@@ -222,6 +225,7 @@ class LICStateManager:
             Path to written file
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICStateManager.write_state")
 
@@ -391,8 +395,11 @@ class StateValidator:
     def validate_hop_chain(self, hop_ids: list[str]) -> StateValidationResult:
         """Validate a chain of HOPs for consistency."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateValidator.validate_hop_chain")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "StateValidator.validate_hop_chain"
+        )
 
         result = StateValidationResult(is_valid=True)
         for hop_id in hop_ids:

@@ -216,8 +216,7 @@ def check_fake_config(path: Path, content: str) -> Violation | None:
         active_methods = [
             item.name
             for item in node.body
-            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
-            and item.name not in trivial_methods
+            if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)) and item.name not in trivial_methods
         ]
         if active_methods:
             return Violation(

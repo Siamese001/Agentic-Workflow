@@ -51,7 +51,7 @@ async def test_retriever():
     results = await retriever.retrieve(query)
     print(f"Found {len(results)} results for direct query")
     for i, result in enumerate(results[:3]):
-        print(f"  {i+1}. {result.collection}: {result.content[:100]}...")
+        print(f"  {i + 1}. {result.collection}: {result.content[:100]}...")
 
 
 if __name__ == "__main__":

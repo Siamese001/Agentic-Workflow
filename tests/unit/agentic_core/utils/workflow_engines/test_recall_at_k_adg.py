@@ -16,14 +16,17 @@ class TestRecallAtKAdg:
     def test_recall_at_k_adg_imports(self):
         """Test recall_at_k_adg module imports."""
         from agentic_core import recall_at_k_adg
+
         assert recall_at_k_adg is not None
 
     def test_recall_at_k_adg_class(self):
         """Test RecallAtKAdg class exists."""
         from agentic_core import RecallAtKAdg
+
         assert RecallAtKAdg is not None
 
     def test_recall_at_k_adg_callable(self):
         """Test recall_at_k_adg functions are callable."""
         from agentic_core import validate_recall_at_k_adg
+
         assert callable(validate_recall_at_k_adg)

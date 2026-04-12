@@ -175,7 +175,9 @@ class NervousSystem:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "NervousSystem.register_reflex",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "NervousSystem.register_reflex",
         )
 
         self.reflexes[trigger] = action

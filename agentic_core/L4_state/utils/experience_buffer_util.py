@@ -301,7 +301,11 @@ class ExperienceBuffer:
         return matches
 
     def predict_success_probability(
-        self, action: str, target: str | None = None, context_hash: str | None = None, **extra_context,
+        self,
+        action: str,
+        target: str | None = None,
+        context_hash: str | None = None,
+        **extra_context,
     ) -> float:
         """
         Predict success probability based on historical outcomes.

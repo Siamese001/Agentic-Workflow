@@ -236,7 +236,9 @@ class SovereignPromptRenderer:
         if desc_match:
             description = desc_match.group(1).strip()
         schema = TemplateSchema(
-            required_vars=required_vars, optional_vars=optional_vars, description=description,
+            required_vars=required_vars,
+            optional_vars=optional_vars,
+            description=description,
         )
         self._schema_cache[template_name] = schema
         return schema
@@ -255,7 +257,9 @@ class SovereignPromptRenderer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignPromptRenderer.validate_context",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SovereignPromptRenderer.validate_context",
         )
 
         schema = self._parse_template_schema(template_name)
@@ -293,7 +297,9 @@ class SovereignPromptRenderer:
         if validate:
             try:
                 self.validate_context(template_name, context)
-            except TemplateValidationError as e:    # guardian: TemplateValidationError should be handled with specific context
+            except (
+                TemplateValidationError
+            ) as e:  # guardian: TemplateValidationError should be handled with specific context
                 if "No description provided" not in str(e):
                     raise
         full_context = {
@@ -309,7 +315,7 @@ class SovereignPromptRenderer:
             template = self.env.get_template(template_name)
             rendered = template.render(**full_context)
             return rendered.strip() + "\n"
-        except TemplateNotFound:    # guardian: TemplateNotFound should be handled with specific context
+        except TemplateNotFound:  # guardian: TemplateNotFound should be handled with specific context
             raise TemplateNotFound(f"Template '{template_name}' not found in {self.template_root}")
         except Exception as e:
             raise RuntimeError(f"[PROMPT RENDERING FAILURE] Template '{template_name}': {e}")
@@ -346,7 +352,7 @@ class SovereignPromptRenderer:
         )
         try:
             base = meta_env.get_template(base_template).render(**context)
-        except TemplateNotFound:    # guardian: TemplateNotFound should be handled with specific context
+        except TemplateNotFound:  # guardian: TemplateNotFound should be handled with specific context
             raise TemplateNotFound(f"Meta-prompt '{base_template}' not found in {meta_root}")
         except Exception as e:
             raise RuntimeError(f"[META-PROMPT FAILURE] {base_template}: {e}")
@@ -359,7 +365,7 @@ class SovereignPromptRenderer:
                 assembled.append(
                     f"\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>",
                 )
-            except TemplateNotFound:    # guardian: TemplateNotFound should be handled with specific context
+            except TemplateNotFound:  # guardian: TemplateNotFound should be handled with specific context
                 continue
             # guardian: allow-silent-swallow -- fragment render failures are non-critical; logged and skipped
             except Exception as e:

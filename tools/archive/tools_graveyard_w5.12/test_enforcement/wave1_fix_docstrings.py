@@ -5,6 +5,7 @@ but the original docstring was multi-line, leaving it unterminated.
 Pattern: line 1 is '\"\"\"Some text.' without closing '\"\"\"'
 Fix: close the docstring on the same line.
 """
+
 from __future__ import annotations
 
 import ast
@@ -108,9 +109,9 @@ def main():
             still_broken += 1
             broken_files.append(result)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("DOCSTRING FIX RESULTS")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Files with syntax errors: {syntax_errors_before}")
     print(f"Fixed: {fixed}")
     print(f"Still broken: {still_broken}")

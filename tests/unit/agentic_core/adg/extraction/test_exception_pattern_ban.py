@@ -15,7 +15,7 @@ from agentic_core.adg.extraction import static_scanner
 class TestExceptionControlFlowBan:
     """Ban using StopIteration/GeneratorExit as control flow in core algorithms."""
 
-    BANNED_EXCEPTIONS = {'StopIteration', 'GeneratorExit'}
+    BANNED_EXCEPTIONS = {"StopIteration", "GeneratorExit"}
 
     def test_no_stopiteration_in_detect_cycles(self):
         """Verify _detect_cycles doesn't use StopIteration exception handling."""
@@ -44,12 +44,11 @@ class TestExceptionControlFlowBan:
     def test_all_visitor_classes_no_generator_exit(self):
         """Verify all AST visitor classes don't use GeneratorExit handling."""
         scanner_file = Path(static_scanner.__file__)
-        source = scanner_file.read_text(encoding='utf-8', errors='replace')
+        source = scanner_file.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source)
 
         visitor_classes = [
-            node for node in ast.walk(tree)
-            if isinstance(node, ast.ClassDef) and 'Visitor' in node.name
+            node for node in ast.walk(tree) if isinstance(node, ast.ClassDef) and "Visitor" in node.name
         ]
 
         all_violations = []
@@ -58,9 +57,8 @@ class TestExceptionControlFlowBan:
             if violations:
                 all_violations.append(f"{visitor.name}: {violations}")
 
-        assert not all_violations, (
-            "Visitor classes use banned exception control flow:\n" +
-            "\n".join(all_violations)
+        assert not all_violations, "Visitor classes use banned exception control flow:\n" + "\n".join(
+            all_violations
         )
 
     def _find_exception_control_flow(self, tree: ast.AST, banned: set) -> list[str]:
@@ -109,11 +107,11 @@ class TestExceptionControlFlowBan:
         for node in ast.walk(ast.Module(body=body, type_ignores=[])):
             if isinstance(node, ast.Call):
                 # Check for next() calls
-                if isinstance(node.func, ast.Name) and node.func.id == 'next':
+                if isinstance(node.func, ast.Name) and node.func.id == "next":
                     return True
                 # Check for .__next__() or .next() method calls
                 if isinstance(node.func, ast.Attribute):
-                    if node.func.attr in ('__next__', 'next'):
+                    if node.func.attr in ("__next__", "next"):
                         return True
         return False
 
@@ -126,7 +124,7 @@ class TestNextWithDefaultPattern:
         source = inspect.getsource(static_scanner._detect_cycles)
 
         # Should use next(..., None) or next(..., default)
-        has_next_with_default = 'next(children, None)' in source or 'next(iter' in source
+        has_next_with_default = "next(children, None)" in source or "next(iter" in source
 
         assert has_next_with_default, (
             "_detect_cycles should use next(iterator, default) pattern. "
@@ -136,18 +134,18 @@ class TestNextWithDefaultPattern:
     def test_no_bare_next_without_default(self):
         """Flag bare next() calls without default value."""
         scanner_file = Path(static_scanner.__file__)
-        source = scanner_file.read_text(encoding='utf-8', errors='replace')
+        source = scanner_file.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source)
 
         bare_next_calls = []
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Call):
-                if isinstance(node.func, ast.Name) and node.func.id == 'next':
+                if isinstance(node.func, ast.Name) and node.func.id == "next":
                     # Check if it has a second argument (default)
                     if len(node.args) < 2 and not node.keywords:
                         # Get line number from parent Try node if available
-                        line_no = getattr(node, 'lineno', 'unknown')
+                        line_no = getattr(node, "lineno", "unknown")
                         bare_next_calls.append(line_no)
 
         # Allow some bare next() calls if they're in proper exception handling
@@ -165,9 +163,9 @@ class TestExceptionHandlingDocumentation:
     def test_all_try_blocks_have_guardian_comments(self):
         """All try/except blocks must have # guardian: comments justifying the exception."""
         scanner_file = Path(static_scanner.__file__)
-        source_lines = scanner_file.read_text(encoding='utf-8', errors='replace').split('\n')
+        source_lines = scanner_file.read_text(encoding="utf-8", errors="replace").split("\n")
 
-        tree = ast.parse('\n'.join(source_lines))
+        tree = ast.parse("\n".join(source_lines))
 
         undocumented_exceptions = []
 
@@ -181,7 +179,7 @@ class TestExceptionHandlingDocumentation:
                 for offset in [0, -1]:
                     check_idx = line_idx + offset
                     if 0 <= check_idx < len(source_lines):
-                        if '# guardian:' in source_lines[check_idx]:
+                        if "# guardian:" in source_lines[check_idx]:
                             has_guardian = True
                             break
 
@@ -196,19 +194,24 @@ class TestExceptionHandlingDocumentation:
                                 if isinstance(elt, ast.Name):
                                     exc_types.append(elt.id)
 
-                    undocumented_exceptions.append({
-                        'line': node.lineno,
-                        'exceptions': exc_types,
-                    })
+                    undocumented_exceptions.append(
+                        {
+                            "line": node.lineno,
+                            "exceptions": exc_types,
+                        }
+                    )
 
         # Filter to only critical exceptions (not ValueError, TypeError etc)
         critical_undocumented = [
-            e for e in undocumented_exceptions
-            if any(exc in {'StopIteration', 'GeneratorExit', 'RuntimeError'} for exc in e['exceptions'])
+            e
+            for e in undocumented_exceptions
+            if any(exc in {"StopIteration", "GeneratorExit", "RuntimeError"} for exc in e["exceptions"])
         ]
 
         assert not critical_undocumented, (
-            "Found undocumented exception handling for critical exceptions:\n" +
-            "\n".join(f"  Line {e['line']}: catches {e['exceptions']} without # guardian:"
-                     for e in critical_undocumented[:10])
+            "Found undocumented exception handling for critical exceptions:\n"
+            + "\n".join(
+                f"  Line {e['line']}: catches {e['exceptions']} without # guardian:"
+                for e in critical_undocumented[:10]
+            )
         )

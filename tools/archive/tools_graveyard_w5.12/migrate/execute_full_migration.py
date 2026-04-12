@@ -16,8 +16,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
 
 class FullMigrationExecutor:
     """Execute comprehensive migration of learning data to persistent memory."""
@@ -64,12 +65,16 @@ class FullMigrationExecutor:
             try:
                 category_stats = migration_func()
                 self.migration_stats["categories"][category_name] = category_stats
-                print(f"✅ {category_name}: {category_stats['migrated']} migrated, {category_stats['failed']} failed")
+                print(
+                    f"✅ {category_name}: {category_stats['migrated']} migrated, {category_stats['failed']} failed"
+                )
 
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error in {category_name} migration: {e}")
                 self.migration_stats["categories"][category_name] = {
-                    "migrated": 0, "failed": 0, "skipped": 0,
+                    "migrated": 0,
+                    "failed": 0,
+                    "skipped": 0,
                 }
 
         # Final summary
@@ -83,6 +88,7 @@ class FullMigrationExecutor:
 
         # Import and initialize
         from tools.implement_unified_memory import UnifiedMemoryManager
+
         self.memory_manager = UnifiedMemoryManager()
 
         print("✅ Unified memory database ready")
@@ -111,7 +117,7 @@ class FullMigrationExecutor:
 
             # Process files in batches
             for i in range(0, len(config_files), self.batch_size):
-                batch = config_files[i:i + self.batch_size]
+                batch = config_files[i : i + self.batch_size]
 
                 with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
                     futures = [executor.submit(self._migrate_config_file, file_path) for file_path in batch]
@@ -137,11 +143,11 @@ class FullMigrationExecutor:
         """Migrate a single configuration file."""
         try:
             # Read file content
-            if file_path.suffix == '.json':
-                with open(file_path, encoding='utf-8') as f:
+            if file_path.suffix == ".json":
+                with open(file_path, encoding="utf-8") as f:
                     content = json.load(f)
-            elif file_path.suffix in ['.pkl', '.ckpt']:
-                with open(file_path, 'rb') as f:
+            elif file_path.suffix in [".pkl", ".ckpt"]:
+                with open(file_path, "rb") as f:
                     content = pickle.load(f)
             else:
                 return False
@@ -154,7 +160,7 @@ class FullMigrationExecutor:
             self.memory_manager.store_application_state(
                 key=state_key,
                 value=content,
-                state_type="pickle" if file_path.suffix in ['.pkl', '.ckpt'] else "json",
+                state_type="pickle" if file_path.suffix in [".pkl", ".ckpt"] else "json",
             )
 
             return True
@@ -180,7 +186,7 @@ class FullMigrationExecutor:
         checkpoint_files = []
         for pattern in checkpoint_patterns:
             try:
-                checkpoint_files.extend(ROOT.rglob(pattern.split('/')[-1]))
+                checkpoint_files.extend(ROOT.rglob(pattern.split("/")[-1]))
             except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
@@ -211,8 +217,8 @@ class FullMigrationExecutor:
         """Migrate a single checkpoint file."""
         try:
             # Load checkpoint data
-            if file_path.suffix in ['.pkl', '.ckpt', '.model', '.pth']:
-                with open(file_path, 'rb') as f:
+            if file_path.suffix in [".pkl", ".ckpt", ".model", ".pth"]:
+                with open(file_path, "rb") as f:
                     checkpoint_data = pickle.load(f)
             else:
                 return False
@@ -241,11 +247,14 @@ class FullMigrationExecutor:
 
             # Store as model checkpoint
             from tools.implement_unified_memory import ModelCheckpoint
+
             checkpoint = ModelCheckpoint(
                 model_name=model_name,
                 version=version,
                 model_type="migrated_checkpoint",
-                weights=checkpoint_data if not isinstance(checkpoint_data, dict) else checkpoint_data.get("weights", {}),
+                weights=checkpoint_data
+                if not isinstance(checkpoint_data, dict)
+                else checkpoint_data.get("weights", {}),
                 metadata=metadata,
                 performance_metrics=performance_metrics,
                 created_at=datetime.now(),
@@ -274,13 +283,16 @@ class FullMigrationExecutor:
         training_files = []
         for pattern in training_patterns:
             try:
-                training_files.extend(ROOT.rglob(pattern.split('/')[-1]))
+                training_files.extend(ROOT.rglob(pattern.split("/")[-1]))
             except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
         # Filter relevant training files
-        training_files = [f for f in training_files if any(keyword in str(f).lower()
-                          for keyword in ['training', 'dataset', 'data', 'train'])]
+        training_files = [
+            f
+            for f in training_files
+            if any(keyword in str(f).lower() for keyword in ["training", "dataset", "data", "train"])
+        ]
 
         training_files = list(set(training_files))[:100]  # Limit to 100 for demo
 
@@ -303,11 +315,12 @@ class FullMigrationExecutor:
     def _migrate_training_file(self, file_path: Path) -> bool:
         """Migrate a single training file."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 training_data = json.load(f)
 
             # Store as learning experience
             from tools.implement_unified_memory import LearningExperience
+
             experience = LearningExperience(
                 experience_type="migrated_training_data",
                 input_context={"original_path": str(file_path.relative_to(ROOT))},
@@ -344,7 +357,7 @@ class FullMigrationExecutor:
         state_files = []
         for pattern in state_patterns:
             try:
-                state_files.extend(ROOT.rglob(pattern.split('/')[-1]))
+                state_files.extend(ROOT.rglob(pattern.split("/")[-1]))
             except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
@@ -369,7 +382,7 @@ class FullMigrationExecutor:
     def _migrate_state_file(self, file_path: Path) -> bool:
         """Migrate a single state file."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 state_data = json.load(f)
 
             # Generate state key
@@ -405,13 +418,16 @@ class FullMigrationExecutor:
         log_files = []
         for pattern in log_patterns:
             try:
-                log_files.extend(ROOT.rglob(pattern.split('/')[-1]))
+                log_files.extend(ROOT.rglob(pattern.split("/")[-1]))
             except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
         # Filter performance logs
-        log_files = [f for f in log_files if any(keyword in str(f).lower()
-                    for keyword in ['log', 'metric', 'performance', 'telemetry'])]
+        log_files = [
+            f
+            for f in log_files
+            if any(keyword in str(f).lower() for keyword in ["log", "metric", "performance", "telemetry"])
+        ]
 
         log_files = list(set(log_files))[:30]  # Limit for demo
 
@@ -434,7 +450,7 @@ class FullMigrationExecutor:
     def _migrate_log_file(self, file_path: Path) -> bool:
         """Migrate a single log file."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 log_data = json.load(f)
 
             # Extract performance metrics
@@ -483,7 +499,7 @@ class FullMigrationExecutor:
         interaction_files = []
         for pattern in interaction_patterns:
             try:
-                interaction_files.extend(ROOT.rglob(pattern.split('/')[-1]))
+                interaction_files.extend(ROOT.rglob(pattern.split("/")[-1]))
             except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
@@ -508,11 +524,12 @@ class FullMigrationExecutor:
     def _migrate_interaction_file(self, file_path: Path) -> bool:
         """Migrate a single user interaction file."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 interaction_data = json.load(f)
 
             # Store as learning experience
             from tools.implement_unified_memory import LearningExperience
+
             experience = LearningExperience(
                 experience_type="migrated_user_interaction",
                 input_context={"original_path": str(file_path.relative_to(ROOT))},
@@ -548,7 +565,7 @@ class FullMigrationExecutor:
         graph_files = []
         for pattern in graph_patterns:
             try:
-                files = ROOT.rglob(pattern.split('/')[-1])
+                files = ROOT.rglob(pattern.split("/")[-1])
                 # Exclude ADG files
                 graph_files.extend([f for f in files if "adg" not in str(f).lower()])
             except (ValueError, TypeError, RuntimeError) as e:
@@ -575,7 +592,7 @@ class FullMigrationExecutor:
     def _migrate_graph_file(self, file_path: Path) -> bool:
         """Migrate a single knowledge graph file."""
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 graph_data = json.load(f)
 
             # Store in knowledge graphs table
@@ -588,20 +605,25 @@ class FullMigrationExecutor:
 
             # Store using direct SQL for now
             conn = self.memory_manager.conn
-            conn.execute("""
+            conn.execute(
+                """
                 INSERT OR REPLACE INTO knowledge_graphs
                 (graph_name, graph_type, nodes, edges, metadata)
                 VALUES (?, ?, ?, ?, ?)
-            """, (
-                graph_name,
-                graph_type,
-                nodes_blob,
-                edges_blob,
-                json.dumps({
-                    "original_path": str(file_path.relative_to(ROOT)),
-                    "migration_timestamp": datetime.now().isoformat(),
-                }),
-            ))
+            """,
+                (
+                    graph_name,
+                    graph_type,
+                    nodes_blob,
+                    edges_blob,
+                    json.dumps(
+                        {
+                            "original_path": str(file_path.relative_to(ROOT)),
+                            "migration_timestamp": datetime.now().isoformat(),
+                        }
+                    ),
+                ),
+            )
 
             conn.commit()
             return True
@@ -626,7 +648,7 @@ class FullMigrationExecutor:
         embedding_files = []
         for pattern in embedding_patterns:
             try:
-                embedding_files.extend(ROOT.rglob(pattern.split('/')[-1]))
+                embedding_files.extend(ROOT.rglob(pattern.split("/")[-1]))
             except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
@@ -652,11 +674,11 @@ class FullMigrationExecutor:
         """Migrate a single embedding file."""
         try:
             # Load embedding data
-            if file_path.suffix == '.json':
-                with open(file_path, encoding='utf-8') as f:
+            if file_path.suffix == ".json":
+                with open(file_path, encoding="utf-8") as f:
                     embedding_data = json.load(f)
             else:
-                with open(file_path, 'rb') as f:
+                with open(file_path, "rb") as f:
                     embedding_data = pickle.load(f)
 
             # Handle different embedding formats
@@ -665,6 +687,7 @@ class FullMigrationExecutor:
                 for entity_id, vector in list(embedding_data["vectors"].items())[:5]:  # Limit to 5
                     if isinstance(vector, list) and len(vector) > 0:
                         from tools.implement_unified_memory import EmbeddingVector
+
                         embedding = EmbeddingVector(
                             entity_id=str(entity_id),
                             entity_type="migrated_embedding",
@@ -677,6 +700,7 @@ class FullMigrationExecutor:
             elif isinstance(embedding_data, list) and len(embedding_data) > 0:
                 # Single embedding vector
                 from tools.implement_unified_memory import EmbeddingVector
+
                 embedding = EmbeddingVector(
                     entity_id=file_path.stem,
                     entity_type="migrated_embedding",
@@ -777,7 +801,7 @@ def main():
 
     # Confirm execution
     response = input("\nContinue with migration? (y/N): ")
-    if response.lower() != 'y':
+    if response.lower() != "y":
         print("❌ Migration cancelled by user")
         return
 
@@ -793,7 +817,8 @@ def main():
     report_file = artifacts_dir / f"migration_report_{timestamp}.json"
 
     import json
-    with open(report_file, 'w') as f:
+
+    with open(report_file, "w") as f:
         json.dump(stats, f, indent=2, default=str)
 
     print(f"\n📊 Migration report saved: {report_file.name}")

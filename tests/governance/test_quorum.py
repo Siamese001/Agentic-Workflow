@@ -14,6 +14,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 @pytest.mark.governance
 def test_quorum_requires_threshold():
     """Blueprint update must fail if signature count < threshold."""

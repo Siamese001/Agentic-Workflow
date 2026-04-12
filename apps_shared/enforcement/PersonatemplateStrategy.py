@@ -13,6 +13,7 @@ from typing import Any
 
 class AgentRole(Enum):
     """Functional roles for agents."""
+
     CONTEXT_GATHERER = "context_gatherer"
     STRATEGIC_PLANNER = "strategic_planner"
     CONTENT_DRAFTER = "content_drafter"
@@ -202,6 +203,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
             Formatted prompt string
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PersonaTemplate.get_prompt")
 
@@ -318,8 +320,11 @@ class PromptSanitizer:
             Sanitized prompt
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptSanitizer.sanitize_prompt")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptSanitizer.sanitize_prompt"
+        )
 
         import re
 

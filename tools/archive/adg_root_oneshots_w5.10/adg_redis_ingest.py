@@ -220,8 +220,7 @@ def _spot_check_projection(
                 mismatches += 1
                 if not first_mismatch:
                     first_mismatch = (
-                        f"edge_id={row[0]} field={field} "
-                        f"expected={expected_val!r} got={actual!r}"
+                        f"edge_id={row[0]} field={field} expected={expected_val!r} got={actual!r}"
                     )
                 break
 
@@ -240,8 +239,7 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
     cpu_config = CPUConfig(use_processes=False, batch_size=BATCH_SIZE)
     optimizer = get_cpu_optimizer(cpu_config)
     ingest_start = time.time()
-    print(f"[cpu] Workers available: {optimizer.get_optimal_workers()} "
-          f"(AMD={optimizer._is_amd})")
+    print(f"[cpu] Workers available: {optimizer.get_optimal_workers()} (AMD={optimizer._is_amd})")
 
     sqlite_path = get_latest_sqlite(ADG_DIR)
     snapshot_path = get_latest_snapshot(ADG_DIR)
@@ -250,9 +248,15 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
 
     # Connection pool for better throughput
     r = redis.Redis(
-        host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True,
-        socket_keepalive=True, socket_connect_timeout=5, socket_timeout=30,
-        health_check_interval=30, max_connections=20,
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        db=REDIS_DB,
+        decode_responses=True,
+        socket_keepalive=True,
+        socket_connect_timeout=5,
+        socket_timeout=30,
+        health_check_interval=30,
+        max_connections=20,
     )
     r.ping()
     print(f"[redis] connected {REDIS_HOST}:{REDIS_PORT} (pooled)")
@@ -358,14 +362,11 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
             src = str(d.get("src_id") or d.get("source") or d.get("from_id") or "")
             tgt = str(d.get("dst_id") or d.get("target") or d.get("to_id") or "")
             rel = str(
-                d.get("relation_type") or d.get("relation")
-                or d.get("edge_type") or "unknown",
+                d.get("relation_type") or d.get("relation") or d.get("edge_type") or "unknown",
             )
 
             # Per-edge metadata HASH (zero-loss: all SQLite fields preserved)
-            safe_edge = {
-                k: str(v) for k, v in d.items() if v is not None and str(v) != ""
-            }
+            safe_edge = {k: str(v) for k, v in d.items() if v is not None and str(v) != ""}
             if not safe_edge:
                 safe_edge = {"id": edge_id}
             pipe.hmset(f"adg:edge_detail:{edge_id}", safe_edge)
@@ -404,11 +405,7 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
                 pipe = r.pipeline(transaction=False)
                 for row in rows:
                     vid = str(row.get("id", violation_count + 1))
-                    safe_v = {
-                        k: str(v)
-                        for k, v in row.items()
-                        if v is not None and str(v) != ""
-                    }
+                    safe_v = {k: str(v) for k, v in row.items() if v is not None and str(v) != ""}
                     if safe_v:
                         pipe.hmset(f"adg:violation:{vid}", safe_v)
                     pipe.rpush("adg:violations", vid)
@@ -424,10 +421,7 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
         pipe = r.pipeline(transaction=False)
         batch = 0
         for mid in mod_neighbors:
-            neighbors_ser = {
-                rel: sorted(list(nbrs))
-                for rel, nbrs in mod_neighbors[mid].items()
-            }
+            neighbors_ser = {rel: sorted(list(nbrs)) for rel, nbrs in mod_neighbors[mid].items()}
             counts_ser = dict(mod_edge_counts[mid])
             context_blob = json.dumps(
                 {"module_id": mid, "edge_counts": counts_ser, "neighbors": neighbors_ser},
@@ -512,8 +506,7 @@ def ingest(force: bool = False, parallel: bool = True) -> None:
     # ── Assert digest coherency ──
     if not projection_coherent:
         print(
-            f"[FAIL] DIGEST MISMATCH: SQLite={sqlite_digest[:16]}... "
-            f"Redis={redis_digest[:16]}...",
+            f"[FAIL] DIGEST MISMATCH: SQLite={sqlite_digest[:16]}... Redis={redis_digest[:16]}...",
         )
         conn.close()
         sys.exit(1)

@@ -129,34 +129,33 @@ class StateValidator:
         all_entities: list[tuple[int, str]] = []
 
         for i, instance in enumerate(test_instances):
-            if hasattr(instance, 'validate_state_isolation'):
+            if hasattr(instance, "validate_state_isolation"):
                 validation = instance.validate_state_isolation()
                 registered_entities = validation.get("registered_entities") or []
                 for entity in registered_entities:
                     all_entities.append((i, entity))
-                results.append({
-                    "instance_index": i,
-                    "is_clean": validation["is_clean"],
-                    "registered_entities": validation["registered_entities_count"],
-                    "stats_totals": validation["stats_totals"],
-                })
+                results.append(
+                    {
+                        "instance_index": i,
+                        "is_clean": validation["is_clean"],
+                        "registered_entities": validation["registered_entities_count"],
+                        "stats_totals": validation["stats_totals"],
+                    }
+                )
             else:
-                results.append({
-                    "instance_index": i,
-                    "is_clean": None,
-                    "error": "No validation method available",
-                })
+                results.append(
+                    {
+                        "instance_index": i,
+                        "is_clean": None,
+                        "error": "No validation method available",
+                    }
+                )
 
         entity_counts: dict[str, set[int]] = {}
         for idx, entity in all_entities:
             entity_counts.setdefault(entity, set()).add(idx)
 
-        leaky_indices = {
-            idx
-            for entity, owners in entity_counts.items()
-            if len(owners) > 1
-            for idx in owners
-        }
+        leaky_indices = {idx for entity, owners in entity_counts.items() if len(owners) > 1 for idx in owners}
 
         return {
             "total_instances": len(test_instances),
@@ -211,17 +210,20 @@ def clean_env():
 
     # Keep essential variables but remove test additions
     essential_vars = [
-        "PATH", "HOME", "USER", "TEMP", "TMP", "USERNAME",
-        "COMPUTERNAME", "SYSTEMROOT", "WINDIR",
+        "PATH",
+        "HOME",
+        "USER",
+        "TEMP",
+        "TMP",
+        "USERNAME",
+        "COMPUTERNAME",
+        "SYSTEMROOT",
+        "WINDIR",
     ]
 
     clean_env = {k: v for k, v in original_env.items() if k in essential_vars}
     if "HOME" not in clean_env and "USERPROFILE" not in clean_env:
-        fallback_home = (
-            original_env.get("USERPROFILE")
-            or original_env.get("HOME")
-            or str(Path.home())
-        )
+        fallback_home = original_env.get("USERPROFILE") or original_env.get("HOME") or str(Path.home())
         clean_env["USERPROFILE"] = fallback_home
     os.environ.clear()
     os.environ.update(clean_env)

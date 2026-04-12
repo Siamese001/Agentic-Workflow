@@ -4,6 +4,7 @@ fan_in=11 — this module is imported by 11 other modules.
 ADG contract: import-hygiene is covered by test_HardenedeventbusStrategy_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import sys
@@ -36,23 +37,27 @@ class TestHardenedEventBusContract:
         assert isinstance(HardenedEventBus, type)
 
     def test_has_method_initialize(self):
-        assert callable(getattr(HardenedEventBus, 'initialize', None))
+        assert callable(getattr(HardenedEventBus, "initialize", None))
 
     def test_has_method_publish(self):
-        assert callable(getattr(HardenedEventBus, 'publish', None))
+        assert callable(getattr(HardenedEventBus, "publish", None))
 
     def test_has_method_subscribe(self):
-        assert callable(getattr(HardenedEventBus, 'subscribe', None))
+        assert callable(getattr(HardenedEventBus, "subscribe", None))
 
     def test_has_method_unsubscribe(self):
-        assert callable(getattr(HardenedEventBus, 'unsubscribe', None))
+        assert callable(getattr(HardenedEventBus, "unsubscribe", None))
+
 
 class TestGetHardenedEventBusFunction:
     def test_is_callable(self):
         pass
+
+
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
+
 
 class TestBatchSizeConstant:
     def test_is_not_none(self):

@@ -16,8 +16,13 @@ AudiencePersona = Literal["recruiter", "cto", "svp_eng", "board", "head_of_ai"]
 BriefTone = Literal["board-ready", "cto-ready", "recruiter-friendly", "technical"]
 
 EmphasisArea = Literal[
-    "governance", "orchestration", "rag", "commercialization",
-    "safety", "observability", "determinism",
+    "governance",
+    "orchestration",
+    "rag",
+    "commercialization",
+    "safety",
+    "observability",
+    "determinism",
 ]
 
 BriefStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
@@ -74,7 +79,9 @@ class ExecBriefRequest(BaseModel):
     """Input contract for a single executive brief generation run."""
 
     audience: AudiencePersona = Field("recruiter", description="Target audience")
-    source_dirs: list[str] = Field(default_factory=lambda: ["docs/architecture"], description="Source directories")
+    source_dirs: list[str] = Field(
+        default_factory=lambda: ["docs/architecture"], description="Source directories"
+    )
     emphasis_areas: list[EmphasisArea] = Field(default_factory=list, description="Areas to emphasize")
     tone: BriefTone = Field("technical", description="Brief tone")
     industry: str = Field("", description="Industry sector")
@@ -91,13 +98,21 @@ class ExecBriefResult(BaseModel):
     tone: str = Field("", description="Brief tone")
     status: BriefStatus = Field("pending", description="Generation status")
     sections: list[BriefSection] = Field(default_factory=list, description="Generated sections")
-    capabilities_extracted: list[CapabilityEvidence] = Field(default_factory=list, description="Extracted capabilities")
+    capabilities_extracted: list[CapabilityEvidence] = Field(
+        default_factory=list, description="Extracted capabilities"
+    )
     quality_score: float = Field(0.0, ge=0, le=1, description="Overall quality score")
     gate_violations: list[str] = Field(default_factory=list, description="Gate violations")
     artifact_paths: list[str] = Field(default_factory=list, description="Output artifact paths")
     provenance: dict = Field(default_factory=dict, description="Provenance metadata")
     run_summary_path: str = Field("", description="Summary output path")
     error: str = Field("", description="Error message")
+    qwen_inference_result: dict | None = Field(
+        None, description="Local Qwen vLLM inference result when LOCAL_VLLM routing selected"
+    )
+    local_first_disposition: dict | None = Field(
+        None, description="Current-run routing disposition packet for local-first Qwen lane"
+    )
 
     @property
     def passed_gate(self) -> bool:

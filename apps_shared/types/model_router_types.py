@@ -430,7 +430,10 @@ class ModelRouter:
         )
 
     def get_model_config(
-        self, task_type: TaskType, complexity_score: int = 1, force_tier: ModelTier | None = None,
+        self,
+        task_type: TaskType,
+        complexity_score: int = 1,
+        force_tier: ModelTier | None = None,
     ) -> dict[str, Any]:
         """Get model configuration for a task.
 
@@ -444,7 +447,11 @@ class ModelRouter:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"AdaptiveModelRouter.get_model_config:{task_type}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"AdaptiveModelRouter.get_model_config:{task_type}",
+        )
         profile = self._task_profiles.get(task_type)
         # guardian: allow-config-with-logic
         if not profile:
@@ -752,7 +759,6 @@ class FallbackClient:
                     logger.error(f"[FallbackClient] All providers failed: {fallback_error}")
                     raise
             raise RuntimeError(f"All model attempts failed. Last error: {e}")
-
 
 
 class SequentialThinkingClient:

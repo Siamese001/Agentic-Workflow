@@ -172,13 +172,19 @@ class AgentDiscoveryCache:
     """
 
     def __init__(
-        self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_DISCOVERY_TTL,
+        self,
+        cache: DeterministicRedisCache | None = None,
+        ttl_seconds: int = _DEFAULT_DISCOVERY_TTL,
     ):
         self._cache = cache or get_hot_cache()
         self._ttl = ttl_seconds
 
     def get_or_fetch(
-        self, discovery_path: Path, fetch_from_disk: Any, *, replay_mode: bool = False,
+        self,
+        discovery_path: Path,
+        fetch_from_disk: Any,
+        *,
+        replay_mode: bool = False,
     ) -> list[dict[str, Any]]:
         """Read-through helper: return cached parsed agents or call *fetch_from_disk*.
 
@@ -197,8 +203,11 @@ class AgentDiscoveryCache:
             FileNotFoundError: If discovery_path does not exist
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentDiscoveryCache.get_or_fetch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AgentDiscoveryCache.get_or_fetch"
+        )
 
         if not replay_mode:
             try:
@@ -254,6 +263,7 @@ class AgentDiscoveryCache:
 def get_agent_discovery_cache() -> AgentDiscoveryCache:
     """Get the singleton agent discovery cache instance."""
     return AgentDiscoveryCache()
+
 
 _emit_reads_through("l4", "discovery_cache", "urg_read_1")
 _emit_reads_through("l4", "discovery_cache", "urg_read_2")

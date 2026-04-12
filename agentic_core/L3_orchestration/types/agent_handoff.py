@@ -51,7 +51,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_routes_to_agent,
     _emit_validates_agent_capability,
     emit_determinism_digest,  # noqa: E402
-    )
+)
 from agentic_core.runtime.types.execution_trace import get_active_execution_trace
 
 _emit_routes_to_agent("p1", "agent_handoff", "L3")
@@ -59,7 +59,6 @@ _emit_orchestrates_workflow("p1", "agent_handoff", "L3")
 _emit_dispatches_execution_plan("p1", "agent_handoff", "L3")
 _emit_validates_agent_capability("p1", "agent_handoff", "L3")
 _emit_checks_agent_registry("p1", "agent_handoff", "L3")
-
 
 
 emit_determinism_digest("trace_agent_handoff", "agent_handoff_dispatch_entry")
@@ -170,7 +169,9 @@ class HandoffRecord:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "HandoffRecord.mark_completed",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "HandoffRecord.mark_completed",
         )
 
         self.status = HandoffStatus.COMPLETED
@@ -267,7 +268,10 @@ class HandoffDispatcher:
                 preferred_agent_id=handoff.dst,
             )
             get_capability_decision_store().ingest(_decision)
-        except (CapabilityNotFoundError, CapabilityPermissionError) as exc:    # guardian: Multiple exceptions (CapabilityNotFoundError, CapabilityPermissionError) need specific handling
+        except (
+            CapabilityNotFoundError,
+            CapabilityPermissionError,
+        ) as exc:  # guardian: Multiple exceptions (CapabilityNotFoundError, CapabilityPermissionError) need specific handling
             record.mark_failed(f"REGISTRY_REJECTED:{exc}")
             logger.error(
                 "HANDOFF_REGISTRY_REJECTED src=%s dst=%s cap=%s error=%s",

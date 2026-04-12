@@ -181,7 +181,11 @@ class HardenedGeminiExecutor:
             self._gateway = None
 
     def execute(
-        self, prompt: str, model: str | None = None, temperature: float = 0.7, max_tokens: int | None = None,
+        self,
+        prompt: str,
+        model: str | None = None,
+        temperature: float = 0.7,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
         """Execute a prompt via SovereignLLMGateway (Google/Gemini path).
 
@@ -189,8 +193,11 @@ class HardenedGeminiExecutor:
             dict with 'content', 'model', 'provider', 'success' keys.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedGeminiExecutor.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedGeminiExecutor.execute"
+        )
 
         if self._gateway is None:
             raise RuntimeError("HardenedGeminiExecutor: SovereignLLMGateway not available — cannot execute")
@@ -198,7 +205,10 @@ class HardenedGeminiExecutor:
 
         effective_model = model or "gemini-2.5-pro"
         request = GenerationRequest(
-            agent_id=self.agent_id, provider="google", model=effective_model, prompt=prompt,
+            agent_id=self.agent_id,
+            provider="google",
+            model=effective_model,
+            prompt=prompt,
         )
         last_exc: Exception | None = None
         for attempt in range(1, self.max_retries + 1):
@@ -209,7 +219,9 @@ class HardenedGeminiExecutor:
                 finally:
                     loop.close()
                 logger.debug(
-                    "HardenedGeminiExecutor: success on attempt %d model=%s", attempt, effective_model,
+                    "HardenedGeminiExecutor: success on attempt %d model=%s",
+                    attempt,
+                    effective_model,
                 )
                 return {
                     "content": response.content,
@@ -222,7 +234,10 @@ class HardenedGeminiExecutor:
             except Exception as exc:
                 last_exc = exc
                 logger.warning(
-                    "HardenedGeminiExecutor attempt %d/%d failed: %s", attempt, self.max_retries, exc,
+                    "HardenedGeminiExecutor attempt %d/%d failed: %s",
+                    attempt,
+                    self.max_retries,
+                    exc,
                 )
         raise RuntimeError(
             f"HardenedGeminiExecutor: all {self.max_retries} attempts failed. Last: {last_exc}",

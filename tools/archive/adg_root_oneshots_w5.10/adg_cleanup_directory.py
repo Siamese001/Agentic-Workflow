@@ -117,5 +117,6 @@ def cleanup_adg_directory():
 
     print("\n✅ ADG directory cleanup complete!")
 
+
 if __name__ == "__main__":
     cleanup_adg_directory()

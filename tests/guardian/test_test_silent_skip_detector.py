@@ -173,6 +173,7 @@ def det():
 @pytest.fixture
 def test_py(tmp_path):
     """Write content into a test_probe.py file (test file name)."""
+
     def _make(content: str) -> Path:
         p = tmp_path / "test_probe.py"
         p.write_text(content, encoding="utf-8")

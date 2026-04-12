@@ -28,12 +28,39 @@ from typing import Any, Dict, List, Set, Tuple
 # Imports that should stay at module level (safe for collection)
 SAFE_IMPORTS = {
     # Standard library
-    "pytest", "unittest", "mock", "unittest.mock", "os", "sys", "pathlib",
-    "datetime", "time", "uuid", "re", "json", "yaml", "csv", "io", "tempfile",
-    "math", "random", "itertools", "functools", "operator", "dataclasses",
-    "typing", "collections", "contextlib", "warnings", "logging",
+    "pytest",
+    "unittest",
+    "mock",
+    "unittest.mock",
+    "os",
+    "sys",
+    "pathlib",
+    "datetime",
+    "time",
+    "uuid",
+    "re",
+    "json",
+    "yaml",
+    "csv",
+    "io",
+    "tempfile",
+    "math",
+    "random",
+    "itertools",
+    "functools",
+    "operator",
+    "dataclasses",
+    "typing",
+    "collections",
+    "contextlib",
+    "warnings",
+    "logging",
     # Testing utilities
-    "pytest_asyncio", "pytest_mock", "factory_boy", "faker", "freezegun",
+    "pytest_asyncio",
+    "pytest_mock",
+    "factory_boy",
+    "faker",
+    "freezegun",
     # Future statements
     "__future__",
 }
@@ -143,17 +170,17 @@ class DelayedImportTransformer(ast.NodeTransformer):
                 for import_stmt in self.imports_to_delay:
                     # Clone the import statement to avoid modifying the original
                     if isinstance(import_stmt, ast.Import):
-                        new_import = ast.Import(names=[
-                            ast.alias(name=alias.name, asname=alias.asname)
-                            for alias in import_stmt.names
-                        ])
+                        new_import = ast.Import(
+                            names=[
+                                ast.alias(name=alias.name, asname=alias.asname) for alias in import_stmt.names
+                            ]
+                        )
                     elif isinstance(import_stmt, ast.ImportFrom):
                         new_import = ast.ImportFrom(
                             module=import_stmt.module,
                             level=import_stmt.level,
                             names=[
-                                ast.alias(name=alias.name, asname=alias.asname)
-                                for alias in import_stmt.names
+                                ast.alias(name=alias.name, asname=alias.asname) for alias in import_stmt.names
                             ],
                         )
                     else:
@@ -176,7 +203,7 @@ class DelayedImportTransformer(ast.NodeTransformer):
 def analyze_file(file_path: pathlib.Path) -> Dict[str, Any]:
     """Analyze a Python file for delayed import conversion."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
 
         tree = ast.parse(content)
@@ -203,7 +230,7 @@ def analyze_file(file_path: pathlib.Path) -> Dict[str, Any]:
 def convert_file(file_path: pathlib.Path, validate: bool = False) -> Dict[str, Any]:
     """Convert a Python file to use delayed imports."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             original_content = f.read()
 
         tree = ast.parse(original_content)
@@ -236,7 +263,7 @@ def convert_file(file_path: pathlib.Path, validate: bool = False) -> Dict[str, A
         new_content = ast.unparse(new_tree)
 
         # Write back to file
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.write(new_content)
 
         return {

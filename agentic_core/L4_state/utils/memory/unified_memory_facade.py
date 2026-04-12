@@ -263,7 +263,9 @@ class UnifiedMemoryFacade:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "UnifiedMemoryFacade.register_backend",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "UnifiedMemoryFacade.register_backend",
         )
 
         self._backends[name] = backend

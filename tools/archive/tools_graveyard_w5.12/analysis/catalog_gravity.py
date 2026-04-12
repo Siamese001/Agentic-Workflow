@@ -4,7 +4,7 @@
 import glob
 import sqlite3
 
-files = glob.glob('artifacts/adg/adg_indexed_*.sqlite')
+files = glob.glob("artifacts/adg/adg_indexed_*.sqlite")
 latest = sorted(files)[-1]
 
 conn = sqlite3.connect(latest)
@@ -20,8 +20,8 @@ cur.execute("""
 
 rows = cur.fetchall()
 
-print('=== LAYER GRAVITY VIOLATIONS - DETAILED CATALOG ===')
-print(f'Total: {len(rows)} violations')
+print("=== LAYER GRAVITY VIOLATIONS - DETAILED CATALOG ===")
+print(f"Total: {len(rows)} violations")
 print()
 
 # Group by violation type
@@ -32,9 +32,9 @@ for evidence, fp, line in rows:
         if current_type:
             print()
         current_type = evidence
-        print(f'\n{evidence}:')
+        print(f"\n{evidence}:")
         count = 0
-    print(f'  {fp}:{line}')
+    print(f"  {fp}:{line}")
     count += 1
 
 conn.close()

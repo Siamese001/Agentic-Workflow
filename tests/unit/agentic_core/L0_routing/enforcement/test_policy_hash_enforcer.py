@@ -1,4 +1,5 @@
 """Placeholder test file - syntax fixed."""
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -16,36 +17,49 @@ class GeneratedTest(unittest.TestCase):
     def test_format(self):
         """Test format function."""
         from agentic_core.L0_routing.enforcement import format
+
         result = format()
         self.assertIsNotNone(result)
 
     def test_active_merkle_root(self):
         """Test active_merkle_root function."""
         from agentic_core.L0_routing.enforcement import active_merkle_root
+
         result = active_merkle_root()
         self.assertIsNotNone(result)
 
     def test_PolicyHashViolation_init(self):
         """Test PolicyHashViolation initialization."""
         from agentic_core.L0_routing.enforcement import PolicyHashViolation
+
         instance = PolicyHashViolation("test violation")
         self.assertIsNotNone(instance)
 
     def test_PolicyHashValidationResult_init(self):
         """Test PolicyHashValidationResult initialization."""
         from agentic_core.L0_routing.enforcement import PolicyHashValidationResult
+
         instance = PolicyHashValidationResult(
-            passed=True, packet_id="packet123", policy_hash_present=True,
-            policy_hash_matches=True, active_root="root123", packet_hash="hash123",
+            passed=True,
+            packet_id="packet123",
+            policy_hash_present=True,
+            policy_hash_matches=True,
+            active_root="root123",
+            packet_hash="hash123",
         )
         self.assertIsNotNone(instance)
 
     def test_PolicyHashValidationResult_format(self):
         """Test PolicyHashValidationResult.format method."""
         from agentic_core.L0_routing.enforcement import PolicyHashValidationResult
+
         instance = PolicyHashValidationResult(
-            passed=True, packet_id="packet123", policy_hash_present=True,
-            policy_hash_matches=True, active_root="root123", packet_hash="hash123",
+            passed=True,
+            packet_id="packet123",
+            policy_hash_present=True,
+            policy_hash_matches=True,
+            active_root="root123",
+            packet_hash="hash123",
         )
         result = instance.format()
         self.assertIsNotNone(result)
@@ -55,5 +69,6 @@ class GeneratedTest(unittest.TestCase):
         # packet_hash is truncated in format output, just check it's not empty
         self.assertTrue(len(result) > 50)  # Reasonable length for formatted output
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

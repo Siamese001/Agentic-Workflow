@@ -25,6 +25,7 @@ Examples:
     python tools/adg/adg_direct.py find_node "adg_backed_registry"
     python tools/adg/adg_direct.py sql "SELECT relation_type, COUNT(*) c FROM edges GROUP BY relation_type ORDER BY c DESC LIMIT 20"
 """
+
 from __future__ import annotations
 
 import json
@@ -50,6 +51,7 @@ _ADG_DIR = get_adg_dir()
 def _get_redis():
     try:
         import redis as _r
+
         client = _r.from_url(_REDIS_URL, decode_responses=True, socket_connect_timeout=2)
         client.ping()
         return client
@@ -82,14 +84,15 @@ def _pp(obj: Any) -> None:
 
 
 def _header(title: str) -> None:
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"  {title}")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
 
 # ---------------------------------------------------------------------------
 # Commands
 # ---------------------------------------------------------------------------
+
 
 def cmd_status(args: list[str]) -> None:
     _header("ADG STATUS")
@@ -113,7 +116,9 @@ def cmd_status(args: list[str]) -> None:
             print(f"AGE        : {age}s")
             print(f"DIGEST     : {status.get('digest', 'n/a')}")
             print(f"COHERENT   : {status.get('projection_coherent', 'unknown')}")
-            print(f"VERDICT    : {'HOT [OK]' if is_fresh else 'STALE — run: python tools/adg/adg_redis_ingest.py --force'}")
+            print(
+                f"VERDICT    : {'HOT [OK]' if is_fresh else 'STALE — run: python tools/adg/adg_redis_ingest.py --force'}"
+            )
             return
         else:
             print("Redis: adg:status key missing — falling back to SQLite")
@@ -222,7 +227,8 @@ def cmd_nodes_by_layer(args: list[str]) -> None:
     if not con:
         return
     rows = con.execute(
-        "SELECT id, adg_name, entity_type FROM nodes WHERE layer=? LIMIT ?", (layer, limit),
+        "SELECT id, adg_name, entity_type FROM nodes WHERE layer=? LIMIT ?",
+        (layer, limit),
     ).fetchall()
     total = con.execute("SELECT COUNT(*) FROM nodes WHERE layer=?", (layer,)).fetchone()[0]
     print(f"SOURCE: SQLite | Total in layer: {total:,} | Showing: {len(rows)}")
@@ -254,7 +260,8 @@ def cmd_nodes_by_file(args: list[str]) -> None:
     if not con:
         return
     rows = con.execute(
-        "SELECT id, adg_name, entity_type FROM nodes WHERE resolved_path LIKE ?", (f"%{path}%",),
+        "SELECT id, adg_name, entity_type FROM nodes WHERE resolved_path LIKE ?",
+        (f"%{path}%",),
     ).fetchall()
     print(f"SOURCE: SQLite | {len(rows)} nodes")
     for row in rows[:50]:
@@ -279,7 +286,9 @@ def cmd_edge_fanout(args: list[str]) -> None:
             for eid in shown:
                 detail = r.hgetall(f"adg:edge_detail:{eid}")
                 if detail:
-                    print(f"  -> {detail.get('dst_id', '?')} [{detail.get('symbol', '')}] @ {detail.get('source_file', '')}:{detail.get('line_no', '')}")
+                    print(
+                        f"  -> {detail.get('dst_id', '?')} [{detail.get('symbol', '')}] @ {detail.get('source_file', '')}:{detail.get('line_no', '')}"
+                    )
                 else:
                     print(f"  edge_id={eid}")
             return
@@ -295,7 +304,8 @@ def cmd_edge_fanout(args: list[str]) -> None:
         (src_id, rel, limit),
     ).fetchall()
     total = con.execute(
-        "SELECT COUNT(*) FROM edges WHERE src_id=? AND relation_type=?", (src_id, rel),
+        "SELECT COUNT(*) FROM edges WHERE src_id=? AND relation_type=?",
+        (src_id, rel),
     ).fetchone()[0]
     print(f"SOURCE: SQLite | Total: {total} | Showing: {len(rows)}")
     for row in rows:
@@ -320,7 +330,9 @@ def cmd_edge_fanin(args: list[str]) -> None:
             for eid in shown:
                 detail = r.hgetall(f"adg:edge_detail:{eid}")
                 if detail:
-                    print(f"  <- {detail.get('src_id', '?')} [{detail.get('symbol', '')}] @ {detail.get('source_file', '')}:{detail.get('line_no', '')}")
+                    print(
+                        f"  <- {detail.get('src_id', '?')} [{detail.get('symbol', '')}] @ {detail.get('source_file', '')}:{detail.get('line_no', '')}"
+                    )
                 else:
                     print(f"  edge_id={eid}")
             return
@@ -336,7 +348,8 @@ def cmd_edge_fanin(args: list[str]) -> None:
         (tgt_id, rel, limit),
     ).fetchall()
     total = con.execute(
-        "SELECT COUNT(*) FROM edges WHERE dst_id=? AND relation_type=?", (tgt_id, rel),
+        "SELECT COUNT(*) FROM edges WHERE dst_id=? AND relation_type=?",
+        (tgt_id, rel),
     ).fetchone()[0]
     print(f"SOURCE: SQLite | Total: {total} | Showing: {len(rows)}")
     for row in rows:
@@ -357,7 +370,9 @@ def cmd_violations(args: list[str]) -> None:
             for vid in vids:
                 v = r.hgetall(f"adg:violation:{vid}")
                 if v:
-                    print(f"  [{v.get('category', '?')}] {v.get('file_path', '?')}:{v.get('line_number', '?')} — {v.get('evidence', '')[:80]}")
+                    print(
+                        f"  [{v.get('category', '?')}] {v.get('file_path', '?')}:{v.get('line_number', '?')} — {v.get('evidence', '')[:80]}"
+                    )
                 else:
                     print(f"  violation_id={vid}")
             return
@@ -373,7 +388,8 @@ def cmd_violations(args: list[str]) -> None:
         return
     try:
         rows = con.execute(
-            "SELECT source_file, relation_type, symbol FROM edges WHERE relation_type='violates' LIMIT ?", (limit,),
+            "SELECT source_file, relation_type, symbol FROM edges WHERE relation_type='violates' LIMIT ?",
+            (limit,),
         ).fetchall()
         print(f"SOURCE: SQLite (approximation via violates edges) | Showing: {len(rows)}")
         for row in rows:

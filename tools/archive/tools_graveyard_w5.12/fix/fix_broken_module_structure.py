@@ -69,15 +69,34 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                 s = lines[i].strip()
                 if s.startswith("from __future__") or s.startswith("import ") or s.startswith("from "):
                     # Check if it's a stdlib/third-party import
-                    if any(s.startswith(p) for p in [
-                        "from __future__", "import os", "import re", "import sys",
-                        "import logging", "import json", "import time", "import uuid",
-                        "from typing", "from dataclasses", "from pathlib", "from enum",
-                        "from collections", "from abc", "from functools", "from datetime",
-                        "import hashlib", "import hmac", "from contextlib",
-                        "import ast", "import math", "import statistics",
-                        "from pydantic",
-                    ]):
+                    if any(
+                        s.startswith(p)
+                        for p in [
+                            "from __future__",
+                            "import os",
+                            "import re",
+                            "import sys",
+                            "import logging",
+                            "import json",
+                            "import time",
+                            "import uuid",
+                            "from typing",
+                            "from dataclasses",
+                            "from pathlib",
+                            "from enum",
+                            "from collections",
+                            "from abc",
+                            "from functools",
+                            "from datetime",
+                            "import hashlib",
+                            "import hmac",
+                            "from contextlib",
+                            "import ast",
+                            "import math",
+                            "import statistics",
+                            "from pydantic",
+                        ]
+                    ):
                         has_stdlib_after = True
                         first_stdlib_after = i
                         break
@@ -98,7 +117,7 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                 continue
 
             # Extract the LTC block
-            ltc_lines = lines[ltc_block_start:ltc_block_end + 1]
+            ltc_lines = lines[ltc_block_start : ltc_block_end + 1]
 
             # Also extract any _emit_* call lines immediately after the block
             emit_calls_end = ltc_block_end + 1
@@ -109,7 +128,7 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                 else:
                     break
 
-            emit_call_lines = lines[ltc_block_end + 1:emit_calls_end]
+            emit_call_lines = lines[ltc_block_end + 1 : emit_calls_end]
 
             # Remove the LTC block + emit calls from their current position
             new_lines = lines[:ltc_block_start] + lines[emit_calls_end:]

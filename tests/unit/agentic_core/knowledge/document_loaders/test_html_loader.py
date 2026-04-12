@@ -4,7 +4,7 @@ from pathlib import Path
 
 
 def test_html_loader_extracts_visible_text(tmp_path: Path):
-        """Visible text is extracted and HTML tags are stripped."""
+    """Visible text is extracted and HTML tags are stripped."""
 
 
 def test_html_loader_strips_script_and_style(tmp_path: Path):

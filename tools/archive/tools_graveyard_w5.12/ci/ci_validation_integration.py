@@ -12,9 +12,15 @@ def run_validation():
     """Run validation and output CI-friendly results."""
     try:
         # Run validation runner
-        result = subprocess.run([
-            sys.executable, "tools/validation_runner.py",
-        ], capture_output=True, text=True, cwd=Path.cwd())
+        result = subprocess.run(
+            [
+                sys.executable,
+                "tools/validation_runner.py",
+            ],
+            capture_output=True,
+            text=True,
+            cwd=Path.cwd(),
+        )
 
         # Output results in CI-friendly format
         print("=== Validation Results ===")
@@ -33,10 +39,12 @@ def run_validation():
         print(f"::error::Validation runner error: {e}")
         return 1
 
+
 def main():
     """Main CI integration."""
     exit_code = run_validation()
     sys.exit(exit_code)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

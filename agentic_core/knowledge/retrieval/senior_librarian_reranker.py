@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class RerankResult:
     """Result after reranking."""
+
     doc_id: str
     original_score: float
     rerank_score: float
@@ -76,7 +77,9 @@ class SeniorLibrarianReranker:
         """
         trace_id = f"rerank_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "SeniorLibrarianReranker.rerank",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "SeniorLibrarianReranker.rerank",
         )
 
         reranked = []
@@ -89,21 +92,23 @@ class SeniorLibrarianReranker:
 
             # Combined score
             final_score = (
-                relevance * self.relevance_weight +
-                coverage * self.coverage_weight +
-                authority * self.authority_weight
+                relevance * self.relevance_weight
+                + coverage * self.coverage_weight
+                + authority * self.authority_weight
             )
 
-            reranked.append(RerankResult(
-                doc_id=getattr(candidate, 'doc_id', 'unknown'),
-                original_score=getattr(candidate, 'score', 0.0),
-                rerank_score=final_score,
-                relevance_score=relevance,
-                coverage_score=coverage,
-                authority_score=authority,
-                content=getattr(candidate, 'content', ''),
-                metadata=getattr(candidate, 'metadata', {}),
-            ))
+            reranked.append(
+                RerankResult(
+                    doc_id=getattr(candidate, "doc_id", "unknown"),
+                    original_score=getattr(candidate, "score", 0.0),
+                    rerank_score=final_score,
+                    relevance_score=relevance,
+                    coverage_score=coverage,
+                    authority_score=authority,
+                    content=getattr(candidate, "content", ""),
+                    metadata=getattr(candidate, "metadata", {}),
+                )
+            )
 
         # Sort by rerank score
         reranked.sort(key=lambda x: x.rerank_score, reverse=True)
@@ -121,7 +126,7 @@ class SeniorLibrarianReranker:
 
     def _score_relevance(self, query: str, candidate: Any) -> float:
         """Score relevance of candidate to query."""
-        content = getattr(candidate, 'content', '').lower()
+        content = getattr(candidate, "content", "").lower()
         query_terms = query.lower().split()
 
         if not content or not query_terms:
@@ -133,7 +138,7 @@ class SeniorLibrarianReranker:
 
     def _score_coverage(self, query: str, candidate: Any) -> float:
         """Score how well candidate covers query aspects."""
-        content = getattr(candidate, 'content', '')
+        content = getattr(candidate, "content", "")
 
         if not content:
             return 0.5
@@ -145,16 +150,16 @@ class SeniorLibrarianReranker:
 
     def _score_authority(self, candidate: Any) -> float:
         """Score authority/trustworthiness of candidate."""
-        metadata = getattr(candidate, 'metadata', {})
+        metadata = getattr(candidate, "metadata", {})
 
         # Source quality indicators
         score = 0.5
 
-        if metadata.get('is_official'):
+        if metadata.get("is_official"):
             score += 0.3
-        if metadata.get('is_reviewed'):
+        if metadata.get("is_reviewed"):
             score += 0.1
-        if metadata.get('version'):
+        if metadata.get("version"):
             score += 0.1
 
         return min(score, 1.0)

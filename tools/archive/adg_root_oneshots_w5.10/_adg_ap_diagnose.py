@@ -3,6 +3,7 @@
 Diagnose why suppression tokens are not being respected.
 Reads exact whitelist check logic from each validator.
 """
+
 from __future__ import annotations
 
 import re
@@ -13,10 +14,7 @@ SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache", "archives"
 
 
 def show_whitelist_logic(validator_filename: str) -> None:
-    hits = [
-        p for p in REPO.rglob(validator_filename)
-        if not any(s in p.parts for s in SKIP_DIRS)
-    ]
+    hits = [p for p in REPO.rglob(validator_filename) if not any(s in p.parts for s in SKIP_DIRS)]
     if not hits:
         print(f"  {validator_filename}: NOT FOUND")
         return
@@ -29,7 +27,7 @@ def show_whitelist_logic(validator_filename: str) -> None:
     check_lines = []
     for i, line in enumerate(lines):
         if "WHITELIST_COMMENT" in line or "whitelist" in line.lower() or "guardian" in line.lower():
-            check_lines.append(f"    {i+1}: {line.rstrip()}")
+            check_lines.append(f"    {i + 1}: {line.rstrip()}")
     print(f"\n  {validator_filename}")
     print(f"    token = {token!r}")
     print("    usage lines:")
@@ -39,10 +37,7 @@ def show_whitelist_logic(validator_filename: str) -> None:
 
 def show_current_line(filepath: str, lineno: int) -> None:
     """Show the actual line content after suppression was applied."""
-    hits = [
-        p for p in REPO.rglob(filepath)
-        if not any(s in p.parts for s in SKIP_DIRS)
-    ]
+    hits = [p for p in REPO.rglob(filepath) if not any(s in p.parts for s in SKIP_DIRS)]
     if not hits:
         print(f"  {filepath}: NOT FOUND")
         return
@@ -50,9 +45,6 @@ def show_current_line(filepath: str, lineno: int) -> None:
     idx = lineno - 1
     if 0 <= idx < len(lines):
         print(f"  {filepath}:{lineno}  →  {lines[idx]!r}")
-
-
-
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 """
 Test Exec Integrations.
 """
+
 import unittest
 
 from apps_exec.integrations import ExecutionAdapter, ObservabilityAdapter

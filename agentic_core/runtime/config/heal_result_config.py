@@ -14,6 +14,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_
 
 # Configuration constants
 
+
 class HealStatus(str, Enum):
     """Canonical status values for heal operations."""
 

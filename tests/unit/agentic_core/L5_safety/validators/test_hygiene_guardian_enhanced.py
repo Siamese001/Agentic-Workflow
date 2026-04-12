@@ -16,14 +16,17 @@ class TestHygieneGuardianEnhanced:
     def test_hygiene_guardian_enhanced_imports(self):
         """Test hygiene_guardian_enhanced module imports."""
         from agentic_core import hygiene_guardian_enhanced
+
         assert hygiene_guardian_enhanced is not None
 
     def test_hygiene_guardian_enhanced_class(self):
         """Test HygieneGuardianEnhanced class exists."""
         from agentic_core import HygieneGuardianEnhanced
+
         assert HygieneGuardianEnhanced is not None
 
     def test_hygiene_guardian_enhanced_callable(self):
         """Test hygiene_guardian_enhanced functions are callable."""
         from agentic_core import validate_hygiene_guardian_enhanced
+
         assert callable(validate_hygiene_guardian_enhanced)

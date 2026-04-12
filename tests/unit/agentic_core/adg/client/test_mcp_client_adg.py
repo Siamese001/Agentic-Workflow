@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.adg.client.InMemoryStore."""
+
 from __future__ import annotations
 
 import importlib

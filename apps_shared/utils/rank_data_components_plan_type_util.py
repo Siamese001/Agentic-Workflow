@@ -215,8 +215,11 @@ class RankDataComponentsPlanImpl(RankDataComponentsPlanProcessor):
     def process(self, input_data: dict[str, object]) -> RankDataComponentsPlanResult:
         """Process input following L5 architecture principles"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RankDataComponentsPlanImpl.process")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RankDataComponentsPlanImpl.process"
+        )
 
         self.logger.info(f"Processing {input_data}")
         self._validate_input(input_data)
@@ -303,8 +306,11 @@ class RankDataComponentsPlanFactory:
     def create_processor(safety_level: str = "strict") -> RankDataComponentsPlanInterface:
         """Create configured engine"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RankDataComponentsPlanFactory.create_processor")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RankDataComponentsPlanFactory.create_processor"
+        )
 
         constraints = RankDataComponentsPlanConstraints(safety_level=safety_level)
         engine = RankDataComponentsPlanImpl(constraints)
@@ -334,7 +340,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = rank_data_components(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:    # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

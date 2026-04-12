@@ -192,8 +192,11 @@ class SovereignRAGManager(SovereignBaseAgent):
 
                 def query(self, query_emb, top_k=5):
                     import uuid as _uuid  # noqa: PLC0415
+
                     _trace_id = str(_uuid.uuid4())
-                    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemVectorStore.query")
+                    _emit_records_execution_trace(
+                        _trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemVectorStore.query"
+                    )
 
                     import numpy as np
 
@@ -222,6 +225,7 @@ class SovereignRAGManager(SovereignBaseAgent):
 
     def ingest(self, file_path: Path) -> bool:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRAGManager.ingest")
 
@@ -277,8 +281,9 @@ class SovereignRAGManager(SovereignBaseAgent):
             _adg_confidence = _gbp(Path(__file__).resolve(), _root).behavioral_score
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("SovereignRAGManagerAgent: Exception swallowed at L279: %s", e)
+            logging.getLogger(__name__).debug("SovereignRAGManagerAgent: Exception swallowed at L279: %s", e)
         vector_results: list[dict[str, Any]] = []
         bm25_results: list[dict[str, Any]] = []
         if self.embedder and self.vector_store:
@@ -320,7 +325,10 @@ class SovereignRAGManager(SovereignBaseAgent):
         return combined[:top_k]
 
     def _fuse_results(
-        self, vector: list[dict[str, Any]], bm25: list[dict[str, Any]], k: int = 60,
+        self,
+        vector: list[dict[str, Any]],
+        bm25: list[dict[str, Any]],
+        k: int = 60,
     ) -> list[dict[str, Any]]:
         """Reciprocal Rank Fusion of vector and BM25 result lists.
 

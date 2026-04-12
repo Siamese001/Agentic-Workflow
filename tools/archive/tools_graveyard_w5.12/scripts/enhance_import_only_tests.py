@@ -14,14 +14,14 @@ def extract_module_from_source(source: str) -> str | None:
     """Extract the module being imported from the source code."""
     lines = source.splitlines()
     for line in lines:
-        if 'import ' in line and 'noqa: F401' in line:
+        if "import " in line and "noqa: F401" in line:
             # Pattern: import module.path  # noqa: F401
-            match = re.search(r'import\s+([^\s]+)', line)
+            match = re.search(r"import\s+([^\s]+)", line)
             if match:
                 return match.group(1)
-        elif 'import ' in line and ' as _mod' in line:
+        elif "import " in line and " as _mod" in line:
             # Pattern: import module.path as _mod  # noqa: F401
-            match = re.search(r'import\s+([^\s]+)\s+as\s+_mod', line)
+            match = re.search(r"import\s+([^\s]+)\s+as\s+_mod", line)
             if match:
                 return match.group(1)
     return None
@@ -40,7 +40,7 @@ def analyze_module_api(module_path: str) -> tuple[list[str], list[str], list[str
     functions = []
 
     for name in dir(mod):
-        if name.startswith('_'):
+        if name.startswith("_"):
             continue
 
         obj = getattr(mod, name)
@@ -56,12 +56,13 @@ def analyze_module_api(module_path: str) -> tuple[list[str], list[str], list[str
     return public_symbols, classes, functions
 
 
-def generate_enhanced_test(module_path: str, classes: list[tuple[str, str]],
-                          functions: list[tuple[str, str]]) -> str:
+def generate_enhanced_test(
+    module_path: str, classes: list[tuple[str, str]], functions: list[tuple[str, str]]
+) -> str:
     """Generate API-specific behavioral tests for a module."""
 
     # Extract module name for display
-    module_name = module_path.split('.')[-1]
+    module_name = module_path.split(".")[-1]
 
     test_content = f'''"""Enhanced behavioral tests for {module_path}."""
 from __future__ import annotations
@@ -135,10 +136,10 @@ def test_{func_name.lower()}_is_callable():
     assert callable(func), f"{func_name} must be callable"
 '''
 
-    test_content += '''
+    test_content += """
 if __name__ == "__main__":
     pytest.main([__file__])
-'''
+"""
 
     return test_content
 
@@ -146,12 +147,16 @@ if __name__ == "__main__":
 def file_is_import_only(fp: Path) -> tuple[bool, int, str, str | None]:
     """Check if a file is an import-only test."""
     try:
-        source = fp.read_text(encoding='utf-8')
+        source = fp.read_text(encoding="utf-8")
         tree = ast.parse(source)
     except Exception:
         return False, 0, "", None
 
-    test_funcs = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name.startswith('test_')]
+    test_funcs = [
+        n
+        for n in ast.walk(tree)
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name.startswith("test_")
+    ]
     if not test_funcs:
         return False, 0, "", None
 
@@ -182,7 +187,7 @@ def enhance_batch(file_paths: list[str]) -> tuple[int, int, list[str]]:
             enhanced_content = generate_enhanced_test(module_path, classes, functions)
 
             # Write the enhanced test
-            fp.write_text(enhanced_content, encoding='utf-8')
+            fp.write_text(enhanced_content, encoding="utf-8")
             enhanced += 1
 
         except Exception as e:

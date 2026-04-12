@@ -16,14 +16,17 @@ class TestInjectionLayerConfigAdg:
     def test_injection_layer_config_adg_imports(self):
         """Test injection_layer_config_adg module imports."""
         from agentic_core import injection_layer_config_adg
+
         assert injection_layer_config_adg is not None
 
     def test_injection_layer_config_adg_class(self):
         """Test InjectionLayerConfigAdg class exists."""
         from agentic_core import InjectionLayerConfigAdg
+
         assert InjectionLayerConfigAdg is not None
 
     def test_injection_layer_config_adg_callable(self):
         """Test injection_layer_config_adg functions are callable."""
         from agentic_core import validate_injection_layer_config_adg
+
         assert callable(validate_injection_layer_config_adg)

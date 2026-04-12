@@ -213,8 +213,11 @@ class L0ThresholdChangePackage:
     def canonical_bytes(self) -> bytes:
         """Return deterministic canonical byte representation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L0ThresholdChangePackage.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L0ThresholdChangePackage.canonical_bytes"
+        )
 
         data = {
             "surface_name": self.surface_name,
@@ -290,14 +293,14 @@ def propose_l0_threshold_changes(
     last_update_utc = history.get(f"{surface}_last_update", 0)
     try:
         assert_cooldown_ok(last_update_utc, now_utc, cooldown_policy)
-    except CooldownViolation:    # guardian: CooldownViolation should be handled with specific context
+    except CooldownViolation:  # guardian: CooldownViolation should be handled with specific context
         return None
 
     # Dampening: sample size
     n_obs = history.get(f"{surface}_n_obs", 0)
     try:
         assert_min_sample_size(n_obs, sample_policy)
-    except SampleSizeViolation:    # guardian: SampleSizeViolation should be handled with specific context
+    except SampleSizeViolation:  # guardian: SampleSizeViolation should be handled with specific context
         return None
 
     # Compute proposed value: fixed delta, capped to bounds
@@ -361,6 +364,7 @@ class L0ProposerAdapter:
         to ``propose_l0_threshold_changes()``.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L0ProposerAdapter.propose")
 
@@ -385,11 +389,13 @@ class L0ProposerAdapter:
         # Normalise cooldown / sample to our policy types
         if cooldown is None:
             from system_learning.constraints.dampening import CooldownPolicy
+
             # guardian: allow-magic-config
             cooldown = CooldownPolicy(min_seconds_between_updates=3600)
 
         if sample is None:
             from system_learning.constraints.dampening import SampleSizePolicy
+
             # guardian: allow-magic-config
             sample = SampleSizePolicy(min_observations=10)
 

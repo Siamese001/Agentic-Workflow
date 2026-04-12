@@ -32,8 +32,10 @@ import pytest
 # Test Infrastructure Types
 # =============================================================================
 
+
 class ExecutionPath(Enum):
     """Execution paths per agentic process mapping v12."""
+
     PATH_A = auto()  # Read-only response
     PATH_B = auto()  # Policy check first
     PATH_C = auto()  # Execute script direct
@@ -42,29 +44,32 @@ class ExecutionPath(Enum):
 
 class BusType(Enum):
     """System bus types per agentic process mapping v12."""
-    BUS_C = "control"       # Real-time reroute (L6 → L0)
-    BUS_D = "deny"          # Safety fail → re-entry (L5 → L1)
-    BUS_E = "escalation"    # Drift → Path D
-    BUS_T = "telemetry"     # Read-only signals
-    BUS_P = "preference"    # Eval/DPO signals
-    BUS_U = "updates"       # Governed ML commits
+
+    BUS_C = "control"  # Real-time reroute (L6 → L0)
+    BUS_D = "deny"  # Safety fail → re-entry (L5 → L1)
+    BUS_E = "escalation"  # Drift → Path D
+    BUS_T = "telemetry"  # Read-only signals
+    BUS_P = "preference"  # Eval/DPO signals
+    BUS_U = "updates"  # Governed ML commits
 
 
 class Layer(Enum):
     """System layers per agentic process mapping v12."""
-    U0 = "user"           # User input
-    L1 = "cognition"      # Reasoning, context
-    L0 = "routing"        # Route authority
+
+    U0 = "user"  # User input
+    L1 = "cognition"  # Reasoning, context
+    L0 = "routing"  # Route authority
     L3 = "orchestration"  # Coordination
-    L5 = "safety"         # Policy, certification
-    L2 = "execution"      # Execute only
+    L5 = "safety"  # Policy, certification
+    L2 = "execution"  # Execute only
     L6 = "observability"  # Verify only
-    L4 = "state"          # Store only
+    L4 = "state"  # Store only
 
 
 @dataclass
 class TestExecutionContext:
     """Context for tracking test execution state."""
+
     trace_id: str
     policy_hash: str
     path: ExecutionPath
@@ -79,17 +84,20 @@ class TestExecutionContext:
 
     def record_mutation(self, layer: Layer, operation: str, details: dict[str, Any]) -> None:
         """Record a mutation attempt."""
-        self.mutations.append({
-            "layer": layer.value,
-            "operation": operation,
-            "details": details,
-            "timestamp": time.time(),
-        })
+        self.mutations.append(
+            {
+                "layer": layer.value,
+                "operation": operation,
+                "details": details,
+                "timestamp": time.time(),
+            }
+        )
 
 
 @dataclass
 class RobustnessResult:
     """Result of a robustness test execution."""
+
     test_name: str
     success: bool
     edge_cases_passed: int
@@ -103,6 +111,7 @@ class RobustnessResult:
 # =============================================================================
 # Pytest Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def temp_test_dir(tmp_path: Path) -> Path:
@@ -161,6 +170,7 @@ def reset_global_state() -> None:
 # Test Infrastructure Classes
 # =============================================================================
 
+
 class BusCommunicationMonitor:
     """Monitor and validate bus communications."""
 
@@ -171,13 +181,15 @@ class BusCommunicationMonitor:
     def record(self, bus_type: BusType, source: Layer, target: Layer, payload: dict[str, Any]) -> None:
         """Record a bus communication event."""
         with self._lock:
-            self.events.append({
-                "bus": bus_type,
-                "source": source,
-                "target": target,
-                "payload": payload,
-                "timestamp": time.time(),
-            })
+            self.events.append(
+                {
+                    "bus": bus_type,
+                    "source": source,
+                    "target": target,
+                    "payload": payload,
+                    "timestamp": time.time(),
+                }
+            )
 
     def get_events_for_bus(self, bus_type: BusType) -> list[dict[str, Any]]:
         """Get all events for a specific bus type."""
@@ -241,12 +253,36 @@ class LayerBoundaryValidator:
 
     # Hard constraints from v12
     HARD_RULES = {
-        Layer.L2: {"can_mutate": [Layer.L4], "cannot_mutate": [Layer.L5, Layer.L0, Layer.L3, Layer.L6, Layer.L1], "description": "Execute only"},
-        Layer.L4: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L0, Layer.L2, Layer.L3, Layer.L6, Layer.L1], "description": "Store only"},
-        Layer.L5: {"can_mutate": [], "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4, Layer.L3, Layer.L6, Layer.L1], "description": "Certify only"},
-        Layer.L6: {"can_mutate": [], "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4, Layer.L5, Layer.L3, Layer.L1], "description": "Observe only"},
-        Layer.L0: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L2, Layer.L4, Layer.L3, Layer.L6, Layer.L1], "description": "Route only"},
-        Layer.L3: {"can_mutate": [], "cannot_mutate": [Layer.L5, Layer.L0, Layer.L2, Layer.L4, Layer.L6, Layer.L1], "description": "Orchestrate only"},
+        Layer.L2: {
+            "can_mutate": [Layer.L4],
+            "cannot_mutate": [Layer.L5, Layer.L0, Layer.L3, Layer.L6, Layer.L1],
+            "description": "Execute only",
+        },
+        Layer.L4: {
+            "can_mutate": [],
+            "cannot_mutate": [Layer.L5, Layer.L0, Layer.L2, Layer.L3, Layer.L6, Layer.L1],
+            "description": "Store only",
+        },
+        Layer.L5: {
+            "can_mutate": [],
+            "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4, Layer.L3, Layer.L6, Layer.L1],
+            "description": "Certify only",
+        },
+        Layer.L6: {
+            "can_mutate": [],
+            "cannot_mutate": [Layer.L0, Layer.L2, Layer.L4, Layer.L5, Layer.L3, Layer.L1],
+            "description": "Observe only",
+        },
+        Layer.L0: {
+            "can_mutate": [],
+            "cannot_mutate": [Layer.L5, Layer.L2, Layer.L4, Layer.L3, Layer.L6, Layer.L1],
+            "description": "Route only",
+        },
+        Layer.L3: {
+            "can_mutate": [],
+            "cannot_mutate": [Layer.L5, Layer.L0, Layer.L2, Layer.L4, Layer.L6, Layer.L1],
+            "description": "Orchestrate only",
+        },
     }
 
     @classmethod
@@ -325,6 +361,7 @@ class DeterminismValidator:
 # Test Result Collectors
 # =============================================================================
 
+
 class E2ETestReport:
     """Collect and report E2E test results."""
 
@@ -363,8 +400,7 @@ class E2ETestReport:
                 "side_effects_contained": {"passed": side_effects, "total": total},
             },
             "failed_tests": [
-                {"name": r.test_name, "errors": r.errors}
-                for r in self.results if not r.success
+                {"name": r.test_name, "errors": r.errors} for r in self.results if not r.success
             ],
         }
 

@@ -294,7 +294,7 @@ class ASTEnforcementMixin:
             List of class names
         """
         try:
-            tree = ast.parse(content)    # guardian: Syntax errors should be caught at parser level, not runtime
+            tree = ast.parse(content)  # guardian: Syntax errors should be caught at parser level, not runtime
             # guardian: allow-silent-swallow - acceptable exception handling
             return [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         except SyntaxError:

@@ -174,8 +174,11 @@ class InMemoryScoringReportStore(ScoringReportStore):
             report: The scoring report to persist
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryScoringReportStore.write")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryScoringReportStore.write"
+        )
 
         content_hash = report.content_hash()
         if content_hash not in self._reports_by_hash:

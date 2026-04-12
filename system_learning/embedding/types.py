@@ -3,9 +3,11 @@
 
 class EmbeddingVector:
     """Placeholder embedding vector type."""
+
     pass
 
 
 class EmbeddingMetadata:
     """Placeholder embedding metadata type."""
+
     pass

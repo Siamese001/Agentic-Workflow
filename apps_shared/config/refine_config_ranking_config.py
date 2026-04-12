@@ -26,14 +26,18 @@ The actual ranking algorithms are delegated to runtime_utils.Ranking.
 This file wraps those behaviors and exposes a stable API.
 """
 
+
 class _Ranking:
     """Stub for _Ranking - originally from archives.runtime.runtime_utils."""
+
     @staticmethod
     def bm25_rank(items: list[dict[str, object]]) -> list[dict[str, object]]:
         return list(items)
+
     @staticmethod
     def dense_rank(items: list[dict[str, object]]) -> list[dict[str, object]]:
         return list(items)
+
     @staticmethod
     def hybrid_rank(items: list[dict[str, object]]) -> list[dict[str, object]]:
         return list(items)

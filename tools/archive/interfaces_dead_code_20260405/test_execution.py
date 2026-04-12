@@ -16,14 +16,17 @@ class TestExecution:
     def test_execution_imports(self):
         """Test execution module imports."""
         from agentic_core import execution
+
         assert execution is not None
 
     def test_execution_class(self):
         """Test Execution class exists."""
         from agentic_core import Execution
+
         assert Execution is not None
 
     def test_execution_callable(self):
         """Test execution functions are callable."""
         from agentic_core import validate_execution
+
         assert callable(validate_execution)

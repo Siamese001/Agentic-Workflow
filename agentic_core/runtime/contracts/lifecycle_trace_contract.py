@@ -321,7 +321,10 @@ def _emit_records_execution_trace(root_trace_id: str, layer: str, operation: str
 
 
 def _emit_signs_execution_trace(
-    root_trace_id: str, segment_hash: str, segment_signature: str, order_index: int,
+    root_trace_id: str,
+    segment_hash: str,
+    segment_signature: str,
+    order_index: int,
 ) -> None:
     """Emit signs_execution_trace ADG edge (§5)."""
     _SIGN_LOG.debug(
@@ -1061,6 +1064,30 @@ _emit_hard_fails_untranscripted("p1", "lifecycle_trace_contract")
 _emit_gated_by_confidence("p1", "lifecycle_trace_contract", "confidence_gate")
 
 
+# ── Semantic-cache Prometheus bridge ─────────────────────────────────────────
+
+
+def _record_semantic_cache_prom_event(event: str, namespace: str = "") -> None:
+    """Bridge semantic-cache events to the Prometheus AGENTIC_REGISTRY.
+
+    Uses a lazy import so an absent prometheus_client never breaks this
+    contract layer.  Called from L4 (semantic_cache_manager, gptcache_client)
+    immediately after the existing _emit_emits_metric_event ADG edge.
+
+    Args:
+        event: hit | miss | bypass | eviction | invalidation
+        namespace: cache namespace; empty string for scope-less events
+    """
+    try:
+        from agentic_core.L6_observability.utils.metrics.prometheus_metrics import (  # noqa: PLC0415
+            record_semantic_cache_event as _prom_record,
+        )
+
+        _prom_record(event, namespace)
+    except ImportError:
+        pass
+
+
 # ── §3 — LifecycleTraceRecorder ───────────────────────────────────────────────
 
 
@@ -1095,7 +1122,9 @@ class LifecycleTraceRecorder:
         self._transcript_id: str = ""
         self._model_id: str = ""
         _LOG.debug(
-            "LifecycleTraceRecorder started root_trace_id=%s run_id=%s", self.root_trace_id, self.run_id,
+            "LifecycleTraceRecorder started root_trace_id=%s run_id=%s",
+            self.root_trace_id,
+            self.run_id,
         )
 
     def record_segment(
@@ -1195,7 +1224,10 @@ class LifecycleTraceRecorder:
         # Final record + sign on completed contract
         _emit_records_execution_trace(self.root_trace_id, "FINAL", outcome)
         _emit_signs_execution_trace(
-            self.root_trace_id, final_outcome_hash, final_outcome_hash, self._order_counter,
+            self.root_trace_id,
+            final_outcome_hash,
+            final_outcome_hash,
+            self._order_counter,
         )
 
         _record_contract(contract)
@@ -1815,11 +1847,14 @@ _emit_l6_ingests_l4_trace("l4w4", "lifecycle_trace_contract", "l6_trace_bootstra
 
 # ── §7 — Architecture Handoff Emitters ───────────────────────────────────────
 
+
 def _emit_validates_request(root_trace_id: str, source: str, target: str) -> None:
     """Emit validates_request ADG edge (Architecture Handoff)."""
     _VALIDATES_REQUEST_LOG.debug(
         "validates_request root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1827,7 +1862,9 @@ def _emit_produces_plan(root_trace_id: str, source: str, target: str) -> None:
     """Emit produces_plan ADG edge (Architecture Handoff)."""
     _PRODUCES_PLAN_LOG.debug(
         "produces_plan root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1835,7 +1872,9 @@ def _emit_proposes_route(root_trace_id: str, source: str, target: str) -> None:
     """Emit proposes_route ADG edge (Architecture Handoff)."""
     _PROPOSES_ROUTE_LOG.debug(
         "proposes_route root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1843,7 +1882,9 @@ def _emit_prefilters_scope(root_trace_id: str, source: str, target: str) -> None
     """Emit prefilters_scope ADG edge (Architecture Handoff)."""
     _PREFILTERS_SCOPE_LOG.debug(
         "prefilters_scope root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1851,7 +1892,9 @@ def _emit_produces_evidence_contract(root_trace_id: str, source: str, target: st
     """Emit produces_evidence_contract ADG edge (Architecture Handoff)."""
     _PRODUCES_EVIDENCE_CONTRACT_LOG.debug(
         "produces_evidence_contract root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1859,7 +1902,9 @@ def _emit_packages_prompt_envelope(root_trace_id: str, source: str, target: str)
     """Emit packages_prompt_envelope ADG edge (Architecture Handoff)."""
     _PACKAGES_PROMPT_ENVELOPE_LOG.debug(
         "packages_prompt_envelope root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1867,7 +1912,9 @@ def _emit_stamps_execution_packet(root_trace_id: str, source: str, target: str) 
     """Emit stamps_execution_packet ADG edge (Architecture Handoff)."""
     _STAMPS_EXECUTION_PACKET_LOG.debug(
         "stamps_execution_packet root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1875,7 +1922,9 @@ def _emit_propagates_policy_hash(root_trace_id: str, source: str, target: str) -
     """Emit propagates_policy_hash ADG edge (Architecture Handoff)."""
     _PROPAGATES_POLICY_HASH_LOG.debug(
         "propagates_policy_hash root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1883,7 +1932,9 @@ def _emit_propagates_replay_key(root_trace_id: str, source: str, target: str) ->
     """Emit propagates_replay_key ADG edge (Architecture Handoff)."""
     _PROPAGATES_REPLAY_KEY_LOG.debug(
         "propagates_replay_key root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1891,7 +1942,9 @@ def _emit_seals_result(root_trace_id: str, source: str, target: str) -> None:
     """Emit seals_result ADG edge (Architecture Handoff - ExitHitlEnvelope)."""
     _SEALS_RESULT_LOG.debug(
         "seals_result root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1899,7 +1952,9 @@ def _emit_chooses_exit_disposition(root_trace_id: str, source: str, target: str)
     """Emit chooses_exit_disposition ADG edge (Architecture Handoff - ExitHitlEnvelope)."""
     _CHOOSES_EXIT_DISPOSITION_LOG.debug(
         "chooses_exit_disposition root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1907,7 +1962,9 @@ def _emit_materializes_hitl_packet(root_trace_id: str, source: str, target: str)
     """Emit materializes_hitl_packet ADG edge (Architecture Handoff - ExitHitlEnvelope)."""
     _MATERIALIZES_HITL_PACKET_LOG.debug(
         "materializes_hitl_packet root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1915,7 +1972,9 @@ def _emit_reclears_human_decision(root_trace_id: str, source: str, target: str) 
     """Emit reclears_human_decision ADG edge (Architecture Handoff - ExitHitlEnvelope)."""
     _RECLEARS_HUMAN_DECISION_LOG.debug(
         "reclears_human_decision root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1923,7 +1982,9 @@ def _emit_verifies_blast_radius(root_trace_id: str, source: str, target: str) ->
     """Emit verifies_blast_radius ADG edge (Architecture Handoff - CommitUwgEnvelope)."""
     _VERIFIES_BLAST_RADIUS_LOG.debug(
         "verifies_blast_radius root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1931,7 +1992,9 @@ def _emit_appends_commit_receipt(root_trace_id: str, source: str, target: str) -
     """Emit appends_commit_receipt ADG edge (Architecture Handoff - CommitUwgEnvelope)."""
     _APPENDS_COMMIT_RECEIPT_LOG.debug(
         "appends_commit_receipt root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1939,7 +2002,9 @@ def _emit_publishes_retrieval_surface(root_trace_id: str, source: str, target: s
     """Emit publishes_retrieval_surface ADG edge (Architecture Handoff)."""
     _PUBLISHES_RETRIEVAL_SURFACE_LOG.debug(
         "publishes_retrieval_surface root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1947,7 +2012,9 @@ def _emit_promotes_future_run_change(root_trace_id: str, source: str, target: st
     """Emit promotes_future_run_change ADG edge (Architecture Handoff)."""
     _PROMOTES_FUTURE_RUN_CHANGE_LOG.debug(
         "promotes_future_run_change root_trace_id=%s source=%s target=%s",
-        root_trace_id, source, target,
+        root_trace_id,
+        source,
+        target,
     )
 
 
@@ -1956,7 +2023,9 @@ _emit_validates_request("handoff", "lifecycle_trace_contract", "validates_reques
 _emit_produces_plan("handoff", "lifecycle_trace_contract", "produces_plan_bootstrap")
 _emit_proposes_route("handoff", "lifecycle_trace_contract", "proposes_route_bootstrap")
 _emit_prefilters_scope("handoff", "lifecycle_trace_contract", "prefilters_scope_bootstrap")
-_emit_produces_evidence_contract("handoff", "lifecycle_trace_contract", "produces_evidence_contract_bootstrap")
+_emit_produces_evidence_contract(
+    "handoff", "lifecycle_trace_contract", "produces_evidence_contract_bootstrap"
+)
 _emit_packages_prompt_envelope("handoff", "lifecycle_trace_contract", "packages_prompt_envelope_bootstrap")
 _emit_stamps_execution_packet("handoff", "lifecycle_trace_contract", "stamps_execution_packet_bootstrap")
 _emit_propagates_policy_hash("handoff", "lifecycle_trace_contract", "propagates_policy_hash_bootstrap")
@@ -1967,5 +2036,9 @@ _emit_materializes_hitl_packet("handoff", "lifecycle_trace_contract", "materiali
 _emit_reclears_human_decision("handoff", "lifecycle_trace_contract", "reclears_human_decision_bootstrap")
 _emit_verifies_blast_radius("handoff", "lifecycle_trace_contract", "verifies_blast_radius_bootstrap")
 _emit_appends_commit_receipt("handoff", "lifecycle_trace_contract", "appends_commit_receipt_bootstrap")
-_emit_publishes_retrieval_surface("handoff", "lifecycle_trace_contract", "publishes_retrieval_surface_bootstrap")
-_emit_promotes_future_run_change("handoff", "lifecycle_trace_contract", "promotes_future_run_change_bootstrap")
+_emit_publishes_retrieval_surface(
+    "handoff", "lifecycle_trace_contract", "publishes_retrieval_surface_bootstrap"
+)
+_emit_promotes_future_run_change(
+    "handoff", "lifecycle_trace_contract", "promotes_future_run_change_bootstrap"
+)

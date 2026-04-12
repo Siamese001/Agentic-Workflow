@@ -223,8 +223,11 @@ class IncidentBundle:
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding — deterministic field order."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IncidentBundle.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "IncidentBundle.to_embedding_text"
+        )
 
         parts = [
             f"trace:{self.trace_summary}",
@@ -290,8 +293,11 @@ class MutationDiffRecord:
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MutationDiffRecord.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MutationDiffRecord.to_embedding_text"
+        )
 
         parts = [
             f"mutation:{self.mutation_id}",
@@ -358,8 +364,11 @@ class HealerOutcomeRecord:
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealerOutcomeRecord.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealerOutcomeRecord.to_embedding_text"
+        )
 
         parts = [
             f"healer:{self.healer_id}",
@@ -423,8 +432,11 @@ class PathDPreferencePair:
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PathDPreferencePair.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PathDPreferencePair.to_embedding_text"
+        )
 
         parts = [
             f"plan:{self.original_plan}",
@@ -487,8 +499,11 @@ class GraphNeighborhood:
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphNeighborhood.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphNeighborhood.to_embedding_text"
+        )
 
         parts = [
             f"node:{self.node_id}",
@@ -556,8 +571,11 @@ class PolicyGuardrailCase:
     def to_embedding_text(self) -> str:
         """Canonical flat text for embedding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyGuardrailCase.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyGuardrailCase.to_embedding_text"
+        )
 
         parts = [
             f"payload:{self.blocked_payload_summary}",
@@ -599,7 +617,8 @@ class ReplayFailureRecord:
     timestamp_utc: int
     failure_hash: str = field(default="", init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(
-        default="C0_INFORMATIONAL", init=False,
+        default="C0_INFORMATIONAL",
+        init=False,
     )
 
     def __post_init__(self) -> None:
@@ -633,8 +652,11 @@ class ReplayFailureRecord:
         they do NOT appear in the embedded text.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayFailureRecord.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayFailureRecord.to_embedding_text"
+        )
 
         parts = [
             f"summary:{self.failure_summary}",
@@ -683,7 +705,8 @@ class PromptOutcomeEmbeddingRecord:
     timestamp_utc: int
     record_hash: str = field(default="", init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(
-        default="C0_INFORMATIONAL", init=False,
+        default="C0_INFORMATIONAL",
+        init=False,
     )
 
     def __post_init__(self) -> None:
@@ -692,7 +715,11 @@ class PromptOutcomeEmbeddingRecord:
         if not self.task_description:
             raise ValueError("task_description must not be empty")
         if self.safety_outcome not in (
-            "ALLOWED", "BLOCKED", "ESCALATED", "HEALED", "UNKNOWN",
+            "ALLOWED",
+            "BLOCKED",
+            "ESCALATED",
+            "HEALED",
+            "UNKNOWN",
         ):
             raise ValueError(
                 f"safety_outcome must be ALLOWED/BLOCKED/ESCALATED/HEALED/UNKNOWN, "
@@ -729,8 +756,11 @@ class PromptOutcomeEmbeddingRecord:
         are metadata only; they do NOT appear in the embedded text.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOutcomeEmbeddingRecord.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOutcomeEmbeddingRecord.to_embedding_text"
+        )
 
         parts = [
             f"s0:{self.slot_s0_summary}",
@@ -781,7 +811,8 @@ class RetrievalCaseRecord:
     timestamp_utc: int
     case_hash: str = field(default="", init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(
-        default="C0_INFORMATIONAL", init=False,
+        default="C0_INFORMATIONAL",
+        init=False,
     )
 
     def __post_init__(self) -> None:
@@ -824,8 +855,11 @@ class RetrievalCaseRecord:
         query_id and chunk_ids are metadata only; they do NOT appear in text.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalCaseRecord.to_embedding_text")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalCaseRecord.to_embedding_text"
+        )
 
         chunks_text = " | ".join(sorted(self.chunk_summaries))
         parts = [

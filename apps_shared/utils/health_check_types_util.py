@@ -309,8 +309,11 @@ class HealthChecker:
             critical: If True, failure makes entire app unhealthy
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealthChecker.register_check")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealthChecker.register_check"
+        )
 
         self._checks[name] = (check_fn, critical)
         logger.info(f"Registered health check: {name} (critical={critical})")
@@ -375,19 +378,23 @@ class CommonChecks:
     def env_var_check(var_name: str, required: bool = True) -> Callable[[], CheckResult]:
         """Create a check for an environment variable."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CommonChecks.env_var_check")
-
 
         def check() -> CheckResult:
             value = os.getenv(var_name)
             if value:
                 return CheckResult(
-                    name=f"env:{var_name}", status=HealthStatus.HEALTHY, message=f"{var_name} is set",
+                    name=f"env:{var_name}",
+                    status=HealthStatus.HEALTHY,
+                    message=f"{var_name} is set",
                 )
             elif required:
                 return CheckResult(
-                    name=f"env:{var_name}", status=HealthStatus.UNHEALTHY, message=f"{var_name} is not set",
+                    name=f"env:{var_name}",
+                    status=HealthStatus.UNHEALTHY,
+                    message=f"{var_name} is not set",
                 )
             else:
                 return CheckResult(
@@ -409,17 +416,23 @@ class CommonChecks:
                 client = redis.Redis(host=host, port=port, socket_timeout=DEFAULT_TIMEOUT)
                 client.ping()
                 return CheckResult(
-                    name="redis", status=HealthStatus.HEALTHY, message=f"Redis connected at {host}:{port}",
+                    name="redis",
+                    status=HealthStatus.HEALTHY,
+                    message=f"Redis connected at {host}:{port}",
                 )
             # guardian: allow-silent-swallow - optional dependency
             except ImportError:
                 return CheckResult(
-                    name="redis", status=HealthStatus.DEGRADED, message="Redis client not installed",
+                    name="redis",
+                    status=HealthStatus.DEGRADED,
+                    message="Redis client not installed",
                 )
             # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
-                    name="redis", status=HealthStatus.UNHEALTHY, message=f"Redis connection failed: {e}",
+                    name="redis",
+                    status=HealthStatus.UNHEALTHY,
+                    message=f"Redis connection failed: {e}",
                 )
 
         return check
@@ -451,7 +464,9 @@ class CommonChecks:
             # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
-                    name="disk_space", status=HealthStatus.UNKNOWN, message=f"Could not check disk space: {e}",
+                    name="disk_space",
+                    status=HealthStatus.UNKNOWN,
+                    message=f"Could not check disk space: {e}",
                 )
 
         return check
@@ -486,7 +501,9 @@ class CommonChecks:
             # guardian: allow-silent-swallow
             except Exception as e:
                 return CheckResult(
-                    name="memory", status=HealthStatus.UNKNOWN, message=f"Could not check memory: {e}",
+                    name="memory",
+                    status=HealthStatus.UNKNOWN,
+                    message=f"Could not check memory: {e}",
                 )
 
         return check
@@ -502,6 +519,7 @@ class ReadinessGate:
     def set_ready(self) -> None:
         """Mark application as ready."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReadinessGate.set_ready")
 

@@ -178,7 +178,8 @@ class FeatureExtractor:
         if self.conn:
             try:
                 cursor = self.conn.execute(
-                    "SELECT layer FROM nodes WHERE resolved_path = ? LIMIT 1", (file_path,),
+                    "SELECT layer FROM nodes WHERE resolved_path = ? LIMIT 1",
+                    (file_path,),
                 )
                 row = cursor.fetchone()
                 if row and row[0] and row[0] not in ("", "tests", "unknown"):
@@ -436,9 +437,9 @@ class DispositionClassifier:
             # Remediation rules
             "remediation_rules": [
                 {
-                    "condition": lambda f: not f.has_guardian_comment
-                    and f.test_coverage
-                    and f.function_complexity < 3,
+                    "condition": lambda f: (
+                        not f.has_guardian_comment and f.test_coverage and f.function_complexity < 3
+                    ),
                     "disposition": DispositionType.REMEDIATED,
                     "confidence": 0.7,
                     "reasoning": "Simple function with test coverage, no guardian comment",
@@ -625,7 +626,9 @@ class DispositionClassifier:
         return evidence
 
     def _generate_alternatives(
-        self, features: ViolationFeatures, primary: DispositionType,
+        self,
+        features: ViolationFeatures,
+        primary: DispositionType,
     ) -> list[tuple[DispositionType, float]]:
         """Generate alternative disposition suggestions."""
         alternatives = []

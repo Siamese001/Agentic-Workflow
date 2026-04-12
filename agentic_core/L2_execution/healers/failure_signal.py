@@ -10,7 +10,18 @@ import hashlib
 import json
 import time
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any
+
+
+class HealFailureClass(str, Enum):
+    """C3 ALLOWLIST GATE failure classification passed to SCORE HEAL CONFIDENCE."""
+
+    DRIFT_DETECTION = "DRIFT_DETECTION"
+    IMPORT_BOUNDARY = "IMPORT_BOUNDARY"
+    LAYER_INVERSION = "LAYER_INVERSION"
+    SSOT_DRIFT = "SSOT_DRIFT"
+    UNKNOWN = "UNKNOWN"
 
 
 @dataclass(frozen=True)
@@ -19,6 +30,7 @@ class FailureSignal:
 
     10C-REQ-135: Built from context only - no external hallucinated state.
     """
+
     check_id: str
     retry_count: int
     error_code: str
@@ -29,14 +41,12 @@ class FailureSignal:
     operation: str
     timestamp: float
     signal_hash: str = ""
+    failure_class: HealFailureClass = HealFailureClass.UNKNOWN
+    budget_remaining: float = 1.0
 
     def __post_init__(self) -> None:
         if not self.signal_hash:
-            object.__setattr__(
-                self,
-                "signal_hash",
-                self._compute_hash()
-            )
+            object.__setattr__(self, "signal_hash", self._compute_hash())
 
     def _compute_hash(self) -> str:
         """Compute deterministic hash of signal."""
@@ -48,6 +58,8 @@ class FailureSignal:
             "source_layer": self.source_layer,
             "operation": self.operation,
             "timestamp": self.timestamp,
+            "failure_class": self.failure_class.name,
+            "budget_remaining": self.budget_remaining,
         }
         raw = json.dumps(data, sort_keys=True)
         return hashlib.sha256(raw.encode()).hexdigest()[:16]
@@ -69,6 +81,8 @@ class FailureSignalBuilder:
         self._lineage_hash: str = ""
         self._source_layer: str = ""
         self._operation: str = ""
+        self._failure_class: HealFailureClass = HealFailureClass.UNKNOWN
+        self._budget_remaining: float = 1.0
 
     def from_context(self, context: dict[str, Any]) -> FailureSignalBuilder:
         """Set context (source of truth - no external lookup)."""
@@ -98,6 +112,16 @@ class FailureSignalBuilder:
         self._operation = operation
         return self
 
+    def with_failure_class(self, failure_class: HealFailureClass) -> FailureSignalBuilder:
+        """Set C3 ALLOWLIST GATE failure classification."""
+        self._failure_class = failure_class
+        return self
+
+    def with_budget_remaining(self, budget: float) -> FailureSignalBuilder:
+        """Set remaining execution budget fraction from E1 env/caps freeze."""
+        self._budget_remaining = budget
+        return self
+
     def build(self) -> FailureSignal:
         """Build failure signal from captured context."""
         if not self._check_id:
@@ -113,4 +137,6 @@ class FailureSignalBuilder:
             source_layer=self._source_layer,
             operation=self._operation,
             timestamp=time.time(),
+            failure_class=self._failure_class,
+            budget_remaining=self._budget_remaining,
         )

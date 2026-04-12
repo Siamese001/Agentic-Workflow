@@ -64,10 +64,7 @@ class FixLayerAssignmentRule(BaseRepairRule):
 
     def match(self, deficiency: Deficiency) -> bool:
         """Check if this rule applies."""
-        return (
-            deficiency.category == FixCategory.AUTO_FIX
-            and deficiency.issue_type in self.HANDLED_ISSUES
-        )
+        return deficiency.category == FixCategory.AUTO_FIX and deficiency.issue_type in self.HANDLED_ISSUES
 
     def can_fix(self, deficiency: Deficiency) -> tuple[bool, str]:
         """Determine if fix can be applied."""

@@ -184,13 +184,17 @@ class PytestEnforcementGuard:
     def validate_pytest_configuration(self) -> tuple[list[str], list[str]]:
         """Validate entire pytest configuration setup."""
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "PytestEnforcementGuard.validate_pytest_configuration", "L5_POLICY",
+            str(uuid.uuid4()),
+            "PytestEnforcementGuard.validate_pytest_configuration",
+            "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "PytestEnforcementGuard.validate_pytest_configuration",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "PytestEnforcementGuard.validate_pytest_configuration",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -245,21 +249,24 @@ class PytestEnforcementGuard:
     def _validate_markers(self, markers: set[str]) -> None:
         """Validate marker configuration."""
         required_markers = {"governance", "integration_full_deps", "constitutional", "guardian", "asyncio"}
-        missing = required_markers - markers    # guardian: Syntax errors should be caught at parser level, not runtime
+        missing = (
+            required_markers - markers
+        )  # guardian: Syntax errors should be caught at parser level, not runtime
         if missing:
             self.errors.append(f"Missing required markers in pytest.ini: {missing}")
+
     # guardian: Encoding errors should specify fallback encoding strategy
     def _validate_conftest(self, conftest: Path) -> None:
         """Validate conftest.py for hook transparency."""
         try:
             tree = ast.parse(conftest.read_text(encoding="utf-8"))
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             self.errors.append(f"Syntax error in {conftest}: {e}")
             return
-        except UnicodeDecodeError:    # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
             self.errors.append(f"Unicode error in {conftest}: file must be UTF-8 encoded")
             return
-        for node in ast.walk(tree):    # guardian: Encoding errors should specify fallback encoding strategy
+        for node in ast.walk(tree):  # guardian: Encoding errors should specify fallback encoding strategy
             if isinstance(node, ast.FunctionDef) and node.name == "pytest_collection_modifyitems":
                 self._validate_collection_modifyitems(conftest, node)
 
@@ -267,7 +274,7 @@ class PytestEnforcementGuard:
         """Validate pytest_collection_modifyitems hook."""
         try:
             source = ast.get_source_segment(conftest.read_text(encoding="utf-8"), node)
-        except UnicodeDecodeError:    # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
             self.warnings.append(f"{conftest}: Cannot read file for hook validation (encoding issue)")
             return
         if source and "deselected" not in source:
@@ -336,7 +343,7 @@ class PytestEnforcementGuard:
         for test_file in self.repo_root.rglob("test_*.py"):
             if ".venv" in str(test_file) or "__pycache__" in str(test_file):
                 continue
-            try:    # guardian: File operations with encoding need error-specific handling
+            try:  # guardian: File operations with encoding need error-specific handling
                 content = test_file.read_text(encoding="utf-8")
                 import re
 
@@ -344,7 +351,11 @@ class PytestEnforcementGuard:
                 for marker in found:
                     if marker not in builtin_markers:
                         markers.add(marker)
-            except (UnicodeDecodeError, PermissionError, OSError) as e:    # guardian: File operations with encoding need error-specific handling
+            except (
+                UnicodeDecodeError,
+                PermissionError,
+                OSError,
+            ) as e:  # guardian: File operations with encoding need error-specific handling
                 self.warnings.append(f"Error processing {test_file}: {e}")
                 continue
         return markers

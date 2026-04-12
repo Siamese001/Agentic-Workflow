@@ -3,6 +3,7 @@
 Provides systematic, policy-driven, trace-bound human safety escalation
 for designated high-risk or ambiguous operations.
 """
+
 from enum import Enum
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

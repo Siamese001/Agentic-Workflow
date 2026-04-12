@@ -274,7 +274,9 @@ class MemoryAuthority:
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryAuthority.read:{namespace.value}:{key}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"MemoryAuthority.read:{namespace.value}:{key}",
         )
         value, version = self._rsa.read(key, default)
         source_hash = hashlib.sha256(repr(value).encode()).hexdigest()[:16]

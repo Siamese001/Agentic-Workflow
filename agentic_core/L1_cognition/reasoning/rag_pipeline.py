@@ -391,9 +391,9 @@ class RAGPipeline:
 
         # Combined score
         quality = (
-            relevance_score * relevance_weight +
-            count_score * count_weight +
-            diversity_score * diversity_weight
+            relevance_score * relevance_weight
+            + count_score * count_weight
+            + diversity_score * diversity_weight
         )
 
         return min(1.0, quality)
@@ -402,9 +402,9 @@ class RAGPipeline:
         """Calculate generation quality score."""
         # Use the quality metrics from generation result
         return (
-            generation.coherence_score * 0.4 +
-            generation.relevance_score * 0.4 +
-            generation.completeness_score * 0.2
+            generation.coherence_score * 0.4
+            + generation.relevance_score * 0.4
+            + generation.completeness_score * 0.2
         )
 
     def _update_stats(self, response: RAGResponse) -> None:
@@ -458,7 +458,9 @@ class RAGPipeline:
             avg_response_time_ms=stats["total_time"]["avg"],
             p95_response_time_ms=stats["total_time"]["p95"],
             p99_response_time_ms=stats["total_time"]["p99"],
-            requests_per_second=1000.0 / stats["total_time"]["avg"] if stats["total_time"]["avg"] > 0 else 0.0,
+            requests_per_second=1000.0 / stats["total_time"]["avg"]
+            if stats["total_time"]["avg"] > 0
+            else 0.0,
             avg_quality_score=stats["quality_score"]["avg"],
             avg_context_relevance=0.0,  # Would need to track separately
             avg_generation_coherence=0.0,  # Would need to track separately

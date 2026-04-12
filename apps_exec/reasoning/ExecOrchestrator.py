@@ -25,23 +25,15 @@ from typing import Any
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
-        AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
-    )
-    from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
-        AppsQwenModelConfig,
-        AppsQwenPromptConfig,
     )
 
     _QWEN_AVAILABLE = True
 except ImportError:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
-    AppsQwenInferenceWorker = None  # type: ignore[assignment]
     apps_qwen_telemetry = None  # type: ignore[assignment]
-    AppsQwenModelConfig = None  # type: ignore[assignment]
-    AppsQwenPromptConfig = None  # type: ignore[assignment]
     _QWEN_AVAILABLE = False
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -227,34 +219,22 @@ class ExecOrchestrator:
 
         # Initialize Qwen vLLM for execution planning
         self._qwen_gateway = None
-        self._qwen_inference_worker = None
         self._qwen_session_id = None
+        self._qwen_init_error: str | None = None
 
         if self.qwen_enabled and _QWEN_AVAILABLE:
             try:
-                # Initialize Qwen gateway for execution planning
                 self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
 
-                # Initialize inference worker with execution-specific config
-                model_config = AppsQwenModelConfig(
-                    model_id="Qwen/Qwen2.5-7B-Instruct",
-                    max_tokens=3584,  # High token limit for detailed execution plans
-                    temperature=0.2,  # Low temperature for precise execution planning
-                    confidence_threshold=0.85,
-                    timeout_seconds=60,
-                )
-                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
-
-                # Start telemetry session
                 if apps_qwen_telemetry is not None:
                     self._qwen_session_id = apps_qwen_telemetry.start_session("apps_exec")
 
                 _emit_records_execution_trace("ExecOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
                 _emit_records_telemetry_event("ExecOrchestrator", "L2_EXECUTION", "qwen_init_error")
-                _log.warning(f"Failed to initialize Qwen vLLM: {e}")
-                self.qwen_enabled = False
+                _log.error("Qwen vLLM init failed — run() will raise if LOCAL_VLLM is selected: %s", e)
+                self._qwen_init_error = str(e)
 
         try:
             from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
@@ -267,7 +247,7 @@ class ExecOrchestrator:
             self.adg_behavioral_score = 0.5
             self.adg_antipattern_signals = []
 
-    def run(self, request: ExecBriefRequest) -> ExecBriefResult:
+    async def run(self, request: ExecBriefRequest) -> ExecBriefResult:
         """Execute the full brief generation pipeline.
 
         Args:
@@ -295,14 +275,131 @@ class ExecOrchestrator:
             trace_id=trace_id,
             audience=audience_key,
             tone=request.tone.value if hasattr(request.tone, "value") else str(request.tone),
-            status=BriefStatus.GENERATING,
+            status="generating",
             provenance={"trace_id": trace_id, "audience": audience_key, "app": "apps_exec"},
         )
+
+        # --- Local-first Qwen routing (Phase 1 + adapter enforcement) ---
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (  # noqa: PLC0415
+            VLLMGatewayAdapter,
+        )
+        from agentic_core.L2_execution.types.local_first_disposition import (  # noqa: PLC0415
+            LocalFirstDisposition,
+        )
+        from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: PLC0415
+            Provider,
+            evaluate as evaluate_routing,
+        )
+
+        # requires_policy_read / iteration_count / invalid_ast: repair-domain predicates.
+        # Generation apps are single-pass pipelines with no policy-read concept, no retry
+        # iterations, and no AST output — False/0/100 are semantically correct here, not
+        # placeholders.  Wire these only if a retry loop or policy-read path is introduced.
+        routing_ctx: dict[str, object] = {
+            "requires_policy_read": False,
+            "iteration_count": 0,
+            "max_iterations": 100,
+            "invalid_ast": False,
+            "routing_version": "1",
+        }
+        routing_decision = evaluate_routing(routing_ctx)
+        _dsp: LocalFirstDisposition | None = None
+
+        if routing_decision.provider == Provider.LOCAL_VLLM:
+            if self._qwen_init_error is not None:
+                _dsp = LocalFirstDisposition.for_fail_init(
+                    orchestrator="ExecOrchestrator",
+                    run_id=_trace_id,
+                    predicate_hash=routing_decision.predicate_evaluation_hash,
+                    init_error=self._qwen_init_error,
+                )
+                _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                raise RuntimeError(f"LOCAL_VLLM selected but Qwen init failed: {self._qwen_init_error}")
+            if self._qwen_gateway is not None:
+                # Adapter enforces token budget, backpressure, and circuit breaker
+                _adapter = VLLMGatewayAdapter()
+                _prompt_preview = " ".join(list(request.source_dirs)[:8])[:512]
+                _adapter_result = _adapter.evaluate(
+                    prompt=_prompt_preview,
+                    task_class="execution_planning",
+                    severity="medium",
+                )
+                _telem = _adapter_result.telemetry.as_dict() if _adapter_result.telemetry is not None else {}
+                if _adapter_result.route_to_gemini:
+                    _dsp = LocalFirstDisposition.for_escalate(
+                        orchestrator="ExecOrchestrator",
+                        run_id=_trace_id,
+                        predicate_hash=routing_decision.predicate_evaluation_hash,
+                        telem=_telem,
+                    )
+                    _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                    _emit_records_telemetry_event(
+                        "ExecOrchestrator",
+                        "L2_EXECUTION",
+                        "adapter_escalate",
+                    )
+                else:
+                    _emit_records_telemetry_event(
+                        "ExecOrchestrator",
+                        "L2_EXECUTION",
+                        "adapter_allow",
+                    )
+                    try:
+                        qwen_result = await self.plan_execution_with_qwen(
+                            objectives=list(request.source_dirs),
+                            constraints={},
+                        )
+                        _adapter.record_local_success(severity="medium")
+                    except Exception as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
+                        _adapter.record_local_failure(severity="medium")
+                        _dsp = LocalFirstDisposition.for_fail_exec(
+                            orchestrator="ExecOrchestrator",
+                            run_id=_trace_id,
+                            predicate_hash=routing_decision.predicate_evaluation_hash,
+                            telem=_telem,
+                            exc=_exc,
+                        )
+                        _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                        raise
+                    result.qwen_inference_result = qwen_result
+                    _dsp = LocalFirstDisposition.for_allow(
+                        orchestrator="ExecOrchestrator",
+                        run_id=_trace_id,
+                        predicate_hash=routing_decision.predicate_evaluation_hash,
+                        telem=_telem,
+                        qwen_result_present=qwen_result is not None,
+                    )
+                    _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                    _emit_records_execution_trace(
+                        str(_uuid.uuid4()),
+                        LayerSegment.L3_ORCHESTRATION,
+                        "ExecOrchestrator.run.qwen_local",
+                    )
+            else:
+                _dsp = LocalFirstDisposition.for_skip(
+                    orchestrator="ExecOrchestrator",
+                    run_id=_trace_id,
+                    provider_value="LOCAL_VLLM",
+                    predicate_hash=routing_decision.predicate_evaluation_hash,
+                    reason_code="gateway_not_initialized",
+                )
+                _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+        else:
+            _dsp = LocalFirstDisposition.for_skip(
+                orchestrator="ExecOrchestrator",
+                run_id=_trace_id,
+                provider_value=routing_decision.provider.value,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                reason_code="predicate_selected_opus",
+            )
+            _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+        result.local_first_disposition = _dsp.as_dict() if _dsp is not None else None
 
         try:
             ingestion_result = self._ingestion.execute(request)
             self._record_hop(
-                "HOP-1-INGESTION", len(ingestion_result.documents) > 0 or bool(ingestion_result.skipped_paths),
+                "HOP-1-INGESTION",
+                len(ingestion_result.documents) > 0 or bool(ingestion_result.skipped_paths),
             )
 
             extraction_result = self._extraction.execute(ingestion_result)
@@ -313,7 +410,7 @@ class ExecOrchestrator:
             self._record_hop("HOP-3-ASSEMBLY", bool(assembly_result.sections))
             result.sections = assembly_result.sections
 
-            result.status = BriefStatus.GATE_CHECKING
+            result.status = "gate_checking"
             gate_result = self._gate.validate_sections(assembly_result.sections, audience=audience_key)
             self._record_hop("HOP-4-STYLE-GATE", gate_result.passed)
 
@@ -323,11 +420,11 @@ class ExecOrchestrator:
             ]
 
             if not gate_result.passed and self.gate_mode == "HARD_FAIL":
-                result.status = BriefStatus.FAILED
+                result.status = "failed"
                 _log.error("[ExecOrchestrator] Style gate FAILED: %d violations", len(gate_result.violations))
             else:
                 is_dry = request.dry_run or self.dry_run
-                result.status = BriefStatus.DRY_RUN if is_dry else BriefStatus.COMPLETE
+                result.status = "dry_run" if is_dry else "complete"
                 if not is_dry:
                     artifact_paths = self._emit_artifacts(result, trace_id)
                     result.artifact_paths = artifact_paths
@@ -335,7 +432,7 @@ class ExecOrchestrator:
 
         except (ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             _log.error("[ExecOrchestrator] Pipeline error trace=%s: %s", trace_id, exc, exc_info=True)
-            result.status = BriefStatus.FAILED
+            result.status = "failed"
             result.error = str(exc)
             self._record_hop("PIPELINE-ERROR", False)
 
@@ -343,7 +440,7 @@ class ExecOrchestrator:
 
         run_summary = RunSummary(
             trace_id=trace_id,
-            status=result.status.value,
+            status=result.status,
             audience=audience_key,
             tone=result.tone,
             sections_generated=len(result.sections),
@@ -363,7 +460,7 @@ class ExecOrchestrator:
         _log.info(
             "[ExecOrchestrator] Complete trace=%s status=%s score=%.2f violations=%d",
             trace_id,
-            result.status.value,
+            result.status,
             result.quality_score,
             len(result.gate_violations),
         )
@@ -421,7 +518,10 @@ class ExecOrchestrator:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
 
     async def plan_execution_with_qwen(
-        self, objectives: list[str], constraints: dict[str, Any], planning_type: str = "strategic",
+        self,
+        objectives: list[str],
+        constraints: dict[str, Any],
+        planning_type: str = "strategic",
     ) -> dict[str, Any]:
         """Generate execution plans using Qwen vLLM inference.
 
@@ -509,7 +609,10 @@ class ExecOrchestrator:
             return {"success": False, "error": f"execution_planning_failed: {str(e)}", "content": None}
 
     def _prepare_execution_planning_prompt(
-        self, objectives: list[str], constraints: dict[str, Any], planning_type: str,
+        self,
+        objectives: list[str],
+        constraints: dict[str, Any],
+        planning_type: str,
     ) -> str:
         """Prepare prompt for execution planning using Qwen.
 

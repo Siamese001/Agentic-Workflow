@@ -1,27 +1,29 @@
 """Qwen vLLM Inference Service for L3 Orchestration.
 
-This module provides optimized Qwen v2.5 vLLM inference capabilities
-for the L3 orchestration layer, including:
-- Configuration management
-- vLLM client engines (optimized and hardened)
-- Inference gateway with pooling and batching
-- GPU memory monitoring
-- Telemetry collection
+This module provides Qwen/Qwen2.5-7B-Instruct vLLM inference for apps_* orchestrators.
 
-Example usage:
+Supported runtime path (apps_rg, apps_exec, apps_research, apps_rfp, apps_lic):
+    app → routing predicates → VLLMGatewayAdapter → AppsQwenGateway
+        → HardenedVLLMClient → OptimizedVLLMClient → local vLLM
+
+apps_eval uses AppsQwenGateway directly (controlled/opt-in, no adapter gate).
+
+Canonical topology reference: docs/architecture/qwen-vllm-topology.md
+
+Supported app-facing imports:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
-        QwenInferenceGateway,
-        QwenInferenceRequest,
-        QwenInferenceConfig,
+        AppsQwenGateway,
+        AppsQwenRequest,
+        apps_qwen_telemetry,
     )
 
-    gateway = QwenInferenceGateway()
-    request = QwenInferenceRequest(app_name="my_app", prompt="Hello")
+    gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
+    request = AppsQwenRequest(app_name="my_app", prompt="Hello", confidence_threshold=0.8)
     response = await gateway.infer(request)
 """
 
 # Configuration
-# Backward compatibility re-exports (for gradual migration)
+# Apps-level aliases (migration complete; retained for external configuration use)
 from .config import (
     AppsQwenConfig,
     AppsQwenMetric,
@@ -41,7 +43,6 @@ from .config import (
 
 # Engines
 from .engines import (
-    AppsQwenInferenceWorker,
     CircuitBreaker,
     CircuitBreakerConfig,
     CircuitBreakerOpenError,
@@ -49,7 +50,6 @@ from .engines import (
     HardenedVLLMClient,
     HardeningMetrics,
     OptimizedVLLMClient,
-    QwenInferenceWorker,
     RetryConfig,
     VLLMRequest,
     VLLMResponse,
@@ -100,7 +100,6 @@ __all__ = [
     "CircuitState",
     "RetryConfig",
     "HardeningMetrics",
-    "QwenInferenceWorker",
     "get_vllm_client",
     "close_vllm_client",
     # Reasoning/Gateway
@@ -123,7 +122,6 @@ __all__ = [
     "AppsQwenMetric",
     "AppsQwenSessionMetrics",
     "apps_qwen_telemetry",
-    "AppsQwenInferenceWorker",
     "AppsQwenGateway",
     "AppsQwenRequest",
     "AppsQwenResponse",

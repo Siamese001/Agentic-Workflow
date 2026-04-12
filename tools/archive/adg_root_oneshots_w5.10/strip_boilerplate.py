@@ -23,6 +23,7 @@ from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
 @dataclass
 class StripResult:
     """Result of boilerplate stripping operation."""
+
     action: str  # "cleaned", "deleted", "skipped"
     reason: str
     lines_removed: int = 0
@@ -65,7 +66,7 @@ class BoilerplateStripper(ast.NodeTransformer):
         if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
             call = stmt.value
             if isinstance(call.func, ast.Name):
-                if call.func.id.startswith('_emit_'):
+                if call.func.id.startswith("_emit_"):
                     return True
 
         # Unused imports (simplified - would need full analysis for accuracy)
@@ -73,15 +74,28 @@ class BoilerplateStripper(ast.NodeTransformer):
             # For now, only remove obvious boilerplate imports
             if isinstance(stmt, ast.Import):
                 for alias in stmt.names:
-                    if any(name in alias.name for name in [
-                        'uuid', 'hashlib', 'json', 'logging',
-                        'dataclasses', 'typing', 'pathlib',
-                    ]):
+                    if any(
+                        name in alias.name
+                        for name in [
+                            "uuid",
+                            "hashlib",
+                            "json",
+                            "logging",
+                            "dataclasses",
+                            "typing",
+                            "pathlib",
+                        ]
+                    ):
                         return True
             elif isinstance(stmt, ast.ImportFrom):
-                if stmt.module and any(pattern in stmt.module for pattern in [
-                    'typing', 'dataclasses', 'pathlib',
-                ]):
+                if stmt.module and any(
+                    pattern in stmt.module
+                    for pattern in [
+                        "typing",
+                        "dataclasses",
+                        "pathlib",
+                    ]
+                ):
                     return True
 
         return False
@@ -101,6 +115,7 @@ class SafeBoilerplateStripper:
 
         # Create a new counter for each analysis
         from agentic_core.L5_safety.validators.hollow_file_detector_validator import BehavioralNodeCounter
+
         counter = BehavioralNodeCounter()
         counter.visit(tree)
         return int(counter.behavioral_functions + counter.behavioral_classes)
@@ -154,6 +169,7 @@ class SafeBoilerplateStripper:
         # Generate cleaned content
         try:
             import astor
+
             cleaned_content = astor.to_source(stripped_tree)
         except ImportError:
             # Fallback to basic unparse
@@ -166,6 +182,7 @@ class SafeBoilerplateStripper:
             # Run ruff format if available
             try:
                 import subprocess
+
                 subprocess.run(["ruff", "format", str(file_path)], check=True, capture_output=True)
             except (subprocess.CalledProcessError, FileNotFoundError):
                 pass  # ruff not available or failed
@@ -179,7 +196,9 @@ class SafeBoilerplateStripper:
             became_hollow=False,
         )
 
-    def strip_directory(self, directory: Path, dry_run: bool = True, recursive: bool = True) -> list[StripResult]:
+    def strip_directory(
+        self, directory: Path, dry_run: bool = True, recursive: bool = True
+    ) -> list[StripResult]:
         """Strip boilerplate from all Python files in directory."""
         results = []
 
@@ -191,9 +210,9 @@ class SafeBoilerplateStripper:
 
         # Exclude common non-source directories
         python_files = [
-            f for f in python_files
-            if not any(part.startswith(('.', '__')) for part in f.parts)
-            and "site-packages" not in str(f)
+            f
+            for f in python_files
+            if not any(part.startswith((".", "__")) for part in f.parts) and "site-packages" not in str(f)
         ]
 
         for file_path in python_files:
@@ -233,8 +252,12 @@ def main():
     parser.add_argument("paths", nargs="+", type=Path, help="Files or directories to process")
     parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no modifications)")
     parser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
-    parser.add_argument("--write", action="store_true", help=argparse.SUPPRESS)  # Deprecated, default is now execute
-    parser.add_argument("--recursive", "-R", action="store_true", default=True, help="Process directories recursively")
+    parser.add_argument(
+        "--write", action="store_true", help=argparse.SUPPRESS
+    )  # Deprecated, default is now execute
+    parser.add_argument(
+        "--recursive", "-R", action="store_true", default=True, help="Process directories recursively"
+    )
     parser.add_argument("--no-recursive", action="store_true", help="Don't process directories recursively")
     parser.add_argument("--report-file", type=Path, help="Write detailed report to JSON file")
     parser.add_argument("--repo", type=Path, default=Path("."), help="Repository root")
@@ -304,7 +327,7 @@ def main():
         print(f"\n📄 Report written to {args.report_file}")
 
     # Exit with error if files would be deleted
-    if summary['deleted'] > 0 and dry_run:
+    if summary["deleted"] > 0 and dry_run:
         print(f"\n⚠️  {summary['deleted']} files would become hollow and should be deleted")
         print("   Review the results and consider removing these files manually")
 

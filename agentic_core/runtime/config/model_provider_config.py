@@ -232,8 +232,11 @@ class ModelConfig(BaseModel):
     def validate_model_name(cls, value: str) -> str:
         """[HARDENED] Ensure model name is not empty."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ModelConfig.validate_model_name")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ModelConfig.validate_model_name"
+        )
 
         if not value.strip():
             raise ValueError("model_name cannot be empty")

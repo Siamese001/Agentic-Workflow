@@ -170,6 +170,7 @@ class ExtractContactInfo:
     def retrieve(self, query: str, filters: dict | None = None, LIMIT: int = 10) -> RetrievalResult:
         """Retrieve items."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExtractContactInfo.retrieve")
 

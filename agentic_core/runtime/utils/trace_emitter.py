@@ -232,8 +232,11 @@ class TraceEmitter:
     ) -> TraceRecord:
         """Emit a structured trace record for this module's operation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceEmitter.emit_trace_record")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TraceEmitter.emit_trace_record"
+        )
 
         active = self._current_trace()
         trace_id = active.trace_id if active else "no-active-trace"
@@ -277,7 +280,10 @@ class TraceEmitter:
             elapsed_ms = (time.monotonic() - self._start) * 1000.0
             success = exc_type is None
             self._record = self._emitter.emit_trace_record(
-                self._operation, elapsed_ms, success=success, metadata=self._metadata,
+                self._operation,
+                elapsed_ms,
+                success=success,
+                metadata=self._metadata,
             )
             return False
 
@@ -286,7 +292,9 @@ class TraceEmitter:
             return self._record
 
     def trace_op(
-        self, operation: str, metadata: dict[str, Any] | None = None,
+        self,
+        operation: str,
+        metadata: dict[str, Any] | None = None,
     ) -> TraceEmitter.trace_operation:
         """Return a context manager that traces `operation`."""
         return TraceEmitter.trace_operation(self, operation, metadata)

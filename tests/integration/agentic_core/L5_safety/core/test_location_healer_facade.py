@@ -17,6 +17,7 @@ class TestLocationHealerFacade:
         """Test location_healer_facade module imports."""
         try:
             from agentic_core import location_healer_facade
+
             assert location_healer_facade is not None
         except ImportError:
             pytest.skip("location_healer_facade not available")
@@ -25,6 +26,7 @@ class TestLocationHealerFacade:
         """Test LocationHealerFacade class exists."""
         try:
             from agentic_core import LocationHealerFacade
+
             assert LocationHealerFacade is not None
         except ImportError:
             pytest.skip("LocationHealerFacade not available")
@@ -33,6 +35,7 @@ class TestLocationHealerFacade:
         """Test location_healer_facade functions are callable."""
         try:
             from agentic_core import validate_location_healer_facade
+
             assert callable(validate_location_healer_facade)
         except ImportError:
             pytest.skip("validate_location_healer_facade not available")

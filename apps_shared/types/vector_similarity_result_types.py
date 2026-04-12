@@ -62,7 +62,10 @@ class EnhancedSemanticCache:
 
     # guardian: allow-magic-config
     def get(
-        self, query: str, query_embedding: list[float] | None = None, top_k: int = 5,
+        self,
+        query: str,
+        query_embedding: list[float] | None = None,
+        top_k: int = 5,
     ) -> list[VectorSimilarityResult]:
         """Retrieve cached entries similar to query.
 
@@ -75,6 +78,7 @@ class EnhancedSemanticCache:
             List of similar cached entries
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedSemanticCache.get")
 
@@ -180,7 +184,11 @@ class EnhancedSemanticCache:
 
     # guardian: allow-magic-config
     def generate_fingerprint(
-        self, prompt: str, model: str, temperature: float = 0.7, system_prompt: str | None = None,
+        self,
+        prompt: str,
+        model: str,
+        temperature: float = 0.7,
+        system_prompt: str | None = None,
     ) -> str:
         """Generate fingerprint for cache lookup.
 

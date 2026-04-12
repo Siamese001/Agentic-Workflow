@@ -129,10 +129,7 @@ class FixGuardianFormatRule(BaseRepairRule):
 
     def match(self, deficiency: Deficiency) -> bool:
         """Check if this rule applies."""
-        return (
-            deficiency.category == FixCategory.AUTO_FIX
-            and deficiency.issue_type in self.HANDLED_ISSUES
-        )
+        return deficiency.category == FixCategory.AUTO_FIX and deficiency.issue_type in self.HANDLED_ISSUES
 
     def can_fix(self, deficiency: Deficiency) -> tuple[bool, str]:
         """Determine if fix can be applied."""
@@ -268,11 +265,11 @@ class FixGuardianFormatRule(BaseRepairRule):
 
         # Strip leading 'allow' prefix
         if lowered.startswith("allow-"):
-            inner = lowered[len("allow-"):]
+            inner = lowered[len("allow-") :]
         elif lowered.startswith("allow_"):
-            inner = lowered[len("allow_"):]
+            inner = lowered[len("allow_") :]
         elif lowered.startswith("allow"):
-            inner_raw = raw[len("allow"):].lstrip("-_ ")
+            inner_raw = raw[len("allow") :].lstrip("-_ ")
             inner = self._camel_to_kebab(inner_raw) if inner_raw else ""
         else:
             inner = self._camel_to_kebab(lowered)

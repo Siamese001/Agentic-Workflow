@@ -16,6 +16,7 @@ Edge types extracted:
   IMPORT_EDGE, CALL_EDGE, INHERIT_EDGE, TEST_COVERS_EDGE,
   FIXTURE_DEPENDS_EDGE, ASSERT_TARGET_EDGE, MOCK_TARGET_EDGE
 """
+
 from __future__ import annotations
 
 import ast
@@ -296,10 +297,11 @@ logger = logging.getLogger("adg_semantic_builder")
 # Data classes
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SemanticNode:
     node_id: str
-    node_type: str          # ModuleNode, ClassNode, FunctionNode, TestFunctionNode, FixtureNode, ParametrizedTestNode, AssertionNode, MockNode
+    node_type: str  # ModuleNode, ClassNode, FunctionNode, TestFunctionNode, FixtureNode, ParametrizedTestNode, AssertionNode, MockNode
     module_path: str
     name: str
     qualified_name: str
@@ -324,7 +326,7 @@ class SemanticNode:
 
 @dataclass
 class SemanticEdge:
-    edge_type: str          # IMPORT_EDGE, CALL_EDGE, INHERIT_EDGE, TEST_COVERS_EDGE, FIXTURE_DEPENDS_EDGE, ASSERT_TARGET_EDGE, MOCK_TARGET_EDGE
+    edge_type: str  # IMPORT_EDGE, CALL_EDGE, INHERIT_EDGE, TEST_COVERS_EDGE, FIXTURE_DEPENDS_EDGE, ASSERT_TARGET_EDGE, MOCK_TARGET_EDGE
     from_id: str
     to_id: str
     from_module: str
@@ -347,6 +349,7 @@ class SemanticEdge:
 # ---------------------------------------------------------------------------
 # AST helpers
 # ---------------------------------------------------------------------------
+
 
 def _decorator_names(node: ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef) -> list[str]:
     names = []
@@ -410,6 +413,7 @@ def _node_id(module_path: str, qualified_name: str) -> str:
 # Per-file AST extraction
 # ---------------------------------------------------------------------------
 
+
 def extract_file(rel_path: str, source: str) -> tuple[list[SemanticNode], list[SemanticEdge]]:
     """Parse one Python file and return all semantic nodes and intra-file edges."""
     from agentic_core.adg.contracts.schema_util import module_path_to_layer
@@ -451,14 +455,16 @@ def extract_file(rel_path: str, source: str) -> tuple[list[SemanticNode], list[S
         # Convert dotted module name to a path candidate
         candidate_path = imp_name.replace(".", "/") + ".py"
         imp_id = _node_id(candidate_path, imp_name)
-        edges.append(SemanticEdge(
-            edge_type="IMPORT_EDGE",
-            from_id=module_nid,
-            to_id=imp_id,
-            from_module=rel_path,
-            to_module=candidate_path,
-            lineno=lineno,
-        ))
+        edges.append(
+            SemanticEdge(
+                edge_type="IMPORT_EDGE",
+                from_id=module_nid,
+                to_id=imp_id,
+                from_module=rel_path,
+                to_module=candidate_path,
+                lineno=lineno,
+            )
+        )
 
     # Walk top-level class and function definitions
     fixture_names: set[str] = set()
@@ -508,15 +514,17 @@ def extract_file(rel_path: str, source: str) -> tuple[list[SemanticNode], list[S
 
                 for dep_name in fixture_deps:
                     dep_id = _node_id(rel_path, f"{module_qname}.{dep_name}")
-                    edges.append(SemanticEdge(
-                        edge_type="FIXTURE_DEPENDS_EDGE",
-                        from_id=nid,
-                        to_id=dep_id,
-                        from_module=rel_path,
-                        to_module=rel_path,
-                        lineno=node.lineno,
-                        meta={"dep_name": dep_name},
-                    ))
+                    edges.append(
+                        SemanticEdge(
+                            edge_type="FIXTURE_DEPENDS_EDGE",
+                            from_id=nid,
+                            to_id=dep_id,
+                            from_module=rel_path,
+                            to_module=rel_path,
+                            lineno=node.lineno,
+                            meta={"dep_name": dep_name},
+                        )
+                    )
 
             nodes.append(fn_node)
             if is_test:
@@ -546,15 +554,17 @@ def extract_file(rel_path: str, source: str) -> tuple[list[SemanticNode], list[S
 
             for base_name in bases:
                 base_id = _node_id(rel_path, base_name)
-                edges.append(SemanticEdge(
-                    edge_type="INHERIT_EDGE",
-                    from_id=nid,
-                    to_id=base_id,
-                    from_module=rel_path,
-                    to_module=rel_path,
-                    lineno=node.lineno,
-                    meta={"base": base_name},
-                ))
+                edges.append(
+                    SemanticEdge(
+                        edge_type="INHERIT_EDGE",
+                        from_id=nid,
+                        to_id=base_id,
+                        from_module=rel_path,
+                        to_module=rel_path,
+                        lineno=node.lineno,
+                        meta={"base": base_name},
+                    )
+                )
 
     return nodes, edges
 
@@ -575,8 +585,15 @@ _SCAN_DIRS = [
 ]
 
 _EXCLUDE_PATTERNS = {
-    "__pycache__", ".git", ".venv", "venv", "node_modules",
-    ".mypy_cache", ".pytest_cache", "dist", "build",
+    "__pycache__",
+    ".git",
+    ".venv",
+    "venv",
+    "node_modules",
+    ".mypy_cache",
+    ".pytest_cache",
+    "dist",
+    "build",
 }
 
 
@@ -611,7 +628,10 @@ def build_semantic_graph(repo_root: Path) -> dict:
         # guardian: allow-silent-swallow
         except Exception:
             error_count += 1
+
+
 # ---------------------------------------------------------------------------
+
 
 def build_test_surface_map(graph: dict) -> dict:
     """Map every non-test symbol -> list of test_ids that cover it.
@@ -656,8 +676,8 @@ def build_test_surface_map(graph: dict) -> dict:
         for test_mod, imported in test_imports.items():
             # Direct module import match
             if sym_mod in imported or any(
-                sym_mod.startswith(imp.replace(".", "/")) or
-                imp.startswith(sym_mod.replace("/", ".").removesuffix(".py"))
+                sym_mod.startswith(imp.replace(".", "/"))
+                or imp.startswith(sym_mod.replace("/", ".").removesuffix(".py"))
                 for imp in imported
             ):
                 covering_tests.extend(module_to_tests.get(test_mod, []))
@@ -700,6 +720,7 @@ def build_test_surface_map(graph: dict) -> dict:
 # Phase 3: Root cause cluster discovery
 # ---------------------------------------------------------------------------
 
+
 def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
     """Rank modules by risk signals: fan-out, test surface size, centrality.
 
@@ -718,13 +739,12 @@ def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
             fan_in[edge["to_module"]] += 1
 
     # Test surface size per module
-    test_surface_size: dict[str, int] = {
-        mod: len(tests) for mod, tests in module_coverage.items()
-    }
+    test_surface_size: dict[str, int] = {mod: len(tests) for mod, tests in module_coverage.items()}
 
     # Collect all non-test modules
     all_modules = {
-        n["module_path"] for n in graph["entities"]
+        n["module_path"]
+        for n in graph["entities"]
         if n["node_type"] == "ModuleNode" and not n["module_path"].startswith("tests/")
     }
 
@@ -740,15 +760,17 @@ def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
         if risk == 0:
             continue
 
-        clusters.append({
-            "module": mod,
-            "layer": layer,
-            "fan_out": fo,
-            "fan_in": fi,
-            "test_surface_size": ts_size,
-            "risk_score": risk,
-            "covering_tests": module_coverage.get(mod, []),
-        })
+        clusters.append(
+            {
+                "module": mod,
+                "layer": layer,
+                "fan_out": fo,
+                "fan_in": fi,
+                "test_surface_size": ts_size,
+                "risk_score": risk,
+                "covering_tests": module_coverage.get(mod, []),
+            }
+        )
 
     # Sort by risk descending
     clusters.sort(key=lambda c: c["risk_score"], reverse=True)
@@ -766,6 +788,7 @@ def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
 # ---------------------------------------------------------------------------
 # Phase 0: Validation report
 # ---------------------------------------------------------------------------
+
 
 def build_validation_report(latest_artifact_path: Path, semantic_graph: dict) -> dict:
     try:
@@ -800,6 +823,7 @@ def build_validation_report(latest_artifact_path: Path, semantic_graph: dict) ->
 # Main entrypoint
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     artifacts_dir = _REPO_ROOT / "artifacts"
     adg_dir = _REPO_ROOT / "artifacts" / "adg"
@@ -816,24 +840,31 @@ def main() -> int:
     sem_graph = build_semantic_graph(_REPO_ROOT)
     sem_path = artifacts_dir / "adg_semantic_graph.json"
     sem_path.write_text(json.dumps(sem_graph, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    logger.info("PHASE 1 DONE: %d nodes, %d edges -> %s",
-                sem_graph["counts"]["total_nodes"], sem_graph["counts"]["total_edges"], sem_path)
+    logger.info(
+        "PHASE 1 DONE: %d nodes, %d edges -> %s",
+        sem_graph["counts"]["total_nodes"],
+        sem_graph["counts"]["total_edges"],
+        sem_path,
+    )
 
     # --- PHASE 2: Test surface map ---
     logger.info("PHASE 2: Building test surface map...")
     surface_map = build_test_surface_map(sem_graph)
     surf_path = artifacts_dir / "adg_test_surface_map.json"
     surf_path.write_text(json.dumps(surface_map, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    logger.info("PHASE 2 DONE: %d symbols covered, %d modules covered -> %s",
-                surface_map["covered_symbol_count"], surface_map["covered_module_count"], surf_path)
+    logger.info(
+        "PHASE 2 DONE: %d symbols covered, %d modules covered -> %s",
+        surface_map["covered_symbol_count"],
+        surface_map["covered_module_count"],
+        surf_path,
+    )
 
     # --- PHASE 3: Root cause clusters ---
     logger.info("PHASE 3: Building failure clusters...")
     clusters = build_failure_clusters(sem_graph, surface_map)
     clust_path = artifacts_dir / "adg_failure_clusters.json"
     clust_path.write_text(json.dumps(clusters, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    logger.info("PHASE 3 DONE: %d clusters (top 50 ranked) -> %s",
-                clusters["clusters_with_risk"], clust_path)
+    logger.info("PHASE 3 DONE: %d clusters (top 50 ranked) -> %s", clusters["clusters_with_risk"], clust_path)
 
     # --- PHASE 0: Validation report ---
     logger.info("PHASE 0: Emitting validation report...")

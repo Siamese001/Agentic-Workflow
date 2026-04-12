@@ -69,11 +69,13 @@ class PerformanceMonitor:
         self._max_history_size = max_history_size
         self._metrics_lock = Lock()
         self._metrics_history: deque[PerformanceMetric] = deque(maxlen=max_history_size)
-        self._signal_counters: dict[str, dict[str, int]] = defaultdict(lambda: {
-            "total": 0,
-            "success": 0,
-            "failure": 0,
-        })
+        self._signal_counters: dict[str, dict[str, int]] = defaultdict(
+            lambda: {
+                "total": 0,
+                "success": 0,
+                "failure": 0,
+            }
+        )
         self._latency_samples: dict[str, deque[float]] = defaultdict(lambda: deque(maxlen=1000))
         self._last_health_check = 0
         self._health_cache: SignalHealthMetrics | None = None
@@ -183,9 +185,11 @@ class PerformanceMonitor:
 
         # Check cache
         with self._metrics_lock:
-            if (self._health_cache and
-                signal_type is None and
-                now - self._health_cache.timestamp_utc < self._health_cache_ttl):
+            if (
+                self._health_cache
+                and signal_type is None
+                and now - self._health_cache.timestamp_utc < self._health_cache_ttl
+            ):
                 return self._health_cache
 
         # Calculate metrics
@@ -309,42 +313,48 @@ class PerformanceMonitor:
 
         # High error rate alert
         if health.error_rate > 0.1:
-            alerts.append({
-                "alert_type": "high_error_rate",
-                "severity": "high" if health.error_rate > 0.2 else "medium",
-                "message": f"High error rate: {health.error_rate:.2%}",
-                "timestamp_utc": health.timestamp_utc,
-                "metrics": {
-                    "error_rate": health.error_rate,
-                    "total_signals": health.total_signals_processed,
-                },
-            })
+            alerts.append(
+                {
+                    "alert_type": "high_error_rate",
+                    "severity": "high" if health.error_rate > 0.2 else "medium",
+                    "message": f"High error rate: {health.error_rate:.2%}",
+                    "timestamp_utc": health.timestamp_utc,
+                    "metrics": {
+                        "error_rate": health.error_rate,
+                        "total_signals": health.total_signals_processed,
+                    },
+                }
+            )
 
         # High latency alert
         if health.p95_latency_ms > 5000:
-            alerts.append({
-                "alert_type": "high_latency",
-                "severity": "high" if health.p95_latency_ms > 10000 else "medium",
-                "message": f"High P95 latency: {health.p95_latency_ms}ms",
-                "timestamp_utc": health.timestamp_utc,
-                "metrics": {
-                    "p95_latency_ms": health.p95_latency_ms,
-                    "avg_latency_ms": health.average_latency_ms,
-                },
-            })
+            alerts.append(
+                {
+                    "alert_type": "high_latency",
+                    "severity": "high" if health.p95_latency_ms > 10000 else "medium",
+                    "message": f"High P95 latency: {health.p95_latency_ms}ms",
+                    "timestamp_utc": health.timestamp_utc,
+                    "metrics": {
+                        "p95_latency_ms": health.p95_latency_ms,
+                        "avg_latency_ms": health.average_latency_ms,
+                    },
+                }
+            )
 
         # Low success rate alert
         if health.success_rate < 0.9 and health.total_signals_processed > 10:
-            alerts.append({
-                "alert_type": "low_success_rate",
-                "severity": "high" if health.success_rate < 0.8 else "medium",
-                "message": f"Low success rate: {health.success_rate:.2%}",
-                "timestamp_utc": health.timestamp_utc,
-                "metrics": {
-                    "success_rate": health.success_rate,
-                    "total_signals": health.total_signals_processed,
-                },
-            })
+            alerts.append(
+                {
+                    "alert_type": "low_success_rate",
+                    "severity": "high" if health.success_rate < 0.8 else "medium",
+                    "message": f"Low success rate: {health.success_rate:.2%}",
+                    "timestamp_utc": health.timestamp_utc,
+                    "metrics": {
+                        "success_rate": health.success_rate,
+                        "total_signals": health.total_signals_processed,
+                    },
+                }
+            )
 
         return alerts
 
@@ -379,12 +389,14 @@ class PerformanceMonitor:
             rows = []
             for metric in metrics:
                 tags_str = json.dumps(metric.tags) if metric.tags else ""
-                rows.append([
-                    metric.metric_name,
-                    str(metric.value),
-                    str(metric.timestamp_utc),
-                    tags_str,
-                ])
+                rows.append(
+                    [
+                        metric.metric_name,
+                        str(metric.value),
+                        str(metric.timestamp_utc),
+                        tags_str,
+                    ]
+                )
 
             return "\n".join([",".join(headers)] + [",".join(row) for row in rows])
         else:

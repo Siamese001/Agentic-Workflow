@@ -57,7 +57,11 @@ class TestUnderwritingEngine(unittest.TestCase):
                 employee_count=50,
                 ownership=[
                     OwnerInfo(
-                        owner_name="Test Owner", ownership_pct=100.0, role="CEO", fico=750, guarantor=True,
+                        owner_name="Test Owner",
+                        ownership_pct=100.0,
+                        role="CEO",
+                        fico=750,
+                        guarantor=True,
                     ),
                 ],
                 naics_risk_flags=[],
@@ -111,10 +115,13 @@ class TestUnderwritingEngine(unittest.TestCase):
             ),
             "external_signals": ExternalSignals(),
             "relationship_context": RelationshipContext(
-                existing_customer=True, tenure_years=3.0, deposit_relationship=True,
+                existing_customer=True,
+                tenure_years=3.0,
+                deposit_relationship=True,
             ),
             "decision_constraints": DecisionConstraints(
-                turnaround_sla_hours=72, max_auto_approval_amount=2000000.00,
+                turnaround_sla_hours=72,
+                max_auto_approval_amount=2000000.00,
             ),
         }
 
@@ -160,7 +167,11 @@ class TestUnderwritingEngine(unittest.TestCase):
                     operating_states=["NV"],
                     ownership=[
                         OwnerInfo(
-                            owner_name="Owner", ownership_pct=100.0, role="CEO", fico=700, guarantor=True,
+                            owner_name="Owner",
+                            ownership_pct=100.0,
+                            role="CEO",
+                            fico=700,
+                            guarantor=True,
                         ),
                     ],
                 ),

@@ -177,16 +177,16 @@ class ResumeOrchestrator:
 
         # Extract ADG complexity tier from profile for dynamic path selection
         if self.reasoning_profile is not None:
-            self.complexity_tier = getattr(self.reasoning_profile, 'adg_complexity_tier', 'moderate')
-            self.profile_hash = getattr(self.reasoning_profile, 'profile_hash', None)
+            self.complexity_tier = getattr(self.reasoning_profile, "adg_complexity_tier", "moderate")
+            self.profile_hash = getattr(self.reasoning_profile, "profile_hash", None)
             _emit_records_telemetry_event(
                 str(uuid.uuid4()),
                 {
                     "orchestrator": "ResumeOrchestrator",
                     "complexity_tier": self.complexity_tier,
                     "profile_hash": self.profile_hash,
-                    "adg_node_count": getattr(self.reasoning_profile, 'adg_node_count', 0),
-                    "adg_edge_count": getattr(self.reasoning_profile, 'adg_edge_count', 0),
+                    "adg_node_count": getattr(self.reasoning_profile, "adg_node_count", 0),
+                    "adg_edge_count": getattr(self.reasoning_profile, "adg_edge_count", 0),
                 },
             )
         else:
@@ -195,7 +195,9 @@ class ResumeOrchestrator:
 
     def run(self, JobDescription: str) -> dict[str, object]:
         """Execute the full resume generation workflow."""
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeOrchestrator.run")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeOrchestrator.run"
+        )
         # HOP-0: JD Analysis
         self.jd_enforcer.validate_jd_input(JobDescription, "HOP-0")
         if self.jd_enforcer.has_failures():
@@ -249,12 +251,14 @@ def orchestrate_resume(
 # but referenced here for type annotations
 class HopStatus:
     """Stub for hop status enumeration."""
+
     COMPLETED = "completed"
     FAILED = "failed"
 
 
 class HopCheckpoint:
     """Stub for hop checkpoint dataclass."""
+
     def __init__(self, hop_id: str, status: str) -> None:
         self.hop_id = hop_id
         self.status = status
@@ -262,17 +266,20 @@ class HopCheckpoint:
 
 class HopExecutionError(Exception):
     """Stub for HOP execution error."""
+
     pass
 
 
 class ValidationResult:
     """Stub for validation result."""
+
     def __init__(self) -> None:
         self.passed = True
 
 
 class ClerkExtractor:
     """Stub for clerk extractor."""
+
     def __init__(self, master_resume: dict) -> None:
         self.master_resume = master_resume
 
@@ -282,12 +289,14 @@ class ClerkExtractor:
 
 class DataEnricher:
     """Stub for data enricher."""
+
     def enrich(self, data: dict, context: object, orchestrator: object) -> tuple[dict, list]:
         return data, [ValidationResult()]
 
 
 class JDEnforcementValidator:
     """Stub for JD enforcement validator."""
+
     def __init__(self) -> None:
         self._failures: list[str] = []
 

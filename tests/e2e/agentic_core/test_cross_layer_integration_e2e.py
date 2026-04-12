@@ -31,10 +31,12 @@ import pytest
 
 # Lazy import fixtures - avoid collection-time errors
 
+
 @pytest.fixture(scope="session")
 def _lazy_agentic_core_L5_safety_config_structure_blueprint_ssot_0():
     from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
-    return type('_Import', (), {"get_validated_project_root": get_validated_project_root})
+
+    return type("_Import", (), {"get_validated_project_root": get_validated_project_root})
 
 
 from apps_shared.utils.open_telemetry_tracing_adapter_util import (
@@ -49,6 +51,7 @@ from system_learning.runtime_adg import (
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def cross_layer_project_path(
@@ -75,6 +78,7 @@ def tracer_adapter() -> OpenTelemetryTracingAdapter:
 # Test Class: Full Stack Request Flow
 # =============================================================================
 
+
 class TestFullStackRequestFlow:
     """End-to-end tests covering L0 through L6."""
 
@@ -86,6 +90,7 @@ class TestFullStackRequestFlow:
         """Test complete request flow from L0 (routing) to L6 (observability)."""
         # Clean up test directory
         import shutil
+
         test_path = cross_layer_project_path / "full_stack"
         if test_path.exists():
             shutil.rmtree(test_path)
@@ -221,6 +226,7 @@ class TestFullStackRequestFlow:
 # Test Class: Error Recovery and Resilience
 # =============================================================================
 
+
 class TestCrossLayerErrorRecovery:
     """Error propagation and recovery across layers."""
 
@@ -231,6 +237,7 @@ class TestCrossLayerErrorRecovery:
     ) -> None:
         """Test error handling and propagation from L2 to L6."""
         import shutil
+
         test_path = cross_layer_project_path / "error_recovery"
         if test_path.exists():
             shutil.rmtree(test_path)
@@ -305,6 +312,7 @@ class TestCrossLayerErrorRecovery:
 # Test Class: ADG Integrity and Consistency
 # =============================================================================
 
+
 class TestADGIntegrityValidation:
     """Validate ADG snapshot integrity across the stack."""
 
@@ -315,6 +323,7 @@ class TestADGIntegrityValidation:
     ) -> None:
         """Verify ADG traces are consistent across all layers."""
         import shutil
+
         test_path = cross_layer_project_path / "adg_integrity"
         if test_path.exists():
             shutil.rmtree(test_path)
@@ -362,6 +371,7 @@ class TestADGIntegrityValidation:
     ) -> None:
         """Test memory state persists correctly across layer transitions."""
         import shutil
+
         test_path = cross_layer_project_path / "memory_test"
         if test_path.exists():
             shutil.rmtree(test_path)
@@ -401,6 +411,7 @@ class TestADGIntegrityValidation:
     ) -> None:
         """Test telemetry events correlate across all layers."""
         import shutil
+
         test_path = cross_layer_project_path / "telemetry"
         if test_path.exists():
             shutil.rmtree(test_path)
@@ -441,6 +452,7 @@ class TestADGIntegrityValidation:
 # Test Class: Layer Gravity and Boundary Violations
 # =============================================================================
 
+
 class TestLayerGravityEnforcement:
     """Validate layer gravity rules and detect violations."""
 
@@ -469,7 +481,20 @@ class TestLayerGravityEnforcement:
             parent_id = span.get("parent_span_id", "")
             # In real system, would check parent layer < child layer
             # Here we just verify spans are properly tagged
-            assert layer in ("L0", "L1", "L2", "L3", "L4", "L5", "L6", "U0", "L0_ROUTING", "L1_Cognition", "L2_Execution", "L3_Orchestration")
+            assert layer in (
+                "L0",
+                "L1",
+                "L2",
+                "L3",
+                "L4",
+                "L5",
+                "L6",
+                "U0",
+                "L0_ROUTING",
+                "L1_Cognition",
+                "L2_Execution",
+                "L3_Orchestration",
+            )
 
     def test_safety_plane_interception(
         self,
@@ -496,7 +521,11 @@ class TestLayerGravityEnforcement:
         spans = tracer_adapter.drain_completed_spans()
 
         # Find safety check - look for L5 or safety-related attributes
-        safety_spans = [s for s in spans if "L5" in str(s.get("layer", "")) or "safety" in str(s.get("attributes", {})).lower()]
+        safety_spans = [
+            s
+            for s in spans
+            if "L5" in str(s.get("layer", "")) or "safety" in str(s.get("attributes", {})).lower()
+        ]
         # If no explicit L5 span found, check for safety attributes in any span
         if not safety_spans:
             safety_spans = [s for s in spans if "safety" in str(s.get("attributes", {})).lower()]
@@ -510,4 +539,8 @@ class TestLayerGravityEnforcement:
             for span in l2_spans:
                 attrs = span.get("attributes", {})
                 # Should have safety marker or tool execution marker
-                assert "tool" in str(attrs).lower() or "safety" in str(attrs).lower() or "approved" in str(attrs).lower()
+                assert (
+                    "tool" in str(attrs).lower()
+                    or "safety" in str(attrs).lower()
+                    or "approved" in str(attrs).lower()
+                )

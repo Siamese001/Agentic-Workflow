@@ -172,8 +172,11 @@ class AchievementPrioritizerEngine(BaseRGEngine):
         Sort achievements by impact score.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AchievementPrioritizerEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AchievementPrioritizerEngine.execute"
+        )
 
         self._mcp_audit("achievement_prioritization")
         scored = []

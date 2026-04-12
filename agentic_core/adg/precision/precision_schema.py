@@ -14,24 +14,28 @@ from typing import Any
 # SECTION 1: NODE GRANULARITY EXPANSION
 # =============================================================================
 
+
 class PrecisionNodeType(Enum):
     """Enhanced node types for precision hardening"""
-    SYMBOL = "symbol"           # Original functions, classes, modules
-    CODE_BLOCK = "code_block"   # Function decomposition blocks
+
+    SYMBOL = "symbol"  # Original functions, classes, modules
+    CODE_BLOCK = "code_block"  # Function decomposition blocks
     EXPRESSION_UNIT = "expression_unit"  # Fine-grained expressions
-    CONTROL_BRANCH = "control_branch"    # Control flow branches
-    DATA_ORIGIN = "data_origin"         # Data source nodes
+    CONTROL_BRANCH = "control_branch"  # Control flow branches
+    DATA_ORIGIN = "data_origin"  # Data source nodes
     DATA_TRANSFORMATION = "data_transformation"  # Data processing nodes
-    DATA_SINK = "data_sink"              # Data destination nodes
+    DATA_SINK = "data_sink"  # Data destination nodes
     FILESYSTEM_OPERATION = "filesystem_operation"
     NETWORK_CALL = "network_call"
     DATABASE_OPERATION = "database_operation"
     SUBPROCESS_INVOCATION = "subprocess_invocation"
     IN_MEMORY_STATE_MUTATION = "in_memory_state_mutation"
 
+
 @dataclass(frozen=True)
 class NodeSpan:
     """AST span information for precise positioning"""
+
     start: int
     end: int
     line: int
@@ -39,9 +43,11 @@ class NodeSpan:
     end_line: int
     end_column: int
 
+
 @dataclass(frozen=True)
 class PrecisionNodeAttributes:
     """Enhanced node attributes for precision hardening"""
+
     node_type: PrecisionNodeType
     span: NodeSpan
     file_path: str
@@ -51,12 +57,15 @@ class PrecisionNodeAttributes:
     temporal_order: int | None = None
     type_surface: str | None = None
 
+
 # =============================================================================
 # SECTION 2: SEMANTIC EDGE TAXONOMY
 # =============================================================================
 
+
 class SemanticEdgeType(Enum):
     """Semantic edge types replacing generic edges"""
+
     INVOKES_FUNCTION = "invokes_function"
     READS_VARIABLE = "reads_variable"
     WRITES_VARIABLE = "writes_variable"
@@ -77,42 +86,52 @@ class SemanticEdgeType(Enum):
     VIOLATES_POLICY_AT = "violates_policy_at"
     PROPAGATES_VIOLATION_TO = "propagates_violation_to"
 
+
 @dataclass(frozen=True)
 class SemanticEdgeAttributes:
     """Enhanced edge attributes for semantic precision"""
+
     edge_type: SemanticEdgeType
     source_span: NodeSpan | None = None
     target_span: NodeSpan | None = None
     confidence: float = 1.0
     dynamic_resolution: dict[str, Any] | None = None
 
+
 # =============================================================================
 # SECTION 3: TYPE SURFACE ENRICHMENT
 # =============================================================================
 
+
 @dataclass(frozen=True)
 class TypeSurface:
     """Type information for semantic enrichment"""
+
     inferred_type: str | None
     possible_types: list[str] = field(default_factory=list)
     nullability: bool = False
     shape_signature: dict[str, Any] | None = None
 
+
 @dataclass(frozen=True)
 class VariableAttributes:
     """Variable tracking for data flow lineage"""
+
     source_origin: str
     mutation_count: int
     lineage_chain: list[str]
     type_surface: TypeSurface | None = None
 
+
 # =============================================================================
 # SECTION 4: PRECISION GRAPH STRUCTURE
 # =============================================================================
 
+
 @dataclass
 class PrecisionGraph:
     """Precision graph with enhanced structure"""
+
     nodes: dict[str, PrecisionNodeAttributes] = field(default_factory=dict)
     edges: dict[str, SemanticEdgeAttributes] = field(default_factory=dict)
     edge_types: dict[str, SemanticEdgeType] = field(default_factory=dict)
@@ -153,13 +172,16 @@ class PrecisionGraph:
 
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
 
+
 # =============================================================================
 # SECTION 5: METRICS AND VALIDATION
 # =============================================================================
 
+
 @dataclass(frozen=True)
 class PrecisionMetrics:
     """Precision hardening metrics"""
+
     block_level_coverage_ratio: float
     lineage_completeness_score: float
     control_path_coverage: float
@@ -174,9 +196,11 @@ class PrecisionMetrics:
     graph_hash: str
     replay_signature: str | None = None
 
+
 @dataclass
 class ValidationReport:
     """Precision hardening validation report"""
+
     passed: bool
     metrics: PrecisionMetrics | None = None
     hard_gates_passed: dict[str, bool] | None = None
@@ -194,9 +218,11 @@ class ValidationReport:
     existing_queries_functional: bool = True
     violation_count_preserved: bool = True
 
+
 # =============================================================================
 # SECTION 6: CONFIGURATION
 # =============================================================================
+
 
 @dataclass(frozen=True)
 class PrecisionConfig:
@@ -221,28 +247,24 @@ class PrecisionConfig:
     MIN_NODE_COUNT = 1000
     MIN_EDGE_COUNT = 5000
 
+
 # Export all public symbols
 __all__ = [
     # Node types
     "PrecisionNodeType",
     "NodeSpan",
     "PrecisionNodeAttributes",
-
     # Edge types
     "SemanticEdgeType",
     "SemanticEdgeAttributes",
-
     # Type surfaces
     "TypeSurface",
     "VariableAttributes",
-
     # Graph structure
     "PrecisionGraph",
-
     # Metrics and validation
     "PrecisionMetrics",
     "ValidationReport",
-
     # Configuration
     "PrecisionConfig",
 ]

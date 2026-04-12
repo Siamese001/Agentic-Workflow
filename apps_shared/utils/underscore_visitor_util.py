@@ -165,8 +165,11 @@ class UnderscoreVisitor(ast.NodeVisitor):
 
     def visit_AnnAssign(self, node):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UnderscoreVisitor.visit_AnnAssign")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "UnderscoreVisitor.visit_AnnAssign"
+        )
 
         if isinstance(node.target, ast.Name) and node.target.id.startswith("_"):
             if not node.target.id.startswith("__"):

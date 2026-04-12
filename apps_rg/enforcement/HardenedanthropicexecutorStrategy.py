@@ -206,7 +206,9 @@ class HardenedAnthropicExecutor(HardeningMixin):
     """
 
     def __init__(
-        self, config: HardenedAnthropicConfig | None = None, telemetry: SystemTelemetry | None = None,
+        self,
+        config: HardenedAnthropicConfig | None = None,
+        telemetry: SystemTelemetry | None = None,
     ):
         """Initialize hardened Anthropic executor.
 
@@ -255,7 +257,9 @@ class HardenedAnthropicExecutor(HardeningMixin):
             )
 
     def _build_messages(
-        self, messages: list[AgentMessage], system_prompt: str | None = None,
+        self,
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
     ) -> tuple[list[dict[str, str]], str | None]:
         """Build Anthropic message format.
 
@@ -293,8 +297,11 @@ class HardenedAnthropicExecutor(HardeningMixin):
             Generated text response
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedAnthropicExecutor.run_llm")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedAnthropicExecutor.run_llm"
+        )
 
         if messages:
             anthropic_messages, sys_prompt = self._build_messages(messages, system_prompt)
@@ -448,7 +455,9 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
 # guardian: allow-magic-config
 def create_hardened_anthropic_executor(
-    model: str = "claude-3-5-sonnet-20241022", temperature: float = 0.7, **kwargs,
+    model: str = "claude-3-5-sonnet-20241022",
+    temperature: float = 0.7,
+    **kwargs,
 ) -> HardenedAnthropicExecutor:
     """Create a hardened Anthropic executor.
 

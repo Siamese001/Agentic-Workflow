@@ -63,6 +63,7 @@ class _AttributeVisitor(BaseStructuralVisitor):
         super().__init__(ctx)
         # Import from schema_util at runtime to avoid circular imports
         from agentic_core.adg.contracts.schema_util import CONFIG_READ_SYMBOLS
+
         self._config_symbols = CONFIG_READ_SYMBOLS
 
     def visit_Attribute(self, node: ast.Attribute) -> None:
@@ -125,6 +126,7 @@ class _CompositionVisitor(BaseStructuralVisitor):
         super().__init__(ctx)
         # Import from static_scanner at runtime to avoid circular imports
         from agentic_core.adg.extraction.static_scanner import _COMPOSITION_NOISE
+
         self._noise_symbols = _COMPOSITION_NOISE
         self._in_init = False
         self._current_class = ""

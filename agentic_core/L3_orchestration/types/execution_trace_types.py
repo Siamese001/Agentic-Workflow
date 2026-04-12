@@ -220,7 +220,9 @@ class ExecutionTrace:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ExecutionTrace.compute_replay_key",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ExecutionTrace.compute_replay_key",
         )
 
         replay_data = f"{self.trace_id}{self.plan_hash}{transcript_hash}"

@@ -10,7 +10,10 @@ dirs = ["evaluation", "guardian", "integration", "unit_min_deps", "agentic_core"
 for d in dirs:
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 
@@ -38,7 +41,11 @@ for d in dirs:
         print(f"\n=== tests/{d}/ ({len(errors)} errors) ===")
         for err_file, err_msg in errors:
             # Extract just filename from ERROR line
-            fname = err_file.split("ERROR collecting ")[-1].split(" ")[0] if "ERROR collecting" in err_file else err_file
+            fname = (
+                err_file.split("ERROR collecting ")[-1].split(" ")[0]
+                if "ERROR collecting" in err_file
+                else err_file
+            )
             print(f"  {fname}")
             if err_msg:
                 print(f"    -> {err_msg[:200]}")

@@ -101,7 +101,12 @@ class RLStrategy:
         return None
 
     def execute_agent(
-        self, agent: Any, agent_name: str, dry_run: bool = True, execute: bool = False, **kwargs: Any,
+        self,
+        agent: Any,
+        agent_name: str,
+        dry_run: bool = True,
+        execute: bool = False,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Execute a single agent and return results.

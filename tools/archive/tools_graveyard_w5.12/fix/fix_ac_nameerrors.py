@@ -34,11 +34,5 @@ STUB_FIXES = {
 }
 
 
-
-
-
-
-
-
 if __name__ == "__main__":
     main()

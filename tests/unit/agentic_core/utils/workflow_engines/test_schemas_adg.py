@@ -16,14 +16,17 @@ class TestSchemasAdg:
     def test_schemas_adg_imports(self):
         """Test schemas_adg module imports."""
         from agentic_core import schemas_adg
+
         assert schemas_adg is not None
 
     def test_schemas_adg_class(self):
         """Test SchemasAdg class exists."""
         from agentic_core import SchemasAdg
+
         assert SchemasAdg is not None
 
     def test_schemas_adg_callable(self):
         """Test schemas_adg functions are callable."""
         from agentic_core import validate_schemas_adg
+
         assert callable(validate_schemas_adg)

@@ -241,8 +241,14 @@ class QueryDecomposer:
         summary.query_type_distribution = type_dist
 
         # Evidence coverage
-        required_evidence = sum(1 for c in all_components if c.evidence_required == EvidenceRequirement.REQUIRED)
-        covered_evidence = sum(1 for c in all_components if c.evidence_required == EvidenceRequirement.REQUIRED and c.sources_needed > 0)
+        required_evidence = sum(
+            1 for c in all_components if c.evidence_required == EvidenceRequirement.REQUIRED
+        )
+        covered_evidence = sum(
+            1
+            for c in all_components
+            if c.evidence_required == EvidenceRequirement.REQUIRED and c.sources_needed > 0
+        )
         summary.evidence_coverage_ratio = covered_evidence / max(required_evidence, 1)
 
         return summary
@@ -377,9 +383,7 @@ class QueryDecompositionAgent:
             total_topics=1,
             total_components=len(decomposition.components),
             total_sources_needed=sum(c.sources_needed for c in decomposition.components),
-            query_type_distribution={
-                c.query_type.value: 1 for c in decomposition.components
-            },
+            query_type_distribution={c.query_type.value: 1 for c in decomposition.components},
         )
 
         return decomposition, summary
@@ -391,7 +395,8 @@ class QueryDecompositionAgent:
         """Generate a research execution plan from decomposition."""
         total_sources = sum(c.sources_needed for c in decomposition.components)
         required_sources = sum(
-            c.sources_needed for c in decomposition.components
+            c.sources_needed
+            for c in decomposition.components
             if c.evidence_required == EvidenceRequirement.REQUIRED
         )
 

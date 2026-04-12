@@ -178,6 +178,7 @@ class SignalGroup:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroup.canonical_bytes")
 
@@ -207,8 +208,11 @@ class SignalGroupingReport:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingReport.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingReport.canonical_bytes"
+        )
 
         data = {
             "snapshot_id": self.snapshot_id,
@@ -254,8 +258,11 @@ class SignalGroupingEngine:
         SignalGroupingReport
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingEngine.group_signals")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingEngine.group_signals"
+        )
 
         buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for sig in signals:
@@ -316,8 +323,11 @@ class SignalGroupingEngine:
             Spike detection analysis
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingEngine.detect_signal_spikes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SignalGroupingEngine.detect_signal_spikes"
+        )
 
         if not current_signals:
             return {
@@ -348,16 +358,20 @@ class SignalGroupingEngine:
 
         for sig_type, current_count in current_counts.items():
             baseline = baseline_counts.get(sig_type, 1)  # Default baseline
-            spike_ratio = current_count / baseline if baseline > 0 else current_count  # Fix: use count as ratio when baseline is 0
+            spike_ratio = (
+                current_count / baseline if baseline > 0 else current_count
+            )  # Fix: use count as ratio when baseline is 0
 
             if spike_ratio >= spike_threshold:
-                spike_signals.append({
-                    "signal_type": sig_type,
-                    "current_count": current_count,
-                    "baseline_count": baseline,
-                    "spike_ratio": spike_ratio,
-                    "severity": "high" if spike_ratio >= 10 else "medium" if spike_ratio >= 5 else "low",
-                })
+                spike_signals.append(
+                    {
+                        "signal_type": sig_type,
+                        "current_count": current_count,
+                        "baseline_count": baseline,
+                        "spike_ratio": spike_ratio,
+                        "severity": "high" if spike_ratio >= 10 else "medium" if spike_ratio >= 5 else "low",
+                    }
+                )
                 spike_detected = True
 
         analysis = {
@@ -372,6 +386,7 @@ class SignalGroupingEngine:
         # Persist spike detection results
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             bridge.persist_signal_spike_detection(
@@ -381,9 +396,10 @@ class SignalGroupingEngine:
                 timestamp_utc=analysis["timestamp_utc"],
             )
         except Exception as e:
-
             # Bridge unavailable - continue without it
-            import logging; logging.getLogger(__name__).debug("signal_grouping_engine: Exception swallowed at L383: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("signal_grouping_engine: Exception swallowed at L383: %s", e)
 
         return analysis
 

@@ -286,7 +286,9 @@ class RGValidationExecutor(ParameterizedValidator):
         """Execute validation and return results."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RGValidationExecutor.execute:{self.rule_set}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RGValidationExecutor.execute:{self.rule_set}"
+        )
         issues = self.collect_issues(resume_data, job_data)
         return {
             "rule_set": self.rule_set,

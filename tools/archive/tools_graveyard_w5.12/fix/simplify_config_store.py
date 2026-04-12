@@ -14,21 +14,21 @@ from pathlib import Path
 
 def simplify_file(filepath: Path, dry_run: bool = True) -> dict:
     """Simplify config_store.py by removing repetitive guardian comments."""
-    content = filepath.read_text(encoding='utf-8')
+    content = filepath.read_text(encoding="utf-8")
     original_content = content
-    original_lines = len(content.split('\n'))
+    original_lines = len(content.split("\n"))
 
     # Remove repetitive guardian: Encoding errors comments (keep max 1 per function)
     # Pattern: # guardian: Encoding errors should specify fallback encoding strategy
-    encoding_guardian_pattern = r'# guardian: Encoding errors should specify fallback encoding strategy'
+    encoding_guardian_pattern = r"# guardian: Encoding errors should specify fallback encoding strategy"
 
     # Split by function boundaries (lines starting with "def " or "class ")
     sections: list[list[str]] = []
     current_section: list[str] = []
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     for line in lines:
-        if line.startswith('def ') or line.startswith('class ') or line.startswith('# ==='):
+        if line.startswith("def ") or line.startswith("class ") or line.startswith("# ==="):
             if current_section:
                 sections.append(current_section)
             current_section = [line]
@@ -58,32 +58,32 @@ def simplify_file(filepath: Path, dry_run: bool = True) -> dict:
     for section in cleaned_sections:
         new_lines.extend(section)
 
-    content = '\n'.join(new_lines)
+    content = "\n".join(new_lines)
 
     # Clean up excess blank lines (more than 2 consecutive)
-    content = re.sub(r'\n{4,}', '\n\n\n', content)
+    content = re.sub(r"\n{4,}", "\n\n\n", content)
 
-    new_line_count = len(content.split('\n'))
+    new_line_count = len(content.split("\n"))
     lines_removed = original_lines - new_line_count
 
     result = {
-        'file': str(filepath),
-        'original_lines': original_lines,
-        'new_lines': new_line_count,
-        'lines_removed': lines_removed,
-        'changed': content != original_content,
+        "file": str(filepath),
+        "original_lines": original_lines,
+        "new_lines": new_line_count,
+        "lines_removed": lines_removed,
+        "changed": content != original_content,
     }
 
-    if not dry_run and result['changed']:
-        filepath.write_text(content, encoding='utf-8')
+    if not dry_run and result["changed"]:
+        filepath.write_text(content, encoding="utf-8")
 
     return result
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Simplify config_store.py')
-    parser.add_argument('--check', action='store_true', help='Dry run')
-    parser.add_argument('--apply', action='store_true', help='Apply changes')
+    parser = argparse.ArgumentParser(description="Simplify config_store.py")
+    parser.add_argument("--check", action="store_true", help="Dry run")
+    parser.add_argument("--apply", action="store_true", help="Apply changes")
 
     args = parser.parse_args()
 
@@ -92,23 +92,23 @@ def main():
 
     dry_run = not args.apply
 
-    filepath = Path('agentic_core/L0_routing/meta_control/config_store.py')
+    filepath = Path("agentic_core/L0_routing/meta_control/config_store.py")
     if not filepath.exists():
         print(f"File not found: {filepath}")
         return
 
     result = simplify_file(filepath, dry_run)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Config Store Simplification ({'DRY RUN' if dry_run else 'APPLIED'})")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"File: {result['file']}")
     print(f"Original lines: {result['original_lines']}")
     print(f"New lines: {result['new_lines']}")
     print(f"Lines removed: {result['lines_removed']}")
-    print(f"Size reduction: {result['lines_removed']/result['original_lines']*100:.1f}%")
+    print(f"Size reduction: {result['lines_removed'] / result['original_lines'] * 100:.1f}%")
     print(f"Changed: {result['changed']}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

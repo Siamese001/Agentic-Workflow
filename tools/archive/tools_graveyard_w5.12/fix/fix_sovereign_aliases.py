@@ -1,4 +1,5 @@
 """Find all missing capitalized aliases in sovereign_severity_types.py and add them."""
+
 import ast
 import re
 
@@ -18,10 +19,12 @@ tree = ast.parse(src)
 classes = {n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)}
 print(f"\nDefined classes: {len(classes)}")
 
+
 # Build a map from CamelCase -> snake_case
 def to_snake(name):
     s = re.sub(r"(?<=[a-z])(?=[A-Z])", "_", name)
     return s.lower()
+
 
 missing = []
 for key, val in names:

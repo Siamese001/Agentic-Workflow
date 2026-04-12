@@ -4,6 +4,7 @@ Two patterns:
 1. 'import uuid' inserted at col 0 inside an indented block -> unexpected indent
 2. 'import uuid' inserted between try: and except: -> breaks try/except
 """
+
 import ast
 import os
 
@@ -63,9 +64,13 @@ def fix_file(fp: str) -> bool:
         if line and line[0] not in (" ", "\t"):
             if stripped.startswith("from __future__"):
                 insert_idx = i + 1
-            elif stripped.startswith("import ") and not any(stripped.startswith("import " + pkg) for pkg in local_pkgs):
+            elif stripped.startswith("import ") and not any(
+                stripped.startswith("import " + pkg) for pkg in local_pkgs
+            ):
                 insert_idx = i + 1
-            elif stripped.startswith("from ") and not any(stripped.startswith("from " + pkg) for pkg in local_pkgs):
+            elif stripped.startswith("from ") and not any(
+                stripped.startswith("from " + pkg) for pkg in local_pkgs
+            ):
                 insert_idx = i + 1
 
     if insert_idx == 0:

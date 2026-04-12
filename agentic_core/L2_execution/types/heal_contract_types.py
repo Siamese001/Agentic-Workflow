@@ -457,4 +457,57 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
     return errors
 
 
-__all__ = ["CombinedHealResult", "HealCheckResult", "HealStatus"]
+class ClassifierSource(str, Enum):
+    """Records whether scoring came from ML inference or the heuristic fallback."""
+
+    ML_CLASSIFIER = "ML_CLASSIFIER"
+    HEURISTIC_FALLBACK = "HEURISTIC_FALLBACK"
+
+
+@dataclass(frozen=True)
+class HealClassifierResult:
+    """Output contract for a single heal-confidence inference call.
+
+    recommended_tier is the string name of a HealTier member (e.g. "HIGH").
+    Using str avoids a circular import with confidence_scorer.py.
+    confidence_per_tier keys are HealTier names; values sum to ~1.0 for ML,
+    0.0 for heuristic (heuristic does not produce per-tier probabilities).
+    """
+
+    heal_confidence: float
+    recommended_tier: str
+    confidence_per_tier: dict[str, float]
+    ood_flag: bool
+    source: ClassifierSource
+    model_version_hash: str
+    inference_latency_us: int
+
+
+@dataclass(frozen=True)
+class HealClassifierTelemetry:
+    """BUS T payload emitted after every ConfidenceScorer.score() call.
+
+    divergence_flag is True when the ML recommendation differs from the
+    heuristic tier. This is the primary signal for Phase 6 activation readiness.
+    """
+
+    run_id: str
+    check_id: str
+    source: ClassifierSource
+    recommended_tier: str
+    heal_confidence: float
+    ood_flag: bool
+    model_version_hash: str
+    inference_latency_us: int
+    heuristic_tier: str
+    divergence_flag: bool
+
+
+__all__ = [
+    "ClassifierSource",
+    "CombinedHealResult",
+    "HealCheckResult",
+    "HealClassifierResult",
+    "HealClassifierTelemetry",
+    "HealStatus",
+]

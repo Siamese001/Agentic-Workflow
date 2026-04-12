@@ -264,8 +264,13 @@ class ResearchOrchestrator:
             agents=agents,
             execution_order=execution_order,
             estimated_total_time_ms=200000,  # Sum of all timeouts
-            critical_path=["AGENT-01-QUERY", "AGENT-02-SOURCES", "AGENT-03-EVIDENCE",
-                          "AGENT-04-SYNTHESIZE", "AGENT-06-VALIDATE"],
+            critical_path=[
+                "AGENT-01-QUERY",
+                "AGENT-02-SOURCES",
+                "AGENT-03-EVIDENCE",
+                "AGENT-04-SYNTHESIZE",
+                "AGENT-06-VALIDATE",
+            ],
         )
 
     async def execute_plan(self, plan: ResearchOrchestrationPlan) -> list[ResearchAgentResult]:
@@ -297,14 +302,18 @@ class ResearchOrchestrator:
                     results.append(result)
                     self._results[result.agent_id] = result
 
-                    self._lineage.append({
-                        "agent_id": result.agent_id,
-                        "agent_type": result.agent_type.value,
-                        "status": result.status.value,
-                        "execution_time_ms": result.execution_time_ms,
-                    })
+                    self._lineage.append(
+                        {
+                            "agent_id": result.agent_id,
+                            "agent_type": result.agent_type.value,
+                            "status": result.status.value,
+                            "execution_time_ms": result.execution_time_ms,
+                        }
+                    )
 
-            _emit_records_workflow_lineage("enterprise", "ResearchOrchestrator", f"completed_batch_{len(batch)}")
+            _emit_records_workflow_lineage(
+                "enterprise", "ResearchOrchestrator", f"completed_batch_{len(batch)}"
+            )
 
         return results
 
@@ -342,8 +351,7 @@ class ResearchOrchestrator:
             "validation_passed": passed,
             "total_execution_time_ms": sum(r.execution_time_ms for r in completed),
             "results_by_type": {
-                atype: [r.result_data for r in results]
-                for atype, results in by_type.items()
+                atype: [r.result_data for r in results] for atype, results in by_type.items()
             },
             "execution_lineage": self._lineage,
         }
@@ -398,8 +406,9 @@ class MultiAgentResearchEngine:
         # Create execution plan
         plan = self.orchestrator.create_orchestration_plan(topic, artifact_mode)
 
-        _log.info(f"[MultiAgentResearchEngine] Plan: {len(plan.agents)} agents, "
-                  f"{len(plan.execution_order)} batches")
+        _log.info(
+            f"[MultiAgentResearchEngine] Plan: {len(plan.agents)} agents, {len(plan.execution_order)} batches"
+        )
 
         # Execute plan
         results = await self.orchestrator.execute_plan(plan)

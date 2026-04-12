@@ -44,7 +44,8 @@ class MissionHistorian:
         self.log_path = log_path or Path("mission_audit.csv")
         if not self.log_path.exists():
             _get_write_gateway().init_csv(
-                self.log_path, ["timestamp", "file", "action", "source", "destination", "reason"],
+                self.log_path,
+                ["timestamp", "file", "action", "source", "destination", "reason"],
             )
 
     def record(self, file_name: str, action: str, source: str, destination: str, reason: str) -> Any:
@@ -63,7 +64,8 @@ class MissionHistorian:
             with _proof_emitter.proof_op(f"record:{action}:{file_name}"):
                 pass
             _get_write_gateway().append_csv_row(
-                self.log_path, [datetime.now().isoformat(), file_name, action, source, destination, reason],
+                self.log_path,
+                [datetime.now().isoformat(), file_name, action, source, destination, reason],
             )
             Logger.debug(f"[MissionHistorian] Recorded: {action} on {file_name}")
         # guardian: allow-silent-swallow

@@ -23,14 +23,16 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 class TestType(Enum):
     """Test classification per ADG vs AST reconciliation."""
+
     STRUCTURAL_ONLY = "structural_only"  # ADG sees, AST disproves (false positive)
-    BEHAVIORAL = "behavioral"           # Both ADG and AST see (true positive)
-    DYNAMIC_ONLY = "dynamic_only"      # AST sees, ADG misses (false negative)
+    BEHAVIORAL = "behavioral"  # Both ADG and AST see (true positive)
+    DYNAMIC_ONLY = "dynamic_only"  # AST sees, ADG misses (false negative)
 
 
 @dataclass
 class TestNode:
     """AST-derived test node with reconciliation metadata."""
+
     node_id: str
     file_path: str
     function_name: str
@@ -120,7 +122,7 @@ class ASTTestCollector:
                         return True, "@pytest.mark.skipif(...)"
 
             elif isinstance(decorator, ast.Attribute):
-                if hasattr(decorator, 'attr'):
+                if hasattr(decorator, "attr"):
                     if decorator.attr == "skip":
                         return True, "@pytest.mark.skip"
                     elif decorator.attr == "skipif":
@@ -132,9 +134,22 @@ class ASTTestCollector:
         """Determine if function has actual logic beyond placeholders."""
         # Check for non-trivial statements
         logic_indicators = [
-            ast.Assert, ast.Raise, ast.Return, ast.Yield, ast.YieldFrom,
-            ast.For, ast.While, ast.If, ast.Try, ast.With, ast.AsyncWith,
-            ast.Call, ast.Assign, ast.AnnAssign, ast.AugAssign, ast.NamedExpr,
+            ast.Assert,
+            ast.Raise,
+            ast.Return,
+            ast.Yield,
+            ast.YieldFrom,
+            ast.For,
+            ast.While,
+            ast.If,
+            ast.Try,
+            ast.With,
+            ast.AsyncWith,
+            ast.Call,
+            ast.Assign,
+            ast.AnnAssign,
+            ast.AugAssign,
+            ast.NamedExpr,
         ]
 
         for child in ast.walk(node):
@@ -154,9 +169,11 @@ class ASTTestCollector:
             if node.value.value is None or node.value.value in ("TODO", "FIXME", "Not implemented"):
                 return True
         elif isinstance(node, ast.Raise):
-            if (isinstance(node.exc, ast.Call) and
-                isinstance(node.exc.func, ast.Name) and
-                node.exc.func.id == "NotImplementedError"):
+            if (
+                isinstance(node.exc, ast.Call)
+                and isinstance(node.exc.func, ast.Name)
+                and node.exc.func.id == "NotImplementedError"
+            ):
                 return True
         return False
 

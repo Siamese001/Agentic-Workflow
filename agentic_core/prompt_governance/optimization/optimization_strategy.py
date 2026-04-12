@@ -189,13 +189,15 @@ class PromptOptimizer:
     def __init__(self, config: OptimizationConfig = None):
         """Initialize prompt optimizer."""
         self.config = config or OptimizationConfig(
-            strategy=OptimizationStrategy.CLARITY, level=OptimizationLevel.MODERATE,
+            strategy=OptimizationStrategy.CLARITY,
+            level=OptimizationLevel.MODERATE,
         )
         Logger.debug("PromptOptimizer initialized")
 
     def optimize(self, prompt: str) -> str:
         """Optimize a prompt."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOptimizer.optimize")
 

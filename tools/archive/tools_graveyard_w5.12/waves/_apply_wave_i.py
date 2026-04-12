@@ -4,6 +4,7 @@ These 4 files share Redis state and are not xdist-safe with -n auto.
 Adding the serial marker documents the constraint and allows tooling to
 select them separately from the parallel-safe test files.
 """
+
 import pathlib
 
 ROOT = pathlib.Path(r"c:\Git\Agentic-Workflow")

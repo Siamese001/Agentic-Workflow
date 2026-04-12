@@ -28,6 +28,7 @@ DEFAULT_COST_PER_TOKEN = 2e-05
 
 class BudgetExceededError(Exception):
     """Raised when LLM spending exceeds the configured budget limit."""
+
     pass
 
 
@@ -97,13 +98,15 @@ class CostGovernor:
         self.current_spend += total_cost
 
         # Record in history
-        self._history.append({
-            "model": model,
-            "input_tokens": input_tokens,
-            "output_tokens": output_tokens,
-            "cost": total_cost,
-            "metadata": metadata or {},
-        })
+        self._history.append(
+            {
+                "model": model,
+                "input_tokens": input_tokens,
+                "output_tokens": output_tokens,
+                "cost": total_cost,
+                "metadata": metadata or {},
+            }
+        )
 
         # Trim history if needed
         if len(self._history) > 1000:
@@ -205,10 +208,7 @@ def calculate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
         Estimated cost in dollars
     """
     pricing = MODEL_PRICING.get(model, MODEL_PRICING["default"])
-    return (
-        input_tokens * pricing.input_cost_per_token +
-        output_tokens * pricing.output_cost_per_token
-    )
+    return input_tokens * pricing.input_cost_per_token + output_tokens * pricing.output_cost_per_token
 
 
 def register_model_pricing(

@@ -180,7 +180,10 @@ class RetrievalProfileInvariantChecker:
         self.max_top_k = max_top_k
 
     def validate(
-        self, *, profile: RetrievalProfile, reference_profile: RetrievalProfile | None = None,
+        self,
+        *,
+        profile: RetrievalProfile,
+        reference_profile: RetrievalProfile | None = None,
     ) -> None:
         """Validate profile invariants.
 
@@ -192,8 +195,11 @@ class RetrievalProfileInvariantChecker:
             ValueError: If any invariant is violated
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileInvariantChecker.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileInvariantChecker.validate"
+        )
 
         violations = []
         if not 0.0 < profile.similarity_cutoff <= 1.0:

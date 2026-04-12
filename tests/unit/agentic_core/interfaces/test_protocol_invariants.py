@@ -1,4 +1,5 @@
 """Tests for protocol validation and invariants."""
+
 from __future__ import annotations
 
 import pytest

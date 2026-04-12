@@ -127,6 +127,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
         if self._current_class:
             sym = f"{self._rel}::{self._current_class}.{self._current_function}"
         from agentic_core.adg.contracts.schema_util import canonical_name
+
         return canonical_name("Symbol", sym)
 
     @staticmethod
@@ -172,6 +173,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
         """Emit an execution semantic edge."""
         ln, col, eln, ecol = self._span(node)
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
+
         self.edges.append(
             _Edge(
                 from_name=self._func_adg(),

@@ -26,6 +26,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 # Lazy import for optional S3 dependencies
 try:
     import botocore.exceptions
+
     _HAS_BOTOCORE = True
 except ImportError:
     _HAS_BOTOCORE = False
@@ -37,6 +38,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class StoredArtifact:
     """Stored artifact metadata."""
+
     artifact_id: str  # SHA-256 content hash
     content_hash: str
     storage_backend: str
@@ -88,7 +90,7 @@ class LocalFileBackend(StorageBackend):
         return {}
 
     def _save_metadata(self) -> None:
-        with open(self._metadata_path, 'w') as f:
+        with open(self._metadata_path, "w") as f:
             json.dump(self._metadata, f, indent=2)
 
     def _content_path(self, content_hash: str) -> Path:
@@ -103,7 +105,7 @@ class LocalFileBackend(StorageBackend):
         path = self._content_path(content_hash)
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.write(content)
 
         artifact = StoredArtifact(
@@ -137,7 +139,7 @@ class LocalFileBackend(StorageBackend):
         if not path.exists():
             return None
 
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             return f.read()
 
     def exists(self, artifact_id: str) -> bool:
@@ -166,6 +168,7 @@ class PostgresBackend(StorageBackend):
     def _init_db(self) -> None:
         try:
             import psycopg2
+
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
 
@@ -205,21 +208,24 @@ class PostgresBackend(StorageBackend):
         conn = psycopg2.connect(self.connection_string)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO artifacts (
                 artifact_id, content_hash, content_type, size_bytes,
                 content, metadata, retention_days
             ) VALUES (%s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (artifact_id) DO NOTHING
-        """, (
-            artifact_id,
-            content_hash,
-            metadata.get("content_type", "application/octet-stream"),
-            len(content),
-            content,
-            json.dumps(metadata),
-            metadata.get("retention_days", 365),
-        ))
+        """,
+            (
+                artifact_id,
+                content_hash,
+                metadata.get("content_type", "application/octet-stream"),
+                len(content),
+                content,
+                json.dumps(metadata),
+                metadata.get("retention_days", 365),
+            ),
+        )
 
         conn.commit()
         conn.close()
@@ -240,12 +246,16 @@ class PostgresBackend(StorageBackend):
     def retrieve(self, artifact_id: str) -> bytes | None:
         try:
             import psycopg2
+
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT content FROM artifacts WHERE artifact_id = %s
-            """, (artifact_id,))
+            """,
+                (artifact_id,),
+            )
 
             row = cursor.fetchone()
             conn.close()
@@ -259,12 +269,16 @@ class PostgresBackend(StorageBackend):
     def exists(self, artifact_id: str) -> bool:
         try:
             import psycopg2
+
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT 1 FROM artifacts WHERE artifact_id = %s
-            """, (artifact_id,))
+            """,
+                (artifact_id,),
+            )
 
             exists = cursor.fetchone() is not None
             conn.close()
@@ -280,12 +294,16 @@ class PostgresBackend(StorageBackend):
     def delete(self, artifact_id: str) -> bool:
         try:
             import psycopg2
+
             conn = psycopg2.connect(self.connection_string)
             cursor = conn.cursor()
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 DELETE FROM artifacts WHERE artifact_id = %s
-            """, (artifact_id,))
+            """,
+                (artifact_id,),
+            )
 
             deleted = cursor.rowcount > 0
             conn.commit()
@@ -318,8 +336,9 @@ class S3Backend(StorageBackend):
         if self._s3 is None:
             try:
                 import boto3
+
                 self._s3 = boto3.client(
-                    's3',
+                    "s3",
                     region_name=self.region,
                     endpoint_url=self.endpoint,
                 )
@@ -361,7 +380,7 @@ class S3Backend(StorageBackend):
         try:
             s3 = self._get_s3_client()
             response = s3.get_object(Bucket=self.bucket, Key=key)
-            return response['Body'].read()
+            return response["Body"].read()
         except Exception as e:
             Logger.error(f"Failed to retrieve from S3: {e}")
             return None
@@ -374,7 +393,7 @@ class S3Backend(StorageBackend):
             s3.head_object(Bucket=self.bucket, Key=key)
             return True
         except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == '404':
+            if e.response["Error"]["Code"] == "404":
                 return False
             else:
                 Logger.debug(f"S3 exists check failed: {e}")
@@ -391,7 +410,7 @@ class S3Backend(StorageBackend):
             s3.delete_object(Bucket=self.bucket, Key=key)
             return True
         except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == '404':
+            if e.response["Error"]["Code"] == "404":
                 return False
             else:
                 Logger.debug(f"S3 delete failed: {e}")
@@ -459,7 +478,7 @@ class CanonicalStore:
 
         file_path = Path(file_path)
 
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             content = f.read()
 
         # Auto-detect content type
@@ -534,17 +553,17 @@ class CanonicalStore:
         ext = file_path.suffix.lower()
 
         mime_types = {
-            '.txt': 'text/plain',
-            '.md': 'text/markdown',
-            '.py': 'text/x-python',
-            '.json': 'application/json',
-            '.pdf': 'application/pdf',
-            '.html': 'text/html',
-            '.csv': 'text/csv',
-            '.xml': 'application/xml',
+            ".txt": "text/plain",
+            ".md": "text/markdown",
+            ".py": "text/x-python",
+            ".json": "application/json",
+            ".pdf": "application/pdf",
+            ".html": "text/html",
+            ".csv": "text/csv",
+            ".xml": "application/xml",
         }
 
-        return mime_types.get(ext, 'application/octet-stream')
+        return mime_types.get(ext, "application/octet-stream")
 
     def get_stats(self) -> dict[str, Any]:
         """Get store statistics."""

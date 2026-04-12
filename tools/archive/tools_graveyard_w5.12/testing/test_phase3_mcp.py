@@ -30,7 +30,7 @@ async def test_meta_learning_mcp():
         return False
 
     # Check FastMCP instance
-    if not hasattr(server_module, 'mcp'):
+    if not hasattr(server_module, "mcp"):
         print("❌ FastMCP instance 'mcp' not found")
         return False
 
@@ -44,7 +44,7 @@ async def test_meta_learning_mcp():
         print(f"✅ Found {len(tool_names)} tools: {', '.join(tool_names)}")
     except Exception as e:
         print(f"❌ Failed to list tools: {e}")
-        if hasattr(mcp_instance, '_tools'):
+        if hasattr(mcp_instance, "_tools"):
             tool_names = list(mcp_instance._tools.keys())
             print(f"✅ Found {len(tool_names)} tools (via _tools): {', '.join(tool_names)}")
         else:
@@ -116,6 +116,7 @@ async def test_meta_learning_mcp():
     print("✅ System Learning Meta-Learning MCP Server test passed!")
     return True
 
+
 async def test_phase3_mcp_server():
     """Test Phase 3 MCP server."""
     print("=== Phase 3 MCP Server Test Suite ===\n")
@@ -127,6 +128,7 @@ async def test_phase3_mcp_server():
     print(f"Overall Phase 3 MCP Status: {'✅ TEST PASSED' if success else '❌ TEST FAILED'}")
 
     return success
+
 
 if __name__ == "__main__":
     success = asyncio.run(test_phase3_mcp_server())

@@ -20,6 +20,7 @@ from typing import Any
 # Try to import ADG Query Bridge
 try:
     from adg_query_bridge import ADGQueryBridge, FileMatch, Node
+
     ADG_AVAILABLE = True
 except ImportError as e:
     warnings.warn(f"ADG Query Bridge unavailable: {e}")
@@ -29,8 +30,15 @@ except ImportError as e:
 class ImportViolation:
     """Represents an import violation found by the validator."""
 
-    def __init__(self, file_path: str, line_number: int, import_module: str,
-                 violation_type: str, message: str = "", severity: str = "warning"):
+    def __init__(
+        self,
+        file_path: str,
+        line_number: int,
+        import_module: str,
+        violation_type: str,
+        message: str = "",
+        severity: str = "warning",
+    ):
         self.file_path = file_path
         self.line_number = line_number
         self.import_module = import_module
@@ -55,14 +63,55 @@ class ADGImportValidator:
     def _load_stdlib_modules(self) -> set[str]:
         """Load a basic set of stdlib modules."""
         return {
-            'os', 'sys', 'pathlib', 'json', 're', 'ast', 'argparse', 'logging',
-            'datetime', 'time', 'collections', 'itertools', 'functools',
-            'operator', 'math', 'random', 'string', 'typing', 'dataclasses',
-            'enum', 'threading', 'multiprocessing', 'subprocess', 'shutil',
-            'tempfile', 'glob', 'fnmatch', 'urllib', 'http', 'email', 'xml',
-            'csv', 'sqlite3', 'pickle', 'base64', 'hashlib', 'hmac', 'uuid',
-            'inspect', 'importlib', 'pkgutil', 'warnings', 'traceback',
-            'unittest', 'pytest', 'mock', 'io', 'contextlib', 'weakref',
+            "os",
+            "sys",
+            "pathlib",
+            "json",
+            "re",
+            "ast",
+            "argparse",
+            "logging",
+            "datetime",
+            "time",
+            "collections",
+            "itertools",
+            "functools",
+            "operator",
+            "math",
+            "random",
+            "string",
+            "typing",
+            "dataclasses",
+            "enum",
+            "threading",
+            "multiprocessing",
+            "subprocess",
+            "shutil",
+            "tempfile",
+            "glob",
+            "fnmatch",
+            "urllib",
+            "http",
+            "email",
+            "xml",
+            "csv",
+            "sqlite3",
+            "pickle",
+            "base64",
+            "hashlib",
+            "hmac",
+            "uuid",
+            "inspect",
+            "importlib",
+            "pkgutil",
+            "warnings",
+            "traceback",
+            "unittest",
+            "pytest",
+            "mock",
+            "io",
+            "contextlib",
+            "weakref",
         }
 
     def validate_file(self, file_path: str) -> list[ImportViolation]:
@@ -83,22 +132,32 @@ class ADGImportValidator:
             else:
                 violations = self._validate_file_with_ast_fallback(file_path_obj)
         except Exception as e:
-            rel_path = str(file_path_obj.relative_to(self.repo_root)) if file_path_obj.is_relative_to(self.repo_root) else str(file_path_obj)
-            violations.append(ImportViolation(
-                file_path=rel_path,
-                line_number=0,
-                import_module="",
-                violation_type="validation_error",
-                message=f"Failed to validate imports: {e}",
-                severity="error",
-            ))
+            rel_path = (
+                str(file_path_obj.relative_to(self.repo_root))
+                if file_path_obj.is_relative_to(self.repo_root)
+                else str(file_path_obj)
+            )
+            violations.append(
+                ImportViolation(
+                    file_path=rel_path,
+                    line_number=0,
+                    import_module="",
+                    violation_type="validation_error",
+                    message=f"Failed to validate imports: {e}",
+                    severity="error",
+                )
+            )
 
         return violations
 
     def _validate_file_with_adg(self, file_path: Path) -> list[ImportViolation]:
         """Validate file imports using ADG."""
         violations = []
-        rel_path = str(file_path.relative_to(self.repo_root)) if file_path.is_relative_to(self.repo_root) else str(file_path)
+        rel_path = (
+            str(file_path.relative_to(self.repo_root))
+            if file_path.is_relative_to(self.repo_root)
+            else str(file_path)
+        )
 
         try:
             # Get imports from ADG for this file
@@ -125,7 +184,7 @@ class ADGImportValidator:
         import ast
 
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content, filename=str(file_path))
@@ -134,28 +193,34 @@ class ADGImportValidator:
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        imports.append({
-                            "type": "import",
-                            "module": alias.name,
-                            "alias": alias.asname,
-                            "line": node.lineno,
-                        })
+                        imports.append(
+                            {
+                                "type": "import",
+                                "module": alias.name,
+                                "alias": alias.asname,
+                                "line": node.lineno,
+                            }
+                        )
                 elif isinstance(node, ast.ImportFrom):
                     module = node.module or ""
                     for alias in node.names:
-                        imports.append({
-                            "type": "from",
-                            "module": module,
-                            "name": alias.name,
-                            "alias": alias.asname,
-                            "line": node.lineno,
-                        })
+                        imports.append(
+                            {
+                                "type": "from",
+                                "module": module,
+                                "name": alias.name,
+                                "alias": alias.asname,
+                                "line": node.lineno,
+                            }
+                        )
 
             return imports
         except SyntaxError as e:
             raise ValueError(f"Syntax error in {file_path}: {e}")
 
-    def _validate_module_with_adg(self, module_name: str, line_num: int, file_path: str) -> list[ImportViolation]:
+    def _validate_module_with_adg(
+        self, module_name: str, line_num: int, file_path: str
+    ) -> list[ImportViolation]:
         """Validate a module using ADG data."""
         violations = []
 
@@ -170,14 +235,16 @@ class ADGImportValidator:
             if not importers:
                 # Module not found in ADG, check if it's a local module
                 if not self._is_local_module(module_name):
-                    violations.append(ImportViolation(
-                        file_path=file_path,
-                        line_number=line_num,
-                        import_module=module_name,
-                        violation_type="module_not_found",
-                        message=f"Module '{module_name}' not found in ADG index or stdlib",
-                        severity="warning",
-                    ))
+                    violations.append(
+                        ImportViolation(
+                            file_path=file_path,
+                            line_number=line_num,
+                            import_module=module_name,
+                            violation_type="module_not_found",
+                            message=f"Module '{module_name}' not found in ADG index or stdlib",
+                            severity="warning",
+                        )
+                    )
 
         except Exception as e:
             warnings.warn(f"Failed to validate module {module_name}: {e}")
@@ -191,14 +258,14 @@ class ADGImportValidator:
             return True
 
         # Check parent module
-        parent_module = module_name.split('.')[0]
+        parent_module = module_name.split(".")[0]
         return parent_module in self.stdlib_modules
 
     def _is_local_module(self, module_name: str) -> bool:
         """Check if a module exists locally in the repository."""
         try:
             # Try to find the module as a file or package
-            module_parts = module_name.split('.')
+            module_parts = module_name.split(".")
 
             # Check as package
             package_path = self.repo_root / Path(*module_parts)
@@ -215,7 +282,11 @@ class ADGImportValidator:
     def _validate_file_with_ast_fallback(self, file_path: Path) -> list[ImportViolation]:
         """Validate file imports using AST fallback when ADG is unavailable."""
         violations = []
-        rel_path = str(file_path.relative_to(self.repo_root)) if file_path.is_relative_to(self.repo_root) else str(file_path)
+        rel_path = (
+            str(file_path.relative_to(self.repo_root))
+            if file_path.is_relative_to(self.repo_root)
+            else str(file_path)
+        )
 
         try:
             imports = self._extract_imports_ast(file_path)
@@ -229,24 +300,28 @@ class ADGImportValidator:
 
                 # Basic validation without ADG
                 if not self._is_stdlib_module(module_name) and not self._is_local_module(module_name):
-                    violations.append(ImportViolation(
-                        file_path=rel_path,
-                        line_number=line_num,
-                        import_module=module_name,
-                        violation_type="module_not_found",
-                        message=f"Module '{module_name}' not found (ADG unavailable for validation)",
-                        severity="warning",
-                    ))
+                    violations.append(
+                        ImportViolation(
+                            file_path=rel_path,
+                            line_number=line_num,
+                            import_module=module_name,
+                            violation_type="module_not_found",
+                            message=f"Module '{module_name}' not found (ADG unavailable for validation)",
+                            severity="warning",
+                        )
+                    )
 
         except Exception as e:
-            violations.append(ImportViolation(
-                file_path=rel_path,
-                line_number=0,
-                import_module="",
-                violation_type="validation_error",
-                message=f"Failed to validate imports: {e}",
-                severity="error",
-            ))
+            violations.append(
+                ImportViolation(
+                    file_path=rel_path,
+                    line_number=0,
+                    import_module="",
+                    violation_type="validation_error",
+                    message=f"Failed to validate imports: {e}",
+                    severity="error",
+                )
+            )
 
         return violations
 
@@ -256,7 +331,9 @@ class ADGImportValidator:
         dir_path = self.repo_root / directory
 
         if not dir_path.exists():
-            return [ImportViolation(directory, 0, "", "directory_not_found", f"Directory not found: {directory}")]
+            return [
+                ImportViolation(directory, 0, "", "directory_not_found", f"Directory not found: {directory}")
+            ]
 
         for py_file in dir_path.rglob("*.py"):
             file_violations = self.validate_file(str(py_file))
@@ -269,35 +346,43 @@ class ADGImportValidator:
         violations = []
 
         if not ADG_AVAILABLE:
-            return [ImportViolation(module_name, 0, "", "adg_unavailable", "ADG not available for module validation")]
+            return [
+                ImportViolation(
+                    module_name, 0, "", "adg_unavailable", "ADG not available for module validation"
+                )
+            ]
 
         try:
             # Get files that import this module
             importers = self.bridge.files_importing(module_name)
 
             if not importers:
-                violations.append(ImportViolation(
-                    file_path=module_name,
-                    line_number=0,
-                    import_module=module_name,
-                    violation_type="unused_module",
-                    message=f"Module '{module_name}' is not imported by any files",
-                    severity="info",
-                ))
+                violations.append(
+                    ImportViolation(
+                        file_path=module_name,
+                        line_number=0,
+                        import_module=module_name,
+                        violation_type="unused_module",
+                        message=f"Module '{module_name}' is not imported by any files",
+                        severity="info",
+                    )
+                )
 
             # Check each importer for potential issues
             for importer in importers:
                 violations.extend(self._validate_file_with_adg(self.repo_root / importer.file_path))
 
         except Exception as e:
-            violations.append(ImportViolation(
-                file_path=module_name,
-                line_number=0,
-                import_module=module_name,
-                violation_type="validation_error",
-                message=f"Failed to validate module dependencies: {e}",
-                severity="error",
-            ))
+            violations.append(
+                ImportViolation(
+                    file_path=module_name,
+                    line_number=0,
+                    import_module=module_name,
+                    violation_type="validation_error",
+                    message=f"Failed to validate module dependencies: {e}",
+                    severity="error",
+                )
+            )
 
         return violations
 
@@ -354,6 +439,7 @@ def main():
 
     if args.format == "json":
         import json
+
         output = [
             {
                 "file_path": v.file_path,

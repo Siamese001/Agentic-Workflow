@@ -251,7 +251,9 @@ class MetaLearningObservability:
     def _initialize_health_checks(self) -> None:
         """Initialize health check entries for all components."""
         _emit_observes_runtime_state(
-            str(uuid.uuid4()), "MetaLearningObservability._initialize_health_checks", "L1_REASONING",
+            str(uuid.uuid4()),
+            "MetaLearningObservability._initialize_health_checks",
+            "L1_REASONING",
         )
         components = [
             "MetaLearningClient",
@@ -288,7 +290,9 @@ class MetaLearningObservability:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "MetaLearningObservability.record_metric",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "MetaLearningObservability.record_metric",
         )
 
         metric = MetricPoint(name=name, value=value, tags=tags or {})

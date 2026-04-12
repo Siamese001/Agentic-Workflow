@@ -158,7 +158,9 @@ class LicTemplateOptimizerAgent(SovereignBaseAgent):
     async def execute(self) -> None:
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "LicTemplateOptimizerAgent.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "LicTemplateOptimizerAgent.execute"
+        )
         print(f"   [{self.name}] Optimizing templates...")
         messages = self.ctx.messages
         if not messages:

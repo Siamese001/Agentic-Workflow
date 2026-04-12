@@ -177,7 +177,10 @@ class JobAnalyzer:
 
 
 def __init__(
-    self: Any, llm_client: Any | None, Provider: Provider | None, workflow_config: Any | None,
+    self: Any,
+    llm_client: Any | None,
+    Provider: Provider | None,
+    workflow_config: Any | None,
 ) -> None:
     """
     Initialize JobAnalyzer.

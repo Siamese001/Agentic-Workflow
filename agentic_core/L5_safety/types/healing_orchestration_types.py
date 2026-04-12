@@ -263,7 +263,9 @@ class HealingOrchestrationSuite:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HealingOrchestrationSuite.run_strategy",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HealingOrchestrationSuite.run_strategy",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -276,7 +278,9 @@ class HealingOrchestrationSuite:
         context = context or {}
         if strategy_name not in self._strategies:
             return HealingResult(
-                strategy_name=strategy_name, success=False, errors=[f"Strategy '{strategy_name}' not found"],
+                strategy_name=strategy_name,
+                success=False,
+                errors=[f"Strategy '{strategy_name}' not found"],
             )
         strategy = self._strategies[strategy_name]
         if hasattr(strategy, "can_heal") and (not strategy.can_heal(violation)):
@@ -303,7 +307,9 @@ class HealingOrchestrationSuite:
         except (ValueError, TypeError) as e:
             Logger.error(f"[HealingSuite] Strategy {strategy_name} failed: {e}")
             return HealingResult(
-                strategy_name=strategy_name, success=False, errors=[f"Strategy error: {str(e)}"],
+                strategy_name=strategy_name,
+                success=False,
+                errors=[f"Strategy error: {str(e)}"],
             )
 
     def run_all(self, violation: dict, context: dict | None = None) -> HealingSuiteResult:

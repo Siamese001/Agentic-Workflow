@@ -58,7 +58,8 @@ if execute_ssot_node:
 
     # 5. execute_ssot imports (fan-out)
     rows5 = conn.execute(
-        "SELECT dst_id FROM edges WHERE relation_type='imports' AND src_id=? LIMIT 60", (eid,),
+        "SELECT dst_id FROM edges WHERE relation_type='imports' AND src_id=? LIMIT 60",
+        (eid,),
     ).fetchall()
     print(f"\n=== execute_ssot IMPORTS count={len(rows5)} ===")
     for r in rows5:

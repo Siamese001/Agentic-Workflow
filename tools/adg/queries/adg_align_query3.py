@@ -107,7 +107,8 @@ align_nodes = cur.fetchall()
 ids = [str(n["id"]) for n in align_nodes]
 placeholders = ",".join(["?"] * len(ids))
 cur.execute(
-    f"SELECT DISTINCT dst_id FROM edges WHERE relation_type='covers' AND dst_id IN ({placeholders})", ids,
+    f"SELECT DISTINCT dst_id FROM edges WHERE relation_type='covers' AND dst_id IN ({placeholders})",
+    ids,
 )
 covered_ids = {str(r["dst_id"]) for r in cur.fetchall()}
 uncovered = [n for n in align_nodes if str(n["id"]) not in covered_ids]

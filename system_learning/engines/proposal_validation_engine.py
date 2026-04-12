@@ -253,17 +253,11 @@ def _gate_replay(proposal: OptimizationProposal) -> tuple[bool, str | None]:
         return True, None
 
     # EMBEDDING_CORPUS_EXPANSION with no evidence bundle is suspicious
-    if (
-        proposal.proposed_change_type == "EMBEDDING_CORPUS_EXPANSION"
-        and not proposal.evidence_bundle_hashes
-    ):
+    if proposal.proposed_change_type == "EMBEDDING_CORPUS_EXPANSION" and not proposal.evidence_bundle_hashes:
         return False, "EMBEDDING_EXPANSION_NO_EVIDENCE"
 
     # DPO_DATASET_GENERATION requires evidence bundles
-    if (
-        proposal.proposed_change_type == "DPO_DATASET_GENERATION"
-        and not proposal.evidence_bundle_hashes
-    ):
+    if proposal.proposed_change_type == "DPO_DATASET_GENERATION" and not proposal.evidence_bundle_hashes:
         return False, "DPO_NO_EVIDENCE_BUNDLE"
 
     return True, None
@@ -281,10 +275,7 @@ def _gate_policy(proposal: OptimizationProposal, policy_hash: str | None) -> tup
             return False, "POLICY_HASH_MISMATCH"
 
     # CRITICAL guardrail changes require explicit policy alignment
-    if (
-        proposal.proposed_change_type == "GUARDRAIL_REFINEMENT"
-        and proposal.risk_class == "CRITICAL"
-    ):
+    if proposal.proposed_change_type == "GUARDRAIL_REFINEMENT" and proposal.risk_class == "CRITICAL":
         if proposal.policy_hash is None:
             return False, "GUARDRAIL_CRITICAL_NO_POLICY_HASH"
 
@@ -353,10 +344,7 @@ def _gate_regression(
     regression_risk = _derive_regression_risk(proposal, hitl_rate)
 
     # Block HIGH regression for HIGH/CRITICAL proposals
-    if (
-        regression_risk == "HIGH"
-        and proposal.risk_class in ("HIGH", "CRITICAL")
-    ):
+    if regression_risk == "HIGH" and proposal.risk_class in ("HIGH", "CRITICAL"):
         return False, "HIGH_REGRESSION_RISK"
 
     return True, None
@@ -421,8 +409,11 @@ class ProposalValidationEngine:
         ValidationResult
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ProposalValidationEngine.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ProposalValidationEngine.validate"
+        )
 
         cfg = self._config
         gate_results: dict[str, bool] = {}
@@ -430,7 +421,9 @@ class ProposalValidationEngine:
 
         # --- Run all five gates ---
         for gate_name, gate_fn_result in self._run_gates(
-            proposal, hitl_rate, cfg,
+            proposal,
+            hitl_rate,
+            cfg,
         ):
             passed, reason = gate_fn_result
             gate_results[gate_name] = passed
@@ -448,14 +441,16 @@ class ProposalValidationEngine:
         regression_risk = _derive_regression_risk(proposal, hitl_rate)
 
         # Content-addressed result_id
-        canonical = deterministic_json({
-            "denial_reasons": sorted(denial_reasons),
-            "gate_results": sorted(gate_results.items()),
-            "policy_hash": cfg.active_policy_hash,
-            "proposal_id": proposal.proposal_id,
-            "timestamp_utc": timestamp_utc,
-            "validation_pass": validation_pass,
-        })
+        canonical = deterministic_json(
+            {
+                "denial_reasons": sorted(denial_reasons),
+                "gate_results": sorted(gate_results.items()),
+                "policy_hash": cfg.active_policy_hash,
+                "proposal_id": proposal.proposal_id,
+                "timestamp_utc": timestamp_utc,
+                "validation_pass": validation_pass,
+            }
+        )
         result_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
         return ValidationResult(
@@ -560,7 +555,9 @@ def validate_proposal(
 ) -> ValidationResult:
     """Module-level convenience wrapper."""
     return ProposalValidationEngine(config).validate(
-        proposal, timestamp_utc, hitl_rate=hitl_rate,
+        proposal,
+        timestamp_utc,
+        hitl_rate=hitl_rate,
     )
 
 

@@ -16,14 +16,17 @@ class TestValidateSovereignStructureUtilAdg:
     def test_validate_sovereign_structure_util_adg_imports(self):
         """Test validate_sovereign_structure_util_adg module imports."""
         from agentic_core import validate_sovereign_structure_util_adg
+
         assert validate_sovereign_structure_util_adg is not None
 
     def test_validate_sovereign_structure_util_adg_class(self):
         """Test ValidateSovereignStructureUtilAdg class exists."""
         from agentic_core import ValidateSovereignStructureUtilAdg
+
         assert ValidateSovereignStructureUtilAdg is not None
 
     def test_validate_sovereign_structure_util_adg_callable(self):
         """Test validate_sovereign_structure_util_adg functions are callable."""
         from agentic_core import validate_validate_sovereign_structure_util_adg
+
         assert callable(validate_validate_sovereign_structure_util_adg)

@@ -6,6 +6,7 @@ prompt management, and state tracking.
 
 from __future__ import annotations
 
+import json
 import logging
 from dataclasses import dataclass, field
 from typing import Any
@@ -21,25 +22,15 @@ from apps_rg.utils.rg_agent_base_util import RGAgentBase
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
-        AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
-    )
-    from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
-        AppsQwenConfig,
-        AppsQwenModelConfig,
-        AppsQwenPromptConfig,
     )
 
     _QWEN_AVAILABLE = True
 except ImportError:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
-    AppsQwenInferenceWorker = None  # type: ignore[assignment]
     apps_qwen_telemetry = None  # type: ignore[assignment]
-    AppsQwenConfig = None  # type: ignore[assignment]
-    AppsQwenModelConfig = None  # type: ignore[assignment]
-    AppsQwenPromptConfig = None  # type: ignore[assignment]
     _QWEN_AVAILABLE = False
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -210,39 +201,31 @@ class RgResumeOrchestrator(RGAgentBase):
 
         # Initialize Qwen vLLM integration
         self._qwen_gateway = None
-        self._qwen_inference_worker = None
         self._qwen_session_id = None
+        self._qwen_init_error: str | None = None
 
         if self.qwen_enabled and _QWEN_AVAILABLE:
             try:
-                # Initialize Qwen gateway for resume generation
                 self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
 
-                # Initialize inference worker with resume-specific config
-                model_config = AppsQwenModelConfig(
-                    model_id="Qwen/Qwen2.5-7B-Instruct",
-                    max_tokens=2048,
-                    temperature=0.3,  # Lower temperature for consistent resume content
-                )
-                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
-
-                # Start telemetry session
                 if apps_qwen_telemetry is not None:
                     self._qwen_session_id = apps_qwen_telemetry.start_session("apps_rg")
 
                 _emit_records_execution_trace("RgResumeOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
                 _emit_records_telemetry_event("RgResumeOrchestrator", "L2_EXECUTION", "qwen_init_error")
-                _logger.warning(f"Failed to initialize Qwen vLLM: {e}")
-                self.qwen_enabled = False
+                _logger.error("Qwen vLLM init failed — run() will raise if LOCAL_VLLM is selected: %s", e)
+                self._qwen_init_error = str(e)
 
-    def run(self, JobDescription: str) -> dict[str, object]:
+    async def run(self, JobDescription: str) -> dict[str, object]:  # type: ignore[override]
         """Execute the full resume generation workflow."""
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgResumeOrchestrator.run",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "RgResumeOrchestrator.run",
         )
         if self.jd_enforcer:
             self.jd_enforcer.validate_jd_input(JobDescription, "HOP-0")
@@ -260,15 +243,135 @@ class RgResumeOrchestrator(RGAgentBase):
             try:
                 repo_signals = RepoSignalService().collect().as_dict()
                 self._record_hop("HOP-ENRICH", [{"passed": True}])
-            except Exception:
+            except Exception:  # guardian: allow-broad-exception -- RepoSignalService raises heterogeneous errors; failure is non-fatal and recorded in hop checkpoint
                 self._record_hop("HOP-ENRICH", [{"passed": False}])
 
-        return {
+        # --- Local-first Qwen routing (Phase 1 + adapter enforcement) ---
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (  # noqa: PLC0415
+            VLLMGatewayAdapter,
+        )
+        from agentic_core.L2_execution.types.local_first_disposition import (  # noqa: PLC0415
+            LocalFirstDisposition,
+        )
+        from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: PLC0415
+            Provider,
+            evaluate as evaluate_routing,
+        )
+
+        # requires_policy_read / iteration_count / invalid_ast: repair-domain predicates.
+        # Generation apps are single-pass pipelines with no policy-read concept, no retry
+        # iterations, and no AST output — False/0/100 are semantically correct here, not
+        # placeholders.  Wire these only if a retry loop or policy-read path is introduced.
+        routing_ctx: dict[str, object] = {
+            "requires_policy_read": False,
+            "iteration_count": 0,
+            "max_iterations": 100,
+            "invalid_ast": False,
+            "routing_version": "1",
+        }
+        routing_decision = evaluate_routing(routing_ctx)
+        qwen_result: dict[str, Any] | None = None
+        _dsp_run_id = str(uuid.uuid4())
+        _dsp: LocalFirstDisposition | None = None
+
+        if routing_decision.provider == Provider.LOCAL_VLLM:
+            if self._qwen_init_error is not None:
+                _dsp = LocalFirstDisposition.for_fail_init(
+                    orchestrator="RgResumeOrchestrator",
+                    run_id=_dsp_run_id,
+                    predicate_hash=routing_decision.predicate_evaluation_hash,
+                    init_error=self._qwen_init_error,
+                )
+                _logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                raise RuntimeError(f"LOCAL_VLLM selected but Qwen init failed: {self._qwen_init_error}")
+            if self._qwen_gateway is not None:
+                # Adapter enforces token budget, backpressure, and circuit breaker
+                _adapter = VLLMGatewayAdapter()
+                _prompt_preview = JobDescription[:512]
+                _adapter_result = _adapter.evaluate(
+                    prompt=_prompt_preview,
+                    task_class="resume_generation",
+                    severity="medium",
+                )
+                _telem = _adapter_result.telemetry.as_dict() if _adapter_result.telemetry is not None else {}
+                if _adapter_result.route_to_gemini:
+                    _dsp = LocalFirstDisposition.for_escalate(
+                        orchestrator="RgResumeOrchestrator",
+                        run_id=_dsp_run_id,
+                        predicate_hash=routing_decision.predicate_evaluation_hash,
+                        telem=_telem,
+                    )
+                    _logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                    _emit_records_telemetry_event(
+                        "RgResumeOrchestrator",
+                        "L2_EXECUTION",
+                        "adapter_escalate",
+                    )
+                else:
+                    _emit_records_telemetry_event(
+                        "RgResumeOrchestrator",
+                        "L2_EXECUTION",
+                        "adapter_allow",
+                    )
+                    try:
+                        qwen_result = await self.generate_resume_with_qwen(
+                            job_description=JobDescription,
+                            candidate_profile=self.master_resume,
+                        )
+                        _adapter.record_local_success(severity="medium")
+                    except Exception as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
+                        _adapter.record_local_failure(severity="medium")
+                        _dsp = LocalFirstDisposition.for_fail_exec(
+                            orchestrator="RgResumeOrchestrator",
+                            run_id=_dsp_run_id,
+                            predicate_hash=routing_decision.predicate_evaluation_hash,
+                            telem=_telem,
+                            exc=_exc,
+                        )
+                        _logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                        raise
+                    _dsp = LocalFirstDisposition.for_allow(
+                        orchestrator="RgResumeOrchestrator",
+                        run_id=_dsp_run_id,
+                        predicate_hash=routing_decision.predicate_evaluation_hash,
+                        telem=_telem,
+                        qwen_result_present=qwen_result is not None,
+                    )
+                    _logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                    _emit_records_execution_trace(
+                        str(uuid.uuid4()),
+                        LayerSegment.L3_ORCHESTRATION,
+                        "RgResumeOrchestrator.run.qwen_local",
+                    )
+            else:
+                _dsp = LocalFirstDisposition.for_skip(
+                    orchestrator="RgResumeOrchestrator",
+                    run_id=_dsp_run_id,
+                    provider_value="LOCAL_VLLM",
+                    predicate_hash=routing_decision.predicate_evaluation_hash,
+                    reason_code="gateway_not_initialized",
+                )
+                _logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+        else:
+            _dsp = LocalFirstDisposition.for_skip(
+                orchestrator="RgResumeOrchestrator",
+                run_id=_dsp_run_id,
+                provider_value=routing_decision.provider.value,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                reason_code="predicate_selected_opus",
+            )
+            _logger.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+
+        result: dict[str, object] = {
             "status": "success",
             "enriched_data": enriched_data,
             "checkpoints": [c.get("hop_id") for c in self.hop_checkpoints],
             "repo_signals": repo_signals,
+            "local_first_disposition": _dsp.as_dict() if _dsp is not None else None,
         }
+        if qwen_result is not None:
+            result["qwen_resume_content"] = qwen_result
+        return result
 
     def _record_hop(self, hop_id: str, results: list = None) -> None:
         """Record a hop Checkpoint."""
@@ -276,7 +379,9 @@ class RgResumeOrchestrator(RGAgentBase):
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "status"})
 
     async def generate_resume_with_qwen(
-        self, job_description: str, candidate_profile: dict[str, Any],
+        self,
+        job_description: str,
+        candidate_profile: dict[str, Any],
     ) -> dict[str, Any]:
         """Generate resume content using Qwen vLLM inference.
 
@@ -350,7 +455,9 @@ class RgResumeOrchestrator(RGAgentBase):
             return {"success": False, "error": f"generation_failed: {str(e)}", "content": None}
 
     def _prepare_resume_generation_prompt(
-        self, job_description: str, candidate_profile: dict[str, Any],
+        self,
+        job_description: str,
+        candidate_profile: dict[str, Any],
     ) -> str:
         """Prepare prompt for resume generation using Qwen.
 
@@ -394,7 +501,11 @@ Focus on matching the candidate's experience to the job requirements and quantif
         if _call_path is None:
             _call_path = set()
         super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         agent_name = self.__class__.__name__
         if agent_name in _call_path:

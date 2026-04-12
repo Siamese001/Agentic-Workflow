@@ -1,6 +1,7 @@
 """
 Document Completeness Validator - Verifies required documents are present.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
@@ -10,6 +11,7 @@ from ..types import DocumentPackage, UnderwritingRequest
 @dataclass
 class CompletenessResult:
     """Result of document completeness validation."""
+
     complete: bool = False
     completeness_pct: float = 0.0
     missing_required: List[str] = field(default_factory=list)
@@ -104,19 +106,23 @@ class DocumentCompletenessValidator:
 
             if not present:
                 result.missing_required.append(doc_type)
-                result.findings.append({
-                    "document_type": doc_type,
-                    "status": "missing",
-                    "severity": "required",
-                    "message": f"Required document '{doc_type}' not present",
-                })
+                result.findings.append(
+                    {
+                        "document_type": doc_type,
+                        "status": "missing",
+                        "severity": "required",
+                        "message": f"Required document '{doc_type}' not present",
+                    }
+                )
             else:
-                result.findings.append({
-                    "document_type": doc_type,
-                    "status": "present",
-                    "count": count,
-                    "severity": "info",
-                })
+                result.findings.append(
+                    {
+                        "document_type": doc_type,
+                        "status": "present",
+                        "count": count,
+                        "severity": "info",
+                    }
+                )
 
         # Check document freshness
         result.stale_documents = self._check_document_freshness(request)
@@ -182,7 +188,7 @@ class DocumentCompletenessValidator:
         if request.collateral.appraisal_date:
             try:
                 appraisal_dt = datetime.fromisoformat(
-                    request.collateral.appraisal_date.replace('Z', '+00:00'),
+                    request.collateral.appraisal_date.replace("Z", "+00:00"),
                 )
                 days_old = (datetime.now() - appraisal_dt).days
                 threshold = self.FRESHNESS_THRESHOLDS.get("appraisals", 365)
@@ -196,7 +202,7 @@ class DocumentCompletenessValidator:
         if request.collateral.field_exam_date:
             try:
                 exam_dt = datetime.fromisoformat(
-                    request.collateral.field_exam_date.replace('Z', '+00:00'),
+                    request.collateral.field_exam_date.replace("Z", "+00:00"),
                 )
                 days_old = (datetime.now() - exam_dt).days
 

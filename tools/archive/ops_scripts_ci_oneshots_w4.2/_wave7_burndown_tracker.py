@@ -51,7 +51,16 @@ _GATES: dict[str, dict[str, int]] = {
 _LAYER_DIRS: dict[str, list[str]] = {
     "L_TEST": ["tests"],
     "L_OPS": ["ops_scripts"],
-    "L_APP": ["apps", "apps_lic", "apps_rg", "apps_exec", "apps_eval", "apps_rfp", "apps_research", "apps_shared"],
+    "L_APP": [
+        "apps",
+        "apps_lic",
+        "apps_rg",
+        "apps_exec",
+        "apps_eval",
+        "apps_rfp",
+        "apps_research",
+        "apps_shared",
+    ],
     "L_TOOLS": ["tools"],
     "L_RUNTIME": ["agentic_core/runtime"],
     "L_SL": ["system_learning"],
@@ -75,6 +84,7 @@ def _get_adg_counts() -> dict[str, int]:
     """Fetch graph_plane_counts from Redis ADG snapshot."""
     try:
         import redis  # type: ignore[import]
+
         r = redis.Redis(host="localhost", port=6379, db=0, decode_responses=True)
         raw = r.get("adg:snapshot")
         if raw:
@@ -226,8 +236,12 @@ def _check_phase(phase: str, totals: dict[str, int]) -> bool:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Wave 7 structural debt burndown tracker")
     parser.add_argument("--check", action="store_true", help="Exit 1 if acceptance gate not met")
-    parser.add_argument("--phase", default="7a", choices=list(_GATES.keys()),
-                        help="Phase acceptance gate to check (default: 7a)")
+    parser.add_argument(
+        "--phase",
+        default="7a",
+        choices=list(_GATES.keys()),
+        help="Phase acceptance gate to check (default: 7a)",
+    )
     parser.add_argument("--no-ruff", action="store_true", help="Skip ruff scan (ADG snapshot only)")
     args = parser.parse_args()
 

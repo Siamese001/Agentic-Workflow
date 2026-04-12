@@ -338,7 +338,9 @@ ALL_GUARDIANS: tuple[GuardianSpec, ...] = tuple(
 
 
 def get_guardian_specs(
-    *, enabled_only: bool = False, tier: GuardianTier | str | None = None,
+    *,
+    enabled_only: bool = False,
+    tier: GuardianTier | str | None = None,
 ) -> tuple[GuardianSpec, ...]:
     """
     Retrieve guardian specs with optional filtering.

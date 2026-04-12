@@ -67,7 +67,10 @@ def main():
         if success:
             # Check syntax
             result = subprocess.run(
-                ["python", "-m", "py_compile", str(main_script)], capture_output=True, text=True, timeout=10,
+                ["python", "-m", "py_compile", str(main_script)],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             if result.returncode == 0:
@@ -185,7 +188,9 @@ def main():
     if orchestrator_main.exists():
         # Test status command
         success = run_test(
-            "Orchestrator: Status command", ["python", str(orchestrator_main), "test.py", "status"], [0],
+            "Orchestrator: Status command",
+            ["python", str(orchestrator_main), "test.py", "status"],
+            [0],
         )
         test_results.append(success)
 
@@ -214,7 +219,9 @@ def main():
     if perf_main.exists():
         # Test monitoring workflow
         success = run_test(
-            "Performance: Start monitoring", ["python", str(perf_main), "start", "test_operation"], [0],
+            "Performance: Start monitoring",
+            ["python", str(perf_main), "start", "test_operation"],
+            [0],
         )
         test_results.append(success)
 

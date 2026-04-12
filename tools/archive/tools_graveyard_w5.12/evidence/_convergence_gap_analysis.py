@@ -3,6 +3,7 @@
 Produces evidence for all 7 sections of the convergence report.
 Does NOT modify any repository files.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -16,6 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = ROOT / "artifacts" / "adg"
+
 
 # Find the latest SQLite
 def find_latest_sqlite():
@@ -69,17 +71,24 @@ def section1_delta_zero(db_path):
     print("=" * 60)
 
     TRACKED_FAMILIES = [
-        "agent_executes_agent", "applies_guardrail", "calls",
-        "dispatches_healing_run", "emits_determinism_digest",
-        "pulls_context", "reads_from", "reads_through",
-        "records_execution_trace", "writes_to", "writes_through",
+        "agent_executes_agent",
+        "applies_guardrail",
+        "calls",
+        "dispatches_healing_run",
+        "emits_determinism_digest",
+        "pulls_context",
+        "reads_from",
+        "reads_through",
+        "records_execution_trace",
+        "writes_to",
+        "writes_through",
     ]
 
     runs = []
     run_digests = []
 
     for i in range(3):
-        print(f"\n--- ADG Rebuild R{i+1} ---")
+        print(f"\n--- ADG Rebuild R{i + 1} ---")
         t0 = time.time()
         result = subprocess.run(
             [sys.executable, str(ROOT / "tools" / "generate_full_adg.py")],
@@ -104,7 +113,9 @@ def section1_delta_zero(db_path):
         # Compute a digest of the full edge set for determinism check
         conn = sqlite3.connect(str(latest))
         c = conn.cursor()
-        c.execute("SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type, source_file, line_no")
+        c.execute(
+            "SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type, source_file, line_no"
+        )
         all_rows = c.fetchall()
         conn.close()
         digest = hashlib.sha256(str(all_rows).encode()).hexdigest()[:16]
@@ -169,9 +180,19 @@ def section2_high_risk_gaps(db_path):
 
     # High-risk patterns
     RISK_PATTERNS = [
-        "router", "gateway", "orchestrat", "planner", "agent",
-        "validator", "governor", "memory", "storage", "trace",
-        "replay", "healing", "executor",
+        "router",
+        "gateway",
+        "orchestrat",
+        "planner",
+        "agent",
+        "validator",
+        "governor",
+        "memory",
+        "storage",
+        "trace",
+        "replay",
+        "healing",
+        "executor",
     ]
 
     # Required relations by risk type
@@ -236,12 +257,14 @@ def section2_high_risk_gaps(db_path):
                         severity = "High"
                     else:
                         severity = "Moderate"
-                    gaps.append({
-                        "module": sf,
-                        "risk_type": rt,
-                        "missing": req_rel,
-                        "severity": severity,
-                    })
+                    gaps.append(
+                        {
+                            "module": sf,
+                            "risk_type": rt,
+                            "missing": req_rel,
+                            "severity": severity,
+                        }
+                    )
 
     # Print gap table
     print(f"\nHigh-risk gaps found: {len(gaps)}")
@@ -250,7 +273,9 @@ def section2_high_risk_gaps(db_path):
 
     severity_counts = Counter()
     # Show top 40 critical/high gaps
-    sorted_gaps = sorted(gaps, key=lambda g: {"Critical": 0, "High": 1, "Moderate": 2, "Low": 3}[g["severity"]])
+    sorted_gaps = sorted(
+        gaps, key=lambda g: {"Critical": 0, "High": 1, "Moderate": 2, "Low": 3}[g["severity"]]
+    )
     for g in sorted_gaps[:40]:
         mod_short = g["module"][-52:] if len(g["module"]) > 52 else g["module"]
         print(f"{mod_short:<55} {g['risk_type']:<18} {g['missing']:<30} {g['severity']:<10}")
@@ -264,7 +289,11 @@ def section2_high_risk_gaps(db_path):
         if total_sev:
             print(f"  {sev}: {total_sev}")
 
-    return {"total_gaps": len(gaps), "gaps": sorted_gaps, "severity_counts": dict(Counter(g["severity"] for g in gaps))}
+    return {
+        "total_gaps": len(gaps),
+        "gaps": sorted_gaps,
+        "severity_counts": dict(Counter(g["severity"] for g in gaps)),
+    }
 
 
 def section3_canonical_path(db_path):
@@ -278,7 +307,7 @@ def section3_canonical_path(db_path):
     # Build relation sets
     rel_sources = defaultdict(set)  # relation -> set of source files
     rel_targets = defaultdict(set)  # relation -> set of target files/nodes
-    rel_pairs = defaultdict(set)    # relation -> set of (src, dst) pairs
+    rel_pairs = defaultdict(set)  # relation -> set of (src, dst) pairs
 
     for e in edges:
         rt = e["relation_type"]
@@ -289,26 +318,44 @@ def section3_canonical_path(db_path):
 
     # Canonical path segments
     segments = [
-        ("router → context_retrieval", "pulls_context",
-         lambda: len(rel_sources.get("pulls_context", set())) > 0),
-        ("context_retrieval → reasoning (calls)", "calls",
-         lambda: len(rel_sources.get("calls", set())) > 0),
-        ("reasoning → reads_from", "reads_from",
-         lambda: len(rel_sources.get("reads_from", set())) > 0),
-        ("reasoning → writes_to", "writes_to",
-         lambda: len(rel_sources.get("writes_to", set())) > 0),
-        ("execution → records_execution_trace", "records_execution_trace",
-         lambda: len(rel_sources.get("records_execution_trace", set())) > 0),
-        ("execution → emits_determinism_digest", "emits_determinism_digest",
-         lambda: len(rel_sources.get("emits_determinism_digest", set())) > 0),
-        ("router → agent_executes_agent", "agent_executes_agent",
-         lambda: len(rel_sources.get("agent_executes_agent", set())) > 0),
-        ("execution → writes_through", "writes_through",
-         lambda: len(rel_sources.get("writes_through", set())) > 0),
-        ("execution → reads_through", "reads_through",
-         lambda: len(rel_sources.get("reads_through", set())) > 0),
-        ("safety → applies_guardrail", "applies_guardrail",
-         lambda: len(rel_sources.get("applies_guardrail", set())) > 0),
+        (
+            "router → context_retrieval",
+            "pulls_context",
+            lambda: len(rel_sources.get("pulls_context", set())) > 0,
+        ),
+        ("context_retrieval → reasoning (calls)", "calls", lambda: len(rel_sources.get("calls", set())) > 0),
+        ("reasoning → reads_from", "reads_from", lambda: len(rel_sources.get("reads_from", set())) > 0),
+        ("reasoning → writes_to", "writes_to", lambda: len(rel_sources.get("writes_to", set())) > 0),
+        (
+            "execution → records_execution_trace",
+            "records_execution_trace",
+            lambda: len(rel_sources.get("records_execution_trace", set())) > 0,
+        ),
+        (
+            "execution → emits_determinism_digest",
+            "emits_determinism_digest",
+            lambda: len(rel_sources.get("emits_determinism_digest", set())) > 0,
+        ),
+        (
+            "router → agent_executes_agent",
+            "agent_executes_agent",
+            lambda: len(rel_sources.get("agent_executes_agent", set())) > 0,
+        ),
+        (
+            "execution → writes_through",
+            "writes_through",
+            lambda: len(rel_sources.get("writes_through", set())) > 0,
+        ),
+        (
+            "execution → reads_through",
+            "reads_through",
+            lambda: len(rel_sources.get("reads_through", set())) > 0,
+        ),
+        (
+            "safety → applies_guardrail",
+            "applies_guardrail",
+            lambda: len(rel_sources.get("applies_guardrail", set())) > 0,
+        ),
     ]
 
     print(f"\n{'PATH SEGMENT':<50} {'RELATION':<30} {'STATUS':<10} {'EDGE COUNT':>10}")
@@ -339,7 +386,9 @@ def section3_canonical_path(db_path):
     print(f"  calls ∩ records_execution_trace:  {overlap_calls_trace} modules")
 
     closed = len(missing_segments) == 0
-    print(f"\nCANONICAL PATH VERDICT: {'CLOSED' if closed else 'OPEN — ' + str(len(missing_segments)) + ' missing segments'}")
+    print(
+        f"\nCANONICAL PATH VERDICT: {'CLOSED' if closed else 'OPEN — ' + str(len(missing_segments)) + ' missing segments'}"
+    )
 
     return {"missing": missing_segments, "closed": closed}
 
@@ -549,12 +598,14 @@ def section6_false_positives(db_path):
     self_loops = c.fetchall()
     print(f"  Self-referential edges: {len(self_loops)} groups")
     for rel, sf, src, dst, cnt in self_loops[:10]:
-        issues.append({
-            "edge_type": rel,
-            "source": sf or src,
-            "target": dst,
-            "issue": f"Self-loop ({cnt} instances)",
-        })
+        issues.append(
+            {
+                "edge_type": rel,
+                "source": sf or src,
+                "target": dst,
+                "issue": f"Self-loop ({cnt} instances)",
+            }
+        )
 
     # 2. Edges referencing missing source files (nonexistent on disk)
     print("\nChecking edges with missing source files...")
@@ -573,15 +624,19 @@ def section6_false_positives(db_path):
     print(f"  Source files in ADG: {len(all_source_files)}")
     print(f"  Missing from disk: {len(missing_files)}")
     for mf in missing_files[:10]:
-        c.execute("SELECT relation_type, COUNT(*) FROM edges WHERE source_file = ? GROUP BY relation_type", (mf,))
+        c.execute(
+            "SELECT relation_type, COUNT(*) FROM edges WHERE source_file = ? GROUP BY relation_type", (mf,)
+        )
         rels = c.fetchall()
         for rel, cnt in rels:
-            issues.append({
-                "edge_type": rel,
-                "source": mf,
-                "target": "(missing file)",
-                "issue": f"Source file not on disk ({cnt} edges)",
-            })
+            issues.append(
+                {
+                    "edge_type": rel,
+                    "source": mf,
+                    "target": "(missing file)",
+                    "issue": f"Source file not on disk ({cnt} edges)",
+                }
+            )
 
     # 3. Duplicate edges (exact same src, dst, relation, source_file, line)
     print("\nChecking duplicate edges...")
@@ -598,12 +653,14 @@ def section6_false_positives(db_path):
     print(f"  Duplicate edge groups: {len(duplicates)}")
     print(f"  Excess duplicate edges: {total_dupes}")
     for src, dst, rel, sf, line, cnt in duplicates[:5]:
-        issues.append({
-            "edge_type": rel,
-            "source": sf or str(src),
-            "target": str(dst),
-            "issue": f"Exact duplicate ({cnt}x at line {line})",
-        })
+        issues.append(
+            {
+                "edge_type": rel,
+                "source": sf or str(src),
+                "target": str(dst),
+                "issue": f"Exact duplicate ({cnt}x at line {line})",
+            }
+        )
 
     # 4. Edges with NULL or empty critical fields
     print("\nChecking edges with missing critical fields...")
@@ -611,12 +668,14 @@ def section6_false_positives(db_path):
     null_endpoints = c.fetchone()[0]
     print(f"  Edges with NULL src/dst: {null_endpoints}")
     if null_endpoints > 0:
-        issues.append({
-            "edge_type": "(various)",
-            "source": "NULL",
-            "target": "NULL",
-            "issue": f"{null_endpoints} edges with NULL endpoints",
-        })
+        issues.append(
+            {
+                "edge_type": "(various)",
+                "source": "NULL",
+                "target": "NULL",
+                "issue": f"{null_endpoints} edges with NULL endpoints",
+            }
+        )
 
     # 5. Nodes referenced by edges but not in nodes table
     print("\nChecking orphan edge references...")
@@ -637,12 +696,14 @@ def section6_false_positives(db_path):
     print(f"  Orphan src references: {orphan_src}")
     print(f"  Orphan dst references: {orphan_dst}")
     if orphan_src > 0 or orphan_dst > 0:
-        issues.append({
-            "edge_type": "(various)",
-            "source": f"{orphan_src} orphan srcs",
-            "target": f"{orphan_dst} orphan dsts",
-            "issue": "Edge references nonexistent node",
-        })
+        issues.append(
+            {
+                "edge_type": "(various)",
+                "source": f"{orphan_src} orphan srcs",
+                "target": f"{orphan_dst} orphan dsts",
+                "issue": "Edge references nonexistent node",
+            }
+        )
 
     # 6. Check for _emit_* instrumentation edges that leaked through
     print("\nChecking for instrumentation edge leakage...")
@@ -658,12 +719,14 @@ def section6_false_positives(db_path):
     print(f"  Instrumentation symbol edges: {total_leaks}")
     if total_leaks > 0:
         for rel, cnt in instrumentation_leaks[:5]:
-            issues.append({
-                "edge_type": rel,
-                "source": "(instrumentation)",
-                "target": "_emit_* symbols",
-                "issue": f"{cnt} edges from _emit_* calls (should be suppressed)",
-            })
+            issues.append(
+                {
+                    "edge_type": rel,
+                    "source": "(instrumentation)",
+                    "target": "_emit_* symbols",
+                    "issue": f"{cnt} edges from _emit_* calls (should be suppressed)",
+                }
+            )
 
     conn.close()
 
@@ -677,7 +740,12 @@ def section6_false_positives(db_path):
         print(f"{et:<30} {src:<35} {tgt:<25} {iss['issue']:<35}")
 
     print(f"\nTotal issues found: {len(issues)}")
-    has_material = any("instrumentation" in i["issue"].lower() or "missing file" in i["issue"].lower() or "NULL" in i["issue"] for i in issues)
+    has_material = any(
+        "instrumentation" in i["issue"].lower()
+        or "missing file" in i["issue"].lower()
+        or "NULL" in i["issue"]
+        for i in issues
+    )
     print(f"Material false positives: {'YES' if has_material else 'MINIMAL'}")
 
     return {"issues": issues, "has_material_false_positives": has_material}
@@ -710,7 +778,10 @@ def main():
         ("Delta-zero graph stability", s1["stable"]),
         ("High-risk gap closure", s2["total_gaps"] == 0),
         ("Canonical path closure", s3["closed"]),
-        ("Replay determinism stability", s4["infra_present"] and (len(s1["digests"]) >= 2 and s1["digests"][-1] == s1["digests"][-2])),
+        (
+            "Replay determinism stability",
+            s4["infra_present"] and (len(s1["digests"]) >= 2 and s1["digests"][-1] == s1["digests"][-2]),
+        ),
         ("Query answerability success", s5["all_answerable"]),
         ("False-positive edge absence", not s6["has_material_false_positives"]),
     ]
@@ -747,12 +818,19 @@ def main():
 
     # Save raw data for report generation
     output = {
-        "s1": s1, "s2": s2, "s3": s3, "s4": s4, "s5": s5, "s6": s6,
-        "scorecard": scorecard_rows, "verdict": verdict,
+        "s1": s1,
+        "s2": s2,
+        "s3": s3,
+        "s4": s4,
+        "s5": s5,
+        "s6": s6,
+        "scorecard": scorecard_rows,
+        "verdict": verdict,
         "db_path": str(db_path.name),
     }
 
     out_json = ROOT / "artifacts" / "adg" / "_convergence_analysis_raw.json"
+
     # Sanitize for JSON
     def sanitize(obj):
         if isinstance(obj, set):

@@ -19,6 +19,7 @@ TARGET_FILES = [
     "agentic_core/L0_routing/utils/path_util.py",
 ]
 
+
 def fix_path_normalization(content: str, file_path: str) -> tuple[str, list[str]]:
     """Fix path normalization patterns in content.
 
@@ -35,7 +36,7 @@ def fix_path_normalization(content: str, file_path: str) -> tuple[str, list[str]
     for match in matches:
         var_name = match.group(1)
         old = match.group(0)
-        new = f'{var_name}.as_posix()'
+        new = f"{var_name}.as_posix()"
         content = content.replace(old, new)
         changes.append(f"Replaced '{old}' with '{new}'")
 
@@ -46,9 +47,10 @@ def fix_path_normalization(content: str, file_path: str) -> tuple[str, list[str]
     for match in matches:
         old = match.group(0)
         # This is harder to auto-fix, just flag it
-        changes.append(f"FLAG: chr(92) replacement at line {content[:match.start()].count(chr(10)) + 1}")
+        changes.append(f"FLAG: chr(92) replacement at line {content[: match.start()].count(chr(10)) + 1}")
 
     return content, changes
+
 
 def apply_fixes():
     """Apply fixes to target files."""
@@ -61,37 +63,44 @@ def apply_fixes():
             continue
 
         try:
-            original = file_path.read_text(encoding='utf-8')
+            original = file_path.read_text(encoding="utf-8")
             fixed, changes = fix_path_normalization(original, rel_path)
 
             # Only write if changes were made
             if changes and fixed != original:
                 # Create backup
-                backup_path = file_path.with_suffix('.py.bak_w2')
-                backup_path.write_text(original, encoding='utf-8')
+                backup_path = file_path.with_suffix(".py.bak_w2")
+                backup_path.write_text(original, encoding="utf-8")
 
                 # Write fixed content
-                file_path.write_text(fixed, encoding='utf-8')
-                results.append({
-                    "file": rel_path,
-                    "status": "fixed",
-                    "changes": changes,
-                    "backup": str(backup_path),
-                })
+                file_path.write_text(fixed, encoding="utf-8")
+                results.append(
+                    {
+                        "file": rel_path,
+                        "status": "fixed",
+                        "changes": changes,
+                        "backup": str(backup_path),
+                    }
+                )
             else:
-                results.append({
-                    "file": rel_path,
-                    "status": "no_changes_needed",
-                    "changes": changes,
-                })
+                results.append(
+                    {
+                        "file": rel_path,
+                        "status": "no_changes_needed",
+                        "changes": changes,
+                    }
+                )
         except Exception as e:
-            results.append({
-                "file": rel_path,
-                "status": "error",
-                "error": str(e),
-            })
+            results.append(
+                {
+                    "file": rel_path,
+                    "status": "error",
+                    "error": str(e),
+                }
+            )
 
     return results
+
 
 def main():
     print("Wave 2: Path Normalization Fix")
@@ -99,8 +108,8 @@ def main():
 
     results = apply_fixes()
 
-    fixed_count = sum(1 for r in results if r.get('status') == 'fixed')
-    error_count = sum(1 for r in results if r.get('status') == 'error')
+    fixed_count = sum(1 for r in results if r.get("status") == "fixed")
+    error_count = sum(1 for r in results if r.get("status") == "error")
 
     print("\nResults:")
     print(f"  Files fixed: {fixed_count}")
@@ -110,9 +119,10 @@ def main():
     print("\nDetails:")
     for r in results:
         print(f"  {r['file']}: {r['status']}")
-        if 'changes' in r and r['changes']:
-            for change in r['changes'][:3]:  # Show first 3 changes
+        if "changes" in r and r["changes"]:
+            for change in r["changes"][:3]:  # Show first 3 changes
                 print(f"    - {change}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

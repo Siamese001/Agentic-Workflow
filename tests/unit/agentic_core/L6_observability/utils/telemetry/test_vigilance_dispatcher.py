@@ -16,14 +16,17 @@ class TestVigilanceDispatcher:
     def test_vigilance_dispatcher_imports(self):
         """Test vigilance_dispatcher module imports."""
         from agentic_core import vigilance_dispatcher
+
         assert vigilance_dispatcher is not None
 
     def test_vigilance_dispatcher_class(self):
         """Test VigilanceDispatcher class exists."""
         from agentic_core import VigilanceDispatcher
+
         assert VigilanceDispatcher is not None
 
     def test_vigilance_dispatcher_callable(self):
         """Test vigilance_dispatcher functions are callable."""
         from agentic_core import validate_vigilance_dispatcher
+
         assert callable(validate_vigilance_dispatcher)

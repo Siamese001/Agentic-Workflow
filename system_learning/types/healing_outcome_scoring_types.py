@@ -175,7 +175,7 @@ def _validate_ascii_only(value: str, name: str) -> None:
     """Validate string is ASCII-only."""
     try:
         value.encode("ascii")
-    except UnicodeEncodeError:    # guardian: UnicodeEncodeError should be handled with specific context
+    except UnicodeEncodeError:  # guardian: UnicodeEncodeError should be handled with specific context
         raise ValueError(f"{name} must be ASCII-only, contains non-ASCII characters")
 
 
@@ -263,7 +263,8 @@ class ScoringReport:
         for i, reason in enumerate(self.rejected_reasons):
             _validate_ascii_only(reason, f"rejected_reasons[{i}]")
         if list(self.recommendations) != sorted(
-            self.recommendations, key=lambda r: (-r.score, r.proposer_id, r.target_surface),
+            self.recommendations,
+            key=lambda r: (-r.score, r.proposer_id, r.target_surface),
         ):
             raise ValueError("recommendations must be sorted by (-score, proposer_id, target_surface)")
 
@@ -274,8 +275,11 @@ class ScoringReport:
             Stable byte representation using sorted JSON keys and stable rounding
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScoringReport.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ScoringReport.canonical_bytes"
+        )
 
         data = asdict(self)
         canonical_json = json.dumps(data, sort_keys=True, separators=(",", ":"))

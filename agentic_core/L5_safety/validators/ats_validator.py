@@ -217,7 +217,9 @@ class AtsValidator:
         self.stop_words: set[str] = set(self.keyword_config.get("stop_words", []))
 
     def validate_ats_compatibility(
-        self, resume: dict[str, Any], job_desc: str | None = None,
+        self,
+        resume: dict[str, Any],
+        job_desc: str | None = None,
     ) -> ATSValidationResult:
         """
         Validate ATS compatibility using purely deterministic logic.
@@ -233,7 +235,9 @@ class AtsValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "AtsValidator.validate_ats_compatibility",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "AtsValidator.validate_ats_compatibility",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -251,7 +255,10 @@ class AtsValidator:
             if score < self.min_score_threshold:
                 issues.append(f"Low keyword match ({score:.0%})")
         return ATSValidationResult(
-            passed=len(issues) == 0, issues=issues, score=score, metadata={"validation_type": "deterministic"},
+            passed=len(issues) == 0,
+            issues=issues,
+            score=score,
+            metadata={"validation_type": "deterministic"},
         )
 
     def _check_ats_unfriendly_patterns(self, resume: dict[str, Any]) -> list[str]:

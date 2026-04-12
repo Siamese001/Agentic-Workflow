@@ -25,8 +25,11 @@ class _ReadOnlyVisitor(ast.NodeVisitor):
 
     def visit_Assign(self, node: ast.Assign) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_ReadOnlyVisitor.visit_Assign")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_ReadOnlyVisitor.visit_Assign"
+        )
 
         for target in node.targets:
             if isinstance(target, ast.Attribute):
@@ -54,7 +57,7 @@ def check_file_readonly(file_path: Path) -> list[str]:
     """Return list of write-pattern violations for a single file."""
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
-    except SyntaxError as exc:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError: {exc}"]
     visitor = _ReadOnlyVisitor()
     visitor.visit(tree)

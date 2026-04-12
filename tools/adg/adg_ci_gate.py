@@ -44,14 +44,22 @@ def cmd_check_phase() -> int:
     phase = phase_data.get("phase", 5)
     if phase < 7:
         print(f"[ADG-GATE] BLOCKED: Full-suite pytest is FORBIDDEN in PHASE {phase}.", file=sys.stderr)
-        print("[ADG-GATE] Reason: §ADG-1.2 — full suite only allowed in PHASE 7 after all clusters converge.", file=sys.stderr)
-        print("[ADG-GATE] Action: Run scoped tests per cluster. Use /adg-repair-loop workflow.", file=sys.stderr)
+        print(
+            "[ADG-GATE] Reason: §ADG-1.2 — full suite only allowed in PHASE 7 after all clusters converge.",
+            file=sys.stderr,
+        )
+        print(
+            "[ADG-GATE] Action: Run scoped tests per cluster. Use /adg-repair-loop workflow.", file=sys.stderr
+        )
         clusters = _load_json(CLUSTERS_FILE)
         top = clusters.get("top_clusters", [])
         unresolved = [c for c in top if not c.get("resolved", False)]
         print(f"[ADG-GATE] Unresolved clusters: {len(unresolved)}", file=sys.stderr)
         for c in unresolved[:5]:
-            print(f"  - {c.get('module', c.get('root_module', '?'))} (risk={c.get('risk_score', 0)}, tests={c.get('test_surface_size', len(c.get('covering_tests', [])))})", file=sys.stderr)
+            print(
+                f"  - {c.get('module', c.get('root_module', '?'))} (risk={c.get('risk_score', 0)}, tests={c.get('test_surface_size', len(c.get('covering_tests', [])))})",
+                file=sys.stderr,
+            )
         return 1
 
     print(f"[ADG-GATE] PHASE {phase} — full-suite run is ALLOWED.", file=sys.stdout)

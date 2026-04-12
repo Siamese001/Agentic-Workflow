@@ -38,7 +38,9 @@ class PromotionToken:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "PromotionToken.validate_scope_and_use",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "PromotionToken.validate_scope_and_use",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -101,7 +103,9 @@ class PromotionTokenStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "PromotionTokenStore.mark_nonce_used",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "PromotionTokenStore.mark_nonce_used",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -157,7 +161,9 @@ class PromotionTokenIssuer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "PromotionTokenIssuer.issue_promotion_token",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "PromotionTokenIssuer.issue_promotion_token",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

@@ -183,11 +183,11 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
             if change_time:
                 try:
                     if isinstance(change_time, str):
-                        change_time = datetime.fromisoformat(change_time.replace('Z', '+00:00'))
+                        change_time = datetime.fromisoformat(change_time.replace("Z", "+00:00"))
 
                     if now - change_time <= time_window:
                         # Check if hash actually changed
-                        prev_hash = policy_history[i-1].get("hash", "")
+                        prev_hash = policy_history[i - 1].get("hash", "")
                         curr_hash = change.get("hash", "")
                         if prev_hash != curr_hash:
                             recent_changes += 1
@@ -234,7 +234,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
             if event_time:
                 try:
                     if isinstance(event_time, str):
-                        event_time = datetime.fromisoformat(event_time.replace('Z', '+00:00'))
+                        event_time = datetime.fromisoformat(event_time.replace("Z", "+00:00"))
 
                     if now - event_time <= time_window:
                         recent_escalations += 1
@@ -345,17 +345,19 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
                 batch_features.append(extraction_result.features)
             else:
                 # Add default features for failed extraction
-                batch_features.append({
-                    "latency_z_score": 0.0,
-                    "error_rate_spike": 1.0,
-                    "token_deviation": 0.0,
-                    "path_divergence": 0.0,
-                    "policy_hash_changes": 0.0,
-                    "replay_mismatch_count": 0.0,
-                    "escalation_frequency": 0.0,
-                    "healing_success_rate": 1.0,
-                    "semantic_drift_score": 0.0,
-                })
+                batch_features.append(
+                    {
+                        "latency_z_score": 0.0,
+                        "error_rate_spike": 1.0,
+                        "token_deviation": 0.0,
+                        "path_divergence": 0.0,
+                        "policy_hash_changes": 0.0,
+                        "replay_mismatch_count": 0.0,
+                        "escalation_frequency": 0.0,
+                        "healing_success_rate": 1.0,
+                        "semantic_drift_score": 0.0,
+                    }
+                )
 
         return batch_features
 

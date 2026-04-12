@@ -1,4 +1,5 @@
 """Query ADG SQLite for violation details."""
+
 import sqlite3
 from pathlib import Path
 

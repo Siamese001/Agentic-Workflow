@@ -211,13 +211,17 @@ class DeterministicLoopDetector:
             ToolBudgetExceededError: If the counter exceeds the tool's max_steps.
         """
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "DeterministicLoopDetector.increment_and_check", "L2_EXECUTION",
+            str(uuid.uuid4()),
+            "DeterministicLoopDetector.increment_and_check",
+            "L2_EXECUTION",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DeterministicLoopDetector.increment_and_check",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "DeterministicLoopDetector.increment_and_check",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

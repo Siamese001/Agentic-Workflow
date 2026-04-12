@@ -361,6 +361,7 @@ class PromptExecutionTracer:
         ExecutionTraceResult
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptExecutionTracer.trace")
 
@@ -474,7 +475,11 @@ class PromptExecutionTracer:
         citation_set_hash = sig.get("citation_set_hash")
         if citation_set_hash:
             relations.append(
-                (prompt_node, RETRIEVAL_USES_CITATION_SET, f"ADG::CitationSet::{str(citation_set_hash)[:16]}"),
+                (
+                    prompt_node,
+                    RETRIEVAL_USES_CITATION_SET,
+                    f"ADG::CitationSet::{str(citation_set_hash)[:16]}",
+                ),
             )
 
         relations.append(

@@ -187,8 +187,11 @@ class AnalysisMixin:
             Dictionary with statistical analysis of metrics
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AnalysisMixin.analyze_metrics")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AnalysisMixin.analyze_metrics"
+        )
 
         results = {}
         for key in metric_keys:
@@ -256,7 +259,10 @@ class AnalysisMixin:
         }
 
     def compare_datasets(
-        self, dataset_a: list[Any], dataset_b: list[Any], comparison_key: str | None = None,
+        self,
+        dataset_a: list[Any],
+        dataset_b: list[Any],
+        comparison_key: str | None = None,
     ) -> dict[str, Any]:
         """
         Compare two datasets and identify differences.
@@ -292,7 +298,9 @@ class AnalysisMixin:
         return results
 
     def generate_insights(
-        self, analysis_data: dict[str, Any], thresholds: dict[str, float] | None = None,
+        self,
+        analysis_data: dict[str, Any],
+        thresholds: dict[str, float] | None = None,
     ) -> list[str]:
         """
         Generate insights from analysis data.

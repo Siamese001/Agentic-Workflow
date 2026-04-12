@@ -194,7 +194,10 @@ class RetrievalProfileReplayChecker:
         }
 
     def replay_check_profile_change(
-        self, *, base_profile: RetrievalProfile, proposed_profile: RetrievalProfile,
+        self,
+        *,
+        base_profile: RetrievalProfile,
+        proposed_profile: RetrievalProfile,
     ) -> ReplayCheckResult:
         """Perform deterministic replay check of profile change.
 
@@ -206,8 +209,13 @@ class RetrievalProfileReplayChecker:
             ReplayCheckResult with deterministic digest
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileReplayChecker.replay_check_profile_change")
+        _emit_records_execution_trace(
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "RetrievalProfileReplayChecker.replay_check_profile_change",
+        )
 
         base_output = self._run_deterministic_retrieval(base_profile)
         proposed_output = self._run_deterministic_retrieval(proposed_profile)

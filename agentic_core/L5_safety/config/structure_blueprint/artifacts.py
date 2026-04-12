@@ -481,7 +481,8 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
 
 
 def validate_artifact_routing(
-    filename: str, content: str | None = None,
+    filename: str,
+    content: str | None = None,
 ) -> tuple[bool, str | None, str | None]:
     """
     Validate file against ARTIFACT_ROUTING_MAP negative logic.

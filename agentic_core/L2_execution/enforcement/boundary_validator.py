@@ -175,6 +175,7 @@ logger = logging.getLogger(__name__)
 
 def _snapshot_hash(snapshot: dict[str, Any]) -> str:
     from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation  # noqa: F401
+
     raw = json.dumps(snapshot, sort_keys=True, ensure_ascii=True, default=str)
     return hashlib.sha256(raw.encode()).hexdigest()
 
@@ -216,7 +217,9 @@ def _diff_hash(diff: dict[str, Any]) -> str:
 
 
 def verify_mutation_replay_integrity(
-    snapshot_pre: dict[str, Any], snapshot_post: dict[str, Any], uwg_state_diff: dict[str, Any],
+    snapshot_pre: dict[str, Any],
+    snapshot_post: dict[str, Any],
+    uwg_state_diff: dict[str, Any],
 ) -> None:
     """Verify that the observed boundary diff matches the UWG-recorded state_diff.
 

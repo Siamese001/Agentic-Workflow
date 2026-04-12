@@ -20,24 +20,31 @@ class VisualDetector:
 
     def __init__(self):
         self.visual_extensions = {
-            '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.svg', '.tiff', '.webp',
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".bmp",
+            ".svg",
+            ".tiff",
+            ".webp",
         }
         self.table_indicators = [
-            r'\|.*\|',  # Markdown tables
-            r'<table',  # HTML tables
-            r'\t+',     # Tab-separated
-            r',{3,}',   # CSV-like
+            r"\|.*\|",  # Markdown tables
+            r"<table",  # HTML tables
+            r"\t+",  # Tab-separated
+            r",{3,}",  # CSV-like
         ]
         self.code_indicators = [
-            r'```',     # Code blocks
-            r'    ',    # Indented code
-            r'```[\w\+\-]*\n',  # Language-specific code blocks
+            r"```",  # Code blocks
+            r"    ",  # Indented code
+            r"```[\w\+\-]*\n",  # Language-specific code blocks
         ]
         self.heading_patterns = [
-            r'^#{1,6}\s+(.+)$',  # Markdown headings
-            r'^(.+)\n[=-]+$',     # Underlined headings
-            r'^\d+\.\s+(.+)$',     # Numbered sections
-            r'^[A-Z][A-Z\s]*$',   # ALL CAPS headings (allow empty)
+            r"^#{1,6}\s+(.+)$",  # Markdown headings
+            r"^(.+)\n[=-]+$",  # Underlined headings
+            r"^\d+\.\s+(.+)$",  # Numbered sections
+            r"^[A-Z][A-Z\s]*$",  # ALL CAPS headings (allow empty)
         ]
 
     def detect_modality(self, file_path: Path, content: str | None = None) -> DocumentModality:
@@ -52,7 +59,7 @@ class VisualDetector:
         """
         if content is None and file_path.exists():
             try:
-                content = file_path.read_text(encoding='utf-8', errors='replace')
+                content = file_path.read_text(encoding="utf-8", errors="replace")
             except Exception as e:
                 log.warning(f"Failed to read file for modality detection: {e}")
                 return DocumentModality.UNKNOWN
@@ -92,7 +99,7 @@ class VisualDetector:
         """
         if content is None and file_path.exists():
             try:
-                content = file_path.read_text(encoding='utf-8', errors='replace')
+                content = file_path.read_text(encoding="utf-8", errors="replace")
             except Exception as e:
                 log.warning(f"Failed to read file for metadata extraction: {e}")
                 content = ""
@@ -137,29 +144,29 @@ class VisualDetector:
         suffix = file_path.suffix.lower()
 
         content_type_map = {
-            '.txt': ContentType.TEXT,
-            '.md': ContentType.MARKDOWN,
-            '.markdown': ContentType.MARKDOWN,
-            '.pdf': ContentType.PDF,
-            '.html': ContentType.HTML,
-            '.htm': ContentType.HTML,
-            '.csv': ContentType.CSV,
-            '.json': ContentType.JSON,
-            '.xml': ContentType.XML,
-            '.py': ContentType.CODE,
-            '.js': ContentType.CODE,
-            '.ts': ContentType.CODE,
-            '.java': ContentType.CODE,
-            '.cpp': ContentType.CODE,
-            '.c': ContentType.CODE,
-            '.h': ContentType.CODE,
-            '.css': ContentType.CODE,
-            '.scss': ContentType.CODE,
-            '.less': ContentType.CODE,
-            '.sql': ContentType.CODE,
-            '.sh': ContentType.CODE,
-            '.bat': ContentType.CODE,
-            '.ps1': ContentType.CODE,
+            ".txt": ContentType.TEXT,
+            ".md": ContentType.MARKDOWN,
+            ".markdown": ContentType.MARKDOWN,
+            ".pdf": ContentType.PDF,
+            ".html": ContentType.HTML,
+            ".htm": ContentType.HTML,
+            ".csv": ContentType.CSV,
+            ".json": ContentType.JSON,
+            ".xml": ContentType.XML,
+            ".py": ContentType.CODE,
+            ".js": ContentType.CODE,
+            ".ts": ContentType.CODE,
+            ".java": ContentType.CODE,
+            ".cpp": ContentType.CODE,
+            ".c": ContentType.CODE,
+            ".h": ContentType.CODE,
+            ".css": ContentType.CODE,
+            ".scss": ContentType.CODE,
+            ".less": ContentType.CODE,
+            ".sql": ContentType.CODE,
+            ".sh": ContentType.CODE,
+            ".bat": ContentType.CODE,
+            ".ps1": ContentType.CODE,
         }
 
         # Check for visual content
@@ -178,9 +185,9 @@ class VisualDetector:
 
         # Image references
         image_patterns = [
-            r'!\[.*\]\([^)]+\)',  # Markdown images
-            r'<img[^>]+>',       # HTML images
-            r'image\s*[:=]',     # Key-value image references
+            r"!\[.*\]\([^)]+\)",  # Markdown images
+            r"<img[^>]+>",  # HTML images
+            r"image\s*[:=]",  # Key-value image references
         ]
 
         for pattern in image_patterns:
@@ -188,7 +195,7 @@ class VisualDetector:
             score += len(matches) * 0.3  # Increased weight
 
         # Chart/diagram indicators
-        chart_keywords = ['chart', 'graph', 'diagram', 'figure', 'plot', 'visualization']
+        chart_keywords = ["chart", "graph", "diagram", "figure", "plot", "visualization"]
         for keyword in chart_keywords:
             score += content_lower.count(keyword) * 0.1
 
@@ -213,7 +220,7 @@ class VisualDetector:
             return 0.0
 
         score = 0.0
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # Count table-like lines
         table_lines = 0
@@ -247,8 +254,22 @@ class VisualDetector:
 
         # Language keywords
         code_keywords = [
-            'def ', 'class ', 'import ', 'from ', 'function ', 'var ', 'let ', 'const ',
-            'if ', 'else ', 'for ', 'while ', 'switch ', 'case ', 'try ', 'catch ',
+            "def ",
+            "class ",
+            "import ",
+            "from ",
+            "function ",
+            "var ",
+            "let ",
+            "const ",
+            "if ",
+            "else ",
+            "for ",
+            "while ",
+            "switch ",
+            "case ",
+            "try ",
+            "catch ",
         ]
 
         content_lower = content.lower()
@@ -270,7 +291,7 @@ class VisualDetector:
             return 0.0
 
         score = 0.0
-        lines = content.split('\n')
+        lines = content.split("\n")
 
         # Heading detection
         heading_lines = 0
@@ -305,8 +326,8 @@ class VisualDetector:
             return False
 
         image_patterns = [
-            r'!\[.*\]\([^)]+\)',  # Markdown images
-            r'<img[^>]+>',       # HTML images
+            r"!\[.*\]\([^)]+\)",  # Markdown images
+            r"<img[^>]+>",  # HTML images
         ]
 
         for pattern in image_patterns:
@@ -336,7 +357,7 @@ class VisualDetector:
 
     def _calculate_checksum(self, content: str) -> str:
         """Calculate SHA-256 checksum of content."""
-        return hashlib.sha256(content.encode('utf-8')).hexdigest()
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
     def _detect_language(self, content: str) -> str | None:
         """Simple language detection based on character patterns."""
@@ -344,13 +365,13 @@ class VisualDetector:
             return None
 
         # Simple heuristic for common languages
-        if re.search(r'[\u4e00-\u9fff]', content):  # Chinese characters
-            return 'zh'
-        elif re.search(r'[\u0400-\u04ff]', content):  # Cyrillic
-            return 'ru'
-        elif re.search(r'[\u0590-\u05ff]', content):  # Hebrew
-            return 'he'
-        elif re.search(r'[\u0600-\u06ff]', content):  # Arabic
-            return 'ar'
+        if re.search(r"[\u4e00-\u9fff]", content):  # Chinese characters
+            return "zh"
+        elif re.search(r"[\u0400-\u04ff]", content):  # Cyrillic
+            return "ru"
+        elif re.search(r"[\u0590-\u05ff]", content):  # Hebrew
+            return "he"
+        elif re.search(r"[\u0600-\u06ff]", content):  # Arabic
+            return "ar"
         else:
-            return 'en'  # Default to English
+            return "en"  # Default to English

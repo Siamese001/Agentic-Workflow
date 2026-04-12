@@ -16,14 +16,17 @@ class TestVllmInfrastructureFingerprintTypes:
     def test_vllm_infrastructure_fingerprint_types_imports(self):
         """Test vllm_infrastructure_fingerprint_types module imports."""
         from agentic_core import vllm_infrastructure_fingerprint_types
+
         assert vllm_infrastructure_fingerprint_types is not None
 
     def test_vllm_infrastructure_fingerprint_types_class(self):
         """Test VllmInfrastructureFingerprintTypes class exists."""
         from agentic_core import VllmInfrastructureFingerprintTypes
+
         assert VllmInfrastructureFingerprintTypes is not None
 
     def test_vllm_infrastructure_fingerprint_types_callable(self):
         """Test vllm_infrastructure_fingerprint_types functions are callable."""
         from agentic_core import validate_vllm_infrastructure_fingerprint_types
+
         assert callable(validate_vllm_infrastructure_fingerprint_types)

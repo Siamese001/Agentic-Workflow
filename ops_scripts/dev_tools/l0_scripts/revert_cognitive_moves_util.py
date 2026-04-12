@@ -1,4 +1,5 @@
 """Revert file moves from cognitive_checkpoint.json that were made without Gemini LLM reasoning."""
+
 import json
 import shutil
 from pathlib import Path
@@ -17,8 +18,9 @@ _emit_pulls_context("p1", "revert_cognitive_moves_util", "context_retrieval_2")
 emit_determinism_digest("trace_revert_cognitive_moves_util", "revert_cognitive_moves_util_dispatch")
 emit_determinism_digest("trace_revert_cognitive_moves_util", "revert_cognitive_moves_util_complete")
 _emit_validated_by_safety_plane("p1", "revert_cognitive_moves_util", "safety_validation")
-PROJECT_ROOT = Path('C:/Git/Agentic-Workflow')
-CHECKPOINT_FILE = PROJECT_ROOT / 'archives/gatekeeper/2026-01-21/cognitive_checkpoint.json'
+PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
+CHECKPOINT_FILE = PROJECT_ROOT / "archives/gatekeeper/2026-01-21/cognitive_checkpoint.json"
+
 
 def main():
     """TODO: Add documentation for main."""
@@ -28,13 +30,13 @@ def main():
     skipped = 0
     errors = 0
     for original_path_str, decision in checkpoint.items():
-        if decision.get('action') != 'MOVE':
+        if decision.get("action") != "MOVE":
             continue
-        target_path_rel = decision.get('target_path', '')
+        target_path_rel = decision.get("target_path", "")
         if not target_path_rel:
             continue
-        original_path = Path(original_path_str.replace('\\', '/'))
-        if not target_path_rel.startswith('C:'):
+        original_path = Path(original_path_str.replace("\\", "/"))
+        if not target_path_rel.startswith("C:"):
             target_path = PROJECT_ROOT / target_path_rel
         else:
             target_path = Path(target_path_rel)
@@ -57,5 +59,7 @@ def main():
             skipped += 1
     if reverted > 0:
         pass
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     main()

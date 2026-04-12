@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Verify infrastructure coverage in new ADG."""
+
 import glob
 import os
 import sqlite3
 
 # Find latest ADG
-adg_dir = 'artifacts/adg'
-sqlite_files = glob.glob(f'{adg_dir}/adg_indexed_*.sqlite')
+adg_dir = "artifacts/adg"
+sqlite_files = glob.glob(f"{adg_dir}/adg_indexed_*.sqlite")
 latest = max(sqlite_files, key=os.path.getmtime)
 print(f"Using ADG: {latest}")
 

@@ -16,14 +16,17 @@ class TestIntegrityValidationTypesAdg:
     def test_integrity_validation_types_adg_imports(self):
         """Test integrity_validation_types_adg module imports."""
         from agentic_core import integrity_validation_types_adg
+
         assert integrity_validation_types_adg is not None
 
     def test_integrity_validation_types_adg_class(self):
         """Test IntegrityValidationTypesAdg class exists."""
         from agentic_core import IntegrityValidationTypesAdg
+
         assert IntegrityValidationTypesAdg is not None
 
     def test_integrity_validation_types_adg_callable(self):
         """Test integrity_validation_types_adg functions are callable."""
         from agentic_core import validate_integrity_validation_types_adg
+
         assert callable(validate_integrity_validation_types_adg)

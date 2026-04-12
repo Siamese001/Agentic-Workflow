@@ -14,6 +14,7 @@ from typing import Any
 @dataclass(frozen=True)
 class Identity:
     """Immutable identity."""
+
     actor_id: str
     role: str
     tenant_id: str = "default"
@@ -27,6 +28,7 @@ class Identity:
 @dataclass
 class Credentials:
     """Credentials for authentication."""
+
     token: str = ""
     signature: str = ""
     expiry: float = 0.0
@@ -39,6 +41,7 @@ class AuthorityContext:
 
     10C-REQ-111: Contains identity, credentials, and policy bindings.
     """
+
     identity: Identity
     credentials: Credentials
     policy_hash: str = ""
@@ -86,10 +89,7 @@ class AuthorityBinder:
         compliance_hash: str = "",
     ) -> AuthorityContext:
         """Bind authority context."""
-        identity = self._identity_registry.get(
-            actor_id,
-            Identity(actor_id=actor_id, role="unknown")
-        )
+        identity = self._identity_registry.get(actor_id, Identity(actor_id=actor_id, role="unknown"))
 
         return AuthorityContext(
             identity=identity,

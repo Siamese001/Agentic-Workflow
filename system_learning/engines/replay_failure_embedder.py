@@ -230,8 +230,11 @@ class ReplayFailureEmbedder:
             The generated CorpusRecord.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayFailureEmbedder.ingest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayFailureEmbedder.ingest"
+        )
 
         text = record.to_embedding_text()
         content_hash = compute_content_hash(text.encode("utf-8"))
@@ -407,7 +410,7 @@ class ReplayFailureEmbedder:
                 subsystems_segment = ""
                 for part in text.split(" ## "):
                     if part.startswith("subsystems:"):
-                        subsystems_segment = part[len("subsystems:"):]
+                        subsystems_segment = part[len("subsystems:") :]
                         break
                 if subsystems_segment:
                     for sub in subsystems_segment.split(" | "):

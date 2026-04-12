@@ -208,6 +208,7 @@ def _get_heal_policy_types():
 # Backward-compat alias — resolved lazily at call time
 def decide_reasoning_tier(*args, **kwargs):
     from agentic_core.L5_safety.types.heal_policy_types import decide_heal_escalation
+
     return decide_heal_escalation(*args, **kwargs)
 
 
@@ -414,9 +415,7 @@ def standard_heal(func: F) -> F:
                     },
                 )()
                 Logger.debug(
-                    f"[heal_policy] proceed=True "
-                    f"tier={_tier_name} "
-                    f"threshold=CANONICAL_ROUTER",
+                    f"[heal_policy] proceed=True tier={_tier_name} threshold=CANONICAL_ROUTER",
                 )
 
             # Phase 4: LLM escalation (only if tier is set)

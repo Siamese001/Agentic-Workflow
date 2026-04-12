@@ -3,6 +3,7 @@
 These files have module-level code that reads files (JSON, HTML) that may not exist.
 Wrap those reads in try/except.
 """
+
 import ast
 import os
 import subprocess
@@ -15,10 +16,24 @@ fixed = 0
 def get_fnf_source_files():
     """Find source files that cause FileNotFoundError at import time."""
     r = subprocess.run(
-        [sys.executable, "-m", "pytest", "tests/unit/agentic_core/L0_routing",
-         "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
-        capture_output=True, text=True, encoding="utf-8", errors="replace",
-        cwd=ROOT, timeout=60,
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/unit/agentic_core/L0_routing",
+            "-c",
+            "tools/pytest_minimal.ini",
+            "--co",
+            "--tb=short",
+            "-p",
+            "no:warnings",
+        ],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        cwd=ROOT,
+        timeout=60,
     )
     lines = (r.stdout + r.stderr).splitlines()
     results = []
@@ -27,7 +42,7 @@ def get_fnf_source_files():
         if "FileNotFoundError" not in l:
             continue
         # Find source file
-        for j in range(max(0, i-10), i):
+        for j in range(max(0, i - 10), i):
             prev = lines[j].strip()
             if ".py:" in prev and ("in <module>" in prev):
                 parts = prev.split(":")
@@ -61,7 +76,13 @@ def wrap_file_read_block(filepath, error_lineno):
     # Walk back to find start of statement (non-indented, non-blank, non-comment)
     while start > 0:
         prev = lines[start - 1].strip()
-        if prev == "" or prev.startswith("#") or prev.startswith("def ") or prev.startswith("class ") or prev.startswith("@"):
+        if (
+            prev == ""
+            or prev.startswith("#")
+            or prev.startswith("def ")
+            or prev.startswith("class ")
+            or prev.startswith("@")
+        ):
             break
         # Check if this is still part of the same statement
         if lines[start - 1] and lines[start - 1][0] not in " \t":
@@ -75,7 +96,12 @@ def wrap_file_read_block(filepath, error_lineno):
     end = idx + 1
     while end < len(lines):
         stripped = lines[end].strip()
-        if stripped == "" or stripped.startswith("def ") or stripped.startswith("class ") or stripped.startswith("@"):
+        if (
+            stripped == ""
+            or stripped.startswith("def ")
+            or stripped.startswith("class ")
+            or stripped.startswith("@")
+        ):
             break
         # If it's at module level (no indent), it could be continuation
         if lines[end] and lines[end][0] not in " \t" and not stripped.startswith("#"):
@@ -91,11 +117,18 @@ def wrap_file_read_block(filepath, error_lineno):
         return False
 
     # Check if already wrapped
-    if any("try:" in l and l.strip() == "try:" for l in lines[max(0, start-3):start]):
+    if any("try:" in l and l.strip() == "try:" for l in lines[max(0, start - 3) : start]):
         return False
 
     indented = ["    " + l for l in block]
-    wrapped = ["try:"] + indented + ["except (FileNotFoundError, OSError, json.JSONDecodeError, KeyError, ValueError, AttributeError):  # guardian: allow-silent-swallow", "    pass"]
+    wrapped = (
+        ["try:"]
+        + indented
+        + [
+            "except (FileNotFoundError, OSError, json.JSONDecodeError, KeyError, ValueError, AttributeError):  # guardian: allow-silent-swallow",
+            "    pass",
+        ]
+    )
 
     new_lines = lines[:start] + wrapped + lines[end:]
     new_src = "\n".join(new_lines)
@@ -108,7 +141,7 @@ def wrap_file_read_block(filepath, error_lineno):
         block = [lines[idx]]
         indented = ["    " + lines[idx]]
         wrapped = ["try:"] + indented + ["except Exception:  # guardian: allow-silent-swallow", "    pass"]
-        new_lines = lines[:idx] + wrapped + lines[idx+1:]
+        new_lines = lines[:idx] + wrapped + lines[idx + 1 :]
         new_src = "\n".join(new_lines)
         try:
             # guardian: allow-silent-swallow - acceptable exception handling

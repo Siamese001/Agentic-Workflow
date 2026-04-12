@@ -355,8 +355,11 @@ class ObservabilityToolInvoker:
             handler: Optional handler function
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ObservabilityToolInvoker.register_tool")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ObservabilityToolInvoker.register_tool"
+        )
 
         self._registered_tools[tool_name] = endpoint
         if handler:
@@ -527,7 +530,10 @@ class ObservabilityToolInvoker:
         )
 
     def _simulate_invocation(
-        self, request: InvocationRequest, proxy: bool = False, async_mode: bool = False,
+        self,
+        request: InvocationRequest,
+        proxy: bool = False,
+        async_mode: bool = False,
     ) -> InvocationResponse:
         """Simulate tool invocation."""
         time.sleep(DEFAULT_SLEEP)
@@ -586,7 +592,11 @@ class ObservabilityToolInvoker:
         return f"tool_invoke_{hash(json.dumps(key_data, sort_keys=True))}"
 
     def _create_error_response(
-        self, invocation_id: str, tool_name: str, error: str, start_time: float,
+        self,
+        invocation_id: str,
+        tool_name: str,
+        error: str,
+        start_time: float,
     ) -> InvocationResponse:
         """Create error response."""
         return InvocationResponse(
@@ -633,7 +643,10 @@ class ObservabilityToolInvoker:
 
 # guardian: allow-magic-config
 def create_observability_tool_invoker(
-    default_timeout: float = 30.0, retry_attempts: int = 3, enable_caching: bool = True, **kwargs: object,
+    default_timeout: float = 30.0,
+    retry_attempts: int = 3,
+    enable_caching: bool = True,
+    **kwargs: object,
 ) -> ObservabilityToolInvoker:
     """Create a configured observability tool invoker."""
     config = InvocationConfig(

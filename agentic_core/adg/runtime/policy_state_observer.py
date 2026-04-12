@@ -239,8 +239,11 @@ class StateObservationReport:
     @property
     def by_kind(self) -> dict[str, int]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateObservationReport.by_kind")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "StateObservationReport.by_kind"
+        )
 
         result: dict[str, int] = {}
         for e in self.events:
@@ -288,8 +291,11 @@ class PolicyStateObserver:
     ) -> StateObservationEvent:
         """Record a policy-state observation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyStateObserver.observe_policy")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyStateObserver.observe_policy"
+        )
 
         event = StateObservationEvent(
             agent_id=self._agent_id,

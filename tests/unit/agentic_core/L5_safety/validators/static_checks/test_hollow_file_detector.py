@@ -10,6 +10,7 @@ try:
         HollowFileClassification,
         HollowFileDetector,
     )
+
     HOLLOW_FILE_AVAILABLE = True
 except ImportError:
     HOLLOW_FILE_AVAILABLE = False
@@ -32,7 +33,7 @@ def test_hollow_file_detector_empty():
     detector = HollowFileDetector()
 
     # Create empty file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("")
         temp_path = Path(f.name)
 
@@ -59,7 +60,7 @@ import sys
 from typing import Any
 """
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_path = Path(f.name)
 
@@ -151,7 +152,7 @@ _emit_invokes_eval("p1", "test", "eval")
 _emit_proposal_commits_routing("p1", "test", "routing")
 """
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_path = Path(f.name)
 
@@ -190,7 +191,7 @@ class NotImplementedClass:
         raise NotImplementedError("Not implemented")
 """
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_path = Path(f.name)
 
@@ -235,7 +236,7 @@ def main():
     return result
 """
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_path = Path(f.name)
 
@@ -271,7 +272,7 @@ class TestClass:
         return self.value
 """
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(code)
         temp_path = Path(f.name)
 

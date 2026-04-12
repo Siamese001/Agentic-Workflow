@@ -214,8 +214,11 @@ class HealingPolicyMixin:
         HARDENED: Circular dependency protection + budget enforcement.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingPolicyMixin.heal_repository")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingPolicyMixin.heal_repository"
+        )
 
         if _call_path is None:
             _call_path = set()
@@ -232,7 +235,11 @@ class HealingPolicyMixin:
         try:
             self._healing_count += 1
             summary: dict[str, Any] = self._perform_healing_chain(
-                dry_run, execute, depth, max_depth, _call_path,
+                dry_run,
+                execute,
+                depth,
+                max_depth,
+                _call_path,
             )
             return summary
         # guardian: allow-silent-swallow
@@ -242,7 +249,12 @@ class HealingPolicyMixin:
             self._healing_count -= 1
 
     def _perform_healing_chain(
-        self, dry_run: bool, execute: bool, depth: int, max_depth: int, _call_path: set[str],
+        self,
+        dry_run: bool,
+        execute: bool,
+        depth: int,
+        max_depth: int,
+        _call_path: set[str],
     ) -> dict[str, Any]:
         """Execute the actual healing chain with proper error boundaries."""
         violations_found = 0
@@ -263,12 +275,15 @@ class HealingPolicyMixin:
             elif _bp.behavioral_score > 0.7:
                 _confidence -= 0.05
             Logger.debug(
-                "[ADG] heal_repository confidence=%.3f (score=%.3f)", _confidence, _bp.behavioral_score,
+                "[ADG] heal_repository confidence=%.3f (score=%.3f)",
+                _confidence,
+                _bp.behavioral_score,
             )
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("healing_policy_mixin: Exception swallowed at L269: %s", e)
+            logging.getLogger(__name__).debug("healing_policy_mixin: Exception swallowed at L269: %s", e)
         try:
             for file_path in self.python_files:
                 try:

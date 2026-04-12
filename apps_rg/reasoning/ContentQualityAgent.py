@@ -229,7 +229,9 @@ class ContentQualityAgent(RGAgentBase):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContentQualityAgent.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContentQualityAgent.execute"
+        )
         self.log("Analyzing content quality using logic nodes...")
         resume = self.ctx.current_resume
         if not resume:

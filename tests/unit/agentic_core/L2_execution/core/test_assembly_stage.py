@@ -16,14 +16,17 @@ class TestAssemblyStage:
     def test_assembly_stage_imports(self):
         """Test assembly stage module imports."""
         from agentic_core import assembly_stage
+
         assert assembly_stage is not None
 
     def test_assembly_stage_class(self):
         """Test assembly stage class exists."""
         from agentic_core.assembly_stage import AssemblyStage
+
         assert AssemblyStage is not None
 
     def test_validate_stage(self):
         """Test validate stage function."""
         from agentic_core.assembly_stage import validate_stage
+
         assert callable(validate_stage)

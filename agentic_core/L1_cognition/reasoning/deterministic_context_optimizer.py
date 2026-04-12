@@ -56,7 +56,9 @@ def _compute_context_hash(items: Sequence[ContextItem]) -> str:
 
 
 def optimize_context_window(
-    items: Sequence[ContextItem], top_k_cap: int, seed_pack_hash: str,
+    items: Sequence[ContextItem],
+    top_k_cap: int,
+    seed_pack_hash: str,
 ) -> OptimizationResult:
     """
     Optimizes the context window with deterministic ordering and capping.

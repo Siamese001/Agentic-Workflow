@@ -257,7 +257,9 @@ class HumanReviewAdapter:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HumanReviewAdapter.submit_for_review",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HumanReviewAdapter.submit_for_review",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

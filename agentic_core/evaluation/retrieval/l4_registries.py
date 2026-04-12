@@ -219,8 +219,11 @@ class ChunkManifest:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ChunkManifest.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ChunkManifest.canonical_bytes"
+        )
 
         d = self.to_dict()
         d.pop("metadata", None)
@@ -309,8 +312,11 @@ class RetrievalEvaluationRecord:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalEvaluationRecord.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalEvaluationRecord.canonical_bytes"
+        )
 
         d = self.to_dict()
         return json.dumps(d, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -395,6 +401,7 @@ class ChunkManifestRegistry:
 
     def write(self, manifest: ChunkManifest) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ChunkManifestRegistry.write")
 
@@ -421,8 +428,11 @@ class ParentChildIndexRegistry:
 
     def write(self, link: ParentChildLink) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ParentChildIndexRegistry.write")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ParentChildIndexRegistry.write"
+        )
 
         h = link.content_hash()
         self._child_to_parent[link.child_chunk_id] = link
@@ -449,8 +459,11 @@ class RetrievalEvaluationRegistry:
 
     def write(self, record: RetrievalEvaluationRecord) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalEvaluationRegistry.write")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalEvaluationRegistry.write"
+        )
 
         h = record.content_hash()
         if record.query_id not in self._store:
@@ -475,8 +488,11 @@ class ContextCompletenessSnapshotStore:
 
     def write(self, snapshot: ContextCompletenessSnapshot) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextCompletenessSnapshotStore.write")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ContextCompletenessSnapshotStore.write"
+        )
 
         h = snapshot.content_hash()
         self._snapshots.append(snapshot)

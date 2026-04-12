@@ -29,14 +29,16 @@ logger = logging.getLogger(__name__)
 
 class CircuitState(Enum):
     """Circuit breaker states."""
-    CLOSED = auto()      # Normal operation
-    OPEN = auto()        # Failing, reject requests
-    HALF_OPEN = auto()   # Testing if service recovered
+
+    CLOSED = auto()  # Normal operation
+    OPEN = auto()  # Failing, reject requests
+    HALF_OPEN = auto()  # Testing if service recovered
 
 
 @dataclass
 class RetryConfig:
     """Retry configuration."""
+
     max_retries: int = 3
     base_delay_sec: float = 1.0
     max_delay_sec: float = 30.0
@@ -47,6 +49,7 @@ class RetryConfig:
 @dataclass
 class CircuitBreakerConfig:
     """Circuit breaker configuration."""
+
     failure_threshold: int = 5
     recovery_timeout_sec: float = 30.0
     half_open_max_calls: int = 3
@@ -56,6 +59,7 @@ class CircuitBreakerConfig:
 @dataclass
 class HardeningMetrics:
     """Metrics for hardened client."""
+
     requests_total: int = 0
     requests_success: int = 0
     requests_failed: int = 0
@@ -235,7 +239,13 @@ class HardenedVLLMClient:
                 if attempt < self.retry_config.max_retries:
                     delay = self._calculate_delay(attempt)
                     self.metrics.requests_retried += 1
-                    logger.warning("Retry %d/%d after %.1fs: %s", attempt + 1, self.retry_config.max_retries, delay, response.error_message)
+                    logger.warning(
+                        "Retry %d/%d after %.1fs: %s",
+                        attempt + 1,
+                        self.retry_config.max_retries,
+                        delay,
+                        response.error_message,
+                    )
                     await asyncio.sleep(delay)
 
             except (OSError, RuntimeError) as e:
@@ -245,7 +255,9 @@ class HardenedVLLMClient:
                 if attempt < self.retry_config.max_retries:
                     delay = self._calculate_delay(attempt)
                     self.metrics.requests_retried += 1
-                    logger.warning("Retry %d/%d after %.1fs: %s", attempt + 1, self.retry_config.max_retries, delay, e)
+                    logger.warning(
+                        "Retry %d/%d after %.1fs: %s", attempt + 1, self.retry_config.max_retries, delay, e
+                    )
                     await asyncio.sleep(delay)
 
         # All retries exhausted
@@ -260,9 +272,7 @@ class HardenedVLLMClient:
 
     def _calculate_delay(self, attempt: int) -> float:
         """Calculate retry delay with exponential backoff and jitter."""
-        delay = self.retry_config.base_delay_sec * (
-            self.retry_config.exponential_base ** attempt
-        )
+        delay = self.retry_config.base_delay_sec * (self.retry_config.exponential_base**attempt)
         delay = min(delay, self.retry_config.max_delay_sec)
 
         if self.retry_config.jitter:
@@ -309,7 +319,7 @@ class HardenedVLLMClient:
             logger.warning("Entering degraded mode due to GPU OOM")
 
         # Reduce batch size on the base client
-        if hasattr(self.base_client, 'batch_size'):
+        if hasattr(self.base_client, "batch_size"):
             old_batch = self.base_client.batch_size
             new_batch = max(self._min_batch_size, old_batch // 2)
             self.base_client.batch_size = new_batch

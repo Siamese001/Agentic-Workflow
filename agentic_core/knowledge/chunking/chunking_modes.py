@@ -25,6 +25,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 @dataclass
 class Chunk:
     """Document chunk with metadata."""
+
     id: str
     content: str
     start_pos: int
@@ -74,7 +75,9 @@ class FixedTokenChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text into fixed-size pieces."""
         _emit_records_execution_trace(
-            f"chunk_fixed_{doc_id}", LayerSegment.L2_EXECUTION, "FixedTokenChunker.chunk",
+            f"chunk_fixed_{doc_id}",
+            LayerSegment.L2_EXECUTION,
+            "FixedTokenChunker.chunk",
         )
 
         chunks = []
@@ -89,22 +92,24 @@ class FixedTokenChunker(ChunkingStrategy):
 
             # Extend to word boundary
             if end < len(text):
-                while end < len(text) and text[end] not in ' \n\t':
+                while end < len(text) and text[end] not in " \n\t":
                     end += 1
 
             chunk_text = text[start:end].strip()
             if chunk_text:
-                chunks.append(Chunk(
-                    id=f"{doc_id}_fixed_{chunk_idx}",
-                    content=chunk_text,
-                    start_pos=start,
-                    end_pos=end,
-                    chunk_type="fixed_token",
-                    metadata={
-                        "tokens_estimated": len(chunk_text) // self.approx_chars_per_token,
-                        "strategy": "fixed_token",
-                    },
-                ))
+                chunks.append(
+                    Chunk(
+                        id=f"{doc_id}_fixed_{chunk_idx}",
+                        content=chunk_text,
+                        start_pos=start,
+                        end_pos=end,
+                        chunk_type="fixed_token",
+                        metadata={
+                            "tokens_estimated": len(chunk_text) // self.approx_chars_per_token,
+                            "strategy": "fixed_token",
+                        },
+                    )
+                )
                 chunk_idx += 1
 
             # Move start with overlap
@@ -135,7 +140,9 @@ class OverlapWindowChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text using sliding windows."""
         _emit_records_execution_trace(
-            f"chunk_overlap_{doc_id}", LayerSegment.L2_EXECUTION, "OverlapWindowChunker.chunk",
+            f"chunk_overlap_{doc_id}",
+            LayerSegment.L2_EXECUTION,
+            "OverlapWindowChunker.chunk",
         )
 
         chunks = []
@@ -150,18 +157,20 @@ class OverlapWindowChunker(ChunkingStrategy):
 
             chunk_text = text[start:end].strip()
             if len(chunk_text) > 50:  # Minimum chunk size
-                chunks.append(Chunk(
-                    id=f"{doc_id}_overlap_{chunk_idx}",
-                    content=chunk_text,
-                    start_pos=start,
-                    end_pos=end,
-                    chunk_type="overlap_window",
-                    metadata={
-                        "window_size_tokens": self.window_size,
-                        "stride_tokens": self.stride,
-                        "strategy": "overlap_window",
-                    },
-                ))
+                chunks.append(
+                    Chunk(
+                        id=f"{doc_id}_overlap_{chunk_idx}",
+                        content=chunk_text,
+                        start_pos=start,
+                        end_pos=end,
+                        chunk_type="overlap_window",
+                        metadata={
+                            "window_size_tokens": self.window_size,
+                            "stride_tokens": self.stride,
+                            "strategy": "overlap_window",
+                        },
+                    )
+                )
                 chunk_idx += 1
 
             start += stride_chars
@@ -186,10 +195,10 @@ class SectionAwareChunker(ChunkingStrategy):
 
         # Heading patterns
         self.heading_patterns = [
-            r'^#{1,6}\s+(.+)$',  # Markdown headings
-            r'^(.+)\n[=-]+$',     # Underlined headings
-            r'^\d+\.\s+(.+)$',     # Numbered sections
-            r'^[A-Z][A-Z\s]+$',   # ALL CAPS headings
+            r"^#{1,6}\s+(.+)$",  # Markdown headings
+            r"^(.+)\n[=-]+$",  # Underlined headings
+            r"^\d+\.\s+(.+)$",  # Numbered sections
+            r"^[A-Z][A-Z\s]+$",  # ALL CAPS headings
         ]
 
     def _find_headings(self, text: str) -> list[tuple[int, str]]:
@@ -199,7 +208,7 @@ class SectionAwareChunker(ChunkingStrategy):
             List of (position, heading_text) tuples
         """
         headings = []
-        lines = text.split('\n')
+        lines = text.split("\n")
         pos = 0
 
         for i, line in enumerate(lines):
@@ -215,7 +224,9 @@ class SectionAwareChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text by sections."""
         _emit_records_execution_trace(
-            f"chunk_section_{doc_id}", LayerSegment.L2_EXECUTION, "SectionAwareChunker.chunk",
+            f"chunk_section_{doc_id}",
+            LayerSegment.L2_EXECUTION,
+            "SectionAwareChunker.chunk",
         )
 
         headings = self._find_headings(text)
@@ -240,32 +251,36 @@ class SectionAwareChunker(ChunkingStrategy):
             if len(section_text) > max_chars:
                 sub_chunks = self._subdivide_section(section_text, start_pos, max_chars)
                 for j, (sub_start, sub_end, sub_text) in enumerate(sub_chunks):
-                    chunks.append(Chunk(
-                        id=f"{doc_id}_section_{i}_{j}",
-                        content=sub_text,
-                        start_pos=sub_start,
-                        end_pos=sub_end,
+                    chunks.append(
+                        Chunk(
+                            id=f"{doc_id}_section_{i}_{j}",
+                            content=sub_text,
+                            start_pos=sub_start,
+                            end_pos=sub_end,
+                            chunk_type="section_aware",
+                            metadata={
+                                "heading": heading,
+                                "section_index": i,
+                                "subsection_index": j,
+                                "strategy": "section_aware",
+                            },
+                        )
+                    )
+            else:
+                chunks.append(
+                    Chunk(
+                        id=f"{doc_id}_section_{i}",
+                        content=section_text,
+                        start_pos=start_pos,
+                        end_pos=end_pos,
                         chunk_type="section_aware",
                         metadata={
                             "heading": heading,
                             "section_index": i,
-                            "subsection_index": j,
                             "strategy": "section_aware",
                         },
-                    ))
-            else:
-                chunks.append(Chunk(
-                    id=f"{doc_id}_section_{i}",
-                    content=section_text,
-                    start_pos=start_pos,
-                    end_pos=end_pos,
-                    chunk_type="section_aware",
-                    metadata={
-                        "heading": heading,
-                        "section_index": i,
-                        "strategy": "section_aware",
-                    },
-                ))
+                    )
+                )
 
         return chunks
 
@@ -284,16 +299,18 @@ class SectionAwareChunker(ChunkingStrategy):
 
             # Extend to paragraph boundary
             if end < len(section_text):
-                while end < len(section_text) and section_text[end:end+2] != '\n\n':
+                while end < len(section_text) and section_text[end : end + 2] != "\n\n":
                     end += 1
 
             chunk_text = section_text[start:end].strip()
             if chunk_text:
-                sub_chunks.append((
-                    section_start + start,
-                    section_start + end,
-                    chunk_text,
-                ))
+                sub_chunks.append(
+                    (
+                        section_start + start,
+                        section_start + end,
+                        chunk_text,
+                    )
+                )
 
             start = end
 
@@ -327,7 +344,7 @@ class SemanticObjectChunker(ChunkingStrategy):
         pos = 0
 
         # Split into paragraphs first
-        paragraphs = re.split(r'\n\n+', text)
+        paragraphs = re.split(r"\n\n+", text)
 
         for para in paragraphs:
             para = para.strip()
@@ -341,7 +358,7 @@ class SemanticObjectChunker(ChunkingStrategy):
                 units.append((pos, pos + para_len, "paragraph", para))
             else:
                 # Split large paragraphs into sentences
-                sentences = re.split(r'(?<=[.!?])\s+', para)
+                sentences = re.split(r"(?<=[.!?])\s+", para)
                 sent_pos = pos
 
                 for sent in sentences:
@@ -358,7 +375,9 @@ class SemanticObjectChunker(ChunkingStrategy):
     def chunk(self, text: str, doc_id: str = "") -> list[Chunk]:
         """Chunk text into semantic objects."""
         _emit_records_execution_trace(
-            f"chunk_semantic_{doc_id}", LayerSegment.L2_EXECUTION, "SemanticObjectChunker.chunk",
+            f"chunk_semantic_{doc_id}",
+            LayerSegment.L2_EXECUTION,
+            "SemanticObjectChunker.chunk",
         )
 
         units = self._split_into_units(text)
@@ -378,21 +397,23 @@ class SemanticObjectChunker(ChunkingStrategy):
             # Check if adding this unit exceeds max
             if current_size + unit_size > max_chars and current_units:
                 # Finalize current chunk
-                chunk_text = ' '.join(u[3] for u in current_units)
+                chunk_text = " ".join(u[3] for u in current_units)
                 chunk_end = current_units[-1][1]
 
-                chunks.append(Chunk(
-                    id=f"{doc_id}_semantic_{chunk_idx}",
-                    content=chunk_text,
-                    start_pos=chunk_start,
-                    end_pos=chunk_end,
-                    chunk_type="semantic_object",
-                    metadata={
-                        "unit_count": len(current_units),
-                        "unit_types": [u[2] for u in current_units],
-                        "strategy": "semantic_object",
-                    },
-                ))
+                chunks.append(
+                    Chunk(
+                        id=f"{doc_id}_semantic_{chunk_idx}",
+                        content=chunk_text,
+                        start_pos=chunk_start,
+                        end_pos=chunk_end,
+                        chunk_type="semantic_object",
+                        metadata={
+                            "unit_count": len(current_units),
+                            "unit_types": [u[2] for u in current_units],
+                            "strategy": "semantic_object",
+                        },
+                    )
+                )
                 chunk_idx += 1
 
                 # Start new chunk
@@ -405,10 +426,36 @@ class SemanticObjectChunker(ChunkingStrategy):
 
             # Check if we've hit target size
             if current_size >= target_chars:
-                chunk_text = ' '.join(u[3] for u in current_units)
+                chunk_text = " ".join(u[3] for u in current_units)
                 chunk_end = current_units[-1][1]
 
-                chunks.append(Chunk(
+                chunks.append(
+                    Chunk(
+                        id=f"{doc_id}_semantic_{chunk_idx}",
+                        content=chunk_text,
+                        start_pos=chunk_start,
+                        end_pos=chunk_end,
+                        chunk_type="semantic_object",
+                        metadata={
+                            "unit_count": len(current_units),
+                            "unit_types": [u[2] for u in current_units],
+                            "strategy": "semantic_object",
+                        },
+                    )
+                )
+                chunk_idx += 1
+
+                current_units = []
+                current_size = 0
+                chunk_start = end
+
+        # Add remaining units
+        if current_units:
+            chunk_text = " ".join(u[3] for u in current_units)
+            chunk_end = current_units[-1][1]
+
+            chunks.append(
+                Chunk(
                     id=f"{doc_id}_semantic_{chunk_idx}",
                     content=chunk_text,
                     start_pos=chunk_start,
@@ -419,30 +466,8 @@ class SemanticObjectChunker(ChunkingStrategy):
                         "unit_types": [u[2] for u in current_units],
                         "strategy": "semantic_object",
                     },
-                ))
-                chunk_idx += 1
-
-                current_units = []
-                current_size = 0
-                chunk_start = end
-
-        # Add remaining units
-        if current_units:
-            chunk_text = ' '.join(u[3] for u in current_units)
-            chunk_end = current_units[-1][1]
-
-            chunks.append(Chunk(
-                id=f"{doc_id}_semantic_{chunk_idx}",
-                content=chunk_text,
-                start_pos=chunk_start,
-                end_pos=chunk_end,
-                chunk_type="semantic_object",
-                metadata={
-                    "unit_count": len(current_units),
-                    "unit_types": [u[2] for u in current_units],
-                    "strategy": "semantic_object",
-                },
-            ))
+                )
+            )
 
         return chunks
 
@@ -521,12 +546,12 @@ class ChunkingEngine:
             Strategy name
         """
         # Check for headings
-        heading_pattern = r'^(#{1,6}\s+|.+[=-]+|\d+\.\s+)'
+        heading_pattern = r"^(#{1,6}\s+|.+[=-]+|\d+\.\s+)"
         if re.search(heading_pattern, text, re.MULTILINE):
             return "section_aware"
 
         # Check for code blocks (semantic chunking better)
-        if '```' in text or text.count('\n    ') > 10:
+        if "```" in text or text.count("\n    ") > 10:
             return "semantic_object"
 
         # Default

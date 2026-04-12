@@ -16,7 +16,7 @@ def remove_unused_imports(file_path: str, imports_to_remove: list[str]) -> bool:
         return False
 
     try:
-        source = path.read_text(encoding='utf-8')
+        source = path.read_text(encoding="utf-8")
         tree = ast.parse(source)
     except SyntaxError as e:
         print(f"  Syntax error in {file_path}: {e}")
@@ -36,7 +36,7 @@ def remove_unused_imports(file_path: str, imports_to_remove: list[str]) -> bool:
                         if target in full_name or alias.name in target:
                             lines_to_remove.add(node.lineno)
                 elif isinstance(node, ast.ImportFrom):
-                    module = node.module or ''
+                    module = node.module or ""
                     for alias in node.names:
                         full_name = f"{module}.{alias.name}" if module else alias.name
                         if target in full_name or alias.name in target:
@@ -47,11 +47,11 @@ def remove_unused_imports(file_path: str, imports_to_remove: list[str]) -> bool:
         return False
 
     # Remove lines
-    lines = source.split('\n')
+    lines = source.split("\n")
     new_lines = [line for i, line in enumerate(lines, 1) if i not in lines_to_remove]
 
     # Write back
-    path.write_text('\n'.join(new_lines), encoding='utf-8')
+    path.write_text("\n".join(new_lines), encoding="utf-8")
     print(f"  Removed {len(lines_to_remove)} imports from {file_path}")
     return True
 
@@ -62,11 +62,11 @@ def process_targets(targets: list[dict], directory: str | None = None) -> tuple[
     files_imports: dict[str, list[str]] = {}
 
     for target in targets:
-        file_path = target.get('source_file', '')
+        file_path = target.get("source_file", "")
         if directory and directory not in file_path:
             continue
 
-        symbol = target.get('symbol', '')
+        symbol = target.get("symbol", "")
         if file_path not in files_imports:
             files_imports[file_path] = []
         files_imports[file_path].append(symbol)
@@ -84,24 +84,24 @@ def process_targets(targets: list[dict], directory: str | None = None) -> tuple[
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Remove unused imports from Python files')
-    parser.add_argument('--input', required=True, help='JSON file with targets')
-    parser.add_argument('--directory', help='Filter to specific directory')
-    parser.add_argument('--dry-run', action='store_true', help='Preview without executing')
+    parser = argparse.ArgumentParser(description="Remove unused imports from Python files")
+    parser.add_argument("--input", required=True, help="JSON file with targets")
+    parser.add_argument("--directory", help="Filter to specific directory")
+    parser.add_argument("--dry-run", action="store_true", help="Preview without executing")
 
     args = parser.parse_args()
 
-    with open(args.input, encoding='utf-8') as f:
+    with open(args.input, encoding="utf-8") as f:
         targets = json.load(f)
 
     if args.dry_run:
         # Preview mode
         files_imports: dict[str, list[str]] = {}
         for target in targets:
-            file_path = target.get('source_file', '')
+            file_path = target.get("source_file", "")
             if args.directory and args.directory not in file_path:
                 continue
-            symbol = target.get('symbol', '')
+            symbol = target.get("symbol", "")
             if file_path not in files_imports:
                 files_imports[file_path] = []
             files_imports[file_path].append(symbol)
@@ -119,5 +119,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

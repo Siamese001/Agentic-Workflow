@@ -115,13 +115,16 @@ def emit_detection_signal_with_l4a(
             )
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("detection_signal_emitter: Exception swallowed at L117: %s", e)
+            logging.getLogger(__name__).debug("detection_signal_emitter: Exception swallowed at L117: %s", e)
     return signal
 
 
 def emit_signal_from_gateway_result(
-    mission_id: str, created_at_utc: int, gateway_result: object,
+    mission_id: str,
+    created_at_utc: int,
+    gateway_result: object,
 ) -> DetectionSignal:
     """
     Derive a DetectionSignal from a completed GatewayResult.

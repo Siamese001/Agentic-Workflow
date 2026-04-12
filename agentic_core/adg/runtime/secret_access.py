@@ -239,6 +239,7 @@ class SecretAccessReport:
     @property
     def by_kind(self) -> dict[str, int]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecretAccessReport.by_kind")
 
@@ -293,8 +294,11 @@ class SecretAccessRecorder:
     ) -> SecretAccessEvent:
         """Record a secret access and return the event."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecretAccessRecorder.record_access")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SecretAccessRecorder.record_access"
+        )
 
         masked_hash = ""
         if raw_value:
@@ -312,7 +316,9 @@ class SecretAccessRecorder:
         return event
 
     def record_env_read(
-        self, var_name: str, outcome: SecretAccessOutcome = SecretAccessOutcome.SUCCESS,
+        self,
+        var_name: str,
+        outcome: SecretAccessOutcome = SecretAccessOutcome.SUCCESS,
     ) -> SecretAccessEvent:
         """Specialised helper for os.environ / os.getenv reads."""
         return self.record_access(
@@ -337,7 +343,9 @@ class SecretAccessRecorder:
         return event
 
     def record_denied(
-        self, secret_name: str, secret_kind: SecretKind = SecretKind.API_KEY,
+        self,
+        secret_name: str,
+        secret_kind: SecretKind = SecretKind.API_KEY,
     ) -> SecretAccessEvent:
         """Record a denied secret access."""
         return self.record_access(

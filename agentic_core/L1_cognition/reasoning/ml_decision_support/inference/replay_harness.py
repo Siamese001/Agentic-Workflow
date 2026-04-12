@@ -20,6 +20,7 @@ from ..models.base_model import ModelPrediction
 @dataclass
 class ReplayResult:
     """Result of a replay operation."""
+
     original_prediction: ModelPrediction
     replayed_prediction: ModelPrediction
     predictions_match: bool
@@ -33,6 +34,7 @@ class ReplayResult:
 @dataclass
 class ReplaySession:
     """Session for batch replay operations."""
+
     session_id: str
     start_time: datetime
     end_time: datetime | None = None
@@ -90,7 +92,7 @@ class ReplayHarness:
 
         try:
             # Replay the prediction
-            if hasattr(model, 'predict_from_context'):
+            if hasattr(model, "predict_from_context"):
                 replayed_prediction = model.predict_from_context(
                     context=original_context,
                     trace_id=original_trace_id,
@@ -99,7 +101,7 @@ class ReplayHarness:
                 )
             else:
                 # Fallback to manual feature extraction
-                if hasattr(model, 'feature_extractor'):
+                if hasattr(model, "feature_extractor"):
                     extraction_result = model.feature_extractor.extract_features(
                         context=original_context,
                         trace_id=original_trace_id,
@@ -126,8 +128,12 @@ class ReplayHarness:
             # Compare predictions
             if original_prediction:
                 predictions_match = self._compare_predictions(original_prediction, replayed_prediction)
-                confidence_diff = abs(original_prediction.confidence or 0.0 - (replayed_prediction.confidence or 0.0))
-                prediction_diff = self._calculate_prediction_difference(original_prediction, replayed_prediction)
+                confidence_diff = abs(
+                    original_prediction.confidence or 0.0 - (replayed_prediction.confidence or 0.0)
+                )
+                prediction_diff = self._calculate_prediction_difference(
+                    original_prediction, replayed_prediction
+                )
             else:
                 predictions_match = True  # Can't compare without original
                 confidence_diff = 0.0
@@ -201,12 +207,12 @@ class ReplayHarness:
 
             result = self.replay_prediction(
                 model=model,
-                original_context=case.get('context', {}),
-                original_trace_id=case.get('trace_id', ''),
-                original_replay_key=case.get('replay_key', ''),
-                original_policy_hash=case.get('policy_hash', ''),
-                original_semantic_clock=case.get('semantic_clock'),
-                original_prediction=case.get('original_prediction'),
+                original_context=case.get("context", {}),
+                original_trace_id=case.get("trace_id", ""),
+                original_replay_key=case.get("replay_key", ""),
+                original_policy_hash=case.get("policy_hash", ""),
+                original_semantic_clock=case.get("semantic_clock"),
+                original_prediction=case.get("original_prediction"),
             )
 
             if result.replay_success:
@@ -257,23 +263,23 @@ class ReplayHarness:
 
         # Determine if model is deterministic
         is_deterministic = (
-            success_rate >= 0.95 and  # 95% success rate
-            determinism_rate >= 0.95 and  # 95% match rate
-            session.average_confidence_diff <= tolerance
+            success_rate >= 0.95  # 95% success rate
+            and determinism_rate >= 0.95  # 95% match rate
+            and session.average_confidence_diff <= tolerance
         )
 
         validation_result = {
-            'is_deterministic': is_deterministic,
-            'success_rate': success_rate,
-            'determinism_rate': determinism_rate,
-            'average_confidence_diff': session.average_confidence_diff,
-            'total_cases': session.total_replays,
-            'successful_replays': session.successful_replays,
-            'matches': session.matches,
-            'mismatches': session.mismatches,
-            'failed_replays': session.failed_replays,
-            'session_id': session.session_id,
-            'validation_timestamp': datetime.now().isoformat(),
+            "is_deterministic": is_deterministic,
+            "success_rate": success_rate,
+            "determinism_rate": determinism_rate,
+            "average_confidence_diff": session.average_confidence_diff,
+            "total_cases": session.total_replays,
+            "successful_replays": session.successful_replays,
+            "matches": session.matches,
+            "mismatches": session.mismatches,
+            "failed_replays": session.failed_replays,
+            "session_id": session.session_id,
+            "validation_timestamp": datetime.now().isoformat(),
         }
 
         # Log validation result
@@ -322,31 +328,30 @@ class ReplayHarness:
 
         # Compare prediction distributions
         prediction_drift = self._calculate_prediction_distribution_drift(
-            historical_cases, current_cases,
+            historical_cases,
+            current_cases,
         )
 
         # Determine if drift is detected
-        drift_detected = (
-            confidence_drift > drift_threshold or
-            prediction_drift > drift_threshold
-        )
+        drift_detected = confidence_drift > drift_threshold or prediction_drift > drift_threshold
 
         drift_result = {
-            'drift_detected': drift_detected,
-            'confidence_drift': confidence_drift,
-            'prediction_drift': prediction_drift,
-            'historical_session': {
-                'total_cases': historical_session.total_replays,
-                'success_rate': historical_session.successful_replays / max(1, historical_session.total_replays),
-                'average_confidence': historical_confidence,
+            "drift_detected": drift_detected,
+            "confidence_drift": confidence_drift,
+            "prediction_drift": prediction_drift,
+            "historical_session": {
+                "total_cases": historical_session.total_replays,
+                "success_rate": historical_session.successful_replays
+                / max(1, historical_session.total_replays),
+                "average_confidence": historical_confidence,
             },
-            'current_session': {
-                'total_cases': current_session.total_replays,
-                'success_rate': current_session.successful_replays / max(1, current_session.total_replays),
-                'average_confidence': current_confidence,
+            "current_session": {
+                "total_cases": current_session.total_replays,
+                "success_rate": current_session.successful_replays / max(1, current_session.total_replays),
+                "average_confidence": current_confidence,
             },
-            'drift_threshold': drift_threshold,
-            'detection_timestamp': datetime.now().isoformat(),
+            "drift_threshold": drift_threshold,
+            "detection_timestamp": datetime.now().isoformat(),
         }
 
         # Log drift detection result
@@ -383,7 +388,7 @@ class ReplayHarness:
         confidences = []
 
         for case in cases:
-            prediction = case.get('original_prediction')
+            prediction = case.get("original_prediction")
             if prediction and prediction.confidence is not None:
                 confidences.append(prediction.confidence)
 
@@ -415,7 +420,7 @@ class ReplayHarness:
         distribution = {}
 
         for case in cases:
-            prediction = case.get('original_prediction')
+            prediction = case.get("original_prediction")
             if prediction:
                 pred_str = str(prediction.prediction)
                 distribution[pred_str] = distribution.get(pred_str, 0) + 1
@@ -431,32 +436,32 @@ class ReplayHarness:
     def _log_replay_result(self, result: ReplayResult) -> None:
         """Log replay result to file."""
         log_data = {
-            'timestamp': result.replay_timestamp.isoformat(),
-            'predictions_match': result.predictions_match,
-            'confidence_difference': result.confidence_difference,
-            'prediction_difference': result.prediction_difference,
-            'replay_success': result.replay_success,
-            'error_message': result.error_message,
-            'original_prediction': asdict(result.original_prediction) if result.original_prediction else None,
-            'replayed_prediction': asdict(result.replayed_prediction) if result.replayed_prediction else None,
+            "timestamp": result.replay_timestamp.isoformat(),
+            "predictions_match": result.predictions_match,
+            "confidence_difference": result.confidence_difference,
+            "prediction_difference": result.prediction_difference,
+            "replay_success": result.replay_success,
+            "error_message": result.error_message,
+            "original_prediction": asdict(result.original_prediction) if result.original_prediction else None,
+            "replayed_prediction": asdict(result.replayed_prediction) if result.replayed_prediction else None,
         }
 
-        with open(self.replay_log_file, 'a', encoding='utf-8') as f:
-            f.write(json.dumps(log_data, default=str) + '\n')
+        with open(self.replay_log_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(log_data, default=str) + "\n")
 
     def _log_session_summary(self, session: ReplaySession) -> None:
         """Log session summary."""
         try:
             event_data = {
-                'session_id': session.session_id,
-                'start_time': session.start_time.isoformat(),
-                'end_time': session.end_time.isoformat() if session.end_time else None,
-                'total_replays': session.total_replays,
-                'successful_replays': session.successful_replays,
-                'failed_replays': session.failed_replays,
-                'matches': session.matches,
-                'mismatches': session.mismatches,
-                'average_confidence_diff': session.average_confidence_diff,
+                "session_id": session.session_id,
+                "start_time": session.start_time.isoformat(),
+                "end_time": session.end_time.isoformat() if session.end_time else None,
+                "total_replays": session.total_replays,
+                "successful_replays": session.successful_replays,
+                "failed_replays": session.failed_replays,
+                "matches": session.matches,
+                "mismatches": session.mismatches,
+                "average_confidence_diff": session.average_confidence_diff,
             }
 
             _emit_records_execution_trace(
@@ -500,16 +505,16 @@ class ReplayHarness:
             matches = 0
             mismatches = 0
 
-            with open(self.replay_log_file, encoding='utf-8') as f:
+            with open(self.replay_log_file, encoding="utf-8") as f:
                 for line in f:
                     try:
                         log_entry = json.loads(line.strip())
                         total_replays += 1
 
-                        if log_entry.get('replay_success', False):
+                        if log_entry.get("replay_success", False):
                             successful_replays += 1
 
-                        if log_entry.get('predictions_match', False):
+                        if log_entry.get("predictions_match", False):
                             matches += 1
                         else:
                             mismatches += 1
@@ -518,24 +523,24 @@ class ReplayHarness:
                         continue
 
             return {
-                'total_replays': total_replays,
-                'successful_replays': successful_replays,
-                'failed_replays': total_replays - successful_replays,
-                'matches': matches,
-                'mismatches': mismatches,
-                'success_rate': successful_replays / max(1, total_replays),
-                'determinism_rate': matches / max(1, successful_replays),
-                'active_sessions': len(self.active_sessions),
+                "total_replays": total_replays,
+                "successful_replays": successful_replays,
+                "failed_replays": total_replays - successful_replays,
+                "matches": matches,
+                "mismatches": mismatches,
+                "success_rate": successful_replays / max(1, total_replays),
+                "determinism_rate": matches / max(1, successful_replays),
+                "active_sessions": len(self.active_sessions),
             }
 
         except FileNotFoundError:
             return {
-                'total_replays': 0,
-                'successful_replays': 0,
-                'failed_replays': 0,
-                'matches': 0,
-                'mismatches': 0,
-                'success_rate': 0.0,
-                'determinism_rate': 0.0,
-                'active_sessions': 0,
+                "total_replays": 0,
+                "successful_replays": 0,
+                "failed_replays": 0,
+                "matches": 0,
+                "mismatches": 0,
+                "success_rate": 0.0,
+                "determinism_rate": 0.0,
+                "active_sessions": 0,
             }

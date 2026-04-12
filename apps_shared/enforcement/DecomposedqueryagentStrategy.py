@@ -172,8 +172,11 @@ class DecomposedQuery(BaseModel):
     def validate_sub_queries(cls, v):
         """Ensure sub-queries are valid."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DecomposedQuery.validate_sub_queries")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DecomposedQuery.validate_sub_queries"
+        )
 
         if not v:
             raise ValueError("At least one sub-query is required")
@@ -297,6 +300,7 @@ class QueryDecomposer(SimpleAgentBase):
             DecomposedQuery with sub-queries and reasoning
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "QueryDecomposer.decompose")
 
@@ -350,7 +354,10 @@ class QueryDecomposer(SimpleAgentBase):
             )
 
     async def execute_plan(
-        self, decomposed_query: DecomposedQuery, search_function: callable, **kwargs,
+        self,
+        decomposed_query: DecomposedQuery,
+        search_function: callable,
+        **kwargs,
     ) -> list[Any]:
         """Execute search for all sub-queries in parallel.
 

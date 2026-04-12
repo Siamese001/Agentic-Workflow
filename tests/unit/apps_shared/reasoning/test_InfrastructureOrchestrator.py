@@ -4,6 +4,7 @@ fan_in=11 — this module is imported by 11 other modules.
 ADG contract: import-hygiene is covered by test_InfrastructureOrchestrator_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import sys
@@ -36,13 +37,16 @@ class TestInfrastructureOrchestratorContract:
         assert isinstance(InfrastructureOrchestrator, type)
 
     def test_has_method_initialize(self):
-        assert callable(getattr(InfrastructureOrchestrator, 'initialize', None))
+        assert callable(getattr(InfrastructureOrchestrator, "initialize", None))
 
     def test_has_method_execute_with_infrastructure(self):
         pass
+
+
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
+
 
 class TestBatchSizeConstant:
     def test_is_not_none(self):

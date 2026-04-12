@@ -183,8 +183,11 @@ class TextProcessor:
             TextMatch with all matches and positions
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TextProcessor.extract_patterns")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TextProcessor.extract_patterns"
+        )
 
         if isinstance(pattern, str):
             compiled_pattern = re.compile(pattern, flags)
@@ -199,7 +202,10 @@ class TextProcessor:
             group_list.append(match.groups())
             position_list.append((match.start(), match.end()))
         return TextMatch(
-            matched=len(match_list) > 0, matches=match_list, groups=group_list, positions=position_list,
+            matched=len(match_list) > 0,
+            matches=match_list,
+            groups=group_list,
+            positions=position_list,
         )
 
     @staticmethod
@@ -223,7 +229,11 @@ class TextProcessor:
 
     @staticmethod
     def replace_pattern(
-        text: str, pattern: str | Pattern, replacement: str, count: int = 0, flags: int = 0,
+        text: str,
+        pattern: str | Pattern,
+        replacement: str,
+        count: int = 0,
+        flags: int = 0,
     ) -> str:
         """
         Replace pattern matches in text.

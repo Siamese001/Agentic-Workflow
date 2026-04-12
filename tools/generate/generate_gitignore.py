@@ -9,6 +9,7 @@ Usage:
     python tools/generate/gitignore.py --check              # Verify sync (CI mode)
     python tools/generate/gitignore.py --write-precommit   # Generate pre-commit exclude section
 """
+
 from __future__ import annotations
 
 import argparse
@@ -94,11 +95,30 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     }
 
     # Categorize directories
-    build_cache = {"__pycache__", ".pytest_cache", ".ruff_cache", ".mypy_cache", ".tox", "node_modules", "build", "dist", "_build", ".eggs"}
+    build_cache = {
+        "__pycache__",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".mypy_cache",
+        ".tox",
+        "node_modules",
+        "build",
+        "dist",
+        "_build",
+        ".eggs",
+    }
     version_control = {".git", ".svn", ".hg"}
     virtual_env = {".venv", "venv", "venv_stable", "env", ".env", "Lib", "site-packages"}
     coverage = {"coverage_html", "htmlcov", ".coverage", ".test_artifacts", "test_artifacts", "reports"}
-    archives = {"archives", "archive", "artifacts", ".sovereign_healing_backup", ".healing_backups", ".backup", ".gravity_state"}
+    archives = {
+        "archives",
+        "archive",
+        "artifacts",
+        ".sovereign_healing_backup",
+        ".healing_backups",
+        ".backup",
+        ".gravity_state",
+    }
     ide = {".idea", ".vscode", ".windsurf", ".DS_Store"}
     vendor = {"google", "gapic", "pip", "dist-info", "licenses", "src"}
     data = {"data", "docs", "logs", "raw", "shared"}
@@ -212,7 +232,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Generate .gitignore from YAML config")
     parser.add_argument("--write", action="store_true", help="Write .gitignore file")
     parser.add_argument("--check", action="store_true", help="Check if .gitignore is in sync (CI mode)")
-    parser.add_argument("--write-precommit", action="store_true", help="Write pre-commit exclude section to stdout")
+    parser.add_argument(
+        "--write-precommit", action="store_true", help="Write pre-commit exclude section to stdout"
+    )
 
     args = parser.parse_args(argv)
 

@@ -26,6 +26,7 @@ import pytest
 # Check if ssot is available
 try:
     from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+
     SSOT_AVAILABLE = True
 except ImportError:
     SSOT_AVAILABLE = False
@@ -40,6 +41,7 @@ from system_learning.runtime_adg import (
 # Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def l6_temp_dir(tmp_path: Path) -> Path:
     """Provide temporary directory for L6 observability testing.
@@ -48,6 +50,7 @@ def l6_temp_dir(tmp_path: Path) -> Path:
     relative path computation. Tests use project paths for L4-compliant storage.
     """
     from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+
     project_root = get_validated_project_root()
     l6_dir = project_root / "system_learning" / "meta_learning" / "runtime_adg_snapshots_test"
     l6_dir.mkdir(parents=True, exist_ok=True)
@@ -58,6 +61,7 @@ def l6_temp_dir(tmp_path: Path) -> Path:
 def clean_l6_test_dir(l6_temp_dir: Path) -> Path:
     """Clean up L6 test directory before test runs."""
     import shutil
+
     if l6_temp_dir.exists():
         shutil.rmtree(l6_temp_dir)
     l6_temp_dir.mkdir(parents=True, exist_ok=True)
@@ -208,6 +212,7 @@ def error_spans() -> list[dict[str, Any]]:
 # Test Class: L6 Metrics Integration
 # =============================================================================
 
+
 @pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6ObservabilityMetrics:
     """Test L6 observability metrics collection from runtime ADG."""
@@ -307,6 +312,7 @@ class TestL6ObservabilityMetrics:
 # Test Class: L6 Alert Generation
 # =============================================================================
 
+
 @pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6ObservabilityAlerts:
     """Test L6 alert generation from runtime ADG snapshots."""
@@ -377,6 +383,7 @@ class TestL6ObservabilityAlerts:
 # Test Class: Cross-Layer Analysis
 # =============================================================================
 
+
 @pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6CrossLayerAnalysis:
     """Test cross-layer observability analysis."""
@@ -431,13 +438,15 @@ class TestL6CrossLayerAnalysis:
             # Vary duration to create distribution
             spans = []
             for j, base_span in enumerate(multi_layer_spans[:3]):  # First 3 layers only
-                spans.append({
-                    **base_span,
-                    "span_id": f"dash-{i:03d}-{j:03d}",
-                    "trace_id": f"dash-trace-{i:03d}",
-                    "duration_ms": 50.0 + i * 10,  # Increasing duration
-                    "ts_utc": int(time.time() * 1000) + i * 1000 + j * 100,
-                })
+                spans.append(
+                    {
+                        **base_span,
+                        "span_id": f"dash-{i:03d}-{j:03d}",
+                        "trace_id": f"dash-trace-{i:03d}",
+                        "duration_ms": 50.0 + i * 10,  # Increasing duration
+                        "ts_utc": int(time.time() * 1000) + i * 1000 + j * 100,
+                    }
+                )
 
             snapshot = materializer.materialize(spans, mission=f"dashboard-test-{i}")
             l6_bridge.store_snapshot_for_meta_learning(snapshot)
@@ -462,6 +471,7 @@ class TestL6CrossLayerAnalysis:
 # =============================================================================
 # Test Class: Integration Edge Cases
 # =============================================================================
+
 
 @pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT modules not available")
 class TestL6ObservabilityEdgeCases:

@@ -235,8 +235,11 @@ class OwnershipRegistry:
     def from_scan_result(cls, result: object) -> OwnershipRegistry:
         """Build registry from a ScanResult's module list."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OwnershipRegistry.from_scan_result")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OwnershipRegistry.from_scan_result"
+        )
 
         reg = cls()
         for mod in getattr(result, "modules", []):

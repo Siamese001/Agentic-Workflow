@@ -46,6 +46,7 @@ def test_bge_embedding_generation():
 
     # Verify L2 normalization (magnitude should be ~1.0)
     import math
+
     mag1 = math.sqrt(sum(x * x for x in vec1))
     mag3 = math.sqrt(sum(x * x for x in vec3))
     assert abs(mag1 - 1.0) < 0.01, f"Vector 1 not L2 normalized: magnitude={mag1}"
@@ -96,6 +97,7 @@ def test_embedding_factory_bge_client():
 
     import hashlib
     import os
+
     os.environ["EMBEDDING_ENABLED"] = "true"
 
     from agentic_core.embeddings.embedding_factory import create_embedding_client
@@ -106,7 +108,7 @@ def test_embedding_factory_bge_client():
 
     # Verify client properties
     assert client is not None, "Failed to create BGE-m3 client"
-    assert hasattr(client, 'embedder_identity'), "Client missing embedder_identity"
+    assert hasattr(client, "embedder_identity"), "Client missing embedder_identity"
     assert client.embedder_identity["provider"] == "bge-m3", "Wrong provider"
     assert client.embedder_identity["dimensions"] == 1024, "Wrong dimensions"
 
@@ -241,6 +243,7 @@ def main():
     except Exception as e:
         print(f"\n❌ TEST FAILED: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

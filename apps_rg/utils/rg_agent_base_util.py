@@ -340,8 +340,11 @@ class RGAgentBase(AppBase):
             Pattern ID if stored successfully, None otherwise
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RGAgentBase.store_healing_pattern")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RGAgentBase.store_healing_pattern"
+        )
 
         if self._meta_client is None:
             self._initialize_meta_client()
@@ -363,7 +366,10 @@ class RGAgentBase(AppBase):
         if self._meta_client is None:
             self._initialize_meta_client()
         return self._meta_client.retrieve_healing_patterns(
-            violation, domain=APPS_RG_DIR, top_k=top_k, min_similarity=self._similarity_threshold,
+            violation,
+            domain=APPS_RG_DIR,
+            top_k=top_k,
+            min_similarity=self._similarity_threshold,
         )
 
     def ml_check_healing_depth(self, violation_id: str) -> bool:
@@ -426,7 +432,11 @@ class RGAgentBase(AppBase):
         }
 
     def cache_pattern_with_metadata(
-        self, pattern_type: str, pattern_id: str, pattern_data: dict[str, Any], success_count: int = 0,
+        self,
+        pattern_type: str,
+        pattern_id: str,
+        pattern_data: dict[str, Any],
+        success_count: int = 0,
     ) -> bool:
         """
         Cache a pattern with full metadata for enhanced learning.
@@ -457,7 +467,9 @@ class RGAgentBase(AppBase):
             },
         }
         success, namespaced_key = self.isolate_cache_operation(
-            "set", f"{pattern_type}:{pattern_id}", enhanced_data,
+            "set",
+            f"{pattern_type}:{pattern_id}",
+            enhanced_data,
         )
         if not success:
             return False

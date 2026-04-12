@@ -2,6 +2,7 @@
 """
 Debug script to verify VS Code test discovery configuration
 """
+
 import json
 import subprocess
 import sys
@@ -15,6 +16,7 @@ def run_command(cmd, cwd=None):
         return result.returncode, result.stdout, result.stderr
     except Exception as e:
         return 1, "", str(e)
+
 
 def main():
     print("=== VS Code Test Discovery Debug ===\n")
@@ -33,11 +35,13 @@ def main():
 
     # 3. Check test discovery
     print("\n2. Test Discovery:")
-    returncode, stdout, stderr = run_command("python -m pytest tests/test_vscode_discovery.py --collect-only -q")
+    returncode, stdout, stderr = run_command(
+        "python -m pytest tests/test_vscode_discovery.py --collect-only -q"
+    )
     if returncode == 0:
-        lines = stdout.strip().split('\n')
+        lines = stdout.strip().split("\n")
         for line in lines:
-            if 'collected' in line:
+            if "collected" in line:
                 print(f"   Simple test: {line.strip()}")
                 break
     else:
@@ -46,9 +50,9 @@ def main():
     # 4. Check full test suite
     returncode, stdout, stderr = run_command("python -m pytest tests/ --collect-only -q")
     if returncode == 0:
-        lines = stdout.strip().split('\n')
+        lines = stdout.strip().split("\n")
         for line in lines:
-            if 'collected' in line:
+            if "collected" in line:
                 print(f"   Full suite: {line.strip()}")
                 break
     else:
@@ -98,6 +102,7 @@ def main():
     print("3. Run: Ctrl+Shift+P → 'Developer: Reload Window'")
     print("4. Open Testing panel (beaker icon)")
     print("5. Click refresh icon 🔄")
+
 
 if __name__ == "__main__":
     main()

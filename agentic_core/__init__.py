@@ -15,6 +15,7 @@ redis_mcp = True
 # Class aliases for tests
 RedisCacheClient = DeterministicRedisCache
 
+
 # Stub validation functions
 def validate_late_chunking() -> bool:
     """Stub validation function."""

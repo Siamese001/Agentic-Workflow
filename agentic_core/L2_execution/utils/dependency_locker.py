@@ -198,7 +198,9 @@ class DependencyLocker:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DependencyLocker.generate_lock_hash",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "DependencyLocker.generate_lock_hash",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -239,7 +241,9 @@ class DependencyLocker:
 
     @classmethod
     def validate(
-        cls, requirements_path: Path = _REQUIREMENTS_PATH, lock_file_path: Path = _LOCK_FILE_PATH,
+        cls,
+        requirements_path: Path = _REQUIREMENTS_PATH,
+        lock_file_path: Path = _LOCK_FILE_PATH,
     ) -> bool:
         """Return True if current dependencies match the stored lock hash.
 

@@ -10,6 +10,7 @@ import pytest
 # Lazy import to avoid collection-time conflicts
 def _get_capture_function():
     from tools.capture_evidence import capture_command
+
     return capture_command
 
 

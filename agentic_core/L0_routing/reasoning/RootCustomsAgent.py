@@ -59,6 +59,7 @@ class RootCustomsAgent(SovereignBaseAgent):
     def check_allowed_patterns(self, file_path: Path) -> bool:
         """Check if file matches any allowed root patterns."""
         from agentic_core.L0_routing.utils.root_customs_util import check_allowed_patterns
+
         return check_allowed_patterns(file_path)
 
     def analyze_content_signatures(self, file_path: Path) -> dict[str, Any]:
@@ -133,6 +134,7 @@ class RootCustomsAgent(SovereignBaseAgent):
 def main():
     """Main entry point - delegates to utility."""
     from agentic_core.L0_routing.utils.root_customs_util import main as _main
+
     return _main()
 
 

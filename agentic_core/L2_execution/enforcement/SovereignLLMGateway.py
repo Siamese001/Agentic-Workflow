@@ -202,7 +202,11 @@ class LLMProvider(Protocol):
     """Protocol for LLM provider implementations."""
 
     def generate(
-        self, system_prompt: str, user_prompt: str, tools_schema: list[dict] | None = None, **kwargs,
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        tools_schema: list[dict] | None = None,
+        **kwargs,
     ) -> dict[str, Any]:
         """Generate response from LLM."""
         ...
@@ -266,7 +270,10 @@ class TelemetryLedger:
         }
 
     def get_records(
-        self, trace_id: str | None = None, provider: ProviderType | None = None, success_only: bool = False,
+        self,
+        trace_id: str | None = None,
+        provider: ProviderType | None = None,
+        success_only: bool = False,
     ) -> list[TelemetryRecord]:
         """Query telemetry records with optional filters."""
         results = self._records
@@ -310,7 +317,10 @@ class CircuitBreaker:
     """
 
     def __init__(
-        self, failure_threshold: int = 5, recovery_timeout: float = 30.0, half_open_max_calls: int = 3,
+        self,
+        failure_threshold: int = 5,
+        recovery_timeout: float = 30.0,
+        half_open_max_calls: int = 3,
     ) -> None:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
@@ -383,7 +393,10 @@ class SovereignLLMGateway:
     """
 
     def __init__(
-        self, secret_key: bytes, verify_signatures: bool = True, default_provider: ProviderType | None = None,
+        self,
+        secret_key: bytes,
+        verify_signatures: bool = True,
+        default_provider: ProviderType | None = None,
     ) -> None:
         self._secret_key = secret_key
         self._verify_signatures = verify_signatures
@@ -393,7 +406,10 @@ class SovereignLLMGateway:
         self._circuit_breaker = CircuitBreaker()
 
     def register_provider(
-        self, provider_type: ProviderType, config: ProviderConfig, provider_impl: LLMProvider | None = None,
+        self,
+        provider_type: ProviderType,
+        config: ProviderConfig,
+        provider_impl: LLMProvider | None = None,
     ) -> None:
         """Register an LLM provider."""
         if provider_impl is None:
@@ -593,7 +609,10 @@ class SovereignLLMGateway:
             self._ledger.record(record)
 
     def generate(
-        self, artifact: CompiledPromptArtifact, provider: ProviderType | None = None, **kwargs,
+        self,
+        artifact: CompiledPromptArtifact,
+        provider: ProviderType | None = None,
+        **kwargs,
     ) -> dict[str, Any]:
         """
         Generate LLM response from CompiledPromptArtifact.
@@ -691,7 +710,11 @@ class _PlaceholderProvider:
         self._config = config
 
     def generate(
-        self, system_prompt: str, user_prompt: str, tools_schema: list[dict] | None = None, **kwargs,
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        tools_schema: list[dict] | None = None,
+        **kwargs,
     ) -> dict[str, Any]:
         """Placeholder generate - returns mock response."""
         _LOGGER.debug("PlaceholderProvider.generate called")

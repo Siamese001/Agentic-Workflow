@@ -23,6 +23,7 @@ class DeterminismDigest:
     10C-REQ-121: W<n>-DETERMINISM-DIGEST invariant same input+envelope+clock+reads
     produces same digest.
     """
+
     digest_hash: str
     envelope_hash: str
     input_hash: str
@@ -61,7 +62,10 @@ class DigestSealer:
         """
         self._counter += 1
 
-        # Hash each component
+        # Hash each component.
+        # envelope.ml_model_hashes is included in envelope.envelope_hash() so
+        # runs with different model artifacts produce distinct digest_hash values,
+        # satisfying the C1 "one snapshot only" invariant for ML artifact identity.
         envelope_hash = envelope.envelope_hash()
         input_hash = self._hash_inputs(inputs)
         clock_hash = hashlib.sha256(str(clock_value).encode()).hexdigest()

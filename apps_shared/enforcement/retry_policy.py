@@ -1,4 +1,5 @@
 """Retry Policy - Stub implementation for test compatibility."""
+
 from dataclasses import dataclass
 from typing import Any, Callable
 
@@ -6,6 +7,7 @@ from typing import Any, Callable
 @dataclass
 class RetryConfig:
     """Retry configuration."""
+
     max_attempts: int = 3
     base_delay: float = 1.0
     max_delay: float = 60.0
@@ -33,6 +35,7 @@ class RetryExecutor:
                 last_error = e
                 if attempt < config.max_attempts - 1:
                     import asyncio
+
                     await asyncio.sleep(config.base_delay)
 
         if last_error:

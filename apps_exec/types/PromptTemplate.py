@@ -26,8 +26,10 @@ _emit_snapshots_state("p0", "exec_PromptTemplate", "state_snapshot")
 # EXEC BRIEF PROMPT DEFINITIONS
 # -----------------------------------------------------------------------------
 
+
 class ExecBriefPromptEntry(BaseModel):
     """Single immutable prompt definition for executive brief generation."""
+
     prompt_id: str
     description: str
     system_prompt: str
@@ -42,6 +44,7 @@ class ExecBriefPromptEntry(BaseModel):
 
 class ExecBriefNodeEntry(BaseModel):
     """K-node configuration for exec brief pipeline stages."""
+
     node_id: str
     description: str
     stage: str  # ingestion, extraction, synthesis, drafting, review
@@ -53,6 +56,7 @@ class ExecBriefNodeEntry(BaseModel):
 
 class ExecBriefGlobalRule(BaseModel):
     """Cross-cutting governance rule for all exec brief operations."""
+
     rule_id: str
     description: str
     severity: str  # info, warning, error, fatal
@@ -252,6 +256,7 @@ _EXEC_BRIEF_RULES: dict[str, ExecBriefGlobalRule] = {
 
 class ExecSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of exec brief domain knowledge."""
+
     version: str = "1.0"
     prompts: dict[str, ExecBriefPromptEntry]
     nodes: dict[str, ExecBriefNodeEntry]
@@ -273,6 +278,7 @@ FROZEN_SNAPSHOT = ExecSovereignKnowledge(
 # -----------------------------------------------------------------------------
 # PUBLIC API (Read-Only Access)
 # -----------------------------------------------------------------------------
+
 
 def get_prompt(prompt_id: str) -> str:
     """Retrieve prompt template by ID.

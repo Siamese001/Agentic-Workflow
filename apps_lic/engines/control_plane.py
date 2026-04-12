@@ -18,6 +18,7 @@ from typing import Any
 
 try:
     from apps_shared.mixins.apps_tracing_mixin import AppsTracingMixin
+
     APPS_TRACING_AVAILABLE = True
 except ImportError:
     APPS_TRACING_AVAILABLE = False
@@ -258,7 +259,10 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
             Emits 'ControlPlane.evaluate_input' span with PII detection metadata.
         """
         if APPS_TRACING_AVAILABLE:
-            with self.start_validation_span("input", {"content_length": len(content), "context_keys": list(context.keys()) if context else []}):
+            with self.start_validation_span(
+                "input",
+                {"content_length": len(content), "context_keys": list(context.keys()) if context else []},
+            ):
                 return self._evaluate(content, context, is_input=True)
         else:
             return self._evaluate(content, context, is_input=True)
@@ -270,7 +274,10 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
             Emits 'ControlPlane.evaluate_output' span with PII detection metadata.
         """
         if APPS_TRACING_AVAILABLE:
-            with self.start_validation_span("output", {"content_length": len(content), "context_keys": list(context.keys()) if context else []}):
+            with self.start_validation_span(
+                "output",
+                {"content_length": len(content), "context_keys": list(context.keys()) if context else []},
+            ):
                 return self._evaluate(content, context, is_input=False)
         else:
             return self._evaluate(content, context, is_input=False)
@@ -295,7 +302,12 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
                 is_safe=False,
                 warnings=warnings,
                 errors=errors,
-                metadata={"is_input": is_input, "decision_id": self._decision_count, "pii": detected_pii, "context_keys": list(context.keys()) if context else []},
+                metadata={
+                    "is_input": is_input,
+                    "decision_id": self._decision_count,
+                    "pii": detected_pii,
+                    "context_keys": list(context.keys()) if context else [],
+                },
             )
         if self._shield is not None:
             try:
@@ -327,7 +339,11 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
             is_safe=True,
             warnings=warnings,
             errors=errors,
-            metadata={"is_input": is_input, "decision_id": self._decision_count, "context_keys": list(context.keys()) if context else []},
+            metadata={
+                "is_input": is_input,
+                "decision_id": self._decision_count,
+                "context_keys": list(context.keys()) if context else [],
+            },
         )
 
     def get_prompt(self, prompt_id: str) -> str:
@@ -363,7 +379,11 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         return get_node_config(node_id)
 
     def get_stats(self) -> dict[str, Any]:
-        return {"total_decisions": self._decision_count, "total_blocks": self._block_count, "knowledge_available": self.knowledge is not None}
+        return {
+            "total_decisions": self._decision_count,
+            "total_blocks": self._block_count,
+            "knowledge_available": self.knowledge is not None,
+        }
 
 
 __all__ = ["ControlPlane", "PolicyAction", "PolicyDecision"]

@@ -376,8 +376,11 @@ class AntiPatternDetector(ABC):
                                 violation.metadata["adg_confirmed"] = True
                 # guardian: allow-silent-swallower -- ADG behavioral profile lookup is optional telemetry; failure is non-critical
                 except (RuntimeError, OSError) as e:
+                    import logging
 
-                    import logging; logging.getLogger(__name__).debug("base_detector_validator: RuntimeError swallowed at L378: %s", e)
+                    logging.getLogger(__name__).debug(
+                        "base_detector_validator: RuntimeError swallowed at L378: %s", e
+                    )
 
             scan_time = (time.time() - start_time) * 1000
 
@@ -455,7 +458,7 @@ class AntiPatternDetector(ABC):
             self._ast_cache[cache_key] = (content_hash, tree)
 
             return tree
-    # guardian: Syntax errors should be caught at parser level, not runtime
+        # guardian: Syntax errors should be caught at parser level, not runtime
         except SyntaxError as e:
             Logger.warning(f"Syntax error in {file_path}: {e}")
             return None

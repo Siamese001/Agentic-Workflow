@@ -27,7 +27,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "mutation_prohibition")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -90,7 +90,10 @@ def get_default_protected_root_policy() -> ProtectedRootPolicy:
 
 
 def _emit_block_event(
-    target: Path, matched_root: str, log_path: str, ts_utc_override: str | None = None,
+    target: Path,
+    matched_root: str,
+    log_path: str,
+    ts_utc_override: str | None = None,
 ) -> None:
     """Emit a deterministic JSONL event for a blocked write attempt.
 
@@ -145,7 +148,10 @@ IMMUTABLE_ROOTS = _get_immutable_roots()
 
 
 def enforce_protected_root(
-    target_path: Path, *, allow_override: bool, policy: ProtectedRootPolicy | None = None,
+    target_path: Path,
+    *,
+    allow_override: bool,
+    policy: ProtectedRootPolicy | None = None,
 ) -> None:
     """Block writes to protected root directories unless explicitly overridden.
 

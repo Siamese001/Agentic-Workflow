@@ -16,14 +16,17 @@ class TestBenchmarkingagent:
     def test_BenchmarkingAgent_imports(self):
         """Test BenchmarkingAgent module imports."""
         from agentic_core import BenchmarkingAgent
+
         assert BenchmarkingAgent is not None
 
     def test_BenchmarkingAgent_class(self):
         """Test Benchmarkingagent class exists."""
         from agentic_core import Benchmarkingagent
+
         assert Benchmarkingagent is not None
 
     def test_BenchmarkingAgent_callable(self):
         """Test BenchmarkingAgent functions are callable."""
         from agentic_core import validate_BenchmarkingAgent
+
         assert callable(validate_BenchmarkingAgent)

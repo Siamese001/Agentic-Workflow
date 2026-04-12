@@ -30,6 +30,7 @@ from tests.e2e.conftest import (
 # UWG Authority Chain Tests
 # =============================================================================
 
+
 class TestUWGAuthority:
     """Test UWG as sole durable mutation path.
 
@@ -203,7 +204,7 @@ class TestUWGAuthority:
 
         # Verify chain integrity
         for i, mut in enumerate(chain[1:], 1):
-            assert mut["previous_digest"] == chain[i-1]["digest"]
+            assert mut["previous_digest"] == chain[i - 1]["digest"]
 
         result = RobustnessResult(
             test_name="uwg_replay_verification",
@@ -220,6 +221,7 @@ class TestUWGAuthority:
 # =============================================================================
 # Determinism Proof Tests
 # =============================================================================
+
 
 class TestDeterminismProof:
     """Test determinism proof standards per v12.
@@ -425,6 +427,7 @@ class TestDeterminismProof:
 # Mutation Authority Tests
 # =============================================================================
 
+
 class TestMutationAuthority:
     """Test mutation authority per layer."""
 
@@ -529,6 +532,7 @@ class TestMutationAuthority:
 # ToolNotAllowedError Tests
 # =============================================================================
 
+
 class TestToolNotAllowedError:
     """Test ToolNotAllowedError for non-UWG mutations."""
 
@@ -583,6 +587,7 @@ class TestToolNotAllowedError:
 # UWG Chain Link Tests
 # =============================================================================
 
+
 class TestUWGChainLink:
     """Test UWG replay digest chain linking."""
 
@@ -608,7 +613,7 @@ class TestUWGChainLink:
 
         # Verify chain
         for i, link in enumerate(chain_links[1:], 1):
-            assert link["previous_digest"] == chain_links[i-1]["digest"]
+            assert link["previous_digest"] == chain_links[i - 1]["digest"]
 
         result = RobustnessResult(
             test_name="chain_link_creation",

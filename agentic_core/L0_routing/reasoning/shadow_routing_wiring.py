@@ -48,7 +48,9 @@ class ShadowRoutingWiring:
         self.enable_l4_storage = enable_l4_storage
 
     def observe_and_classify(
-        self, route_decision: RouteDecisionArtifact, additional_context: dict[str, Any] | None = None,
+        self,
+        route_decision: RouteDecisionArtifact,
+        additional_context: dict[str, Any] | None = None,
     ) -> ShadowRoutingTelemetry | None:
         """Observe routing decision and produce shadow classification.
 
@@ -66,13 +68,16 @@ class ShadowRoutingWiring:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "ShadowRoutingWiring.observe_and_classify",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "ShadowRoutingWiring.observe_and_classify",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
         shadow_decision = self.shadow_classifier.observe_routing_decision(
-            route_decision=route_decision, additional_context=additional_context,
+            route_decision=route_decision,
+            additional_context=additional_context,
         )
         if self.enable_telemetry:
             telemetry = self.shadow_classifier.emit_telemetry(shadow_decision)
@@ -116,7 +121,8 @@ def get_shadow_wiring() -> ShadowRoutingWiring:
 
 
 def observe_routing_decision(
-    route_decision: RouteDecisionArtifact, additional_context: dict[str, Any] | None = None,
+    route_decision: RouteDecisionArtifact,
+    additional_context: dict[str, Any] | None = None,
 ) -> ShadowRoutingTelemetry | None:
     """Convenience function to observe a routing decision.
 

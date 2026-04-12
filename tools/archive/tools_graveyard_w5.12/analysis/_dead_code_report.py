@@ -2,6 +2,7 @@
 ADG Dead Code Report — uses pre-tagged dead_imports + unused_import edges,
 plus corrected zero-fan-in module analysis (src=importer, dst=importee).
 """
+
 import sqlite3
 from collections import defaultdict
 
@@ -11,10 +12,12 @@ c = conn.cursor()
 
 PROD_PREFIXES = ("agentic_core/", "apps_", "system_learning/", "infrastructure/")
 
+
 def is_prod(path):
     if not path:
         return False
     return any(path.startswith(p) for p in PROD_PREFIXES)
+
 
 # ── 1. ADG-tagged dead_imports edges (modules nobody uses) ──────────────────
 print("=" * 70)
@@ -82,7 +85,8 @@ prod_mods = {nid: info for nid, info in all_mods.items() if is_prod(info[1])}
 # Node IDs that appear as dst in 'imports' edges (i.e. are imported by someone)
 # dst can be symbol nodes — resolve to their resolved_path file
 imported_paths = set(
-    r[0] for r in c.execute("""
+    r[0]
+    for r in c.execute("""
         SELECT DISTINCT n.resolved_path
         FROM edges e
         JOIN nodes n ON e.dst_id = n.id
@@ -91,8 +95,9 @@ imported_paths = set(
     if r[0]
 )
 
-dead_mods = [(info[1], info[2]) for nid, info in prod_mods.items()
-             if info[1] not in imported_paths]  # resolved_path not in imported set
+dead_mods = [
+    (info[1], info[2]) for nid, info in prod_mods.items() if info[1] not in imported_paths
+]  # resolved_path not in imported set
 dead_mods.sort(key=lambda x: (x[1], x[0]))  # sort by layer then path
 
 by_layer3 = defaultdict(list)

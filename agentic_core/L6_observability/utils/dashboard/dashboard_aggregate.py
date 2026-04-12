@@ -207,7 +207,9 @@ class DashboardAggregateRegistry:
     def persist_snapshot(self, snapshot: DashboardSnapshot) -> None:
         """Persist a dashboard snapshot."""
         _emit_snapshots_state(
-            str(uuid.uuid4()), "DashboardAggregateRegistry.persist_snapshot", "L6_OBSERVABILITY",
+            str(uuid.uuid4()),
+            "DashboardAggregateRegistry.persist_snapshot",
+            "L6_OBSERVABILITY",
         )
         with self._lock:
             self._snapshots[snapshot.dashboard_snapshot_id] = snapshot

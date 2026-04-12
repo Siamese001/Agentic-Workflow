@@ -239,8 +239,11 @@ class PatternAnalysisReport:
         """Canonical byte representation for hashing."""
         _emit_gated_by_confidence(str(uuid.uuid4()), "PatternAnalysisReport.canonical_bytes", "0.5")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PatternAnalysisReport.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PatternAnalysisReport.canonical_bytes"
+        )
 
         data = {
             "findings": [
@@ -314,8 +317,11 @@ class PatternAnalysisEngine:
                             drift_snapshot_bytes=..., now_utc=...) -> PatternAnalysisReport
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PatternAnalysisEngine.analyze")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PatternAnalysisEngine.analyze"
+        )
 
         if healing_snapshot_bytes is not None or now_utc is not None:
             return self._analyze_from_snapshots(
@@ -348,7 +354,10 @@ class PatternAnalysisEngine:
         if healing_snapshot_bytes is not None:
             try:
                 snap = _json.loads(healing_snapshot_bytes.decode("utf-8"))
-            except (_json.JSONDecodeError, UnicodeDecodeError) as exc:    # guardian: Encoding errors should specify fallback encoding strategy
+            except (
+                _json.JSONDecodeError,
+                UnicodeDecodeError,
+            ) as exc:  # guardian: Encoding errors should specify fallback encoding strategy
                 raise ValueError(f"Invalid healing_snapshot_bytes: {exc}") from exc
             healing_version = snap.get("version_id")
             aggregates = snap.get("aggregates", [])
@@ -384,7 +393,9 @@ class PatternAnalysisEngine:
             try:
                 drift = _json.loads(drift_snapshot_bytes.decode("utf-8"))
                 drift_version = drift.get("version")
-                for score_entry in tqdm(drift.get("drift_scores", []), desc="drift scores", unit="score", leave=False):
+                for score_entry in tqdm(
+                    drift.get("drift_scores", []), desc="drift scores", unit="score", leave=False
+                ):
                     component = score_entry.get("component", "unknown")
                     score = score_entry.get("score", 0.0)
                     if score >= self._config.drift_score_threshold:
@@ -394,7 +405,9 @@ class PatternAnalysisEngine:
                         findings.append(
                             PatternFinding(
                                 key=PatternFindingKey(
-                                    label="ROUTING_DRIFT_HIGH", component=component, dimension="drift",
+                                    label="ROUTING_DRIFT_HIGH",
+                                    component=component,
+                                    dimension="drift",
                                 ),
                                 severity=round(score, 6),
                                 evidence=evidence,
@@ -403,8 +416,11 @@ class PatternAnalysisEngine:
                         )
             # guardian: allow-silent-swallow
             except Exception as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("pattern_analysis_engine: Exception swallowed at L404: %s", e)
+                logging.getLogger(__name__).debug(
+                    "pattern_analysis_engine: Exception swallowed at L404: %s", e
+                )
         if detection_signal_bytes is not None:
             try:
                 det = _json.loads(detection_signal_bytes.decode("utf-8"))
@@ -434,7 +450,10 @@ class PatternAnalysisEngine:
         return PatternAnalysisReport(findings=tuple(findings), source_ids=source_ids, _digest=digest)
 
     def _analyze_embeddings(
-        self, historical_embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int,
+        self,
+        historical_embeddings: list[list[float]],
+        metadata: list[dict[str, Any]],
+        min_cluster_size: int,
     ) -> PatternSummary:
         """Analyze historical embeddings for deterministic patterns.
 
@@ -456,7 +475,11 @@ class PatternAnalysisEngine:
         return PatternSummary(clusters=clusters, pattern_digest=digest)
 
     async def analyze_texts(
-        self, texts: list[str], metadata: list[dict[str, Any]], *, min_cluster_size: int,
+        self,
+        texts: list[str],
+        metadata: list[dict[str, Any]],
+        *,
+        min_cluster_size: int,
     ) -> PatternSummary:
         """Analyze texts by embedding them first and then clustering."""
         if not self.embedder:
@@ -469,7 +492,10 @@ class PatternAnalysisEngine:
         return [round(x, self._precision) for x in vector]
 
     def _deterministic_cluster(
-        self, embeddings: list[list[float]], metadata: list[dict[str, Any]], min_cluster_size: int,
+        self,
+        embeddings: list[list[float]],
+        metadata: list[dict[str, Any]],
+        min_cluster_size: int,
     ) -> list[Cluster]:
         """Perform deterministic clustering using distance threshold."""
         if not embeddings:
@@ -571,6 +597,7 @@ class PatternAnalysisEngine:
             Cross-domain pattern analysis
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_verifies_policy(str(_uuid.uuid4()), "Module.analyze_cross_domain_patterns", "L4_STATE")
         _emit_observes_runtime_state(str(_uuid.uuid4()), "Module.analyze_cross_domain_patterns", "L4_STATE")
@@ -596,14 +623,18 @@ class PatternAnalysisEngine:
         domain_analysis = {}
         shared_patterns = []
 
-        for domain, events in tqdm(domain_patterns.items(), desc="domain analysis", unit="domain", leave=False):
+        for domain, events in tqdm(
+            domain_patterns.items(), desc="domain analysis", unit="domain", leave=False
+        ):
             # Extract success rates
             success_rates = [event.get("success_rate", 0.0) for event in events]
 
             if len(success_rates) > 1:
                 # Compute pattern metrics
                 avg_success_rate = sum(success_rates) / len(success_rates)
-                success_variance = sum((r - avg_success_rate) ** 2 for r in success_rates) / len(success_rates)
+                success_variance = sum((r - avg_success_rate) ** 2 for r in success_rates) / len(
+                    success_rates
+                )
 
                 domain_analysis[domain] = {
                     "event_count": len(events),
@@ -614,31 +645,37 @@ class PatternAnalysisEngine:
 
                 # Check for strong patterns (low variance, decent success rate)
                 if success_variance < 0.1 and avg_success_rate > 0.5:
-                    shared_patterns.append({
-                        "domain": domain,
-                        "pattern_type": "consistent_healing",
-                        "strength": 1.0 - success_variance,
-                        "success_rate": avg_success_rate,
-                    })
+                    shared_patterns.append(
+                        {
+                            "domain": domain,
+                            "pattern_type": "consistent_healing",
+                            "strength": 1.0 - success_variance,
+                            "success_rate": avg_success_rate,
+                        }
+                    )
 
         # Identify cross-domain correlations
         cross_domain_correlations = []
         domains = list(domain_patterns.keys())
         if len(domains) > 1:
-            for i, domain1 in tqdm(enumerate(domains), desc="cross-domain", unit="pair", total=len(domains), leave=False):
-                for domain2 in tqdm(domains[i+1:], desc="domain pairs", unit="domain", leave=False):
+            for i, domain1 in tqdm(
+                enumerate(domains), desc="cross-domain", unit="pair", total=len(domains), leave=False
+            ):
+                for domain2 in tqdm(domains[i + 1 :], desc="domain pairs", unit="domain", leave=False):
                     # Simple correlation based on average success rates
                     rate1 = domain_analysis[domain1]["avg_success_rate"]
                     rate2 = domain_analysis[domain2]["avg_success_rate"]
                     correlation = 1.0 - abs(rate1 - rate2)  # Similar rates = high correlation
 
                     if correlation > 0.8:
-                        cross_domain_correlations.append({
-                            "domain1": domain1,
-                            "domain2": domain2,
-                            "correlation": correlation,
-                            "pattern_type": "similar_success_rates",
-                        })
+                        cross_domain_correlations.append(
+                            {
+                                "domain1": domain1,
+                                "domain2": domain2,
+                                "correlation": correlation,
+                                "pattern_type": "similar_success_rates",
+                            }
+                        )
 
         analysis = {
             "cross_domain_patterns_detected": len(shared_patterns) > 0,
@@ -653,6 +690,7 @@ class PatternAnalysisEngine:
         # Persist cross-domain pattern analysis
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             bridge.persist_cross_domain_pattern_analysis(
@@ -663,9 +701,10 @@ class PatternAnalysisEngine:
                 timestamp_utc=now_utc,
             )
         except Exception as e:
-
             # Bridge unavailable - continue without it
-            import logging; logging.getLogger(__name__).debug("pattern_analysis_engine: Exception swallowed at L663: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("pattern_analysis_engine: Exception swallowed at L663: %s", e)
 
         return analysis
 

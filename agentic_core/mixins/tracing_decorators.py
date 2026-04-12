@@ -83,9 +83,10 @@ def _extract_attributes(
             elif isinstance(value, dict):
                 attributes[f"{name}_keys"] = list(value.keys())[:10]  # Limit keys
         except Exception as e:
-
             # Skip values that can't be serialized
-            import logging; logging.getLogger(__name__).debug("tracing_decorators: Exception swallowed at L85: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("tracing_decorators: Exception swallowed at L85: %s", e)
 
     if extra_attrs:
         attributes.update(extra_attrs)
@@ -122,6 +123,7 @@ def trace_cognitive(
             # Span created automatically
             return analysis_result
     """
+
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
 
@@ -140,7 +142,9 @@ def trace_cognitive(
             attributes["span_kind"] = "cognitive"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L1_COGNITION")), func.__name__,
+                operation_name,
+                str(getattr(LayerSegment, layer, "L1_COGNITION")),
+                func.__name__,
             )
 
             try:
@@ -180,6 +184,7 @@ def trace_action(
             # Span tracks file write operation
             return success
     """
+
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
 
@@ -196,7 +201,9 @@ def trace_action(
             attributes["span_kind"] = "action"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__,
+                operation_name,
+                str(getattr(LayerSegment, layer, "L2_EXECUTION")),
+                func.__name__,
             )
 
             try:
@@ -235,6 +242,7 @@ def trace_tool(
             # Span tracks vector search operation
             return matches
     """
+
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
 
@@ -252,7 +260,9 @@ def trace_tool(
             attributes["span_kind"] = "tool"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L2_EXECUTION")), func.__name__,
+                operation_name,
+                str(getattr(LayerSegment, layer, "L2_EXECUTION")),
+                func.__name__,
             )
 
             try:
@@ -298,6 +308,7 @@ def trace_orchestrator(
             # Span tracks full campaign orchestration
             return results
     """
+
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
 
@@ -315,7 +326,9 @@ def trace_orchestrator(
             attributes["span_kind"] = "orchestrator"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L3_ORCHESTRATION")), func.__name__,
+                operation_name,
+                str(getattr(LayerSegment, layer, "L3_ORCHESTRATION")),
+                func.__name__,
             )
 
             try:
@@ -361,6 +374,7 @@ def trace_router(
             # Span tracks routing decision
             return intent
     """
+
     def decorator(func: F) -> F:
         sig = inspect.signature(func)
 
@@ -378,7 +392,9 @@ def trace_router(
             attributes["span_kind"] = "router"
 
             _emit_records_execution_trace(
-                operation_name, str(getattr(LayerSegment, layer, "L0_ROUTING")), func.__name__,
+                operation_name,
+                str(getattr(LayerSegment, layer, "L0_ROUTING")),
+                func.__name__,
             )
 
             try:

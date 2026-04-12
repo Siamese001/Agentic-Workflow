@@ -325,7 +325,9 @@ class CypherQueryGenerator:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphRAGQueryGenerator.generate_query")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphRAGQueryGenerator.generate_query"
+        )
         natural_lower = natural_query.lower()
         for pattern_name, pattern in self.patterns.items():
             match = re.search(pattern, natural_lower)
@@ -392,7 +394,10 @@ class GraphRAGFusion:
         logger.info(f"Initialized GraphRAGFusion - Fusion: {enable_fusion}")
 
     async def query(
-        self, natural_query: str, query_type: QueryType | None = None, max_results: int = DEFAULT_MAX_RESULTS,
+        self,
+        natural_query: str,
+        query_type: QueryType | None = None,
+        max_results: int = DEFAULT_MAX_RESULTS,
     ) -> FusionResult:
         """Execute a GraphRAG fusion query.
 
@@ -543,7 +548,9 @@ class GraphRAGFusion:
         if isinstance(graph_result, Exception):
             graph_result = FusionResult(query=query, query_type=QueryType.GRAPH_ONLY)
         fused_context = self._fuse_results(
-            vector_result.vector_results, graph_result.graph_results, query_type,
+            vector_result.vector_results,
+            graph_result.graph_results,
+            query_type,
         )
         combined_sources = vector_result.sources + graph_result.sources
         combined_confidence = max(vector_result.confidence, graph_result.confidence)
@@ -563,7 +570,10 @@ class GraphRAGFusion:
         )
 
     def _fuse_results(
-        self, vector_results: list[dict[str, Any]], graph_context: GraphContext, query_type: QueryType,
+        self,
+        vector_results: list[dict[str, Any]],
+        graph_context: GraphContext,
+        query_type: QueryType,
     ) -> str:
         """Fuse vector and graph results into context.
 
@@ -635,7 +645,10 @@ def get_graphrag_fusion(**kwargs) -> GraphRAGFusion:
 
 
 async def graphrag_query(
-    query: str, query_type: QueryType | None = None, max_results: int = DEFAULT_MAX_RESULTS, **kwargs,
+    query: str,
+    query_type: QueryType | None = None,
+    max_results: int = DEFAULT_MAX_RESULTS,
+    **kwargs,
 ) -> FusionResult:
     """Convenience function for GraphRAG query.
 

@@ -420,7 +420,9 @@ class ADGBehavioralIndex:
             (score=0.5, no signals) when ADG is unavailable.
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"BehavioralIndex.profile_for:{resolved_path}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"BehavioralIndex.profile_for:{resolved_path}"
+        )
         # Normalize: forward slashes, no leading slash
         key = resolved_path.replace("\\", "/").lstrip("/")
 

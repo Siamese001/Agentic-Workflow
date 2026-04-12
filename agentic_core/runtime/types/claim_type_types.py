@@ -212,13 +212,18 @@ class ClaimConfidenceScorer:
     def analyze_claims(self, text: str) -> ClaimAnalysisResult:
         """Analyze all claims in text."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ClaimConfidenceScorer.analyze_claims")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ClaimConfidenceScorer.analyze_claims"
+        )
 
         claims: Any = self.extract_claims(text)
         overall_confidence: Any = sum(c.confidence for c in claims) / len(claims) if claims else 0.0
         return ClaimAnalysisResult(
-            claims=claims, overall_confidence=overall_confidence, summary=f"Analyzed {len(claims)} claims",
+            claims=claims,
+            overall_confidence=overall_confidence,
+            summary=f"Analyzed {len(claims)} claims",
         )
 
 

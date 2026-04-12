@@ -13,6 +13,7 @@ try:
         VectorDocument,
         get_global_faiss_store,
     )
+
     FAISS_AVAILABLE = True
 except ImportError:
     FAISS_AVAILABLE = False
@@ -137,7 +138,7 @@ class TestFAISSVectorStore:
         assert store is not None
         assert isinstance(store, FaissEmbeddingStore)
 
-    @patch('faiss.IndexFlat')
+    @patch("faiss.IndexFlat")
     def test_ivf_index(self, mock_index):
         """Test IVF index creation."""
         store = FaissVectorStore(dimension=64, index_type="IVF")

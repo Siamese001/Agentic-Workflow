@@ -180,7 +180,9 @@ class ReplayNondeterminismViolation(Exception):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ReplayNondeterminismViolation.__init__",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ReplayNondeterminismViolation.__init__",
         )
         self.message = message
         self.expected = expected
@@ -232,7 +234,9 @@ def execute_in_sandbox(
             return SandboxResult(success=False, result=e)
     if transcript is None:
         violation = ReplayNondeterminismViolation(
-            "Transcript is missing in replay mode.", expected="Transcript", actual=None,
+            "Transcript is missing in replay mode.",
+            expected="Transcript",
+            actual=None,
         )
         return SandboxResult(success=False, result=violation, violation=violation)
     try:
@@ -243,7 +247,9 @@ def execute_in_sandbox(
     expected_result = transcript.get("result")
     if str(simulated_result) != str(expected_result):
         violation = ReplayNondeterminismViolation(
-            "Replay result does not match transcript.", expected=expected_result, actual=simulated_result,
+            "Replay result does not match transcript.",
+            expected=expected_result,
+            actual=simulated_result,
         )
         return SandboxResult(success=False, result=violation, violation=violation)
     return SandboxResult(success=True, result=simulated_result)

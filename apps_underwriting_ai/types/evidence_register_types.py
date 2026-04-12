@@ -1,6 +1,7 @@
 """
 Evidence Register Types - Domain contracts for evidence tracking.
 """
+
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
@@ -8,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class EvidenceEntry(BaseModel):
     """Single evidence entry in the register."""
+
     entry_id: str = Field(..., description="Unique entry ID")
     claim_category: str = Field(..., description="Category of claim (capacity, collateral, etc.)")
     claim_text: str = Field(..., description="Text of the claim")
@@ -23,6 +25,7 @@ class EvidenceRegister(BaseModel):
     """
     Complete evidence register for audit trail.
     """
+
     request_id: str = Field(..., description="Reference to request")
     entries: List[EvidenceEntry] = Field(default_factory=list, description="Evidence entries")
     completeness_pct: float = Field(0.0, ge=0, le=1, description="Evidence completeness")

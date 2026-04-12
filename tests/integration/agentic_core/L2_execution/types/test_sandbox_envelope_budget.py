@@ -17,6 +17,7 @@ class TestSandboxEnvelopeBudget:
         """Test sandbox_envelope_budget module imports."""
         try:
             from agentic_core import sandbox_envelope_budget
+
             assert sandbox_envelope_budget is not None
         except ImportError:
             pytest.skip("sandbox_envelope_budget not available")
@@ -25,6 +26,7 @@ class TestSandboxEnvelopeBudget:
         """Test SandboxEnvelopeBudget class exists."""
         try:
             from agentic_core import SandboxEnvelopeBudget
+
             assert SandboxEnvelopeBudget is not None
         except ImportError:
             pytest.skip("SandboxEnvelopeBudget not available")
@@ -33,6 +35,7 @@ class TestSandboxEnvelopeBudget:
         """Test sandbox_envelope_budget functions are callable."""
         try:
             from agentic_core import validate_sandbox_envelope_budget
+
             assert callable(validate_sandbox_envelope_budget)
         except ImportError:
             pytest.skip("validate_sandbox_envelope_budget not available")

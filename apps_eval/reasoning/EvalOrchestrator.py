@@ -99,20 +99,24 @@ from apps_eval.types.eval_types import (
 )
 from apps_eval.validators.eval_gate_validator import EvalGateValidator
 
+# guardian: allow-silent-degradation -- Qwen vLLM is optional for eval; import failure is logged and captured in _qwen_init_error
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
+
     _emit_applies_guardrail("p0", "EvalOrchestrator", "p0_governance")
     _emit_reads_policy_state("p0", "EvalOrchestrator", "policy_binding")
     _emit_snapshots_state("p0", "EvalOrchestrator", "state_snapshot")
-# guardian: allow-silent-degradation - Optional Qwen integration
-except ImportError:
+    _QWEN_AVAILABLE = True
+except ImportError as _qwen_import_err:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
     apps_qwen_telemetry = None  # type: ignore[assignment]
+    _QWEN_AVAILABLE = False
+    _QWEN_IMPORT_ERROR: str | None = str(_qwen_import_err)
 
 _emit_reads_policy_state("p0", "EvalOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "EvalOrchestrator", "state_snapshot")
@@ -229,12 +233,13 @@ class EvalOrchestrator:
                 fail_on_regression=self._specs.gate.fail_on_regression,
                 max_timeout_violations=self._specs.gate.max_timeout_violations,
             )
-# guardian: allow-silent-degradation - Optional eval specs
+        # guardian: allow-silent-degradation - Optional eval specs
         except ImportError:
             self._specs = None
 
         self._qwen_gateway = None
         self._qwen_session_id = None
+        self._qwen_init_error: str | None = None
         self._qwen_prompt_templates: dict[str, Any] = {}
         qwen_model_id = "Qwen/Qwen2.5-7B-Instruct"
         qwen_prompts_path = Path(__file__).resolve().parents[1] / "data" / "evaluation_prompts.json"
@@ -244,11 +249,24 @@ class EvalOrchestrator:
             qwen_model_id = self._specs.qwen.model_id
             qwen_prompts_path = Path(self._specs.qwen.prompt_templates_file)
 
-        if self.qwen_enabled and AppsQwenGateway is not None:
-            self._qwen_gateway = AppsQwenGateway(model_id=qwen_model_id)
-            if apps_qwen_telemetry is not None:
-                self._qwen_session_id = apps_qwen_telemetry.start_session("apps_eval")
-            self._qwen_prompt_templates = self._load_qwen_prompt_templates(qwen_prompts_path)
+        if not _QWEN_AVAILABLE:
+            self._qwen_init_error = globals().get("_QWEN_IMPORT_ERROR", "qwen_vllm package unavailable")
+            _log.error(
+                "EvalOrchestrator: Qwen package unavailable — explicit Qwen calls will raise. reason=%s",
+                self._qwen_init_error,
+            )
+        elif self.qwen_enabled:
+            try:
+                self._qwen_gateway = AppsQwenGateway(model_id=qwen_model_id)
+                if apps_qwen_telemetry is not None:
+                    self._qwen_session_id = apps_qwen_telemetry.start_session("apps_eval")
+                self._qwen_prompt_templates = self._load_qwen_prompt_templates(qwen_prompts_path)
+            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all captured in _qwen_init_error
+                self._qwen_init_error = str(e)
+                _log.error(
+                    "EvalOrchestrator: Qwen gateway init failed — explicit Qwen calls will raise. reason=%s",
+                    e,
+                )
 
         try:
             from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
@@ -257,7 +275,7 @@ class EvalOrchestrator:
             _profile = _idx.profile_for(Path(__file__).resolve()) if _idx else None
             self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
             self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
-# guardian: allow-silent-degradation - Optional ADG behavioral index
+        # guardian: allow-silent-degradation - Optional ADG behavioral index
         except (ImportError, AttributeError, OSError):
             self.adg_behavioral_score = 0.5
             self.adg_antipattern_signals = []
@@ -272,6 +290,7 @@ class EvalOrchestrator:
             EvalResult with scorecard, regression records, and artifacts.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvalOrchestrator.run")
 
@@ -285,7 +304,7 @@ class EvalOrchestrator:
 
         result = EvalResult(
             trace_id=trace_id,
-            status=EvalStatus.RUNNING,
+            status="running",
             provenance={"trace_id": trace_id, "app": "apps_eval", "suite_ids": request.suite_ids},
         )
 
@@ -294,7 +313,7 @@ class EvalOrchestrator:
             self._record_hop("HOP-1-SUITES", bool(suite_results))
             result.suite_results = suite_results
 
-            result.status = EvalStatus.SCORING
+            result.status = "scoring"
             scorecard = self._scorecard.compute(suite_results)
             self._record_hop("HOP-2-SCORECARD", True)
             result.scorecard = scorecard.rows
@@ -309,7 +328,7 @@ class EvalOrchestrator:
             result.regression_records = regression.records
 
             if regression.regression_count > 0:
-                result.status = EvalStatus.REGRESSION
+                result.status = "regression"
 
             gate = self._gate.validate(
                 suite_results,
@@ -324,13 +343,13 @@ class EvalOrchestrator:
             if not gate.passed:
                 _log.error("[EvalOrchestrator] Gate FAILED: %d violations", len(gate.violations))
                 if not is_dry and self.gate_mode == "HARD_FAIL":
-                    if result.status != EvalStatus.REGRESSION:
-                        result.status = EvalStatus.FAILED
+                    if result.status != "regression":
+                        result.status = "failed"
 
             if is_dry:
-                result.status = EvalStatus.DRY_RUN
-            elif result.status not in (EvalStatus.FAILED, EvalStatus.REGRESSION):
-                result.status = EvalStatus.COMPLETE
+                result.status = "dry_run"
+            elif result.status not in ("failed", "regression"):
+                result.status = "complete"
 
             if not is_dry:
                 paths = self._emit_artifacts(result, trace_id, request)
@@ -339,20 +358,20 @@ class EvalOrchestrator:
 
         except (ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             _log.error("[EvalOrchestrator] Pipeline error trace=%s: %s", trace_id, exc, exc_info=True)
-            result.status = EvalStatus.FAILED
+            result.status = "failed"
             result.error = str(exc)
             self._record_hop("PIPELINE-ERROR", False)
             result.provenance["checkpoints"] = [c["hop_id"] for c in self.hop_checkpoints]
 
         total_scenarios = sum(len(sr.scenarios) for sr in result.suite_results)
         passed_scenarios = sum(
-            1 for sr in result.suite_results for sc in sr.scenarios if sc.outcome.value in ("PASS", "SKIP")
+            1 for sr in result.suite_results for sc in sr.scenarios if sc.outcome in ("PASS", "SKIP")
         )
-        regressions = sum(1 for r in result.regression_records if r.verdict == RegressionVerdict.REGRESSION)
+        regressions = sum(1 for r in result.regression_records if r.verdict == "REGRESSION")
 
         summary = EvalRunSummary(
             trace_id=trace_id,
-            status=result.status.value,
+            status=result.status,
             suites_run=len(result.suite_results),
             scenarios_run=total_scenarios,
             scenarios_passed=passed_scenarios,
@@ -372,7 +391,7 @@ class EvalOrchestrator:
         _log.info(
             "[EvalOrchestrator] Complete trace=%s status=%s score=%.2f regressions=%d",
             trace_id,
-            result.status.value,
+            result.status,
             result.overall_score,
             regressions,
         )
@@ -413,7 +432,7 @@ class EvalOrchestrator:
             "# Evaluation Lab Report",
             "",
             f"**Trace ID:** `{trace_id}`  ",
-            f"**Status:** {result.status.value}  ",
+            f"**Status:** {result.status}  ",
             f"**Overall Score:** {result.overall_score:.1%}  ",
             f"**Gate Violations:** {len(result.gate_violations)}  ",
             "",
@@ -437,9 +456,9 @@ class EvalOrchestrator:
             lines.append(f"- **Mean Latency:** {sr.mean_latency_ms:.1f} ms")
             lines.append("")
             for sc in sr.scenarios:
-                icon = "✓" if sc.outcome.value == "PASS" else ("~" if sc.outcome.value == "SKIP" else "✗")
+                icon = "✓" if sc.outcome == "PASS" else ("~" if sc.outcome == "SKIP" else "✗")
                 lines.append(
-                    f"  - `{icon}` `{sc.scenario_id}` [{sc.outcome.value}] score={sc.score:.2f} — {sc.message}",
+                    f"  - `{icon}` `{sc.scenario_id}` [{sc.outcome}] score={sc.score:.2f} — {sc.message}",
                 )
             lines.append("")
 
@@ -455,7 +474,7 @@ class EvalOrchestrator:
             for reg in result.regression_records:
                 lines.append(
                     f"| {reg.dimension_id} | {reg.current_score:.3f} | "
-                    f"{reg.baseline_score:.3f} | {reg.delta:+.3f} | {reg.verdict.value} |",
+                    f"{reg.baseline_score:.3f} | {reg.delta:+.3f} | {reg.verdict} |",
                 )
             lines.append("")
 
@@ -511,7 +530,7 @@ class EvalOrchestrator:
 
     def _load_qwen_prompt_templates(self, prompts_path: Path) -> dict[str, Any]:
         """Load Qwen prompt templates for apps_eval pilot."""
-        try:    # guardian: Add error context logging
+        try:  # guardian: Add error context logging
             resolved = prompts_path
             if not resolved.is_absolute():
                 resolved = Path(__file__).resolve().parents[2] / prompts_path
@@ -523,11 +542,20 @@ class EvalOrchestrator:
 
     async def evaluate_with_qwen(self, prompt: str, template: str = "code_review") -> dict[str, Any]:
         """Run apps_eval prompt through Qwen gateway when enabled."""
+        if self._qwen_init_error is not None:
+            raise RuntimeError(
+                f"EvalOrchestrator.evaluate_with_qwen invoked but Qwen init failed: {self._qwen_init_error}"
+            )
         if not self.qwen_enabled:
-            return {"success": False, "error": "qwen_disabled", "response": None}
+            _log.info("EvalOrchestrator: Qwen not enabled — skipping evaluation (opt-in path)")
+            return {"success": False, "error": "qwen_not_enabled", "response": None}
         if self._qwen_gateway is None or AppsQwenRequest is None:
+            _log.error(
+                "EvalOrchestrator: gateway is None despite qwen_enabled=True — cannot proceed with Qwen evaluation"
+            )
             return {"success": False, "error": "qwen_gateway_unavailable", "response": None}
         if apps_qwen_telemetry is None or self._qwen_session_id is None:
+            _log.error("EvalOrchestrator: telemetry unavailable — cannot proceed with Qwen evaluation")
             return {"success": False, "error": "qwen_telemetry_unavailable", "response": None}
 
         model_id = "Qwen/Qwen2.5-7B-Instruct"

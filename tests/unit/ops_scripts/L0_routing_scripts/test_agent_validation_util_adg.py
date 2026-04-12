@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L0_routing.scripts.agent_validation_util."""
+
 from __future__ import annotations
 
 import importlib

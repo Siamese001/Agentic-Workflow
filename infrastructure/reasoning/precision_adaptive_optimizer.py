@@ -19,14 +19,15 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class OptimizationStrategy(Enum):
     """Mathematically precise optimization strategies with total ordering."""
+
     CONSERVATIVE = 1  # Prioritize stability and predictability
-    BALANCED = 2      # Balance performance and stability
-    AGGRESSIVE = 3    # Maximize performance at cost of stability
+    BALANCED = 2  # Balance performance and stability
+    AGGRESSIVE = 3  # Maximize performance at cost of stability
     COST_OPTIMIZED = 4  # Minimize cost
     LATENCY_OPTIMIZED = 5  # Minimize latency
     THROUGHPUT_OPTIMIZED = 6  # Maximize throughput
@@ -40,6 +41,7 @@ class OptimizationStrategy(Enum):
 @dataclass(frozen=True)
 class PrecisionOptimizationParameters:
     """Immutable optimization parameters with mathematical guarantees."""
+
     layer_type: str
     similarity_threshold: float = 0.85
     top_k: int = 10
@@ -73,39 +75,45 @@ class PrecisionOptimizationParameters:
             raise ValueError("throughput_target_rps must be positive")
 
         # Generate deterministic checksum
-        content = json.dumps({
-            "layer_type": self.layer_type,
-            "similarity_threshold": self.similarity_threshold,
-            "top_k": self.top_k,
-            "token_budget": self.token_budget,
-            "timeout_seconds": self.timeout_seconds,
-            "max_retries": self.max_retries,
-            "cache_ttl_seconds": self.cache_ttl_seconds,
-            "cost_per_request": self.cost_per_request,
-            "latency_target_ms": self.latency_target_ms,
-            "throughput_target_rps": self.throughput_target_rps,
-        }, sort_keys=True)
+        content = json.dumps(
+            {
+                "layer_type": self.layer_type,
+                "similarity_threshold": self.similarity_threshold,
+                "top_k": self.top_k,
+                "token_budget": self.token_budget,
+                "timeout_seconds": self.timeout_seconds,
+                "max_retries": self.max_retries,
+                "cache_ttl_seconds": self.cache_ttl_seconds,
+                "cost_per_request": self.cost_per_request,
+                "latency_target_ms": self.latency_target_ms,
+                "throughput_target_rps": self.throughput_target_rps,
+            },
+            sort_keys=True,
+        )
         checksum = hashlib.sha256(content.encode()).hexdigest()[:16]
-        object.__setattr__(self, '_checksum', checksum)
+        object.__setattr__(self, "_checksum", checksum)
 
     @property
     def checksum(self) -> str:
-        return getattr(self, '_checksum', '')
+        return getattr(self, "_checksum", "")
 
     def verify_integrity(self) -> bool:
         """Verify cryptographic integrity."""
-        content = json.dumps({
-            "layer_type": self.layer_type,
-            "similarity_threshold": self.similarity_threshold,
-            "top_k": self.top_k,
-            "token_budget": self.token_budget,
-            "timeout_seconds": self.timeout_seconds,
-            "max_retries": self.max_retries,
-            "cache_ttl_seconds": self.cache_ttl_seconds,
-            "cost_per_request": self.cost_per_request,
-            "latency_target_ms": self.latency_target_ms,
-            "throughput_target_rps": self.throughput_target_rps,
-        }, sort_keys=True)
+        content = json.dumps(
+            {
+                "layer_type": self.layer_type,
+                "similarity_threshold": self.similarity_threshold,
+                "top_k": self.top_k,
+                "token_budget": self.token_budget,
+                "timeout_seconds": self.timeout_seconds,
+                "max_retries": self.max_retries,
+                "cache_ttl_seconds": self.cache_ttl_seconds,
+                "cost_per_request": self.cost_per_request,
+                "latency_target_ms": self.latency_target_ms,
+                "throughput_target_rps": self.throughput_target_rps,
+            },
+            sort_keys=True,
+        )
         expected = hashlib.sha256(content.encode()).hexdigest()[:16]
         return self.checksum == expected
 
@@ -113,6 +121,7 @@ class PrecisionOptimizationParameters:
 @dataclass
 class PrecisionPerformanceMetrics:
     """Precise performance metrics with statistical properties."""
+
     timestamp: datetime
     layer_type: str
     response_time_ms: float
@@ -397,7 +406,11 @@ class PrecisionFeatureExtractor:
             "success_trend",
         ]
 
-    def extract_features(self, metrics_history: list[PrecisionPerformanceMetrics], current_params: PrecisionOptimizationParameters) -> list[float]:
+    def extract_features(
+        self,
+        metrics_history: list[PrecisionPerformanceMetrics],
+        current_params: PrecisionOptimizationParameters,
+    ) -> list[float]:
         """Extract features from metrics history and current parameters."""
         if not metrics_history:
             return [0.0] * len(self.feature_names)
@@ -562,7 +575,9 @@ class PrecisionAdaptiveOptimizer:
 
         logger.info(f"Optimized parameters for {layer_type}: {len(suggestions)} suggestions applied")
 
-    async def _apply_optimization_strategy(self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters) -> PrecisionOptimizationParameters:
+    async def _apply_optimization_strategy(
+        self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters
+    ) -> PrecisionOptimizationParameters:
         """Apply optimization based on current strategy."""
         # Create new parameters based on strategy
         if self.strategy == OptimizationStrategy.CONSERVATIVE:
@@ -580,7 +595,9 @@ class PrecisionAdaptiveOptimizer:
         else:
             return current_params
 
-    def _apply_conservative_strategy(self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters) -> PrecisionOptimizationParameters:
+    def _apply_conservative_strategy(
+        self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters
+    ) -> PrecisionOptimizationParameters:
         """Apply conservative optimization strategy (minimal changes)."""
         # Conservative strategy: make small adjustments based on strongest signal
         max_suggestion = max(suggestions.values(), default=0.5)
@@ -594,11 +611,15 @@ class PrecisionAdaptiveOptimizer:
                 "timeout_seconds": 1.0,
             }
         else:
-            adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
+            adjustments = dict.fromkeys(
+                ["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0
+            )
 
         return self._apply_adjustments(current_params, adjustments, factor=0.1)
 
-    def _apply_balanced_strategy(self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters) -> PrecisionOptimizationParameters:
+    def _apply_balanced_strategy(
+        self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters
+    ) -> PrecisionOptimizationParameters:
         """Apply balanced optimization strategy."""
         # Balanced strategy: moderate adjustments based on multiple signals
         avg_suggestion = statistics.mean(suggestions.values()) if suggestions else 0.5
@@ -618,11 +639,15 @@ class PrecisionAdaptiveOptimizer:
                 "timeout_seconds": -2.0,
             }
         else:
-            adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
+            adjustments = dict.fromkeys(
+                ["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0
+            )
 
         return self._apply_adjustments(current_params, adjustments, factor=0.3)
 
-    def _apply_aggressive_strategy(self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters) -> PrecisionOptimizationParameters:
+    def _apply_aggressive_strategy(
+        self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters
+    ) -> PrecisionOptimizationParameters:
         """Apply aggressive optimization strategy."""
         # Aggressive strategy: large adjustments for maximum performance
         max_suggestion = max(suggestions.values(), default=0.5)
@@ -644,7 +669,9 @@ class PrecisionAdaptiveOptimizer:
 
         return self._apply_adjustments(current_params, adjustments, factor=0.7)
 
-    def _apply_cost_optimized_strategy(self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters) -> PrecisionOptimizationParameters:
+    def _apply_cost_optimized_strategy(
+        self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters
+    ) -> PrecisionOptimizationParameters:
         """Apply cost optimization strategy."""
         # Cost optimization: reduce parameters to minimize cost
         cost_suggestion = suggestions.get("cost", 0.5)
@@ -657,11 +684,15 @@ class PrecisionAdaptiveOptimizer:
                 "timeout_seconds": -1.0,  # Shorter timeout
             }
         else:
-            adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
+            adjustments = dict.fromkeys(
+                ["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0
+            )
 
         return self._apply_adjustments(current_params, adjustments, factor=0.5)
 
-    def _apply_latency_optimized_strategy(self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters) -> PrecisionOptimizationParameters:
+    def _apply_latency_optimized_strategy(
+        self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters
+    ) -> PrecisionOptimizationParameters:
         """Apply latency optimization strategy."""
         # Latency optimization: reduce timeout and increase efficiency
         latency_suggestion = suggestions.get("latency", 0.5)
@@ -674,11 +705,15 @@ class PrecisionAdaptiveOptimizer:
                 "timeout_seconds": -3.0,  # Much shorter timeout
             }
         else:
-            adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
+            adjustments = dict.fromkeys(
+                ["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0
+            )
 
         return self._apply_adjustments(current_params, adjustments, factor=0.6)
 
-    def _apply_throughput_optimized_strategy(self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters) -> PrecisionOptimizationParameters:
+    def _apply_throughput_optimized_strategy(
+        self, layer_type: str, suggestions: dict[str, float], current_params: PrecisionOptimizationParameters
+    ) -> PrecisionOptimizationParameters:
         """Apply throughput optimization strategy."""
         # Throughput optimization: increase capacity and parallelism
         throughput_suggestion = suggestions.get("throughput", 0.5)
@@ -691,11 +726,15 @@ class PrecisionAdaptiveOptimizer:
                 "timeout_seconds": 2.0,  # Longer timeout for more processing
             }
         else:
-            adjustments = dict.fromkeys(["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0)
+            adjustments = dict.fromkeys(
+                ["similarity_threshold", "top_k", "token_budget", "timeout_seconds"], 0
+            )
 
         return self._apply_adjustments(current_params, adjustments, factor=0.4)
 
-    def _apply_adjustments(self, current_params: PrecisionOptimizationParameters, adjustments: dict[str, float], factor: float) -> PrecisionOptimizationParameters:
+    def _apply_adjustments(
+        self, current_params: PrecisionOptimizationParameters, adjustments: dict[str, float], factor: float
+    ) -> PrecisionOptimizationParameters:
         """Apply adjustments to parameters with bounds checking."""
         # Apply adjustments with factor
         new_similarity = current_params.similarity_threshold + adjustments["similarity_threshold"] * factor
@@ -757,7 +796,11 @@ class PrecisionAdaptiveOptimizer:
         results = {}
 
         # Train linear regression models
-        for model_name, targets in [("latency", latency_targets), ("cost", cost_targets), ("success", success_targets)]:
+        for model_name, targets in [
+            ("latency", latency_targets),
+            ("cost", cost_targets),
+            ("success", success_targets),
+        ]:
             if model_name in self.models:
                 model = self.models[model_name]
                 success = model.train(features, targets)
@@ -775,14 +818,17 @@ class PrecisionAdaptiveOptimizer:
     def get_optimization_status(self) -> dict[str, Any]:
         """Get comprehensive optimization status."""
         total_optimizations = len(self.optimization_history)
-        recent_optimizations = [o for o in self.optimization_history if
-                               datetime.fromisoformat(o["timestamp"]) > datetime.now() - timedelta(hours=1)]
+        recent_optimizations = [
+            o
+            for o in self.optimization_history
+            if datetime.fromisoformat(o["timestamp"]) > datetime.now() - timedelta(hours=1)
+        ]
 
         model_status = {}
         for name, model in self.models.items():
             model_status[name] = {
                 "trained": model.is_trained(),
-                "samples": getattr(model, 'training_samples', 0),
+                "samples": getattr(model, "training_samples", 0),
                 "feature_importance": model.get_feature_importance() if model.is_trained() else {},
             }
 

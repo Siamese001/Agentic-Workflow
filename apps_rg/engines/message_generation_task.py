@@ -172,8 +172,11 @@ class MessageGenerationTask(BaseRGEngine):
         Generate personalized outreach message.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MessageGenerationTask.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MessageGenerationTask.execute"
+        )
 
         self._mcp_audit("message_generation_start", {"type": message_type})
         prompt = f"Generate a {message_type} message for {recipient_context.get('name', 'recipient')}"

@@ -37,9 +37,14 @@ async def test_query_routing():
     ]
 
     available_collections = [
-        "repo_code_chunks", "repo_symbols", "repo_arch_docs",
-        "repo_adg_graph", "repo_tests_guardrails",
-        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca",
+        "repo_code_chunks",
+        "repo_symbols",
+        "repo_arch_docs",
+        "repo_adg_graph",
+        "repo_tests_guardrails",
+        "repo_runtime_evidence",
+        "repo_git_history",
+        "repo_incidents_rca",
     ]
 
     routing_success = 0
@@ -168,7 +173,9 @@ async def test_reranking_engine():
         print(f"Features used: {len(rerank_result.features_used)}")
 
         print("\nReranked results:")
-        for i, (result, score) in enumerate(zip(rerank_result.reranked_results, rerank_result.reranking_scores), 1):
+        for i, (result, score) in enumerate(
+            zip(rerank_result.reranked_results, rerank_result.reranking_scores), 1
+        ):
             print(f"  {i}. Score: {score:.3f} - {result.content[:50]}...")
 
         print("\n✅ Reranking engine test successful")
@@ -220,7 +227,7 @@ async def test_advanced_retrieval():
                 print("  Top results:")
                 for i, result in enumerate(response.final_results[:2], 1):
                     print(f"    {i}. [{result.collection}] {result.content[:40]}...")
-                    if hasattr(result, 'score'):
+                    if hasattr(result, "score"):
                         print(f"       Score: {result.score:.3f}")
 
                 if len(response.final_results) > 0:
@@ -283,7 +290,7 @@ async def test_fusion_strategies():
             print("-" * 40)
 
         # Compare results
-        successful_strategies = {k: v for k, v in strategy_results.items() if 'error' not in v}
+        successful_strategies = {k: v for k, v in strategy_results.items() if "error" not in v}
 
         if successful_strategies:
             print("\nStrategy Comparison Summary:")
@@ -334,7 +341,9 @@ async def test_performance():
                 total_results += len(response.final_results)
                 successful_queries += 1
 
-                print(f"  {query}: {len(response.final_results)} results in {response.execution_time_ms:.2f}ms")
+                print(
+                    f"  {query}: {len(response.final_results)} results in {response.execution_time_ms:.2f}ms"
+                )
 
             except Exception as e:
                 print(f"  {query}: Failed - {e}")

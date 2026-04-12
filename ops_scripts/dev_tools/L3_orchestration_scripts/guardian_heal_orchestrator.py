@@ -192,7 +192,10 @@ TOOL_ID = "guardian_heal_orchestrator"
 
 
 def _run_guardians(
-    repo_root: Path, timestamp: str, correlation_id: str | None = None, write_artifacts_dir: str | None = None,
+    repo_root: Path,
+    timestamp: str,
+    correlation_id: str | None = None,
+    write_artifacts_dir: str | None = None,
 ) -> dict:
     """Run all enabled guardians and return aggregate result as dict."""
     import uuid as _uuid  # noqa: PLC0415
@@ -333,7 +336,10 @@ def main() -> int:
     parser.add_argument("--correlation-id", default=None, help="Trace correlation ID")
     parser.add_argument("--allow-repo-mutation", action="store_true", help="Allow apply on non-sandbox")
     parser.add_argument(
-        "--format", choices=["json", "summary"], default="json", help="Output format (default: json)",
+        "--format",
+        choices=["json", "summary"],
+        default="json",
+        help="Output format (default: json)",
     )
     args = parser.parse_args()
     if args.apply:

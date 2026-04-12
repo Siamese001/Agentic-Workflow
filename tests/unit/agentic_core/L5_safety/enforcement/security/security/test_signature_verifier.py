@@ -16,14 +16,17 @@ class TestSignatureVerifier:
     def test_signature_verifier_imports(self):
         """Test signature_verifier module imports."""
         from agentic_core import signature_verifier
+
         assert signature_verifier is not None
 
     def test_signature_verifier_class(self):
         """Test SignatureVerifier class exists."""
         from agentic_core import SignatureVerifier
+
         assert SignatureVerifier is not None
 
     def test_signature_verifier_callable(self):
         """Test signature_verifier functions are callable."""
         from agentic_core import validate_signature_verifier
+
         assert callable(validate_signature_verifier)

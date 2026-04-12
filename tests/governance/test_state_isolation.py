@@ -14,18 +14,21 @@ class TestImportIsolation:
 
     def test_import_state_isolation(self):
         """Imports in one test shouldn't affect another test."""
+
         # First test - import and create an instance
         def test_import_1():
             # Create an instance to test state retention
             from pathlib import Path
 
             from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
+
             error1 = WriteAmplificationError(Path("test1"), 100, 1000, 10.0)
             return id(error1), type(error1)
 
         # Second test - same import should create fresh state
         def test_import_2():
             from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
+
             error2 = WriteAmplificationError(Path("test2"), 200, 2000, 10.0)
             return id(error2), type(error2)
 
@@ -43,8 +46,9 @@ class TestImportIsolation:
         import sys
 
         # Clear any existing module state
-        modules_to_remove = [k for k in sys.modules.keys()
-                           if k.startswith(('agentic_core', 'apps_', 'system_learning'))]
+        modules_to_remove = [
+            k for k in sys.modules.keys() if k.startswith(("agentic_core", "apps_", "system_learning"))
+        ]
 
         # Store original modules
         original_modules = {}
@@ -56,6 +60,7 @@ class TestImportIsolation:
         try:
             # First import
             from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
+
             first_value = MAX_GROWTH_RATIO
 
             # Clear module and re-import
@@ -65,6 +70,7 @@ class TestImportIsolation:
 
             # Second import
             from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
+
             second_value = MAX_GROWTH_RATIO
 
             # Values should be the same (constants don't change)
@@ -141,8 +147,8 @@ class TestEnvironmentVariableIsolation:
 
         # Set some test environment variables
         test_vars = {
-            'TEST_ISOLATION_VAR_1': 'value1',
-            'TEST_ISOLATION_VAR_2': 'value2',
+            "TEST_ISOLATION_VAR_1": "value1",
+            "TEST_ISOLATION_VAR_2": "value2",
         }
 
         # Set test variables
@@ -171,11 +177,13 @@ class TestSingletonIsolation:
 
     def test_weak_reference_cleanup(self):
         """Objects should be properly garbage collected."""
+
         def create_object_and_check():
             # Create an object
             from pathlib import Path
 
             from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
+
             obj = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
 
             # Create weak reference
@@ -198,6 +206,7 @@ class TestSingletonIsolation:
 
     def test_cache_isolation(self):
         """Module-level caches should not accumulate state."""
+
         # This is a conceptual test - actual implementation depends on specific modules
         def check_cache_size():
             # Check if any module has growing cache
@@ -205,7 +214,7 @@ class TestSingletonIsolation:
 
             cache_sizes = []
             for module_name, module in sys.modules.items():
-                if hasattr(module, '__dict__'):
+                if hasattr(module, "__dict__"):
                     # Look for common cache patterns
                     dict_size = len(module.__dict__)
                     if dict_size > 1000:  # Arbitrary threshold for "large" cache
@@ -220,6 +229,7 @@ class TestSingletonIsolation:
         try:
             from agentic_core.L2_execution.utils.write_gateway import WriteAmplificationError
             from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_agent_executes_agent
+
             # Create some instances
             error = WriteAmplificationError(Path("test"), 100, 1000, 10.0)
         except ImportError:
@@ -246,6 +256,7 @@ class TestTestOrderIndependence:
             """Run a simple test multiple times and collect results."""
             try:
                 from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
+
                 return MAX_GROWTH_RATIO
             except ImportError:
                 return "import_failed"

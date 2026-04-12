@@ -239,6 +239,7 @@ class CircuitBreaker:
             The original exception if call fails and circuit is not open
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.call")
 
@@ -379,6 +380,7 @@ class CircuitBreakerFactory:
             CircuitBreaker instance
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreakerFactory.get")
 

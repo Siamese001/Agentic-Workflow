@@ -9,6 +9,7 @@ Outputs:
   - artifacts/test_enforcement/test_classification.json
   - artifacts/test_enforcement/test_violations.json
 """
+
 from __future__ import annotations
 
 import ast
@@ -19,30 +20,76 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
-FIRST_PARTY_TOPS = frozenset({
-    "agentic_core", "apps_lic", "apps_rg", "apps_shared", "apps_exec",
-    "apps_rfp", "apps_research", "apps_eval", "system_learning",
-    "infrastructure", "tools", "ops_scripts", "data",
-})
+FIRST_PARTY_TOPS = frozenset(
+    {
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "apps_exec",
+        "apps_rfp",
+        "apps_research",
+        "apps_eval",
+        "system_learning",
+        "infrastructure",
+        "tools",
+        "ops_scripts",
+        "data",
+    }
+)
 
 # Third-party packages that are OPTIONAL (not in core dependencies)
-OPTIONAL_THIRD_PARTY = frozenset({
-    "playwright", "dash", "plotly", "fastapi", "uvicorn", "waitress",
-    "sentence_transformers", "chromadb", "duckdb", "numpy", "np",
-    "pandas", "pd", "sklearn", "scikit_learn", "beautifulsoup4", "bs4",
-    "rich", "opentelemetry", "livereload", "rank_bm25",
-    "pydantic_settings", "aiofiles",
-})
+OPTIONAL_THIRD_PARTY = frozenset(
+    {
+        "playwright",
+        "dash",
+        "plotly",
+        "fastapi",
+        "uvicorn",
+        "waitress",
+        "sentence_transformers",
+        "chromadb",
+        "duckdb",
+        "numpy",
+        "np",
+        "pandas",
+        "pd",
+        "sklearn",
+        "scikit_learn",
+        "beautifulsoup4",
+        "bs4",
+        "rich",
+        "opentelemetry",
+        "livereload",
+        "rank_bm25",
+        "pydantic_settings",
+        "aiofiles",
+    }
+)
 
 # Third-party packages that are EXTERNAL (live services)
-EXTERNAL_DEPS = frozenset({
-    "redis", "pinecone", "openai", "anthropic", "google", "google_genai",
-})
+EXTERNAL_DEPS = frozenset(
+    {
+        "redis",
+        "pinecone",
+        "openai",
+        "anthropic",
+        "google",
+        "google_genai",
+    }
+)
 
 # Platform-specific markers
-PLATFORM_INDICATORS = frozenset({
-    "torch", "cuda", "gpu", "tensorflow", "jax", "mps",
-})
+PLATFORM_INDICATORS = frozenset(
+    {
+        "torch",
+        "cuda",
+        "gpu",
+        "tensorflow",
+        "jax",
+        "mps",
+    }
+)
 
 # Directory-based classification rules
 DIR_CATEGORY_MAP = {
@@ -101,7 +148,7 @@ def _has_marker(source: str, marker_name: str) -> bool:
 def _extract_markers(source: str) -> list[str]:
     """Extract all pytest markers from source."""
     markers = []
-    for m in re.finditer(r'pytest\.mark\.(\w+)', source):
+    for m in re.finditer(r"pytest\.mark\.(\w+)", source):
         markers.append(m.group(1))
     return markers
 
@@ -152,18 +199,22 @@ class TestFileAnalyzer:
         for node in ast.walk(self.tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    self.imports.append({
-                        "module": alias.name,
-                        "first_party": _is_first_party(alias.name),
-                        "line": node.lineno,
-                    })
+                    self.imports.append(
+                        {
+                            "module": alias.name,
+                            "first_party": _is_first_party(alias.name),
+                            "line": node.lineno,
+                        }
+                    )
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
-                    self.imports.append({
-                        "module": node.module,
-                        "first_party": _is_first_party(node.module),
-                        "line": node.lineno,
-                    })
+                    self.imports.append(
+                        {
+                            "module": node.module,
+                            "first_party": _is_first_party(node.module),
+                            "line": node.lineno,
+                        }
+                    )
 
     def _extract_skip_patterns(self):
         """Extract all skip-related patterns for violation detection."""
@@ -182,20 +233,29 @@ class TestFileAnalyzer:
         for i, line in enumerate(lines, 1):
             stripped = line.strip()
             if "pytest.skip(" in stripped:
-                self.skip_patterns.append({
-                    "line": i, "pattern": "pytest_skip_call",
-                    "text": stripped[:200],
-                })
+                self.skip_patterns.append(
+                    {
+                        "line": i,
+                        "pattern": "pytest_skip_call",
+                        "text": stripped[:200],
+                    }
+                )
             if "pytest.importorskip(" in stripped:
-                self.skip_patterns.append({
-                    "line": i, "pattern": "importorskip",
-                    "text": stripped[:200],
-                })
+                self.skip_patterns.append(
+                    {
+                        "line": i,
+                        "pattern": "importorskip",
+                        "text": stripped[:200],
+                    }
+                )
             if "except ImportError" in stripped or "except ModuleNotFoundError" in stripped:
-                self.skip_patterns.append({
-                    "line": i, "pattern": "except_importerror",
-                    "text": stripped[:200],
-                })
+                self.skip_patterns.append(
+                    {
+                        "line": i,
+                        "pattern": "except_importerror",
+                        "text": stripped[:200],
+                    }
+                )
 
     def classify(self) -> dict:
         """Classify this test file into exactly one MECE category."""
@@ -227,7 +287,13 @@ class TestFileAnalyzer:
             category = dir_cat
             justification = f"directory classification: {self.file_path.split('/')[0]}/{self.file_path.split('/')[1] if '/' in self.file_path else ''}"
 
-        test_names = self.test_functions if self.test_functions else ["<syntax-error: no functions parsed>"] if self.has_syntax_error else ["<no test functions>"]
+        test_names = (
+            self.test_functions
+            if self.test_functions
+            else ["<syntax-error: no functions parsed>"]
+            if self.has_syntax_error
+            else ["<no test functions>"]
+        )
 
         result = {
             "file_path": self.file_path,
@@ -247,22 +313,29 @@ class TestFileAnalyzer:
         # V1: Syntax error in any test file is itself a violation
         if self.has_syntax_error:
             # Check if it's a known broken template
-            if "pytest.importorskip" in self.source and "except" not in self.source.split("pytest.importorskip")[0].split("try:")[-1]:
-                violations.append({
-                    "file_path": self.file_path,
-                    "test_name": "<all>",
-                    "violation_type": "broken_template_missing_except",
-                    "why_invalid": "Generated ADG test stub has broken try/except: missing 'except ImportError:' clause, replaced by misplaced pytest.importorskip",
-                    "required_fix": "Replace broken template with direct first-party import (no skip wrapper)",
-                })
+            if (
+                "pytest.importorskip" in self.source
+                and "except" not in self.source.split("pytest.importorskip")[0].split("try:")[-1]
+            ):
+                violations.append(
+                    {
+                        "file_path": self.file_path,
+                        "test_name": "<all>",
+                        "violation_type": "broken_template_missing_except",
+                        "why_invalid": "Generated ADG test stub has broken try/except: missing 'except ImportError:' clause, replaced by misplaced pytest.importorskip",
+                        "required_fix": "Replace broken template with direct first-party import (no skip wrapper)",
+                    }
+                )
             else:
-                violations.append({
-                    "file_path": self.file_path,
-                    "test_name": "<all>",
-                    "violation_type": "syntax_error",
-                    "why_invalid": "File has syntax errors preventing test collection",
-                    "required_fix": "Fix syntax errors to make file parseable",
-                })
+                violations.append(
+                    {
+                        "file_path": self.file_path,
+                        "test_name": "<all>",
+                        "violation_type": "syntax_error",
+                        "why_invalid": "File has syntax errors preventing test collection",
+                        "required_fix": "Fix syntax errors to make file parseable",
+                    }
+                )
 
         # V2: First-party import wrapped in try/except ImportError
         for pat in self.skip_patterns:
@@ -272,53 +345,61 @@ class TestFileAnalyzer:
             if pattern_type == "try_except_importerror":
                 dep = pat.get("dependency", "")
                 if _is_first_party(dep):
-                    violations.append({
-                        "file_path": self.file_path,
-                        "test_name": pat.get("test_name", "<module-level>"),
-                        "line": pat.get("line"),
-                        "violation_type": "first_party_import_skip",
-                        "why_invalid": f"First-party import '{dep}' wrapped in try/except ImportError — hides broken imports",
-                        "required_fix": "Remove try/except wrapper; use direct import. If module doesn't exist, fix the import path or remove the test.",
-                    })
+                    violations.append(
+                        {
+                            "file_path": self.file_path,
+                            "test_name": pat.get("test_name", "<module-level>"),
+                            "line": pat.get("line"),
+                            "violation_type": "first_party_import_skip",
+                            "why_invalid": f"First-party import '{dep}' wrapped in try/except ImportError — hides broken imports",
+                            "required_fix": "Remove try/except wrapper; use direct import. If module doesn't exist, fix the import path or remove the test.",
+                        }
+                    )
 
             # V3: pytest.skip without category context in core tests
             if pattern_type == "pytest_skip_call" and category == "core":
                 reason = pat.get("reason", text)
                 if "import" in reason.lower():
-                    violations.append({
-                        "file_path": self.file_path,
-                        "test_name": pat.get("test_name", "<unknown>"),
-                        "line": pat.get("line"),
-                        "violation_type": "core_test_import_skip",
-                        "why_invalid": f"Core test uses pytest.skip() to hide import failure: {reason[:100]}",
-                        "required_fix": "Remove skip; let import failure surface as test error",
-                    })
+                    violations.append(
+                        {
+                            "file_path": self.file_path,
+                            "test_name": pat.get("test_name", "<unknown>"),
+                            "line": pat.get("line"),
+                            "violation_type": "core_test_import_skip",
+                            "why_invalid": f"Core test uses pytest.skip() to hide import failure: {reason[:100]}",
+                            "required_fix": "Remove skip; let import failure surface as test error",
+                        }
+                    )
 
             # V4: importorskip in core unmarked test
             if pattern_type == "importorskip" and category == "core":
                 dep = pat.get("dependency", "")
                 if dep not in OPTIONAL_THIRD_PARTY and dep != "playwright":
-                    violations.append({
-                        "file_path": self.file_path,
-                        "test_name": pat.get("test_name", "<module-level>"),
-                        "line": pat.get("line"),
-                        "violation_type": "importorskip_in_core",
-                        "why_invalid": f"pytest.importorskip('{dep}') used in core test without optional marker",
-                        "required_fix": "Either mark test as @pytest.mark.optional or remove importorskip and use direct import",
-                    })
+                    violations.append(
+                        {
+                            "file_path": self.file_path,
+                            "test_name": pat.get("test_name", "<module-level>"),
+                            "line": pat.get("line"),
+                            "violation_type": "importorskip_in_core",
+                            "why_invalid": f"pytest.importorskip('{dep}') used in core test without optional marker",
+                            "required_fix": "Either mark test as @pytest.mark.optional or remove importorskip and use direct import",
+                        }
+                    )
 
             # V5: skipif tied to import availability on core test
             if pattern_type == "skipif_import" and category == "core":
                 dep = pat.get("dependency", "")
                 if _is_first_party(dep) or dep.startswith("HAS_") or dep.startswith("has_"):
-                    violations.append({
-                        "file_path": self.file_path,
-                        "test_name": pat.get("test_name", "<unknown>"),
-                        "line": pat.get("line"),
-                        "violation_type": "skipif_import_in_core",
-                        "why_invalid": f"Core test uses skipif to skip on import availability: {dep}",
-                        "required_fix": "Remove skipif; first-party imports must not be optional in core tests",
-                    })
+                    violations.append(
+                        {
+                            "file_path": self.file_path,
+                            "test_name": pat.get("test_name", "<unknown>"),
+                            "line": pat.get("line"),
+                            "violation_type": "skipif_import_in_core",
+                            "why_invalid": f"Core test uses skipif to skip on import availability: {dep}",
+                            "required_fix": "Remove skipif; first-party imports must not be optional in core tests",
+                        }
+                    )
 
         # V6: stub/flag patterns for first-party in core
         if category == "core" and self.tree:
@@ -327,14 +408,16 @@ class TestFileAnalyzer:
                     behavior = pat.get("handler_behavior", "")
                     dep = pat.get("dependency", "")
                     if behavior in ("stub", "flag", "pass") and _is_first_party(dep):
-                        violations.append({
-                            "file_path": self.file_path,
-                            "test_name": pat.get("test_name", "<module-level>"),
-                            "line": pat.get("line"),
-                            "violation_type": f"first_party_{behavior}_on_importerror",
-                            "why_invalid": f"First-party '{dep}' import failure silently handled with {behavior} pattern",
-                            "required_fix": "Remove try/except; use direct import. Broken first-party imports must surface as errors.",
-                        })
+                        violations.append(
+                            {
+                                "file_path": self.file_path,
+                                "test_name": pat.get("test_name", "<module-level>"),
+                                "line": pat.get("line"),
+                                "violation_type": f"first_party_{behavior}_on_importerror",
+                                "why_invalid": f"First-party '{dep}' import failure silently handled with {behavior} pattern",
+                                "required_fix": "Remove try/except; use direct import. Broken first-party imports must surface as errors.",
+                            }
+                        )
 
         return violations
 
@@ -379,26 +462,34 @@ class _SkipCollector(ast.NodeVisitor):
                 if dec.func.attr == "skipif":
                     src = self._source_range(dec.lineno, dec.end_lineno or dec.lineno)
                     dep = self._extract_skipif_dep(dec, src)
-                    self.patterns.append({
-                        "line": dec.lineno, "pattern": "skipif_import",
-                        "test_name": self._test_name(), "dependency": dep,
-                        "text": src[:200],
-                    })
+                    self.patterns.append(
+                        {
+                            "line": dec.lineno,
+                            "pattern": "skipif_import",
+                            "test_name": self._test_name(),
+                            "dependency": dep,
+                            "text": src[:200],
+                        }
+                    )
                 elif dec.func.attr == "skip":
                     reason = ""
                     for kw in dec.keywords:
                         if kw.arg == "reason" and isinstance(kw.value, ast.Constant):
                             reason = str(kw.value.value)
-                    self.patterns.append({
-                        "line": dec.lineno, "pattern": "skip_decorator",
-                        "test_name": self._test_name(), "reason": reason,
-                    })
+                    self.patterns.append(
+                        {
+                            "line": dec.lineno,
+                            "pattern": "skip_decorator",
+                            "test_name": self._test_name(),
+                            "reason": reason,
+                        }
+                    )
 
     def _extract_skipif_dep(self, call, src):
         m = re.search(r'find_spec\(["\']([^"\']+)', src)
         if m:
             return m.group(1)
-        m = re.search(r'import\s+(\w[\w.]*)', src)
+        m = re.search(r"import\s+(\w[\w.]*)", src)
         if m:
             return m.group(1)
         # Check for HAS_X flags
@@ -418,19 +509,27 @@ class _SkipCollector(ast.NodeVisitor):
             for kw in node.keywords:
                 if kw.arg == "reason" and isinstance(kw.value, ast.Constant):
                     reason = str(kw.value.value)
-            self.patterns.append({
-                "line": node.lineno, "pattern": "pytest_skip_call",
-                "test_name": self._test_name(), "reason": reason,
-                "text": reason[:200],
-            })
+            self.patterns.append(
+                {
+                    "line": node.lineno,
+                    "pattern": "pytest_skip_call",
+                    "test_name": self._test_name(),
+                    "reason": reason,
+                    "text": reason[:200],
+                }
+            )
         elif name in ("pytest.importorskip", "importorskip"):
             dep = ""
             if node.args and isinstance(node.args[0], ast.Constant):
                 dep = str(node.args[0].value)
-            self.patterns.append({
-                "line": node.lineno, "pattern": "importorskip",
-                "test_name": self._test_name(), "dependency": dep,
-            })
+            self.patterns.append(
+                {
+                    "line": node.lineno,
+                    "pattern": "importorskip",
+                    "test_name": self._test_name(),
+                    "dependency": dep,
+                }
+            )
         self.generic_visit(node)
 
     def visit_Try(self, node):
@@ -446,13 +545,15 @@ class _SkipCollector(ast.NodeVisitor):
                 dep_str = ", ".join(deps) if deps else "<unknown>"
 
                 behavior = self._handler_behavior(handler)
-                self.patterns.append({
-                    "line": node.lineno,
-                    "pattern": "try_except_importerror",
-                    "test_name": self._test_name(),
-                    "dependency": dep_str,
-                    "handler_behavior": behavior,
-                })
+                self.patterns.append(
+                    {
+                        "line": node.lineno,
+                        "pattern": "try_except_importerror",
+                        "test_name": self._test_name(),
+                        "dependency": dep_str,
+                        "handler_behavior": behavior,
+                    }
+                )
         self.generic_visit(node)
 
     def _is_import_error(self, handler):
@@ -572,6 +673,7 @@ def main():
 
     # Summary
     import collections
+
     cat_counts = collections.Counter(c["category"] for c in classifications)
     syntax_err = sum(1 for c in classifications if c.get("has_syntax_error"))
     test_total = sum(c["test_count"] for c in classifications)
@@ -579,9 +681,9 @@ def main():
     vio_types = collections.Counter(v["violation_type"] for v in all_violations)
     vio_files = len(set(v["file_path"] for v in all_violations))
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("PHASE 2 — CLASSIFICATION SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total files classified: {len(classifications)}")
     print(f"Total test functions: {test_total}")
     print(f"Files with syntax errors: {syntax_err}")
@@ -590,9 +692,9 @@ def main():
     for cat in ["core", "optional", "platform", "external", "experimental"]:
         print(f"  {cat}: {cat_counts.get(cat, 0)}")
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("PHASE 3 — VIOLATION SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total violations: {len(all_violations)}")
     print(f"Files with violations: {vio_files}")
     print("\nBy violation type:")

@@ -3,6 +3,7 @@
 For each source file with a NameError, check if the name is a known path_constant
 and add the import. For class/function stubs, add try/except guards.
 """
+
 import ast
 import os
 import re
@@ -13,32 +14,59 @@ ROOT = r"C:\Git\Agentic-Workflow"
 # Discovered from the error report
 FIXES = [
     # REPORTS_DIR missing in find_missing_invocation_util.py
-    ("agentic_core/L0_routing/scripts/find_missing_invocation_util.py", "REPORTS_DIR",
-     "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR"),
+    (
+        "agentic_core/L0_routing/scripts/find_missing_invocation_util.py",
+        "REPORTS_DIR",
+        "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR",
+    ),
     # REPORTS_DIR in root_hygiene_util.py - it imports from wrong place
-    ("agentic_core/L0_routing/scripts/root_hygiene_util.py", "REPORTS_DIR",
-     "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR"),
+    (
+        "agentic_core/L0_routing/scripts/root_hygiene_util.py",
+        "REPORTS_DIR",
+        "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR",
+    ),
     # AGENTIC_CORE_DIR in complexity_visitor_util.py
-    ("agentic_core/L0_routing/utils/complexity_visitor_util.py", "AGENTIC_CORE_DIR",
-     "from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR"),
+    (
+        "agentic_core/L0_routing/utils/complexity_visitor_util.py",
+        "AGENTIC_CORE_DIR",
+        "from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR",
+    ),
     # APPS_RG_DIR in scorched_earth_merge_util.py
-    ("agentic_core/L0_routing/utils/scorched_earth_merge_util.py", "APPS_RG_DIR",
-     "from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, TESTS_UNIT_DIR"),
+    (
+        "agentic_core/L0_routing/utils/scorched_earth_merge_util.py",
+        "APPS_RG_DIR",
+        "from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, TESTS_UNIT_DIR",
+    ),
     # _emit_writes_through in transcript_freezer.py
-    ("agentic_core/L2_execution/enforcement/transcript_freezer.py", "_emit_writes_through",
-     "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through"),
+    (
+        "agentic_core/L2_execution/enforcement/transcript_freezer.py",
+        "_emit_writes_through",
+        "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through",
+    ),
     # _emit_writes_through in redis_coordination_fabric.py
-    ("agentic_core/cache/redis_coordination_fabric.py", "_emit_writes_through",
-     "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through"),
+    (
+        "agentic_core/cache/redis_coordination_fabric.py",
+        "_emit_writes_through",
+        "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through",
+    ),
     # AGENTIC_CORE_DIR in forge_fortress_util.py
-    ("agentic_core/L5_safety/utils/forge_fortress_util.py", "AGENTIC_CORE_DIR",
-     "from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR"),
+    (
+        "agentic_core/L5_safety/utils/forge_fortress_util.py",
+        "AGENTIC_CORE_DIR",
+        "from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR",
+    ),
     # OPS_SCRIPTS_DIR in guard_ddd_alignment_util.py
-    ("agentic_core/L5_safety/utils/guard_ddd_alignment_util.py", "OPS_SCRIPTS_DIR",
-     "from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR"),
+    (
+        "agentic_core/L5_safety/utils/guard_ddd_alignment_util.py",
+        "OPS_SCRIPTS_DIR",
+        "from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR",
+    ),
     # REPORTS_DIR in validate_assembly.py
-    ("agentic_core/prompt_governance/validation/validate_assembly.py", "REPORTS_DIR",
-     "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR"),
+    (
+        "agentic_core/prompt_governance/validation/validate_assembly.py",
+        "REPORTS_DIR",
+        "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR",
+    ),
     # HealerMixin in security_level_config.py
     ("agentic_core/runtime/config/security_level_config.py", "HealerMixin", None),
     # L3SubatomicTestingMixin in dag_manager.py

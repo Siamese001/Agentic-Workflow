@@ -212,7 +212,9 @@ def _deep_diff(before: Any, after: Any, path: str = "") -> list[str]:
 
 
 def detect_ghost_mutations(
-    state_before: dict[str, Any], state_after: dict[str, Any], transcript: ExecutionTranscript,
+    state_before: dict[str, Any],
+    state_after: dict[str, Any],
+    transcript: ExecutionTranscript,
 ) -> ReconciliationResult:
     """
     Detects hidden state mutations by comparing before/after snapshots against a transcript.
@@ -240,7 +242,8 @@ def detect_ghost_mutations(
     diff = _deep_diff(expected_state_after, state_after)
     if diff:
         violation = GhostMutationViolation(
-            "Ghost mutation detected: State changed in ways not recorded in the transcript.", diff=diff,
+            "Ghost mutation detected: State changed in ways not recorded in the transcript.",
+            diff=diff,
         )
         return ReconciliationResult(is_consistent=False, violation=violation)
     return ReconciliationResult(is_consistent=True)

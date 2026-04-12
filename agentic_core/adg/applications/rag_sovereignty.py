@@ -247,7 +247,9 @@ class RAGSovereigntyReport:
 
 
 def check_rag_sovereignty(
-    result: ScanResult, client: ADGMCPClient | None = None, extra_edges: list[dict] | None = None,
+    result: ScanResult,
+    client: ADGMCPClient | None = None,
+    extra_edges: list[dict] | None = None,
 ) -> RAGSovereigntyReport:
     """Enforce RAG C0 informational-only policy.
 
@@ -329,7 +331,9 @@ def _persist_proof(result: ScanResult, report: RAGSovereigntyReport, client: ADG
 
 def _ensure_graph_nodes(client: ADGMCPClient) -> None:
     client.upsert_entity(
-        _C0_CONTEXT_NODE, "retrieval_component", ["component:C0Context", f"policy_id:{_POLICY_ID}"],
+        _C0_CONTEXT_NODE,
+        "retrieval_component",
+        ["component:C0Context", f"policy_id:{_POLICY_ID}"],
     )
     for dn in sorted(_DECISION_NODES):
         client.upsert_entity(dn, "decision_point", [f"policy_id:{_POLICY_ID}"])

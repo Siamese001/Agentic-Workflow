@@ -87,14 +87,14 @@ print(f"\nTotal calling modules: {total_calling:,}")
 
 # Thresholds from Step 8
 THRESHOLDS = {
-    "records_execution_trace": 0.90,   # trace coverage
-    "applies_guardrail": 0.80,        # guardrail coverage
-    "reads_policy_state": 0.95,       # policy binding
-    "state_authority": 1.00,          # combined state (snapshots + reads_runtime + observes_runtime)
-    "invokes_eval": 0.80,            # evaluation linkage
-    "emits_replay_key": 0.90,        # replay key coverage
-    "emits_determinism_digest": 0.90, # determinism digest
-    "signs_execution_trace": 0.90,   # trace signing
+    "records_execution_trace": 0.90,  # trace coverage
+    "applies_guardrail": 0.80,  # guardrail coverage
+    "reads_policy_state": 0.95,  # policy binding
+    "state_authority": 1.00,  # combined state (snapshots + reads_runtime + observes_runtime)
+    "invokes_eval": 0.80,  # evaluation linkage
+    "emits_replay_key": 0.90,  # replay key coverage
+    "emits_determinism_digest": 0.90,  # determinism digest
+    "signs_execution_trace": 0.90,  # trace signing
 }
 
 # Combined state authority: union of modules with any state edge
@@ -131,7 +131,9 @@ for metric in THRESHOLDS:
     thr = THRESHOLDS[metric] * 100
     pct = coverage[metric]
     status = "✓" if pct >= thr else "✗"
-    print(f"  {metric:<33s} {cur_val:>8,} {targets[metric]:>8,} {deficits[metric]:>8,} {pct:>6.1f}% {thr:>4.0f}% {status}")
+    print(
+        f"  {metric:<33s} {cur_val:>8,} {targets[metric]:>8,} {deficits[metric]:>8,} {pct:>6.1f}% {thr:>4.0f}% {status}"
+    )
 
 # ══════════════════════════════════════════════════════════════════════════════
 # STEP 3 — TRACE DEFICIT SET

@@ -374,8 +374,11 @@ class ThematicAnalysisNode:
         - Competitive intelligence gathering
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThematicAnalysisNode.analyze_thematic_resonance")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ThematicAnalysisNode.analyze_thematic_resonance"
+        )
 
         logger.info(f"Starting thematic analysis for {company_name}")
         primary_theme, secondary_themes = self._extract_themes(job_description)
@@ -444,7 +447,9 @@ class ThematicAnalysisNode:
         )
 
     def _gather_competitive_intelligence(
-        self, job_description: str, company_name: str,
+        self,
+        job_description: str,
+        company_name: str,
     ) -> CompetitiveIntelligence:
         """Gather competitive intelligence from peer job descriptions."""
         return CompetitiveIntelligence(
@@ -504,7 +509,9 @@ class TwoPhaseGenerationNode:
         }
 
     def generate_unify_bullets_phase_a(
-        self, thematic_output: ThematicAnalysisOutput, role_extraction: dict[str, Any],
+        self,
+        thematic_output: ThematicAnalysisOutput,
+        role_extraction: dict[str, Any],
     ) -> BulletGenerationOutput:
         """
         Phase A: Generate Unify Consulting bullets (7 bullets with 3V-3T-1S provenance)
@@ -515,8 +522,11 @@ class TwoPhaseGenerationNode:
         - Thematic alignment
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TwoPhaseGenerationNode.generate_unify_bullets_phase_a")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TwoPhaseGenerationNode.generate_unify_bullets_phase_a"
+        )
 
         logger.info("Starting Phase A: Unify bullet generation")
         bullets = self._generate_bullets_with_provenance(
@@ -539,7 +549,9 @@ class TwoPhaseGenerationNode:
         return output
 
     def synthesize_unify_overview_phase_b(
-        self, bullet_output: BulletGenerationOutput, thematic_output: ThematicAnalysisOutput,
+        self,
+        bullet_output: BulletGenerationOutput,
+        thematic_output: ThematicAnalysisOutput,
     ) -> OverviewSynthesisOutput:
         """
         Phase B: Synthesize Unify Consulting overview from generated bullets
@@ -595,7 +607,11 @@ class TwoPhaseGenerationNode:
         return 0.85
 
     def _synthesize_overview(
-        self, bullets: list[str], themes: list[str], differentiators: list[str], target_words: int,
+        self,
+        bullets: list[str],
+        themes: list[str],
+        differentiators: list[str],
+        target_words: int,
     ) -> str:
         """Synthesize overview from bullets without repeating achievements."""
         return "Led strategic technology transformation initiatives driving operational excellence and innovation across enterprise platforms"
@@ -654,8 +670,11 @@ class WordCountEnforcementEngine:
             ValidationResult with validation details
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WordCountEnforcementEngine.validate_content")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "WordCountEnforcementEngine.validate_content"
+        )
 
         constraints = self.constraints.get(content_type, {})
         word_count = len(content.split())
@@ -690,7 +709,10 @@ class WordCountEnforcementEngine:
 
     # guardian: allow-magic-config
     def enforce_with_regeneration(
-        self, content: str, content_type: str, max_attempts: int = 3,
+        self,
+        content: str,
+        content_type: str,
+        max_attempts: int = 3,
     ) -> tuple[str, ValidationResult]:
         """
         Enforce word count constraints with regeneration.
@@ -706,7 +728,9 @@ class WordCountEnforcementEngine:
                 return (current_content, last_validation)
             logger.warning(f"Attempt {attempt + 1}: {last_validation.violation_type} - regenerating")
             current_content = self.regeneration_engine.regenerate(
-                current_content, last_validation.violation_type, last_validation,
+                current_content,
+                last_validation.violation_type,
+                last_validation,
             )
             last_validation = self.validate_content(current_content, content_type)
         error_msg = f"Content failed validation after {max_attempts} attempts. Final count: {last_validation.word_count}"
@@ -791,8 +815,11 @@ class ValidationGate:
             Cryptographic signature
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationGate.execute_and_sign")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationGate.execute_and_sign"
+        )
 
         validation_result = self._execute_validation(execution_data)
         signature = self._create_signature(validation_result)
@@ -832,7 +859,10 @@ class ValidationGate:
         return signature
 
     def _log_execution(
-        self, execution_data: dict[str, Any], validation_result: dict[str, Any], signature: str,
+        self,
+        execution_data: dict[str, Any],
+        validation_result: dict[str, Any],
+        signature: str,
     ) -> None:
         """Log execution for audit trail."""
         log_entry = {
@@ -860,7 +890,8 @@ def example_two_phase_generation():
     overview_output = two_phase_node.synthesize_unify_overview_phase_b(bullet_output, thematic_output)
     print(f"Overview: {overview_output.overview}")
     final_overview, validation = word_enforcer.enforce_with_regeneration(
-        overview_output.overview, "K.5B_unify_overview",
+        overview_output.overview,
+        "K.5B_unify_overview",
     )
     print(f"Final overview ({validation.word_count} words): {final_overview}")
 

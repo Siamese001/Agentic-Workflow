@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class ConcurrencyConfig:
     """Configuration for concurrency control."""
+
     max_concurrent: int = 10
     token_rate: float = 1.0  # tokens per second
     token_bucket_size: int = 10
@@ -61,7 +62,9 @@ class ConcurrencyManager:
         """
         trace_id = f"concurrency_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ConcurrencyManager.acquire",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "ConcurrencyManager.acquire",
         )
 
         return self._semaphore.acquire(timeout=timeout)

@@ -7,7 +7,9 @@ from collections import Counter
 
 result = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/agentic_core/", "-q", "--tb=line", "--no-header"],
-    capture_output=True, text=True, cwd=".",
+    capture_output=True,
+    text=True,
+    cwd=".",
 )
 
 output = result.stdout + result.stderr
@@ -43,11 +45,13 @@ for line in output.splitlines():
         else:
             category = "other"
 
-        error_files.append({
-            "file": current_file,
-            "category": category,
-            "message": error_msg[:120],
-        })
+        error_files.append(
+            {
+                "file": current_file,
+                "category": category,
+                "message": error_msg[:120],
+            }
+        )
         current_file = None  # Reset for next error
 
 # Count categories
@@ -62,9 +66,14 @@ for cat, count in cat_counter.most_common():
 print(f"\nTotal categorized errors: {len(error_files)}")
 
 # Show samples of each
-for cat in ["IndentationError_in_source_module", "SyntaxError_in_source_module",
-            "missing_BATCH_SIZE_constant", "FileNotFoundError_at_import",
-            "ModuleNotFoundError", "missing_named_import"]:
+for cat in [
+    "IndentationError_in_source_module",
+    "SyntaxError_in_source_module",
+    "missing_BATCH_SIZE_constant",
+    "FileNotFoundError_at_import",
+    "ModuleNotFoundError",
+    "missing_named_import",
+]:
     samples = [e for e in error_files if e["category"] == cat]
     if samples:
         print(f"\n--- {cat} ({len(samples)}) ---")
@@ -73,7 +82,12 @@ for cat in ["IndentationError_in_source_module", "SyntaxError_in_source_module",
             print(f"    {s['message']}")
 
 # Check: how many of these error files are our enhanced files vs pre-existing?
-enhanced_errors = [e for e in error_files if "MODULE_PATH" in open(e["file"], encoding="utf-8").read() if "Behavioral contract tests" in open(e["file"], encoding="utf-8").read()]
+enhanced_errors = [
+    e
+    for e in error_files
+    if "MODULE_PATH" in open(e["file"], encoding="utf-8").read()
+    if "Behavioral contract tests" in open(e["file"], encoding="utf-8").read()
+]
 print("\nEnhanced files causing errors: check below")
 
 # Better: check if the file has our fixture pattern

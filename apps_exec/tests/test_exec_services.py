@@ -1,6 +1,5 @@
 """Tests for apps_exec service components."""
 
-
 from apps_exec.services.artifact_exporter_service import (
     ArtifactExporterService,
 )

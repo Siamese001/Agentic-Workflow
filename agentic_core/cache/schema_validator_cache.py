@@ -193,8 +193,11 @@ class SchemaValidatorCache:
             ValueError: If schema is empty
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SchemaValidatorCache.get_or_fetch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SchemaValidatorCache.get_or_fetch"
+        )
 
         if not schema:
             raise ValueError("Schema dict must not be empty")
@@ -245,6 +248,7 @@ class SchemaValidatorCache:
 def get_schema_validator_cache() -> SchemaValidatorCache:
     """Get the singleton schema validator cache instance."""
     return SchemaValidatorCache()
+
 
 _emit_reads_through("l4", "schema_validator_cache", "urg_read_1")
 _emit_reads_through("l4", "schema_validator_cache", "urg_read_2")

@@ -31,9 +31,12 @@ from typing import Any
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+
 class ProvenanceVerificationError(Exception):
     """Raised when provenance verification fails."""
+
     pass
+
 
 class ADGProvenanceVerifier:
     """Verifies ADG artifact provenance consistency."""
@@ -108,13 +111,13 @@ class ADGProvenanceVerifier:
             "count": len(sorted_paths),
         }
 
-        inventory_json = json.dumps(inventory_data, sort_keys=True, separators=(',', ':'))
+        inventory_json = json.dumps(inventory_data, sort_keys=True, separators=(",", ":"))
         return hashlib.sha256(inventory_json.encode()).hexdigest()
 
     def _load_json_artifact(self, artifact_path: Path) -> dict[str, Any]:
         """Load and parse JSON artifact."""
         try:
-            with open(artifact_path, encoding='utf-8') as f:
+            with open(artifact_path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             raise ProvenanceVerificationError(f"Failed to load {artifact_path}: {e}")
@@ -167,7 +170,7 @@ class ADGProvenanceVerifier:
     def _verify_timestamp_format(self, artifact_name: str, timestamp: str) -> None:
         """Verify timestamp is valid ISO8601 UTC."""
         try:
-            dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
             if dt.tzinfo is None:
                 raise ProvenanceVerificationError(
                     f"{artifact_name} timestamp missing timezone: {timestamp}",
@@ -334,6 +337,7 @@ class ADGProvenanceVerifier:
 
         return result
 
+
 def main():
     """CLI entry point."""
     import argparse
@@ -358,18 +362,21 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, 'w') as f:
+            with open(args.output, "w") as f:
                 json.dump(result, f, indent=2, default=str)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1
 
-    except ProvenanceVerificationError as e:    # guardian: ProvenanceVerificationError should be handled with specific context
+    except (
+        ProvenanceVerificationError
+    ) as e:  # guardian: ProvenanceVerificationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:
         print(f"💥 Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

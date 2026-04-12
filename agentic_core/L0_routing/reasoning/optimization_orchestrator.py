@@ -186,7 +186,10 @@ def optimize_routing_policy(
 
     # --- Step 6: persist optimization record ---
     optimization_record = _persist_optimization_record(
-        optimization_window, route_rankings, policy_recommendations, _registry,
+        optimization_window,
+        route_rankings,
+        policy_recommendations,
+        _registry,
     )
 
     # Explicit ADG edge emission for static scanner detection
@@ -263,7 +266,8 @@ def optimize_routing_policy(
 
 
 def _analyze_historical_routing_outcomes(
-    routing_history: RoutingHistory, optimization_window: OptimizationWindow,
+    routing_history: RoutingHistory,
+    optimization_window: OptimizationWindow,
 ) -> dict[str, Any]:
     """Analyze historical routing outcomes."""
     # This would normally analyze actual routing history
@@ -402,7 +406,8 @@ def _rank_candidate_routes(
 
 
 def _produce_policy_recommendations(
-    route_rankings: dict[str, Any], policy_context: PolicyContext,
+    route_rankings: dict[str, Any],
+    policy_context: PolicyContext,
 ) -> dict[str, Any]:
     """Produce policy recommendations based on route rankings."""
     rank = route_rankings["rank"]

@@ -16,14 +16,17 @@ class TestLazySeamScanner:
     def test_lazy_seam_scanner_imports(self):
         """Test lazy_seam_scanner module imports."""
         from agentic_core import lazy_seam_scanner
+
         assert lazy_seam_scanner is not None
 
     def test_lazy_seam_scanner_class(self):
         """Test LazySeamScanner class exists."""
         from agentic_core import LazySeamScanner
+
         assert LazySeamScanner is not None
 
     def test_lazy_seam_scanner_callable(self):
         """Test lazy_seam_scanner functions are callable."""
         from agentic_core import validate_lazy_seam_scanner
+
         assert callable(validate_lazy_seam_scanner)

@@ -385,7 +385,9 @@ def main() -> bool:
         Logger.info(f"   - Invalid/Ghosts: {validation_stats['invalid']}")
 
         # Validate compliance gate based on scan results
-        if not check_compliance_gate(validation_stats):    # guardian: DiscoveryError should be handled with specific context
+        if not check_compliance_gate(
+            validation_stats
+        ):  # guardian: DiscoveryError should be handled with specific context
             Logger.error("[DISCOVERY] Compliance gate validation failed (Integrity violations detected)")
             return False
 
@@ -446,7 +448,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
             report.architectural_role = "STUB"
             return report
 
-        if file_type == "IGNORE":    # guardian: Syntax errors should be caught at parser level, not runtime
+        if file_type == "IGNORE":  # guardian: Syntax errors should be caught at parser level, not runtime
             report.rejection_reason = "File ignored by kernel (empty, critical, or unparseable)"
             return report
 
@@ -708,7 +710,11 @@ def discover_all_agents(strict_mode: bool = True) -> list[dict[str, Any]]:
         Logger.debug(f"[DISCOVERY] Returning {len(verified_agents)} verified agents")
         return verified_agents
 
-    except (OSError, ValueError, TypeError) as e:  # guardian: allow-specific -- agent discovery failure returns empty
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+    ) as e:  # guardian: allow-specific -- agent discovery failure returns empty
         Logger.error(f"[DISCOVERY] Failed to discover agents: {e}")
         return []
 
@@ -749,7 +755,11 @@ def get_agent_discovery_summary() -> dict[str, Any]:
 
         return summary
 
-    except (OSError, ValueError, TypeError) as e:  # guardian: allow-specific -- summary generation failure returns error dict
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+    ) as e:  # guardian: allow-specific -- summary generation failure returns error dict
         Logger.error(f"[DISCOVERY] Failed to generate summary: {e}")
         return {"error": str(e)}
 
@@ -770,7 +780,11 @@ def refresh_discovery_cache() -> bool:
 
         return True
 
-    except (OSError, ValueError, TypeError) as e:  # guardian: allow-specific -- cache refresh failure returns False
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+    ) as e:  # guardian: allow-specific -- cache refresh failure returns False
         Logger.error(f"[CACHE] Cache refresh failed: {e}")
         return False
 
@@ -791,7 +805,11 @@ def get_structured_agent_paths() -> list[str]:
 
         return paths
 
-    except (OSError, ValueError, TypeError) as e:  # guardian: allow-specific -- path generation failure returns empty
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+    ) as e:  # guardian: allow-specific -- path generation failure returns empty
         Logger.error(f"[PATHS] Failed to generate structured paths: {e}")
         return []
 
@@ -886,14 +904,18 @@ def cli_interface() -> None:
             for agent in raw:
                 # Re-run single analysis to print reason (inefficient but fine for CLI)
                 path = project_root / (agent.get("path", "") or agent.get("file", ""))
-                report = analyze_agent_integrity(path)    # guardian: KeyboardInterrupt should be handled with specific context
+                report = analyze_agent_integrity(
+                    path
+                )  # guardian: KeyboardInterrupt should be handled with specific context
                 if not report.is_valid and not report.is_stub:
                     print(f"  - {agent.get('name', agent.get('class_name', '?'))}: {report.rejection_reason}")
-    # guardian: KeyboardInterrupt should be handled with specific context
+        # guardian: KeyboardInterrupt should be handled with specific context
         else:
             # Default: run full discovery
             success = main()
-            sys.exit(0 if success else 1)    # guardian: KeyboardInterrupt should be handled with specific context
+            sys.exit(
+                0 if success else 1
+            )  # guardian: KeyboardInterrupt should be handled with specific context
 
     except KeyboardInterrupt:
         Logger.info("[DISCOVERY] Operation cancelled by user")

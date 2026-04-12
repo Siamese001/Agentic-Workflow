@@ -217,7 +217,9 @@ class CoreIntegrityVerifier:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "CoreIntegrityVerifier.verify_core_integrity",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "CoreIntegrityVerifier.verify_core_integrity",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -247,7 +249,7 @@ class CoreIntegrityVerifier:
                     import shutil
 
                     shutil.rmtree(pycache)
-                except OSError:    # guardian: Add error context logging
+                except OSError:  # guardian: Add error context logging
                     continue  # pycache removal is best-effort; skip on permission/lock errors
 
         if unsafe_files:

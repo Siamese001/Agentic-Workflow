@@ -63,7 +63,9 @@ class DocumentIngestionService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DocumentIngestionService.ingest_directory",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "DocumentIngestionService.ingest_directory",
         )
         _emit_routes_to_capability("p2", "doc_ingestion", "filesystem_access")
         _emit_validates_capability("p2", "doc_ingestion", "read_permissions")
@@ -104,7 +106,9 @@ class DocumentIngestionService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DocumentIngestionService.ingest_file",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "DocumentIngestionService.ingest_file",
         )
 
         path = Path(file_path)

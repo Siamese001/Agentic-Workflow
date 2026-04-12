@@ -170,11 +170,7 @@ class JudgeScorecard:
             result.get("dimension_scores", {}).items(),
             key=lambda x: x[1]["average_score"],
         ):
-            icon = (
-                "PASS" if data["outcome"] == "PASS"
-                else "WARN" if data["outcome"] == "WARN"
-                else "FAIL"
-            )
+            icon = "PASS" if data["outcome"] == "PASS" else "WARN" if data["outcome"] == "WARN" else "FAIL"
             lines.append(
                 f"  [{icon}] {dim:<25} {data['average_score']:.4f}  "
                 f"(w={data['weight']:.1f}, n={data['verdict_count']})",
@@ -185,8 +181,7 @@ class JudgeScorecard:
             lines.append("  Failures:")
             for f in result["fail_summary"][:10]:
                 lines.append(
-                    f"    [{f['severity']}] {f['rubric_id']} @ {f['target']}: "
-                    f"{f['reasoning'][:80]}",
+                    f"    [{f['severity']}] {f['rubric_id']} @ {f['target']}: {f['reasoning'][:80]}",
                 )
 
         lines.append("=" * 60)
@@ -220,20 +215,14 @@ class RegressionAnalyzer:
         raw_regressions = self._store.regressions(current_digest, previous_digest)
 
         # Filter by threshold
-        significant = [
-            r for r in raw_regressions if abs(r["delta"]) >= self._threshold
-        ]
+        significant = [r for r in raw_regressions if abs(r["delta"]) >= self._threshold]
 
         # Also check for improvements (score increased)
         current_verdicts = self._store.query_by_digest(current_digest)
         previous_verdicts = self._store.query_by_digest(previous_digest)
 
-        current_map = {
-            (v.target, v.rubric_id): v for v in current_verdicts
-        }
-        previous_map = {
-            (v.target, v.rubric_id): v for v in previous_verdicts
-        }
+        current_map = {(v.target, v.rubric_id): v for v in current_verdicts}
+        previous_map = {(v.target, v.rubric_id): v for v in previous_verdicts}
 
         improvements: list[dict[str, Any]] = []
         stable = 0
@@ -258,7 +247,8 @@ class RegressionAnalyzer:
                 stable += 1
 
         new_failures = [
-            r for r in significant
+            r
+            for r in significant
             if r["current_outcome"] == VerdictOutcome.FAIL.value
             and r["previous_outcome"] != VerdictOutcome.FAIL.value
         ]

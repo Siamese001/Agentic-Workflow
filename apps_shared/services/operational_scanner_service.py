@@ -62,7 +62,9 @@ class OperationalScannerService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "OperationalScannerService.scan_directory",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "OperationalScannerService.scan_directory",
         )
         _emit_routes_to_capability("p2", "op_scanner", "filesystem_scan")
         _emit_validates_capability("p2", "op_scanner", "read_permissions")

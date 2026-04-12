@@ -63,6 +63,7 @@ def test_mcp_configuration():
         print(f"❌ MCP configuration test failed: {e}")
         return False
 
+
 def test_environment_variables():
     """Test environment variables are set."""
     print("🔍 Testing Environment Variables...")
@@ -85,6 +86,7 @@ def test_environment_variables():
 
     return all_set
 
+
 def test_tool_files():
     """Test all tool files exist and are functional."""
     print("🔍 Testing Tool Files...")
@@ -106,7 +108,7 @@ def test_tool_files():
             # Test if Python file is syntactically valid
             try:
                 with open(tool_file) as f:
-                    compile(f.read(), str(tool_file), 'exec')
+                    compile(f.read(), str(tool_file), "exec")
                 print(f"✅ {tool_file.name} syntax valid")
             except SyntaxError as e:
                 print(f"❌ {tool_file.name} syntax error: {e}")
@@ -116,6 +118,7 @@ def test_tool_files():
             all_exist = False
 
     return all_exist
+
 
 def test_sequential_thinking_booster():
     """Test sequential thinking booster functionality."""
@@ -140,13 +143,21 @@ def test_sequential_thinking_booster():
     output_file = repo_root / "test_tools_output.json"
 
     try:
-        with open(test_file, 'w') as f:
+        with open(test_file, "w") as f:
             json.dump({"tools": test_tools}, f)
 
         # Run booster
-        result = subprocess.run([
-            sys.executable, str(booster_script), str(test_file), str(output_file),
-        ], capture_output=True, text=True, cwd=repo_root)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(booster_script),
+                str(test_file),
+                str(output_file),
+            ],
+            capture_output=True,
+            text=True,
+            cwd=repo_root,
+        )
 
         if result.returncode != 0:
             print(f"❌ Booster execution failed: {result.stderr}")
@@ -184,6 +195,7 @@ def test_sequential_thinking_booster():
             if file.exists():
                 file.unlink()
 
+
 def test_usage_tracker():
     """Test MCP usage tracker functionality."""
     print("🔍 Testing MCP Usage Tracker...")
@@ -197,19 +209,39 @@ def test_usage_tracker():
 
     try:
         # Test logging functionality
-        result = subprocess.run([
-            sys.executable, str(tracker_script),
-            "--log", "sequential-thinking", "test-context", "true", "1.5", "500",
-        ], capture_output=True, text=True, cwd=repo_root)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(tracker_script),
+                "--log",
+                "sequential-thinking",
+                "test-context",
+                "true",
+                "1.5",
+                "500",
+            ],
+            capture_output=True,
+            text=True,
+            cwd=repo_root,
+        )
 
         if result.returncode != 0:
             print(f"❌ Usage tracker logging failed: {result.stderr}")
             return False
 
         # Test report generation
-        result = subprocess.run([
-            sys.executable, str(tracker_script), "--report", "--hours", "1",
-        ], capture_output=True, text=True, cwd=repo_root)
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(tracker_script),
+                "--report",
+                "--hours",
+                "1",
+            ],
+            capture_output=True,
+            text=True,
+            cwd=repo_root,
+        )
 
         if result.returncode != 0:
             print(f"❌ Usage tracker report failed: {result.stderr}")
@@ -221,6 +253,7 @@ def test_usage_tracker():
     except Exception as e:
         print(f"❌ Usage tracker test failed: {e}")
         return False
+
 
 def test_sequential_thinking_workflow():
     """Test sequential thinking workflow integration."""
@@ -235,8 +268,11 @@ def test_sequential_thinking_workflow():
 
     try:
         # Test import and basic functionality
-        result = subprocess.run([
-            sys.executable, "-c", f"""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                f"""
 import sys
 sys.path.append('{repo_root}')
 from tools.utils.planning.sequential_thinking_workflow import SequentialThinkingEnhancedWorkflow
@@ -255,7 +291,11 @@ print(f'Force sequential thinking: {{should_force}}')
 template = workflow._get_seq_thinking_template('analysis')
 print(f'Template retrieved: {{len(template)}} characters')
 """,
-        ], capture_output=True, text=True, cwd=repo_root)
+            ],
+            capture_output=True,
+            text=True,
+            cwd=repo_root,
+        )
 
         if result.returncode != 0:
             print(f"❌ Workflow test failed: {result.stderr}")
@@ -267,6 +307,7 @@ print(f'Template retrieved: {{len(template)}} characters')
     except Exception as e:
         print(f"❌ Workflow test failed: {e}")
         return False
+
 
 def test_prompt_templates():
     """Test sequential thinking prompt templates."""
@@ -280,8 +321,11 @@ def test_prompt_templates():
         return False
 
     try:
-        result = subprocess.run([
-            sys.executable, "-c", f"""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                f"""
 import sys
 sys.path.append('{repo_root}')
 from apps_shared.prompts.sequential_thinking_templates import (
@@ -304,7 +348,11 @@ print(f'Template rendered: {{len(rendered)}} characters')
 templates = get_template_for_complexity('high')
 print(f'Templates for high complexity: {{len(templates)}}')
 """,
-        ], capture_output=True, text=True, cwd=repo_root)
+            ],
+            capture_output=True,
+            text=True,
+            cwd=repo_root,
+        )
 
         if result.returncode != 0:
             print(f"❌ Templates test failed: {result.stderr}")
@@ -317,16 +365,17 @@ print(f'Templates for high complexity: {{len(templates)}}')
         print(f"❌ Templates test failed: {e}")
         return False
 
+
 def run_integration_test():
     """Run comprehensive integration test."""
     print("🚀 Starting Sequential Thinking Integration Test")
     print("=" * 60)
 
     # Set environment variables for testing
-    os.environ['SEQUENTIAL_THINKING_ENABLED'] = 'true'
-    os.environ['SEQUENTIAL_THINKING_PRIORITY'] = '1'
-    os.environ['WINDSURF_TOOL_PREFERENCE'] = 'sequential-thinking'
-    os.environ['SWE15_SEQUENTIAL_THINKING'] = 'enabled'
+    os.environ["SEQUENTIAL_THINKING_ENABLED"] = "true"
+    os.environ["SEQUENTIAL_THINKING_PRIORITY"] = "1"
+    os.environ["WINDSURF_TOOL_PREFERENCE"] = "sequential-thinking"
+    os.environ["SWE15_SEQUENTIAL_THINKING"] = "enabled"
 
     tests = [
         ("MCP Configuration", test_mcp_configuration),
@@ -343,7 +392,7 @@ def run_integration_test():
     total = len(tests)
 
     for test_name, test_func in tests:
-        print(f"\n{'='*20} {test_name} {'='*20}")
+        print(f"\n{'=' * 20} {test_name} {'=' * 20}")
         try:
             success = test_func()
             results[test_name] = success
@@ -374,6 +423,7 @@ def run_integration_test():
         print("\n❌ Some tests failed. Please check the issues above.")
 
     return passed == total
+
 
 if __name__ == "__main__":
     success = run_integration_test()

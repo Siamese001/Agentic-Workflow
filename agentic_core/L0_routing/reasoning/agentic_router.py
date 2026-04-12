@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 from agentic_core.L0_routing.enforcement.routing_contract import (
     ProposalCommitter,
+    RoutingContractError,
     RoutingContext,
     create_and_commit_routing_contract,
 )
@@ -62,6 +63,7 @@ Logger = logging.getLogger(__name__)
 # L6 import deferred to avoid layer boundary violation (L0→L6)
 _perf_emitter_cache: dict[str, Any] = {}
 
+
 def _get_perf_emitter() -> tuple[Any, Any, Any]:
     """Lazy load L6 performance emitter to avoid layer boundary violation."""
     if "record_fn" not in _perf_emitter_cache:
@@ -70,14 +72,17 @@ def _get_perf_emitter() -> tuple[Any, Any, Any]:
                 StageStatus,
                 record_routing_performance,
             )
+
             _perf_emitter_cache["record_fn"] = record_routing_performance
             _perf_emitter_cache["status_error"] = StageStatus.ERROR
             _perf_emitter_cache["status_success"] = StageStatus.SUCCESS
         except ImportError as e:
             Logger.warning(f"L6 performance emitter not available: {e}")
+
             # Return no-op functions
             def _noop(*args, **kwargs):
                 pass
+
             _perf_emitter_cache["record_fn"] = _noop
             _perf_emitter_cache["status_error"] = None
             _perf_emitter_cache["status_success"] = None
@@ -193,7 +198,8 @@ class AgenticRouter:
 
         async def _mad_handler(user_input: str, context: dict[str, Any]) -> Any:
             outputs = await asyncio.gather(
-                *[d(user_input, context) for d in debaters], return_exceptions=True,
+                *[d(user_input, context) for d in debaters],
+                return_exceptions=True,
             )
             valid = [o for o in outputs if not isinstance(o, BaseException)]
             if not valid:
@@ -264,7 +270,7 @@ class AgenticRouter:
         # P3/L0: Apply capacity-aware routing if multiple candidates exist
         _capacity_chosen_route = target_name
         if len(_candidate_routes) > 1:
-            try:    # guardian: RoutingCapacityError should be handled with specific context
+            try:  # guardian: RoutingCapacityError should be handled with specific context
                 capacity_ctx = RoutingCapacityContext.create(
                     run_id=_rtid,
                     trace_id=_rtid,
@@ -295,7 +301,11 @@ class AgenticRouter:
                     target_name = _capacity_chosen_route
 
             except RoutingCapacityError as _rce:
-                import logging; logging.getLogger(__name__).debug("agentic_router: RoutingCapacityError swallowed at L297: %s", _rce)
+                import logging
+
+                logging.getLogger(__name__).debug(
+                    "agentic_router: RoutingCapacityError swallowed at L297: %s", _rce
+                )
             except (ImportError, AttributeError, KeyError, TypeError, ValueError) as _cap_exc:
                 Logger.error(
                     "CAPACITY_ROUTING_ERROR: %s, falling back to original routing",
@@ -421,7 +431,10 @@ class AgenticRouter:
                         extra={"target": target_name, "confidence": confidence},
                     )
                     return (target_name, target_name, confidence)
-            except (AttributeError, TypeError) as exc:  # embedding classifier optional, keyword fallback handles
+            except (
+                AttributeError,
+                TypeError,
+            ) as exc:  # embedding classifier optional, keyword fallback handles
                 Logger.warning("agentic_router_embedding_fallback: %s", exc)
 
         text = user_input.lower()

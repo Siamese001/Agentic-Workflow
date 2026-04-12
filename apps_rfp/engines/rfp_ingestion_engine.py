@@ -211,7 +211,9 @@ class PlainTextParser:
         constraint_section = sections.get("constraints", sections.get("limitations", text))
 
         # Budget constraints
-        if match := re.search(r"(?:budget|cost|price)[:\s]*[$]?([\d,]+(?:K|M|B)?)", constraint_section, re.IGNORECASE):
+        if match := re.search(
+            r"(?:budget|cost|price)[:\s]*[$]?([\d,]+(?:K|M|B)?)", constraint_section, re.IGNORECASE
+        ):
             constraints.append(
                 Constraint(
                     constraint_id=f"C{c_counter:03d}",
@@ -222,7 +224,11 @@ class PlainTextParser:
             c_counter += 1
 
         # Timeline constraints
-        if match := re.search(r"(?:duration|timeline|period)[:\s]*(\d+\s*(?:weeks?|months?|years?))", constraint_section, re.IGNORECASE):
+        if match := re.search(
+            r"(?:duration|timeline|period)[:\s]*(\d+\s*(?:weeks?|months?|years?))",
+            constraint_section,
+            re.IGNORECASE,
+        ):
             constraints.append(
                 Constraint(
                     constraint_id=f"C{c_counter:03d}",
@@ -320,7 +326,9 @@ class RfpIngestionEngine:
         # Find appropriate parser
         for parser in self.parsers:
             if parser.can_parse(path):
-                _emit_records_execution_trace("enterprise", "RfpIngestionEngine", f"using_{type(parser).__name__}")
+                _emit_records_execution_trace(
+                    "enterprise", "RfpIngestionEngine", f"using_{type(parser).__name__}"
+                )
                 return parser.parse(path)
 
         # Fallback to plain text

@@ -16,14 +16,17 @@ class TestMetaLearningContract:
     def test_meta_learning_contract_imports(self):
         """Test meta_learning_contract module imports."""
         from agentic_core import meta_learning_contract
+
         assert meta_learning_contract is not None
 
     def test_meta_learning_contract_class(self):
         """Test MetaLearningContract class exists."""
         from agentic_core import MetaLearningContract
+
         assert MetaLearningContract is not None
 
     def test_meta_learning_contract_callable(self):
         """Test meta_learning_contract functions are callable."""
         from agentic_core import validate_meta_learning_contract
+
         assert callable(validate_meta_learning_contract)

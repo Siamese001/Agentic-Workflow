@@ -51,7 +51,9 @@ class SourceIngestionAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SourceIngestionAgent.ingest_sources",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SourceIngestionAgent.ingest_sources",
         )
         _emit_orchestrates_workflow("p3", "source_ingestion_agent", "ingestion_workflow")
         _emit_dispatches_agent("p3", "source_ingestion_agent", "ingestion_dispatch")

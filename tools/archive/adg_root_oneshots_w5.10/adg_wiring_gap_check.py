@@ -88,13 +88,15 @@ class ADGWiringGapChecker:
                 import_count = cursor.fetchone()[0]
 
                 if import_count == 0:
-                    gaps.append({
-                        "type": "registry_gap",
-                        "class_name": class_name,
-                        "class_path": class_path,
-                        "missing_registry": registry_file,
-                        "severity": "warning",
-                    })
+                    gaps.append(
+                        {
+                            "type": "registry_gap",
+                            "class_name": class_name,
+                            "class_path": class_path,
+                            "missing_registry": registry_file,
+                            "severity": "warning",
+                        }
+                    )
 
         conn.close()
         return gaps
@@ -141,12 +143,14 @@ class ADGWiringGapChecker:
             instantiation_count = cursor.fetchone()[0]
 
             if instantiation_count == 0:
-                orphans.append({
-                    "type": "instantiation_orphan",
-                    "class_name": class_name,
-                    "class_path": class_path,
-                    "severity": "info",
-                })
+                orphans.append(
+                    {
+                        "type": "instantiation_orphan",
+                        "class_name": class_name,
+                        "class_path": class_path,
+                        "severity": "info",
+                    }
+                )
 
         conn.close()
         return orphans
@@ -195,12 +199,14 @@ class ADGWiringGapChecker:
             adapter_count = cursor.fetchone()[0]
 
             if adapter_count == 0:
-                gaps.append({
-                    "type": "port_adapter_gap",
-                    "interface_name": interface_name,
-                    "interface_path": interface_path,
-                    "severity": "warning",
-                })
+                gaps.append(
+                    {
+                        "type": "port_adapter_gap",
+                        "interface_name": interface_name,
+                        "interface_path": interface_path,
+                        "severity": "warning",
+                    }
+                )
 
         conn.close()
         return gaps
@@ -230,13 +236,15 @@ class ADGWiringGapChecker:
         )
 
         for row in cursor.fetchall():
-            issues.append({
-                "type": "unresolved_import",
-                "source_file": row[3],
-                "line_no": row[4],
-                "import_target": row[5],
-                "severity": "error",
-            })
+            issues.append(
+                {
+                    "type": "unresolved_import",
+                    "source_file": row[3],
+                    "line_no": row[4],
+                    "import_target": row[5],
+                    "severity": "error",
+                }
+            )
 
         # Dead imports (imports that resolve but module never used)
         cursor.execute(
@@ -257,13 +265,15 @@ class ADGWiringGapChecker:
         )
 
         for row in cursor.fetchall():
-            issues.append({
-                "type": "dead_import",
-                "source_file": row[1],
-                "line_no": row[2],
-                "import_target": row[3],
-                "severity": "warning",
-            })
+            issues.append(
+                {
+                    "type": "dead_import",
+                    "source_file": row[1],
+                    "line_no": row[2],
+                    "import_target": row[3],
+                    "severity": "warning",
+                }
+            )
 
         conn.close()
         return issues
@@ -326,7 +336,9 @@ def main() -> int:
         all_issues.extend(issues)
         print(f"\nRegistry Gaps: {len(issues)}")
         for issue in issues[:10]:
-            print(f"  [{issue['severity'].upper()}] {issue['class_name']} missing from {issue['missing_registry']}")
+            print(
+                f"  [{issue['severity'].upper()}] {issue['class_name']} missing from {issue['missing_registry']}"
+            )
 
     if args.instantiation_orphans or args.all:
         issues = checker.check_instantiation_orphans()
@@ -347,7 +359,9 @@ def main() -> int:
         all_issues.extend(issues)
         print(f"\nDead/Unresolved Imports: {len(issues)}")
         for issue in issues[:10]:
-            print(f"  [{issue['severity'].upper()}] {issue['type']}: {issue['import_target']} in {issue['source_file']}")
+            print(
+                f"  [{issue['severity'].upper()}] {issue['type']}: {issue['import_target']} in {issue['source_file']}"
+            )
 
     # Summary
     print(f"\nTotal Issues: {len(all_issues)}")

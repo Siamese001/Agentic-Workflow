@@ -42,16 +42,19 @@ def measure_cpu_during_adg_generation():
             cpu_percent = psutil.cpu_percent(interval=0.5)
             memory_info = psutil.virtual_memory()
 
-            cpu_samples.append({
-                'timestamp': time.time() - start_time,
-                'cpu_percent': cpu_percent,
-                'memory_percent': memory_info.percent,
-                'memory_used_gb': memory_info.used / (1024**3),
-            })
+            cpu_samples.append(
+                {
+                    "timestamp": time.time() - start_time,
+                    "cpu_percent": cpu_percent,
+                    "memory_percent": memory_info.percent,
+                    "memory_used_gb": memory_info.used / (1024**3),
+                }
+            )
 
             if len(cpu_samples) % 10 == 0:
-                print(f"  Sample {len(cpu_samples)}: CPU={cpu_percent:.1f}%, "
-                      f"Memory={memory_info.percent:.1f}%")
+                print(
+                    f"  Sample {len(cpu_samples)}: CPU={cpu_percent:.1f}%, Memory={memory_info.percent:.1f}%"
+                )
     except KeyboardInterrupt:
         process.terminate()
         raise
@@ -61,31 +64,31 @@ def measure_cpu_during_adg_generation():
 
     # Calculate statistics
     if cpu_samples:
-        avg_cpu = sum(s['cpu_percent'] for s in cpu_samples) / len(cpu_samples)
-        max_cpu = max(s['cpu_percent'] for s in cpu_samples)
-        avg_memory = sum(s['memory_percent'] for s in cpu_samples) / len(cpu_samples)
-        max_memory = max(s['memory_percent'] for s in cpu_samples)
+        avg_cpu = sum(s["cpu_percent"] for s in cpu_samples) / len(cpu_samples)
+        max_cpu = max(s["cpu_percent"] for s in cpu_samples)
+        avg_memory = sum(s["memory_percent"] for s in cpu_samples) / len(cpu_samples)
+        max_memory = max(s["memory_percent"] for s in cpu_samples)
     else:
         avg_cpu = max_cpu = avg_memory = max_memory = 0
 
     results = {
-        'timestamp': datetime.now().isoformat(),
-        'duration_seconds': duration,
-        'cpu_metrics': {
-            'average_percent': round(avg_cpu, 2),
-            'max_percent': round(max_cpu, 2),
-            'samples_count': len(cpu_samples),
+        "timestamp": datetime.now().isoformat(),
+        "duration_seconds": duration,
+        "cpu_metrics": {
+            "average_percent": round(avg_cpu, 2),
+            "max_percent": round(max_cpu, 2),
+            "samples_count": len(cpu_samples),
         },
-        'memory_metrics': {
-            'average_percent': round(avg_memory, 2),
-            'max_percent': round(max_memory, 2),
-            'peak_used_gb': round(max(s['memory_used_gb'] for s in cpu_samples), 2) if cpu_samples else 0,
+        "memory_metrics": {
+            "average_percent": round(avg_memory, 2),
+            "max_percent": round(max_memory, 2),
+            "peak_used_gb": round(max(s["memory_used_gb"] for s in cpu_samples), 2) if cpu_samples else 0,
         },
-        'samples': cpu_samples[:100],  # Store first 100 samples for analysis
+        "samples": cpu_samples[:100],  # Store first 100 samples for analysis
     }
 
     # Save results
-    output_path = Path('artifacts/adg/cpu_usage_test.json')
+    output_path = Path("artifacts/adg/cpu_usage_test.json")
     output_path.write_text(json.dumps(results, indent=2))
 
     print("=" * 60)
@@ -98,6 +101,7 @@ def measure_cpu_during_adg_generation():
     print(f"Results saved to: {output_path}")
 
     return results
+
 
 if __name__ == "__main__":
     results = measure_cpu_during_adg_generation()

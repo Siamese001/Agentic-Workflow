@@ -19,6 +19,7 @@ class AccessTicket:
 
     10C-REQ-158: capability_token, sandbox_envelope, bounded scope, expiration, timeout.
     """
+
     capability_token: str
     sandbox_envelope: str
     scope: list[str]
@@ -116,7 +117,4 @@ class TicketBuilder:
     def get_active_tickets(self) -> list[AccessTicket]:
         """Get all non-expired tickets."""
         current_time = time.time()
-        return [
-            t for t in self._issued_tickets.values()
-            if t.expiration > current_time
-        ]
+        return [t for t in self._issued_tickets.values() if t.expiration > current_time]

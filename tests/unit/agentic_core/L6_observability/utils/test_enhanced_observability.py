@@ -1,6 +1,5 @@
 """Tests for Enhanced Observability System."""
 
-
 from agentic_core.L6_observability.utils.enhanced_observability import (
     Alert,
     AlertSeverity,

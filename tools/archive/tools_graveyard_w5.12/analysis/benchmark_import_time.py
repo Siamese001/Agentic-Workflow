@@ -17,7 +17,7 @@ import sys
 import time
 start = time.time()
 try:
-    import {file_path.replace('/', '.').replace('.py', '')}
+    import {file_path.replace("/", ".").replace(".py", "")}
     end = time.time()
     print(f"SUCCESS: {{end - start:.4f}} seconds")
 except Exception as e:
@@ -48,6 +48,7 @@ except Exception as e:
     finally:
         script_path.unlink(missing_ok=True)
 
+
 def main():
     # Test a few files with different emitter counts
     test_files = [
@@ -70,6 +71,7 @@ def main():
 
     print("Expected: Each file should take ~1-2 seconds due to emitter calls")
     print("After stripping: Should be <0.1 seconds per file")
+
 
 if __name__ == "__main__":
     main()

@@ -8,6 +8,7 @@ Reads the classified JSON and checks source to identify:
 Usage:
     python tools/evidence/_w2_subcategorize.py
 """
+
 from __future__ import annotations
 
 import ast

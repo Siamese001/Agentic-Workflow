@@ -345,7 +345,9 @@ class PromptInjectionLoader:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptInjectionLoader.save_injection",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "PromptInjectionLoader.save_injection",
         )
 
         file_path = self.config.injection_dir / f"{injection_id}.json"

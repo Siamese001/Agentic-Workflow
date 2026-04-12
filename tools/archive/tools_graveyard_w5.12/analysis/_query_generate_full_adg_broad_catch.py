@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """Query specific broad_exception_catch violations in generate_full_adg.py."""
+
 import sqlite3
 from pathlib import Path
 
 adg_dir = Path(__file__).resolve().parents[2] / "artifacts" / "adg"
-dbs = sorted([p for p in adg_dir.glob("adg_indexed_*.sqlite") if p.stat().st_size > 0], key=lambda p: p.stat().st_mtime, reverse=True)
+dbs = sorted(
+    [p for p in adg_dir.glob("adg_indexed_*.sqlite") if p.stat().st_size > 0],
+    key=lambda p: p.stat().st_mtime,
+    reverse=True,
+)
 db = dbs[0]
 
 conn = sqlite3.connect(db)

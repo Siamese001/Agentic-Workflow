@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.knowledge.document_loaders.html_loader."""
+
 from __future__ import annotations
 
 import importlib
@@ -58,8 +59,7 @@ def test_path_is_instantiable(mod):
     assert cls is not None, "Path must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "Path must be a class"
 
-
-# Arrange
+    # Arrange
     input_data = {}  # Replace with actual test data
 
     # Act

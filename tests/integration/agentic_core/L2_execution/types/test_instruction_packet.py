@@ -16,14 +16,17 @@ class TestInstructionPacket:
     def test_instruction_packet_imports(self):
         """Test instruction_packet module imports."""
         from agentic_core import instruction_packet
+
         assert instruction_packet is not None
 
     def test_instruction_packet_class(self):
         """Test InstructionPacket class exists."""
         from agentic_core import InstructionPacket
+
         assert InstructionPacket is not None
 
     def test_instruction_packet_callable(self):
         """Test instruction_packet functions are callable."""
         from agentic_core import validate_instruction_packet
+
         assert callable(validate_instruction_packet)

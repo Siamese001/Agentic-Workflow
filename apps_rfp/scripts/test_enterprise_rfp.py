@@ -69,7 +69,9 @@ def _assert_detailed_observability(result: object) -> None:
     _assert(bool(trace_id), "Trace ID missing - distributed tracing not wired")
     _assert(len(trace_id) >= 16, f"Trace ID too short ({len(trace_id)} chars)")
 
-    complete_steps = {entry.get("step", "").upper() for entry in execution_log if entry.get("status") == "complete"}
+    complete_steps = {
+        entry.get("step", "").upper() for entry in execution_log if entry.get("status") == "complete"
+    }
     _assert(len(complete_steps) >= 2, f"Insufficient completed steps: {complete_steps}")
 
 

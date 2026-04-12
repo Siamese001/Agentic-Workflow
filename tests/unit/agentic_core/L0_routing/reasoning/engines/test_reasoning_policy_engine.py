@@ -3,6 +3,7 @@
 G2 Fix: Provides test coverage for calibrate_from_outcomes method
 which was previously untested.
 """
+
 from __future__ import annotations
 
 import pytest

@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L0_routing.scripts.check_protected_files_util."""
+
 from __future__ import annotations
 
 import importlib

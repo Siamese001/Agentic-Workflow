@@ -120,6 +120,7 @@ class TemplateRegistry:
     def _get_version_store(self):
         """Lazy import to avoid circular dependencies."""
         from agentic_core.L4_state.utils.memory.prompt_version_store import get_version_store
+
         return get_version_store()
 
     def get_s0(self, version_hash: str) -> str:
@@ -153,7 +154,9 @@ class TemplateRegistry:
         return store.get_mixin(mixin_id)
 
     def register_template(
-        self, manifest: TemplateManifest, content: str,
+        self,
+        manifest: TemplateManifest,
+        content: str,
     ) -> str:
         """Register a new template (admin use only).
 

@@ -5,16 +5,13 @@ Strategy:
 2. For FileNotFoundErrors: wrap module-level file reads in try/except
 3. For ImportErrors: add try/except guards
 """
+
 import ast
 import os
 import re
 
 ROOT = r"C:\Git\Agentic-Workflow"
 fixed = 0
-
-
-
-
 
 
 def wrap_module_level_code(filepath, lineno):
@@ -32,14 +29,23 @@ def wrap_module_level_code(filepath, lineno):
     end = start + 1
     while end < len(lines):
         stripped = lines[end].strip()
-        if stripped == "" or stripped.startswith("def ") or stripped.startswith("class ") or stripped.startswith("@"):
+        if (
+            stripped == ""
+            or stripped.startswith("def ")
+            or stripped.startswith("class ")
+            or stripped.startswith("@")
+        ):
             break
         end += 1
 
     # Wrap in try/except
     block = lines[start:end]
     indented = ["    " + l for l in block]
-    wrapped = ["try:\n"] + indented + ["except (FileNotFoundError, OSError):  # guardian: allow-silent-swallow\n", "    pass\n"]
+    wrapped = (
+        ["try:\n"]
+        + indented
+        + ["except (FileNotFoundError, OSError):  # guardian: allow-silent-swallow\n", "    pass\n"]
+    )
 
     new_lines = lines[:start] + wrapped + lines[end:]
     new_src = "".join(new_lines)
@@ -57,9 +63,17 @@ def wrap_module_level_code(filepath, lineno):
 
 # Known path constants that can be imported
 PATH_CONSTANTS = {
-    "AGENTIC_CORE_DIR", "APPS_LIC_DIR", "APPS_RG_DIR", "APPS_SHARED_DIR",
-    "ARCHIVES_DIR", "REPORTS_DIR", "OPS_SCRIPTS_DIR", "SYSTEM_LEARNING_DIR",
-    "TESTS_UNIT_DIR", "GLOBAL_EXCLUDED_DIRS", "L0_MAINTENANCE_DIR",
+    "AGENTIC_CORE_DIR",
+    "APPS_LIC_DIR",
+    "APPS_RG_DIR",
+    "APPS_SHARED_DIR",
+    "ARCHIVES_DIR",
+    "REPORTS_DIR",
+    "OPS_SCRIPTS_DIR",
+    "SYSTEM_LEARNING_DIR",
+    "TESTS_UNIT_DIR",
+    "GLOBAL_EXCLUDED_DIRS",
+    "L0_MAINTENANCE_DIR",
 }
 
 MIXIN_STUBS = {

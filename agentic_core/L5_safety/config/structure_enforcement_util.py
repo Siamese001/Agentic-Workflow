@@ -50,10 +50,28 @@ APP_SPECIFIC_PATTERN_STRINGS: Final[Sequence[str]] = [
 ]
 
 FORBIDDEN_LAYER_PREFIXES: Final[tuple[str, ...]] = (
-    "l0_", "l1_", "l2_", "l3_", "l4_", "l5_", "l6_",
-    "L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_",
-    "p0_", "p1_", "p2_", "p3_",
-    "P0_", "P1_", "P2_", "P3_",
+    "l0_",
+    "l1_",
+    "l2_",
+    "l3_",
+    "l4_",
+    "l5_",
+    "l6_",
+    "L0_",
+    "L1_",
+    "L2_",
+    "L3_",
+    "L4_",
+    "L5_",
+    "L6_",
+    "p0_",
+    "p1_",
+    "p2_",
+    "p3_",
+    "P0_",
+    "P1_",
+    "P2_",
+    "P3_",
 )
 
 LAYER_PREFIX_FILENAME_ALLOWLIST: Final[frozenset[str]] = frozenset(
@@ -74,8 +92,16 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
     },
     "docs/reports/audit": {
         "file_extensions": [".md", ".json", ".csv", ".txt"],
-        "naming_patterns": [re.compile(".*audit.*"), re.compile(".*drift.*"), re.compile(".*variance.*"), re.compile(".*compliance.*")],
-        "content_signals": {"headers": ["# Audit Report", "## Violations", "## Drift"], "keywords": ["audit", "drift", "variance", "compliance", "SSOT"]},
+        "naming_patterns": [
+            re.compile(".*audit.*"),
+            re.compile(".*drift.*"),
+            re.compile(".*variance.*"),
+            re.compile(".*compliance.*"),
+        ],
+        "content_signals": {
+            "headers": ["# Audit Report", "## Violations", "## Drift"],
+            "keywords": ["audit", "drift", "variance", "compliance", "SSOT"],
+        },
         "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
     },
@@ -88,14 +114,23 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
     },
     "docs/reports/security": {
         "file_extensions": [".md", ".json", ".csv", ".txt"],
-        "naming_patterns": [re.compile(".*security.*"), re.compile(".*vulnerability.*"), re.compile(".*hardened.*"), re.compile(".*hardening.*")],
+        "naming_patterns": [
+            re.compile(".*security.*"),
+            re.compile(".*vulnerability.*"),
+            re.compile(".*hardened.*"),
+            re.compile(".*hardening.*"),
+        ],
         "content_signals": {"keywords": ["security", "vulnerability", "safety", "hardened", "guardrails"]},
         "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
     },
     "docs/reports/telemetry": {
         "file_extensions": [".md", ".json", ".csv", ".txt"],
-        "naming_patterns": [re.compile(".*telemetry.*"), re.compile(".*metrics.*"), re.compile(".*performance.*")],
+        "naming_patterns": [
+            re.compile(".*telemetry.*"),
+            re.compile(".*metrics.*"),
+            re.compile(".*performance.*"),
+        ],
         "content_signals": {"keywords": ["telemetry", "metrics", "performance", "observability"]},
         "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
@@ -103,22 +138,51 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
     "docs/reports/missions": {
         "file_extensions": [".jsonl", ".trace", ".log", ".json"],
         "naming_patterns": [re.compile(".*mission.*"), re.compile(".*trace.*"), re.compile(".*execution.*")],
-        "content_signals": {"json_keys": ["mission_id", "trace_id", "execution_log"], "keywords": ["mission", "trace", "execution"]},
+        "content_signals": {
+            "json_keys": ["mission_id", "trace_id", "execution_log"],
+            "keywords": ["mission", "trace", "execution"],
+        },
         "forbidden_extensions": [".py", ".js", ".sh", ".bat", ".ts"],
         "forbidden_keywords": ["def ", "class ", "import ", "function ", "var ", "const "],
     },
     "agentic_core/L0_routing/utils": {
         "file_extensions": [".log", ".err", ".out", ".txt"],
         "naming_patterns": [re.compile(".*debug.*"), re.compile(".*error.*"), re.compile(".*crash.*")],
-        "content_signals": {"keywords": ["DEBUG", "ERROR", "Traceback (most recent call)", "Exception", "Stack trace"]},
+        "content_signals": {
+            "keywords": ["DEBUG", "ERROR", "Traceback (most recent call)", "Exception", "Stack trace"]
+        },
         "forbidden_extensions": [".py", ".pyc", ".pyo"],
         "forbidden_keywords": ["def main", "if __name__", "import sys", "class "],
     },
     "agentic_core/L0_routing/scripts": {
         "file_extensions": [".py"],
-        "naming_patterns": [re.compile(".*script.*"), re.compile(".*fixer.*"), re.compile(".*tool.*"), re.compile(".*util.*"), re.compile(".*cleaner.*"), re.compile(".*migrat.*")],
-        "content_signals": {"keywords": ["def main(", "if __name__", "#!/usr/bin/env python", "import sys", "argparse", "click", "typer"]},
-        "forbidden_keywords": ["class Test", "def test_", "import unittest", "import pytest", "class BaseAgent", "class Sovereign"],
+        "naming_patterns": [
+            re.compile(".*script.*"),
+            re.compile(".*fixer.*"),
+            re.compile(".*tool.*"),
+            re.compile(".*util.*"),
+            re.compile(".*cleaner.*"),
+            re.compile(".*migrat.*"),
+        ],
+        "content_signals": {
+            "keywords": [
+                "def main(",
+                "if __name__",
+                "#!/usr/bin/env python",
+                "import sys",
+                "argparse",
+                "click",
+                "typer",
+            ]
+        },
+        "forbidden_keywords": [
+            "class Test",
+            "def test_",
+            "import unittest",
+            "import pytest",
+            "class BaseAgent",
+            "class Sovereign",
+        ],
     },
     "logs": {
         "file_extensions": [".jsonl", ".trace"],
@@ -128,8 +192,15 @@ ARTIFACT_ROUTING_MAP: Final[Mapping[str, Mapping[str, Any]]] = {
     },
     "data/processed": {
         "file_extensions": [".json", ".csv", ".parquet"],
-        "naming_patterns": [re.compile(".*dataset.*"), re.compile(".*processed.*"), re.compile("agent_discovery.*\\.json$"), re.compile(".*manifest.*\\.json$")],
-        "content_signals": {"json_keys": ["dataset_version", "record_count", "processed_at", "schema_version"]},
+        "naming_patterns": [
+            re.compile(".*dataset.*"),
+            re.compile(".*processed.*"),
+            re.compile("agent_discovery.*\\.json$"),
+            re.compile(".*manifest.*\\.json$"),
+        ],
+        "content_signals": {
+            "json_keys": ["dataset_version", "record_count", "processed_at", "schema_version"]
+        },
         "forbidden_keywords": ["def ", "class ", "api_key", "secret"],
     },
 }
@@ -180,7 +251,8 @@ def is_app_specific_file(filename: str) -> bool:
 
 
 def validate_artifact_routing(
-    filename: str, content: str | None = None,
+    filename: str,
+    content: str | None = None,
 ) -> tuple[bool, str | None, str | None]:
     """
     Validate file against ARTIFACT_ROUTING_MAP negative logic.

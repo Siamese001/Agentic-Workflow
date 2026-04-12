@@ -16,15 +16,18 @@ class TestAdgCliCommands:
     def test_adg_cli_imports(self):
         """Test ADG CLI module imports."""
         from tools.adg import cli_commands
+
         assert cli_commands is not None
 
     def test_cli_command_class(self):
         """Test CLI command class exists."""
         from tools.adg.cli_commands import CLICommand
+
         assert CLICommand is not None
 
     def test_execute_cli_command(self):
         """Test execute CLI command function."""
         from tools.adg.cli_commands import execute_command
+
         assert callable(execute_command)
         assert callable(build_artifact)

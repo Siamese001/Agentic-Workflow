@@ -4,7 +4,12 @@ from pathlib import Path
 sqlite_path = Path("C:/Git/Agentic-Workflow/artifacts/adg/adg_indexed_04062026_1723.sqlite")
 
 pipeline_paths = ("tools/adg/%", "tools/generate/%", "agentic_core/adg/%")
-swallow_types = ("silent_exception_swallow", "broad_exception_catch", "log_and_swallow", "return_none_swallow")
+swallow_types = (
+    "silent_exception_swallow",
+    "broad_exception_catch",
+    "log_and_swallow",
+    "return_none_swallow",
+)
 
 query = """
     SELECT DISTINCT source_file

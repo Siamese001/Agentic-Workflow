@@ -210,7 +210,9 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
 
                 _trace_id = str(_uuid.uuid4())
                 _emit_records_execution_trace(
-                    _trace_id, LayerSegment.L1_REASONING, "DarkReasoningVisitor.visit_Call",
+                    _trace_id,
+                    LayerSegment.L1_REASONING,
+                    "DarkReasoningVisitor.visit_Call",
                 )
 
                 if isinstance(node.func, ast.Attribute) and node.func.attr.lower() in self.reasoning_methods:
@@ -235,8 +237,11 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
         issues.extend(visitor.issues)
     # guardian: allow-silent-swallow
     except Exception as e:
+        import logging
 
-        import logging; logging.getLogger(__name__).debug("dark_reasoning_visitor_validator: Exception swallowed at L237: %s", e)
+        logging.getLogger(__name__).debug(
+            "dark_reasoning_visitor_validator: Exception swallowed at L237: %s", e
+        )
     return issues
 
 

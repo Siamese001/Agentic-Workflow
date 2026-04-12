@@ -4,6 +4,7 @@ Source: tests\adg\test_mcp_config_sovereignty.py
 Extracted: 2026-03-27T06:50:34.082667
 """
 
+
 class TestCompliantConfig:
     def test_no_violations(self, tmp_path: Path) -> None:
         p = _write_config(tmp_path, _COMPLIANT_CONFIG)
@@ -21,6 +22,7 @@ class TestCompliantConfig:
         violations = validate_mcp_sovereignty(real)
         assert violations == [], f"Real mcp_config.json has violations: {violations}"
 
+
 class TestMissingFilesystemKey:
     def test_missing_filesystem_key_reported(self, tmp_path: Path) -> None:
         cfg = {"mcpServers": {"redis": {"command": "npx", "args": []}}}
@@ -32,6 +34,7 @@ class TestMissingFilesystemKey:
         p = _write_config(tmp_path, {"mcpServers": {}})
         v = validate_mcp_sovereignty(p)
         assert any("MISSING_FILESYSTEM" in x for x in v)
+
 
 class TestFilesystemDisabled:
     def test_disabled_true_reported(self, tmp_path: Path) -> None:
@@ -47,6 +50,7 @@ class TestFilesystemDisabled:
         p = _write_config(tmp_path, _COMPLIANT_CONFIG)
         v = validate_mcp_sovereignty(p)
         assert not any("FILESYSTEM_DISABLED" in x for x in v)
+
 
 class TestFilesystemOutOfRepoArg:
     def test_user_path_in_args_reported(self, tmp_path: Path) -> None:
@@ -68,6 +72,7 @@ class TestFilesystemOutOfRepoArg:
         p = _write_config(tmp_path, _COMPLIANT_CONFIG)
         v = validate_mcp_sovereignty(p)
         assert not any("FILESYSTEM_OUT_OF_REPO_ARG" in x for x in v)
+
 
 class TestFilesystemComment:
     def test_missing_comment_reported(self, tmp_path: Path) -> None:
@@ -133,6 +138,7 @@ class TestFilesystemComment:
         v = validate_mcp_sovereignty(p)
         assert any("FILESYSTEM_COMMENT_MISSING_SENSITIVE" in x and sensitive in x for x in v)
 
+
 class TestForbiddenPathFragments:
     def test_windsurf_plans_in_args_reported(self, tmp_path: Path) -> None:
         cfg = {
@@ -172,6 +178,7 @@ class TestForbiddenPathFragments:
         p = _write_config(tmp_path, _COMPLIANT_CONFIG)
         v = validate_mcp_sovereignty(p)
         assert not any("FORBIDDEN_PATH" in x for x in v)
+
 
 class TestEdgeCases:
     def test_missing_file_returns_violation(self, tmp_path: Path) -> None:
@@ -226,6 +233,7 @@ class TestEdgeCases:
         p = _write_config(tmp_path, cfg)
         v = validate_mcp_sovereignty(p)
         assert v == []
+
 
 class TestAdversarialBypass:
     def test_uppercase_users_path_caught(self, tmp_path: Path) -> None:
@@ -385,6 +393,7 @@ class TestAdversarialBypass:
         v = validate_mcp_sovereignty(p)
         assert any("FORBIDDEN_PATH" in x and "rogue_server" in x for x in v)
         assert not any("MISSING_FILESYSTEM" in x for x in v)
+
 
 class TestIdempotency:
     def test_same_file_same_result_twice(self, tmp_path: Path) -> None:

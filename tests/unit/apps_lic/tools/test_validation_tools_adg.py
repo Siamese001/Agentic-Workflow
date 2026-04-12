@@ -16,14 +16,17 @@ class TestValidationToolsAdg:
     def test_validation_tools_adg_imports(self):
         """Test validation_tools_adg module imports."""
         from agentic_core import validation_tools_adg
+
         assert validation_tools_adg is not None
 
     def test_validation_tools_adg_class(self):
         """Test ValidationToolsAdg class exists."""
         from agentic_core import ValidationToolsAdg
+
         assert ValidationToolsAdg is not None
 
     def test_validation_tools_adg_callable(self):
         """Test validation_tools_adg functions are callable."""
         from agentic_core import validate_validation_tools_adg
+
         assert callable(validate_validation_tools_adg)

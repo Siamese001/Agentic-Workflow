@@ -162,7 +162,10 @@ chk("G11 nodes with layer=L_SHARED", "SELECT COUNT(*) FROM nodes WHERE layer='L_
 
 # G12 – belongs_to_layer edges
 chk(
-    "G12 belongs_to_layer edges", "SELECT COUNT(*) FROM edges WHERE relation_type='belongs_to_layer'", ">=", 1,
+    "G12 belongs_to_layer edges",
+    "SELECT COUNT(*) FROM edges WHERE relation_type='belongs_to_layer'",
+    ">=",
+    1,
 )
 
 # G15 – in_cycle (may be 0 if no cycles)
@@ -227,7 +230,8 @@ print("SAMPLE NODES (new entity types)")
 print("=" * 64)
 for etype in ("layer", "gateway", "seam", "provider", "prompt_slot", "prompt_template"):
     rows = cur.execute(
-        "SELECT adg_name, entity_type, layer FROM nodes WHERE entity_type=? LIMIT 4", (etype,),
+        "SELECT adg_name, entity_type, layer FROM nodes WHERE entity_type=? LIMIT 4",
+        (etype,),
     ).fetchall()
     if rows:
         print(f"\n  [{etype}]")

@@ -332,13 +332,17 @@ class ErrorSanitizer:
                 else:
                     context[key] = "<sanitized>"
         secure_error = error_type(
-            f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})", ErrorCode=ErrorCode, context=context,
+            f"{sanitized_message} (Error: {ErrorCode or 'UNKNOWN'})",
+            ErrorCode=ErrorCode,
+            context=context,
         )
         return secure_error
 
 
 def secure_exception(
-    error_type: type[SecureError] = SecurityError, ErrorCode: str | None = None, sanitize_args: bool = True,
+    error_type: type[SecureError] = SecurityError,
+    ErrorCode: str | None = None,
+    sanitize_args: bool = True,
 ):
     """Decorator to secure exceptions from functions.
 
@@ -349,14 +353,14 @@ def secure_exception(
 
     Returns:
         Decorated function
-    """    # guardian: SecureError should be handled with specific context
+    """  # guardian: SecureError should be handled with specific context
 
     def decorator(func):
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
             try:
                 return await func(*args, **kwargs)
-            except SecureError:    # guardian: SecureError should be handled with specific context
+            except SecureError:  # guardian: SecureError should be handled with specific context
                 raise
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
@@ -370,14 +374,16 @@ def secure_exception(
                             context[f"arg_{name}"] = ErrorSanitizer.sanitize_message(value)
                         else:
                             context[f"arg_{name}"] = "<sanitized>"
-                secure_error = ErrorSanitizer.create_secure_error(error_type, e, ErrorCode, context)    # guardian: SecureError should be handled with specific context
+                secure_error = ErrorSanitizer.create_secure_error(
+                    error_type, e, ErrorCode, context
+                )  # guardian: SecureError should be handled with specific context
                 raise secure_error
 
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
-            except SecureError:    # guardian: SecureError should be handled with specific context
+            except SecureError:  # guardian: SecureError should be handled with specific context
                 raise
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
@@ -414,7 +420,10 @@ class SecureErrorHandler:
         self.Logger = logging.getLogger(logger_name)
 
     def handle_error(
-        self, error: Exception, context: dict[str, Any] | None = None, include_stack: bool = False,
+        self,
+        error: Exception,
+        context: dict[str, Any] | None = None,
+        include_stack: bool = False,
     ) -> SecureError:
         """Handle an error securely.
 

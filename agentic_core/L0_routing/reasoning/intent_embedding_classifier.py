@@ -162,7 +162,9 @@ class IntentEmbeddingClassifier:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "IntentEmbeddingClassifier.encode_prototype",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "IntentEmbeddingClassifier.encode_prototype",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")

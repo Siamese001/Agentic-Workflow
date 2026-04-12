@@ -16,6 +16,7 @@ def test_import(module_name, class_name):
         print(f"  Cannot import {class_name} from {module_name}: {e}")
         return False
 
+
 def fix_init_file_minimal(init_path):
     """Fix __init__.py with only working imports."""
     try:
@@ -25,12 +26,24 @@ def fix_init_file_minimal(init_path):
         working_imports = []
 
         modules_to_test = [
-            ('execution_gateway', ['ExecutionGatewayError', 'UnregisteredAgentError', 'GatewayResult', 'V15ExecutionGateway']),
-            ('boundary_contracts', ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']),
-            ('crypto_trust_contracts', ['SigningError', 'VerificationError', 'ReplayDetectedError', 'EscalationRequiredError']),
-            ('mutation_prohibition', ['SourceMutationBlocked', 'ProtectedRootBlockEvent']),
-            ('routing_contract', ['UngovernnedRouteError', 'StaleRoutingContractError', 'RoutingContractValidationError']),
-            ('traceability_contracts', ['TraceIDFormatError', 'ErrorSignatureError', 'PolicyConfigPinError']),
+            (
+                "execution_gateway",
+                ["ExecutionGatewayError", "UnregisteredAgentError", "GatewayResult", "V15ExecutionGateway"],
+            ),
+            (
+                "boundary_contracts",
+                ["BoundarySchemaError", "ContextRetrievalError", "MetaInvariantError", "SSOTBindingError"],
+            ),
+            (
+                "crypto_trust_contracts",
+                ["SigningError", "VerificationError", "ReplayDetectedError", "EscalationRequiredError"],
+            ),
+            ("mutation_prohibition", ["SourceMutationBlocked", "ProtectedRootBlockEvent"]),
+            (
+                "routing_contract",
+                ["UngovernnedRouteError", "StaleRoutingContractError", "RoutingContractValidationError"],
+            ),
+            ("traceability_contracts", ["TraceIDFormatError", "ErrorSignatureError", "PolicyConfigPinError"]),
         ]
 
         for module_name, class_names in modules_to_test:
@@ -115,14 +128,16 @@ def fix_init_file_minimal(init_path):
         lines.append("")
 
         # Add minimal lifecycle trace calls
-        lines.extend([
-            "emit_replay_key(\"p0\", \"__init__\")",
-            "emit_determinism_digest(\"p0\", \"__init__\")",
-        ])
+        lines.extend(
+            [
+                'emit_replay_key("p0", "__init__")',
+                'emit_determinism_digest("p0", "__init__")',
+            ]
+        )
 
         # Write back
-        with open(init_path, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+        with open(init_path, "w", encoding="utf-8") as f:
+            f.write("\n".join(lines))
 
         print(f"Created minimal {init_path} with {len(working_imports)} working imports")
         return True
@@ -130,10 +145,11 @@ def fix_init_file_minimal(init_path):
         print(f"Error fixing {init_path}: {e}")
         return False
 
+
 def main():
     """Main function to fix L0 routing enforcement imports."""
-    enforcement_dir = pathlib.Path('agentic_core/L0_routing/enforcement')
-    init_path = enforcement_dir / '__init__.py'
+    enforcement_dir = pathlib.Path("agentic_core/L0_routing/enforcement")
+    init_path = enforcement_dir / "__init__.py"
 
     if not init_path.exists():
         print(f"__init__.py not found at {init_path}")
@@ -144,5 +160,6 @@ def main():
     else:
         print("Failed to fix __init__.py")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

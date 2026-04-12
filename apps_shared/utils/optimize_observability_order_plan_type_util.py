@@ -84,7 +84,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-record_execution_trace("optimize_observability_order_plan_type_util", "optimize_observability_order_plan_type_util_trace")
+record_execution_trace(
+    "optimize_observability_order_plan_type_util", "optimize_observability_order_plan_type_util_trace"
+)
 
 
 _emit_emits_metric_event("optimize_observability_order_plan_type_util", "p4obs", "metric_1")
@@ -219,8 +221,11 @@ class OptimizeObservabilityOrderPlanImpl(OptimizeObservabilityOrderPlanProcessor
     def process(self, input_data: dict[str, object]) -> OptimizeObservabilityOrderPlanResult:
         """Process input following L5 architecture principles"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizeObservabilityOrderPlanImpl.process")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizeObservabilityOrderPlanImpl.process"
+        )
 
         self.logger.info(f"Processing {input_data}")
         self._validate_input(input_data)
@@ -307,8 +312,11 @@ class OptimizeObservabilityOrderPlanFactory:
     def create_processor(safety_level: str = "strict") -> OptimizeObservabilityOrderPlanInterface:
         """Create configured engine"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizeObservabilityOrderPlanFactory.create_processor")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizeObservabilityOrderPlanFactory.create_processor"
+        )
 
         constraints = OptimizeObservabilityOrderPlanConstraints(safety_level=safety_level)
         engine = OptimizeObservabilityOrderPlanImpl(constraints)
@@ -338,7 +346,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = optimize_observability_order(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:    # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

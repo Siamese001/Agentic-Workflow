@@ -16,14 +16,17 @@ class TestCircuitbreakerstrategy:
     def test_CircuitbreakerStrategy_imports(self):
         """Test CircuitbreakerStrategy module imports."""
         from agentic_core import CircuitbreakerStrategy
+
         assert CircuitbreakerStrategy is not None
 
     def test_CircuitbreakerStrategy_class(self):
         """Test Circuitbreakerstrategy class exists."""
         from agentic_core import Circuitbreakerstrategy
+
         assert Circuitbreakerstrategy is not None
 
     def test_CircuitbreakerStrategy_callable(self):
         """Test CircuitbreakerStrategy functions are callable."""
         from agentic_core import validate_CircuitbreakerStrategy
+
         assert callable(validate_CircuitbreakerStrategy)

@@ -19,11 +19,13 @@ class ProvenanceIntegrator:
 
 class ProvenanceEvent:
     """Placeholder provenance event."""
+
     pass
 
 
 class ProvenanceRecord:
     """Placeholder provenance record."""
+
     pass
 
 

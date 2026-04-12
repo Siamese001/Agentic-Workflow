@@ -1,11 +1,15 @@
 """Get detailed error breakdown from pytest collection."""
+
 import re
 import subprocess
 from collections import Counter
 
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/", "--co", "--tb=short", "-q"],
-    capture_output=True, text=True, encoding="utf-8", errors="replace",
+    capture_output=True,
+    text=True,
+    encoding="utf-8",
+    errors="replace",
     timeout=30,
 )
 out = r.stdout + "\n" + r.stderr
@@ -24,8 +28,18 @@ for line in lines:
         m = re.search(r"(tests/\S+\.py)", line)
         current_test = m.group(1) if m else "unknown"
     elif current_test and ("Error" in line or "error" in line.lower()):
-        if any(kw in line for kw in ["NameError", "FileNotFoundError", "ModuleNotFoundError",
-                                       "ImportError", "PydanticUserError", "OSError", "AttributeError"]):
+        if any(
+            kw in line
+            for kw in [
+                "NameError",
+                "FileNotFoundError",
+                "ModuleNotFoundError",
+                "ImportError",
+                "PydanticUserError",
+                "OSError",
+                "AttributeError",
+            ]
+        ):
             current_cause = line.strip()
             errors.append((current_test, current_cause))
             current_test = None

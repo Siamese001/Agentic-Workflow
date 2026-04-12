@@ -293,8 +293,11 @@ class EvaluationReport:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationReport.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationReport.canonical_bytes"
+        )
 
         d = self.to_dict()
         d.pop("metadata", None)
@@ -354,12 +357,18 @@ class EvaluationDeltaReport:
 
     @classmethod
     def from_reports(
-        cls, delta_report_id: str, baseline: EvaluationReport, candidate: EvaluationReport,
+        cls,
+        delta_report_id: str,
+        baseline: EvaluationReport,
+        candidate: EvaluationReport,
     ) -> EvaluationDeltaReport:
         """Compute a delta report from two EvaluationReport instances."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationDeltaReport.from_reports")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationDeltaReport.from_reports"
+        )
 
         better = (
             candidate.context_completeness_score > baseline.context_completeness_score
@@ -378,21 +387,26 @@ class EvaluationDeltaReport:
             delta_ndcg=round(candidate.ndcg - baseline.ndcg, 6),
             delta_answer_correctness=round(candidate.answer_correctness - baseline.answer_correctness, 6),
             delta_context_completeness=round(
-                candidate.context_completeness_score - baseline.context_completeness_score, 6,
+                candidate.context_completeness_score - baseline.context_completeness_score,
+                6,
             ),
             delta_support_score=round(candidate.support_score - baseline.support_score, 6),
             delta_high_similarity_wrong_answer_rate=round(
-                candidate.high_similarity_wrong_answer_rate - baseline.high_similarity_wrong_answer_rate, 6,
+                candidate.high_similarity_wrong_answer_rate - baseline.high_similarity_wrong_answer_rate,
+                6,
             ),
             delta_parent_reconstruction_rate=round(
-                candidate.parent_reconstruction_applied_rate - baseline.parent_reconstruction_applied_rate, 6,
+                candidate.parent_reconstruction_applied_rate - baseline.parent_reconstruction_applied_rate,
+                6,
             ),
             delta_classification_f1=round(candidate.classification_f1 - baseline.classification_f1, 6),
             delta_classification_precision=round(
-                candidate.classification_precision - baseline.classification_precision, 6,
+                candidate.classification_precision - baseline.classification_precision,
+                6,
             ),
             delta_classification_recall=round(
-                candidate.classification_recall - baseline.classification_recall, 6,
+                candidate.classification_recall - baseline.classification_recall,
+                6,
             ),
             candidate_is_better=better,
         )

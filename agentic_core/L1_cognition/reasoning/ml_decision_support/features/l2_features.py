@@ -121,7 +121,9 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
     def _register_extraction_functions(self) -> None:
         """Register L2-specific feature extraction functions."""
-        self.register_extraction_function("healer_compatibility_score", self._extract_healer_compatibility_score)
+        self.register_extraction_function(
+            "healer_compatibility_score", self._extract_healer_compatibility_score
+        )
         self.register_extraction_function("historical_success_rate", self._extract_historical_success_rate)
         self.register_extraction_function("resource_availability", self._extract_resource_availability)
         self.register_extraction_function("error_severity_score", self._extract_error_severity_score)
@@ -213,7 +215,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
             if healing_date:
                 if isinstance(healing_date, str):
                     try:
-                        healing_time = datetime.fromisoformat(healing_date.replace('Z', '+00:00'))
+                        healing_time = datetime.fromisoformat(healing_date.replace("Z", "+00:00"))
                     except ValueError:
                         continue
                 else:
@@ -416,10 +418,12 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
             esc_error_type = escalation.get("error_type", "")
             esc_error_category = escalation.get("error_category", "")
 
-            if (esc_error_type == error_type or
-                esc_error_category == error_category or
-                error_type in esc_error_type or
-                esc_error_type in error_type):
+            if (
+                esc_error_type == error_type
+                or esc_error_category == error_category
+                or error_type in esc_error_type
+                or esc_error_type in error_type
+            ):
                 similar_escalations += 1
 
         # Calculate escalation frequency
@@ -437,7 +441,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
             if esc_date:
                 if isinstance(esc_date, str):
                     try:
-                        esc_time = datetime.fromisoformat(esc_date.replace('Z', '+00:00'))
+                        esc_time = datetime.fromisoformat(esc_date.replace("Z", "+00:00"))
                     except ValueError:
                         continue
                 else:
@@ -486,7 +490,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
 
             if retry_attempts > 0:
                 retry_success_rate = successful_retries / retry_attempts
-                base_probability *= (0.5 + retry_success_rate * 0.5)  # Scale based on success rate
+                base_probability *= 0.5 + retry_success_rate * 0.5  # Scale based on success rate
 
         # Adjust based on system state
         system_state = context.get("system_state", {})
@@ -593,7 +597,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
         if deadline:
             try:
                 if isinstance(deadline, str):
-                    deadline_time = datetime.fromisoformat(deadline.replace('Z', '+00:00'))
+                    deadline_time = datetime.fromisoformat(deadline.replace("Z", "+00:00"))
                 else:
                     deadline_time = deadline
 

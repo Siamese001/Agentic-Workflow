@@ -190,8 +190,11 @@ class MCPOperationMixin:
     def mcp_gateway(self):
         """Lazy-load MCP gateway singleton."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MCPOperationMixin.mcp_gateway")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MCPOperationMixin.mcp_gateway"
+        )
 
         if self._mcp_gateway is None:
             from agentic_core.L2_execution.enforcement.SovereignMCPGateway import get_mcp_gateway

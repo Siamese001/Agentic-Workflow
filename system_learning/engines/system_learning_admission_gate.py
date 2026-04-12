@@ -23,7 +23,9 @@ def _get_cache_admission_gate():
         CacheAdmissionDecision,
         CacheAdmissionGate,
     )
+
     return CacheAdmissionDecision, CacheAdmissionGate
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -182,7 +184,9 @@ class SystemLearningCacheAdmissionGate:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "SystemLearningCacheAdmissionGate.evaluate_admission",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "SystemLearningCacheAdmissionGate.evaluate_admission",
         )
 
         self._metrics["total_evaluations"] += 1
@@ -204,7 +208,11 @@ class SystemLearningCacheAdmissionGate:
 
             # Combine decisions
             final_decision = self._combine_admission_decisions(
-                base_decision, learning_result, drift_result, telemetry_result, context,
+                base_decision,
+                learning_result,
+                drift_result,
+                telemetry_result,
+                context,
             )
 
             # Record decision
@@ -223,7 +231,9 @@ class SystemLearningCacheAdmissionGate:
         except Exception as e:
             logger.error(f"Admission evaluation failed: {e}")
             _emit_captures_runtime_anomaly(
-                "p4obs", "system_learning_admission_gate", "admission_evaluation_failure",
+                "p4obs",
+                "system_learning_admission_gate",
+                "admission_evaluation_failure",
             )
 
             # Fail closed on errors

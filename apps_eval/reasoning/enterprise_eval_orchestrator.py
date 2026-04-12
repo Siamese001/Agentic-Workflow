@@ -154,10 +154,15 @@ class EnterpriseEvalOrchestrator:
                 decompositions, test_plan = await self._step_decompose(request.criteria_items)
                 result.decompositions = decompositions
                 result.test_plan = test_plan
-                self._log_step(trace_id, "DECOMPOSE", "complete", details={
-                    "components": test_plan.get("total_components", 0),
-                    "estimated_time_ms": test_plan.get("total_estimated_time_ms", 0),
-                })
+                self._log_step(
+                    trace_id,
+                    "DECOMPOSE",
+                    "complete",
+                    details={
+                        "components": test_plan.get("total_components", 0),
+                        "estimated_time_ms": test_plan.get("total_estimated_time_ms", 0),
+                    },
+                )
 
             # === STEP 2: RETRIEVE (L2 Execution/RAG) ===
             if request.enable_retrieval:
@@ -165,21 +170,31 @@ class EnterpriseEvalOrchestrator:
                 similar, trends = await self._step_retrieve(request.suite_ids, request.evaluation_type)
                 result.similar_evaluations = similar
                 result.trend_analysis = trends
-                self._log_step(trace_id, "RETRIEVE", "complete", details={
-                    "similar_found": len(similar),
-                    "trends_analyzed": len(trends),
-                })
+                self._log_step(
+                    trace_id,
+                    "RETRIEVE",
+                    "complete",
+                    details={
+                        "similar_found": len(similar),
+                        "trends_analyzed": len(trends),
+                    },
+                )
 
             # === STEP 2B: CONTEXT ENRICHMENT (Repo Signals) ===
             if request.enable_repo_signals:
                 self._log_step(trace_id, "ENRICH", "start")
                 repo_signals = await self._step_collect_repo_signals()
                 result.repo_signals = repo_signals
-                self._log_step(trace_id, "ENRICH", "complete", details={
-                    "adg_available": bool(repo_signals.get("adg", {}).get("available")),
-                    "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
-                    "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
-                })
+                self._log_step(
+                    trace_id,
+                    "ENRICH",
+                    "complete",
+                    details={
+                        "adg_available": bool(repo_signals.get("adg", {}).get("available")),
+                        "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
+                        "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
+                    },
+                )
 
             # === STEP 3: EXECUTE (L3 Orchestration) ===
             self._log_step(trace_id, "EXECUTE", "start")
@@ -188,10 +203,15 @@ class EnterpriseEvalOrchestrator:
                 result.decompositions,
             )
             result.evaluation_results = eval_results
-            self._log_step(trace_id, "EXECUTE", "complete", details={
-                "agents_executed": eval_results.get("agents_executed", 0),
-                "overall_score": eval_results.get("overall_score", 0),
-            })
+            self._log_step(
+                trace_id,
+                "EXECUTE",
+                "complete",
+                details={
+                    "agents_executed": eval_results.get("agents_executed", 0),
+                    "overall_score": eval_results.get("overall_score", 0),
+                },
+            )
 
             # === STEP 4: VALIDATE (L5 Safety) ===
             if request.enable_validation:
@@ -202,11 +222,16 @@ class EnterpriseEvalOrchestrator:
                 )
                 result.validation_result = asdict(validation)
                 result.gate_result = gates
-                self._log_step(trace_id, "VALIDATE", "complete", details={
-                    "validation_passed": validation.passed,
-                    "gates_passed": gates.get("gates_passed", False),
-                    "violations": len(validation.violations),
-                })
+                self._log_step(
+                    trace_id,
+                    "VALIDATE",
+                    "complete",
+                    details={
+                        "validation_passed": validation.passed,
+                        "gates_passed": gates.get("gates_passed", False),
+                        "violations": len(validation.violations),
+                    },
+                )
 
             # === STEP 5: EMIT ===
             self._log_step(trace_id, "EMIT", "start")
@@ -218,7 +243,9 @@ class EnterpriseEvalOrchestrator:
             result.total_execution_time_ms = elapsed_ms
 
             # Determine final status
-            if result.validation_result.get("passed", False) and result.gate_result.get("gates_passed", False):
+            if result.validation_result.get("passed", False) and result.gate_result.get(
+                "gates_passed", False
+            ):
                 result.status = "complete"
             elif result.gate_result.get("gates_passed", False):
                 result.status = "partial"
@@ -227,7 +254,9 @@ class EnterpriseEvalOrchestrator:
 
             result.execution_log = self._execution_log
 
-            _log.info(f"[EnterpriseEvalOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms")
+            _log.info(
+                f"[EnterpriseEvalOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms"
+            )
             _emit_captures_pattern("enterprise", "EnterpriseEvalOrchestrator", "process_complete")
 
         except Exception as exc:
@@ -381,7 +410,9 @@ class EnterpriseEvalOrchestrator:
         lines.append(f"- **Overall Score:** {eval_results.get('overall_score', 0):.0%}")
         lines.append(f"- **Agents Executed:** {eval_results.get('agents_executed', 0)}")
         lines.append(f"- **Gates Passed:** {'✅' if result.gate_result.get('gates_passed') else '❌'}")
-        lines.append(f"- **Validation:** {'✅ PASSED' if result.validation_result.get('passed') else '⚠️ REVIEW'}")
+        lines.append(
+            f"- **Validation:** {'✅ PASSED' if result.validation_result.get('passed') else '⚠️ REVIEW'}"
+        )
         lines.append("")
 
         # Test plan summary
@@ -396,7 +427,11 @@ class EnterpriseEvalOrchestrator:
             lines.append("")
 
         # Dimension scores
-        dimension_scores = eval_results.get("results_by_type", {}).get("scorecard_compute", [{}])[0].get("dimension_scores", {})
+        dimension_scores = (
+            eval_results.get("results_by_type", {})
+            .get("scorecard_compute", [{}])[0]
+            .get("dimension_scores", {})
+        )
         if dimension_scores:
             lines.append("## Dimension Scores")
             lines.append("")
@@ -425,7 +460,9 @@ class EnterpriseEvalOrchestrator:
             governance = result.repo_signals.get("governance", {})
 
             lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
-            lines.append(f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}")
+            lines.append(
+                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
+            )
             lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
             lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
             lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
@@ -439,7 +476,9 @@ class EnterpriseEvalOrchestrator:
         lines.append("## Execution Lineage")
         lines.append("")
         for entry in result.execution_log:
-            status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
+            status_icon = (
+                "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
+            )
             lines.append(f"{status_icon} **{entry['step']}**: {entry['status']}")
         lines.append("")
 
@@ -475,7 +514,9 @@ class EnterpriseEvalOrchestrator:
             "trace_id": result.trace_id,
             "created_at": datetime.now().isoformat(),
             "overall_score": result.evaluation_results.get("overall_score", 0.0),
-            "dimension_scores": result.evaluation_results.get("results_by_type", {}).get("scorecard_compute", [{}])[0].get("dimension_scores", {}),
+            "dimension_scores": result.evaluation_results.get("results_by_type", {})
+            .get("scorecard_compute", [{}])[0]
+            .get("dimension_scores", {}),
         }
 
         path.write_text(json.dumps(baseline, indent=2), encoding="utf-8")

@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.evaluation.metrics.ragas_metrics."""
+
 from __future__ import annotations
 
 import importlib
@@ -79,8 +80,7 @@ def test_layersegment_is_instantiable(mod):
     assert cls is not None, "LayerSegment must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "LayerSegment must be a class"
 
-
-# Arrange
+    # Arrange
     input_data = {}  # Replace with actual test data
 
     # Act

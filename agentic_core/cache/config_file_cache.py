@@ -206,8 +206,11 @@ class ConfigFileCache:
             FileNotFoundError: If config_path does not exist
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigFileCache.get_or_fetch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigFileCache.get_or_fetch"
+        )
 
         if not replay_mode:
             try:
@@ -264,6 +267,7 @@ class ConfigFileCache:
 def get_config_file_cache() -> ConfigFileCache:
     """Get the singleton config file cache instance."""
     return ConfigFileCache()
+
 
 _emit_reads_through("l4", "config_file_cache", "urg_read_1")
 _emit_reads_through("l4", "config_file_cache", "urg_read_2")

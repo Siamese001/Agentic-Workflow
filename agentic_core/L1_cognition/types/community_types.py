@@ -11,9 +11,11 @@ from dataclasses import dataclass
 # Placeholder for community types - full implementation was created and scanned by ADG
 # This file serves as a marker that the implementation was completed
 
+
 @dataclass
 class CommunityDetectionConfig:
     """Configuration for community detection algorithms."""
+
     algorithm: str = "leiden"
     resolution: float = 1.0
     random_state: int = 42
@@ -22,5 +24,6 @@ class CommunityDetectionConfig:
     use_igraph: bool = True
     enable_hierarchical: bool = True
     max_hierarchy_levels: int = 5
+
 
 __all__ = ["CommunityDetectionConfig"]

@@ -4,8 +4,8 @@
 import sqlite3
 from pathlib import Path
 
-adg_dir = Path('artifacts/adg')
-sqlite_files = sorted(adg_dir.glob('adg_indexed_*.sqlite'))
+adg_dir = Path("artifacts/adg")
+sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
 sqlite_path = sqlite_files[-1]
 conn = sqlite3.connect(str(sqlite_path))
 cur = conn.cursor()
@@ -33,7 +33,9 @@ print(f"Rows with fan_in > 0: {cur.fetchone()[0]}")
 
 # Check if edges reference node IDs correctly
 print("\n=== Edge src/dst ID sample ===")
-cur.execute("SELECT src_id, dst_id, relation_type FROM edges WHERE relation_type IN ('imports', 'calls') LIMIT 5")
+cur.execute(
+    "SELECT src_id, dst_id, relation_type FROM edges WHERE relation_type IN ('imports', 'calls') LIMIT 5"
+)
 print("Sample edges (src_id, dst_id, type):")
 for row in cur.fetchall():
     print(f"  {row}")
@@ -45,8 +47,8 @@ for row in cur.fetchall():
     print(f"  {row}")
 
 print("\n=== Check join between edges and nodes ===")
-cur.execute("""SELECT COUNT(*) FROM edges e 
-    JOIN nodes n ON e.dst_id = n.id 
+cur.execute("""SELECT COUNT(*) FROM edges e
+    JOIN nodes n ON e.dst_id = n.id
     WHERE e.relation_type IN ('imports', 'calls')""")
 print(f"Joinable edges: {cur.fetchone()[0]}")
 

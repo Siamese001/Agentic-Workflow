@@ -189,7 +189,10 @@ class OrchestrationMixin:
     """
 
     def execute_workflow(
-        self, steps: list[WorkflowStep], stop_on_failure: bool = True, rollback_on_failure: bool = False,
+        self,
+        steps: list[WorkflowStep],
+        stop_on_failure: bool = True,
+        rollback_on_failure: bool = False,
     ) -> dict[str, Any]:
         """
         Execute a multi-step workflow with error handling.
@@ -203,8 +206,11 @@ class OrchestrationMixin:
             Dictionary with workflow execution results
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationMixin.execute_workflow")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationMixin.execute_workflow"
+        )
 
         results = {"steps": [], "status": "completed", "errors": []}
         completed_steps = []
@@ -246,7 +252,8 @@ class OrchestrationMixin:
                         self.log(f"Rollback failed for {step.name}: {e}")
 
     def orchestrate_parallel(
-        self, tasks: list[tuple[str, Callable, tuple, dict[str, Any]]],
+        self,
+        tasks: list[tuple[str, Callable, tuple, dict[str, Any]]],
     ) -> dict[str, Any]:
         """
         Orchestrate parallel task execution.
@@ -270,7 +277,9 @@ class OrchestrationMixin:
         return results
 
     def coordinate_agents(
-        self, agent_tasks: dict[str, Callable], dependencies: dict[str, list[str]] | None = None,
+        self,
+        agent_tasks: dict[str, Callable],
+        dependencies: dict[str, list[str]] | None = None,
     ) -> dict[str, Any]:
         """
         Coordinate multiple agents with dependency management.

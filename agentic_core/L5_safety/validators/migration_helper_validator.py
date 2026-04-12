@@ -248,13 +248,17 @@ class MigrationHelper:
             ComplianceResult with compliance details
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "MigrationHelper.check_agent_compliance", "L5_POLICY",
+            str(uuid.uuid4()),
+            "MigrationHelper.check_agent_compliance",
+            "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "MigrationHelper.check_agent_compliance",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "MigrationHelper.check_agent_compliance",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

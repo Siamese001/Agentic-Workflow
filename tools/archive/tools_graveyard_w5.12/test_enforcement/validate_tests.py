@@ -32,11 +32,11 @@ class TestValidator:
 
         # Required markers for each category
         self.category_markers = {
-            'CORE': ['@pytest.mark.core'],
-            'OPTIONAL': ['@pytest.mark.optional', '@pytest.mark.aws', '@pytest.mark.gpu', '@pytest.mark.db'],
-            'PLATFORM-SPECIFIC': ['@pytest.mark.platform', '@pytest.mark.windows', '@pytest.mark.linux'],
-            'EXTERNAL': ['@pytest.mark.external'],
-            'EXPERIMENTAL': ['@pytest.mark.experimental'],
+            "CORE": ["@pytest.mark.core"],
+            "OPTIONAL": ["@pytest.mark.optional", "@pytest.mark.aws", "@pytest.mark.gpu", "@pytest.mark.db"],
+            "PLATFORM-SPECIFIC": ["@pytest.mark.platform", "@pytest.mark.windows", "@pytest.mark.linux"],
+            "EXTERNAL": ["@pytest.mark.external"],
+            "EXPERIMENTAL": ["@pytest.mark.experimental"],
         }
 
     def validate_test_file(self, file_path: Path) -> list[dict[str, Any]]:
@@ -44,7 +44,7 @@ class TestValidator:
         violations = []
 
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content, filename=str(file_path))
@@ -53,24 +53,28 @@ class TestValidator:
 
             violations.extend(validator.violations)
 
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
-            violations.append({
-                'file_path': str(file_path),
-                'line_number': e.lineno or 0,
-                'violation_type': 'syntax_error',
-                'severity': SeverityLevel.HIGH.value,
-                'description': f'Syntax error: {e}',
-                'suggested_fix': 'Fix syntax error before validation',
-            })
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
+            violations.append(
+                {
+                    "file_path": str(file_path),
+                    "line_number": e.lineno or 0,
+                    "violation_type": "syntax_error",
+                    "severity": SeverityLevel.HIGH.value,
+                    "description": f"Syntax error: {e}",
+                    "suggested_fix": "Fix syntax error before validation",
+                }
+            )
         except Exception as e:
-            violations.append({
-                'file_path': str(file_path),
-                'line_number': 0,
-                'violation_type': 'parse_error',
-                'severity': SeverityLevel.HIGH.value,
-                'description': f'Parse error: {e}',
-                'suggested_fix': 'Fix file parsing issue',
-            })
+            violations.append(
+                {
+                    "file_path": str(file_path),
+                    "line_number": 0,
+                    "violation_type": "parse_error",
+                    "severity": SeverityLevel.HIGH.value,
+                    "description": f"Parse error: {e}",
+                    "suggested_fix": "Fix file parsing issue",
+                }
+            )
 
         return violations
 
@@ -111,8 +115,8 @@ class TestValidator:
         }
 
         for violation in violations:
-            vtype = violation['violation_type']
-            severity = violation['severity']
+            vtype = violation["violation_type"]
+            severity = violation["severity"]
 
             by_type[vtype] = by_type.get(vtype, 0) + 1
             by_severity[severity] += 1
@@ -145,7 +149,7 @@ class ValidationVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
-        if node.name.startswith('test_'):
+        if node.name.startswith("test_"):
             self.current_function = node.name
             self.current_markers = []
 
@@ -164,7 +168,7 @@ class ValidationVisitor(ast.NodeVisitor):
             self.generic_visit(node)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
-        if node.name.startswith('test_'):
+        if node.name.startswith("test_"):
             self.current_function = node.name
             self.current_markers = []
 
@@ -182,15 +186,16 @@ class ValidationVisitor(ast.NodeVisitor):
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Attribute):
                 # Check for pytest.mark.*
-                if (isinstance(decorator.value, ast.Name) and
-                    decorator.value.id == 'pytest' and
-                    isinstance(decorator.attr, str) and
-                    decorator.attr.startswith('mark')):
-
+                if (
+                    isinstance(decorator.value, ast.Name)
+                    and decorator.value.id == "pytest"
+                    and isinstance(decorator.attr, str)
+                    and decorator.attr.startswith("mark")
+                ):
                     marker_name = decorator.attr
-                    if marker_name == 'mark':
+                    if marker_name == "mark":
                         # Handle pytest.mark.something
-                        if isinstance(decorator, ast.Attribute) and hasattr(decorator, 'attr'):
+                        if isinstance(decorator, ast.Attribute) and hasattr(decorator, "attr"):
                             marker_name = f"mark.{decorator.attr}"
 
                     self.current_markers.append(marker_name)
@@ -202,19 +207,20 @@ class ValidationVisitor(ast.NodeVisitor):
 
         # Rule: All tests must have category marker
         has_category_marker = any(
-            any(marker in m for marker in self._get_all_category_markers())
-            for m in self.current_markers
+            any(marker in m for marker in self._get_all_category_markers()) for m in self.current_markers
         )
 
         if not has_category_marker:
-            self.violations.append({
-                'file_path': self.file_path,
-                'line_number': node.lineno,
-                'violation_type': 'missing_category_marker',
-                'severity': 'MEDIUM',
-                'description': f'Test {self.current_function} lacks category marker',
-                'suggested_fix': 'Add @pytest.mark.core/optional/platform/external/experimental',
-            })
+            self.violations.append(
+                {
+                    "file_path": self.file_path,
+                    "line_number": node.lineno,
+                    "violation_type": "missing_category_marker",
+                    "severity": "MEDIUM",
+                    "description": f"Test {self.current_function} lacks category marker",
+                    "suggested_fix": "Add @pytest.mark.core/optional/platform/external/experimental",
+                }
+            )
 
     def visit_Call(self, node: ast.Call):
         """Check for improper skip calls."""
@@ -223,37 +229,37 @@ class ValidationVisitor(ast.NodeVisitor):
             return
 
         # Check pytest.skip calls
-        if (isinstance(node.func, ast.Attribute) and
-            node.func.attr == 'skip'):
-
+        if isinstance(node.func, ast.Attribute) and node.func.attr == "skip":
             # Rule: pytest.skip requires marker context
             if not self.current_markers:
-                self.violations.append({
-                    'file_path': self.file_path,
-                    'line_number': node.lineno,
-                    'violation_type': 'unmarked_skip',
-                    'severity': 'HIGH',
-                    'description': f'Test {self.current_function} uses pytest.skip without marker',
-                    'suggested_fix': 'Add @pytest.mark.optional/external marker or remove skip',
-                })
+                self.violations.append(
+                    {
+                        "file_path": self.file_path,
+                        "line_number": node.lineno,
+                        "violation_type": "unmarked_skip",
+                        "severity": "HIGH",
+                        "description": f"Test {self.current_function} uses pytest.skip without marker",
+                        "suggested_fix": "Add @pytest.mark.optional/external marker or remove skip",
+                    }
+                )
 
         # Check pytest.importorskip calls
-        elif (isinstance(node.func, ast.Attribute) and
-              node.func.attr == 'importorskip'):
-
+        elif isinstance(node.func, ast.Attribute) and node.func.attr == "importorskip":
             # Rule: importorskip must be in optional/external tests
-            allowed_markers = ['mark.optional', 'mark.external', 'mark.platform', 'mark.experimental']
+            allowed_markers = ["mark.optional", "mark.external", "mark.platform", "mark.experimental"]
             has_allowed_marker = any(marker in m for m in self.current_markers for marker in allowed_markers)
 
             if not has_allowed_marker:
-                self.violations.append({
-                    'file_path': self.file_path,
-                    'line_number': node.lineno,
-                    'violation_type': 'unmarked_importorskip',
-                    'severity': 'HIGH',
-                    'description': f'Test {self.current_function} uses importorskip without proper marker',
-                    'suggested_fix': 'Add @pytest.mark.optional/external/platform marker',
-                })
+                self.violations.append(
+                    {
+                        "file_path": self.file_path,
+                        "line_number": node.lineno,
+                        "violation_type": "unmarked_importorskip",
+                        "severity": "HIGH",
+                        "description": f"Test {self.current_function} uses importorskip without proper marker",
+                        "suggested_fix": "Add @pytest.mark.optional/external/platform marker",
+                    }
+                )
 
         self.generic_visit(node)
 
@@ -264,29 +270,31 @@ class ValidationVisitor(ast.NodeVisitor):
             return
 
         for handler in node.handlers:
-            if (isinstance(handler.type, ast.Name) and
-                handler.type.id == 'ImportError'):
-
+            if isinstance(handler.type, ast.Name) and handler.type.id == "ImportError":
                 # Rule: No ImportError skip in core tests
-                if 'mark.core' in self.current_markers:
-                    self.violations.append({
-                        'file_path': self.file_path,
-                        'line_number': node.lineno,
-                        'violation_type': 'core_import_error_skip',
-                        'severity': 'HIGH',
-                        'description': f'Core test {self.current_function} uses ImportError skip',
-                        'suggested_fix': 'Remove ImportError handling or reclassify as optional',
-                    })
+                if "mark.core" in self.current_markers:
+                    self.violations.append(
+                        {
+                            "file_path": self.file_path,
+                            "line_number": node.lineno,
+                            "violation_type": "core_import_error_skip",
+                            "severity": "HIGH",
+                            "description": f"Core test {self.current_function} uses ImportError skip",
+                            "suggested_fix": "Remove ImportError handling or reclassify as optional",
+                        }
+                    )
                 else:
                     # Rule: ImportError skips should use importorskip
-                    self.violations.append({
-                        'file_path': self.file_path,
-                        'line_number': node.lineno,
-                        'violation_type': 'import_error_pattern',
-                        'severity': 'MEDIUM',
-                        'description': f'Test {self.current_function} uses try/except ImportError pattern',
-                        'suggested_fix': 'Use pytest.importorskip with proper marker',
-                    })
+                    self.violations.append(
+                        {
+                            "file_path": self.file_path,
+                            "line_number": node.lineno,
+                            "violation_type": "import_error_pattern",
+                            "severity": "MEDIUM",
+                            "description": f"Test {self.current_function} uses try/except ImportError pattern",
+                            "suggested_fix": "Use pytest.importorskip with proper marker",
+                        }
+                    )
 
         self.generic_visit(node)
 
@@ -338,7 +346,7 @@ def main():
     output_dir.mkdir(exist_ok=True)
 
     validation_file = output_dir / "test_validation_report.json"
-    with open(validation_file, 'w', encoding='utf-8') as f:
+    with open(validation_file, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, sort_keys=True)
 
     print(f"✅ Validation report written to: {validation_file}")

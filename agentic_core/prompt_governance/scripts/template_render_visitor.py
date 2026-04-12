@@ -189,8 +189,11 @@ class TemplateRenderVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TemplateRenderVisitor.visit_FunctionDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TemplateRenderVisitor.visit_FunctionDef"
+        )
 
         old_function = self.current_function
         self.current_function = node.name

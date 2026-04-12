@@ -178,8 +178,14 @@ _emit_gated_by_confidence("p1", "ast_constant_deduplicator", "confidence_gate")
 
 # Constants to deduplicate (from SSOT)
 SSOT_CONSTANTS = {
-    'MAX_RETRIES', 'DEFAULT_SLEEP', 'THRESHOLD', 'BUFFER_SIZE',
-    'BATCH_SIZE', 'MAX_DEPTH', 'MAX_FILES', 'DEFAULT_TIMEOUT',
+    "MAX_RETRIES",
+    "DEFAULT_SLEEP",
+    "THRESHOLD",
+    "BUFFER_SIZE",
+    "BATCH_SIZE",
+    "MAX_DEPTH",
+    "MAX_FILES",
+    "DEFAULT_TIMEOUT",
 }
 
 
@@ -239,7 +245,7 @@ class ImportInjector(ast.NodeTransformer):
         # Create import statement
         import_names = sorted(self.constants_to_import)
         new_import = ast.ImportFrom(
-            module='agentic_core.L0_routing.config.path_constants',
+            module="agentic_core.L0_routing.config.path_constants",
             names=[ast.alias(name=name, asname=None) for name in import_names],
             level=0,
         )
@@ -254,10 +260,10 @@ def deduplicate_file(file_path: Path, dry_run: bool = True) -> dict:
     """Deduplicate constants in a single file."""
     try:
         # Skip if this IS the SSOT file
-        if file_path.name == 'path_constants.py' and 'L0_routing' in str(file_path):
-            return {'status': 'skipped', 'reason': 'ssot_source'}
+        if file_path.name == "path_constants.py" and "L0_routing" in str(file_path):
+            return {"status": "skipped", "reason": "ssot_source"}
 
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(file_path))
 
         # Remove duplicate constants
@@ -265,7 +271,7 @@ def deduplicate_file(file_path: Path, dry_run: bool = True) -> dict:
         tree = remover.visit(tree)
 
         if not remover.modified:
-            return {'status': 'skipped', 'reason': 'no_duplicates'}
+            return {"status": "skipped", "reason": "no_duplicates"}
 
         # Add import for removed constants
         injector = ImportInjector(remover.removed_constants)
@@ -278,28 +284,28 @@ def deduplicate_file(file_path: Path, dry_run: bool = True) -> dict:
         new_source = ast.unparse(tree)
 
         if not dry_run:
-            file_path.write_text(new_source, encoding='utf-8')
+            file_path.write_text(new_source, encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'removed_constants': sorted(remover.removed_constants),
-            'added_import': injector.added_import,
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "removed_constants": sorted(remover.removed_constants),
+            "added_import": injector.added_import,
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': f'SyntaxError: {e}',
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": f"SyntaxError: {e}",
         }
     except (ValueError, TypeError, RuntimeError) as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
         }
 
 
@@ -307,9 +313,9 @@ def main():
     """Main execution."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Deduplicate SSOT constants')
-    parser.add_argument('--execute', action='store_true', help='Actually write changes')
-    parser.add_argument('--limit', type=int, default=100, help='Max files to process')
+    parser = argparse.ArgumentParser(description="Deduplicate SSOT constants")
+    parser.add_argument("--execute", action="store_true", help="Actually write changes")
+    parser.add_argument("--limit", type=int, default=100, help="Max files to process")
 
     args = parser.parse_args()
 
@@ -318,13 +324,13 @@ def main():
 
     # Load files with violations
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if 'threshold=0.95' in line or 'max_retries=3' in line:
-                file_path = line.split(':')[0]
+            if "threshold=0.95" in line or "max_retries=3" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
-    unique_files = sorted(set(violations))[:args.limit]
+    unique_files = sorted(set(violations))[: args.limit]
 
     print(f"[INFO] Processing {len(unique_files)} files")
     print(f"[MODE] {'EXECUTE' if args.execute else 'DRY RUN'}")
@@ -338,16 +344,16 @@ def main():
         result = deduplicate_file(file_path, dry_run=not args.execute)
         results.append(result)
 
-        if result['status'] == 'success':
-            constants = ', '.join(result['removed_constants'])
+        if result["status"] == "success":
+            constants = ", ".join(result["removed_constants"])
             print(f"✓ {result['file']}")
             print(f"  Removed: {constants}")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
 
-    success = len([r for r in results if r['status'] == 'success'])
-    errors = len([r for r in results if r['status'] == 'error'])
-    skipped = len([r for r in results if r['status'] == 'skipped'])
+    success = len([r for r in results if r["status"] == "success"])
+    errors = len([r for r in results if r["status"] == "error"])
+    skipped = len([r for r in results if r["status"] == "skipped"])
 
     print()
     print(f"[SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}")
@@ -358,5 +364,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

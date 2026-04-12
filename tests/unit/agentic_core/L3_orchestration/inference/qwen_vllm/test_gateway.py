@@ -1,6 +1,5 @@
 """Tests for Qwen vLLM gateway orchestration."""
 
-
 from agentic_core.L3_orchestration.inference.qwen_vllm.reasoning import (
     QwenInferenceGateway,
     QwenInferenceRequest,

@@ -193,7 +193,9 @@ class AutonomousThreatEvolutionAgent(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "AutonomousThreatEvolutionAgent.__init__", "p0_governance",
+            str(_uuid.uuid4()),
+            "AutonomousThreatEvolutionAgent.__init__",
+            "p0_governance",
         )
         self.safety: Any | None = SafetyEngine
         self.log_path: Path = Path("agentic_core/L6_observability/reasoning/threat_detections.json")

@@ -1,4 +1,5 @@
 """Fix remaining 20 syntax errors: Unicode em-dashes and edge cases."""
+
 from __future__ import annotations
 
 import ast

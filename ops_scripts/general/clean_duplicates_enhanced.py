@@ -254,7 +254,7 @@ def get_file_hash(filepath):
     try:
         with open(filepath, "rb") as f:
             return hashlib.md5(f.read()).hexdigest()
-    except OSError:    # guardian: Add error context logging
+    except OSError:  # guardian: Add error context logging
         return None
 
 
@@ -352,7 +352,12 @@ def _adg_startup_warning() -> None:
 
 
 def purge_everything(
-    aggressive=False, organize=False, merge_logic=False, merge_to=None, silos=None, exclude=None,
+    aggressive=False,
+    organize=False,
+    merge_logic=False,
+    merge_to=None,
+    silos=None,
+    exclude=None,
 ):
     """
     Brief description of functionality and purpose.

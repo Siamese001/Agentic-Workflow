@@ -358,7 +358,10 @@ def run_cross_layer_mutation_guardian(
         v = viols[check_id]
         if v:
             result.add_check(
-                check_id, CheckStatus.FAIL, f"{len(v)} violation(s)", evidence={"violations": v[:20]},
+                check_id,
+                CheckStatus.FAIL,
+                f"{len(v)} violation(s)",
+                evidence={"violations": v[:20]},
             )
         else:
             result.add_check(check_id, CheckStatus.PASS, "No violations detected")

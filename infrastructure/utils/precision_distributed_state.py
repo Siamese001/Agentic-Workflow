@@ -21,11 +21,12 @@ from typing import Any, TypeVar
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class PrecisionRegion(Enum):
     """Precise geographic region enumeration with deterministic ordering."""
+
     US_EAST = 1
     US_WEST = 2
     EUROPE = 3
@@ -46,6 +47,7 @@ class PrecisionRegion(Enum):
 
 class PrecisionStateType(Enum):
     """Precise state type enumeration with total ordering."""
+
     CACHE_STATE = 1
     CONFIGURATION = 2
     USER_SESSION = 3
@@ -61,6 +63,7 @@ class PrecisionStateType(Enum):
 
 class PrecisionReplicationStatus(Enum):
     """Precise replication status with mathematical states."""
+
     PENDING = 1
     IN_PROGRESS = 2
     COMPLETED = 3
@@ -76,6 +79,7 @@ class PrecisionReplicationStatus(Enum):
 @dataclass(frozen=True)
 class PrecisionStateSnapshot:
     """Immutable state snapshot with cryptographic integrity and versioning."""
+
     snapshot_id: str
     state_type: PrecisionStateType
     layer_type: str
@@ -94,31 +98,39 @@ class PrecisionStateSnapshot:
             raise ValueError("data must be a dictionary")
 
         # Generate deterministic checksum
-        content = json.dumps({
-            "snapshot_id": self.snapshot_id,
-            "state_type": self.state_type.value,
-            "layer_type": self.layer_type,
-            "region": self.region.value,
-            "timestamp": self.timestamp.isoformat(),
-            "version": self.version,
-            "data": self.data,
-            "metadata": self.metadata,
-        }, sort_keys=True, default=str)
+        content = json.dumps(
+            {
+                "snapshot_id": self.snapshot_id,
+                "state_type": self.state_type.value,
+                "layer_type": self.layer_type,
+                "region": self.region.value,
+                "timestamp": self.timestamp.isoformat(),
+                "version": self.version,
+                "data": self.data,
+                "metadata": self.metadata,
+            },
+            sort_keys=True,
+            default=str,
+        )
         checksum = hashlib.sha256(content.encode()).hexdigest()
-        object.__setattr__(self, 'checksum', checksum)
+        object.__setattr__(self, "checksum", checksum)
 
     def verify_integrity(self) -> bool:
         """Verify cryptographic integrity of the snapshot."""
-        content = json.dumps({
-            "snapshot_id": self.snapshot_id,
-            "state_type": self.state_type.value,
-            "layer_type": self.layer_type,
-            "region": self.region.value,
-            "timestamp": self.timestamp.isoformat(),
-            "version": self.version,
-            "data": self.data,
-            "metadata": self.metadata,
-        }, sort_keys=True, default=str)
+        content = json.dumps(
+            {
+                "snapshot_id": self.snapshot_id,
+                "state_type": self.state_type.value,
+                "layer_type": self.layer_type,
+                "region": self.region.value,
+                "timestamp": self.timestamp.isoformat(),
+                "version": self.version,
+                "data": self.data,
+                "metadata": self.metadata,
+            },
+            sort_keys=True,
+            default=str,
+        )
         expected = hashlib.sha256(content.encode()).hexdigest()
         return self.checksum == expected
 
@@ -130,6 +142,7 @@ class PrecisionStateSnapshot:
 @dataclass
 class PrecisionReplicationResult:
     """Precise replication result with detailed metrics."""
+
     snapshot_id: str
     source_region: PrecisionRegion
     target_region: PrecisionRegion
@@ -438,7 +451,9 @@ class PrecisionMultiRegionReplicator:
             self.storage_backends[region] = PrecisionInMemoryStorage(region)
 
         # Consensus and consistency
-        self.consensus = PrecisionRaftConsensus(f"{primary_region.value}_coordinator", [r.value for r in self.all_regions])
+        self.consensus = PrecisionRaftConsensus(
+            f"{primary_region.value}_coordinator", [r.value for r in self.all_regions]
+        )
 
         # Replication tracking
         self.replication_tasks: dict[str, asyncio.Task] = {}
@@ -499,7 +514,9 @@ class PrecisionMultiRegionReplicator:
                     snapshot_id=snapshot.snapshot_id,
                     source_region=self.primary_region,
                     target_region=replica_region,
-                    status=PrecisionReplicationStatus.COMPLETED if success else PrecisionReplicationStatus.FAILED,
+                    status=PrecisionReplicationStatus.COMPLETED
+                    if success
+                    else PrecisionReplicationStatus.FAILED,
                     start_time=start_time,
                     end_time=end_time,
                     bytes_transferred=bytes_transferred,
@@ -538,7 +555,9 @@ class PrecisionMultiRegionReplicator:
             avg_latency = statistics.mean([r.latency_ms for r in replication_results])
             total_replications = self.replication_metrics["total_replications"]
             current_avg = self.replication_metrics["average_latency_ms"]
-            self.replication_metrics["average_latency_ms"] = (current_avg * (total_replications - 1) + avg_latency) / total_replications
+            self.replication_metrics["average_latency_ms"] = (
+                current_avg * (total_replications - 1) + avg_latency
+            ) / total_replications
 
         # Clean up task reference
         if snapshot.snapshot_id in self.replication_tasks:
@@ -567,7 +586,9 @@ class PrecisionMultiRegionReplicator:
 
         return latency_matrix.get((source, target), 100.0)  # Default 100ms
 
-    async def retrieve_snapshot(self, snapshot_id: str, preferred_region: PrecisionRegion | None = None) -> PrecisionStateSnapshot | None:
+    async def retrieve_snapshot(
+        self, snapshot_id: str, preferred_region: PrecisionRegion | None = None
+    ) -> PrecisionStateSnapshot | None:
         """Retrieve snapshot with region preference."""
         # Try preferred region first
         if preferred_region and preferred_region in self.storage_backends:
@@ -615,7 +636,9 @@ class PrecisionMultiRegionReplicator:
 
         return {
             "snapshot_id": snapshot_id,
-            "status": "completed" if all(r.status == PrecisionReplicationStatus.COMPLETED for r in results) else "partial",
+            "status": "completed"
+            if all(r.status == PrecisionReplicationStatus.COMPLETED for r in results)
+            else "partial",
             "total_regions": len(self.all_regions),
             "completed_regions": status_counts["COMPLETED"],
             "failed_regions": status_counts["FAILED"],
@@ -682,7 +705,12 @@ class PrecisionDistributedStateManager:
         await self.disaster_recovery.stop_monitoring()
         logger.info("Stopped distributed state management")
 
-    async def store_layer_state(self, layer_type: str, state_data: dict[str, Any], state_type: PrecisionStateType = PrecisionStateType.CACHE_STATE) -> str:
+    async def store_layer_state(
+        self,
+        layer_type: str,
+        state_data: dict[str, Any],
+        state_type: PrecisionStateType = PrecisionStateType.CACHE_STATE,
+    ) -> str:
         """Store layer state with distributed replication."""
         snapshot_id = f"{layer_type}_{state_type.name}_{int(time.time())}_{uuid.uuid4().hex[:8]}"
 
@@ -797,7 +825,9 @@ class PrecisionHealthChecker:
         self._check_task: asyncio.Task | None = None
         self._running = False
 
-    def register_component(self, component_id: str, region: PrecisionRegion, layer_type: str, endpoint: str) -> None:
+    def register_component(
+        self, component_id: str, region: PrecisionRegion, layer_type: str, endpoint: str
+    ) -> None:
         """Register component for health checking."""
         self.component_registry[component_id] = {
             "region": region,
@@ -876,7 +906,9 @@ class PrecisionHealthChecker:
             # Update average response time
             total_checks = self.health_metrics["total_checks"]
             current_avg = self.health_metrics["average_response_time_ms"]
-            self.health_metrics["average_response_time_ms"] = (current_avg * (total_checks - 1) + response_time) / total_checks
+            self.health_metrics["average_response_time_ms"] = (
+                current_avg * (total_checks - 1) + response_time
+            ) / total_checks
 
         except Exception as e:
             self.health_status[component_id] = {
@@ -979,27 +1011,33 @@ class PrecisionDisasterRecoveryManager:
             # Failover to other regions
             for region in self.replicator.all_regions:
                 if region.name != affected_region:
-                    recovery_procedure["steps"].append({
-                        "action": "promote_to_primary",
-                        "region": region.name,
-                        "status": "completed",
-                    })
+                    recovery_procedure["steps"].append(
+                        {
+                            "action": "promote_to_primary",
+                            "region": region.name,
+                            "status": "completed",
+                        }
+                    )
 
         elif disaster_type == "network_partition":
             # Isolate affected region
-            recovery_procedure["steps"].append({
-                "action": "isolate_region",
-                "region": affected_region,
-                "status": "completed",
-            })
+            recovery_procedure["steps"].append(
+                {
+                    "action": "isolate_region",
+                    "region": affected_region,
+                    "status": "completed",
+                }
+            )
 
         elif disaster_type == "storage_corruption":
             # Restore from backup
-            recovery_procedure["steps"].append({
-                "action": "restore_from_backup",
-                "region": affected_region,
-                "status": "completed",
-            })
+            recovery_procedure["steps"].append(
+                {
+                    "action": "restore_from_backup",
+                    "region": affected_region,
+                    "status": "completed",
+                }
+            )
 
         # Mark disaster as resolved
         disaster_event["status"] = "resolved"

@@ -17,6 +17,7 @@ class TestBlueprintModuleEviction:
         """Test blueprint_module_eviction module imports."""
         try:
             from agentic_core import blueprint_module_eviction
+
             assert blueprint_module_eviction is not None
         except ImportError:
             pytest.skip("blueprint_module_eviction not available")
@@ -25,6 +26,7 @@ class TestBlueprintModuleEviction:
         """Test BlueprintModuleEviction class exists."""
         try:
             from agentic_core import BlueprintModuleEviction
+
             assert BlueprintModuleEviction is not None
         except ImportError:
             pytest.skip("BlueprintModuleEviction not available")
@@ -33,6 +35,7 @@ class TestBlueprintModuleEviction:
         """Test blueprint_module_eviction functions are callable."""
         try:
             from agentic_core import validate_blueprint_module_eviction
+
             assert callable(validate_blueprint_module_eviction)
         except ImportError:
             pytest.skip("validate_blueprint_module_eviction not available")

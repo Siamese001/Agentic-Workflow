@@ -9,6 +9,7 @@ inline suppression to each violation line.
 Execution model per §2.1:
     subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")
 """
+
 from __future__ import annotations
 
 import re
@@ -61,11 +62,9 @@ SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache", "archives"
 
 # ── Step 1: Read whitelist comment tokens from each validator ──────────────
 
+
 def _whitelist_token(validator_filename: str) -> str:
-    hits = [
-        p for p in REPO.rglob(validator_filename)
-        if not any(s in p.parts for s in SKIP_DIRS)
-    ]
+    hits = [p for p in REPO.rglob(validator_filename) if not any(s in p.parts for s in SKIP_DIRS)]
     if not hits:
         return ""
     content = hits[0].read_text(encoding="utf-8")
@@ -74,33 +73,32 @@ def _whitelist_token(validator_filename: str) -> str:
 
 
 CATEGORY_TOKENS: dict[str, str] = {
-    "global_mutation":      _whitelist_token("global_mutation_validator.py"),
-    "magic_configuration":  _whitelist_token("magic_validator.py"),
-    "path_fragility":       _whitelist_token("path_fragility_validator.py"),
-    "type_erasure":         _whitelist_token("type_erasure_validator.py"),
-    "config_with_logic":    _whitelist_token("config_with_logic_validator.py"),
-    "silent_swallower":     _whitelist_token("silent_swallower_validator.py"),
+    "global_mutation": _whitelist_token("global_mutation_validator.py"),
+    "magic_configuration": _whitelist_token("magic_validator.py"),
+    "path_fragility": _whitelist_token("path_fragility_validator.py"),
+    "type_erasure": _whitelist_token("type_erasure_validator.py"),
+    "config_with_logic": _whitelist_token("config_with_logic_validator.py"),
+    "silent_swallower": _whitelist_token("silent_swallower_validator.py"),
 }
 
 
 # ── Step 2: Run checker and collect violations ─────────────────────────────
 
 
-
 # ── Step 3: Find absolute paths for each filename stem ────────────────────
-
 
 
 # ── Step 4: Apply surgical inline suppression per violation ───────────────
 
 
-
 # ── Main ──────────────────────────────────────────────────────────────────
+
 
 def main():
     """Stub main function - anti-pattern fix logic removed in function cleanup."""
     print("_adg_ap_fix: Functionality removed in cleanup pass")
     return 0
+
 
 if __name__ == "__main__":
     main()

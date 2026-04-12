@@ -5,6 +5,7 @@ PlaceholderDetectorAgent - Extracted for one-class-per-file pattern.
 Originally from: ContentCleanlinessValidatorAgent.py
 Extracted: 2026-01-06 (Surgical Extraction)
 """
+
 from dataclasses import dataclass
 
 
@@ -34,8 +35,11 @@ class PlaceholderDetectorAgent(SubatomicTestingMixin, MCPHardenedMixin, HealerMi
     def detect_placeholders(self, text: str) -> list[str]:
         """Detect ALL placeholder patterns"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PlaceholderDetectorAgent.detect_placeholders")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PlaceholderDetectorAgent.detect_placeholders"
+        )
 
         found = []
 

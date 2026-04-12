@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class RecoveryAction:
     """A recovery action."""
+
     name: str
     action: Callable
     priority: int = 1
@@ -80,7 +81,9 @@ class RecoveryManager:
         """
         trace_id = f"recovery_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "RecoveryManager.attempt_recovery",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "RecoveryManager.attempt_recovery",
         )
 
         for action in self._recovery_actions:

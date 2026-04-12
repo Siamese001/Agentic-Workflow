@@ -373,7 +373,9 @@ class HumanEscalationRegistry:
         """Persist a human escalation record."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "HumanEscalationStore.persist_record",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "HumanEscalationStore.persist_record",
         )
         with self._lock:
             self._records[record.escalation_id] = record

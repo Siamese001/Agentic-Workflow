@@ -235,8 +235,11 @@ class ExecutionOrchestrator:
         Returns run_sha for tracking.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecutionOrchestrator.start_execution")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ExecutionOrchestrator.start_execution"
+        )
 
         run_sha = self._generate_run_sha(context)
         self.current_trace = ExecutionTrace(
@@ -383,7 +386,8 @@ class ExecutionOrchestrator:
 
 
 def create_execution_orchestrator(
-    output_dir: Path | None = None, silent_mode: bool = True,
+    output_dir: Path | None = None,
+    silent_mode: bool = True,
 ) -> ExecutionOrchestrator:
     """Factory function to create ExecutionOrchestrator instance"""
     return ExecutionOrchestrator(output_dir=output_dir, silent_mode=silent_mode)

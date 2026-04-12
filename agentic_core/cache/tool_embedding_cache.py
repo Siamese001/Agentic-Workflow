@@ -204,8 +204,11 @@ class ToolEmbeddingCache:
             ValueError: If tool_definitions is empty
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ToolEmbeddingCache.get_or_fetch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ToolEmbeddingCache.get_or_fetch"
+        )
 
         if not tool_definitions:
             raise ValueError("Tool definitions list must not be empty")
@@ -270,6 +273,7 @@ class ToolEmbeddingCache:
 def get_tool_embedding_cache() -> ToolEmbeddingCache:
     """Get the singleton tool embedding cache instance."""
     return ToolEmbeddingCache()
+
 
 _emit_reads_through("l4", "tool_embedding_cache", "urg_read_1")
 _emit_reads_through("l4", "tool_embedding_cache", "urg_read_2")

@@ -185,14 +185,16 @@ class TestRetryLogic:
         config = RetryConfig(max_retries=2, base_delay_sec=0.01)
 
         mock_client = MagicMock()
-        mock_client.infer = AsyncMock(return_value=VLLMResponse(
-            success=False,
-            text="",
-            model="",
-            tokens_used=0,
-            latency_ms=0,
-            error_message="invalid request: bad prompt format",
-        ))
+        mock_client.infer = AsyncMock(
+            return_value=VLLMResponse(
+                success=False,
+                text="",
+                model="",
+                tokens_used=0,
+                latency_ms=0,
+                error_message="invalid request: bad prompt format",
+            )
+        )
 
         hardened = HardenedVLLMClient(
             base_client=mock_client,
@@ -212,14 +214,16 @@ class TestRetryLogic:
         config = RetryConfig(max_retries=2, base_delay_sec=0.01)
 
         mock_client = MagicMock()
-        mock_client.infer = AsyncMock(return_value=VLLMResponse(
-            success=False,
-            text="",
-            model="",
-            tokens_used=0,
-            latency_ms=0,
-            error_message="server error",
-        ))
+        mock_client.infer = AsyncMock(
+            return_value=VLLMResponse(
+                success=False,
+                text="",
+                model="",
+                tokens_used=0,
+                latency_ms=0,
+                error_message="server error",
+            )
+        )
 
         hardened = HardenedVLLMClient(
             base_client=mock_client,
@@ -314,14 +318,16 @@ class TestGPUOOMHandling:
     async def test_degraded_mode_on_oom(self):
         """Should enter degraded mode on OOM."""
         mock_client = MagicMock()
-        mock_client.infer = AsyncMock(return_value=VLLMResponse(
-            success=False,
-            text="",
-            model="",
-            tokens_used=0,
-            latency_ms=0,
-            error_message="CUDA out of memory",
-        ))
+        mock_client.infer = AsyncMock(
+            return_value=VLLMResponse(
+                success=False,
+                text="",
+                model="",
+                tokens_used=0,
+                latency_ms=0,
+                error_message="CUDA out of memory",
+            )
+        )
         mock_client.batch_size = 8
 
         hardened = HardenedVLLMClient(base_client=mock_client)
@@ -340,13 +346,15 @@ class TestMetricsCollection:
     async def test_metrics_recorded(self):
         """Should record request metrics."""
         mock_client = MagicMock()
-        mock_client.infer = AsyncMock(return_value=VLLMResponse(
-            success=True,
-            text="success",
-            model="qwen",
-            tokens_used=10,
-            latency_ms=100,
-        ))
+        mock_client.infer = AsyncMock(
+            return_value=VLLMResponse(
+                success=True,
+                text="success",
+                model="qwen",
+                tokens_used=10,
+                latency_ms=100,
+            )
+        )
 
         hardened = HardenedVLLMClient(base_client=mock_client)
 
@@ -367,16 +375,18 @@ class TestMetricsCollection:
 
         # Return different latencies
         latencies = [50, 100, 150, 200, 250, 300, 350, 400, 450, 500]
-        mock_client.infer = AsyncMock(side_effect=[
-            VLLMResponse(
-                success=True,
-                text="success",
-                model="qwen",
-                tokens_used=10,
-                latency_ms=lat,
-            )
-            for lat in latencies
-        ])
+        mock_client.infer = AsyncMock(
+            side_effect=[
+                VLLMResponse(
+                    success=True,
+                    text="success",
+                    model="qwen",
+                    tokens_used=10,
+                    latency_ms=lat,
+                )
+                for lat in latencies
+            ]
+        )
 
         hardened = HardenedVLLMClient(base_client=mock_client)
 
@@ -399,20 +409,26 @@ class TestIntegration:
     async def test_successful_request_flow(self):
         """Test complete successful request flow."""
         mock_client = MagicMock()
-        mock_client.infer = AsyncMock(return_value=VLLMResponse(
-            success=True,
-            text="The answer is 4",
-            model="Qwen/Qwen2.5-14B-Instruct-AWQ",
-            tokens_used=15,
-            latency_ms=150,
-        ))
-        mock_client.health_check = AsyncMock(return_value={
-            "healthy": True,
-            "models": ["Qwen/Qwen2.5-14B-Instruct-AWQ"],
-        })
-        mock_client.get_metrics = MagicMock(return_value={
-            "requests_total": 1,
-        })
+        mock_client.infer = AsyncMock(
+            return_value=VLLMResponse(
+                success=True,
+                text="The answer is 4",
+                model="Qwen/Qwen2.5-14B-Instruct-AWQ",
+                tokens_used=15,
+                latency_ms=150,
+            )
+        )
+        mock_client.health_check = AsyncMock(
+            return_value={
+                "healthy": True,
+                "models": ["Qwen/Qwen2.5-14B-Instruct-AWQ"],
+            }
+        )
+        mock_client.get_metrics = MagicMock(
+            return_value={
+                "requests_total": 1,
+            }
+        )
         mock_client.batch_size = 4
 
         hardened = HardenedVLLMClient(
@@ -445,14 +461,16 @@ class TestIntegration:
     async def test_circuit_opens_after_consecutive_failures(self):
         """Circuit should open after consecutive failures."""
         mock_client = MagicMock()
-        mock_client.infer = AsyncMock(return_value=VLLMResponse(
-            success=False,
-            text="",
-            model="",
-            tokens_used=0,
-            latency_ms=0,
-            error_message="server error",
-        ))
+        mock_client.infer = AsyncMock(
+            return_value=VLLMResponse(
+                success=False,
+                text="",
+                model="",
+                tokens_used=0,
+                latency_ms=0,
+                error_message="server error",
+            )
+        )
 
         hardened = HardenedVLLMClient(
             base_client=mock_client,

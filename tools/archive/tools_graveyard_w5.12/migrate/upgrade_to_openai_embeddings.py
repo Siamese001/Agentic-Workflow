@@ -14,11 +14,12 @@ from chromadb.utils import embedding_functions
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_embedding_function():
     """Get embedding function - OpenAI if available, otherwise mock"""
 
     # Check for OpenAI API key
-    openai_api_key = os.getenv('OPENAI_API_KEY')
+    openai_api_key = os.getenv("OPENAI_API_KEY")
 
     if openai_api_key:
         logger.info("Using OpenAI embeddings")
@@ -43,6 +44,7 @@ def get_embedding_function():
 
     return MockEmbeddingFunction(), "mock"
 
+
 def upgrade_collection_embeddings(collection_name):
     """Upgrade a collection to use new embeddings"""
 
@@ -63,7 +65,7 @@ def upgrade_collection_embeddings(collection_name):
         logger.info("Retrieving existing data...")
         all_data = collection.get()
 
-        if not all_data['ids']:
+        if not all_data["ids"]:
             logger.warning(f"No data found in collection {collection_name}")
             return
 
@@ -71,7 +73,7 @@ def upgrade_collection_embeddings(collection_name):
 
         # Generate new embeddings
         logger.info(f"Generating {ef_type} embeddings...")
-        new_embeddings = ef_func(all_data['documents'])
+        new_embeddings = ef_func(all_data["documents"])
         logger.info(f"Generated {len(new_embeddings)} embeddings")
 
         # Delete old collection and create new one with updated embedding function
@@ -96,14 +98,14 @@ def upgrade_collection_embeddings(collection_name):
 
         # Process in batches to avoid size limits
         batch_size = 5000
-        total_items = len(all_data['ids'])
+        total_items = len(all_data["ids"])
 
         for i in range(0, total_items, batch_size):
             end_idx = min(i + batch_size, total_items)
 
-            batch_ids = all_data['ids'][i:end_idx]
-            batch_docs = all_data['documents'][i:end_idx]
-            batch_metas = all_data['metadatas'][i:end_idx]
+            batch_ids = all_data["ids"][i:end_idx]
+            batch_docs = all_data["documents"][i:end_idx]
+            batch_metas = all_data["metadatas"][i:end_idx]
             batch_embeddings = new_embeddings[i:end_idx]
 
             new_collection.add(
@@ -113,12 +115,15 @@ def upgrade_collection_embeddings(collection_name):
                 embeddings=batch_embeddings,
             )
 
-            logger.info(f"  Ingested batch {i//batch_size + 1}/{(total_items-1)//batch_size + 1} ({end_idx-i} items)")
+            logger.info(
+                f"  Ingested batch {i // batch_size + 1}/{(total_items - 1) // batch_size + 1} ({end_idx - i} items)"
+            )
 
         logger.info(f"Successfully upgraded {collection_name} to {ef_type} embeddings")
 
     except Exception as e:
         logger.error(f"Error upgrading collection {collection_name}: {e}")
+
 
 def upgrade_all_collections():
     """Upgrade all ChromaDB collections"""
@@ -153,12 +158,14 @@ def upgrade_all_collections():
         count = col.count()
         logger.info(f"  {col.name}: {count} items")
 
+
 def main():
     """Main function"""
     logger.info("Wave 6: Upgrade embeddings starting...")
     logger.info(f"OPENAI_API_KEY available: {'Yes' if os.getenv('OPENAI_API_KEY') else 'No'}")
 
     upgrade_all_collections()
+
 
 if __name__ == "__main__":
     main()

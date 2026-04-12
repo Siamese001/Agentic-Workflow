@@ -86,7 +86,9 @@ def calculate_relative_import(file_path: Path, import_path: str, project_root: P
 
 
 def fix_imports_in_file(
-    file_path: Path, agentic_core_root: Path, dry_run: bool = False,
+    file_path: Path,
+    agentic_core_root: Path,
+    dry_run: bool = False,
 ) -> tuple[int, list[str]]:
     """
     Fix imports in a single file.

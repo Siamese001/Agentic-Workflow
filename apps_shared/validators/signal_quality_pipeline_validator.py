@@ -293,7 +293,11 @@ class SignalQualityPipeline:
         )
 
     def evaluate_signal(
-        self, content: str, metadata: dict[str, str], query: str, doc_id: str | None = None,
+        self,
+        content: str,
+        metadata: dict[str, str],
+        query: str,
+        doc_id: str | None = None,
     ) -> QualityAssessment:
         """Evaluate a signal through all quality checks.
 
@@ -308,7 +312,9 @@ class SignalQualityPipeline:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SignalQualityPipeline.evaluate_signal")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SignalQualityPipeline.evaluate_signal"
+        )
         try:
             assessment = QualityAssessment(is_pass=True, doc_id=doc_id)
             if not content or not isinstance(content, str):
@@ -518,7 +524,9 @@ class SignalQualityPipeline:
             return []
 
     def batch_evaluate(
-        self, documents: list[tuple[str, dict[str, str], str]], filter_failed: bool = True,
+        self,
+        documents: list[tuple[str, dict[str, str], str]],
+        filter_failed: bool = True,
     ) -> list[tuple[dict[str, str], QualityAssessment]]:
         """Evaluate multiple documents in batch.
 
@@ -577,7 +585,8 @@ def create_quality_pipeline(
 
 
 def filter_high_quality_signals(
-    documents: list[tuple[str, dict[str, str], str]], strict_mode: bool = False,
+    documents: list[tuple[str, dict[str, str], str]],
+    strict_mode: bool = False,
 ) -> list[dict[str, str]]:
     """Quickly filter documents for high-quality signals.
 

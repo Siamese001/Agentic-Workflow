@@ -211,7 +211,8 @@ class LeadQualityValidator:
         self.required_fields = config.get("required_fields", ["company"])
         self.contact_fields = config.get("contact_fields", ["contact_name", "email"])
         self.suspicious_domains = config.get(
-            "suspicious_domains", [".xyz", ".top", ".click", ".link", ".work", ".date"],
+            "suspicious_domains",
+            [".xyz", ".top", ".click", ".link", ".work", ".date"],
         )
         self.spam_indicators = config.get("spam_indicators", ["test@", "noreply@", "donotreply@", "spam@"])
 
@@ -229,7 +230,9 @@ class LeadQualityValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "LeadQualityValidator.validate_lead_quality",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "LeadQualityValidator.validate_lead_quality",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

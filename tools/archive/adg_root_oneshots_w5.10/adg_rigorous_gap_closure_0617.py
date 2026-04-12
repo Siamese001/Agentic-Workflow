@@ -80,7 +80,9 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # 1.1 Check current blank layer count
-        blank_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL")[0]['count']
+        blank_layers = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL"
+        )[0]["count"]
         print(f"Current blank layers: {blank_layers}")
         result["details"]["blank_layers_before"] = blank_layers
 
@@ -121,7 +123,7 @@ class ADGRigorousGapClosure0617:
 
         symbol_count = 0
         for symbol in symbols_empty:
-            module_name = symbol['module_name']
+            module_name = symbol["module_name"]
             if module_name:
                 # Find the module's layer
                 module_layer = self.execute_query(
@@ -129,10 +131,10 @@ class ADGRigorousGapClosure0617:
                     (module_name,),
                 )
                 if module_layer:
-                    layer = module_layer[0]['layer']
+                    layer = module_layer[0]["layer"]
                     updated = self.execute_update(
                         "UPDATE nodes SET layer = ? WHERE adg_name = ? AND entity_type = 'symbol'",
-                        (layer, symbol['adg_name']),
+                        (layer, symbol["adg_name"]),
                     )
                     symbol_count += updated
 
@@ -156,7 +158,9 @@ class ADGRigorousGapClosure0617:
         result["details"]["layer_updates"] = total_updated
 
         # 1.4 Validation
-        blank_layers_after = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL")[0]['count']
+        blank_layers_after = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL"
+        )[0]["count"]
         print(f"Blank layers after fix: {blank_layers_after}")
         result["details"]["blank_layers_after"] = blank_layers_after
 
@@ -178,7 +182,9 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # Check current blank identity_kind
-        blank_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL")[0]['count']
+        blank_identity = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL"
+        )[0]["count"]
         print(f"Current blank identity_kind: {blank_identity}")
         result["details"]["blank_identity_before"] = blank_identity
 
@@ -223,11 +229,19 @@ class ADGRigorousGapClosure0617:
         print(f"  inferred_symbol: {inferred_symbol_count}")
         print(f"  unresolved_import: {unresolved_count}")
 
-        total_updated = repo_module_count + external_module_count + repo_symbol_count + inferred_symbol_count + unresolved_count
+        total_updated = (
+            repo_module_count
+            + external_module_count
+            + repo_symbol_count
+            + inferred_symbol_count
+            + unresolved_count
+        )
         result["details"]["identity_updates"] = total_updated
 
         # 2.4 Validation
-        blank_identity_after = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL")[0]['count']
+        blank_identity_after = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL"
+        )[0]["count"]
         print(f"Blank identity_kind after fix: {blank_identity_after}")
         result["details"]["blank_identity_after"] = blank_identity_after
 
@@ -249,7 +263,9 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # Check current blank confidence
-        blank_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL")[0]['count']
+        blank_confidence = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL"
+        )[0]["count"]
         print(f"Current blank confidence: {blank_confidence}")
         result["details"]["blank_confidence_before"] = blank_confidence
 
@@ -281,7 +297,9 @@ class ADGRigorousGapClosure0617:
         result["details"]["confidence_updates"] = total_updated
 
         # 3.3 Validation
-        blank_confidence_after = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL")[0]['count']
+        blank_confidence_after = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL"
+        )[0]["count"]
         print(f"Blank confidence after fix: {blank_confidence_after}")
         result["details"]["blank_confidence_after"] = blank_confidence_after
 
@@ -301,15 +319,21 @@ class ADGRigorousGapClosure0617:
         print("=" * 80)
 
         # Check ALL criteria
-        blank_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL")[0]['count']
-        blank_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL")[0]['count']
-        blank_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL")[0]['count']
+        blank_layers = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL"
+        )[0]["count"]
+        blank_identity = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL"
+        )[0]["count"]
+        blank_confidence = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL"
+        )[0]["count"]
 
         print(f"Blank layers: {blank_layers}")
         print(f"Blank identity_kind: {blank_identity}")
         print(f"Blank confidence: {blank_confidence}")
 
-        phase1_success = (blank_layers == 0 and blank_identity == 0 and blank_confidence == 0)
+        phase1_success = blank_layers == 0 and blank_identity == 0 and blank_confidence == 0
 
         if phase1_success:
             print("✅ PHASE 1 SUCCESS - All data integrity criteria met")
@@ -331,11 +355,15 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # 4.1 Direct SQL queries
-        node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]['count']
-        edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]['count']
+        node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]["count"]
+        edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]["count"]
 
-        edge_types = self.execute_query("SELECT relation_type, COUNT(*) as count FROM edges GROUP BY relation_type ORDER BY relation_type")
-        layer_dist = self.execute_query("SELECT layer, COUNT(*) as count FROM nodes GROUP BY layer ORDER BY layer")
+        edge_types = self.execute_query(
+            "SELECT relation_type, COUNT(*) as count FROM edges GROUP BY relation_type ORDER BY relation_type"
+        )
+        layer_dist = self.execute_query(
+            "SELECT layer, COUNT(*) as count FROM nodes GROUP BY layer ORDER BY layer"
+        )
 
         # Build report
         report = {
@@ -344,8 +372,8 @@ class ADGRigorousGapClosure0617:
                 "nodes": node_count,
                 "edges": edge_count,
             },
-            "edge_distribution": {row['relation_type']: row['count'] for row in edge_types},
-            "layer_distribution": {row['layer']: row['count'] for row in layer_dist},
+            "edge_distribution": {row["relation_type"]: row["count"] for row in edge_types},
+            "layer_distribution": {row["layer"]: row["count"] for row in layer_dist},
             "parity_status": "EXACT",
         }
 
@@ -355,7 +383,7 @@ class ADGRigorousGapClosure0617:
         report_path = REPORTS_DIR / f"reconciliation_report_{self.timestamp}.json"
         REPORTS_DIR.mkdir(exist_ok=True)
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2, sort_keys=True)
 
         print(f"✅ Report saved: {report_path.name}")
@@ -376,8 +404,12 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # 5.1 Compute current hashes
-        node_data = self.execute_query("SELECT adg_name, entity_type, layer, identity_kind, confidence, resolved_path FROM nodes ORDER BY adg_name")
-        edge_data = self.execute_query("SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type")
+        node_data = self.execute_query(
+            "SELECT adg_name, entity_type, layer, identity_kind, confidence, resolved_path FROM nodes ORDER BY adg_name"
+        )
+        edge_data = self.execute_query(
+            "SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type"
+        )
 
         # Compute node hash
         node_hash_input = json.dumps([dict(row) for row in node_data], sort_keys=True)
@@ -395,10 +427,16 @@ class ADGRigorousGapClosure0617:
             GROUP BY relation_type
         """)
 
-        mutation_coverage = {row['relation_type']: row['count'] for row in mutation_edges}
+        mutation_coverage = {row["relation_type"]: row["count"] for row in mutation_edges}
 
         # Check required mutation edges
-        required_edges = ['emits_replay_key', 'references_policy_hash', 'mutation_signature', 'parent_snapshot_hash', 'links_to_execution_trace']
+        required_edges = [
+            "emits_replay_key",
+            "references_policy_hash",
+            "mutation_signature",
+            "parent_snapshot_hash",
+            "links_to_execution_trace",
+        ]
         missing_edges = [edge for edge in required_edges if edge not in mutation_coverage]
 
         report = {
@@ -418,7 +456,7 @@ class ADGRigorousGapClosure0617:
 
         # Save report
         report_path = REPORTS_DIR / f"replay_convergence_report_{self.timestamp}.json"
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2, sort_keys=True)
 
         print(f"✅ Report saved: {report_path.name}")
@@ -452,10 +490,12 @@ class ADGRigorousGapClosure0617:
                 SELECT 1 FROM edges e
                 WHERE e.dst_id = n.id AND e.relation_type = 'unresolved_import'
             )
-        """)[0]['count']
+        """)[0]["count"]
 
         # 6.2 Edge Classification Completeness
-        unclassified_edges = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE edge_kind = '' OR edge_kind IS NULL")[0]['count']
+        unclassified_edges = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE edge_kind = '' OR edge_kind IS NULL"
+        )[0]["count"]
 
         report = {
             "timestamp": self.timestamp,
@@ -487,35 +527,50 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # 7.1 Validate each L0/L2/L5 module has required edges
-        critical_layers = ['L0_FOUNDATION', 'L2_COORDINATION', 'L5_EXECUTION']
-        critical_modules = self.execute_query(f"""
+        critical_layers = ["L0_FOUNDATION", "L2_COORDINATION", "L5_EXECUTION"]
+        critical_modules = self.execute_query(
+            f"""
             SELECT n.adg_name, n.layer
             FROM nodes n
-            WHERE n.layer IN ({','.join(['?' for _ in critical_layers])})
+            WHERE n.layer IN ({",".join(["?" for _ in critical_layers])})
             AND n.entity_type = 'module'
-        """, critical_layers)
+        """,
+            critical_layers,
+        )
 
-        required_edges = ['determinism_seed', 'determinism_digest_emit', 'policy_verification', 'execution_plan_dispatch']
+        required_edges = [
+            "determinism_seed",
+            "determinism_digest_emit",
+            "policy_verification",
+            "execution_plan_dispatch",
+        ]
         coverage_stats = dict.fromkeys(required_edges, 0)
         modules_without_coverage = []
 
         for module in critical_modules:
-            module_id = self.execute_query("SELECT id FROM nodes WHERE adg_name = ?", (module['adg_name'],))[0]['id']
+            module_id = self.execute_query("SELECT id FROM nodes WHERE adg_name = ?", (module["adg_name"],))[
+                0
+            ]["id"]
 
-            module_edges = self.execute_query("""
+            module_edges = self.execute_query(
+                """
                 SELECT relation_type FROM edges
                 WHERE src_id = ? OR dst_id = ?
-            """, (module_id, module_id))
+            """,
+                (module_id, module_id),
+            )
 
-            module_edge_types = {row['relation_type'] for row in module_edges}
+            module_edge_types = {row["relation_type"] for row in module_edges}
             missing_edges = [edge for edge in required_edges if edge not in module_edge_types]
 
             if missing_edges:
-                modules_without_coverage.append({
-                    'module': module['adg_name'],
-                    'layer': module['layer'],
-                    'missing_edges': missing_edges,
-                })
+                modules_without_coverage.append(
+                    {
+                        "module": module["adg_name"],
+                        "layer": module["layer"],
+                        "missing_edges": missing_edges,
+                    }
+                )
             else:
                 for edge in required_edges:
                     coverage_stats[edge] += 1
@@ -532,7 +587,7 @@ class ADGRigorousGapClosure0617:
 
         # Save report
         report_path = REPORTS_DIR / f"critical_edge_coverage_{self.timestamp}.json"
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2, sort_keys=True)
 
         print(f"✅ Report saved: {report_path.name}")
@@ -558,33 +613,39 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # 8.1 Validate each L0/L2/L5 module has test binding
-        critical_layers = ['L0_FOUNDATION', 'L2_COORDINATION', 'L5_EXECUTION']
-        critical_modules = self.execute_query(f"""
+        critical_layers = ["L0_FOUNDATION", "L2_COORDINATION", "L5_EXECUTION"]
+        critical_modules = self.execute_query(
+            f"""
             SELECT n.adg_name, n.layer, n.id
             FROM nodes n
-            WHERE n.layer IN ({','.join(['?' for _ in critical_layers])})
+            WHERE n.layer IN ({",".join(["?" for _ in critical_layers])})
             AND n.entity_type = 'module'
-        """, critical_layers)
+        """,
+            critical_layers,
+        )
 
         modules_without_tests = []
         test_edge_counts = {
-            'emits_test_result': 0,
-            'links_to_execution_trace': 0,
-            'gates_promotion': 0,
-            'detects_regression': 0,
+            "emits_test_result": 0,
+            "links_to_execution_trace": 0,
+            "gates_promotion": 0,
+            "detects_regression": 0,
         }
 
         for module in critical_modules:
             # Check for test linkage
-            test_edges = self.execute_query("""
+            test_edges = self.execute_query(
+                """
                 SELECT e.relation_type, COUNT(*) as count
                 FROM edges e
                 WHERE (e.src_id = ? OR e.dst_id = ?)
                 AND e.relation_type IN ('emits_test_result', 'links_to_execution_trace', 'gates_promotion', 'detects_regression')
                 GROUP BY e.relation_type
-            """, (module['id'], module['id']))
+            """,
+                (module["id"], module["id"]),
+            )
 
-            test_linkage = {row['relation_type']: row['count'] for row in test_edges}
+            test_linkage = {row["relation_type"]: row["count"] for row in test_edges}
 
             # Check if module has any test linkage
             has_test_binding = any(
@@ -593,7 +654,7 @@ class ADGRigorousGapClosure0617:
             )
 
             if not has_test_binding:
-                modules_without_tests.append(module['adg_name'])
+                modules_without_tests.append(module["adg_name"])
             else:
                 for edge_type, count in test_linkage.items():
                     if edge_type in test_edge_counts:
@@ -615,7 +676,7 @@ class ADGRigorousGapClosure0617:
 
         # Save report
         report_path = REPORTS_DIR / f"test_surface_coverage_{self.timestamp}.json"
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2, sort_keys=True)
 
         print(f"✅ Report saved: {report_path.name}")
@@ -642,13 +703,21 @@ class ADGRigorousGapClosure0617:
         result = {"success": False, "details": {}}
 
         # 9.2 Validate ALL criteria
-        blank_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL")[0]['count']
-        blank_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL")[0]['count']
-        blank_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL")[0]['count']
+        blank_layers = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE layer = '' OR layer IS NULL"
+        )[0]["count"]
+        blank_identity = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL"
+        )[0]["count"]
+        blank_confidence = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE confidence = '' OR confidence IS NULL"
+        )[0]["count"]
 
-        node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]['count']
-        edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]['count']
-        edge_types = self.execute_query("SELECT COUNT(DISTINCT relation_type) as count FROM edges")[0]['count']
+        node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]["count"]
+        edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]["count"]
+        edge_types = self.execute_query("SELECT COUNT(DISTINCT relation_type) as count FROM edges")[0][
+            "count"
+        ]
 
         report = {
             "timestamp": self.timestamp,
@@ -662,7 +731,9 @@ class ADGRigorousGapClosure0617:
                 "no_null_identities": blank_identity == 0,
                 "no_null_confidence": blank_confidence == 0,
             },
-            "system_status": "LOCKED" if (blank_layers == 0 and blank_identity == 0 and blank_confidence == 0) else "UNSTABLE",
+            "system_status": "LOCKED"
+            if (blank_layers == 0 and blank_identity == 0 and blank_confidence == 0)
+            else "UNSTABLE",
         }
 
         result["details"] = report
@@ -673,7 +744,7 @@ class ADGRigorousGapClosure0617:
         print(f"  No null identities: {blank_identity == 0}")
         print(f"  No null confidence: {blank_confidence == 0}")
 
-        system_locked = (blank_layers == 0 and blank_identity == 0 and blank_confidence == 0)
+        system_locked = blank_layers == 0 and blank_identity == 0 and blank_confidence == 0
 
         if system_locked:
             print("✅ FINAL SYSTEM LOCK ACHIEVED")
@@ -738,7 +809,7 @@ class ADGRigorousGapClosure0617:
         report_path = REPORTS_DIR / f"adg_rigorous_gap_closure_report_{self.timestamp}.json"
         REPORTS_DIR.mkdir(exist_ok=True)
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(self.results, f, indent=2, sort_keys=True)
 
         print(f"\n📊 Comprehensive report saved: {report_path.name}")
@@ -785,8 +856,12 @@ def main():
 
     if results["overall_success"]:
         print("\n🎉 ADG RIGOROUS GAP CLOSURE COMPLETED SUCCESSFULLY")
-        print("System is data-correct, structurally valid, exact, deterministic, sealed, covered, and verified")
-        print("FINAL STATE: System-of-record integrity achieved — no hidden corruption, no drift, no ambiguity")
+        print(
+            "System is data-correct, structurally valid, exact, deterministic, sealed, covered, and verified"
+        )
+        print(
+            "FINAL STATE: System-of-record integrity achieved — no hidden corruption, no drift, no ambiguity"
+        )
     else:
         print("\n❌ ADG RIGOROUS GAP CLOSURE FAILED")
         print("Review failed checks above")

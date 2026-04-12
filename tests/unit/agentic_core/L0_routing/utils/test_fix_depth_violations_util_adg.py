@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L0_routing.utils.fix_depth_violations_util."""
+
 from __future__ import annotations
 
 import importlib

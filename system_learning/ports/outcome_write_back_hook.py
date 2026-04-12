@@ -221,8 +221,11 @@ class DefaultOutcomeWriteBackHook:
 
     def on_outcome(self, *, healing_input, decision, record, success: bool) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultOutcomeWriteBackHook.on_outcome")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultOutcomeWriteBackHook.on_outcome"
+        )
 
         try:
             self._store.record_outcome(healing_input.error_signature, success)

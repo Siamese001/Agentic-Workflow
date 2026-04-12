@@ -172,8 +172,11 @@ class SelfDiagnosisMixin:
         Returns structured report for L6 observability and proactive healing.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SelfDiagnosisMixin.self_diagnose")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SelfDiagnosisMixin.self_diagnose"
+        )
 
         diagnosis = {
             "diagnosis_timestamp": datetime.utcnow().isoformat() + "Z",
@@ -241,8 +244,9 @@ class SelfDiagnosisMixin:
                 diagnosis["adg_behavioral_score"] = _bp.behavioral_score
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("self_diagnosis_mixin: Exception swallowed at L243: %s", e)
+            logging.getLogger(__name__).debug("self_diagnosis_mixin: Exception swallowed at L243: %s", e)
         if diagnosis["issues"]:
             critical_issues = [i for i in diagnosis["issues"] if i.get("Severity") == "CRITICAL"]
             diagnosis["overall_health"] = "critical" if critical_issues else "degraded"

@@ -275,8 +275,11 @@ class EmbeddingServiceFactory:
             EmbeddingServiceFactory instance or _DisabledEmbeddingService.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingServiceFactory.get_or_disabled")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingServiceFactory.get_or_disabled"
+        )
 
         if not cls._is_embedding_enabled():
             if cls._INSTANCE is not None:
@@ -301,7 +304,10 @@ class EmbeddingServiceFactory:
     @classmethod
     @classmethod
     def get(
-        cls, pack_base_path: Path, replay_mode: bool = False, expected_pack_hash: str | None = None,
+        cls,
+        pack_base_path: Path,
+        replay_mode: bool = False,
+        expected_pack_hash: str | None = None,
     ) -> EmbeddingServiceFactory:
         """Get singleton instance with fork guard validation."""
         with cls._LOCK:

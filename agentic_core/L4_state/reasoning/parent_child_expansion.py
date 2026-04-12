@@ -27,6 +27,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class ExpansionContext:
     """Context retrieved through parent-child expansion."""
+
     chunk_id: str
     content: str
     depth: int  # Hop distance from original
@@ -88,7 +89,9 @@ class ParentChildExpander:
         """
         _trace_id = f"expand_{seed_chunk_id}_{self._expansion_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ParentChildExpander.expand",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ParentChildExpander.expand",
         )
         _emit_pulls_context(_trace_id, "ParentChildExpander", seed_chunk_id)
 
@@ -97,14 +100,16 @@ class ParentChildExpander:
         queue: list[tuple[str, int, float]] = [(seed_chunk_id, 0, self.base_confidence)]
 
         # Add seed
-        results.append(ExpansionContext(
-            chunk_id=seed_chunk_id,
-            content=seed_content or "",
-            depth=0,
-            relationship="seed",
-            confidence=self.base_confidence,
-            metadata=seed_metadata or {},
-        ))
+        results.append(
+            ExpansionContext(
+                chunk_id=seed_chunk_id,
+                content=seed_content or "",
+                depth=0,
+                relationship="seed",
+                confidence=self.base_confidence,
+                metadata=seed_metadata or {},
+            )
+        )
 
         while queue:
             current_id, current_depth, current_confidence = queue.pop(0)
@@ -129,21 +134,23 @@ class ParentChildExpander:
 
                 visited.add(neighbor_id)
 
-                results.append(ExpansionContext(
-                    chunk_id=neighbor_id,
-                    content=neighbor.get("content", ""),
-                    depth=current_depth + 1,
-                    relationship=relationship,
-                    confidence=next_confidence,
-                    metadata=neighbor.get("metadata", {}),
-                ))
+                results.append(
+                    ExpansionContext(
+                        chunk_id=neighbor_id,
+                        content=neighbor.get("content", ""),
+                        depth=current_depth + 1,
+                        relationship=relationship,
+                        confidence=next_confidence,
+                        metadata=neighbor.get("metadata", {}),
+                    )
+                )
 
                 queue.append((neighbor_id, current_depth + 1, next_confidence))
 
         # Update stats
-        self._avg_expanded_nodes = (
-            self._avg_expanded_nodes * self._expansion_count + len(results)
-        ) / (self._expansion_count + 1)
+        self._avg_expanded_nodes = (self._avg_expanded_nodes * self._expansion_count + len(results)) / (
+            self._expansion_count + 1
+        )
         self._expansion_count += 1
 
         Logger.info(f"Expanded {seed_chunk_id}: {len(results)} nodes at depths 0-{self.max_depth}")
@@ -169,33 +176,39 @@ class ParentChildExpander:
             # Get parents
             parents = self.l4e_registry.get_parents(chunk_id)
             for parent in parents:
-                neighbors.append({
-                    "chunk_id": parent.chunk_id,
-                    "relationship": "parent",
-                    "content": parent.content,
-                    "metadata": parent.metadata,
-                })
+                neighbors.append(
+                    {
+                        "chunk_id": parent.chunk_id,
+                        "relationship": "parent",
+                        "content": parent.content,
+                        "metadata": parent.metadata,
+                    }
+                )
 
             # Get children
             children = self.l4e_registry.get_children(chunk_id)
             for child in children:
-                neighbors.append({
-                    "chunk_id": child.chunk_id,
-                    "relationship": "child",
-                    "content": child.content,
-                    "metadata": child.metadata,
-                })
+                neighbors.append(
+                    {
+                        "chunk_id": child.chunk_id,
+                        "relationship": "child",
+                        "content": child.content,
+                        "metadata": child.metadata,
+                    }
+                )
 
             # Get siblings (via shared parent)
             siblings = self.l4e_registry.get_siblings(chunk_id)
             for sibling in siblings:
                 if sibling.chunk_id != chunk_id:  # Exclude self
-                    neighbors.append({
-                        "chunk_id": sibling.chunk_id,
-                        "relationship": "sibling",
-                        "content": sibling.content,
-                        "metadata": sibling.metadata,
-                    })
+                    neighbors.append(
+                        {
+                            "chunk_id": sibling.chunk_id,
+                            "relationship": "sibling",
+                            "content": sibling.content,
+                            "metadata": sibling.metadata,
+                        }
+                    )
 
         except Exception as e:
             Logger.error(f"Failed to get neighbors for {chunk_id}: {e}")
@@ -310,19 +323,21 @@ class L4ERetrievalIntegrator:
             if ctx.depth == 0:
                 continue  # Skip seeds (already in initial_results)
 
-            expanded_results.append({
-                "id": ctx.chunk_id,
-                "chunk_id": ctx.chunk_id,
-                "content": ctx.content,
-                "metadata": {
-                    **ctx.metadata,
-                    "expansion_depth": ctx.depth,
-                    "expansion_relationship": ctx.relationship,
-                    "expansion_confidence": ctx.confidence,
-                },
-                "score": ctx.confidence * 0.5,  # Expanded results get score boost
-                "source": "l4e_expansion",
-            })
+            expanded_results.append(
+                {
+                    "id": ctx.chunk_id,
+                    "chunk_id": ctx.chunk_id,
+                    "content": ctx.content,
+                    "metadata": {
+                        **ctx.metadata,
+                        "expansion_depth": ctx.depth,
+                        "expansion_relationship": ctx.relationship,
+                        "expansion_confidence": ctx.confidence,
+                    },
+                    "score": ctx.confidence * 0.5,  # Expanded results get score boost
+                    "source": "l4e_expansion",
+                }
+            )
 
         return {
             "initial_results": initial_results,

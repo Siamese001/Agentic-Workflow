@@ -202,7 +202,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
         """Async initialization with L5 shielding and immediate fail-fast"""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SovereignMCPRouter.initialize",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "SovereignMCPRouter.initialize",
         )
         try:
             if not self.config_path.exists():
@@ -256,7 +258,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
             elif key_id in {21, 13}:
                 try:
                     memory_result: Any = await self.manager.call_tool(
-                        "search_nodes", {"query": f"Canon Key {key_id} healing pattern for {violation_desc}"},
+                        "search_nodes",
+                        {"query": f"Canon Key {key_id} healing pattern for {violation_desc}"},
                     )
                     return {
                         "status": "l4_memory_recall",
@@ -269,7 +272,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     raise
             elif key_id == 18:
                 redis_result: Any = await self.manager.call_tool(
-                    "redis_recover", {"key_prefix": "mission:state", "operation": "restore_last_good"},
+                    "redis_recover",
+                    {"key_prefix": "mission:state", "operation": "restore_last_good"},
                 )
                 return {
                     "status": "l3_recovery",
@@ -351,7 +355,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         )
                         steps_out.append(thought_text)
                         if isinstance(step_result, dict) and not step_result.get(
-                            "nextThoughtNeeded", not is_last,
+                            "nextThoughtNeeded",
+                            not is_last,
                         ):
                             break
                     solution = steps_out[-1] if steps_out else violation_desc
@@ -404,7 +409,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
             elif key_id in {40, 41, 42, 49}:
                 try:
                     structure: Any = await self.manager.call_tool(
-                        "read_wiki_structure", {"repo": "xai/grok-canon"},
+                        "read_wiki_structure",
+                        {"repo": "xai/grok-canon"},
                     )
                     relevant_topic: Any = next(
                         (t for t in structure.get("topics", []) if str(key_id) in t or "canon" in t.lower()),
@@ -412,7 +418,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     )
                     if relevant_topic:
                         content: Any = await self.manager.call_tool(
-                            "read_wiki_contents", {"repo": "xai/grok-canon", "topic": relevant_topic},
+                            "read_wiki_contents",
+                            {"repo": "xai/grok-canon", "topic": relevant_topic},
                         )
                         return {
                             "status": "l2_deepwiki_structure",
@@ -443,7 +450,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         return {"status": "fallback", "reason": str(search_e)}
             elif key_id == 42:
                 return await self.manager.call_tool(
-                    "fission_write", {"monolith_path": file_path, "files": {}},
+                    "fission_write",
+                    {"monolith_path": file_path, "files": {}},
                 )
             return {"status": "no_route", "key_id": key_id}
         except (RuntimeError, ValueError) as e:
@@ -460,14 +468,14 @@ class SovereignMcpRouter(SovereignBaseAgent):
 
 
 # guardian: allow-type-erasure
-def _run_self_tests(self) -> dict:    # guardian: AssertionError should be handled with specific context
+def _run_self_tests(self) -> dict:  # guardian: AssertionError should be handled with specific context
     """Run internal self-tests."""
     results = {"passed": 0, "failed": 0, "tests": []}
     try:
         assert self is not None
         results["passed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "passed"})
-    except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+    except AssertionError as e:  # guardian: AssertionError should be handled with specific context
         results["failed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results

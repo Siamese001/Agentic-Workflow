@@ -76,12 +76,14 @@ class OpenTelemetrySpanStore(TelemetryStoreProtocol):
         # Evict oldest spans if buffer exceeds max size
         if len(self._span_buffer) > self._max_buffer_size:
             evicted_count = len(self._span_buffer) - self._max_buffer_size
-            self._span_buffer = self._span_buffer[-self._max_buffer_size:]
+            self._span_buffer = self._span_buffer[-self._max_buffer_size :]
             logger.debug(f"Evicted {evicted_count} old spans from buffer")
 
         ingested = len(spans)
         _emit_records_telemetry_event(
-            "opentelemetry_span_store", "L4_STATE", "span_ingestion",
+            "opentelemetry_span_store",
+            "L4_STATE",
+            "span_ingestion",
             ingested_count=ingested,
             buffer_size=len(self._span_buffer),
         )
@@ -135,7 +137,9 @@ class OpenTelemetrySpanStore(TelemetryStoreProtocol):
                 events.append((ts_utc, kind, payload_bytes))
 
         _emit_records_telemetry_event(
-            "opentelemetry_span_store", "L4_STATE", "read_events",
+            "opentelemetry_span_store",
+            "L4_STATE",
+            "read_events",
             window_start=window_start_utc,
             window_end=window_end_utc,
             events_returned=len(events),

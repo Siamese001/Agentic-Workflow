@@ -178,7 +178,6 @@ if TYPE_CHECKING:
 try:
     from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
 except ImportError as e:
-
     raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
 
     class SubatomicTestingMixin:
@@ -250,11 +249,16 @@ class DomainPlannerAgent(L3OrchestrationBase):
     """
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
+        self,
+        plan: StrategyPlan,
+        job_context: dict[str, Any],
+        workflow_id: str,
     ) -> PlannerAssessment:
         _gw = get_routing_gateway(workflow_id)
         _emit_records_execution_trace(
-            workflow_id, LayerSegment.L3_ORCHESTRATION, "DomainPlannerAgent.run_async",
+            workflow_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "DomainPlannerAgent.run_async",
         )
         emit_agent_executes_agent(
             parent_agent_id="DomainPlannerAgent",
@@ -329,7 +333,6 @@ class DomainPlannerAgent(L3OrchestrationBase):
             Logger.info(f"[{agent_name}] L3 orchestration - domain planning validation")
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -376,7 +379,10 @@ class RiskAssessorAgent(SovereignBaseAgent):
     """Assesses risk and potential failure modes in the strategy."""
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
+        self,
+        plan: StrategyPlan,
+        job_context: dict[str, Any],
+        workflow_id: str,
     ) -> PlannerAssessment:
         focus_count = len(plan.focus_areas)
         duplicate_focus = len({focus.lower() for focus in plan.focus_areas}) != focus_count
@@ -438,7 +444,6 @@ class RiskAssessorAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - risk assessment validation")
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -485,7 +490,10 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
     """Evaluates whether the plan is grounded in achievable achievements."""
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
+        self,
+        plan: StrategyPlan,
+        job_context: dict[str, Any],
+        workflow_id: str,
     ) -> PlannerAssessment:
         achievements = plan.key_achievements_to_highlight
         quantified_achievements = [a for a in achievements if any(ch.isdigit() for ch in a)]
@@ -548,7 +556,6 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - feasibility analysis validation")
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -595,7 +602,10 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
     """Runs lightweight scenario stress tests on a strategy plan."""
 
     async def run_async(
-        self, plan: StrategyPlan, job_context: dict[str, Any], workflow_id: str,
+        self,
+        plan: StrategyPlan,
+        job_context: dict[str, Any],
+        workflow_id: str,
     ) -> list[ScenarioSimulationResult]:
         focus_lower = [focus.lower() for focus in plan.focus_areas]
         technical_focus = any("tech" in focus for focus in focus_lower)
@@ -690,7 +700,6 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - scenario simulation validation")
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1
@@ -852,7 +861,6 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
             Logger.info(f"[{agent_name}] L3 orchestration - strategy coordination validation")
             metrics["skipped"] = 1
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             Logger.error(f"[{agent_name}] Healing failed: {e}")
             metrics["errors"] += 1

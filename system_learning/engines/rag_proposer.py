@@ -184,8 +184,11 @@ class RAGChangePackage:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGChangePackage.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RAGChangePackage.canonical_bytes"
+        )
 
         data = {
             "surface_name": self.surface_name,
@@ -205,7 +208,14 @@ class RAGParameterProposer:
     """Concrete RAG proposer conforming to the RAGProposer Protocol."""
 
     def propose(
-        self, snapshot: Any, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any,
+        self,
+        snapshot: Any,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
     ) -> RAGChangePackage | None:
         """Propose RAG parameter changes based on retrieval quality metrics.
 
@@ -219,8 +229,11 @@ class RAGParameterProposer:
             Current RAG config with ``"similarity_cutoff"`` and ``"top_k"``.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGParameterProposer.propose")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RAGParameterProposer.propose"
+        )
 
         if not isinstance(metrics, dict) or not isinstance(config, dict):
             return None

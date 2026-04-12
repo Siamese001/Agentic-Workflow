@@ -29,6 +29,7 @@ Logger = logging.getLogger(__name__)
 
 class ViolationType(Enum):
     """Types of code violations."""
+
     SYNTAX = auto()
     CANON = auto()
     ASYNC = auto()

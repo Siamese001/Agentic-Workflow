@@ -98,15 +98,19 @@ class TestE2ESmoke(unittest.TestCase):
         )
 
         # Compute signature using the same canonical format as verify_signature
-        canonical = str({
-            "trace_id": "trace-123",
-            "final_system_string": "System prompt",
-            "final_user_string": "User prompt",
-            "allowed_tools_schema": tuple(sorted([], key=lambda x: str(x))),
-            "token_estimate": 50,
-        })
+        canonical = str(
+            {
+                "trace_id": "trace-123",
+                "final_system_string": "System prompt",
+                "final_user_string": "User prompt",
+                "allowed_tools_schema": tuple(sorted([], key=lambda x: str(x))),
+                "token_estimate": 50,
+            }
+        )
         signature = hmac.new(
-            secret_key, canonical.encode("utf-8"), hashlib.sha256,
+            secret_key,
+            canonical.encode("utf-8"),
+            hashlib.sha256,
         ).hexdigest()
 
         # Create final artifact with signature

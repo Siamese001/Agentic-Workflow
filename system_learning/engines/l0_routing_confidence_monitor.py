@@ -314,11 +314,13 @@ def propose_routing_confidence_change(
     adjusted_trigger = max(0.5, adjusted_trigger)  # Never go below 0.5
 
     # Further adjust based on ADG confidence tiers
-    if adg_confidence_tiers:    # guardian: SampleSizeViolation should be handled with specific context
+    if adg_confidence_tiers:  # guardian: SampleSizeViolation should be handled with specific context
         total_edges = sum(adg_confidence_tiers.values())
         if total_edges > 0:
             # High proportion of low confidence (C0/C1) increases sensitivity
-            low_conf_ratio = (adg_confidence_tiers.get('C0', 0) + adg_confidence_tiers.get('C1', 0)) / total_edges
+            low_conf_ratio = (
+                adg_confidence_tiers.get("C0", 0) + adg_confidence_tiers.get("C1", 0)
+            ) / total_edges
             if low_conf_ratio > 0.3:  # More than 30% low confidence
                 adjusted_trigger -= 0.05  # Additional sensitivity boost
                 adjusted_trigger = max(0.5, adjusted_trigger)

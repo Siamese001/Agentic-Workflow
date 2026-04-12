@@ -20,14 +20,16 @@ from ..models.base_model import ModelInput, ModelPrediction
 
 class ShadowMode(Enum):
     """Shadow logging modes."""
+
     LOG_ONLY = "log_only"  # Just log predictions
-    COMPARE = "compare"    # Compare with actual decisions
+    COMPARE = "compare"  # Compare with actual decisions
     TRAINING_DATA = "training_data"  # Collect for training
 
 
 @dataclass
 class ShadowLogEntry:
     """Single shadow log entry."""
+
     timestamp: datetime
     trace_id: str
     replay_key: str
@@ -45,6 +47,7 @@ class ShadowLogEntry:
 @dataclass
 class ComparisonResult:
     """Result of comparing ML prediction with actual decision."""
+
     predictions_match: bool
     confidence_difference: float | None = None
     path_difference: str | None = None
@@ -75,13 +78,13 @@ class ShadowLogger:
 
         # Statistics
         self.stats = {
-            'total_predictions': 0,
-            'comparisons_made': 0,
-            'ml_correct': 0,
-            'ml_better': 0,
-            'ml_worse': 0,
-            'confidence_disagreements': 0,
-            'path_disagreements': 0,
+            "total_predictions": 0,
+            "comparisons_made": 0,
+            "ml_correct": 0,
+            "ml_better": 0,
+            "ml_worse": 0,
+            "confidence_disagreements": 0,
+            "path_disagreements": 0,
         }
 
     def log_prediction(
@@ -109,7 +112,7 @@ class ShadowLogger:
             trace_id=model_prediction.trace_id,
             replay_key=model_prediction.replay_key,
             policy_hash=model_prediction.policy_hash,
-            model_name=model_prediction.model_metadata.get('model_name', ''),
+            model_name=model_prediction.model_metadata.get("model_name", ""),
             model_version=model_prediction.model_version,
             model_input=model_input.features,
             model_prediction=asdict(model_prediction),
@@ -121,7 +124,8 @@ class ShadowLogger:
         # Add comparison if actual decision provided
         if actual_decision and logging_mode in [ShadowMode.COMPARE, ShadowMode.TRAINING_DATA]:
             log_entry.comparison_result = self._compare_predictions(
-                model_prediction, actual_decision,
+                model_prediction,
+                actual_decision,
             )
             self._update_stats(log_entry.comparison_result)
 
@@ -129,7 +133,7 @@ class ShadowLogger:
         self._write_log_entry(log_entry, logging_mode)
 
         # Update statistics
-        self.stats['total_predictions'] += 1
+        self.stats["total_predictions"] += 1
 
         # Log to execution trace
         self._log_shadow_event(log_entry)
@@ -191,7 +195,7 @@ class ShadowLogger:
             return None
 
         # Reconstruct model prediction object
-        model_prediction_dict = shadow_prediction['model_prediction']
+        model_prediction_dict = shadow_prediction["model_prediction"]
         model_prediction = self._reconstruct_prediction(model_prediction_dict)
 
         # Compare predictions
@@ -209,12 +213,12 @@ class ShadowLogger:
         """Get shadow logging statistics."""
         return {
             **self.stats,
-            'session_id': self.session_id,
-            'session_start_time': self._get_session_start_time(),
-            'log_files': {
-                'shadow_predictions': str(self.shadow_log_file),
-                'comparisons': str(self.comparison_log_file),
-                'training_data': str(self.training_data_file),
+            "session_id": self.session_id,
+            "session_start_time": self._get_session_start_time(),
+            "log_files": {
+                "shadow_predictions": str(self.shadow_log_file),
+                "comparisons": str(self.comparison_log_file),
+                "training_data": str(self.training_data_file),
             },
         }
 
@@ -231,13 +235,13 @@ class ShadowLogger:
         opportunities = []
 
         try:
-            with open(self.comparison_log_file, encoding='utf-8') as f:
+            with open(self.comparison_log_file, encoding="utf-8") as f:
                 for line in f:
                     if len(opportunities) >= limit:
                         break
 
                     entry = json.loads(line.strip())
-                    if entry.get('improvement_opportunity', False):
+                    if entry.get("improvement_opportunity", False):
                         opportunities.append(entry)
 
         except FileNotFoundError:
@@ -269,26 +273,26 @@ class ShadowLogger:
         training_examples = []
 
         try:
-            with open(self.shadow_log_file, encoding='utf-8') as f:
+            with open(self.shadow_log_file, encoding="utf-8") as f:
                 for line in f:
                     entry = json.loads(line.strip())
 
                     # Filter by confidence
-                    prediction = entry.get('model_prediction', {})
-                    confidence = prediction.get('confidence', 0.0)
+                    prediction = entry.get("model_prediction", {})
+                    confidence = prediction.get("confidence", 0.0)
 
                     if confidence >= min_confidence:
                         training_example = {
-                            'features': entry.get('model_input', {}),
-                            'prediction': prediction.get('prediction'),
-                            'confidence': confidence,
-                            'trace_id': entry.get('trace_id'),
-                            'timestamp': entry.get('timestamp'),
+                            "features": entry.get("model_input", {}),
+                            "prediction": prediction.get("prediction"),
+                            "confidence": confidence,
+                            "trace_id": entry.get("trace_id"),
+                            "timestamp": entry.get("timestamp"),
                         }
 
-                        if include_comparisons and entry.get('comparison_result'):
-                            training_example['actual_decision'] = entry.get('actual_decision')
-                            training_example['comparison'] = entry.get('comparison_result')
+                        if include_comparisons and entry.get("comparison_result"):
+                            training_example["actual_decision"] = entry.get("actual_decision")
+                            training_example["comparison"] = entry.get("comparison_result")
 
                         training_examples.append(training_example)
 
@@ -296,9 +300,9 @@ class ShadowLogger:
             pass  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow
 
         # Write training data
-        with open(output_file, 'w', encoding='utf-8') as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             for example in training_examples:
-                f.write(json.dumps(example) + '\n')
+                f.write(json.dumps(example) + "\n")
 
         return output_file
 
@@ -310,7 +314,7 @@ class ShadowLogger:
         """Compare ML prediction with actual decision."""
         # Extract decision values
         predicted_path = model_prediction.prediction
-        actual_path = actual_decision.get('path', actual_decision.get('decision'))
+        actual_path = actual_decision.get("path", actual_decision.get("decision"))
 
         # Check if predictions match
         predictions_match = str(predicted_path) == str(actual_path)
@@ -318,7 +322,7 @@ class ShadowLogger:
         # Calculate confidence difference if both have confidence
         confidence_difference = None
         if model_prediction.confidence is not None:
-            actual_confidence = actual_decision.get('confidence')
+            actual_confidence = actual_decision.get("confidence")
             if actual_confidence is not None:
                 confidence_difference = abs(model_prediction.confidence - actual_confidence)
 
@@ -349,7 +353,7 @@ class ShadowLogger:
         log_data = asdict(log_entry)
 
         # Convert datetime to string for JSON serialization
-        log_data['timestamp'] = log_entry.timestamp.isoformat()
+        log_data["timestamp"] = log_entry.timestamp.isoformat()
 
         # Convert enums and datetime to strings for JSON serialization
         for key, value in log_data.items():
@@ -366,82 +370,82 @@ class ShadowLogger:
                         value[k] = v.isoformat()
 
         if logging_mode == ShadowMode.LOG_ONLY:
-            with open(self.shadow_log_file, 'a', encoding='utf-8') as f:
-                f.write(json.dumps(log_data) + '\n')
+            with open(self.shadow_log_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(log_data) + "\n")
 
         elif logging_mode == ShadowMode.COMPARE:
             # Write to both shadow and comparison logs
-            with open(self.shadow_log_file, 'a', encoding='utf-8') as f:
-                f.write(json.dumps(log_data) + '\n')
+            with open(self.shadow_log_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(log_data) + "\n")
 
             if log_entry.comparison_result:
                 comparison_data = {
                     **log_data,
-                    'comparison_result': asdict(log_entry.comparison_result),
+                    "comparison_result": asdict(log_entry.comparison_result),
                 }
-                with open(self.comparison_log_file, 'a', encoding='utf-8') as f:
-                    f.write(json.dumps(comparison_data) + '\n')
+                with open(self.comparison_log_file, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(comparison_data) + "\n")
 
         elif logging_mode == ShadowMode.TRAINING_DATA:
             # Write to all three logs
-            with open(self.shadow_log_file, 'a', encoding='utf-8') as f:
-                f.write(json.dumps(log_data) + '\n')
+            with open(self.shadow_log_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(log_data) + "\n")
 
             if log_entry.comparison_result:
                 comparison_data = {
                     **log_data,
-                    'comparison_result': asdict(log_entry.comparison_result),
+                    "comparison_result": asdict(log_entry.comparison_result),
                 }
-                with open(self.comparison_log_file, 'a', encoding='utf-8') as f:
-                    f.write(json.dumps(comparison_data) + '\n')
+                with open(self.comparison_log_file, "a", encoding="utf-8") as f:
+                    f.write(json.dumps(comparison_data) + "\n")
 
             # Training data format
             training_data = {
-                'features': log_entry.model_input,
-                'prediction': log_entry.model_prediction['prediction'],
-                'confidence': log_entry.model_prediction.get('confidence'),
-                'metadata': {
-                    'trace_id': log_entry.trace_id,
-                    'timestamp': log_entry.timestamp.isoformat(),
-                    'model_version': log_entry.model_version,
+                "features": log_entry.model_input,
+                "prediction": log_entry.model_prediction["prediction"],
+                "confidence": log_entry.model_prediction.get("confidence"),
+                "metadata": {
+                    "trace_id": log_entry.trace_id,
+                    "timestamp": log_entry.timestamp.isoformat(),
+                    "model_version": log_entry.model_version,
                 },
             }
 
             if log_entry.actual_decision:
-                training_data['actual_decision'] = log_entry.actual_decision
+                training_data["actual_decision"] = log_entry.actual_decision
 
-            with open(self.training_data_file, 'a', encoding='utf-8') as f:
-                f.write(json.dumps(training_data) + '\n')
+            with open(self.training_data_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps(training_data) + "\n")
 
     def _update_stats(self, comparison_result: ComparisonResult) -> None:
         """Update comparison statistics."""
-        self.stats['comparisons_made'] += 1
+        self.stats["comparisons_made"] += 1
 
         if comparison_result.predictions_match:
-            self.stats['ml_correct'] += 1
+            self.stats["ml_correct"] += 1
         else:
-            self.stats['path_disagreements'] += 1
+            self.stats["path_disagreements"] += 1
 
         if comparison_result.confidence_difference and comparison_result.confidence_difference > 0.2:
-            self.stats['confidence_disagreements'] += 1
+            self.stats["confidence_disagreements"] += 1
 
         if comparison_result.ml_better is True:
-            self.stats['ml_better'] += 1
+            self.stats["ml_better"] += 1
         elif comparison_result.ml_better is False:
-            self.stats['ml_worse'] += 1
+            self.stats["ml_worse"] += 1
 
     def _log_shadow_event(self, log_entry: ShadowLogEntry) -> None:
         """Log shadow event to execution trace."""
         try:
             event_data = {
-                'session_id': self.session_id,
-                'trace_id': log_entry.trace_id,
-                'model_name': log_entry.model_name,
-                'model_version': log_entry.model_version,
-                'logging_mode': log_entry.logging_mode.value,
-                'prediction': log_entry.model_prediction.get('prediction'),
-                'confidence': log_entry.model_prediction.get('confidence'),
-                'has_comparison': log_entry.comparison_result is not None,
+                "session_id": self.session_id,
+                "trace_id": log_entry.trace_id,
+                "model_name": log_entry.model_name,
+                "model_version": log_entry.model_version,
+                "logging_mode": log_entry.logging_mode.value,
+                "prediction": log_entry.model_prediction.get("prediction"),
+                "confidence": log_entry.model_prediction.get("confidence"),
+                "has_comparison": log_entry.comparison_result is not None,
             }
 
             _emit_records_execution_trace(
@@ -462,10 +466,10 @@ class ShadowLogger:
     def _find_prediction_by_trace_id(self, trace_id: str) -> dict[str, Any] | None:
         """Find shadow prediction by trace ID."""
         try:
-            with open(self.shadow_log_file, encoding='utf-8') as f:
+            with open(self.shadow_log_file, encoding="utf-8") as f:
                 for line in f:
                     entry = json.loads(line.strip())
-                    if entry.get('trace_id') == trace_id:
+                    if entry.get("trace_id") == trace_id:
                         return entry
 
         except FileNotFoundError:
@@ -477,29 +481,29 @@ class ShadowLogger:
         """Reconstruct ModelPrediction object from dictionary."""
         # This is a simplified reconstruction
         # In practice, you'd want to fully reconstruct the object
-        return type('ModelPrediction', (), prediction_dict)()
+        return type("ModelPrediction", (), prediction_dict)()
 
     def _update_log_entry_with_comparison(self, trace_id: str, comparison: ComparisonResult) -> None:
         """Update existing log entry with comparison result."""
         # This would involve finding and updating the specific log entry
         # For simplicity, we just append to comparison log
         comparison_data = {
-            'trace_id': trace_id,
-            'comparison_result': asdict(comparison),
-            'timestamp': datetime.now().isoformat(),
+            "trace_id": trace_id,
+            "comparison_result": asdict(comparison),
+            "timestamp": datetime.now().isoformat(),
         }
 
-        with open(self.comparison_log_file, 'a', encoding='utf-8') as f:
-            f.write(json.dumps(comparison_data) + '\n')
+        with open(self.comparison_log_file, "a", encoding="utf-8") as f:
+            f.write(json.dumps(comparison_data) + "\n")
 
     def _get_session_start_time(self) -> str | None:
         """Get session start time from first log entry."""
         try:
-            with open(self.shadow_log_file, encoding='utf-8') as f:
+            with open(self.shadow_log_file, encoding="utf-8") as f:
                 first_line = f.readline()
                 if first_line:
                     entry = json.loads(first_line.strip())
-                    return entry.get('timestamp')
+                    return entry.get("timestamp")
 
         except (FileNotFoundError, json.JSONDecodeError):
             pass  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow

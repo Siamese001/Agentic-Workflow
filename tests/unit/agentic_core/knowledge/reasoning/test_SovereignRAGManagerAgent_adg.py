@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.knowledge.reasoning.SovereignRAGManagerAgent."""
+
 from __future__ import annotations
 
 import importlib
@@ -79,8 +80,7 @@ def test_textdocumentloader_is_instantiable(mod):
     assert cls is not None, "TextDocumentLoader must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "TextDocumentLoader must be a class"
 
-
-# Arrange
+    # Arrange
     input_data = {}  # Replace with actual test data
 
     # Act

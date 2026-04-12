@@ -29,6 +29,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class EvaluationRun:
     """Evaluation run configuration and results."""
+
     run_id: str
     mode: str  # shadow, replay, live
     query: str
@@ -78,7 +79,9 @@ class ShadowEvaluationRunner(EvaluationRunner):
         """
         _trace_id = f"shadow_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ShadowEvaluationRunner.evaluate",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ShadowEvaluationRunner.evaluate",
         )
 
         # Get ground truth if available
@@ -196,7 +199,9 @@ class ReplayEvaluationRunner(EvaluationRunner):
         """
         _trace_id = f"replay_batch_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ReplayEvaluationRunner.replay",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ReplayEvaluationRunner.replay",
         )
 
         # Get historical queries
@@ -224,7 +229,9 @@ class ReplayEvaluationRunner(EvaluationRunner):
         """Evaluate in replay mode."""
         _trace_id = f"replay_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ReplayEvaluationRunner.evaluate",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ReplayEvaluationRunner.evaluate",
         )
 
         # In replay, we compare against stored results
@@ -330,10 +337,7 @@ class EvaluationOrchestrator:
                     metric_sums[metric_name] = metric_sums.get(metric_name, 0.0) + value
                     metric_counts[metric_name] = metric_counts.get(metric_name, 0) + 1
 
-        averages = {
-            name: metric_sums[name] / metric_counts[name]
-            for name in metric_sums
-        }
+        averages = {name: metric_sums[name] / metric_counts[name] for name in metric_sums}
 
         return {
             "count": len(evaluations),
@@ -362,7 +366,7 @@ class EvaluationOrchestrator:
                 for e in self._evaluations
             ]
 
-            with open(path, 'w') as f:
+            with open(path, "w") as f:
                 json.dump(data, f, indent=2)
 
             Logger.info(f"Exported {len(data)} evaluations to {path}")

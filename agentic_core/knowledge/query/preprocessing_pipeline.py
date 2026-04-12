@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 class QueryFormat(Enum):
     """Format of the incoming query."""
+
     RAW_TEXT = "raw_text"
     STRUCTURED = "structured"
     CONVERSATION = "conversation"
@@ -35,6 +36,7 @@ class QueryPacket:
     The QueryPacket provides a split structure for distinct routing
     vs. retrieval duties with query provenance tracking.
     """
+
     # Original query
     raw_query: str
     original_format: QueryFormat = QueryFormat.RAW_TEXT
@@ -77,13 +79,13 @@ class QueryPreprocessor:
     def _setup_patterns(self):
         """Setup cleaning patterns."""
         # Whitespace normalization
-        self.whitespace_pattern = re.compile(r'\s+')
+        self.whitespace_pattern = re.compile(r"\s+")
 
         # Special character cleaning (preserve essential punctuation)
-        self.special_chars_pattern = re.compile(r'[^\w\s\-\.\?\!\,\;\:]')
+        self.special_chars_pattern = re.compile(r"[^\w\s\-\.\?\!\,\;\:]")
 
         # Multiple punctuation
-        self.multi_punct_pattern = re.compile(r'[\.\?\!\,\;\:]+')
+        self.multi_punct_pattern = re.compile(r"[\.\?\!\,\;\:]+")
 
     def preprocess(
         self,
@@ -105,7 +107,9 @@ class QueryPreprocessor:
         """
         trace_id = f"preprocess_{hash(str(query)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryPreprocessor.preprocess",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "QueryPreprocessor.preprocess",
         )
 
         # Extract raw text from various formats
@@ -158,10 +162,7 @@ class QueryPreprocessor:
         Returns:
             List of QueryPacket objects
         """
-        return [
-            self.preprocess(q, source_format)
-            for q in queries
-        ]
+        return [self.preprocess(q, source_format) for q in queries]
 
     def _extract_raw_text(
         self,
@@ -204,10 +205,10 @@ class QueryPreprocessor:
         cleaned = query.strip()
 
         # Normalize whitespace
-        cleaned = self.whitespace_pattern.sub(' ', cleaned)
+        cleaned = self.whitespace_pattern.sub(" ", cleaned)
 
         # Remove excessive special characters (but preserve meaning)
-        cleaned = self.special_chars_pattern.sub('', cleaned)
+        cleaned = self.special_chars_pattern.sub("", cleaned)
 
         # Normalize multiple punctuation
         cleaned = self.multi_punct_pattern.sub(lambda m: m.group(0)[0], cleaned)
@@ -219,26 +220,111 @@ class QueryPreprocessor:
         # For routing, we want to focus on key terms
         # Remove stop words (basic implementation)
         stop_words = {
-            'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been',
-            'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
-            'would', 'could', 'should', 'may', 'might', 'must', 'shall',
-            'can', 'need', 'dare', 'ought', 'used', 'to', 'of', 'in',
-            'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into',
-            'through', 'during', 'before', 'after', 'above', 'below',
-            'between', 'under', 'and', 'but', 'or', 'yet', 'so',
-            'if', 'because', 'although', 'though', 'while', 'where',
-            'when', 'that', 'which', 'who', 'whom', 'whose', 'what',
-            'this', 'these', 'those', 'i', 'me', 'my', 'myself', 'we',
-            'our', 'ours', 'ourselves', 'you', 'your', 'yours',
-            'yourself', 'yourselves', 'he', 'him', 'his', 'himself',
-            'she', 'her', 'hers', 'herself', 'it', 'its', 'itself',
-            'they', 'them', 'their', 'theirs', 'themselves', 'am',
+            "the",
+            "a",
+            "an",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "being",
+            "have",
+            "has",
+            "had",
+            "do",
+            "does",
+            "did",
+            "will",
+            "would",
+            "could",
+            "should",
+            "may",
+            "might",
+            "must",
+            "shall",
+            "can",
+            "need",
+            "dare",
+            "ought",
+            "used",
+            "to",
+            "of",
+            "in",
+            "for",
+            "on",
+            "with",
+            "at",
+            "by",
+            "from",
+            "as",
+            "into",
+            "through",
+            "during",
+            "before",
+            "after",
+            "above",
+            "below",
+            "between",
+            "under",
+            "and",
+            "but",
+            "or",
+            "yet",
+            "so",
+            "if",
+            "because",
+            "although",
+            "though",
+            "while",
+            "where",
+            "when",
+            "that",
+            "which",
+            "who",
+            "whom",
+            "whose",
+            "what",
+            "this",
+            "these",
+            "those",
+            "i",
+            "me",
+            "my",
+            "myself",
+            "we",
+            "our",
+            "ours",
+            "ourselves",
+            "you",
+            "your",
+            "yours",
+            "yourself",
+            "yourselves",
+            "he",
+            "him",
+            "his",
+            "himself",
+            "she",
+            "her",
+            "hers",
+            "herself",
+            "it",
+            "its",
+            "itself",
+            "they",
+            "them",
+            "their",
+            "theirs",
+            "themselves",
+            "am",
         }
 
         words = query.lower().split()
         keywords = [w for w in words if w not in stop_words]
 
-        return ' '.join(keywords) if keywords else query
+        return " ".join(keywords) if keywords else query
 
     def _optimize_for_retrieval(self, query: str) -> str:
         """Optimize query for retrieval (semantic content preservation)."""

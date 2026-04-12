@@ -16,14 +16,17 @@ class TestReplayEnvelopeTypesAdg:
     def test_replay_envelope_types_adg_imports(self):
         """Test replay_envelope_types_adg module imports."""
         from agentic_core import replay_envelope_types_adg
+
         assert replay_envelope_types_adg is not None
 
     def test_replay_envelope_types_adg_class(self):
         """Test ReplayEnvelopeTypesAdg class exists."""
         from agentic_core import ReplayEnvelopeTypesAdg
+
         assert ReplayEnvelopeTypesAdg is not None
 
     def test_replay_envelope_types_adg_callable(self):
         """Test replay_envelope_types_adg functions are callable."""
         from agentic_core import validate_replay_envelope_types_adg
+
         assert callable(validate_replay_envelope_types_adg)

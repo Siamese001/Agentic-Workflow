@@ -188,7 +188,10 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
     # Convenience API
     # ========================================================================
     def get_embedding(
-        self, content: str, provider: str = "bge-m3", use_cache: bool = True,
+        self,
+        content: str,
+        provider: str = "bge-m3",
+        use_cache: bool = True,
     ) -> list[float] | None:
         """Synchronous wrapper for embedding generation."""
         result = self.run_l2_phases(

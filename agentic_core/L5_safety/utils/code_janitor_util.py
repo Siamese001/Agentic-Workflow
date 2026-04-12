@@ -121,7 +121,11 @@ class CodeJanitor:
         return (len(violations) == 0, violations)
 
     def _check_line_indentation(
-        self, file_path: str, line_num: int, line: str, violations: list[str],
+        self,
+        file_path: str,
+        line_num: int,
+        line: str,
+        violations: list[str],
     ) -> None:
         """Check indentation for a single line."""
         if "\t" in line:
@@ -188,7 +192,10 @@ class CodeJanitor:
         return (len(violations) == 0, violations)
 
     def _check_node_naming_convention(
-        self, file_path: str, node: ast.AST, violations: list[str],
+        self,
+        file_path: str,
+        node: ast.AST,
+        violations: list[str],
     ) -> None:
         """Helper to check naming convention for a single AST node."""
         if isinstance(node, ast.ClassDef):
@@ -368,10 +375,13 @@ def main():
 
     parser = argparse.ArgumentParser(description="Code Janitor Utility")
     parser.add_argument("file", help="Python file to validate")
-    parser.add_argument("--checks", nargs="+",
-                        choices=["syntax", "indentation", "whitespace", "naming", "all"],
-                        default=["all"],
-                        help="Validation checks to run")
+    parser.add_argument(
+        "--checks",
+        nargs="+",
+        choices=["syntax", "indentation", "whitespace", "naming", "all"],
+        default=["all"],
+        help="Validation checks to run",
+    )
     parser.add_argument("--verbose", "-v", action="store_true")
 
     args = parser.parse_args()

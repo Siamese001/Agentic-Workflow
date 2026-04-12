@@ -17,6 +17,7 @@ import time
 @dataclass
 class VectorRecord:
     """Vector record with metadata."""
+
     id: str
     embedding: list[float]
     sparse_vector: dict[int, float] | None
@@ -91,12 +92,14 @@ class EmbeddingPipeline:
 
         records_data = []
         for r in self._records:
-            records_data.append({
-                "id": r.id,
-                "embedding": r.embedding[:10],  # Truncate for storage
-                "metadata": r.metadata,
-                "source_uri": r.source_uri,
-            })
+            records_data.append(
+                {
+                    "id": r.id,
+                    "embedding": r.embedding[:10],  # Truncate for storage
+                    "metadata": r.metadata,
+                    "source_uri": r.source_uri,
+                }
+            )
 
         # Write to file
         index_file = self._index_path.with_suffix(".jsonl")

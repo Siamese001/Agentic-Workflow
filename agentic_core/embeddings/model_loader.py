@@ -15,6 +15,7 @@ import hashlib
 @dataclass
 class ModelManifest:
     """Model checkpoint manifest."""
+
     model_name: str
     checkpoint_path: str
     parameter_count: int
@@ -71,6 +72,7 @@ class ModelLoader:
 
         try:
             from sentence_transformers import SentenceTransformer
+
             self._model = SentenceTransformer(self._model_name, device=self._device)
 
             if self._manifest:

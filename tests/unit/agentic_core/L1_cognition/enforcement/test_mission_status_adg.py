@@ -16,14 +16,17 @@ class TestMissionStatusAdg:
     def test_mission_status_adg_imports(self):
         """Test mission_status_adg module imports."""
         from agentic_core import mission_status_adg
+
         assert mission_status_adg is not None
 
     def test_mission_status_adg_class(self):
         """Test MissionStatusAdg class exists."""
         from agentic_core import MissionStatusAdg
+
         assert MissionStatusAdg is not None
 
     def test_mission_status_adg_callable(self):
         """Test mission_status_adg functions are callable."""
         from agentic_core import validate_mission_status_adg
+
         assert callable(validate_mission_status_adg)

@@ -85,16 +85,16 @@ class CleanADGDeployer:
 
         if workflow_file.exists():
             try:
-                content = workflow_file.read_text(encoding='utf-8')
+                content = workflow_file.read_text(encoding="utf-8")
 
                 # Update ADG generation command to use clean scanner
                 new_content = content.replace(
-                    'python tools/generate_full_adg.py',
-                    'python tools/generate_static_adg.py',
+                    "python tools/generate_full_adg.py",
+                    "python tools/generate_static_adg.py",
                 )
 
                 if new_content != content:
-                    workflow_file.write_text(new_content, encoding='utf-8')
+                    workflow_file.write_text(new_content, encoding="utf-8")
                     self.deployment_log.append("Updated CI workflow to use clean static scanner")
                     print("✅ Updated CI workflow")
                 else:
@@ -119,6 +119,7 @@ class CleanADGDeployer:
             print("  Generating clean static ADG...")
             try:
                 import subprocess
+
                 result = subprocess.run(
                     ["python", str(static_script)],
                     cwd=PROJECT_ROOT,
@@ -150,6 +151,7 @@ class CleanADGDeployer:
             print("  Generating runtime ADG...")
             try:
                 import subprocess
+
                 result = subprocess.run(
                     ["python", str(runtime_script)],
                     cwd=PROJECT_ROOT,
@@ -210,20 +212,20 @@ class CleanADGDeployer:
         print("📋 Generating deployment report...")
 
         report = {
-            'deployment_timestamp': datetime.now().isoformat(),
-            'deployment_log': self.deployment_log,
-            'errors': self.errors,
-            'success': len(self.errors) == 0,
-            'components_deployed': [
-                'Clean static scanner',
-                'Runtime scanner',
-                'CI configuration updates',
-                'Separated ADG generation',
+            "deployment_timestamp": datetime.now().isoformat(),
+            "deployment_log": self.deployment_log,
+            "errors": self.errors,
+            "success": len(self.errors) == 0,
+            "components_deployed": [
+                "Clean static scanner",
+                "Runtime scanner",
+                "CI configuration updates",
+                "Separated ADG generation",
             ],
         }
 
         report_file = PROJECT_ROOT / "tools" / "adg_separation_deployment_report.json"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
 
         print(f"✅ Deployment report written to: {report_file}")
@@ -254,7 +256,7 @@ def main():
     report = deployer.generate_deployment_report()
 
     print("\n" + "=" * 80)
-    if report['success']:
+    if report["success"]:
         print("🎉 CLEAN ADG SEPARATION DEPLOYED SUCCESSFULLY!")
         print("✅ Static/Runtime ADG separation complete")
         print("✅ CI updated to use clean scanners")
@@ -262,7 +264,7 @@ def main():
     else:
         print("⚠️  DEPLOYMENT COMPLETED WITH ERRORS")
         print(f"❌ Errors: {len(report['errors'])}")
-        for error in report['errors']:
+        for error in report["errors"]:
             print(f"   - {error}")
 
     print("\n📊 Deployment summary:")

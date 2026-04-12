@@ -89,7 +89,9 @@ class DeterminismDigestEmitter:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeterminismDigestEmitter.compute",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "DeterminismDigestEmitter.compute",
         )
 
         components = {

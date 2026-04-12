@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class BudgetResult:
     """Result of budget allocation."""
+
     allowed_tokens: int
     estimated_cost: float
     remaining_budget: int
@@ -67,7 +68,9 @@ class ComputeBudgetManager:
         """
         trace_id = f"budget_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ComputeBudgetManager.allocate_budget",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "ComputeBudgetManager.allocate_budget",
         )
 
         # Check remaining budget

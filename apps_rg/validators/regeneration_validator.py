@@ -174,6 +174,7 @@ class ExpansionStrategy(RegenerationStrategy):
 
     def execute(self, content: str, violation_metadata: dict[str, Any]) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExpansionStrategy.execute")
 
@@ -190,8 +191,11 @@ class CondensationStrategy(RegenerationStrategy):
 
     def execute(self, content: str, violation_metadata: dict[str, Any]) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CondensationStrategy.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CondensationStrategy.execute"
+        )
 
         max_allowed = violation_metadata.get("max_allowed", 9999)
         words = content.split()
@@ -213,8 +217,11 @@ class RegenerationEngine:
         Route the violation to the appropriate repair strategy.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RegenerationEngine.regenerate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RegenerationEngine.regenerate"
+        )
 
         strategy = self.strategies.get(violation_type)
         if not strategy:

@@ -241,8 +241,11 @@ class CompletenessReviewRubric(ReviewRubric):
     def quality_score(self) -> float:
         """Extended quality score including completeness penalty."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CompletenessReviewRubric.quality_score")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CompletenessReviewRubric.quality_score"
+        )
 
         base_dimensions = [self.grounded, self.useful, self.correct, self.safe]
         base_raw = sum(1 for d in base_dimensions if d) / len(base_dimensions)

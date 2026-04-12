@@ -206,8 +206,11 @@ class ResumeOrchestratorEngine(BaseRGEngine):
 
     async def execute(self, job_description: str) -> dict[str, Any]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeOrchestratorEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeOrchestratorEngine.execute"
+        )
 
         self._mcp_audit("workflow_start")
         mission_input = {
@@ -217,7 +220,7 @@ class ResumeOrchestratorEngine(BaseRGEngine):
         }
         try:
             self.ctx.buffer.write("mission_input", mission_input, source_agent=self.name)
-        except PermissionError:    # guardian: Permission errors should validate access before operation
+        except PermissionError:  # guardian: Permission errors should validate access before operation
             pass
         try:
             step_count = 0

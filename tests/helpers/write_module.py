@@ -17,6 +17,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 def agent_module(agent_name: str, base_class: str = "SovereignBaseAgent") -> str:
     """Generate a module containing an Agent class."""
     return f'''"""Agent module for {agent_name}."""

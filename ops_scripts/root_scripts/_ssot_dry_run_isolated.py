@@ -326,7 +326,9 @@ if "FileClassificationAgent" in agent_classes:
             if v:
                 v["file"] = str(Path(v["file"]).relative_to(PROJECT_ROOT)).replace("\\", "/")
                 layer_violations.append(v)
-        except Exception:  # guardian: allow-silent-swallow -- non-critical: validation failure skipped silently
+        except (
+            Exception
+        ):  # guardian: allow-silent-swallow -- non-critical: validation failure skipped silently
             pass
 
     print(f"  Layer violations found: {len(layer_violations)}", file=sys.stderr)

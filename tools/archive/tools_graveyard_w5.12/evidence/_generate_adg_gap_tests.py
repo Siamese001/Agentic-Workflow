@@ -212,7 +212,7 @@ def inspect_module(src_path: Path) -> SymbolInfo:
         return info
     try:
         tree = ast.parse(src_path.read_text(encoding="utf-8", errors="replace"))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return info
 
     # Collect __all__

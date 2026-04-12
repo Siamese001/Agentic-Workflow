@@ -181,7 +181,7 @@ class ThresholdReplacer(ast.NodeTransformer):
                     var_name = target.id.upper()
                     # If variable IS named THRESHOLD, remove this assignment entirely
                     # since we'll import it instead
-                    if var_name == 'THRESHOLD':
+                    if var_name == "THRESHOLD":
                         self.nodes_to_remove.append(node)
                         self.modified = True
                         return None  # Remove this node
@@ -189,9 +189,9 @@ class ThresholdReplacer(ast.NodeTransformer):
 
     def visit_keyword(self, node: ast.keyword) -> ast.keyword:
         """Replace threshold=0.95 in function calls."""
-        if node.arg and 'threshold' in node.arg.lower():
+        if node.arg and "threshold" in node.arg.lower():
             if isinstance(node.value, ast.Constant) and node.value.value == 0.95:
-                node.value = ast.Name(id='THRESHOLD', ctx=ast.Load())
+                node.value = ast.Name(id="THRESHOLD", ctx=ast.Load())
                 self.modified = True
         return self.generic_visit(node)
 
@@ -201,26 +201,26 @@ def add_threshold_import(source: str, file_path: Path) -> str:
     lines = source.splitlines(keepends=True)
 
     # Check if import already exists
-    if 'from agentic_core.L0_routing.config.path_constants import' in source:
+    if "from agentic_core.L0_routing.config.path_constants import" in source:
         # Check if THRESHOLD is in the import
-        if 'THRESHOLD' in source:
+        if "THRESHOLD" in source:
             return source
 
         # Add THRESHOLD to existing import
         for i, line in enumerate(lines):
-            if 'from agentic_core.L0_routing.config.path_constants import' in line:
+            if "from agentic_core.L0_routing.config.path_constants import" in line:
                 # Check if it's a multi-line import
-                if '(' in line:
+                if "(" in line:
                     # Find closing paren
                     for j in range(i, len(lines)):
-                        if ')' in lines[j]:
+                        if ")" in lines[j]:
                             # Add THRESHOLD before closing paren
-                            lines[j] = lines[j].replace(')', ',\n    THRESHOLD,\n)')
+                            lines[j] = lines[j].replace(")", ",\n    THRESHOLD,\n)")
                             break
                 else:
                     # Single line import - add THRESHOLD
-                    lines[i] = line.rstrip().rstrip(',') + ',\n'
-                    lines.insert(i + 1, '    THRESHOLD,\n')
+                    lines[i] = line.rstrip().rstrip(",") + ",\n"
+                    lines.insert(i + 1, "    THRESHOLD,\n")
                 break
     else:
         # Find where to insert import (after other imports)
@@ -239,23 +239,23 @@ def add_threshold_import(source: str, file_path: Path) -> str:
                 continue
 
             # Find last import statement
-            if stripped.startswith('import ') or stripped.startswith('from '):
+            if stripped.startswith("import ") or stripped.startswith("from "):
                 insert_pos = i + 1
 
         # Insert import after last import
         if insert_pos > 0:
-            lines.insert(insert_pos, 'from agentic_core.L0_routing.config.path_constants import THRESHOLD\n')
+            lines.insert(insert_pos, "from agentic_core.L0_routing.config.path_constants import THRESHOLD\n")
         else:
             # No imports found, add after docstring or at top
-            lines.insert(0, 'from agentic_core.L0_routing.config.path_constants import THRESHOLD\n\n')
+            lines.insert(0, "from agentic_core.L0_routing.config.path_constants import THRESHOLD\n\n")
 
-    return ''.join(lines)
+    return "".join(lines)
 
 
 def refactor_file(file_path: Path, dry_run: bool = True) -> dict:
     """Refactor a single file to use THRESHOLD constant."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
 
         # Parse AST
         tree = ast.parse(source, filename=str(file_path))
@@ -265,36 +265,39 @@ def refactor_file(file_path: Path, dry_run: bool = True) -> dict:
         new_tree = replacer.visit(tree)
 
         if not replacer.modified:
-            return {'status': 'skipped', 'reason': 'no_modifications_needed'}
+            return {"status": "skipped", "reason": "no_modifications_needed"}
 
         # Generate new source
         new_source = ast.unparse(new_tree)
 
         # Add import if needed
-        if 'THRESHOLD' not in source or 'from agentic_core.L0_routing.config.path_constants import' not in source:
+        if (
+            "THRESHOLD" not in source
+            or "from agentic_core.L0_routing.config.path_constants import" not in source
+        ):
             new_source = add_threshold_import(new_source, file_path)
 
         if not dry_run:
-            file_path.write_text(new_source, encoding='utf-8')
+            file_path.write_text(new_source, encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': f'SyntaxError: {e}',
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": f"SyntaxError: {e}",
         }
     except (ValueError, TypeError, RuntimeError) as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
         }
 
 
@@ -302,10 +305,10 @@ def main():
     """Main refactoring execution."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Refactor threshold=0.95 violations')
-    parser.add_argument('--dry-run', action='store_true', help='Preview changes without writing')
-    parser.add_argument('--limit', type=int, default=10, help='Max files to process')
-    parser.add_argument('--execute', action='store_true', help='Actually write changes')
+    parser = argparse.ArgumentParser(description="Refactor threshold=0.95 violations")
+    parser.add_argument("--dry-run", action="store_true", help="Preview changes without writing")
+    parser.add_argument("--limit", type=int, default=10, help="Max files to process")
+    parser.add_argument("--execute", action="store_true", help="Actually write changes")
 
     args = parser.parse_args()
 
@@ -314,13 +317,13 @@ def main():
 
     # Load violations
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if 'threshold=0.95' in line:
-                file_path = line.split(':')[0]
+            if "threshold=0.95" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
-    unique_files = sorted(set(violations))[:args.limit]
+    unique_files = sorted(set(violations))[: args.limit]
 
     print(f"[INFO] Processing {len(unique_files)} files (limit={args.limit})")
     print(f"[MODE] {'DRY RUN' if not args.execute else 'EXECUTE'}")
@@ -334,17 +337,17 @@ def main():
         result = refactor_file(file_path, dry_run=not args.execute)
         results.append(result)
 
-        if result['status'] == 'success':
+        if result["status"] == "success":
             print(f"✓ {result['file']}")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
-        elif result['status'] == 'skipped':
+        elif result["status"] == "skipped":
             print(f"- {result.get('file', file_path.name)}: {result['reason']}")
 
     # Summary
-    success = len([r for r in results if r['status'] == 'success'])
-    errors = len([r for r in results if r['status'] == 'error'])
-    skipped = len([r for r in results if r['status'] == 'skipped'])
+    success = len([r for r in results if r["status"] == "success"])
+    errors = len([r for r in results if r["status"] == "error"])
+    skipped = len([r for r in results if r["status"] == "skipped"])
 
     print()
     print("[SUMMARY]")
@@ -359,5 +362,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

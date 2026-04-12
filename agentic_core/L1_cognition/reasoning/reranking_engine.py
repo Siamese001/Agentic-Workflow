@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class RerankingFeatures:
     """Features for reranking model."""
+
     semantic_score: float
     collection_priority: float
     text_length: int
@@ -33,6 +34,7 @@ class RerankingFeatures:
 @dataclass
 class RerankingResult:
     """Result from reranking process."""
+
     original_results: list[RetrievalResult]
     reranked_results: list[RetrievalResult]
     reranking_scores: list[float]
@@ -89,8 +91,8 @@ class RerankingEngine:
             "L2": 1.2,  # Execution is critical
             "L3": 1.1,  # Orchestration is important
             "L4": 1.0,  # State is baseline
-            "L5": 1.15, # Safety is critical
-            "L6": 0.9,   # Observability is supporting
+            "L5": 1.15,  # Safety is critical
+            "L6": 0.9,  # Observability is supporting
         }
 
         # File type relevance weights
@@ -144,6 +146,7 @@ class RerankingEngine:
             RerankingResult with reranked results
         """
         import time
+
         start_time = time.time()
 
         # Input validation
@@ -206,12 +209,14 @@ class RerankingEngine:
             model_info=model_info,
         )
 
-    def _extract_features(self, result: RetrievalResult, query: str, fusion_result: FusionResult) -> RerankingFeatures:
+    def _extract_features(
+        self, result: RetrievalResult, query: str, fusion_result: FusionResult
+    ) -> RerankingFeatures:
         """Extract features for reranking."""
         metadata = result.metadata
 
         # Semantic score (from retrieval)
-        semantic_score = getattr(result, 'score', 0.5)
+        semantic_score = getattr(result, "score", 0.5)
 
         # Collection priority
         collection_priority = self.collection_weights.get(result.collection, 1.0)
@@ -222,15 +227,15 @@ class RerankingEngine:
         # Layer relevance
         layer_relevance = 1.0
         layers = []
-        if 'layer' in metadata:
-            if isinstance(metadata['layer'], list):
-                layers = metadata['layer']
+        if "layer" in metadata:
+            if isinstance(metadata["layer"], list):
+                layers = metadata["layer"]
             else:
-                layers = [metadata['layer']]
-        elif 'src_layer' in metadata:
-            layers.append(metadata['src_layer'])
-        if 'dst_layer' in metadata:
-            layers.append(metadata['dst_layer'])
+                layers = [metadata["layer"]]
+        elif "src_layer" in metadata:
+            layers.append(metadata["src_layer"])
+        if "dst_layer" in metadata:
+            layers.append(metadata["dst_layer"])
 
         if layers:
             layer_relevance = np.mean([self.layer_weights.get(layer, 1.0) for layer in layers])
@@ -249,18 +254,21 @@ class RerankingEngine:
 
         # Recency score (for time-based data)
         recency_score = 1.0
-        if 'timestamp' in metadata:
+        if "timestamp" in metadata:
             try:
-                timestamp_str = metadata['timestamp']
+                timestamp_str = metadata["timestamp"]
                 if isinstance(timestamp_str, str):
                     # Parse timestamp and calculate recency
                     try:
-                        timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                        timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                         days_ago = (datetime.now() - timestamp).days
                         recency_score = max(0.1, 1.0 - (days_ago / 365.0))  # Decay over year
                     except Exception as e:
+                        import logging
 
-                        import logging; logging.getLogger(__name__).debug("reranking_engine: Exception swallowed at L261: %s", e)
+                        logging.getLogger(__name__).debug(
+                            "reranking_engine: Exception swallowed at L261: %s", e
+                        )
             except:
                 pass
 
@@ -285,7 +293,7 @@ class RerankingEngine:
 
         # File type relevance
         file_type_relevance = 1.0
-        artifact_type = metadata.get('artifact_type', '')
+        artifact_type = metadata.get("artifact_type", "")
         if artifact_type:
             file_type_relevance = self.file_type_weights.get(artifact_type, 1.0)
 
@@ -301,21 +309,28 @@ class RerankingEngine:
             file_type_relevance=file_type_relevance,
         )
 
-    def _ml_rerank(self, results: list[RetrievalResult], features_list: list[RerankingFeatures]) -> tuple[list[RetrievalResult], list[float]]:
+    def _ml_rerank(
+        self, results: list[RetrievalResult], features_list: list[RerankingFeatures]
+    ) -> tuple[list[RetrievalResult], list[float]]:
         """Rerank using LightGBM model."""
         try:
             # Convert features to numpy array
-            feature_array = np.array([[
-                f.semantic_score,
-                f.collection_priority,
-                f.text_length,
-                f.layer_relevance,
-                f.component_relevance,
-                f.recency_score,
-                f.popularity_score,
-                f.query_term_match,
-                f.file_type_relevance,
-            ] for f in features_list])
+            feature_array = np.array(
+                [
+                    [
+                        f.semantic_score,
+                        f.collection_priority,
+                        f.text_length,
+                        f.layer_relevance,
+                        f.component_relevance,
+                        f.recency_score,
+                        f.popularity_score,
+                        f.query_term_match,
+                        f.file_type_relevance,
+                    ]
+                    for f in features_list
+                ]
+            )
 
             # Predict scores
             scores = self.model.predict(feature_array)
@@ -333,21 +348,23 @@ class RerankingEngine:
             # Fallback to rule-based
             return self._rule_based_rerank(results, features_list)
 
-    def _rule_based_rerank(self, results: list[RetrievalResult], features_list: list[RerankingFeatures]) -> tuple[list[RetrievalResult], list[float]]:
+    def _rule_based_rerank(
+        self, results: list[RetrievalResult], features_list: list[RerankingFeatures]
+    ) -> tuple[list[RetrievalResult], list[float]]:
         """Rerank using rule-based approach."""
         # Calculate composite scores
         scores = []
         for features in features_list:
             # Weighted combination of features
             score = (
-                features.semantic_score * 0.3 +
-                features.collection_priority * 0.2 +
-                features.layer_relevance * 0.15 +
-                features.component_relevance * 0.15 +
-                features.query_term_match * 0.1 +
-                features.recency_score * 0.05 +
-                features.popularity_score * 0.03 +
-                features.file_type_relevance * 0.02
+                features.semantic_score * 0.3
+                + features.collection_priority * 0.2
+                + features.layer_relevance * 0.15
+                + features.component_relevance * 0.15
+                + features.query_term_match * 0.1
+                + features.recency_score * 0.05
+                + features.popularity_score * 0.03
+                + features.file_type_relevance * 0.02
             )
             scores.append(score)
 
@@ -389,17 +406,19 @@ class RerankingEngine:
 
             for result, rel_label in zip(results, relevance):
                 feature_vector = self._extract_features(result, query, dummy_fusion)
-                features.append([
-                    feature_vector.semantic_score,
-                    feature_vector.collection_priority,
-                    feature_vector.text_length,
-                    feature_vector.layer_relevance,
-                    feature_vector.component_relevance,
-                    feature_vector.recency_score,
-                    feature_vector.popularity_score,
-                    feature_vector.query_term_match,
-                    feature_vector.file_type_relevance,
-                ])
+                features.append(
+                    [
+                        feature_vector.semantic_score,
+                        feature_vector.collection_priority,
+                        feature_vector.text_length,
+                        feature_vector.layer_relevance,
+                        feature_vector.component_relevance,
+                        feature_vector.recency_score,
+                        feature_vector.popularity_score,
+                        feature_vector.query_term_match,
+                        feature_vector.file_type_relevance,
+                    ]
+                )
                 labels.append(rel_label)
 
         return np.array(features), np.array(labels)
@@ -465,7 +484,7 @@ def main():
     print(f"Model info: {rerank_result.model_info}")
 
     for i, (result, score) in enumerate(zip(rerank_result.reranked_results, rerank_result.reranking_scores)):
-        print(f"  {i+1}. Score: {score:.3f} - {result.content[:50]}...")
+        print(f"  {i + 1}. Score: {score:.3f} - {result.content[:50]}...")
 
 
 if __name__ == "__main__":

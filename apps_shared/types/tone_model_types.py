@@ -177,7 +177,8 @@ class StyleProfile(BaseModel):
 
     primary_tone: ToneType = Field(..., description="Primary tone type")
     formality_level: confloat(ge=0.0, le=1.0) = Field(
-        default=0.7, description="Formality level (0=Casual, 1=Academic)",
+        default=0.7,
+        description="Formality level (0=Casual, 1=Academic)",
     )
     emoji_frequency: confloat(ge=0.0, le=1.0) = Field(default=0.2, description="Emoji usage frequency")
     sentence_length_avg: int = Field(default=15, ge=5, le=50, description="Target words per sentence")
@@ -293,7 +294,9 @@ class ToneAnalyzer:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StyleAnalyzer.analyze_style")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StyleAnalyzer.analyze_style"
+        )
         try:
             if not content_samples or not isinstance(content_samples, list):
                 logger.warning("Empty or invalid content samples, returning neutral profile")
@@ -647,7 +650,9 @@ class ToneModel:
         logger.info("Initialized ToneModel with all components")
 
     def analyze_and_configure(
-        self, content_samples: list[str], archetype: str | None = None,
+        self,
+        content_samples: list[str],
+        archetype: str | None = None,
     ) -> tuple[StyleProfile, GenerationConfig]:
         """Analyze content and generate configuration.
 
@@ -661,7 +666,8 @@ class ToneModel:
         try:
             profile = self.analyzer.analyze_style(content_samples)
             config = self.config_templates.get(
-                profile.primary_tone, self.config_templates[ToneType.AUTHORITATIVE],
+                profile.primary_tone,
+                self.config_templates[ToneType.AUTHORITATIVE],
             )
             if profile.formality_level > 0.8:
                 config.temperature_setting = max(0.1, config.temperature_setting - 0.1)

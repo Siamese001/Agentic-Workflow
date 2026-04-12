@@ -132,16 +132,19 @@ class ADGPrecisionPass:
         total_unresolved = self.cur.fetchone()[0]
 
         # Check critical path unresolved
-        critical_patterns = ['agentic_core/L0_', 'agentic_core/L2_', 'agentic_core/L5_']
+        critical_patterns = ["agentic_core/L0_", "agentic_core/L2_", "agentic_core/L5_"]
         critical_unresolved = 0
 
         for pattern in critical_patterns:
-            self.cur.execute("""
+            self.cur.execute(
+                """
                 SELECT COUNT(*) FROM edges e
                 JOIN nodes n ON e.src_id = n.id
                 WHERE e.relation_type = 'unresolved_import'
                 AND n.resolved_path LIKE ?
-            """, (f"{pattern}%",))
+            """,
+                (f"{pattern}%",),
+            )
             count = self.cur.fetchone()[0]
             critical_unresolved += count
             result["details"][f"unresolved_{pattern.replace('/', '_').replace('-', '')}"] = count
@@ -157,7 +160,7 @@ class ADGPrecisionPass:
         unclassified_edges = self.cur.fetchone()[0]
         result["details"]["unclassified_edges"] = unclassified_edges
 
-        result["success"] = (critical_unresolved == 0 and unclassified_edges == 0)
+        result["success"] = critical_unresolved == 0 and unclassified_edges == 0
 
         print(f"  Critical unresolved: {critical_unresolved}")
         print(f"  Unclassified edges: {unclassified_edges}")
@@ -174,12 +177,12 @@ class ADGPrecisionPass:
 
         # Get determinism edge counts
         determinism_edges = [
-            'determinism_seed',
-            'emits_determinism_digest',
-            'mutation_signature',
-            'parent_snapshot_hash',
-            'emits_replay_key',
-            'references_policy_hash',
+            "determinism_seed",
+            "emits_determinism_digest",
+            "mutation_signature",
+            "parent_snapshot_hash",
+            "emits_replay_key",
+            "references_policy_hash",
         ]
 
         for edge_type in determinism_edges:
@@ -277,9 +280,9 @@ class ADGPrecisionPass:
         core_modules = self.cur.fetchall()
 
         # Required edge families
-        determinism_edges = ['determinism_seed', 'emits_determinism_digest']
-        governance_edges = ['policy_verification']
-        execution_edges = ['dispatches_execution_plan']
+        determinism_edges = ["determinism_seed", "emits_determinism_digest"]
+        governance_edges = ["policy_verification"]
+        execution_edges = ["dispatches_execution_plan"]
 
         coverage_stats = {
             "total_core_modules": len(core_modules),
@@ -293,30 +296,39 @@ class ADGPrecisionPass:
 
         for module_adg, module_id, layer in core_modules:
             # Check determinism
-            self.cur.execute("""
+            self.cur.execute(
+                """
                 SELECT COUNT(*) FROM edges
                 WHERE src_id = ? AND relation_type IN (?, ?)
-            """, (module_id, determinism_edges[0], determinism_edges[1]))
+            """,
+                (module_id, determinism_edges[0], determinism_edges[1]),
+            )
             if self.cur.fetchone()[0] > 0:
                 coverage_stats["modules_with_determinism"] += 1
             else:
                 coverage_stats["missing_determinism"].append(module_adg)
 
             # Check governance
-            self.cur.execute("""
+            self.cur.execute(
+                """
                 SELECT COUNT(*) FROM edges
                 WHERE src_id = ? AND relation_type = ?
-            """, (module_id, governance_edges[0]))
+            """,
+                (module_id, governance_edges[0]),
+            )
             if self.cur.fetchone()[0] > 0:
                 coverage_stats["modules_with_governance"] += 1
             else:
                 coverage_stats["missing_governance"].append(module_adg)
 
             # Check execution
-            self.cur.execute("""
+            self.cur.execute(
+                """
                 SELECT COUNT(*) FROM edges
                 WHERE src_id = ? AND relation_type = ?
-            """, (module_id, execution_edges[0]))
+            """,
+                (module_id, execution_edges[0]),
+            )
             if self.cur.fetchone()[0] > 0:
                 coverage_stats["modules_with_execution"] += 1
             else:
@@ -326,9 +338,9 @@ class ADGPrecisionPass:
 
         # Success if all core modules have all required edges
         result["success"] = (
-            coverage_stats["modules_with_determinism"] == coverage_stats["total_core_modules"] and
-            coverage_stats["modules_with_governance"] == coverage_stats["total_core_modules"] and
-            coverage_stats["modules_with_execution"] == coverage_stats["total_core_modules"]
+            coverage_stats["modules_with_determinism"] == coverage_stats["total_core_modules"]
+            and coverage_stats["modules_with_governance"] == coverage_stats["total_core_modules"]
+            and coverage_stats["modules_with_execution"] == coverage_stats["total_core_modules"]
         )
 
         print(f"  Core modules: {coverage_stats['total_core_modules']}")
@@ -410,20 +422,22 @@ class ADGPrecisionPass:
         hasher = hashlib.sha256()
 
         # Hash nodes
-        self.cur.execute("SELECT id, adg_name, entity_type, layer, identity_kind, resolved_path FROM nodes ORDER BY id")
+        self.cur.execute(
+            "SELECT id, adg_name, entity_type, layer, identity_kind, resolved_path FROM nodes ORDER BY id"
+        )
         for row in self.cur.fetchall():
-            hasher.update('|'.join(map(str, row)).encode())
+            hasher.update("|".join(map(str, row)).encode())
 
         # Hash edges
         self.cur.execute("SELECT src_id, dst_id, relation_type, edge_kind FROM edges ORDER BY id")
         for row in self.cur.fetchall():
-            hasher.update('|'.join(map(str, row)).encode())
+            hasher.update("|".join(map(str, row)).encode())
 
         return hasher.hexdigest()
 
     def save_comprehensive_report(self, results: dict[str, Any], report_path: Path) -> None:
         """Save comprehensive precision report."""
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(results, f, indent=2)
         print(f"  Report saved: {report_path}")
 
@@ -441,7 +455,7 @@ class ADGPrecisionPass:
             "sqlite_edges": results["checks"]["parity"]["details"]["sqlite_edges"],
             "parity_success": results["checks"]["parity"]["success"],
         }
-        with open(report_dir / "reconciliation_report.json", 'w') as f:
+        with open(report_dir / "reconciliation_report.json", "w") as f:
             json.dump(reconciliation, f, indent=2)
 
         # 2. Boundary Report
@@ -451,19 +465,23 @@ class ADGPrecisionPass:
             "unclassified_edges": results["checks"]["boundary"]["details"]["unclassified_edges"],
             "boundary_success": results["checks"]["boundary"]["success"],
         }
-        with open(report_dir / "boundary_report.json", 'w') as f:
+        with open(report_dir / "boundary_report.json", "w") as f:
             json.dump(boundary, f, indent=2)
 
         # 3. Critical Edge Coverage
         coverage = {
             "timestamp": results["timestamp"],
             "core_modules": results["checks"]["edge_coverage"]["details"]["total_core_modules"],
-            "modules_with_determinism": results["checks"]["edge_coverage"]["details"]["modules_with_determinism"],
-            "modules_with_governance": results["checks"]["edge_coverage"]["details"]["modules_with_governance"],
+            "modules_with_determinism": results["checks"]["edge_coverage"]["details"][
+                "modules_with_determinism"
+            ],
+            "modules_with_governance": results["checks"]["edge_coverage"]["details"][
+                "modules_with_governance"
+            ],
             "modules_with_execution": results["checks"]["edge_coverage"]["details"]["modules_with_execution"],
             "coverage_success": results["checks"]["edge_coverage"]["success"],
         }
-        with open(report_dir / "critical_edge_coverage.json", 'w') as f:
+        with open(report_dir / "critical_edge_coverage.json", "w") as f:
             json.dump(coverage, f, indent=2)
 
         # 4. Test Surface Coverage
@@ -474,7 +492,7 @@ class ADGPrecisionPass:
             "test_linkage": results["checks"]["test_binding"]["details"]["test_linkage"],
             "test_binding_success": results["checks"]["test_binding"]["success"],
         }
-        with open(report_dir / "test_surface_coverage.json", 'w') as f:
+        with open(report_dir / "test_surface_coverage.json", "w") as f:
             json.dump(test_surface, f, indent=2)
 
         # 5. Replay Convergence
@@ -484,7 +502,7 @@ class ADGPrecisionPass:
             "database_hash": results["checks"]["replay"]["details"]["database_hash"],
             "replay_success": results["checks"]["replay"]["success"],
         }
-        with open(report_dir / "replay_convergence_report.json", 'w') as f:
+        with open(report_dir / "replay_convergence_report.json", "w") as f:
             json.dump(replay, f, indent=2)
 
     def close(self):
@@ -496,8 +514,7 @@ def main():
     """Main execution."""
     # Find latest SQLite database
     adg_dir = ROOT / "artifacts" / "adg" / "databases"
-    sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"),
-                         key=lambda p: p.stat().st_mtime, reverse=True)
+    sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True)
 
     if not sqlite_files:
         print("ERROR: No SQLite database found")

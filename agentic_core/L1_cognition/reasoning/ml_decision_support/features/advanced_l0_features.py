@@ -119,7 +119,9 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
     def _register_extraction_functions(self) -> None:
         """Register advanced L0-specific feature extraction functions."""
-        self.register_extraction_function("semantic_similarity_score", self._extract_semantic_similarity_score)
+        self.register_extraction_function(
+            "semantic_similarity_score", self._extract_semantic_similarity_score
+        )
         self.register_extraction_function("intent_confidence", self._extract_intent_confidence)
         self.register_extraction_function("context_relevance", self._extract_context_relevance)
         self.register_extraction_function("user_preference_score", self._extract_user_preference_score)
@@ -324,7 +326,9 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
         network_availability = max(0.0, (100 - network_usage) / 100)
 
         # Weighted average
-        resource_availability = (cpu_availability * 0.4) + (memory_availability * 0.4) + (network_availability * 0.2)
+        resource_availability = (
+            (cpu_availability * 0.4) + (memory_availability * 0.4) + (network_availability * 0.2)
+        )
 
         return round(resource_availability, 3)
 
@@ -514,12 +518,12 @@ class AdvancedL0FeatureExtractor(DeterministicFeatureExtractor):
 
         # Weighted combination
         routing_confidence = (
-            confidence_factors["semantic_similarity"] * semantic_confidence +
-            confidence_factors["intent_confidence"] * intent_confidence +
-            confidence_factors["context_relevance"] * context_confidence +
-            confidence_factors["user_preference"] * user_confidence +
-            confidence_factors["historical_success"] * historical_confidence +
-            confidence_factors["resource_availability"] * resource_confidence
+            confidence_factors["semantic_similarity"] * semantic_confidence
+            + confidence_factors["intent_confidence"] * intent_confidence
+            + confidence_factors["context_relevance"] * context_confidence
+            + confidence_factors["user_preference"] * user_confidence
+            + confidence_factors["historical_success"] * historical_confidence
+            + confidence_factors["resource_availability"] * resource_confidence
         )
 
         return round(max(0.0, min(1.0, routing_confidence)), 3)

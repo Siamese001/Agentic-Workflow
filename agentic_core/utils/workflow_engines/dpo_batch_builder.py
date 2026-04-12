@@ -201,8 +201,11 @@ class DPOBatchBuilder:
             DPOBatch containing all valid preference pairs
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DPOBatchBuilder.generate_pairs")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DPOBatchBuilder.generate_pairs"
+        )
 
         if not human_decisions:
             return DPOBatch(
@@ -259,12 +262,18 @@ class DPOBatchBuilder:
             from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
             artifact = create_artifact(
-                kind="dpo_batch", logical_id=f"dpo_batch_{batch.batch_id[:8]}", payload=batch.to_dict(),
+                kind="dpo_batch",
+                logical_id=f"dpo_batch_{batch.batch_id[:8]}",
+                payload=batch.to_dict(),
             )
             self.l4_store.put(artifact)
         except (ValueError, KeyError, AttributeError) as e:
             logging.getLogger(__name__).warning(f"Failed to store DPO batch {batch.batch_id[:8]}: {e}")
-        except (OSError, RuntimeError, MemoryError) as e:    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+        except (
+            OSError,
+            RuntimeError,
+            MemoryError,
+        ) as e:  # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
             logging.getLogger(__name__).error(f"Critical error storing DPO batch {batch.batch_id[:8]}: {e}")
 
 

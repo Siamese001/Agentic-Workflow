@@ -20,18 +20,28 @@ from typing import Any
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+
 class L4NormalizationError(Exception):
     """Raised when L4 normalization verification fails."""
+
     pass
+
 
 class ADGL4NormalizationVerifier:
     """Verifies ADG L4 normalization compliance."""
 
     # Expected L4 entity types
     L4_ENTITY_TYPES = {
-        "module", "datastore", "side_effect_endpoint", "embedding_store",
-        "retrieval_component", "decision_point", "policy", "validation_artifact",
-        "learning_state", "provenance_state",
+        "module",
+        "datastore",
+        "side_effect_endpoint",
+        "embedding_store",
+        "retrieval_component",
+        "decision_point",
+        "policy",
+        "validation_artifact",
+        "learning_state",
+        "provenance_state",
     }
 
     def __init__(self, adg_dir: Path):
@@ -66,14 +76,16 @@ class ADGL4NormalizationVerifier:
 
                 l4_nodes = []
                 for row in cursor.fetchall():
-                    l4_nodes.append({
-                        "id": row[0],
-                        "name": row[1],
-                        "entity_type": row[2],
-                        "layer": row[3],
-                        "identity_kind": row[4],
-                        "confidence": row[5],
-                    })
+                    l4_nodes.append(
+                        {
+                            "id": row[0],
+                            "name": row[1],
+                            "entity_type": row[2],
+                            "layer": row[3],
+                            "identity_kind": row[4],
+                            "confidence": row[5],
+                        }
+                    )
 
                 print(f"   📊 Found {len(l4_nodes)} nodes in L4")
 
@@ -84,12 +96,16 @@ class ADGL4NormalizationVerifier:
                         unknown_classifications.append(node)
 
                 if unknown_classifications:
-                    self.errors.append(f"{len(unknown_classifications)} L4 nodes have UNKNOWN layer classification")
+                    self.errors.append(
+                        f"{len(unknown_classifications)} L4 nodes have UNKNOWN layer classification"
+                    )
 
                 # Check entity type distribution
                 entity_distribution = {}
                 for node in l4_nodes:
-                    entity_distribution[node["entity_type"]] = entity_distribution.get(node["entity_type"], 0) + 1
+                    entity_distribution[node["entity_type"]] = (
+                        entity_distribution.get(node["entity_type"], 0) + 1
+                    )
 
                 print("   📊 L4 entity distribution:")
                 for entity_type, count in sorted(entity_distribution.items()):
@@ -122,14 +138,16 @@ class ADGL4NormalizationVerifier:
 
                 l4_modules = []
                 for row in cursor.fetchall():
-                    l4_modules.append({
-                        "id": row[0],
-                        "name": row[1],
-                        "entity_type": row[2],
-                        "identity_kind": row[3],
-                        "confidence": row[4],
-                        "resolved_path": row[5],
-                    })
+                    l4_modules.append(
+                        {
+                            "id": row[0],
+                            "name": row[1],
+                            "entity_type": row[2],
+                            "identity_kind": row[3],
+                            "confidence": row[4],
+                            "resolved_path": row[5],
+                        }
+                    )
 
                 print(f"   📊 Analyzing {len(l4_modules)} L4 modules")
 
@@ -151,19 +169,22 @@ class ADGL4NormalizationVerifier:
                         issues.append("Missing resolved path")
 
                     if issues:
-                        identity_issues.append({
-                            "module_name": module["name"],
-                            "identity_kind": module["identity_kind"],
-                            "confidence": module["confidence"],
-                            "issues": issues,
-                        })
+                        identity_issues.append(
+                            {
+                                "module_name": module["name"],
+                                "identity_kind": module["identity_kind"],
+                                "confidence": module["confidence"],
+                                "issues": issues,
+                            }
+                        )
 
                 print(f"   📊 L4 identity issues: {len(identity_issues)}")
 
                 return {
                     "total_l4_modules": len(l4_modules),
                     "identity_issues": len(identity_issues),
-                    "identity_compliance_rate": (len(l4_modules) - len(identity_issues)) / max(1, len(l4_modules)),
+                    "identity_compliance_rate": (len(l4_modules) - len(identity_issues))
+                    / max(1, len(l4_modules)),
                     "issue_details": identity_issues,
                 }
 
@@ -190,15 +211,17 @@ class ADGL4NormalizationVerifier:
 
                 l4_nodes = []
                 for row in cursor.fetchall():
-                    l4_nodes.append({
-                        "id": row[0],
-                        "name": row[1],
-                        "entity_type": row[2],
-                        "layer": row[3],
-                        "identity_kind": row[4],
-                        "confidence": row[5],
-                        "resolved_path": row[6],
-                    })
+                    l4_nodes.append(
+                        {
+                            "id": row[0],
+                            "name": row[1],
+                            "entity_type": row[2],
+                            "layer": row[3],
+                            "identity_kind": row[4],
+                            "confidence": row[5],
+                            "resolved_path": row[6],
+                        }
+                    )
 
                 # Check for UNKNOWN layer nodes in L4 (this is the key check)
                 unknown_layer_nodes = [n for n in l4_nodes if n["layer"] == "UNKNOWN"]
@@ -223,26 +246,35 @@ class ADGL4NormalizationVerifier:
 
                 # Get L4 persistence-related nodes
                 persistence_entities = [
-                    "datastore", "side_effect_endpoint", "embedding_store",
-                    "validation_artifact", "learning_state", "provenance_state",
+                    "datastore",
+                    "side_effect_endpoint",
+                    "embedding_store",
+                    "validation_artifact",
+                    "learning_state",
+                    "provenance_state",
                 ]
 
-                placeholders = ','.join(['?' for _ in persistence_entities])
-                cursor.execute(f"""
+                placeholders = ",".join(["?" for _ in persistence_entities])
+                cursor.execute(
+                    f"""
                     SELECT id, adg_name, entity_type, resolved_path, confidence
                     FROM nodes
                     WHERE layer = 'L4' AND entity_type IN ({placeholders})
-                """, persistence_entities)
+                """,
+                    persistence_entities,
+                )
 
                 persistence_nodes = []
                 for row in cursor.fetchall():
-                    persistence_nodes.append({
-                        "id": row[0],
-                        "name": row[1],
-                        "entity_type": row[2],
-                        "resolved_path": row[3],
-                        "confidence": row[4],
-                    })
+                    persistence_nodes.append(
+                        {
+                            "id": row[0],
+                            "name": row[1],
+                            "entity_type": row[2],
+                            "resolved_path": row[3],
+                            "confidence": row[4],
+                        }
+                    )
 
                 print(f"   📊 Found {len(persistence_nodes)} L4 persistence nodes")
 
@@ -250,26 +282,33 @@ class ADGL4NormalizationVerifier:
                 path_issues = []
                 for node in persistence_nodes:
                     if not node["resolved_path"] or node["resolved_path"].strip() == "":
-                        path_issues.append({
-                            "node_name": node["name"],
-                            "entity_type": node["entity_type"],
-                            "issue": "Missing resolved path",
-                        })
+                        path_issues.append(
+                            {
+                                "node_name": node["name"],
+                                "entity_type": node["entity_type"],
+                                "issue": "Missing resolved path",
+                            }
+                        )
                     elif not Path(node["resolved_path"]).is_absolute():
-                        path_issues.append({
-                            "node_name": node["name"],
-                            "entity_type": node["entity_type"],
-                            "issue": "Non-absolute path",
-                        })
+                        path_issues.append(
+                            {
+                                "node_name": node["name"],
+                                "entity_type": node["entity_type"],
+                                "issue": "Non-absolute path",
+                            }
+                        )
 
                 # Check for canonical state ledger participation
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT COUNT(*) FROM edges e
                     JOIN nodes n ON e.dst_id = n.id
                     WHERE n.layer = 'L4'
                     AND n.entity_type IN ({})
                     AND e.relation_type IN ('stores_validation_artifact', 'stores_learning_state', 'writes_to')
-                """.format(','.join(['?' for _ in persistence_entities])), persistence_entities)
+                """.format(",".join(["?" for _ in persistence_entities])),
+                    persistence_entities,
+                )
 
                 ledger_participation = cursor.fetchone()[0]
 
@@ -305,12 +344,15 @@ class ADGL4NormalizationVerifier:
 
                 layer_distribution = {}
                 for entity_type, description in artifact_types:
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         SELECT layer, COUNT(*) FROM nodes
                         WHERE entity_type = ?
                         GROUP BY layer
                         ORDER BY COUNT(*) DESC
-                    """, (entity_type,))
+                    """,
+                        (entity_type,),
+                    )
 
                     distribution = dict(cursor.fetchall())
                     layer_distribution[entity_type] = {
@@ -329,22 +371,28 @@ class ADGL4NormalizationVerifier:
                     if total_count > 0:
                         l4_percentage = l4_count / total_count
                         if l4_percentage < 0.8:  # Less than 80% in L4
-                            misplaced_artifacts.append({
-                                "entity_type": entity_type,
-                                "description": info["description"],
-                                "l4_count": l4_count,
-                                "total_count": total_count,
-                                "l4_percentage": l4_percentage,
-                                "distribution": info["distribution"],
-                            })
+                            misplaced_artifacts.append(
+                                {
+                                    "entity_type": entity_type,
+                                    "description": info["description"],
+                                    "l4_count": l4_count,
+                                    "total_count": total_count,
+                                    "l4_percentage": l4_percentage,
+                                    "distribution": info["distribution"],
+                                }
+                            )
 
                 print("   📊 Artifact distribution analysis:")
                 for entity_type, info in layer_distribution.items():
                     l4_pct = info["l4_count"] / max(1, info["total_count"]) * 100
-                    print(f"      {info['description']}: {info['l4_count']}/{info['total_count']} in L4 ({l4_pct:.1f}%)")
+                    print(
+                        f"      {info['description']}: {info['l4_count']}/{info['total_count']} in L4 ({l4_pct:.1f}%)"
+                    )
 
                 if misplaced_artifacts:
-                    print(f"   ⚠️  Found {len(misplaced_artifacts)} artifact types with insufficient L4 concentration")
+                    print(
+                        f"   ⚠️  Found {len(misplaced_artifacts)} artifact types with insufficient L4 concentration"
+                    )
 
                 return {
                     "layer_distribution": layer_distribution,
@@ -375,10 +423,10 @@ class ADGL4NormalizationVerifier:
 
         # Determine overall status
         critical_issues = (
-            layer_classification["unknown_classifications"] > 0 or
-            identity_resolution["identity_issues"] > 0 or
-            persistence_paths["path_issues"] > 0 or
-            authoritative_location["misplaced_artifacts"] > 2  # Allow some flexibility
+            layer_classification["unknown_classifications"] > 0
+            or identity_resolution["identity_issues"] > 0
+            or persistence_paths["path_issues"] > 0
+            or authoritative_location["misplaced_artifacts"] > 2  # Allow some flexibility
         )
 
         # Prepare result
@@ -423,6 +471,7 @@ class ADGL4NormalizationVerifier:
 
         return result
 
+
 def main():
     """CLI entry point."""
     import argparse
@@ -447,18 +496,21 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, 'w') as f:
+            with open(args.output, "w") as f:
                 json.dump(result, f, indent=2, default=str)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1
 
-    except L4NormalizationError as e:    # guardian: L4NormalizationError should be handled with specific context
+    except (
+        L4NormalizationError
+    ) as e:  # guardian: L4NormalizationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:
         print(f"💥 Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

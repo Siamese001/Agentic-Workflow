@@ -483,7 +483,9 @@ class ObservabilityLoadPlanner:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityPlanner.plan_load")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityPlanner.plan_load"
+        )
         self.logger.info(
             f"Starting observability load planning for: {load_request.get('plan_name', 'unknown')}",
         )
@@ -495,7 +497,12 @@ class ObservabilityLoadPlanner:
             log_queries = self._parse_log_queries(load_request) if self.config.enable_logs else []
             trace_queries = self._parse_trace_queries(load_request) if self.config.enable_traces else []
             load_plan = self._create_load_plan(
-                load_request, request_type, data_source, metrics, log_queries, trace_queries,
+                load_request,
+                request_type,
+                data_source,
+                metrics,
+                log_queries,
+                trace_queries,
             )
             estimated_data_points = self._estimate_data_points(load_plan)
             query_count = len(metrics) + len(log_queries) + len(trace_queries)
@@ -710,11 +717,17 @@ class ObservabilityLoadPlanner:
 
 
 def create_observability_load_planner(
-    enable_metrics: bool = True, enable_logs: bool = True, enable_traces: bool = True, **kwargs: object,
+    enable_metrics: bool = True,
+    enable_logs: bool = True,
+    enable_traces: bool = True,
+    **kwargs: object,
 ) -> ObservabilityLoadPlanner:
     """Create a configured observability load planner."""
     config = ObservabilityLoadConfig(
-        enable_metrics=enable_metrics, enable_logs=enable_logs, enable_traces=enable_traces, **kwargs,
+        enable_metrics=enable_metrics,
+        enable_logs=enable_logs,
+        enable_traces=enable_traces,
+        **kwargs,
     )
     return ObservabilityLoadPlanner(config)
 
@@ -936,7 +949,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = load_data_planning(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:    # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

@@ -16,6 +16,7 @@ print("=" * 100)
 print(f"Repository: {ROOT}")
 print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
+
 class PersistentMemoryAnalyzer:
     """Analyzes repository for persistent memory opportunities."""
 
@@ -111,7 +112,7 @@ class PersistentMemoryAnalyzer:
         # Analyze learning files
         for file_path in learning_files[:20]:  # Limit to first 20 for analysis
             try:
-                content = file_path.read_text(encoding='utf-8', errors='ignore')
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
 
                 # Look for learning-related patterns
                 learning_indicators = {
@@ -123,7 +124,9 @@ class PersistentMemoryAnalyzer:
                     "file_size_kb": file_path.stat().st_size / 1024,
                 }
 
-                self.analysis["learning_artifacts"][str(file_path.relative_to(self.root))] = learning_indicators
+                self.analysis["learning_artifacts"][str(file_path.relative_to(self.root))] = (
+                    learning_indicators
+                )
             except (ValueError, TypeError, RuntimeError):
                 continue
 
@@ -167,7 +170,7 @@ class PersistentMemoryAnalyzer:
                 continue
 
             try:
-                content = file_path.read_text(encoding='utf-8', errors='ignore')
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
 
                 # Check for stateful patterns
                 stateful_score = 0
@@ -213,7 +216,7 @@ class PersistentMemoryAnalyzer:
         # Analyze performance files
         for file_path in perf_files:
             try:
-                content = file_path.read_text(encoding='utf-8', errors='ignore')
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
 
                 # Try to parse as JSON to analyze structure
                 try:
@@ -271,7 +274,7 @@ class PersistentMemoryAnalyzer:
 
         for file_path in kg_files:
             try:
-                content = file_path.read_text(encoding='utf-8', errors='ignore')
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
 
                 # Analyze structure
                 try:
@@ -331,8 +334,8 @@ class PersistentMemoryAnalyzer:
 
         for file_path in training_files:
             try:
-                if file_path.suffix == '.json':
-                    content = file_path.read_text(encoding='utf-8', errors='ignore')
+                if file_path.suffix == ".json":
+                    content = file_path.read_text(encoding="utf-8", errors="ignore")
                     try:
                         data = json.loads(content)
                         self.analysis["training_data"][str(file_path.relative_to(self.root))] = {
@@ -354,7 +357,6 @@ class PersistentMemoryAnalyzer:
                         "data_type": "binary",
                         "extension": file_path.suffix,
                     }
-
 
             except (ValueError, TypeError, RuntimeError):
                 continue
@@ -382,7 +384,7 @@ class PersistentMemoryAnalyzer:
 
         for file_path in interaction_files:
             try:
-                content = file_path.read_text(encoding='utf-8', errors='ignore')
+                content = file_path.read_text(encoding="utf-8", errors="ignore")
                 try:
                     data = json.loads(content)
                     self.analysis["user_interactions"][str(file_path.relative_to(self.root))] = {
@@ -424,8 +426,8 @@ class PersistentMemoryAnalyzer:
 
         for file_path in log_files:
             try:
-                if file_path.suffix == '.json':
-                    content = file_path.read_text(encoding='utf-8', errors='ignore')
+                if file_path.suffix == ".json":
+                    content = file_path.read_text(encoding="utf-8", errors="ignore")
                     try:
                         data = json.loads(content)
                         entry_count = len(data) if isinstance(data, list) else 1
@@ -441,14 +443,13 @@ class PersistentMemoryAnalyzer:
                         }
                 else:
                     # Text logs
-                    content = file_path.read_text(encoding='utf-8', errors='ignore')
-                    line_count = len(content.split('\n'))
+                    content = file_path.read_text(encoding="utf-8", errors="ignore")
+                    line_count = len(content.split("\n"))
                     self.analysis["system_logs"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "line_count": line_count,
                         "is_structured": False,
                     }
-
 
             except (ValueError, TypeError, RuntimeError):
                 continue
@@ -462,105 +463,121 @@ class PersistentMemoryAnalyzer:
 
         # Learning artifacts recommendations
         if self.analysis["learning_artifacts"]:
-            recommendations.append({
-                "category": "Learning Artifacts",
-                "priority": "HIGH",
-                "description": "Implement persistent storage for model checkpoints, embeddings, and training progress",
-                "files_count": len(self.analysis["learning_artifacts"]),
-                "implementation": "SQLite tables: models, embeddings, training_sessions, checkpoints",
-                "benefits": "Resume training, model versioning, incremental learning",
-            })
+            recommendations.append(
+                {
+                    "category": "Learning Artifacts",
+                    "priority": "HIGH",
+                    "description": "Implement persistent storage for model checkpoints, embeddings, and training progress",
+                    "files_count": len(self.analysis["learning_artifacts"]),
+                    "implementation": "SQLite tables: models, embeddings, training_sessions, checkpoints",
+                    "benefits": "Resume training, model versioning, incremental learning",
+                }
+            )
 
         # State data recommendations
         if self.analysis["state_data"]:
-            recommendations.append({
-                "category": "State Management",
-                "priority": "HIGH",
-                "description": "Centralize application state in persistent storage",
-                "files_count": len(self.analysis["state_data"]),
-                "implementation": "SQLite tables: application_state, user_sessions, cache_entries",
-                "benefits": "State recovery, session management, cache persistence",
-            })
+            recommendations.append(
+                {
+                    "category": "State Management",
+                    "priority": "HIGH",
+                    "description": "Centralize application state in persistent storage",
+                    "files_count": len(self.analysis["state_data"]),
+                    "implementation": "SQLite tables: application_state, user_sessions, cache_entries",
+                    "benefits": "State recovery, session management, cache persistence",
+                }
+            )
 
         # Performance data recommendations
         if self.analysis["performance_data"]:
-            recommendations.append({
-                "category": "Performance Analytics",
-                "priority": "MEDIUM",
-                "description": "Store performance metrics and benchmarks for trend analysis",
-                "files_count": len(self.analysis["performance_data"]),
-                "implementation": "SQLite tables: metrics, benchmarks, performance_trends",
-                "benefits": "Performance tracking, regression detection, optimization insights",
-            })
+            recommendations.append(
+                {
+                    "category": "Performance Analytics",
+                    "priority": "MEDIUM",
+                    "description": "Store performance metrics and benchmarks for trend analysis",
+                    "files_count": len(self.analysis["performance_data"]),
+                    "implementation": "SQLite tables: metrics, benchmarks, performance_trends",
+                    "benefits": "Performance tracking, regression detection, optimization insights",
+                }
+            )
 
         # Knowledge graphs recommendations
         if self.analysis["knowledge_graphs"]:
-            recommendations.append({
-                "category": "Knowledge Management",
-                "priority": "HIGH",
-                "description": "Persist knowledge graphs and embeddings for semantic search",
-                "files_count": len(self.analysis["knowledge_graphs"]),
-                "implementation": "SQLite tables: knowledge_graphs, embeddings, semantic_index",
-                "benefits": "Knowledge retention, semantic search, relationship mining",
-            })
+            recommendations.append(
+                {
+                    "category": "Knowledge Management",
+                    "priority": "HIGH",
+                    "description": "Persist knowledge graphs and embeddings for semantic search",
+                    "files_count": len(self.analysis["knowledge_graphs"]),
+                    "implementation": "SQLite tables: knowledge_graphs, embeddings, semantic_index",
+                    "benefits": "Knowledge retention, semantic search, relationship mining",
+                }
+            )
 
         # Training data recommendations
         if self.analysis["training_data"]:
-            recommendations.append({
-                "category": "Training Data Management",
-                "priority": "MEDIUM",
-                "description": "Organize and persist training datasets and model versions",
-                "files_count": len(self.analysis["training_data"]),
-                "implementation": "SQLite tables: datasets, model_versions, training_runs",
-                "benefits": "Data lineage, model versioning, experiment tracking",
-            })
+            recommendations.append(
+                {
+                    "category": "Training Data Management",
+                    "priority": "MEDIUM",
+                    "description": "Organize and persist training datasets and model versions",
+                    "files_count": len(self.analysis["training_data"]),
+                    "implementation": "SQLite tables: datasets, model_versions, training_runs",
+                    "benefits": "Data lineage, model versioning, experiment tracking",
+                }
+            )
 
         # User interaction recommendations
         if self.analysis["user_interactions"]:
-            recommendations.append({
-                "category": "User Analytics",
-                "priority": "MEDIUM",
-                "description": "Store user interactions for personalization and analytics",
-                "files_count": len(self.analysis["user_interactions"]),
-                "implementation": "SQLite tables: user_interactions, preferences, feedback",
-                "benefits": "Personalization, user insights, interaction patterns",
-            })
+            recommendations.append(
+                {
+                    "category": "User Analytics",
+                    "priority": "MEDIUM",
+                    "description": "Store user interactions for personalization and analytics",
+                    "files_count": len(self.analysis["user_interactions"]),
+                    "implementation": "SQLite tables: user_interactions, preferences, feedback",
+                    "benefits": "Personalization, user insights, interaction patterns",
+                }
+            )
 
         # System logs recommendations
         if self.analysis["system_logs"]:
-            recommendations.append({
-                "category": "System Observability",
-                "priority": "MEDIUM",
-                "description": "Consolidate logs and telemetry in structured storage",
-                "files_count": len(self.analysis["system_logs"]),
-                "implementation": "SQLite tables: system_logs, events, telemetry",
-                "benefits": "Centralized logging, queryable logs, system insights",
-            })
+            recommendations.append(
+                {
+                    "category": "System Observability",
+                    "priority": "MEDIUM",
+                    "description": "Consolidate logs and telemetry in structured storage",
+                    "files_count": len(self.analysis["system_logs"]),
+                    "implementation": "SQLite tables: system_logs, events, telemetry",
+                    "benefits": "Centralized logging, queryable logs, system insights",
+                }
+            )
 
         # Cross-cutting recommendations
-        recommendations.extend([
-            {
-                "category": "Unified Memory Architecture",
-                "priority": "CRITICAL",
-                "description": "Implement a unified persistent memory system across all components",
-                "implementation": "Central SQLite database with schema for all data types",
-                "benefits": "Unified access, data relationships, system-wide learning",
-            },
-            {
-                "category": "Memory-First Architecture",
-                "priority": "HIGH",
-                "description": "Design system with persistent memory as primary storage",
-                "implementation": "Memory-centric design patterns with SQLite as backbone",
-                "benefits": "Data persistence, system resilience, learning continuity",
-            },
-            {
-                "category": "Learning Loop Integration",
-                "priority": "HIGH",
-                "description": "Integrate persistent memory into continuous learning loops",
-                "implementation": "Feedback systems with SQLite-stored learning data",
-                "benefits": "Continuous improvement, adaptive behavior, knowledge accumulation",
-            },
-        ])
+        recommendations.extend(
+            [
+                {
+                    "category": "Unified Memory Architecture",
+                    "priority": "CRITICAL",
+                    "description": "Implement a unified persistent memory system across all components",
+                    "implementation": "Central SQLite database with schema for all data types",
+                    "benefits": "Unified access, data relationships, system-wide learning",
+                },
+                {
+                    "category": "Memory-First Architecture",
+                    "priority": "HIGH",
+                    "description": "Design system with persistent memory as primary storage",
+                    "implementation": "Memory-centric design patterns with SQLite as backbone",
+                    "benefits": "Data persistence, system resilience, learning continuity",
+                },
+                {
+                    "category": "Learning Loop Integration",
+                    "priority": "HIGH",
+                    "description": "Integrate persistent memory into continuous learning loops",
+                    "implementation": "Feedback systems with SQLite-stored learning data",
+                    "benefits": "Continuous improvement, adaptive behavior, knowledge accumulation",
+                },
+            ]
+        )
 
         self.analysis["recommendations"] = recommendations
 
@@ -946,14 +963,14 @@ def main():
 
     # Save analysis
     analysis_file = results_dir / f"persistent_memory_analysis_{timestamp}.json"
-    with open(analysis_file, 'w') as f:
+    with open(analysis_file, "w") as f:
         json.dump(analysis, f, indent=2, default=str)
 
     print(f"📊 Analysis saved: {analysis_file.name}")
 
     # Save schema design
     schema_file = results_dir / f"unified_memory_schema_{timestamp}.sql"
-    with open(schema_file, 'w') as f:
+    with open(schema_file, "w") as f:
         f.write(analyzer.generate_schema_design())
 
     print(f"🗄️ Schema design saved: {schema_file.name}")

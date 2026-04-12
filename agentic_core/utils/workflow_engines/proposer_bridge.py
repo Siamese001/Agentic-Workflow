@@ -281,7 +281,9 @@ class EvaluatorProposerBridge:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluatorProposerBridge.propose",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "EvaluatorProposerBridge.propose",
         )
 
         signals: list[ImprovementSignal] = []
@@ -428,8 +430,9 @@ class EvaluatorProposerBridge:
             self.l4_store.put(artifact)
         # guardian: allow-silent-swallow -- L4 persistence failure is non-critical; proposal already processed
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("proposer_bridge: Exception swallowed at L430: %s", e)
+            logging.getLogger(__name__).debug("proposer_bridge: Exception swallowed at L430: %s", e)
 
 
 __all__ = ["ImprovementSignal", "ImprovementProposal", "EvaluatorProposerBridge"]

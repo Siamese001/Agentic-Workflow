@@ -16,14 +16,17 @@ class TestGovernanceagent:
     def test_GovernanceAgent_imports(self):
         """Test GovernanceAgent module imports."""
         from agentic_core import GovernanceAgent
+
         assert GovernanceAgent is not None
 
     def test_GovernanceAgent_class(self):
         """Test Governanceagent class exists."""
         from agentic_core import Governanceagent
+
         assert Governanceagent is not None
 
     def test_GovernanceAgent_callable(self):
         """Test GovernanceAgent functions are callable."""
         from agentic_core import validate_GovernanceAgent
+
         assert callable(validate_GovernanceAgent)

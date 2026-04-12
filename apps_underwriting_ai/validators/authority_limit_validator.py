@@ -1,6 +1,7 @@
 """
 Authority Limit Validator - Compares request to delegated approval authority.
 """
+
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -10,6 +11,7 @@ from ..types import RiskFeatures, UnderwritingRequest
 @dataclass
 class AuthorityResult:
     """Result of authority limit validation."""
+
     within_authority: bool = True
     requested_amount: float = 0.0
     max_auto_approval: Optional[float] = None
@@ -31,13 +33,13 @@ class AuthorityLimitValidator:
 
     # Authority limits by risk grade
     RISK_ADJUSTED_LIMITS = {
-        "1": 1.0,    # 100% of base limit
+        "1": 1.0,  # 100% of base limit
         "2": 1.0,
         "3": 1.0,
-        "4": 0.8,    # 80% of base limit
-        "5": 0.6,    # 60% of base limit
-        "6": 0.4,    # 40% of base limit
-        "7": 0.0,    # No auto-approval
+        "4": 0.8,  # 80% of base limit
+        "5": 0.6,  # 60% of base limit
+        "6": 0.4,  # 40% of base limit
+        "7": 0.0,  # No auto-approval
         "8": 0.0,
         "9": 0.0,
     }

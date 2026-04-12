@@ -44,17 +44,20 @@ def clean_env():
 
     # Keep essential variables but remove test additions
     essential_vars = [
-        "PATH", "HOME", "USER", "TEMP", "TMP", "USERNAME",
-        "COMPUTERNAME", "SYSTEMROOT", "WINDIR",
+        "PATH",
+        "HOME",
+        "USER",
+        "TEMP",
+        "TMP",
+        "USERNAME",
+        "COMPUTERNAME",
+        "SYSTEMROOT",
+        "WINDIR",
     ]
 
     clean_env = {k: v for k, v in original_env.items() if k in essential_vars}
     if "HOME" not in clean_env and "USERPROFILE" not in clean_env:
-        fallback_home = (
-            original_env.get("USERPROFILE")
-            or original_env.get("HOME")
-            or str(Path.home())
-        )
+        fallback_home = original_env.get("USERPROFILE") or original_env.get("HOME") or str(Path.home())
         clean_env["USERPROFILE"] = fallback_home
     os.environ.clear()
     os.environ.update(clean_env)

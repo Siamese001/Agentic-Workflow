@@ -51,9 +51,9 @@ def scan_forbidden_tokens(file_path: Path, forbidden_tokens: list[str]) -> list[
             if token in content:
                 found.append(token)
         return found
-    except FileNotFoundError:    # guardian: File operations should check existence before access
+    except FileNotFoundError:  # guardian: File operations should check existence before access
         return []
-    except UnicodeDecodeError:    # guardian: Encoding errors should specify fallback encoding strategy
+    except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
         return []
 
 
@@ -90,7 +90,8 @@ def main():
     sections.append("```")
     sections.append(
         run_command(
-            [sys.executable, "-m", "pytest", "-q", "tests/unit/L2_execution", "-m", "unit"], repo_root,
+            [sys.executable, "-m", "pytest", "-q", "tests/unit/L2_execution", "-m", "unit"],
+            repo_root,
         ),
     )
     sections.append("```\n\n")

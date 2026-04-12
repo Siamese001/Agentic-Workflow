@@ -865,7 +865,9 @@ def _contains_symbol_reference(analysis: FileAnalysis, symbol_hint: str) -> bool
 
 
 def _analysis_mentions_cache(
-    analysis: FileAnalysis, module_hint: str, symbol_hint: str | None = None,
+    analysis: FileAnalysis,
+    module_hint: str,
+    symbol_hint: str | None = None,
 ) -> bool:
     if _contains_module_reference(analysis, module_hint):
         return True
@@ -931,7 +933,9 @@ def _detect_upward_imports(file_path: Path, analysis: FileAnalysis) -> list[str]
 def _looks_like_meta_pipeline(file_path: Path, analysis: FileAnalysis) -> bool:
     rel = _stable_relpath(file_path).lower()
     return (
-        "meta_learning_pipeline" in rel or SYSTEM_LEARNING_DIR in rel or len(analysis.meta_stage_mentions) >= 3
+        "meta_learning_pipeline" in rel
+        or SYSTEM_LEARNING_DIR in rel
+        or len(analysis.meta_stage_mentions) >= 3
     )
 
 
@@ -1660,7 +1664,8 @@ class SemanticGapAnalyzer:
 
         # Check telemetry engine for config caching
         telemetry_files = self.ast_analyzer.find_hot_paths(
-            AGENTIC_CORE / "L6_observability", "*telemetry*.py",
+            AGENTIC_CORE / "L6_observability",
+            "*telemetry*.py",
         )
         for telem_file in telemetry_files:
             analysis = self.ast_analyzer.analyze_file(telem_file)
@@ -1701,7 +1706,8 @@ class SemanticGapAnalyzer:
             )
             existing = deduped.get(key)
             if existing is None or PRIORITY_RANK.get(gap.priority, 99) < PRIORITY_RANK.get(
-                existing.priority, 99,
+                existing.priority,
+                99,
             ):
                 deduped[key] = gap
         return sorted(deduped.values(), key=_priority_sort_key)

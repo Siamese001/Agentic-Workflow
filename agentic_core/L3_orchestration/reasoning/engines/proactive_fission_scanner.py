@@ -241,7 +241,9 @@ class ProactiveFissionScanner:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ProactiveFissionScanner.scan_repository",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ProactiveFissionScanner.scan_repository",
         )
 
         Logger.info(f"[SCAN] Scanning repository: {target_dir}")
@@ -299,7 +301,8 @@ class ProactiveFissionScanner:
         try:
             query: Any = f"best modular architecture for python {file_name}"
             design_patterns: Any = await self.router.call_mcp(
-                "brave_search", {"query": query, "purpose": "Find modular design patterns"},
+                "brave_search",
+                {"query": query, "purpose": "Find modular design patterns"},
             )
             structural_twins: Any = await self.router.call_mcp(
                 "pinecone",

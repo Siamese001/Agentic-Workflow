@@ -15,12 +15,13 @@ from pathlib import Path
 from typing import Any
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Test configuration
 REPO_ROOT = Path(__file__).parent.parent.parent
 E2E_RESULTS = REPO_ROOT / "docs" / "reports" / "mcp_e2e_test_results.json"
+
 
 class MCPEndToEndTester:
     def __init__(self):
@@ -75,7 +76,7 @@ def main():
 if __name__ == "__main__":
     main()
 ''',
-            "sample_config.json": '''
+            "sample_config.json": """
 {
     "name": "test_config",
     "version": "1.0.0",
@@ -84,8 +85,8 @@ if __name__ == "__main__":
         "timeout": 30
     }
 }
-''',
-            "sample_markdown.md": '''
+""",
+            "sample_markdown.md": """
 # Test Document
 
 This is a test markdown file for vector search testing.
@@ -100,12 +101,12 @@ This is a test markdown file for vector search testing.
 def example():
     return "test"
 ```
-''',
+""",
         }
 
         for filename, content in test_files.items():
             file_path = self.test_data_dir / filename
-            with open(file_path, 'w', encoding='utf-8') as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
         logger.info(f"Created {len(test_files)} test files")
@@ -188,19 +189,23 @@ def example():
             end_time = time.time()
 
             if process.returncode == 0 and "sample_python.py" in process.stdout:
-                result["tests"].append({
-                    "name": "List files",
-                    "success": True,
-                    "duration": end_time - start_time,
-                    "output_lines": len(process.stdout.split('\n')),
-                })
+                result["tests"].append(
+                    {
+                        "name": "List files",
+                        "success": True,
+                        "duration": end_time - start_time,
+                        "output_lines": len(process.stdout.split("\n")),
+                    }
+                )
             else:
                 result["success"] = False
-                result["tests"].append({
-                    "name": "List files",
-                    "success": False,
-                    "error": process.stderr,
-                })
+                result["tests"].append(
+                    {
+                        "name": "List files",
+                        "success": False,
+                        "error": process.stderr,
+                    }
+                )
 
             # Test file content reading
             start_time = time.time()
@@ -215,27 +220,33 @@ def example():
             end_time = time.time()
 
             if process.returncode == 0 and "def main():" in process.stdout:
-                result["tests"].append({
-                    "name": "Read file",
-                    "success": True,
-                    "duration": end_time - start_time,
-                    "content_size": len(process.stdout),
-                })
+                result["tests"].append(
+                    {
+                        "name": "Read file",
+                        "success": True,
+                        "duration": end_time - start_time,
+                        "content_size": len(process.stdout),
+                    }
+                )
             else:
                 result["success"] = False
-                result["tests"].append({
-                    "name": "Read file",
-                    "success": False,
-                    "error": process.stderr,
-                })
+                result["tests"].append(
+                    {
+                        "name": "Read file",
+                        "success": False,
+                        "error": process.stderr,
+                    }
+                )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "File operations error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "File operations error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -255,12 +266,14 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Git status",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "has_changes": len(process.stdout.strip()) > 0,
-            })
+            result["tests"].append(
+                {
+                    "name": "Git status",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "has_changes": len(process.stdout.strip()) > 0,
+                }
+            )
 
             # Test git log
             start_time = time.time()
@@ -273,20 +286,24 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Git log",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "commits_shown": len(process.stdout.strip().split('\n')) if process.stdout.strip() else 0,
-            })
+            result["tests"].append(
+                {
+                    "name": "Git log",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "commits_shown": len(process.stdout.strip().split("\n")) if process.stdout.strip() else 0,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Git operations error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Git operations error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -305,12 +322,14 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Execute Python script",
-                "success": process.returncode == 0 and "Hello from test file!" in process.stdout,
-                "duration": end_time - start_time,
-                "output": process.stdout.strip(),
-            })
+            result["tests"].append(
+                {
+                    "name": "Execute Python script",
+                    "success": process.returncode == 0 and "Hello from test file!" in process.stdout,
+                    "duration": end_time - start_time,
+                    "output": process.stdout.strip(),
+                }
+            )
 
             # Test Python module check
             start_time = time.time()
@@ -322,20 +341,24 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Python version check",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "version": process.stdout.strip(),
-            })
+            result["tests"].append(
+                {
+                    "name": "Python version check",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "version": process.stdout.strip(),
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Python operations error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Python operations error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -355,12 +378,14 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Current directory",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "directory": process.stdout.strip(),
-            })
+            result["tests"].append(
+                {
+                    "name": "Current directory",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "directory": process.stdout.strip(),
+                }
+            )
 
             # Test environment variables - use python for cross-platform
             start_time = time.time()
@@ -372,20 +397,26 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Environment variables",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "env_vars_count": len(process.stdout.strip().split('\n')) if process.stdout.strip() else 0,
-            })
+            result["tests"].append(
+                {
+                    "name": "Environment variables",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "env_vars_count": len(process.stdout.strip().split("\n"))
+                    if process.stdout.strip()
+                    else 0,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "System info error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "System info error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -415,7 +446,14 @@ def example():
             # Discover tests in a specific directory
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "--collect-only", "-q", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py"],
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    "--collect-only",
+                    "-q",
+                    "tests/unit/agentic_core/L0_routing/config/test_path_constants.py",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -424,19 +462,30 @@ def example():
             end_time = time.time()
 
             # Count tests by looking for test function names (test_ prefix)
-            test_count = len([line for line in process.stdout.split('\n') if 'test_' in line and '::' in line])
+            test_count = len(
+                [line for line in process.stdout.split("\n") if "test_" in line and "::" in line]
+            )
 
-            result["tests"].append({
-                "name": "Discover routing tests",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "tests_found": test_count,
-            })
+            result["tests"].append(
+                {
+                    "name": "Discover routing tests",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "tests_found": test_count,
+                }
+            )
 
             # Discover all tests
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "--collect-only", "-q", "tests/unit/agentic_core/L0_routing/config/"],
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    "--collect-only",
+                    "-q",
+                    "tests/unit/agentic_core/L0_routing/config/",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -445,22 +494,26 @@ def example():
             end_time = time.time()
 
             # Count tests by looking for :: separator in node IDs
-            total_tests = len([line for line in process.stdout.split('\n') if '::' in line])
+            total_tests = len([line for line in process.stdout.split("\n") if "::" in line])
 
-            result["tests"].append({
-                "name": "Discover all tests",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "total_tests": total_tests,
-            })
+            result["tests"].append(
+                {
+                    "name": "Discover all tests",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "total_tests": total_tests,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Test discovery error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Test discovery error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -472,7 +525,13 @@ def example():
             # Run a small subset of tests
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "-v"],
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    "tests/unit/agentic_core/L0_routing/config/test_path_constants.py",
+                    "-v",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -481,40 +540,44 @@ def example():
             end_time = time.time()
 
             # Parse results - look for passed/failed in output
-            output_lines = process.stdout.split('\n')
-            passed = sum(1 for line in output_lines if ' passed' in line or 'PASSED' in line)
-            failed = sum(1 for line in output_lines if ' failed' in line or 'FAILED' in line)
-            errors = sum(1 for line in output_lines if ' error' in line or 'ERROR' in line)
+            output_lines = process.stdout.split("\n")
+            passed = sum(1 for line in output_lines if " passed" in line or "PASSED" in line)
+            failed = sum(1 for line in output_lines if " failed" in line or "FAILED" in line)
+            errors = sum(1 for line in output_lines if " error" in line or "ERROR" in line)
 
             # Also check summary line like "1 passed in 0.01s"
             summary_passed = 0
             for line in output_lines:
-                if ' passed' in line and ' in ' in line:
+                if " passed" in line and " in " in line:
                     try:
-                        summary_passed = int(line.split(' passed')[0].split()[-1])
+                        summary_passed = int(line.split(" passed")[0].split()[-1])
                     except (ValueError, IndexError):
                         pass
 
             if summary_passed > 0:
                 passed = summary_passed
 
-            result["tests"].append({
-                "name": "Execute routing tests",
-                "success": process.returncode in [0, 1],  # 0=success, 1=tests failed
-                "duration": end_time - start_time,
-                "passed": passed,
-                "failed": failed,
-                "errors": errors,
-                "total": passed + failed + errors,
-            })
+            result["tests"].append(
+                {
+                    "name": "Execute routing tests",
+                    "success": process.returncode in [0, 1],  # 0=success, 1=tests failed
+                    "duration": end_time - start_time,
+                    "passed": passed,
+                    "failed": failed,
+                    "errors": errors,
+                    "total": passed + failed + errors,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Test execution error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Test execution error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -526,7 +589,14 @@ def example():
             # Run tests with coverage
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "--cov=agentic_core.L0_routing.config", "--cov-report=json"],
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    "tests/unit/agentic_core/L0_routing/config/test_path_constants.py",
+                    "--cov=agentic_core.L0_routing.config",
+                    "--cov-report=json",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=90,
@@ -545,21 +615,27 @@ def example():
                 except Exception:
                     pass
 
-            result["tests"].append({
-                "name": "Coverage analysis",
-                "success": process.returncode in [0, 1] and coverage_data is not None,
-                "duration": end_time - start_time,
-                "coverage_generated": coverage_data is not None,
-                "total_coverage": coverage_data.get('totals', {}).get('percent_covered', 0) if coverage_data else 0,
-            })
+            result["tests"].append(
+                {
+                    "name": "Coverage analysis",
+                    "success": process.returncode in [0, 1] and coverage_data is not None,
+                    "duration": end_time - start_time,
+                    "coverage_generated": coverage_data is not None,
+                    "total_coverage": coverage_data.get("totals", {}).get("percent_covered", 0)
+                    if coverage_data
+                    else 0,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Coverage analysis error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Coverage analysis error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -579,12 +655,14 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Pytest version",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "version": process.stdout.strip(),
-            })
+            result["tests"].append(
+                {
+                    "name": "Pytest version",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "version": process.stdout.strip(),
+                }
+            )
 
             # Check pytest configuration
             start_time = time.time()
@@ -597,20 +675,24 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Configuration check",
-                "success": process.returncode == 0,
-                "duration": end_time - start_time,
-                "config_lines": len(process.stdout.split('\n')) if process.stdout else 0,
-            })
+            result["tests"].append(
+                {
+                    "name": "Configuration check",
+                    "success": process.returncode == 0,
+                    "duration": end_time - start_time,
+                    "config_lines": len(process.stdout.split("\n")) if process.stdout else 0,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Test analysis error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Test analysis error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -644,13 +726,15 @@ def example():
             response = requests.get("https://httpbin.org/get", timeout=10)
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "GET request",
-                "success": response.status_code == 200,
-                "duration": end_time - start_time,
-                "status_code": response.status_code,
-                "response_size": len(response.content),
-            })
+            result["tests"].append(
+                {
+                    "name": "GET request",
+                    "success": response.status_code == 200,
+                    "duration": end_time - start_time,
+                    "status_code": response.status_code,
+                    "response_size": len(response.content),
+                }
+            )
 
             # Test POST request
             start_time = time.time()
@@ -661,13 +745,15 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "POST request",
-                "success": response.status_code == 200,
-                "duration": end_time - start_time,
-                "status_code": response.status_code,
-                "json_response": response.json().get("json", {}),
-            })
+            result["tests"].append(
+                {
+                    "name": "POST request",
+                    "success": response.status_code == 200,
+                    "duration": end_time - start_time,
+                    "status_code": response.status_code,
+                    "json_response": response.json().get("json", {}),
+                }
+            )
 
             # Test PUT request
             start_time = time.time()
@@ -678,20 +764,24 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "PUT request",
-                "success": response.status_code == 200,
-                "duration": end_time - start_time,
-                "status_code": response.status_code,
-            })
+            result["tests"].append(
+                {
+                    "name": "PUT request",
+                    "success": response.status_code == 200,
+                    "duration": end_time - start_time,
+                    "status_code": response.status_code,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "API testing error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "API testing error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -711,12 +801,14 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Bearer token auth",
-                "success": response.status_code == 200,
-                "duration": end_time - start_time,
-                "authenticated": response.json().get("authenticated", False),
-            })
+            result["tests"].append(
+                {
+                    "name": "Bearer token auth",
+                    "success": response.status_code == 200,
+                    "duration": end_time - start_time,
+                    "authenticated": response.json().get("authenticated", False),
+                }
+            )
 
             # Test Basic authentication
             start_time = time.time()
@@ -727,20 +819,24 @@ def example():
             )
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Basic auth",
-                "success": response.status_code == 200,
-                "duration": end_time - start_time,
-                "authenticated": response.json().get("authenticated", False),
-            })
+            result["tests"].append(
+                {
+                    "name": "Basic auth",
+                    "success": response.status_code == 200,
+                    "duration": end_time - start_time,
+                    "authenticated": response.json().get("authenticated", False),
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Authentication error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Authentication error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -756,12 +852,14 @@ def example():
             response = requests.get("https://httpbin.org/status/404", timeout=10)
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "404 handling",
-                "success": response.status_code == 404,
-                "duration": end_time - start_time,
-                "error_handled": True,
-            })
+            result["tests"].append(
+                {
+                    "name": "404 handling",
+                    "success": response.status_code == 404,
+                    "duration": end_time - start_time,
+                    "error_handled": True,
+                }
+            )
 
             # Test timeout
             start_time = time.time()
@@ -773,20 +871,24 @@ def example():
                 end_time = time.time()
                 timeout_handled = True
 
-            result["tests"].append({
-                "name": "Timeout handling",
-                "success": timeout_handled,
-                "duration": end_time - start_time,
-                "timeout_handled": timeout_handled,
-            })
+            result["tests"].append(
+                {
+                    "name": "Timeout handling",
+                    "success": timeout_handled,
+                    "duration": end_time - start_time,
+                    "timeout_handled": timeout_handled,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Error handling error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Error handling error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -821,22 +923,26 @@ def example():
 
             success_count = sum(1 for r in responses if r.status_code == 200)
 
-            result["tests"].append({
-                "name": "Concurrent requests",
-                "success": success_count == len(urls),
-                "duration": end_time - start_time,
-                "requests_count": len(urls),
-                "success_count": success_count,
-                "avg_time_per_request": (end_time - start_time) / len(urls),
-            })
+            result["tests"].append(
+                {
+                    "name": "Concurrent requests",
+                    "success": success_count == len(urls),
+                    "duration": end_time - start_time,
+                    "requests_count": len(urls),
+                    "success_count": success_count,
+                    "avg_time_per_request": (end_time - start_time) / len(urls),
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Batch operations error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Batch operations error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -883,7 +989,7 @@ def example():
             # Test document indexing
             start_time = time.time()
 
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             documents = [
                 "Python is a popular programming language",
@@ -904,33 +1010,39 @@ def example():
 
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Index documents",
-                "success": True,
-                "duration": end_time - start_time,
-                "documents_count": len(documents),
-                "embedding_dimension": embeddings.shape[1],
-            })
+            result["tests"].append(
+                {
+                    "name": "Index documents",
+                    "success": True,
+                    "duration": end_time - start_time,
+                    "documents_count": len(documents),
+                    "embedding_dimension": embeddings.shape[1],
+                }
+            )
 
             # Verify indexing
             start_time = time.time()
             count = collection.count()
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Verify indexing",
-                "success": count == len(documents),
-                "duration": end_time - start_time,
-                "stored_count": count,
-            })
+            result["tests"].append(
+                {
+                    "name": "Verify indexing",
+                    "success": count == len(documents),
+                    "duration": end_time - start_time,
+                    "stored_count": count,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Document indexing error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Document indexing error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -947,7 +1059,7 @@ def example():
             client = chromadb.PersistentClient(path=str(chroma_path))
             collection = client.get_collection("e2e_test")
 
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             # Test semantic search
             queries = [
@@ -967,21 +1079,25 @@ def example():
 
                 end_time = time.time()
 
-                result["tests"].append({
-                    "name": f"Search: {query}",
-                    "success": len(results["documents"][0]) > 0,
-                    "duration": end_time - start_time,
-                    "results_count": len(results["documents"][0]),
-                    "top_result": results["documents"][0][0] if results["documents"] else None,
-                })
+                result["tests"].append(
+                    {
+                        "name": f"Search: {query}",
+                        "success": len(results["documents"][0]) > 0,
+                        "duration": end_time - start_time,
+                        "results_count": len(results["documents"][0]),
+                        "top_result": results["documents"][0][0] if results["documents"] else None,
+                    }
+                )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Semantic search error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Semantic search error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1000,12 +1116,14 @@ def example():
             collections = client.list_collections()
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "List collections",
-                "success": True,
-                "duration": end_time - start_time,
-                "collection_count": len(collections),
-            })
+            result["tests"].append(
+                {
+                    "name": "List collections",
+                    "success": True,
+                    "duration": end_time - start_time,
+                    "collection_count": len(collections),
+                }
+            )
 
             # Get collection info
             start_time = time.time()
@@ -1013,31 +1131,37 @@ def example():
             count = collection.count()
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Collection info",
-                "success": True,
-                "duration": end_time - start_time,
-                "document_count": count,
-            })
+            result["tests"].append(
+                {
+                    "name": "Collection info",
+                    "success": True,
+                    "duration": end_time - start_time,
+                    "document_count": count,
+                }
+            )
 
             # Delete collection
             start_time = time.time()
             client.delete_collection("e2e_test")
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Delete collection",
-                "success": True,
-                "duration": end_time - start_time,
-            })
+            result["tests"].append(
+                {
+                    "name": "Delete collection",
+                    "success": True,
+                    "duration": end_time - start_time,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Collection management error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Collection management error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1061,7 +1185,7 @@ def example():
                 pass
 
             collection = client.create_collection("perf_test")
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             # Test batch embedding performance
             batch_sizes = [10, 50, 100]
@@ -1073,21 +1197,25 @@ def example():
                 embeddings = model.encode(documents)
                 end_time = time.time()
 
-                result["tests"].append({
-                    "name": f"Embed batch {batch_size}",
-                    "success": True,
-                    "duration": end_time - start_time,
-                    "batch_size": batch_size,
-                    "docs_per_second": batch_size / (end_time - start_time),
-                })
+                result["tests"].append(
+                    {
+                        "name": f"Embed batch {batch_size}",
+                        "success": True,
+                        "duration": end_time - start_time,
+                        "batch_size": batch_size,
+                        "docs_per_second": batch_size / (end_time - start_time),
+                    }
+                )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Performance testing error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Performance testing error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1114,7 +1242,13 @@ def example():
             # Use terminal to run pytest and analyze results
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "--tb=short"],
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    "tests/unit/agentic_core/L0_routing/config/test_path_constants.py",
+                    "--tb=short",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=60,
@@ -1123,24 +1257,30 @@ def example():
             end_time = time.time()
 
             # Parse pytest output
-            output_lines = process.stdout.split('\n')
-            test_results = [line for line in output_lines if any(x in line for x in [' passed', ' failed', ' error'])]
+            output_lines = process.stdout.split("\n")
+            test_results = [
+                line for line in output_lines if any(x in line for x in [" passed", " failed", " error"])
+            ]
 
-            result["tests"].append({
-                "name": "Terminal pytest execution",
-                "success": process.returncode in [0, 1],
-                "duration": end_time - start_time,
-                "test_results": len(test_results),
-                "exit_code": process.returncode,
-            })
+            result["tests"].append(
+                {
+                    "name": "Terminal pytest execution",
+                    "success": process.returncode in [0, 1],
+                    "duration": end_time - start_time,
+                    "test_results": len(test_results),
+                    "exit_code": process.returncode,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Terminal pytest integration error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Terminal pytest integration error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1175,7 +1315,7 @@ def example():
                 pass
 
             collection = client.create_collection("integration_test")
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             # Index the content
             embedding = model.encode([text_content])
@@ -1188,21 +1328,25 @@ def example():
 
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "HTTP to Vector DB workflow",
-                "success": True,
-                "duration": end_time - start_time,
-                "content_size": len(text_content),
-                "indexed": True,
-            })
+            result["tests"].append(
+                {
+                    "name": "HTTP to Vector DB workflow",
+                    "success": True,
+                    "duration": end_time - start_time,
+                    "content_size": len(text_content),
+                    "indexed": True,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "HTTP Vector DB integration error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "HTTP Vector DB integration error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1227,6 +1371,7 @@ def example():
 
             # Step 2: HTTP - Fetch external data
             import requests
+
             response = requests.get("https://httpbin.org/uuid", timeout=10)
             uuid_data = response.json()
 
@@ -1245,7 +1390,7 @@ def example():
                 pass
 
             collection = client.create_collection("workflow_test")
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             combined_text = f"Commit: {commit_info}, UUID: {uuid_data.get('uuid', 'unknown')}"
             embedding = model.encode([combined_text])
@@ -1259,7 +1404,13 @@ def example():
 
             # Step 4: Pytest - Run a quick test to verify system health
             test_process = subprocess.run(
-                ["python", "-m", "pytest", "tests/unit/agentic_core/L0_routing/config/test_path_constants.py", "-q"],
+                [
+                    "python",
+                    "-m",
+                    "pytest",
+                    "tests/unit/agentic_core/L0_routing/config/test_path_constants.py",
+                    "-q",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -1268,24 +1419,30 @@ def example():
 
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Complete workflow",
-                "success": process.returncode == 0 and response.status_code == 200 and test_process.returncode in [0, 1],
-                "duration": end_time - start_time,
-                "steps_completed": 4,
-                "git_success": process.returncode == 0,
-                "http_success": response.status_code == 200,
-                "vector_db_success": True,
-                "pytest_success": test_process.returncode in [0, 1],
-            })
+            result["tests"].append(
+                {
+                    "name": "Complete workflow",
+                    "success": process.returncode == 0
+                    and response.status_code == 200
+                    and test_process.returncode in [0, 1],
+                    "duration": end_time - start_time,
+                    "steps_completed": 4,
+                    "git_success": process.returncode == 0,
+                    "http_success": response.status_code == 200,
+                    "vector_db_success": True,
+                    "pytest_success": test_process.returncode in [0, 1],
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Multi-server workflow error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Multi-server workflow error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1326,22 +1483,26 @@ def example():
 
             success_count = sum(1 for r in responses if r.status_code == 200)
 
-            result["tests"].append({
-                "name": "Concurrent HTTP requests",
-                "success": success_count == len(urls),
-                "duration": end_time - start_time,
-                "requests_count": len(urls),
-                "success_rate": success_count / len(urls),
-                "avg_time_per_request": (end_time - start_time) / len(urls),
-            })
+            result["tests"].append(
+                {
+                    "name": "Concurrent HTTP requests",
+                    "success": success_count == len(urls),
+                    "duration": end_time - start_time,
+                    "requests_count": len(urls),
+                    "success_rate": success_count / len(urls),
+                    "avg_time_per_request": (end_time - start_time) / len(urls),
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Concurrent operations error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Concurrent operations error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1353,31 +1514,37 @@ def example():
             from sentence_transformers import SentenceTransformer
 
             # Test large batch embedding
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             # Generate large document set
-            large_documents = [f"This is test document number {i} with some content to embed." for i in range(100)]
+            large_documents = [
+                f"This is test document number {i} with some content to embed." for i in range(100)
+            ]
 
             start_time = time.time()
             embeddings = model.encode(large_documents, batch_size=32)
             end_time = time.time()
 
-            result["tests"].append({
-                "name": "Large batch embedding",
-                "success": True,
-                "duration": end_time - start_time,
-                "document_count": len(large_documents),
-                "embedding_dimension": embeddings.shape[1],
-                "docs_per_second": len(large_documents) / (end_time - start_time),
-            })
+            result["tests"].append(
+                {
+                    "name": "Large batch embedding",
+                    "success": True,
+                    "duration": end_time - start_time,
+                    "document_count": len(large_documents),
+                    "embedding_dimension": embeddings.shape[1],
+                    "docs_per_second": len(large_documents) / (end_time - start_time),
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Large datasets error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Large datasets error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1407,23 +1574,27 @@ def example():
 
             final_memory = process.memory_info().rss / 1024 / 1024  # MB
 
-            result["tests"].append({
-                "name": "Memory stress test",
-                "success": True,
-                "baseline_memory_mb": baseline_memory,
-                "peak_memory_mb": peak_memory,
-                "final_memory_mb": final_memory,
-                "memory_increase_mb": peak_memory - baseline_memory,
-                "memory_recovered_mb": peak_memory - final_memory,
-            })
+            result["tests"].append(
+                {
+                    "name": "Memory stress test",
+                    "success": True,
+                    "baseline_memory_mb": baseline_memory,
+                    "peak_memory_mb": peak_memory,
+                    "final_memory_mb": final_memory,
+                    "memory_increase_mb": peak_memory - baseline_memory,
+                    "memory_recovered_mb": peak_memory - final_memory,
+                }
+            )
 
         except Exception as e:
             result["success"] = False
-            result["tests"].append({
-                "name": "Memory stress error",
-                "success": False,
-                "error": str(e),
-            })
+            result["tests"].append(
+                {
+                    "name": "Memory stress error",
+                    "success": False,
+                    "error": str(e),
+                }
+            )
 
         return result
 
@@ -1431,12 +1602,14 @@ def example():
         """Generate comprehensive end-to-end test report"""
         total_time = time.time() - self.start_time
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("📊 MCP END-TO-END TEST REPORT")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         logger.info(f"Total Test Time: {total_time:.2f}s")
-        logger.info(f"Servers Tested: {len([k for k in self.results.keys() if k not in ['integration', 'stress']])}")
+        logger.info(
+            f"Servers Tested: {len([k for k in self.results.keys() if k not in ['integration', 'stress']])}"
+        )
         logger.info(f"Integration Tests: {'integration' in self.results}")
         logger.info(f"Stress Tests: {'stress' in self.results}")
 
@@ -1495,14 +1668,14 @@ def example():
         # Save detailed report
         await self._save_e2e_report()
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         if success_rate >= 90:
             logger.info("🎉 END-TO-END TESTS EXCELLENT!")
         elif success_rate >= 75:
             logger.info("✅ END-TO-END TESTS GOOD!")
         else:
             logger.warning(f"⚠️ END-TO-END TESTS NEED IMPROVEMENT ({success_rate:.1f}% success)")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
     async def _save_e2e_report(self):
         """Save detailed end-to-end test report"""
@@ -1514,16 +1687,18 @@ def example():
         }
 
         try:
-            with open(E2E_RESULTS, 'w', encoding='utf-8') as f:
+            with open(E2E_RESULTS, "w", encoding="utf-8") as f:
                 json.dump(report_data, f, indent=2, default=str)
             logger.info(f"📄 E2E report saved: {E2E_RESULTS}")
         except Exception as e:
             logger.error(f"Failed to save E2E report: {e}")
 
+
 async def main():
     """Main entry point"""
     tester = MCPEndToEndTester()
     await tester.run_all_e2e_tests()
+
 
 if __name__ == "__main__":
     try:

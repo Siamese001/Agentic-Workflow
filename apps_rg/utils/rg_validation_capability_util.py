@@ -208,8 +208,11 @@ class RGValidationCapability:
         self.add_signal(), self.remove_signal() — all provided by RGAgentBase.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RGValidationCapability.run_validation")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RGValidationCapability.run_validation"
+        )
 
         if not self.VALIDATION_SIGNAL:
             raise ValueError(f"{self.__class__.__name__} must set VALIDATION_SIGNAL")

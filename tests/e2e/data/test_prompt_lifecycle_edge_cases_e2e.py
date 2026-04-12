@@ -133,13 +133,15 @@ class TestEdgeCasesCompiledArtifact(unittest.TestCase):
         wrong_key = b"wrong-key"
 
         # Compute signature with correct key
-        canonical = str({
-            "trace_id": "trace-123",
-            "final_system_string": "System",
-            "final_user_string": "User",
-            "allowed_tools_schema": (),
-            "token_estimate": 10,
-        })
+        canonical = str(
+            {
+                "trace_id": "trace-123",
+                "final_system_string": "System",
+                "final_user_string": "User",
+                "allowed_tools_schema": (),
+                "token_estimate": 10,
+            }
+        )
         signature = hmac.new(secret_key, canonical.encode(), hashlib.sha256).hexdigest()
 
         artifact = CompiledPromptArtifact(
@@ -161,13 +163,15 @@ class TestEdgeCasesCompiledArtifact(unittest.TestCase):
         secret_key = b"test-key"
 
         # Create artifact
-        canonical = str({
-            "trace_id": "trace-123",
-            "final_system_string": "System",
-            "final_user_string": "User",
-            "allowed_tools_schema": (),
-            "token_estimate": 10,
-        })
+        canonical = str(
+            {
+                "trace_id": "trace-123",
+                "final_system_string": "System",
+                "final_user_string": "User",
+                "allowed_tools_schema": (),
+                "token_estimate": 10,
+            }
+        )
         signature = hmac.new(secret_key, canonical.encode(), hashlib.sha256).hexdigest()
 
         # Tamper with the content after signing

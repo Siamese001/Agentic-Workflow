@@ -1,4 +1,5 @@
 """ADG Identity Normalizer - Normalizes ADG node identities."""
+
 from __future__ import annotations
 
 

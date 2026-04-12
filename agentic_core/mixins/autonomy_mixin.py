@@ -84,6 +84,8 @@ except ImportError:
         """Fallback stub for MCPHardenedMixin."""
 
         pass
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -177,8 +179,11 @@ class AutonomyMixin(SovereignBaseAgent):
 
     async def should_act_proactively(self) -> bool:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomyMixin.should_act_proactively")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomyMixin.should_act_proactively"
+        )
 
         if not self._autonomy_enabled:
             return False

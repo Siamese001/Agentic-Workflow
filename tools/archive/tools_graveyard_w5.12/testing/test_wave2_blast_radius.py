@@ -24,7 +24,7 @@ async def test_blast_radius():
     stats = retriever.get_collection_stats()
     print("Collection Statistics:")
     for collection, info in stats.items():
-        if collection in ['repo_adg_graph', 'repo_tests_guardrails']:
+        if collection in ["repo_adg_graph", "repo_tests_guardrails"]:
             print(f"  {collection}: {info['document_count']} documents")
 
     # Test scenarios for blast radius
@@ -59,8 +59,8 @@ async def test_blast_radius():
 
         # Create query
         query = RetrievalQuery(
-            text=scenario['query'],
-            collections=scenario['collections'],
+            text=scenario["query"],
+            collections=scenario["collections"],
             max_results=10,
         )
 
@@ -78,18 +78,18 @@ async def test_blast_radius():
             for result in results[:5]:  # Top 5 results
                 metadata = result.metadata
 
-                if 'src_layer' in metadata and metadata['src_layer']:
-                    layers_affected.add(metadata['src_layer'])
-                if 'dst_layer' in metadata and metadata['dst_layer']:
-                    layers_affected.add(metadata['dst_layer'])
-                if 'layer' in metadata and metadata['layer']:
-                    layers_affected.add(metadata['layer'])
+                if "src_layer" in metadata and metadata["src_layer"]:
+                    layers_affected.add(metadata["src_layer"])
+                if "dst_layer" in metadata and metadata["dst_layer"]:
+                    layers_affected.add(metadata["dst_layer"])
+                if "layer" in metadata and metadata["layer"]:
+                    layers_affected.add(metadata["layer"])
 
-                if 'subsystem' in metadata and metadata['subsystem']:
-                    subsystems_affected.add(metadata['subsystem'])
+                if "subsystem" in metadata and metadata["subsystem"]:
+                    subsystems_affected.add(metadata["subsystem"])
 
-                if 'artifact_type' in metadata and metadata['artifact_type']:
-                    file_types.add(metadata['artifact_type'])
+                if "artifact_type" in metadata and metadata["artifact_type"]:
+                    file_types.add(metadata["artifact_type"])
 
                 print(f"  - {result.collection}: {result.content[:100]}...")
 
@@ -134,8 +134,8 @@ async def test_semantic_similarity():
         print(f"\n--- {test['name']} ---")
 
         query = RetrievalQuery(
-            text=test['query'],
-            collections=test['collections'],
+            text=test["query"],
+            collections=test["collections"],
             max_results=5,
         )
 
@@ -143,7 +143,7 @@ async def test_semantic_similarity():
 
         print(f"Found {len(results)} similar components:")
         for i, result in enumerate(results[:3]):
-            print(f"  {i+1}. [{result.collection}] {result.content[:80]}...")
+            print(f"  {i + 1}. [{result.collection}] {result.content[:80]}...")
             if result.score:
                 print(f"     Score: {result.score:.3f}")
 

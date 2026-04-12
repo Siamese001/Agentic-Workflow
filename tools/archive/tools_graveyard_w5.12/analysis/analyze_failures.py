@@ -1,4 +1,5 @@
 """Analyze test failures and errors from JUnit XML files."""
+
 import os
 import xml.etree.ElementTree as ET
 from collections import Counter

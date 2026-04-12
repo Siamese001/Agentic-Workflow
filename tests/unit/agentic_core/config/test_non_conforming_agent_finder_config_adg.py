@@ -16,14 +16,17 @@ class TestNonConformingAgentFinderConfigAdg:
     def test_non_conforming_agent_finder_config_adg_imports(self):
         """Test non_conforming_agent_finder_config_adg module imports."""
         from agentic_core import non_conforming_agent_finder_config_adg
+
         assert non_conforming_agent_finder_config_adg is not None
 
     def test_non_conforming_agent_finder_config_adg_class(self):
         """Test NonConformingAgentFinderConfigAdg class exists."""
         from agentic_core import NonConformingAgentFinderConfigAdg
+
         assert NonConformingAgentFinderConfigAdg is not None
 
     def test_non_conforming_agent_finder_config_adg_callable(self):
         """Test non_conforming_agent_finder_config_adg functions are callable."""
         from agentic_core import validate_non_conforming_agent_finder_config_adg
+
         assert callable(validate_non_conforming_agent_finder_config_adg)

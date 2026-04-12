@@ -208,7 +208,7 @@ def check_file(path: Path) -> list[str]:
     try:
         source = path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source, filename=str(path))
-    except SyntaxError as exc:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SYNTAX_ERROR: {path}: {exc}"]
 
     violations: list[str] = []

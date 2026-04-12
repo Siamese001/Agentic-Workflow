@@ -1,6 +1,7 @@
 """
 Test RG Pydantic Types.
 """
+
 import unittest
 
 from pydantic import ValidationError

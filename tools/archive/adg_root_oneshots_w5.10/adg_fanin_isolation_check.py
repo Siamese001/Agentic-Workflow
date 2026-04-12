@@ -261,7 +261,8 @@ WHERE e.dst_id = :node_id
 
 
 def find_zero_prod_fanin_modules(
-    conn: sqlite3.Connection, limit: int = 200,
+    conn: sqlite3.Connection,
+    limit: int = 200,
 ) -> list[dict]:
     """Return production modules with zero production importers."""
     cur = conn.execute(_ALL_MODULES_SQL)
@@ -271,7 +272,8 @@ def find_zero_prod_fanin_modules(
     for row in modules:
         node_id, path, layer = row["id"], row["resolved_path"], row["layer"]
         prod_count = conn.execute(
-            _PROD_FANIN_COUNT_SQL, {"node_id": node_id},
+            _PROD_FANIN_COUNT_SQL,
+            {"node_id": node_id},
         ).fetchone()[0]
         if prod_count == 0:
             dead.append(
@@ -285,9 +287,9 @@ def find_zero_prod_fanin_modules(
 
 def sweep_dead_code(conn: sqlite3.Connection, top_n: int = 50) -> int:
     """Sweep for zero-fan-in production modules. Returns count found."""
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("DEAD CODE SWEEP — production modules with zero production importers")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     dead = find_zero_prod_fanin_modules(conn, limit=top_n)
 
@@ -460,9 +462,9 @@ def main() -> int:
             print("Quick example: python tools/adg/adg_fanin_isolation_check.py gptcache_client")
             return 0
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         print(f"ADG FAN-IN ISOLATION CHECK  ({len(args.patterns)} target(s))")
-        print(f"{'='*70}")
+        print(f"{'=' * 70}")
 
         failed = []
         for pattern in args.patterns:
@@ -471,7 +473,7 @@ def main() -> int:
             if not has_prod:
                 failed.append(pattern)
 
-        print(f"\n{'='*70}")
+        print(f"\n{'=' * 70}")
         if failed:
             print(f"❌ GATE FAIL — {len(failed)} target(s) have zero production fan-in:")
             for f in failed:

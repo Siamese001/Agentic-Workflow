@@ -432,8 +432,11 @@ class SkillExtractorNode:
             SkillAnalysisOutput with extraction, gap, and match analysis
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SkillExtractorNode.analyze_skills")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SkillExtractorNode.analyze_skills"
+        )
 
         logger.info("Analyzing skills from job description and candidate profile")
         jd_skills = self._extract_skills_from_text(job_description)
@@ -530,7 +533,9 @@ class SkillExtractorNode:
         return self._extract_skills_from_text(profile_text)
 
     def _analyze_skill_gaps(
-        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult,
+        self,
+        jd_skills: SkillExtractionResult,
+        candidate_skills: SkillExtractionResult,
     ) -> SkillGapResult:
         """Analyze skill gaps between job requirements and candidate profile.
 
@@ -576,7 +581,9 @@ class SkillExtractorNode:
         )
 
     def _match_skills(
-        self, jd_skills: SkillExtractionResult, candidate_skills: SkillExtractionResult,
+        self,
+        jd_skills: SkillExtractionResult,
+        candidate_skills: SkillExtractionResult,
     ) -> SkillMatchResult:
         """Perform detailed skill matching between JD and candidate.
 
@@ -624,7 +631,9 @@ class SkillExtractorNode:
         )
 
     def _generate_recommendations(
-        self, gap_result: SkillGapResult, match_result: SkillMatchResult,
+        self,
+        gap_result: SkillGapResult,
+        match_result: SkillMatchResult,
     ) -> list[str]:
         """Generate recommendations based on skill analysis.
 

@@ -35,6 +35,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 class GuardianStatus(str, Enum):
     """Binary guardian status - no warnings allowed."""
 

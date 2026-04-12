@@ -6,7 +6,10 @@ failures = [
         "test": "tests/sovereign_hardening/test_ssot_pipeline_protocol.py::TestFailClosedOnException::test_execute_skipped_after_validate_exception",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError propagated from mock.side_effect in run_pipeline at execute_ssot.py:7368",
-        "chain": ["tests/sovereign_hardening/test_ssot_pipeline_protocol.py", "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368"],
+        "chain": [
+            "tests/sovereign_hardening/test_ssot_pipeline_protocol.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "run_pipeline",
         "root_line": 7368,
@@ -17,7 +20,10 @@ failures = [
         "test": "tests/sovereign_hardening/test_ssot_pipeline_protocol.py::TestFailClosedOnException::test_heal_skipped_after_validate_exception",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError propagated from mock.side_effect in run_pipeline",
-        "chain": ["tests/sovereign_hardening/test_ssot_pipeline_protocol.py", "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368"],
+        "chain": [
+            "tests/sovereign_hardening/test_ssot_pipeline_protocol.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "run_pipeline",
         "root_line": 7368,
@@ -28,7 +34,10 @@ failures = [
         "test": "tests/sovereign_hardening/test_ssot_pipeline_protocol.py::TestFailClosedOnException::test_error_field_populated",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError propagated from mock.side_effect in run_pipeline",
-        "chain": ["tests/sovereign_hardening/test_ssot_pipeline_protocol.py", "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368"],
+        "chain": [
+            "tests/sovereign_hardening/test_ssot_pipeline_protocol.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "run_pipeline",
         "root_line": 7368,
@@ -39,7 +48,10 @@ failures = [
         "test": "tests/sovereign_hardening/test_ssot_pipeline_protocol.py::TestFailClosedOnException::test_skip_agent_called",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError propagated from mock.side_effect in run_pipeline",
-        "chain": ["tests/sovereign_hardening/test_ssot_pipeline_protocol.py", "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368"],
+        "chain": [
+            "tests/sovereign_hardening/test_ssot_pipeline_protocol.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "run_pipeline",
         "root_line": 7368,
@@ -50,7 +62,10 @@ failures = [
         "test": "tests/sovereign_hardening/test_ssot_pipeline_protocol.py::TestFailClosedOnException::test_update_agent_not_called_for_execute_after_exception",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError propagated from mock.side_effect in run_pipeline",
-        "chain": ["tests/sovereign_hardening/test_ssot_pipeline_protocol.py", "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368"],
+        "chain": [
+            "tests/sovereign_hardening/test_ssot_pipeline_protocol.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "run_pipeline",
         "root_line": 7368,
@@ -61,7 +76,10 @@ failures = [
         "test": "tests/sovereign_hardening/test_ssot_pipeline_protocol.py::TestFailClosedOnException::test_update_agent_not_called_for_heal_after_exception",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError propagated from mock.side_effect in run_pipeline",
-        "chain": ["tests/sovereign_hardening/test_ssot_pipeline_protocol.py", "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368"],
+        "chain": [
+            "tests/sovereign_hardening/test_ssot_pipeline_protocol.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "run_pipeline",
         "root_line": 7368,
@@ -72,7 +90,10 @@ failures = [
         "test": "tests/sovereign_hardening/test_ssot_pipeline_protocol.py::TestFailClosedOnException::test_exception_in_pre_commit_skips_all_subsequent",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError: pre_commit boom — propagated from run_pipeline",
-        "chain": ["tests/sovereign_hardening/test_ssot_pipeline_protocol.py", "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368"],
+        "chain": [
+            "tests/sovereign_hardening/test_ssot_pipeline_protocol.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::run_pipeline:7368",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "run_pipeline",
         "root_line": 7368,
@@ -83,7 +104,10 @@ failures = [
         "test": "tests/invariants/test_gap_a_b_wire_in.py::TestGapARunManifest::test_write_run_manifest_creates_file",
         "error_type": "NameError",
         "error_text": "NameError: name 'APPS_RG_DIR' is not defined at test_gap_a_b_wire_in.py:23",
-        "chain": ["tests/invariants/test_gap_a_b_wire_in.py:23", "agentic_core/L0_routing/config/path_constants.py"],
+        "chain": [
+            "tests/invariants/test_gap_a_b_wire_in.py:23",
+            "agentic_core/L0_routing/config/path_constants.py",
+        ],
         "root_module": "tests/invariants/test_gap_a_b_wire_in.py",
         "root_function": "test_write_run_manifest_creates_file",
         "root_line": 23,
@@ -94,7 +118,10 @@ failures = [
         "test": "tests/invariants/test_gap_a_b_wire_in.py::TestGapARunManifest::test_write_run_manifest_trace_id_in_file",
         "error_type": "NameError",
         "error_text": "NameError: name 'AGENTIC_CORE_DIR' is not defined at test_gap_a_b_wire_in.py:50",
-        "chain": ["tests/invariants/test_gap_a_b_wire_in.py:50", "agentic_core/L0_routing/config/path_constants.py"],
+        "chain": [
+            "tests/invariants/test_gap_a_b_wire_in.py:50",
+            "agentic_core/L0_routing/config/path_constants.py",
+        ],
         "root_module": "tests/invariants/test_gap_a_b_wire_in.py",
         "root_function": "test_write_run_manifest_trace_id_in_file",
         "root_line": 50,
@@ -105,7 +132,10 @@ failures = [
         "test": "tests/unit_min_deps/test_fire_meta_learning_timestamps.py::TestFireMetaLearningTimestamps::test_empty_healing_actions_no_crash",
         "error_type": "NameError",
         "error_text": "NameError: name 'decision_engine' is not defined at execute_ssot.py:267 in _fire_meta_learning_intake",
-        "chain": ["tests/unit_min_deps/test_fire_meta_learning_timestamps.py", "agentic_core/L0_routing/scripts/execute_ssot.py::_fire_meta_learning_intake:267"],
+        "chain": [
+            "tests/unit_min_deps/test_fire_meta_learning_timestamps.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py::_fire_meta_learning_intake:267",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "_fire_meta_learning_intake",
         "root_line": 267,
@@ -116,7 +146,10 @@ failures = [
         "test": "tests/e2e/agentic_core/L0_maintenance/misc/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_03_state_persistence_crash_recovery",
         "error_type": "AssertionError",
         "error_text": "AssertionError: State file should exist — state not persisted on crash recovery path",
-        "chain": ["tests/e2e/agentic_core/L0_maintenance/misc/test_ssot_e2e_reporting.py", "agentic_core/L0_routing/scripts/execute_ssot.py"],
+        "chain": [
+            "tests/e2e/agentic_core/L0_maintenance/misc/test_ssot_e2e_reporting.py",
+            "agentic_core/L0_routing/scripts/execute_ssot.py",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "unknown — state persistence on crash",
         "confidence": "medium",
@@ -126,7 +159,11 @@ failures = [
         "test": "tests/e2e/agentic_core/L0_maintenance/misc/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_05_decision_audit_trail",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError: vLLM subprocess failed — ModuleNotFoundError: No module named 'agentic_core' in WSL subprocess",
-        "chain": ["tests/e2e/.../test_ssot_e2e_reporting.py", "execute_ssot.py::_arbiter:1925", "qwen_vllm_inference.py"],
+        "chain": [
+            "tests/e2e/.../test_ssot_e2e_reporting.py",
+            "execute_ssot.py::_arbiter:1925",
+            "qwen_vllm_inference.py",
+        ],
         "root_module": "agentic_core/L2_execution/healers/qwen_vllm_inference.py",
         "root_function": "_arbiter WSL subprocess context",
         "confidence": "high",
@@ -136,7 +173,10 @@ failures = [
         "test": "tests/e2e/agentic_core/L0_maintenance/misc/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_08_human_rejection_logic",
         "error_type": "AssertionError",
         "error_text": "assert True is False — should_proceed_with_healing returned True, test expects False for human rejection scenario",
-        "chain": ["tests/e2e/.../test_ssot_e2e_reporting.py:283", "execute_ssot.py::should_proceed_with_healing"],
+        "chain": [
+            "tests/e2e/.../test_ssot_e2e_reporting.py:283",
+            "execute_ssot.py::should_proceed_with_healing",
+        ],
         "root_module": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "root_function": "should_proceed_with_healing",
         "confidence": "high",
@@ -146,7 +186,11 @@ failures = [
         "test": "tests/e2e/agentic_core/L0_maintenance/misc/test_ssot_e2e_reporting.py::TestSSOTE2EReporting::test_e2e_09_full_reconciliation_loop",
         "error_type": "RuntimeError",
         "error_text": "RuntimeError: vLLM subprocess failed — ModuleNotFoundError: No module named 'agentic_core' in WSL subprocess",
-        "chain": ["tests/e2e/.../test_ssot_e2e_reporting.py", "execute_ssot.py::_arbiter:1925", "qwen_vllm_inference.py"],
+        "chain": [
+            "tests/e2e/.../test_ssot_e2e_reporting.py",
+            "execute_ssot.py::_arbiter:1925",
+            "qwen_vllm_inference.py",
+        ],
         "root_module": "agentic_core/L2_execution/healers/qwen_vllm_inference.py",
         "root_function": "_arbiter via should_proceed_with_healing",
         "confidence": "high",
@@ -155,7 +199,10 @@ failures = [
 ]
 
 out = Path("artifacts/execute_ssot_failure_chains.json")
-out.write_text(json.dumps({"failures": failures, "total_failures": 15, "total_passed": 369, "skipped": 1}, indent=2), encoding="utf-8")
+out.write_text(
+    json.dumps({"failures": failures, "total_failures": 15, "total_passed": 369, "skipped": 1}, indent=2),
+    encoding="utf-8",
+)
 print("PHASE 3 artifact written.")
 cats = {}
 for f in failures:

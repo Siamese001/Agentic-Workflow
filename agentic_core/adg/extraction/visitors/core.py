@@ -30,6 +30,7 @@ class _CallVisitor(BaseStructuralVisitor):
             WRITE_SIDE_EFFECT_EXCLUSIONS,
             WRITE_SIDE_EFFECT_SYMBOLS,
         )
+
         self._embedding_symbols = EMBEDDING_SYMBOLS
         self._write_symbols = WRITE_SIDE_EFFECT_SYMBOLS
         self._write_exclusions = WRITE_SIDE_EFFECT_EXCLUSIONS
@@ -84,14 +85,14 @@ class _CallVisitor(BaseStructuralVisitor):
         """Classify call edge kind and relation type."""
         if sym in self._embedding_symbols or any(sym.endswith(e) for e in self._embedding_symbols):
             return "embedding", "instantiates"
-        if sym in self._write_symbols or any(
-            sym.endswith(w.split(".")[-1]) for w in self._write_symbols
-        ):
+        if sym in self._write_symbols or any(sym.endswith(w.split(".")[-1]) for w in self._write_symbols):
             # G3: exclude false-positive write symbols
             if sym in self._write_exclusions:
                 return "", ""
             return "write", "writes_to"
-        if sym in self._network_symbols or any(sym.startswith(n.split(".")[0]) for n in self._network_symbols):
+        if sym in self._network_symbols or any(
+            sym.startswith(n.split(".")[0]) for n in self._network_symbols
+        ):
             return "network", "invokes_provider"
 
         base = sym.split(".")[0]
@@ -121,35 +122,54 @@ class _AntipatternVisitor(BaseStructuralVisitor):
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
         from agentic_core.adg.contracts.schema_util import BROAD_EXCEPTION_TYPES
+
         self._broad_exceptions = BROAD_EXCEPTION_TYPES
         self._antipatterns: list[tuple[int, str, str]] = []  # (line_no, category, symbol)
         # Allowlist of known blocking I/O calls for async detection
-        self._blocking_io_calls = frozenset({
-            "time.sleep", "requests.get", "requests.post", "requests.put", "requests.delete",
-            "requests.request", "urllib.request.urlopen", "urllib.urlopen",
-            "socket.recv", "socket.send", "socket.connect", "socket.accept",
-            "subprocess.run", "subprocess.call", "subprocess.check_output",
-            "os.system", "asyncio.get_event_loop().run_until_complete",
-        })
+        self._blocking_io_calls = frozenset(
+            {
+                "time.sleep",
+                "requests.get",
+                "requests.post",
+                "requests.put",
+                "requests.delete",
+                "requests.request",
+                "urllib.request.urlopen",
+                "urllib.urlopen",
+                "socket.recv",
+                "socket.send",
+                "socket.connect",
+                "socket.accept",
+                "subprocess.run",
+                "subprocess.call",
+                "subprocess.check_output",
+                "os.system",
+                "asyncio.get_event_loop().run_until_complete",
+            }
+        )
         # Hardcoded path patterns to detect (AST stores string values without escapes)
-        self._hardcoded_path_patterns = frozenset({
-            "C:\\Git\\",        # Windows backslash path
-            "C:/Git/",          # Windows forward slash path
-            "/home/amita/",     # Unix user home
-            "/Users/amita/",    # macOS user home
-            "D:\\",             # Secondary drive
-        })
+        self._hardcoded_path_patterns = frozenset(
+            {
+                "C:\\Git\\",  # Windows backslash path
+                "C:/Git/",  # Windows forward slash path
+                "/home/amita/",  # Unix user home
+                "/Users/amita/",  # macOS user home
+                "D:\\",  # Secondary drive
+            }
+        )
 
     def visit_Constant(self, node: ast.Constant) -> None:
         """Detect hardcoded absolute paths in string constants."""
         if isinstance(node.value, str):
             for pattern in self._hardcoded_path_patterns:
                 if pattern in node.value:
-                    self._antipatterns.append((
-                        node.lineno,
-                        "hardcoded_path",
-                        pattern,
-                    ))
+                    self._antipatterns.append(
+                        (
+                            node.lineno,
+                            "hardcoded_path",
+                            pattern,
+                        )
+                    )
                     break
         self.generic_visit(node)
 
@@ -159,11 +179,13 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
         # Check for broad exception catch
         if handler_type in self._broad_exceptions:
-            self._antipatterns.append((
-                node.lineno,
-                "broad_exception_catch",
-                handler_type or "Exception",
-            ))
+            self._antipatterns.append(
+                (
+                    node.lineno,
+                    "broad_exception_catch",
+                    handler_type or "Exception",
+                )
+            )
 
         # Analyze handler body for antipatterns
         if node.body:
@@ -171,27 +193,33 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
             # Check for empty/pass-only handlers (silent swallow)
             if self._is_silent_swallow(node.body):
-                self._antipatterns.append((
-                    node.lineno,
-                    "silent_exception_swallow",
-                    handler_type or "Exception",
-                ))
+                self._antipatterns.append(
+                    (
+                        node.lineno,
+                        "silent_exception_swallow",
+                        handler_type or "Exception",
+                    )
+                )
 
             # Check for log-and-swallow
             if self._is_log_and_swallow(node.body):
-                self._antipatterns.append((
-                    node.lineno,
-                    "log_and_swallow",
-                    handler_type or "Exception",
-                ))
+                self._antipatterns.append(
+                    (
+                        node.lineno,
+                        "log_and_swallow",
+                        handler_type or "Exception",
+                    )
+                )
 
             # Check for return None after exception
             if self._is_return_none_after_exception(node.body):
-                self._antipatterns.append((
-                    body_lines[-1] if body_lines else node.lineno,
-                    "return_none_swallow",
-                    handler_type or "Exception",
-                ))
+                self._antipatterns.append(
+                    (
+                        body_lines[-1] if body_lines else node.lineno,
+                        "return_none_swallow",
+                        handler_type or "Exception",
+                    )
+                )
 
         self.generic_visit(node)
 
@@ -226,7 +254,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     if isinstance(call.func, ast.Attribute):
                         if call.func.attr in {"debug", "info", "warning", "error", "exception"}:
                             # Check if this is the last statement or followed by pass
-                            remaining = body[i + 1:]
+                            remaining = body[i + 1 :]
                             if not remaining or all(isinstance(s, ast.Pass) for s in remaining):
                                 return True
         return False
@@ -250,11 +278,13 @@ class _AntipatternVisitor(BaseStructuralVisitor):
             if isinstance(child, ast.Call):
                 sym = self._extract_symbol(child.func)
                 if sym and sym in self._blocking_io_calls:
-                    self._antipatterns.append((
-                        child.lineno,
-                        "blocking_call_in_async",
-                        sym,
-                    ))
+                    self._antipatterns.append(
+                        (
+                            child.lineno,
+                            "blocking_call_in_async",
+                            sym,
+                        )
+                    )
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
@@ -271,11 +301,13 @@ class _AntipatternVisitor(BaseStructuralVisitor):
                     if isinstance(target, ast.Name) and target.id.isupper():
                         # Skip if inside a lazy-init guard: if _X is None: X = ...
                         # TODO: implement parent tracking for guard detection
-                        self._antipatterns.append((
-                            stmt.lineno,
-                            "global_state_mutation",
-                            target.id,
-                        ))
+                        self._antipatterns.append(
+                            (
+                                stmt.lineno,
+                                "global_state_mutation",
+                                target.id,
+                            )
+                        )
 
     def _extract_symbol(self, func_node: ast.expr) -> str:
         """Extract symbol name from function expression."""
@@ -295,21 +327,25 @@ class _AntipatternVisitor(BaseStructuralVisitor):
     def visit_While(self, node: ast.While) -> None:
         """Detect retry loops without backoff (while loops)."""
         if self._loop_contains_retry_without_backoff(node):
-            self._antipatterns.append((
-                node.lineno,
-                "retry_without_backoff",
-                "while_retry",
-            ))
+            self._antipatterns.append(
+                (
+                    node.lineno,
+                    "retry_without_backoff",
+                    "while_retry",
+                )
+            )
         self.generic_visit(node)
 
     def visit_For(self, node: ast.For) -> None:
         """Detect retry loops without backoff (for loops)."""
         if self._loop_contains_retry_without_backoff(node):
-            self._antipatterns.append((
-                node.lineno,
-                "retry_without_backoff",
-                "for_retry",
-            ))
+            self._antipatterns.append(
+                (
+                    node.lineno,
+                    "retry_without_backoff",
+                    "for_retry",
+                )
+            )
         self.generic_visit(node)
 
     def _loop_contains_retry_without_backoff(self, node: ast.AST) -> bool:
@@ -336,9 +372,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         for child in ast.walk(node):
             if isinstance(child, ast.Call):
                 sym = self._extract_symbol(child.func)
-                if sym and any(
-                    s in sym for s in ("sleep", "time.sleep", "await asyncio.sleep")
-                ):
+                if sym and any(s in sym for s in ("sleep", "time.sleep", "await asyncio.sleep")):
                     return False  # Has backoff, not a violation
 
         return True

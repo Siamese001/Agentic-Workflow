@@ -1,4 +1,5 @@
 """conftest.py for L5_safety/enforcement tests - ensures tools/fix is on path."""
+
 import sys
 from pathlib import Path
 
@@ -10,6 +11,7 @@ def _find_repo_root():
         if (parent / "pytest.ini").exists() or (parent / ".git").exists():
             return parent
     return current.parents[5]  # Fallback
+
 
 # Add tools/fix to path for importing fix_high_severity_silent_swallowers
 _repo_root = _find_repo_root()

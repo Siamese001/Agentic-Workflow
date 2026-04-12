@@ -90,33 +90,36 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         result = self._detector.scan_for_duplicates(python_files)
 
         # Copy results to agent state
-        self.duplicate_groups = {
-            k: v.members for k, v in result.duplicate_groups.items()
-        }
+        self.duplicate_groups = {k: v.members for k, v in result.duplicate_groups.items()}
 
         return result
 
     def _normalize_code(self, code: str) -> str:
         """Normalize for hashing."""
         from agentic_core.L5_safety.utils.code_deduplication_util import _normalize_code
+
         return _normalize_code(code)
 
     def _filter_code_lines(self, code: str) -> list[str]:
         """Filter code lines."""
         from agentic_core.L5_safety.utils.code_deduplication_util import _filter_code_lines
+
         return _filter_code_lines(code).splitlines()
 
     def _hash_block(self, code: str) -> str:
         """Generate AST fingerprint."""
         from agentic_core.L5_safety.utils.code_deduplication_util import _hash_block
+
         return _hash_block(code)
 
     def _block_similarity(self, norm_a: str, norm_b: str) -> float:
         """Conservative structural similarity."""
         from agentic_core.L5_safety.utils.code_deduplication_util import _block_similarity
+
         return _block_similarity(norm_a, norm_b)
 
     def _extract_functions_classes(self, file_path: Path) -> list[tuple[str, str, int]]:
         """Parse file and extract function/class bodies."""
         from agentic_core.L5_safety.utils.code_deduplication_util import _extract_functions_classes
+
         return _extract_functions_classes(file_path, self.min_lines)

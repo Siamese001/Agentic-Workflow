@@ -186,8 +186,26 @@ def _invoke_authorize_and_execute(execution_context, target_callable, capability
     return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
 
 
+def _invoke_evidence_sidecar(evidence_bundle: Any, execution_context: Any, tool_name: str = "") -> Any:
+    """Pre-authorization evidence gate sidecar — delegates to evaluate_and_emit().
+
+    Called from act(), act_async(), act_simple() when reasoning["evidence_bundle"] is set.
+    Returns (gate_result, disposition) from the shared cross-lane adapter.
+    """
+    from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (  # noqa: PLC0415
+        evaluate_and_emit,
+    )
+
+    return evaluate_and_emit(evidence_bundle, execution_context, tool_name)
+
+
 def _make_execution_context(
-    run_id: str, capability_token: str, policy_hash: str, payload: Any, target: str, action_class=None,
+    run_id: str,
+    capability_token: str,
+    policy_hash: str,
+    payload: Any,
+    target: str,
+    action_class=None,
 ):
     from agentic_core.L4_state.utils.context.execution_context import (  # noqa: PLC0415
         ActionClass,
@@ -254,6 +272,10 @@ class ActionNode:
             target="action_node.act",
         )
         tools = self._select_tools(reasoning["plan"])
+        # Pre-authorization evidence gate: runs only when evidence_bundle is present
+        _evidence_bundle = reasoning.get("evidence_bundle")
+        if _evidence_bundle is not None:
+            _invoke_evidence_sidecar(_evidence_bundle, _ectx, "action_node.act")
         _invoke_authorize_and_execute(
             _ectx,
             lambda p: self._execute_tools(tools, p),
@@ -297,6 +319,10 @@ class ActionNode:
             target="action_node.act_async",
         )
         tools = self._select_tools(reasoning["plan"])
+        # Pre-authorization evidence gate: runs only when evidence_bundle is present
+        _evidence_bundle = reasoning.get("evidence_bundle")
+        if _evidence_bundle is not None:
+            _invoke_evidence_sidecar(_evidence_bundle, _ectx, "action_node.act_async")
         _invoke_authorize_and_execute(
             _ectx,
             lambda p: p,
@@ -339,6 +365,10 @@ class ActionNode:
             payload=perceived,
             target="action_node.act_simple",
         )
+        # Pre-authorization evidence gate: runs only when evidence_bundle is present
+        _evidence_bundle = perceived.get("evidence_bundle")
+        if _evidence_bundle is not None:
+            _invoke_evidence_sidecar(_evidence_bundle, _ectx, "action_node.act_simple")
         _invoke_authorize_and_execute(
             _ectx,
             lambda p: p,

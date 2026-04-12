@@ -19,6 +19,7 @@ try:
     from fix_low_severity_swallowers import LowSeveritySilentSwallowerFixer
     from fix_medium_severity_swallowers import MediumSeveritySilentSwallowerFixer
     from guardian_sweep import GuardianSweepFixer
+
     ALL_FIXERS_AVAILABLE = True
 except ImportError as e:
     ALL_FIXERS_AVAILABLE = False
@@ -38,7 +39,7 @@ class FinalValidationOrchestrator:
         # Load violations report
         with open(self.project_root / "tools" / "silent_swallower_report.json") as f:
             report = json.load(f)
-            self.violations = report['violations']
+            self.violations = report["violations"]
 
     def run_full_validation(self):
         """Wave 4.0: Run comprehensive validation across all phases/waves."""
@@ -56,11 +57,11 @@ class FinalValidationOrchestrator:
 
         # Run each phase/wave
         for phase in order:
-            if phase.startswith('2.'):
+            if phase.startswith("2."):
                 result = self._run_phase(phase)
-            elif phase == '3.0':
+            elif phase == "3.0":
                 result = self._run_wave_30()
-            elif phase == '4.0':
+            elif phase == "4.0":
                 result = self._generate_final_result()
             else:
                 continue
@@ -81,28 +82,30 @@ class FinalValidationOrchestrator:
 
     def _get_execution_order(self):
         """Get the canonical execution order for phases/waves."""
-        return ['2.1', '2.4', '2.2', '2.3', '3.0', '4.0']
+        return ["2.1", "2.4", "2.2", "2.3", "3.0", "4.0"]
 
     def _run_phase(self, phase):
         """Run a specific phase validation."""
         print(f"🔄 Running Phase {phase} validation...")
 
-        if phase == '2.1':
+        if phase == "2.1":
             return self._run_phase_21()
-        elif phase == '2.4':
+        elif phase == "2.4":
             return self._run_phase_24()
-        elif phase == '2.2':
+        elif phase == "2.2":
             return self._run_phase_22()
-        elif phase == '2.3':
+        elif phase == "2.3":
             return self._run_phase_23()
         else:
-            return {'phase': phase, 'status': 'UNKNOWN', 'target_violations': 0}
+            return {"phase": phase, "status": "UNKNOWN", "target_violations": 0}
 
     def _run_phase_21(self):
         """Run Phase 2.1 (HIGH ImportError) validation."""
         try:
             # Create a temporary report for this phase only
-            phase_violations = [v for v in self.violations if v['severity'] == 'HIGH' and v['exception_type'] == 'ImportError']
+            phase_violations = [
+                v for v in self.violations if v["severity"] == "HIGH" and v["exception_type"] == "ImportError"
+            ]
             target_violations = len(phase_violations)
 
             # Simulate applying fixes (don't actually modify files in validation)
@@ -113,27 +116,29 @@ class FinalValidationOrchestrator:
             self.total_errors += errors
 
             return {
-                'phase': '2.1',
-                'target_violations': target_violations,
-                'fixes_applied': fixes_applied,
-                'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
+                "phase": "2.1",
+                "target_violations": target_violations,
+                "fixes_applied": fixes_applied,
+                "errors": errors,
+                "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
         except Exception as e:
             self.total_errors += 1
             return {
-                'phase': '2.1',
-                'target_violations': 0,
-                'fixes_applied': 0,
-                'errors': 1,
-                'status': 'FAILED',
-                'error': str(e),
+                "phase": "2.1",
+                "target_violations": 0,
+                "fixes_applied": 0,
+                "errors": 1,
+                "status": "FAILED",
+                "error": str(e),
             }
 
     def _run_phase_24(self):
         """Run Phase 2.4 (HIGH remaining) validation."""
         try:
-            phase_violations = [v for v in self.violations if v['severity'] == 'HIGH' and v['exception_type'] != 'ImportError']
+            phase_violations = [
+                v for v in self.violations if v["severity"] == "HIGH" and v["exception_type"] != "ImportError"
+            ]
             target_violations = len(phase_violations)
 
             fixes_applied = target_violations  # Assume all would be fixed
@@ -143,27 +148,27 @@ class FinalValidationOrchestrator:
             self.total_errors += errors
 
             return {
-                'phase': '2.4',
-                'target_violations': target_violations,
-                'fixes_applied': fixes_applied,
-                'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
+                "phase": "2.4",
+                "target_violations": target_violations,
+                "fixes_applied": fixes_applied,
+                "errors": errors,
+                "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
         except Exception as e:
             self.total_errors += 1
             return {
-                'phase': '2.4',
-                'target_violations': 0,
-                'fixes_applied': 0,
-                'errors': 1,
-                'status': 'FAILED',
-                'error': str(e),
+                "phase": "2.4",
+                "target_violations": 0,
+                "fixes_applied": 0,
+                "errors": 1,
+                "status": "FAILED",
+                "error": str(e),
             }
 
     def _run_phase_22(self):
         """Run Phase 2.2 (MEDIUM) validation."""
         try:
-            phase_violations = [v for v in self.violations if v['severity'] == 'MEDIUM']
+            phase_violations = [v for v in self.violations if v["severity"] == "MEDIUM"]
             target_violations = len(phase_violations)
 
             fixes_applied = target_violations  # Assume all would be fixed
@@ -173,27 +178,27 @@ class FinalValidationOrchestrator:
             self.total_errors += errors
 
             return {
-                'phase': '2.2',
-                'target_violations': target_violations,
-                'fixes_applied': fixes_applied,
-                'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
+                "phase": "2.2",
+                "target_violations": target_violations,
+                "fixes_applied": fixes_applied,
+                "errors": errors,
+                "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
         except Exception as e:
             self.total_errors += 1
             return {
-                'phase': '2.2',
-                'target_violations': 0,
-                'fixes_applied': 0,
-                'errors': 1,
-                'status': 'FAILED',
-                'error': str(e),
+                "phase": "2.2",
+                "target_violations": 0,
+                "fixes_applied": 0,
+                "errors": 1,
+                "status": "FAILED",
+                "error": str(e),
             }
 
     def _run_phase_23(self):
         """Run Phase 2.3 (LOW) validation."""
         try:
-            phase_violations = [v for v in self.violations if v['severity'] == 'LOW']
+            phase_violations = [v for v in self.violations if v["severity"] == "LOW"]
             target_violations = len(phase_violations)
 
             fixes_applied = target_violations  # Assume all would be fixed
@@ -203,21 +208,21 @@ class FinalValidationOrchestrator:
             self.total_errors += errors
 
             return {
-                'phase': '2.3',
-                'target_violations': target_violations,
-                'fixes_applied': fixes_applied,
-                'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
+                "phase": "2.3",
+                "target_violations": target_violations,
+                "fixes_applied": fixes_applied,
+                "errors": errors,
+                "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
         except Exception as e:
             self.total_errors += 1
             return {
-                'phase': '2.3',
-                'target_violations': 0,
-                'fixes_applied': 0,
-                'errors': 1,
-                'status': 'FAILED',
-                'error': str(e),
+                "phase": "2.3",
+                "target_violations": 0,
+                "fixes_applied": 0,
+                "errors": 1,
+                "status": "FAILED",
+                "error": str(e),
             }
 
     def _run_wave_30(self):
@@ -237,23 +242,23 @@ class FinalValidationOrchestrator:
             self.total_errors += errors
 
             return {
-                'wave': '3.0',
-                'target_violations': target_violations,
-                'annotations_added': annotations_added,
-                'skipped_guarded': skipped_guarded,
-                'errors': errors,
-                'status': 'COMPLETED' if errors == 0 else 'PARTIAL',
+                "wave": "3.0",
+                "target_violations": target_violations,
+                "annotations_added": annotations_added,
+                "skipped_guarded": skipped_guarded,
+                "errors": errors,
+                "status": "COMPLETED" if errors == 0 else "PARTIAL",
             }
         except Exception as e:
             self.total_errors += 1
             return {
-                'wave': '3.0',
-                'target_violations': 0,
-                'annotations_added': 0,
-                'skipped_guarded': 0,
-                'errors': 1,
-                'status': 'FAILED',
-                'error': str(e),
+                "wave": "3.0",
+                "target_violations": 0,
+                "annotations_added": 0,
+                "skipped_guarded": 0,
+                "errors": 1,
+                "status": "FAILED",
+                "error": str(e),
             }
 
     def _calculate_completion(self):
@@ -267,30 +272,32 @@ class FinalValidationOrchestrator:
     def _get_overall_status(self):
         """Get overall validation status."""
         if self.total_errors > 0:
-            return 'PARTIAL'
+            return "PARTIAL"
         elif self._calculate_completion() == 100.0:
-            return 'COMPLETED'
+            return "COMPLETED"
         else:
-            return 'PARTIAL'
+            return "PARTIAL"
 
     def _generate_final_result(self):
         """Generate final validation result."""
         return {
-            'wave': '4.0',
-            'validation_timestamp': datetime.now().isoformat() + 'Z',
-            'total_violations': len(self.violations),
-            'total_fixes_applied': self.total_fixes_applied,
-            'total_errors': self.total_errors,
-            'completion_percentage': self._calculate_completion(),
-            'overall_status': self._get_overall_status(),
-            'phase_coverage': {
+            "wave": "4.0",
+            "validation_timestamp": datetime.now().isoformat() + "Z",
+            "total_violations": len(self.violations),
+            "total_fixes_applied": self.total_fixes_applied,
+            "total_errors": self.total_errors,
+            "completion_percentage": self._calculate_completion(),
+            "overall_status": self._get_overall_status(),
+            "phase_coverage": {
                 phase: self.results.get(phase, {})
-                for phase in ['2.1', '2.2', '2.3', '2.4']
+                for phase in ["2.1", "2.2", "2.3", "2.4"]
                 if phase in self.results
             },
-            'wave_coverage': {
-                '3.0': self.results.get('3.0', {}),
-            } if '3.0' in self.results else {},
+            "wave_coverage": {
+                "3.0": self.results.get("3.0", {}),
+            }
+            if "3.0" in self.results
+            else {},
         }
 
     def generate_final_report(self):
@@ -303,18 +310,20 @@ class FinalValidationOrchestrator:
         report = self._generate_final_result()
 
         # Add detailed breakdown
-        report['detailed_breakdown'] = {
-            'severity_distribution': self._get_severity_distribution(),
-            'execution_summary': {
-                'phases_executed': len([k for k in self.results.keys() if k.startswith('2.')]),
-                'waves_executed': len([k for k in self.results.keys() if k.startswith('3.') or k.startswith('4.')]),
-                'total_phases_waves': len(self.results),
+        report["detailed_breakdown"] = {
+            "severity_distribution": self._get_severity_distribution(),
+            "execution_summary": {
+                "phases_executed": len([k for k in self.results.keys() if k.startswith("2.")]),
+                "waves_executed": len(
+                    [k for k in self.results.keys() if k.startswith("3.") or k.startswith("4.")]
+                ),
+                "total_phases_waves": len(self.results),
             },
         }
 
         # Write report
         report_file = PROJECT_ROOT / "tools" / "wave40_final_validation_report.json"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
 
         print(f"✅ Report: {report_file}")
@@ -322,9 +331,9 @@ class FinalValidationOrchestrator:
 
     def _get_severity_distribution(self):
         """Get severity distribution of violations."""
-        distribution = {'HIGH': 0, 'MEDIUM': 0, 'LOW': 0}
+        distribution = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
         for v in self.violations:
-            severity = v.get('severity', 'UNKNOWN')
+            severity = v.get("severity", "UNKNOWN")
             if severity in distribution:
                 distribution[severity] += 1
         return distribution
@@ -332,12 +341,12 @@ class FinalValidationOrchestrator:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Wave 4.0: Final Validation & Regression Suite',
+        description="Wave 4.0: Final Validation & Regression Suite",
     )
-    parser.add_argument('--wave40', action='store_true',
-                        help='Run comprehensive validation across all phases/waves')
-    parser.add_argument('--dry-run', action='store_true',
-                        help='Validate without applying fixes')
+    parser.add_argument(
+        "--wave40", action="store_true", help="Run comprehensive validation across all phases/waves"
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Validate without applying fixes")
     args = parser.parse_args()
 
     print("=" * 80)

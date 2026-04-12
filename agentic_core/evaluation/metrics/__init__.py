@@ -1,6 +1,5 @@
 """Evaluation metrics package."""
 
-
 from .base import ClassificationMetric, EvaluationMetric, GenerationMetric, RetrievalMetric
 
 try:

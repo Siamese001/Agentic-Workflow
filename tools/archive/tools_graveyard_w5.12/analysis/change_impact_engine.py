@@ -419,7 +419,7 @@ class ChangeImpactEngine:
         by_depth_raw: dict[str, int] = {}
         for adg_name, depth in blast.items():
             if adg_name.startswith(_MODULE_PREFIX):
-                rel = adg_name[len(_MODULE_PREFIX):]
+                rel = adg_name[len(_MODULE_PREFIX) :]
                 impacted_rel.append(rel)
                 by_depth_raw[rel] = depth
 

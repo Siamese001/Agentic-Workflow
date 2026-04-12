@@ -503,7 +503,10 @@ class ProvenanceTracker:
 
     # guardian: allow-magic-config
     async def search_lineage(
-        self, trace_id: str | None = None, model_version: str | None = None, limit: int = 100,
+        self,
+        trace_id: str | None = None,
+        model_version: str | None = None,
+        limit: int = 100,
     ) -> list[ArtifactLineage]:
         """Search lineage records.
 
@@ -517,7 +520,9 @@ class ProvenanceTracker:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ProvenanceTracker.search_lineage")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ProvenanceTracker.search_lineage"
+        )
         results = []
         try:
             lines = await asyncio.to_thread(self._read_lineage_file)
@@ -627,7 +632,10 @@ class ProvenanceContext:
     """Context manager for provenance tracking."""
 
     def __init__(
-        self, trace_id: str, sources: list[tuple[str, str, float]], tracker: ProvenanceTracker | None = None,
+        self,
+        trace_id: str,
+        sources: list[tuple[str, str, float]],
+        tracker: ProvenanceTracker | None = None,
     ):
         """Initialize provenance context.
 
@@ -652,7 +660,11 @@ class ProvenanceContext:
         pass
 
     async def record_generation(
-        self, artifact_id: str, output: str, model_version: str, generation_prompt: str | None = None,
+        self,
+        artifact_id: str,
+        output: str,
+        model_version: str,
+        generation_prompt: str | None = None,
     ) -> ArtifactLineage:
         """Record generation within context.
 
@@ -666,7 +678,11 @@ class ProvenanceContext:
             Artifact lineage
         """
         return await self.tracker.record_generation(
-            self.trace_id, artifact_id, output, model_version, generation_prompt,
+            self.trace_id,
+            artifact_id,
+            output,
+            model_version,
+            generation_prompt,
         )
 
 
@@ -694,7 +710,11 @@ async def track_provenance(
     tracker = await get_provenance_tracker()
     async with ProvenanceContext(trace_id, sources, tracker):
         return await tracker.record_generation(
-            trace_id, artifact_id, output, model_version, generation_prompt,
+            trace_id,
+            artifact_id,
+            output,
+            model_version,
+            generation_prompt,
         )
 
 
@@ -723,7 +743,11 @@ def provenance_tracked(extract_sources: Callable | None = None):
             model_version = getattr(func, "_model_version", "unknown")
             if sources:
                 await track_provenance(
-                    trace_id, sources, f"artifact_{int(time.time())}", output, model_version,
+                    trace_id,
+                    sources,
+                    f"artifact_{int(time.time())}",
+                    output,
+                    model_version,
                 )
             return result
 

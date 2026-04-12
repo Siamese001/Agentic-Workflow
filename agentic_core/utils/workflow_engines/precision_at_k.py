@@ -181,6 +181,7 @@ class PrecisionAtK(RetrievalMetric):
             Fraction of top-k retrieved docs that are relevant, in [0, 1]
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PrecisionAtK.compute")
 

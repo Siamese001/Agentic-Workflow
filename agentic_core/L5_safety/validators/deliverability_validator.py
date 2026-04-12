@@ -209,7 +209,8 @@ class DeliverabilityValidator:
         """
         config = config or {}
         self.spam_triggers = config.get(
-            "spam_triggers", ["$$$", "!!!", "CAPS LOCK", "FREE", "BUY NOW", "CLICK HERE", "ACT NOW"],
+            "spam_triggers",
+            ["$$$", "!!!", "CAPS LOCK", "FREE", "BUY NOW", "CLICK HERE", "ACT NOW"],
         )
         self.max_links = config.get("max_links", 3)
         self.max_images = config.get("max_images", 2)
@@ -229,7 +230,9 @@ class DeliverabilityValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "DeliverabilityValidator.validate_deliverability",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "DeliverabilityValidator.validate_deliverability",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

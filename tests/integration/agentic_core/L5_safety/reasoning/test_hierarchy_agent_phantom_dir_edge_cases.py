@@ -18,6 +18,7 @@ class TestHierarchyAgentPhantomDirEdgeCases:
         try:
             try:
                 from agentic_core import hierarchy_agent_phantom_dir_edge_cases
+
                 assert hierarchy_agent_phantom_dir_edge_cases is not None
             except ImportError:
                 pytest.skip("hierarchy_agent_phantom_dir_edge_cases not available")
@@ -29,6 +30,7 @@ class TestHierarchyAgentPhantomDirEdgeCases:
         try:
             try:
                 from agentic_core import HierarchyAgentPhantomDirEdgeCases
+
                 assert HierarchyAgentPhantomDirEdgeCases is not None
             except ImportError:
                 pytest.skip("HierarchyAgentPhantomDirEdgeCases not available")
@@ -40,6 +42,7 @@ class TestHierarchyAgentPhantomDirEdgeCases:
         try:
             try:
                 from agentic_core import validate_hierarchy_agent_phantom_dir_edge_cases
+
                 assert callable(validate_hierarchy_agent_phantom_dir_edge_cases)
             except ImportError:
                 pytest.skip("validate_hierarchy_agent_phantom_dir_edge_cases not available")

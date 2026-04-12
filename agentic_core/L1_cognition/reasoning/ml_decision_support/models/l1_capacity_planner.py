@@ -85,13 +85,13 @@ class L1CapacityPlanner(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.model_weights = model_data.get('model_weights')
-            self.feature_names = model_data.get('feature_names', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.model_weights = model_data.get("model_weights")
+            self.feature_names = model_data.get("feature_names", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -101,24 +101,24 @@ class L1CapacityPlanner(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         model_data = {
-            'model_weights': self.model_weights,
-            'feature_names': self.feature_names,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
-                'lookback_window': self.lookback_window,
-                'forecast_horizon': self.forecast_horizon,
+            "model_weights": self.model_weights,
+            "feature_names": self.feature_names,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
+                "lookback_window": self.lookback_window,
+                "forecast_horizon": self.forecast_horizon,
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -178,8 +178,7 @@ class L1CapacityPlanner(BaseMLModel):
 
             # Create probability distribution
             prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(class_probabilities)
+                self.class_names[i]: float(prob) for i, prob in enumerate(class_probabilities)
             }
 
             # Calculate confidence (max probability)
@@ -213,16 +212,18 @@ class L1CapacityPlanner(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': predicted_class,
-                'class_probabilities': [float(p) for p in class_probabilities],
-                'thresholds_passed': passes_threshold,
-                'capacity_action': predicted_action,
-                'requires_scaling': predicted_action != "Maintain_Current",
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": predicted_class,
+                    "class_probabilities": [float(p) for p in class_probabilities],
+                    "thresholds_passed": passes_threshold,
+                    "capacity_action": predicted_action,
+                    "requires_scaling": predicted_action != "Maintain_Current",
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -269,10 +270,10 @@ class L1CapacityPlanner(BaseMLModel):
 
         if not extraction_result.success:
             return {
-                'capacity_action': 'Maintain_Current',
-                'confidence': 0.0,
-                'reason': 'Feature extraction failed',
-                'recommendations': ['Check capacity data availability'],
+                "capacity_action": "Maintain_Current",
+                "confidence": 0.0,
+                "reason": "Feature extraction failed",
+                "recommendations": ["Check capacity data availability"],
             }
 
         # Validate input
@@ -312,16 +313,16 @@ class L1CapacityPlanner(BaseMLModel):
         )
 
         return {
-            'capacity_action': prediction.prediction,
-            'confidence': prediction.confidence,
-            'probability_distribution': prediction.probability_distribution,
-            'top_factors': prediction.top_features,
-            'recommendations': recommendations,
-            'demand_forecast': demand_forecast,
-            'resource_requirements': resource_requirements,
-            'cost_analysis': cost_analysis,
-            'implementation_timeline': self._estimate_implementation_timeline(prediction.prediction),
-            'risk_assessment': self._assess_capacity_risks(prediction.prediction, capacity_context),
+            "capacity_action": prediction.prediction,
+            "confidence": prediction.confidence,
+            "probability_distribution": prediction.probability_distribution,
+            "top_factors": prediction.top_features,
+            "recommendations": recommendations,
+            "demand_forecast": demand_forecast,
+            "resource_requirements": resource_requirements,
+            "cost_analysis": cost_analysis,
+            "implementation_timeline": self._estimate_implementation_timeline(prediction.prediction),
+            "risk_assessment": self._assess_capacity_risks(prediction.prediction, capacity_context),
         }
 
     def forecast_demand(
@@ -347,14 +348,14 @@ class L1CapacityPlanner(BaseMLModel):
         """
         if len(historical_data) < 7:
             return {
-                'error': 'Insufficient historical data',
-                'minimum_required': 7,
-                'provided': len(historical_data),
+                "error": "Insufficient historical data",
+                "minimum_required": 7,
+                "provided": len(historical_data),
             }
 
         # Extract demand values
-        demand_values = [point.get('demand', 0) for point in historical_data]
-        timestamps = [point.get('timestamp') for point in historical_data]
+        demand_values = [point.get("demand", 0) for point in historical_data]
+        timestamps = [point.get("timestamp") for point in historical_data]
 
         # Simple time series forecasting (moving average with trend)
         if len(demand_values) >= 14:
@@ -366,7 +367,7 @@ class L1CapacityPlanner(BaseMLModel):
         # Calculate moving average and trend
         moving_avg = []
         for i in range(ma_period, len(demand_values)):
-            avg = sum(demand_values[i-ma_period:i]) / ma_period
+            avg = sum(demand_values[i - ma_period : i]) / ma_period
             moving_avg.append(avg)
 
         # Calculate trend
@@ -390,18 +391,20 @@ class L1CapacityPlanner(BaseMLModel):
             # Ensure non-negative
             forecast_demand = max(0, forecast_demand)
 
-            forecast.append({
-                'day': day,
-                'forecast_demand': forecast_demand,
-                'confidence': max(0.5, 1.0 - (day * 0.1)),  # Decreasing confidence
-            })
+            forecast.append(
+                {
+                    "day": day,
+                    "forecast_demand": forecast_demand,
+                    "confidence": max(0.5, 1.0 - (day * 0.1)),  # Decreasing confidence
+                }
+            )
 
         return {
-            'forecast': forecast,
-            'trend': trend,
-            'method': 'moving_average_with_trend',
-            'data_points_used': len(demand_values),
-            'forecast_period_days': forecast_days,
+            "forecast": forecast,
+            "trend": trend,
+            "method": "moving_average_with_trend",
+            "data_points_used": len(demand_values),
+            "forecast_period_days": forecast_days,
         }
 
     def _predict_time_series(self, feature_vector: np.ndarray) -> np.ndarray:
@@ -419,12 +422,12 @@ class L1CapacityPlanner(BaseMLModel):
         feature_influence = {
             0: [0.3, 0.1, 0.0, -0.1, -0.2, -0.3, -0.4, -0.2],  # Scale_Up_Aggressive
             1: [0.2, 0.2, 0.1, 0.0, -0.1, -0.2, -0.3, -0.1],  # Scale_Up_Moderate
-            2: [0.1, 0.2, 0.2, 0.1, 0.0, -0.1, -0.2, 0.0],   # Scale_Up_Conservative
-            3: [0.0, 0.1, 0.2, 0.2, 0.2, 0.1, 0.0, 0.1],   # Maintain_Current
+            2: [0.1, 0.2, 0.2, 0.1, 0.0, -0.1, -0.2, 0.0],  # Scale_Up_Conservative
+            3: [0.0, 0.1, 0.2, 0.2, 0.2, 0.1, 0.0, 0.1],  # Maintain_Current
             4: [-0.1, 0.0, 0.1, 0.2, 0.2, 0.2, 0.1, 0.2],  # Scale_Down_Conservative
             5: [-0.2, -0.1, 0.0, 0.1, 0.2, 0.2, 0.2, 0.3],  # Scale_Down_Moderate
             6: [-0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4],  # Scale_Down_Aggressive
-            7: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],    # Reallocate_Resources
+            7: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1],  # Reallocate_Resources
         }
 
         for class_idx, influences in feature_influence.items():
@@ -450,12 +453,14 @@ class L1CapacityPlanner(BaseMLModel):
         recommendations = []
 
         if action.startswith("Scale_Up"):
-            recommendations.extend([
-                "Increase resource allocation to meet demand",
-                "Monitor utilization after scaling",
-                "Update capacity planning forecasts",
-                "Consider auto-scaling policies",
-            ])
+            recommendations.extend(
+                [
+                    "Increase resource allocation to meet demand",
+                    "Monitor utilization after scaling",
+                    "Update capacity planning forecasts",
+                    "Consider auto-scaling policies",
+                ]
+            )
 
             if "Aggressive" in action:
                 recommendations.append("Implement aggressive scaling for high growth")
@@ -465,12 +470,14 @@ class L1CapacityPlanner(BaseMLModel):
                 recommendations.append("Conservative scaling with minimal buffer")
 
         elif action.startswith("Scale_Down"):
-            recommendations.extend([
-                "Reduce resource allocation to optimize costs",
-                "Monitor performance after scaling down",
-                "Ensure SLA compliance is maintained",
-                "Consider rightsizing instances",
-            ])
+            recommendations.extend(
+                [
+                    "Reduce resource allocation to optimize costs",
+                    "Monitor performance after scaling down",
+                    "Ensure SLA compliance is maintained",
+                    "Consider rightsizing instances",
+                ]
+            )
 
             if "Aggressive" in action:
                 recommendations.append("Aggressive cost optimization")
@@ -480,38 +487,44 @@ class L1CapacityPlanner(BaseMLModel):
                 recommendations.append("Conservative cost reduction")
 
         elif action == "Maintain_Current":
-            recommendations.extend([
-                "Current capacity is optimal",
-                "Continue monitoring for changes",
-                "Maintain current configuration",
-                "Regular capacity reviews",
-            ])
+            recommendations.extend(
+                [
+                    "Current capacity is optimal",
+                    "Continue monitoring for changes",
+                    "Maintain current configuration",
+                    "Regular capacity reviews",
+                ]
+            )
 
         elif action == "Reallocate_Resources":
-            recommendations.extend([
-                "Reallocate resources for better efficiency",
-                "Optimize resource distribution",
-                "Consider workload-specific allocation",
-                "Monitor reallocation impact",
-            ])
+            recommendations.extend(
+                [
+                    "Reallocate resources for better efficiency",
+                    "Optimize resource distribution",
+                    "Consider workload-specific allocation",
+                    "Monitor reallocation impact",
+                ]
+            )
 
         # Add context-specific recommendations
-        growth_rate = features.get('traffic_growth_rate', 0)
+        growth_rate = features.get("traffic_growth_rate", 0)
         if growth_rate > 0.2:
             recommendations.append("High growth rate detected - consider proactive scaling")
         elif growth_rate < -0.1:
             recommendations.append("Negative growth detected - plan for downsizing")
 
-        volatility = features.get('demand_volatility', 0)
+        volatility = features.get("demand_volatility", 0)
         if volatility > 0.5:
             recommendations.append("High demand volatility - implement flexible scaling")
 
         return recommendations
 
-    def _generate_demand_forecast(self, context: dict[str, Any], features: dict[str, float]) -> dict[str, Any]:
+    def _generate_demand_forecast(
+        self, context: dict[str, Any], features: dict[str, float]
+    ) -> dict[str, Any]:
         """Generate demand forecast based on context and features."""
         current_demand = context.get("demand", {}).get("current_demand", 1000)
-        growth_rate = features.get('traffic_growth_rate', 0)
+        growth_rate = features.get("traffic_growth_rate", 0)
 
         # Simple forecast based on growth rate
         forecast_days = 7
@@ -520,17 +533,19 @@ class L1CapacityPlanner(BaseMLModel):
         for day in range(1, forecast_days + 1):
             # Compound growth
             forecast_demand = current_demand * ((1 + growth_rate) ** (day / 30))  # Daily growth
-            forecast.append({
-                'day': day,
-                'forecast_demand': forecast_demand,
-                'confidence': max(0.3, 1.0 - (day * 0.1)),
-            })
+            forecast.append(
+                {
+                    "day": day,
+                    "forecast_demand": forecast_demand,
+                    "confidence": max(0.3, 1.0 - (day * 0.1)),
+                }
+            )
 
         return {
-            'forecast': forecast,
-            'current_demand': current_demand,
-            'growth_rate': growth_rate,
-            'forecast_period': forecast_days,
+            "forecast": forecast,
+            "current_demand": current_demand,
+            "growth_rate": growth_rate,
+            "forecast_period": forecast_days,
         }
 
     def _calculate_resource_requirements(
@@ -545,10 +560,10 @@ class L1CapacityPlanner(BaseMLModel):
         current_memory = current_resources.get("memory", 8192)
 
         # Get forecasted demand
-        forecast_data = forecast.get('forecast', [])
+        forecast_data = forecast.get("forecast", [])
         if forecast_data:
-            peak_demand = max(point['forecast_demand'] for point in forecast_data)
-            current_demand = forecast.get('current_demand', 1000)
+            peak_demand = max(point["forecast_demand"] for point in forecast_data)
+            current_demand = forecast.get("current_demand", 1000)
         else:
             peak_demand = current_demand
 
@@ -583,12 +598,12 @@ class L1CapacityPlanner(BaseMLModel):
         required_memory = max(1024, int(current_memory * scaling_factor))
 
         return {
-            'required_cpu': required_cpu,
-            'required_memory': required_memory,
-            'current_cpu': current_cpu,
-            'current_memory': current_memory,
-            'scaling_factor': scaling_factor,
-            'peak_demand': peak_demand,
+            "required_cpu": required_cpu,
+            "required_memory": required_memory,
+            "current_cpu": current_cpu,
+            "current_memory": current_memory,
+            "scaling_factor": scaling_factor,
+            "peak_demand": peak_demand,
         }
 
     def _analyze_cost_impact(
@@ -605,8 +620,8 @@ class L1CapacityPlanner(BaseMLModel):
         memory_cost_per_unit = current_cost / (context.get("resources", {}).get("memory", 8192) * 0.4)
 
         # Calculate new cost
-        new_cpu = requirements.get('required_cpu', 4)
-        new_memory = requirements.get('required_memory', 8192)
+        new_cpu = requirements.get("required_cpu", 4)
+        new_memory = requirements.get("required_memory", 8192)
 
         new_cpu_cost = new_cpu * cpu_cost_per_unit
         new_memory_cost = new_memory * memory_cost_per_unit
@@ -616,11 +631,11 @@ class L1CapacityPlanner(BaseMLModel):
         cost_change_percent = (cost_change / current_cost) * 100 if current_cost > 0 else 0
 
         return {
-            'current_monthly_cost': current_cost,
-            'projected_monthly_cost': new_total_cost,
-            'cost_change': cost_change,
-            'cost_change_percent': cost_change_percent,
-            'cost_per_request': new_total_cost / requirements.get('peak_demand', 1000),
+            "current_monthly_cost": current_cost,
+            "projected_monthly_cost": new_total_cost,
+            "cost_change": cost_change,
+            "cost_change_percent": cost_change_percent,
+            "cost_per_request": new_total_cost / requirements.get("peak_demand", 1000),
         }
 
     def _estimate_implementation_timeline(self, action: str) -> str:
@@ -671,34 +686,36 @@ class L1CapacityPlanner(BaseMLModel):
 
         # Simplified importance based on feature names
         importance_weights = {
-            'traffic_growth_rate': 0.25,
-            'current_capacity_utilization': 0.20,
-            'demand_volatility': 0.15,
-            'peak_demand_ratio': 0.10,
-            'scaling_frequency': 0.10,
-            'seasonal_pattern_strength': 0.08,
-            'forecast_accuracy': 0.05,
-            'resource_efficiency': 0.04,
-            'cost_per_request': 0.02,
-            'capacity_buffer': 0.01,
+            "traffic_growth_rate": 0.25,
+            "current_capacity_utilization": 0.20,
+            "demand_volatility": 0.15,
+            "peak_demand_ratio": 0.10,
+            "scaling_frequency": 0.10,
+            "seasonal_pattern_strength": 0.08,
+            "forecast_accuracy": 0.05,
+            "resource_efficiency": 0.04,
+            "cost_per_request": 0.02,
+            "capacity_buffer": 0.01,
         }
 
         feature_importance = []
         for i, feature_name in enumerate(feature_names):
             importance = importance_weights.get(feature_name, 0.01)
-            feature_importance.append({
-                'feature_name': feature_name,
-                'importance_score': importance,
-                'feature_value': model_input.features.get(feature_name),
-                'rank': i + 1,
-            })
+            feature_importance.append(
+                {
+                    "feature_name": feature_name,
+                    "importance_score": importance,
+                    "feature_value": model_input.features.get(feature_name),
+                    "rank": i + 1,
+                }
+            )
 
         # Sort by importance
-        feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+        feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
         # Update ranks
         for i, feature in enumerate(feature_importance):
-            feature['rank'] = i + 1
+            feature["rank"] = i + 1
 
         return feature_importance[:10]
 
@@ -757,8 +774,8 @@ class L1CapacityPlanner(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert action type string to class index
             if isinstance(label, str):

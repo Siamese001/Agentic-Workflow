@@ -100,7 +100,9 @@ Focus on value proposition, risk mitigation, and measurable financial outcomes.
 
     @staticmethod
     def technical_documentation(
-        system_description: str, technical_requirements: list[str], audience: str = "technical",
+        system_description: str,
+        technical_requirements: list[str],
+        audience: str = "technical",
     ) -> str:
         """Technical documentation prompt.
 
@@ -190,7 +192,10 @@ Ensure consideration of relevant laws, regulations, and industry standards for t
 
     @staticmethod
     def marketing_content(
-        product: str, target_audience: str, value_proposition: str, content_type: str = "general",
+        product: str,
+        target_audience: str,
+        value_proposition: str,
+        content_type: str = "general",
     ) -> str:
         """Marketing content generation prompt.
 
@@ -247,7 +252,9 @@ Include appropriate disclaimers and compliance considerations where applicable.
 
     @staticmethod
     def research_synthesis(
-        research_topic: str, sources: list[dict[str, Any]], synthesis_type: str = "comprehensive",
+        research_topic: str,
+        sources: list[dict[str, Any]],
+        synthesis_type: str = "comprehensive",
     ) -> str:
         """Research synthesis prompt for academic/scientific content.
 

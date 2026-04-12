@@ -31,6 +31,7 @@ from typing import Optional
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _collect_targets(
     report_paths: list[str],
     subdirs: list[str],
@@ -62,8 +63,8 @@ def _collect_targets(
             # Check subdir filter
             if subdirs:
                 match = any(
-                    fpath.startswith(sd.replace("\\", "/")) or
-                    ("/" + sd.replace("\\", "/") + "/") in ("/" + fpath)
+                    fpath.startswith(sd.replace("\\", "/"))
+                    or ("/" + sd.replace("\\", "/") + "/") in ("/" + fpath)
                     for sd in subdirs
                 )
                 if not match:
@@ -119,32 +120,33 @@ def _strip_symbols_from_file(
 
         # Single-line import: from X import A, B, C
         single_match = re.match(
-            r'^(\s*from\s+\S+\s+import\s+)(.*?)(\s*)$', str(line).rstrip('\n\r'),
+            r"^(\s*from\s+\S+\s+import\s+)(.*?)(\s*)$",
+            str(line).rstrip("\n\r"),
         )
-        if single_match and '(' not in line:
+        if single_match and "(" not in line:
             prefix = single_match.group(1)
             names_part = single_match.group(2)
             # Strip trailing comments
-            names_part = names_part.split('#')[0].strip()
+            names_part = names_part.split("#")[0].strip()
             # Split by comma
-            names = [n.strip() for n in names_part.split(',') if n.strip()]
+            names = [n.strip() for n in names_part.split(",") if n.strip()]
             kept = [n for n in names if n not in symbols_to_remove]
             removed = [n for n in names if n in symbols_to_remove]
             if removed:
                 if kept:
                     # Rebuild single-line import with remaining names
-                    eol = '\n' if line.endswith('\n') else ''
-                    new_lines[i] = prefix + ', '.join(kept) + eol
+                    eol = "\n" if line.endswith("\n") else ""
+                    new_lines[i] = prefix + ", ".join(kept) + eol
                 else:
                     # All removed — delete the entire line
                     new_lines[i] = None
                 changed = True
-                log_entries.append(f"  L{i+1}: removed {removed} (single-line)")
+                log_entries.append(f"  L{i + 1}: removed {removed} (single-line)")
             i += 1
             continue
 
         # Multi-line import start: from X import (
-        multi_start = re.match(r'^(\s*from\s+\S+\s+import\s*\()', line)
+        multi_start = re.match(r"^(\s*from\s+\S+\s+import\s*\()", line)
         if multi_start:
             # Collect all lines until the closing ')'
             block_start = i
@@ -152,7 +154,7 @@ def _strip_symbols_from_file(
             j = i + 1
             while j < len(new_lines):
                 next_line = new_lines[j]
-                if next_line is not None and ')' in next_line:
+                if next_line is not None and ")" in next_line:
                     block_lines.append(next_line)
                     break
                 if next_line is not None:
@@ -162,7 +164,7 @@ def _strip_symbols_from_file(
 
             # Parse out the symbol lines
             import_prefix_line = block_lines[0]  # "from X import ("
-            closing_line = block_lines[-1]        # ")"
+            closing_line = block_lines[-1]  # ")"
 
             # Find which lines are symbol lines and which to keep
             symbol_lines = block_lines[1:-1]
@@ -172,7 +174,7 @@ def _strip_symbols_from_file(
                 if sl is None:
                     continue
                 # Extract symbol name (strip whitespace and trailing comma/comment)
-                stripped = str(sl).strip().rstrip(',').split('#')[0].strip()
+                stripped = str(sl).strip().rstrip(",").split("#")[0].strip()
                 if stripped in symbols_to_remove:
                     removed_syms.append(stripped)
                 else:
@@ -180,7 +182,7 @@ def _strip_symbols_from_file(
 
             if removed_syms:
                 changed = True
-                log_entries.append(f"  L{i+1}: removed {removed_syms} from multi-line import")
+                log_entries.append(f"  L{i + 1}: removed {removed_syms} from multi-line import")
 
                 if not kept_symbol_lines:
                     # All symbols in this import block were removed — delete entire block
@@ -237,12 +239,19 @@ def _strip_symbols_from_file(
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Strip dead constant imports from Python files")
-    parser.add_argument("--reports", nargs="+", required=True, help="Path(s) to deep_analysis_*.json report files")
-    parser.add_argument("--subdirs", nargs="*", default=[], help="Restrict to files under these subdirectories")
+    parser.add_argument(
+        "--reports", nargs="+", required=True, help="Path(s) to deep_analysis_*.json report files"
+    )
+    parser.add_argument(
+        "--subdirs", nargs="*", default=[], help="Restrict to files under these subdirectories"
+    )
     parser.add_argument("--symbols", required=True, help="Comma-separated list of symbols to strip")
-    parser.add_argument("--dry-run", action="store_true", help="Print what would be done without modifying files")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print what would be done without modifying files"
+    )
     parser.add_argument("--log", default=None, help="Path to write JSON change log")
     args = parser.parse_args()
 
@@ -285,7 +294,8 @@ def main() -> int:
 
     if args.log:
         pathlib.Path(args.log).write_text(
-            json.dumps(change_log, indent=2), encoding="utf-8",
+            json.dumps(change_log, indent=2),
+            encoding="utf-8",
         )
         print(f"Change log written to: {args.log}")
 

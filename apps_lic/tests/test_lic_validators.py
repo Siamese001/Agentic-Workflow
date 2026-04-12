@@ -1,6 +1,5 @@
 """Tests for apps_lic validator components."""
 
-
 from apps_lic.validators.MessageDiversityValidator import (
     MessageDiversityValidator,
 )

@@ -4,6 +4,7 @@ Source: tools/adg/capability_extractor.py
 Extracted: 2026-03-27T06:52:44.268287
 """
 
+
 class CapabilityExtractor:
     def __init__(self, repo_root: str):
         self.repo_root = Path(repo_root)
@@ -32,15 +33,18 @@ class CapabilityExtractor:
         """Load the repo hygiene manifest."""
         with open(manifest_path) as f:
             data = json.load(f)
-        return data['files']
+        return data["files"]
 
     def get_legitimate_python_files(self, manifest: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Extract legitimate Python files for analysis."""
         python_files = [
-            item for item in manifest
-            if (item["classification"] == "legitimate" and
-                item["path"].endswith(".py") and
-                (Path(item["path"]).exists()))
+            item
+            for item in manifest
+            if (
+                item["classification"] == "legitimate"
+                and item["path"].endswith(".py")
+                and (Path(item["path"]).exists())
+            )
         ]
         logging.info(f"Found {len(python_files)} legitimate Python files to analyze")
         return python_files
@@ -56,7 +60,7 @@ class CapabilityExtractor:
                 logging.warning(f"File {file_path} is outside repository root")
                 return None
 
-            with open(abs_path, encoding='utf-8') as f:
+            with open(abs_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -80,7 +84,7 @@ class CapabilityExtractor:
                         "line": node.lineno,
                         "args": [arg.arg for arg in node.args.args],
                         "docstring": ast.get_docstring(node),
-                        "is_private": node.name.startswith('_'),
+                        "is_private": node.name.startswith("_"),
                         "calls": self._extract_function_calls(node),
                     }
                     capabilities["functions"].append(func_info)
@@ -91,7 +95,7 @@ class CapabilityExtractor:
                         "line": node.lineno,
                         "methods": [n.name for n in node.body if isinstance(n, ast.FunctionDef)],
                         "docstring": ast.get_docstring(node),
-                        "is_private": node.name.startswith('_'),
+                        "is_private": node.name.startswith("_"),
                     }
                     capabilities["classes"].append(class_info)
 
@@ -179,10 +183,10 @@ class CapabilityExtractor:
                 return False
 
             # Write to shared module
-            with open(target_module, 'w', encoding='utf-8') as f:
+            with open(target_module, "w", encoding="utf-8") as f:
                 f.write(f'"""\nExtracted capability module: {primary_capability}\n')
-                f.write(f'Source: {candidate["file_path"]}\n')
-                f.write(f'Extracted: {datetime.now().isoformat()}\n')
+                f.write(f"Source: {candidate['file_path']}\n")
+                f.write(f"Extracted: {datetime.now().isoformat()}\n")
                 f.write('"""\n\n')
                 f.write(extracted_code)
 
@@ -193,8 +197,12 @@ class CapabilityExtractor:
                 "target_module": str(target_module.relative_to(self.repo_root)),
                 "capability": primary_capability,
                 "reusable_score": candidate["reusable_score"],
-                "functions_extracted": len([f for f in candidate.get("functions", []) if not f.get("is_private", True)]),
-                "classes_extracted": len([c for c in candidate.get("classes", []) if not c.get("is_private", True)]),
+                "functions_extracted": len(
+                    [f for f in candidate.get("functions", []) if not f.get("is_private", True)]
+                ),
+                "classes_extracted": len(
+                    [c for c in candidate.get("classes", []) if not c.get("is_private", True)]
+                ),
                 "status": "extracted",
             }
             self.extraction_log.append(log_entry)
@@ -220,7 +228,7 @@ class CapabilityExtractor:
     def _extract_reusable_code(self, source_path: Path, candidate: Dict[str, Any]) -> str:
         """Extract reusable code from a source file."""
         try:
-            with open(source_path, encoding='utf-8') as f:
+            with open(source_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -230,10 +238,10 @@ class CapabilityExtractor:
             # Extract public functions and classes
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
-                    if not node.name.startswith('_'):
+                    if not node.name.startswith("_"):
                         # Get the lines for this node
                         start_line = node.lineno - 1
-                        end_line = node.end_lineno if hasattr(node, 'end_lineno') else start_line + 10
+                        end_line = node.end_lineno if hasattr(node, "end_lineno") else start_line + 10
                         lines = content.splitlines()
 
                         # Extract with proper indentation handling
@@ -258,11 +266,12 @@ class CapabilityExtractor:
             "extractions": self.extraction_log,
         }
 
-        with open(log_file, 'w', encoding='utf-8') as f:
+        with open(log_file, "w", encoding="utf-8") as f:
             json.dump(log_data, f, indent=2, ensure_ascii=False)
 
         logging.info(f"Extraction log saved to {log_file}")
         return log_file
+
 
 def main():
     """Main execution function."""
@@ -335,15 +344,18 @@ def main():
         """Load the repo hygiene manifest."""
         with open(manifest_path) as f:
             data = json.load(f)
-        return data['files']
+        return data["files"]
 
     def get_legitimate_python_files(self, manifest: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Extract legitimate Python files for analysis."""
         python_files = [
-            item for item in manifest
-            if (item["classification"] == "legitimate" and
-                item["path"].endswith(".py") and
-                (Path(item["path"]).exists()))
+            item
+            for item in manifest
+            if (
+                item["classification"] == "legitimate"
+                and item["path"].endswith(".py")
+                and (Path(item["path"]).exists())
+            )
         ]
         logging.info(f"Found {len(python_files)} legitimate Python files to analyze")
         return python_files
@@ -359,7 +371,7 @@ def main():
                 logging.warning(f"File {file_path} is outside repository root")
                 return None
 
-            with open(abs_path, encoding='utf-8') as f:
+            with open(abs_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content)
@@ -383,7 +395,7 @@ def main():
                         "line": node.lineno,
                         "args": [arg.arg for arg in node.args.args],
                         "docstring": ast.get_docstring(node),
-                        "is_private": node.name.startswith('_'),
+                        "is_private": node.name.startswith("_"),
                         "calls": self._extract_function_calls(node),
                     }
                     capabilities["functions"].append(func_info)
@@ -394,7 +406,7 @@ def main():
                         "line": node.lineno,
                         "methods": [n.name for n in node.body if isinstance(n, ast.FunctionDef)],
                         "docstring": ast.get_docstring(node),
-                        "is_private": node.name.startswith('_'),
+                        "is_private": node.name.startswith("_"),
                     }
                     capabilities["classes"].append(class_info)
 
@@ -444,10 +456,10 @@ def main():
                 return False
 
             # Write to shared module
-            with open(target_module, 'w', encoding='utf-8') as f:
+            with open(target_module, "w", encoding="utf-8") as f:
                 f.write(f'"""\nExtracted capability module: {primary_capability}\n')
-                f.write(f'Source: {candidate["file_path"]}\n')
-                f.write(f'Extracted: {datetime.now().isoformat()}\n')
+                f.write(f"Source: {candidate['file_path']}\n")
+                f.write(f"Extracted: {datetime.now().isoformat()}\n")
                 f.write('"""\n\n')
                 f.write(extracted_code)
 
@@ -458,8 +470,12 @@ def main():
                 "target_module": str(target_module.relative_to(self.repo_root)),
                 "capability": primary_capability,
                 "reusable_score": candidate["reusable_score"],
-                "functions_extracted": len([f for f in candidate.get("functions", []) if not f.get("is_private", True)]),
-                "classes_extracted": len([c for c in candidate.get("classes", []) if not c.get("is_private", True)]),
+                "functions_extracted": len(
+                    [f for f in candidate.get("functions", []) if not f.get("is_private", True)]
+                ),
+                "classes_extracted": len(
+                    [c for c in candidate.get("classes", []) if not c.get("is_private", True)]
+                ),
                 "status": "extracted",
             }
             self.extraction_log.append(log_entry)
@@ -482,7 +498,7 @@ def main():
             "extractions": self.extraction_log,
         }
 
-        with open(log_file, 'w', encoding='utf-8') as f:
+        with open(log_file, "w", encoding="utf-8") as f:
             json.dump(log_data, f, indent=2, ensure_ascii=False)
 
         logging.info(f"Extraction log saved to {log_file}")

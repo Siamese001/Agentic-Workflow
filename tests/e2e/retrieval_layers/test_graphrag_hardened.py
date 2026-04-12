@@ -71,6 +71,7 @@ try:
         ChunkManifestRegistry,
         EnrichedChunkManifest,
     )
+
     GRAPHRAG_AVAILABLE = True
 except ImportError:
     GRAPHRAG_AVAILABLE = False
@@ -92,9 +93,11 @@ except ImportError:
 # Evidence Capture Framework (Constitutional Rule #1)
 # =============================================================================
 
+
 @dataclass
 class TestEvidence:
     """Evidence record for deterministic test verification."""
+
     test_name: str
     timestamp: float
     inputs_hash: str
@@ -180,6 +183,7 @@ evidence_collector = EvidenceCollector()
 
 def capture_evidence(test_func: Callable) -> Callable:
     """Decorator to capture evidence for a test function."""
+
     def wrapper(*args, **kwargs):
         test_name = test_func.__name__
 
@@ -224,6 +228,7 @@ def _store_evidence_to_file(evidence: TestEvidence) -> None:
 # =============================================================================
 # Hardened Fixtures with Cleanup Guarantees
 # =============================================================================
+
 
 @pytest.fixture
 def temp_dir_hardened(tmp_path: Path) -> Path:
@@ -288,6 +293,7 @@ def mock_vector_db_with_failures() -> MagicMock:
 
     # First call fails, second succeeds (retry pattern)
     call_count = [0]
+
     def query_with_retry(*args, **kwargs):
         call_count[0] += 1
         if call_count[0] == 1:
@@ -310,9 +316,11 @@ def mock_vector_db_with_failures() -> MagicMock:
 # Resilience Testing Utilities
 # =============================================================================
 
+
 @contextmanager
 def timeout_context(seconds: int):
     """Context manager for timeout enforcement."""
+
     def handler(signum, frame):
         raise TimeoutError(f"Operation timed out after {seconds} seconds")
 
@@ -323,6 +331,7 @@ def timeout_context(seconds: int):
 
 def with_retry(max_retries: int = 3, delay: float = 0.1):
     """Decorator to add retry logic to a function."""
+
     def decorator(func: Callable) -> Callable:
         def wrapper(*args, **kwargs):
             last_exception = None
@@ -332,15 +341,18 @@ def with_retry(max_retries: int = 3, delay: float = 0.1):
                 except Exception as e:
                     last_exception = e
                     if attempt < max_retries - 1:
-                        time.sleep(delay * (2 ** attempt))  # Exponential backoff
+                        time.sleep(delay * (2**attempt))  # Exponential backoff
             raise last_exception
+
         return wrapper
+
     return decorator
 
 
 # =============================================================================
 # Hardened Test Class: Pipeline B - Edge Cases & Failure Scenarios
 # =============================================================================
+
 
 @pytest.mark.skipif(not GRAPHRAG_AVAILABLE, reason="GraphRAG modules not available")
 @pytest.mark.timeout(120)
@@ -387,8 +399,7 @@ class TestPipelineBHardened:
 
         # Create 100 chunks
         chunks = [
-            {"chunk_id": f"batch_chunk_{i}", "content": f"Content {i}", "metadata": {}}
-            for i in range(100)
+            {"chunk_id": f"batch_chunk_{i}", "content": f"Content {i}", "metadata": {}} for i in range(100)
         ]
 
         start_time = time.time()
@@ -460,6 +471,7 @@ class TestPipelineBHardened:
 # Hardened Test Class: Pipeline C - Resilience & Edge Cases
 # =============================================================================
 
+
 @pytest.mark.skipif(not GRAPHRAG_AVAILABLE, reason="GraphRAG modules not available")
 @pytest.mark.timeout(120)
 class TestPipelineCHardened:
@@ -510,6 +522,7 @@ class TestPipelineCHardened:
 
         # Mock deep hierarchy
         from unittest.mock import MagicMock
+
         mock_l4e = MagicMock()
 
         call_count = {"get_parents": 0, "get_children": 0}
@@ -608,6 +621,7 @@ class TestPipelineCHardened:
 # Hardened Test Class: Pipeline D - Dampening & Validation
 # =============================================================================
 
+
 @pytest.mark.skipif(not GRAPHRAG_AVAILABLE, reason="GraphRAG modules not available")
 @pytest.mark.timeout(120)
 class TestPipelineDHardened:
@@ -620,8 +634,20 @@ class TestPipelineDHardened:
 
         # Small batch (below threshold of 5)
         small_batch = [
-            {"query": "q1", "retrieved_chunks": ["c1"], "relevant_chunks": ["c1"], "groundedness_scores": [0.5], "contexts": []},
-            {"query": "q2", "retrieved_chunks": ["c2"], "relevant_chunks": ["c2"], "groundedness_scores": [0.5], "contexts": []},
+            {
+                "query": "q1",
+                "retrieved_chunks": ["c1"],
+                "relevant_chunks": ["c1"],
+                "groundedness_scores": [0.5],
+                "contexts": [],
+            },
+            {
+                "query": "q2",
+                "retrieved_chunks": ["c2"],
+                "relevant_chunks": ["c2"],
+                "groundedness_scores": [0.5],
+                "contexts": [],
+            },
         ]
 
         change_package = proposer.analyze_and_propose(small_batch)
@@ -711,6 +737,7 @@ class TestPipelineDHardened:
 # =============================================================================
 # Hardened Test Class: Integration - Fail-Closed & Evidence
 # =============================================================================
+
 
 @pytest.mark.skipif(not GRAPHRAG_AVAILABLE, reason="GraphRAG modules not available")
 @pytest.mark.timeout(300)
@@ -816,6 +843,7 @@ class TestIntegrationHardened:
 # =============================================================================
 # Cleanup & Teardown
 # =============================================================================
+
 
 def pytest_sessionfinish(session, exitstatus):
     """Cleanup after all tests complete."""

@@ -179,6 +179,7 @@ except ImportError:
     class InstructionalInjectionMixin2:
         """Stub for healing resilience."""
 
+
 Logger = logging.getLogger(__name__)
 
 
@@ -215,7 +216,9 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         class_name = self.__class__.__name__
         try:
             if hasattr(self, "can_run"):
-                can_run_result = self.can_run()    # guardian: AssertionError should be handled with specific context
+                can_run_result = (
+                    self.can_run()
+                )  # guardian: AssertionError should be handled with specific context
                 if can_run_result is not True:
                     # guardian: allow-silent-swallow - acceptable exception handling
                     Logger.debug(f"[SELF-TEST] {class_name}.can_run() returned {can_run_result}")

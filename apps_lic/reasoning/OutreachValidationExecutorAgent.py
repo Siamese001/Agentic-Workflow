@@ -232,7 +232,11 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
         )
 
     def _execute_check(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Execute outreach-specific validation check.
 
@@ -573,7 +577,9 @@ class OutreachValidationExecutorAgent(SovereignBaseAgent):
         """Heal violations detected by OutreachValidationExecutorAgent."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "OutreachValidationExecutorAgent.heal")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "OutreachValidationExecutorAgent.heal"
+        )
         violation_type = violation.get("type", "unknown")
         try:
             return {

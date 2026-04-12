@@ -422,7 +422,10 @@ class CrossEngineQualityStandards:
             preferred_standards={"professional_tone", "concise", "adds_value"},
             excellence_standards={"exceptional_quality"},
             custom_thresholds=QualityThresholds(
-                MIN_RELEVANCE=0.75, MIN_AUTHORITY=0.6, MIN_SPECIFICITY=0.7, MIN_COHERENCE=0.7,
+                MIN_RELEVANCE=0.75,
+                MIN_AUTHORITY=0.6,
+                MIN_SPECIFICITY=0.7,
+                MIN_COHERENCE=0.7,
             ),
             domain_weights={
                 "accuracy": 0.3,
@@ -446,7 +449,10 @@ class CrossEngineQualityStandards:
             preferred_standards={"professional_tone", "adds_value"},
             excellence_standards={"concise", "exceptional_quality"},
             custom_thresholds=QualityThresholds(
-                MIN_RELEVANCE=0.8, MIN_AUTHORITY=0.5, MIN_SPECIFICITY=0.6, MIN_COHERENCE=0.7,
+                MIN_RELEVANCE=0.8,
+                MIN_AUTHORITY=0.5,
+                MIN_SPECIFICITY=0.6,
+                MIN_COHERENCE=0.7,
             ),
             domain_weights={"accuracy": 0.25, "relevance": 0.3, "clarity": 0.25, "value": 0.2},
         )
@@ -553,7 +559,9 @@ class CrossEngineQualityStandards:
         }
 
     def create_domain_config_from_standards(
-        self, engine_type: EngineType, quality_level: StandardType = StandardType.PREFERRED,
+        self,
+        engine_type: EngineType,
+        quality_level: StandardType = StandardType.PREFERRED,
     ) -> DomainConfig:
         """Create domain config based on quality standards.
 
@@ -566,7 +574,11 @@ class CrossEngineQualityStandards:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"StandardsManager.create_domain_config:{engine_type}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"StandardsManager.create_domain_config:{engine_type}",
+        )
         profile = self.get_engine_profile(engine_type)
         if not profile:
             raise ValueError(f"No profile found for engine {engine_type}")

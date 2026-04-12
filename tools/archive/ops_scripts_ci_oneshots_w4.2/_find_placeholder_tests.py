@@ -112,8 +112,7 @@ def _classify_file(path: Path) -> list[str]:
     test_funcs = [
         n
         for n in ast.walk(tree)
-        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
-        and n.name.startswith("test_")
+        if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name.startswith("test_")
     ]
 
     if not test_funcs:
@@ -181,9 +180,7 @@ def print_json(results: dict[str, list[str]]) -> None:
     out = {
         "total": len(results),
         "files": {path: funcs for path, funcs in results.items()},
-        "by_dir": {
-            d: files for d, files in sorted(_by_dir(results).items())
-        },
+        "by_dir": {d: files for d, files in sorted(_by_dir(results).items())},
     }
     print(json.dumps(out, indent=2))
 
@@ -196,9 +193,7 @@ def print_json(results: dict[str, list[str]]) -> None:
 def check_enforce(results: dict[str, list[str]]) -> int:
     """Return 1 if any enforced directory has placeholders, else 0."""
     violations = {
-        path: funcs
-        for path, funcs in results.items()
-        if path.split(os.sep)[0].split("/")[0] in _ENFORCE_DIRS
+        path: funcs for path, funcs in results.items() if path.split(os.sep)[0].split("/")[0] in _ENFORCE_DIRS
     }
     if violations:
         print(f"[ENFORCE] {len(violations)} placeholder(s) in enforced directories:\n")

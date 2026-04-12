@@ -118,7 +118,9 @@ class WorkCoordinationBundle:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "WorkCoordinationBundle.create",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "WorkCoordinationBundle.create",
         )
 
         bundle = cls(bundle_id=bundle_id, task_description=task_description)
@@ -267,7 +269,8 @@ def get_coordination_bundle(bundle_id: str, task_description: str = "") -> WorkC
     with _registry_lock:
         if bundle_id not in _bundle_registry:
             _bundle_registry[bundle_id] = WorkCoordinationBundle.create(
-                bundle_id=bundle_id, task_description=task_description,
+                bundle_id=bundle_id,
+                task_description=task_description,
             )
         return _bundle_registry[bundle_id]
 

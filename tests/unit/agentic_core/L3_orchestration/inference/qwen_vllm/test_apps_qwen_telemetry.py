@@ -1,4 +1,5 @@
 """Tests for Qwen vLLM telemetry module."""
+
 from __future__ import annotations
 
 import time
@@ -17,6 +18,7 @@ try:
         QwenInferenceTelemetry,
         QwenSessionMetrics,
     )
+
     QWEN_VLLM_AVAILABLE = True
 except ImportError:
     QWEN_VLLM_AVAILABLE = False

@@ -380,14 +380,17 @@ class DDDAlignmentAgent(SovereignBaseAgent):
 
     def _check_file_imports(self, filepath: Path) -> list[DDDViolation]:
         """Check a single file for DDD violations."""
-        violations = []    # guardian: Parsing and encoding errors need separate handling strategies
+        violations = []  # guardian: Parsing and encoding errors need separate handling strategies
         source_context = self._get_file_context(filepath)
         if not source_context:
             return violations
         try:
             content = filepath.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError) as e:    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
             Logger.debug(f"Could not parse {filepath}: {e}")
             return violations
         for node in ast.walk(tree):

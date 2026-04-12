@@ -335,7 +335,9 @@ class PipelineContext:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PipelineContext.get_cache_key:{component}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PipelineContext.get_cache_key:{component}"
+        )
         content = json.dumps(data, sort_keys=True, default=str)
         hash_key = hashlib.sha256(f"{component}:{content}".encode()).hexdigest()[:16]
         self.cache_keys.add(hash_key)
@@ -395,14 +397,18 @@ class InputProcessingStage(PipelineStage):
             if cached:
                 self._update_payload_with_processed_data(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
+                    stage_name,
+                    (time.time() - start_time) * 1000,
+                    metadata={"cache_hit": True},
                 )
                 return envelope
             processed = await self._process_content(content, envelope)
             self._update_payload_with_processed_data(envelope, processed)
             self.semantic_cache.set(cache_key, processed)
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
+                stage_name,
+                (time.time() - start_time) * 1000,
+                metadata={"cache_hit": False},
             )
             return envelope
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -450,7 +456,9 @@ class InputProcessingStage(PipelineStage):
         return result
 
     def _update_payload_with_processed_data(
-        self, envelope: SignalEnvelope, processed: dict[str, Any],
+        self,
+        envelope: SignalEnvelope,
+        processed: dict[str, Any],
     ) -> None:
         """Update payload with processed data.
 
@@ -504,11 +512,15 @@ class ContextEnrichmentStage(PipelineStage):
             if cached:
                 self._update_envelope_with_context(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
+                    stage_name,
+                    (time.time() - start_time) * 1000,
+                    metadata={"cache_hit": True},
                 )
                 return envelope
             rag_results = self.rag_processor.retrieve_and_rerank(
-                expanded_query, top_k=10, filters={"engine": envelope.payload.payload_type.value},
+                expanded_query,
+                top_k=10,
+                filters={"engine": envelope.payload.payload_type.value},
             )
             kg_context = self.kg_injector.inject_context(expanded_query, envelope.payload.payload_type.value)
             enriched = {
@@ -519,7 +531,9 @@ class ContextEnrichmentStage(PipelineStage):
             self._update_envelope_with_context(envelope, enriched)
             self.semantic_cache.set(cache_key, enriched)
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
+                stage_name,
+                (time.time() - start_time) * 1000,
+                metadata={"cache_hit": False},
             )
             return envelope
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -611,14 +625,18 @@ class SignalAugmentationStage(PipelineStage):
             if cached:
                 self._update_envelope_with_augmented(envelope, cached)
                 envelope.mark_stage_complete(
-                    stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": True},
+                    stage_name,
+                    (time.time() - start_time) * 1000,
+                    metadata={"cache_hit": True},
                 )
                 return envelope
             augmented = await self._perform_augmentation(content, envelope)
             self._update_envelope_with_augmented(envelope, augmented)
             self.semantic_cache.set(cache_key, augmented)
             envelope.mark_stage_complete(
-                stage_name, (time.time() - start_time) * 1000, metadata={"cache_hit": False},
+                stage_name,
+                (time.time() - start_time) * 1000,
+                metadata={"cache_hit": False},
             )
             return envelope
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -662,7 +680,9 @@ class SignalAugmentationStage(PipelineStage):
         augmented["claim_confidence"] = sum(c.confidence for c in claims) / len(claims) if claims else 0.5
         if envelope.payload.payload_type.value == "resume_data":
             optimized = optimize_prompt(
-                content, strategy="achievement_focused", constraints=["use_metrics", "action_verbs"],
+                content,
+                strategy="achievement_focused",
+                constraints=["use_metrics", "action_verbs"],
             )
         else:
             optimized = optimize_prompt(
@@ -751,7 +771,9 @@ class QualityValidationStage(PipelineStage):
                 return envelope
             content = self._extract_content_from_payload(envelope.payload)
             quality_result = self.signal_pipeline.process_signal(
-                content, envelope.payload.payload_type.value, self._get_enriched_context(envelope),
+                content,
+                envelope.payload.payload_type.value,
+                self._get_enriched_context(envelope),
             )
             validation = {
                 "passes_quality_gate": quality_result.is_pass,
@@ -1209,7 +1231,10 @@ class UnifiedSignalPipeline:
                 with self._lock:
                     self._stats["stage_failures"][stage_name] += 1
                 raise PipelineExecutionError(
-                    f"Pipeline failed at stage {stage_name}", envelope, stage_name, e,
+                    f"Pipeline failed at stage {stage_name}",
+                    envelope,
+                    stage_name,
+                    e,
                 )
         return envelope
 
@@ -1307,7 +1332,11 @@ class PipelineExecutionError(Exception):
     """Error raised when pipeline execution fails."""
 
     def __init__(
-        self, message: str, envelope: SignalEnvelope, failed_stage: str, cause: Exception | None = None,
+        self,
+        message: str,
+        envelope: SignalEnvelope,
+        failed_stage: str,
+        cause: Exception | None = None,
     ):
         """Initialize pipeline execution error.
 

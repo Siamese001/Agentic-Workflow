@@ -109,7 +109,9 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
         # Citation count (logarithmic scaling)
         citation_count = document.get("citation_count", 0)
         if citation_count > 0:
-            score += authority_indicators["citation_count"] * (1.0 - 1.0 / (1.0 + math.log10(max(1, citation_count))))
+            score += authority_indicators["citation_count"] * (
+                1.0 - 1.0 / (1.0 + math.log10(max(1, citation_count)))
+            )
 
         # Reference count
         reference_count = document.get("reference_count", 0)
@@ -155,7 +157,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
                 date_value = document[field]
                 if isinstance(date_value, str):
                     try:
-                        doc_date = datetime.fromisoformat(date_value.replace('Z', '+00:00'))
+                        doc_date = datetime.fromisoformat(date_value.replace("Z", "+00:00"))
                         break
                     except ValueError:
                         continue
@@ -244,11 +246,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
         technical_density = tech_count / max(1, word_count)
 
         # Combine metrics with weights
-        density_score = (
-            lexical_diversity * 0.3 +
-            domain_density * 0.4 +
-            technical_density * 0.3
-        )
+        density_score = lexical_diversity * 0.3 + domain_density * 0.4 + technical_density * 0.3
 
         # Normalize to 0-1 range
         density_score = min(1.0, density_score * 2.0)  # Scale up since typical values are low
@@ -409,7 +407,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
         score += complexity_indicators["query_length"] * length_score
 
         # Nested queries (parentheses, quotes)
-        nested_count = query_text.count('(') + query_text.count('"')
+        nested_count = query_text.count("(") + query_text.count('"')
         nested_score = min(1.0, nested_count / 5.0)  # Normalize to 5 nested elements
         score += complexity_indicators["nested_queries"] * nested_score
 

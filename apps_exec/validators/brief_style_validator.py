@@ -60,21 +60,23 @@ class StyleValidator:
     """L5 validator for brief style and quality."""
 
     # Buzzwords to detect
-    BUZZWORDS: frozenset[str] = frozenset({
-        "game-changer",
-        "synergy",
-        "leverage",
-        "holistic",
-        "paradigm shift",
-        "thought leader",
-        "disruptive",
-        "innovative",
-        "cutting-edge",
-        "world-class",
-        "best-in-class",
-        "next-generation",
-        "state-of-the-art",
-    })
+    BUZZWORDS: frozenset[str] = frozenset(
+        {
+            "game-changer",
+            "synergy",
+            "leverage",
+            "holistic",
+            "paradigm shift",
+            "thought leader",
+            "disruptive",
+            "innovative",
+            "cutting-edge",
+            "world-class",
+            "best-in-class",
+            "next-generation",
+            "state-of-the-art",
+        }
+    )
 
     # Unsupported claim patterns
     UNSUPPORTED_CLAIM_PATTERNS: list[re.Pattern] = [
@@ -118,7 +120,9 @@ class StyleValidator:
 
         # Calculate quality score
         quality_score = self._calculate_quality_score(
-            violations, style_metrics, evidence_result,
+            violations,
+            style_metrics,
+            evidence_result,
         )
 
         # Determine pass/fail
@@ -360,10 +364,9 @@ class QualityGate:
             )
 
         # Style violations gate
-        blocking_violations = len([
-            v for v in validation_result.violations
-            if v.severity == ViolationSeverity.BLOCKING
-        ])
+        blocking_violations = len(
+            [v for v in validation_result.violations if v.severity == ViolationSeverity.BLOCKING]
+        )
         if blocking_violations > 0:
             gates_passed = False
             violations.append(f"{blocking_violations} blocking style violations found")
@@ -398,7 +401,9 @@ class BriefValidationAgent:
 
         # Run style validation
         validation = self.validator.validate(
-            brief_content, brief_metadata, target_audience,
+            brief_content,
+            brief_metadata,
+            target_audience,
         )
 
         # Run quality gates

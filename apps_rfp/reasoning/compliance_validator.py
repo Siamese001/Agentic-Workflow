@@ -161,7 +161,9 @@ class ComplianceValidator:
 
         # Calculate quality score
         quality_score = self._calculate_quality_score(
-            violations, claim_verifications, regulatory_gaps,
+            violations,
+            claim_verifications,
+            regulatory_gaps,
         )
 
         # Determine pass/fail
@@ -236,7 +238,7 @@ class ComplianceValidator:
                 if re.search(pattern, body, re.IGNORECASE):
                     violations.append(
                         ComplianceViolation(
-                            violation_id=f"V{len(violations)+1:03d}",
+                            violation_id=f"V{len(violations) + 1:03d}",
                             rule_id="R001",
                             section_id=section_id,
                             severity=ViolationSeverity.WARNING,
@@ -267,7 +269,7 @@ class ComplianceValidator:
             if numeric_claims and not evidence_cited:
                 violations.append(
                     ComplianceViolation(
-                        violation_id=f"V{len(violations)+1:03d}",
+                        violation_id=f"V{len(violations) + 1:03d}",
                         rule_id="R002",
                         section_id=section_id,
                         severity=ViolationSeverity.WARNING,
@@ -303,7 +305,7 @@ class ComplianceValidator:
             if not any(kw in all_text for kw in keywords):
                 violations.append(
                     ComplianceViolation(
-                        violation_id=f"V{len(violations)+1:03d}",
+                        violation_id=f"V{len(violations) + 1:03d}",
                         rule_id="R003",
                         section_id="proposal",
                         severity=ViolationSeverity.BLOCKING,
@@ -337,7 +339,7 @@ class ComplianceValidator:
             if not any(req in p for p in present):
                 violations.append(
                     ComplianceViolation(
-                        violation_id=f"V{len(violations)+1:03d}",
+                        violation_id=f"V{len(violations) + 1:03d}",
                         rule_id="R004",
                         section_id="proposal",
                         severity=ViolationSeverity.BLOCKING,
@@ -358,8 +360,14 @@ class ComplianceValidator:
         violations: list[ComplianceViolation] = []
 
         security_keywords = [
-            "encryption", "secure", "authentication", "authorization",
-            "vulnerability", "penetration test", "soc2", "iso27001",
+            "encryption",
+            "secure",
+            "authentication",
+            "authorization",
+            "vulnerability",
+            "penetration test",
+            "soc2",
+            "iso27001",
         ]
 
         for section in sections:
@@ -370,10 +378,12 @@ class ComplianceValidator:
             for keyword in security_keywords:
                 if keyword in body.lower():
                     # Check if there's specific backing
-                    if not re.search(rf"{keyword}.*(?:using|via|with|specific|standard)", body, re.IGNORECASE):
+                    if not re.search(
+                        rf"{keyword}.*(?:using|via|with|specific|standard)", body, re.IGNORECASE
+                    ):
                         violations.append(
                             ComplianceViolation(
-                                violation_id=f"V{len(violations)+1:03d}",
+                                violation_id=f"V{len(violations) + 1:03d}",
                                 rule_id="R005",
                                 section_id=section_id,
                                 severity=ViolationSeverity.WARNING,
@@ -391,21 +401,35 @@ class ComplianceValidator:
         claims: list[dict[str, Any]] = []
 
         # Pattern: sentences with numbers or strong verbs
-        sentences = re.split(r'[.!?]+', body)
+        sentences = re.split(r"[.!?]+", body)
 
         for idx, sent in enumerate(sentences):
             sent = sent.strip()
             if len(sent) > 20:
                 # Check if it's a claim (has metrics, outcomes, or strong assertions)
-                if any(pattern in sent.lower() for pattern in [
-                    "will", "delivers", "achieves", "reduces", "improves",
-                    "guarantees", "ensures", "provides", "%", "$", "percent",
-                ]):
-                    claims.append({
-                        "claim_id": f"C{idx+1:03d}",
-                        "text": sent,
-                        "section_id": section.get("section_id", "unknown"),
-                    })
+                if any(
+                    pattern in sent.lower()
+                    for pattern in [
+                        "will",
+                        "delivers",
+                        "achieves",
+                        "reduces",
+                        "improves",
+                        "guarantees",
+                        "ensures",
+                        "provides",
+                        "%",
+                        "$",
+                        "percent",
+                    ]
+                ):
+                    claims.append(
+                        {
+                            "claim_id": f"C{idx + 1:03d}",
+                            "text": sent,
+                            "section_id": section.get("section_id", "unknown"),
+                        }
+                    )
 
         return claims
 
@@ -418,7 +442,7 @@ class ComplianceValidator:
         has_evidence = len(evidence_refs) > 0
 
         # Check for quantified claims (need stronger evidence)
-        is_quantified = bool(re.search(r'\d+%|\$[\d,]+|\d+\s+(?:hours|days|weeks)', claim_text))
+        is_quantified = bool(re.search(r"\d+%|\$[\d,]+|\d+\s+(?:hours|days|weeks)", claim_text))
 
         if has_evidence and is_quantified:
             confidence = "medium"  # Quantified claims need extra scrutiny
@@ -529,7 +553,9 @@ class ClaimsVerifier:
         _emit_verifies_policy("enterprise", "ClaimsVerifier", "verify_claim")
 
         # Check for direct matches
-        direct_matches = [s for s in available_sources if any(word in s.lower() for word in claim.lower().split()[:5])]
+        direct_matches = [
+            s for s in available_sources if any(word in s.lower() for word in claim.lower().split()[:5])
+        ]
 
         # Check for pattern matches in registry
         pattern_matches: list[str] = []
@@ -543,7 +569,11 @@ class ClaimsVerifier:
             "claim": claim[:100],
             "verified": len(all_matches) > 0,
             "evidence_sources": all_matches[:5],  # Top 5
-            "verification_confidence": "high" if len(all_matches) >= 2 else "medium" if all_matches else "low",
+            "verification_confidence": "high"
+            if len(all_matches) >= 2
+            else "medium"
+            if all_matches
+            else "low",
         }
 
     def batch_verify(

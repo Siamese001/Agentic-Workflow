@@ -16,14 +16,17 @@ class TestMlPatternRecordTypesAdg:
     def test_ml_pattern_record_types_adg_imports(self):
         """Test ml_pattern_record_types_adg module imports."""
         from agentic_core import ml_pattern_record_types_adg
+
         assert ml_pattern_record_types_adg is not None
 
     def test_ml_pattern_record_types_adg_class(self):
         """Test MlPatternRecordTypesAdg class exists."""
         from agentic_core import MlPatternRecordTypesAdg
+
         assert MlPatternRecordTypesAdg is not None
 
     def test_ml_pattern_record_types_adg_callable(self):
         """Test ml_pattern_record_types_adg functions are callable."""
         from agentic_core import validate_ml_pattern_record_types_adg
+
         assert callable(validate_ml_pattern_record_types_adg)

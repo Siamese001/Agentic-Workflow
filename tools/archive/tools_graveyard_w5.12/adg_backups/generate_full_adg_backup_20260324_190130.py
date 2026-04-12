@@ -255,7 +255,9 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # Capture repo state hash (tree hash)
     try:
         repo_state_hash = _subprocess.check_output(
-            ["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True,
+            ["git", "rev-parse", "HEAD^{tree}"],
+            cwd=ROOT,
+            text=True,
         ).strip()
         print(f"[ADG] Captured repo state hash: {repo_state_hash}")
     except Exception as e:
@@ -785,7 +787,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             # Archive only the zip file (most efficient)
             print(f"[ADG] Archive: Processing run {ts} with {len(zip_files)} zip file(s)")
             zip_archived, zip_bytes_original, zip_bytes_archived = _archive_zip_files(
-                zip_files, archive_month_dir,
+                zip_files,
+                archive_month_dir,
             )
             archived_count += zip_archived
             bytes_original += zip_bytes_original

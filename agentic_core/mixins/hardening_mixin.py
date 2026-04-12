@@ -256,19 +256,27 @@ class HardeningMixin:
             Exception: If all retries exhausted
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HardeningMixin.execute_hardened")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HardeningMixin.execute_hardened"
+        )
 
         start_time = time.time()
         try:
             if validate_token_budget:
                 await asyncio.wait_for(asyncio.to_thread(validate_token_budget), timeout=DEFAULT_TIMEOUT)
             result = await self.error_recovery.invoke_with_retry(
-                fn=fn, breaker_name=self.circuit_breaker.name, context=metadata or {},
+                fn=fn,
+                breaker_name=self.circuit_breaker.name,
+                context=metadata or {},
             )
             latency_ms = (time.time() - start_time) * 1000
             self.telemetry.log_success(
-                component=self.component_name, operation=operation, latency_ms=latency_ms, metadata=metadata,
+                component=self.component_name,
+                operation=operation,
+                latency_ms=latency_ms,
+                metadata=metadata,
             )
             return result
         except asyncio.TimeoutError as e:
@@ -286,7 +294,10 @@ class HardeningMixin:
         except CircuitBreakerOpenError as e:
             latency_ms = (time.time() - start_time) * 1000
             self.telemetry.log_circuit_breaker(
-                component=self.component_name, breaker_name=e.breaker_name, state="OPEN", metadata=metadata,
+                component=self.component_name,
+                breaker_name=e.breaker_name,
+                state="OPEN",
+                metadata=metadata,
             )
             raise
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller

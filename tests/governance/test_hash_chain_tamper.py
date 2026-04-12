@@ -22,6 +22,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 class HashChainTamperError(RuntimeError):
     """Raised when hash chain tampering is detected."""
 

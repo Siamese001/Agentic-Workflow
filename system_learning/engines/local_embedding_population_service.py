@@ -272,8 +272,11 @@ class LocalEmbeddingPopulationService:
             IndexBuildMetadata for the built index.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LocalEmbeddingPopulationService.populate_from_jsonl")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LocalEmbeddingPopulationService.populate_from_jsonl"
+        )
 
         sorted_files = sorted(source_files, key=lambda p: str(p))
         all_records = []

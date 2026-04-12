@@ -440,7 +440,9 @@ class ThreeTierComplianceChecker:
         """Perform full three-tier compliance check."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ThreeTierComplianceEnforcer.check_compliance",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "ThreeTierComplianceEnforcer.check_compliance",
         )
         result = ComplianceResult()
 

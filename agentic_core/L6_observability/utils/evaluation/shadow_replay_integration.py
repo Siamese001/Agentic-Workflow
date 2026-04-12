@@ -228,9 +228,7 @@ class ShadowEvaluationIntegrator:
             "evaluation_count": self._evaluation_count,
             "regression_count": self._regression_count,
             "regression_rate": (
-                self._regression_count / self._evaluation_count
-                if self._evaluation_count > 0
-                else 0.0
+                self._regression_count / self._evaluation_count if self._evaluation_count > 0 else 0.0
             ),
         }
 
@@ -310,9 +308,7 @@ class ReplayEvaluator:
             "evaluation_count": self._evaluation_count,
             "regression_count": self._regression_count,
             "regression_rate": (
-                self._regression_count / self._evaluation_count
-                if self._evaluation_count > 0
-                else 0.0
+                self._regression_count / self._evaluation_count if self._evaluation_count > 0 else 0.0
             ),
         }
 

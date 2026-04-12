@@ -45,37 +45,45 @@ class RunSummaryRenderer:
         ]
 
         if summary.gate_violations:
-            lines.extend([
-                "## Gate Violations",
-                "",
-            ])
+            lines.extend(
+                [
+                    "## Gate Violations",
+                    "",
+                ]
+            )
             for violation in summary.gate_violations:
                 lines.append(f"- ⚠️ {violation}")
             lines.append("")
 
         if summary.artifacts:
-            lines.extend([
-                "## Artifacts",
-                "",
-            ])
+            lines.extend(
+                [
+                    "## Artifacts",
+                    "",
+                ]
+            )
             for artifact in summary.artifacts:
                 lines.append(f"- {artifact}")
             lines.append("")
 
         if summary.error:
-            lines.extend([
-                "## Error",
-                "",
-                f"```\n{summary.error}\n```",
-                "",
-            ])
+            lines.extend(
+                [
+                    "## Error",
+                    "",
+                    f"```\n{summary.error}\n```",
+                    "",
+                ]
+            )
 
-        lines.extend([
-            "## Provenance",
-            "",
-            f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```",
-            "",
-        ])
+        lines.extend(
+            [
+                "## Provenance",
+                "",
+                f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 

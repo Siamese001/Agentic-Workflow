@@ -19,6 +19,7 @@ Non-responsibilities:
 - Message body composition
 - Final assembly
 """
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
@@ -112,8 +113,11 @@ class ActionCallGenerator:
             CTAResult with CTA and validation details
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ActionCallGenerator.generate_cta")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ActionCallGenerator.generate_cta"
+        )
 
         self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results: Any = []

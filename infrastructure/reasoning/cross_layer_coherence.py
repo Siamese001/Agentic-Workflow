@@ -141,7 +141,9 @@ class EventDrivenInvalidationBus:
             logger.error(f"Error notifying subscriber: {e}")
 
     def get_event_history(
-        self, layer_type: LayerType | None = None, since: datetime | None = None,
+        self,
+        layer_type: LayerType | None = None,
+        since: datetime | None = None,
     ) -> list[InvalidationMessage]:
         """Get event history."""
         events = list(self.event_history)
@@ -345,7 +347,11 @@ class ConsistencyMonitor:
                 await self._resolve_inconsistency(key, entries, inconsistencies, coherence_manager)
 
     async def _resolve_inconsistency(
-        self, key: str, entries: dict[LayerType, CacheEntry], inconsistencies: list[str], coherence_manager,
+        self,
+        key: str,
+        entries: dict[LayerType, CacheEntry],
+        inconsistencies: list[str],
+        coherence_manager,
     ):
         """Resolve consistency inconsistency."""
         resolution = {
@@ -440,7 +446,9 @@ class CrossLayerCoherenceManager:
         """Add cache entry to layer."""
         try:
             self.contract_guard.validate_exact_lookup_key(key)
-        except FourLayerContractError as e:    # guardian: FourLayerContractError should be handled with specific context
+        except (
+            FourLayerContractError
+        ) as e:  # guardian: FourLayerContractError should be handled with specific context
             raise ValueError(f"Invalid cache key: {e}") from e
 
         if ttl_seconds <= 0:
@@ -485,12 +493,19 @@ class CrossLayerCoherenceManager:
             await self.lock_manager.release_lock(key, f"add_{layer_type.value}")
 
     async def update_cache_entry(
-        self, layer_type: LayerType, key: str, value: Any, version: str, ttl_seconds: int = 3600,
+        self,
+        layer_type: LayerType,
+        key: str,
+        value: Any,
+        version: str,
+        ttl_seconds: int = 3600,
     ) -> bool:
         """Update cache entry."""
         try:
             self.contract_guard.validate_exact_lookup_key(key)
-        except FourLayerContractError as e:    # guardian: FourLayerContractError should be handled with specific context
+        except (
+            FourLayerContractError
+        ) as e:  # guardian: FourLayerContractError should be handled with specific context
             raise ValueError(f"Invalid cache key: {e}") from e
 
         if ttl_seconds <= 0:
@@ -536,7 +551,9 @@ class CrossLayerCoherenceManager:
         """Invalidate cache entry."""
         try:
             self.contract_guard.validate_exact_lookup_key(key)
-        except FourLayerContractError as e:    # guardian: FourLayerContractError should be handled with specific context
+        except (
+            FourLayerContractError
+        ) as e:  # guardian: FourLayerContractError should be handled with specific context
             raise ValueError(f"Invalid cache key: {e}") from e
 
         lock_acquired = await self.lock_manager.acquire_lock(key, f"invalidate_{layer_type.value}")
@@ -574,7 +591,9 @@ class CrossLayerCoherenceManager:
         """Get cache entry."""
         try:
             self.contract_guard.validate_exact_lookup_key(key)
-        except FourLayerContractError:    # guardian: FourLayerContractError should be handled with specific context
+        except (
+            FourLayerContractError
+        ):  # guardian: FourLayerContractError should be handled with specific context
             return None
 
         entry = self.layer_caches[layer_type].get(key)
@@ -645,6 +664,7 @@ class CrossLayerCoherenceManager:
             # Wave B-7: Emit cache coherence violations for drift detection
             try:
                 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
                 bridge = get_sl_memory_bridge()
 
                 # Persist coherence violation

@@ -1,6 +1,7 @@
 """
 Forbidden Feature Checker - Ensures prohibited attributes are not used.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Set
 
@@ -10,6 +11,7 @@ from ..types import RiskFeatures, UnderwritingRequest
 @dataclass
 class ForbiddenCheckResult:
     """Result of forbidden feature check."""
+
     passed: bool = True
     violations: List[Dict[str, Any]] = field(default_factory=list)
     blocked_fields: List[str] = field(default_factory=list)
@@ -95,16 +97,18 @@ class ForbiddenFeatureChecker:
         borrower = request.borrower
 
         # Convert to dict for checking
-        borrower_dict = borrower.dict() if hasattr(borrower, 'dict') else {}
+        borrower_dict = borrower.dict() if hasattr(borrower, "dict") else {}
 
         for forbidden in self.FORBIDDEN_FIELDS:
             if forbidden in borrower_dict and borrower_dict[forbidden] is not None:
-                result.violations.append({
-                    "type": "forbidden_field_present",
-                    "field": f"borrower.{forbidden}",
-                    "severity": "blocking",
-                    "message": f"Forbidden field '{forbidden}' present in borrower profile",
-                })
+                result.violations.append(
+                    {
+                        "type": "forbidden_field_present",
+                        "field": f"borrower.{forbidden}",
+                        "severity": "blocking",
+                        "message": f"Forbidden field '{forbidden}' present in borrower profile",
+                    }
+                )
                 result.blocked_fields.append(forbidden)
 
     def _check_proxy_indicators(
@@ -119,13 +123,15 @@ class ForbiddenFeatureChecker:
         for proxy in self.PROXY_INDICATORS:
             if proxy.lower() in industry_desc:
                 # This is a warning, not a blocking violation
-                result.violations.append({
-                    "type": "proxy_indicator_detected",
-                    "field": "borrower.industry_description",
-                    "indicator": proxy,
-                    "severity": "warning",
-                    "message": f"Potential demographic proxy '{proxy}' detected in industry description",
-                })
+                result.violations.append(
+                    {
+                        "type": "proxy_indicator_detected",
+                        "field": "borrower.industry_description",
+                        "indicator": proxy,
+                        "severity": "warning",
+                        "message": f"Potential demographic proxy '{proxy}' detected in industry description",
+                    }
+                )
 
     def validate_feature_derivation(
         self,
@@ -152,12 +158,14 @@ class ForbiddenFeatureChecker:
         # Check for forbidden terms in rationale
         for forbidden in self.FORBIDDEN_FIELDS:
             if forbidden in rationale_lower:
-                result.violations.append({
-                    "type": "forbidden_term_in_rationale",
-                    "term": forbidden,
-                    "severity": "blocking",
-                    "message": f"Forbidden term '{forbidden}' detected in rationale",
-                })
+                result.violations.append(
+                    {
+                        "type": "forbidden_term_in_rationale",
+                        "term": forbidden,
+                        "severity": "blocking",
+                        "message": f"Forbidden term '{forbidden}' detected in rationale",
+                    }
+                )
 
         result.passed = len(result.violations) == 0
 

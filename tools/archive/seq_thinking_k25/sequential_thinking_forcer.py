@@ -195,7 +195,7 @@ def seq(prompt: str) -> str:
     return forcer.force(prompt)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Test
     test_prompt = "Design the architecture for the new payment system"
 

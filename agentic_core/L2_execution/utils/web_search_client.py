@@ -244,7 +244,8 @@ class WebSearchTools:
         Logger.info(f"📍 Sovereign Local Search: '{query}' in {location or 'US'}")
         try:
             result: Any = await self.router.manager.call_tool(
-                tool_name="brave_local_search", args={"query": query, "count": config.BRAVE_SEARCH_COUNT},
+                tool_name="brave_local_search",
+                args={"query": query, "count": config.BRAVE_SEARCH_COUNT},
             )
             return self._parse_mcp_response(result, "local")
         # guardian: allow-silent-swallow

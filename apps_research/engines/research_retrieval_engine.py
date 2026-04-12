@@ -230,12 +230,14 @@ class ResearchRetrievalEngine:
             filters={"artifact_mode": artifact_mode},
         )
 
-        self._query_history.append({
-            "query_type": "similar",
-            "topic": current_topic,
-            "results_count": len(results),
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._query_history.append(
+            {
+                "query_type": "similar",
+                "topic": current_topic,
+                "results_count": len(results),
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         return results
 
@@ -309,7 +311,9 @@ class ResearchRetrievalEngine:
             "min_quality_score": min(quality_scores),
             "max_quality_score": max(quality_scores),
             "avg_source_count": sum(source_counts) / len(source_counts),
-            "quality_threshold_80th": sorted(quality_scores)[int(len(quality_scores) * 0.8)] if len(quality_scores) >= 5 else 0.8,
+            "quality_threshold_80th": sorted(quality_scores)[int(len(quality_scores) * 0.8)]
+            if len(quality_scores) >= 5
+            else 0.8,
         }
 
     def recommend_sources(
@@ -337,11 +341,13 @@ class ResearchRetrievalEngine:
         # Sort by frequency
         recommendations: list[dict[str, Any]] = []
         for source, freq in sorted(source_references.items(), key=lambda x: x[1], reverse=True):
-            recommendations.append({
-                "source": source,
-                "frequency_in_similar": freq,
-                "recommendation": f"Consider adding '{source}' based on similar research",
-            })
+            recommendations.append(
+                {
+                    "source": source,
+                    "frequency_in_similar": freq,
+                    "recommendation": f"Consider adding '{source}' based on similar research",
+                }
+            )
 
         return recommendations[:5]
 

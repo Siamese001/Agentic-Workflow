@@ -353,7 +353,12 @@ def execute_with_timeout(
         work_dir: Any = validate_sandbox(cwd)
     try:
         result: Any = safe_execute(
-            command, cwd=str(work_dir), capture_output=capture_output, text=True, timeout=timeout, check=check,
+            command,
+            cwd=str(work_dir),
+            capture_output=capture_output,
+            text=True,
+            timeout=timeout,
+            check=check,
         )
         return result
     except subprocess.TimeoutExpired as e:
@@ -390,7 +395,7 @@ def execute_command(args: ExecuteCommandArgs) -> tuple[int, str, str]:
             result.stdout if result.stdout else "",
             result.stderr if result.stderr else "",
         )
-    except ExecutionTimeoutError:    # guardian: ExecutionTimeoutError should be handled with specific context
+    except ExecutionTimeoutError:  # guardian: ExecutionTimeoutError should be handled with specific context
         raise
     except Exception as e:
         raise ExecutionError(f"Command execution failed: {e}") from e
@@ -411,11 +416,17 @@ def check_tool_installed(tool_name: str) -> bool:
     for command in ALLOWED_COMMANDS[tool_name]:
         try:
             result: Any = safe_execute(
-                [command, "--version"], capture_output=True, timeout=DEFAULT_TIMEOUT, check=False,
+                [command, "--version"],
+                capture_output=True,
+                timeout=DEFAULT_TIMEOUT,
+                check=False,
             )
             if result.returncode == 0:
                 return True
-        except (subprocess.TimeoutExpired, FileNotFoundError):    # guardian: File operations should check existence before access
+        except (
+            subprocess.TimeoutExpired,
+            FileNotFoundError,
+        ):  # guardian: File operations should check existence before access
             continue
     return False
 
@@ -440,7 +451,10 @@ def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None =
     args.append(target_path)
     try:
         result: Any = execute_with_timeout(
-            command=args, timeout=DEFAULT_TIMEOUT, capture_output=True, check=False,
+            command=args,
+            timeout=DEFAULT_TIMEOUT,
+            capture_output=True,
+            check=False,
         )
         success: Any = result.returncode == 0
         output: Any = result.stdout if result.stdout else result.stderr

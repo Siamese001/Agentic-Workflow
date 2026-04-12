@@ -178,6 +178,7 @@ class FileOperations:
             json.JSONDecodeError: If file is not valid JSON
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileOperations.read_json")
 
@@ -301,8 +302,11 @@ class DataCollectionOperations:
             Dictionary mapping metric keys to collected values
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DataCollectionOperations.collect_metrics")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DataCollectionOperations.collect_metrics"
+        )
 
         metrics = {key: [] for key in metric_keys}
         for point in data_points:
@@ -372,7 +376,10 @@ class MonitoringOperations:
         """
         try:
             return FileOperations.read_json(state_file)
-        except (FileNotFoundError, json.JSONDecodeError) as e:    # guardian: File operations should check existence before access
+        except (
+            FileNotFoundError,
+            json.JSONDecodeError,
+        ) as e:  # guardian: File operations should check existence before access
             logger.warning(f"Failed to read state file: {e}")
             return {"status": "unknown", "error": str(e)}
 
@@ -387,8 +394,11 @@ class MonitoringOperations:
             event_data: Event data
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MonitoringOperations.record_event")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MonitoringOperations.record_event"
+        )
 
         import datetime
 
@@ -407,7 +417,9 @@ class MonitoringOperations:
 
     @staticmethod
     def get_recent_events(
-        event_log: str | Path, count: int = 10, event_type: str | None = None,
+        event_log: str | Path,
+        count: int = 10,
+        event_type: str | None = None,
     ) -> list[dict[str, Any]]:
         """
         Get recent events from log.

@@ -15,6 +15,7 @@ import chromadb
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def ingest_jsonl_traces():
     """Ingest JSONL trace files"""
 
@@ -73,7 +74,7 @@ def ingest_jsonl_traces():
 
         try:
             chunks = []
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 for line_num, line in enumerate(f, 1):
                     if not line.strip():
                         continue
@@ -91,16 +92,16 @@ def ingest_jsonl_traces():
 
                         # Enhanced metadata
                         metadata = {
-                            'source_file': str(file_path),
-                            'trace_type': file_info['trace_type'],
-                            'namespace': file_info['namespace'],
-                            'description': file_info['description'],
-                            'line_number': line_num,
-                            'content_hash': hashlib.sha256(content.encode()).hexdigest(),
-                            'trace_id': f"trace_{file_info['trace_type']}_{line_num:06d}",
-                            'created_utc': int(datetime.now().timestamp()),
-                            'chunk_type': 'expanded_trace',
-                            'file_size': len(content),
+                            "source_file": str(file_path),
+                            "trace_type": file_info["trace_type"],
+                            "namespace": file_info["namespace"],
+                            "description": file_info["description"],
+                            "line_number": line_num,
+                            "content_hash": hashlib.sha256(content.encode()).hexdigest(),
+                            "trace_id": f"trace_{file_info['trace_type']}_{line_num:06d}",
+                            "created_utc": int(datetime.now().timestamp()),
+                            "chunk_type": "expanded_trace",
+                            "file_size": len(content),
                         }
 
                         # Add any additional fields from the data
@@ -110,9 +111,9 @@ def ingest_jsonl_traces():
                                     metadata[f"data_{key}"] = value
 
                         chunk = {
-                            'id': chunk_id,
-                            'content': content,
-                            'metadata': metadata,
+                            "id": chunk_id,
+                            "content": content,
+                            "metadata": metadata,
                         }
 
                         chunks.append(chunk)
@@ -123,9 +124,9 @@ def ingest_jsonl_traces():
 
             if chunks:
                 # Ingest chunks
-                ids = [chunk['id'] for chunk in chunks]
-                documents = [chunk['content'] for chunk in chunks]
-                metadatas = [chunk['metadata'] for chunk in chunks]
+                ids = [chunk["id"] for chunk in chunks]
+                documents = [chunk["content"] for chunk in chunks]
+                metadatas = [chunk["metadata"] for chunk in chunks]
 
                 # Generate mock embeddings
                 embeddings = [[0.0] * 1536 for _ in chunks]
@@ -144,6 +145,7 @@ def ingest_jsonl_traces():
             logger.error(f"Error processing {file_info['path']}: {e}")
 
     return total_chunks
+
 
 def ingest_log_traces():
     """Ingest log files as traces"""
@@ -173,16 +175,16 @@ def ingest_log_traces():
             continue
 
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Split into chunks (e.g., by lines or paragraphs)
-            lines = content.split('\n')
+            lines = content.split("\n")
             chunks = []
 
             for i in range(0, len(lines), 100):  # Chunk every 100 lines
-                chunk_lines = lines[i:i+100]
-                chunk_content = '\n'.join(chunk_lines)
+                chunk_lines = lines[i : i + 100]
+                chunk_content = "\n".join(chunk_lines)
 
                 if not chunk_content.strip():
                     continue
@@ -192,31 +194,31 @@ def ingest_log_traces():
                 ).hexdigest()
 
                 metadata = {
-                    'source_file': str(file_path),
-                    'trace_type': file_info['trace_type'],
-                    'namespace': file_info['namespace'],
-                    'line_start': i + 1,
-                    'line_end': min(i + 100, len(lines)),
-                    'content_hash': hashlib.sha256(chunk_content.encode()).hexdigest(),
-                    'trace_id': f"trace_{file_info['trace_type']}_{i//100:06d}",
-                    'created_utc': int(datetime.now().timestamp()),
-                    'chunk_type': 'log_trace',
-                    'file_size': len(chunk_content),
+                    "source_file": str(file_path),
+                    "trace_type": file_info["trace_type"],
+                    "namespace": file_info["namespace"],
+                    "line_start": i + 1,
+                    "line_end": min(i + 100, len(lines)),
+                    "content_hash": hashlib.sha256(chunk_content.encode()).hexdigest(),
+                    "trace_id": f"trace_{file_info['trace_type']}_{i // 100:06d}",
+                    "created_utc": int(datetime.now().timestamp()),
+                    "chunk_type": "log_trace",
+                    "file_size": len(chunk_content),
                 }
 
                 chunk = {
-                    'id': chunk_id,
-                    'content': chunk_content,
-                    'metadata': metadata,
+                    "id": chunk_id,
+                    "content": chunk_content,
+                    "metadata": metadata,
                 }
 
                 chunks.append(chunk)
 
             if chunks:
                 # Ingest chunks
-                ids = [chunk['id'] for chunk in chunks]
-                documents = [chunk['content'] for chunk in chunks]
-                metadatas = [chunk['metadata'] for chunk in chunks]
+                ids = [chunk["id"] for chunk in chunks]
+                documents = [chunk["content"] for chunk in chunks]
+                metadatas = [chunk["metadata"] for chunk in chunks]
 
                 # Generate mock embeddings
                 embeddings = [[0.0] * 1536 for _ in chunks]
@@ -235,6 +237,7 @@ def ingest_log_traces():
             logger.error(f"Error processing {file_info['path']}: {e}")
 
     return total_chunks
+
 
 def main():
     """Main function"""
@@ -255,6 +258,7 @@ def main():
     logger.info(f"  - Log traces: {log_chunks} chunks")
     logger.info(f"  - Total new chunks: {total_new_chunks}")
     logger.info(f"  - Final traces collection: {final_count} items")
+
 
 if __name__ == "__main__":
     main()

@@ -154,7 +154,9 @@ class RuntimeADGSnapshot:
 
         # Validate hash consistency
         if self.snapshot_id != self.snapshot_hash:
-            errors.append(f"Hash mismatch: snapshot_id={self.snapshot_id[:16]}... vs snapshot_hash={self.snapshot_hash[:16]}...")
+            errors.append(
+                f"Hash mismatch: snapshot_id={self.snapshot_id[:16]}... vs snapshot_hash={self.snapshot_hash[:16]}..."
+            )
 
         # Validate timestamps
         if self.started_at_utc < 0:
@@ -181,13 +183,26 @@ class RuntimeADGSnapshot:
                     errors.append(f"Negative duration for node {node.node_id[:16]}: {node.duration_ms}")
 
         # Validate edges and count types
-        valid_relations = frozenset({
-            "parent_child", "temporal_sequence", "actor", "action", "target",
-            "dependency", "read_edge", "write_edge", "tool_invocation_edge",
-            "orchestration_handoff_edge", "retry_edge", "evaluation_edge",
-            "policy_validation_edge", "human_escalation_edge",
-            "failure_propagation_edge", "outcome_edge",
-        })
+        valid_relations = frozenset(
+            {
+                "parent_child",
+                "temporal_sequence",
+                "actor",
+                "action",
+                "target",
+                "dependency",
+                "read_edge",
+                "write_edge",
+                "tool_invocation_edge",
+                "orchestration_handoff_edge",
+                "retry_edge",
+                "evaluation_edge",
+                "policy_validation_edge",
+                "human_escalation_edge",
+                "failure_propagation_edge",
+                "outcome_edge",
+            }
+        )
 
         for edge in self.edges:
             # Count edge types
@@ -211,10 +226,13 @@ class RuntimeADGSnapshot:
             "edge_count": len(self.edges),
             "edge_type_count": len(edge_type_counts),
             "semantic_edge_count": sum(
-                count for rel, count in edge_type_counts.items()
+                count
+                for rel, count in edge_type_counts.items()
                 if rel not in ("parent_child", "temporal_sequence")
             ),
-            "duration_ms": self.ended_at_utc - self.started_at_utc if self.ended_at_utc >= self.started_at_utc else 0,
+            "duration_ms": self.ended_at_utc - self.started_at_utc
+            if self.ended_at_utc >= self.started_at_utc
+            else 0,
         }
 
         return {

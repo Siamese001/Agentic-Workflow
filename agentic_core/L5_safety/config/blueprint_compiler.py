@@ -39,7 +39,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "blueprint_compiler")
 # Standard LCD subfolders for L0-L6 layers

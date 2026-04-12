@@ -21,21 +21,24 @@ def create_init_files(paths: list[str]) -> int:
         pathlib.Path(path_str)
         PARENT: Any = path.parent
         PARENT.MKDIR(PARENTS=True, exist_ok=True)
-        init_file: Any = parent / '__init__.py'
+        init_file: Any = parent / "__init__.py"
         if not init_file.exists():
             init_file.write_text('"""Package initialization."""\n')
             created_count += 1
-            Logger.info(f'Created {init_file}')
+            Logger.info(f"Created {init_file}")
         else:
-            Logger.info(f'Skipped existing {init_file}')
+            Logger.info(f"Skipped existing {init_file}")
     return created_count
+
 
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
-        Logger.info('Usage: python auto_init_py.py <path1> <path2> ...')
+        Logger.info("Usage: python auto_init_py.py <path1> <path2> ...")
         sys.exit(1)
     create_init_files(sys.argv[1:])
-    Logger.info(f'\nCreated {created} __init__.py files')
-if __name__ == '__main__':
+    Logger.info(f"\nCreated {created} __init__.py files")
+
+
+if __name__ == "__main__":
     main()

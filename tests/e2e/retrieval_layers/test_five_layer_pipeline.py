@@ -15,6 +15,7 @@ import pytest
 @dataclass
 class RetrievalResult:
     """Result from a retrieval layer."""
+
     layer: int
     hit: bool
     data: Any

@@ -92,13 +92,13 @@ class C1QueryOptimizer(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.pipeline = model_data.get('pipeline')
-            self.feature_names = model_data.get('feature_names', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.pipeline = model_data.get("pipeline")
+            self.feature_names = model_data.get("feature_names", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -108,22 +108,22 @@ class C1QueryOptimizer(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         model_data = {
-            'pipeline': self.pipeline,
-            'feature_names': self.feature_names,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
+            "pipeline": self.pipeline,
+            "feature_names": self.feature_names,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -182,10 +182,7 @@ class C1QueryOptimizer(BaseMLModel):
             predicted_action = self.OPTIMIZATION_MAPPING.get(int(predicted_class), "No_Optimization")
 
             # Create probability distribution
-            prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            prob_distribution = {self.class_names[i]: float(prob) for i, prob in enumerate(probabilities)}
 
             # Calculate confidence (max probability)
             confidence = float(np.max(probabilities))
@@ -218,16 +215,18 @@ class C1QueryOptimizer(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': predicted_class,
-                'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold,
-                'optimization_action': predicted_action,
-                'requires_optimization': predicted_action != "No_Optimization",
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": predicted_class,
+                    "class_probabilities": [float(p) for p in probabilities],
+                    "thresholds_passed": passes_threshold,
+                    "optimization_action": predicted_action,
+                    "requires_optimization": predicted_action != "No_Optimization",
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -274,10 +273,10 @@ class C1QueryOptimizer(BaseMLModel):
 
         if not extraction_result.success:
             return {
-                'optimization_action': 'No_Optimization',
-                'confidence': 0.0,
-                'reason': 'Feature extraction failed',
-                'recommendations': ['Check query data availability'],
+                "optimization_action": "No_Optimization",
+                "confidence": 0.0,
+                "reason": "Feature extraction failed",
+                "recommendations": ["Check query data availability"],
             }
 
         # Validate input
@@ -314,15 +313,15 @@ class C1QueryOptimizer(BaseMLModel):
         )
 
         return {
-            'optimization_action': prediction.prediction,
-            'confidence': prediction.confidence,
-            'probability_distribution': prediction.probability_distribution,
-            'top_factors': prediction.top_features,
-            'recommendations': recommendations,
-            'optimized_query': optimized_query,
-            'performance_impact': performance_impact,
-            'implementation_effort': self._estimate_implementation_effort(prediction.prediction),
-            'risk_assessment': self._assess_optimization_risk(prediction.prediction, query_context),
+            "optimization_action": prediction.prediction,
+            "confidence": prediction.confidence,
+            "probability_distribution": prediction.probability_distribution,
+            "top_factors": prediction.top_features,
+            "recommendations": recommendations,
+            "optimized_query": optimized_query,
+            "performance_impact": performance_impact,
+            "implementation_effort": self._estimate_implementation_effort(prediction.prediction),
+            "risk_assessment": self._assess_optimization_risk(prediction.prediction, query_context),
         }
 
     def analyze_query_plan(
@@ -351,52 +350,60 @@ class C1QueryOptimizer(BaseMLModel):
         insights = []
 
         # Scan type analysis
-        scan_types = [op.get('operation_type') for op in query_plan.get('operations', [])]
-        table_scans = [st for st in scan_types if st == 'Table Scan']
+        scan_types = [op.get("operation_type") for op in query_plan.get("operations", [])]
+        table_scans = [st for st in scan_types if st == "Table Scan"]
 
         if table_scans:
-            insights.append({
-                'type': 'performance_issue',
-                'severity': 'high',
-                'description': f'{len(table_scans)} table scans detected - consider adding indexes',
-                'recommendation': 'Add appropriate indexes to avoid full table scans',
-            })
+            insights.append(
+                {
+                    "type": "performance_issue",
+                    "severity": "high",
+                    "description": f"{len(table_scans)} table scans detected - consider adding indexes",
+                    "recommendation": "Add appropriate indexes to avoid full table scans",
+                }
+            )
 
         # Join order analysis
-        join_operations = [op for op in query_plan.get('operations', []) if 'Join' in op.get('operation_type', '')]
+        join_operations = [
+            op for op in query_plan.get("operations", []) if "Join" in op.get("operation_type", "")
+        ]
 
         if len(join_operations) > 3:
-            insights.append({
-                'type': 'complexity_issue',
-                'severity': 'medium',
-                'description': f'Complex join with {len(join_operations)} operations',
-                'recommendation': 'Consider query rewrite or materialized views',
-            })
+            insights.append(
+                {
+                    "type": "complexity_issue",
+                    "severity": "medium",
+                    "description": f"Complex join with {len(join_operations)} operations",
+                    "recommendation": "Consider query rewrite or materialized views",
+                }
+            )
 
         # Cost analysis
-        total_cost = sum(op.get('cost', 0) for op in query_plan.get('operations', []))
+        total_cost = sum(op.get("cost", 0) for op in query_plan.get("operations", []))
 
         if total_cost > 1000:
-            insights.append({
-                'type': 'cost_issue',
-                'severity': 'high',
-                'description': f'High execution cost: {total_cost:.2f}',
-                'recommendation': 'Optimize query structure and add indexes',
-            })
+            insights.append(
+                {
+                    "type": "cost_issue",
+                    "severity": "high",
+                    "description": f"High execution cost: {total_cost:.2f}",
+                    "recommendation": "Optimize query structure and add indexes",
+                }
+            )
 
         # Generate optimization suggestions
         suggestions = self._generate_plan_suggestions(query_plan, insights)
 
         return {
-            'plan_analysis': {
-                'total_cost': total_cost,
-                'operation_count': len(query_plan.get('operations', [])),
-                'table_scans': len(table_scans),
-                'join_operations': len(join_operations),
+            "plan_analysis": {
+                "total_cost": total_cost,
+                "operation_count": len(query_plan.get("operations", [])),
+                "table_scans": len(table_scans),
+                "join_operations": len(join_operations),
             },
-            'insights': insights,
-            'suggestions': suggestions,
-            'optimization_priority': self._determine_optimization_priority(insights),
+            "insights": insights,
+            "suggestions": suggestions,
+            "optimization_priority": self._determine_optimization_priority(insights),
         }
 
     def recommend_indexes(
@@ -450,16 +457,18 @@ class C1QueryOptimizer(BaseMLModel):
                 else:
                     impact = "Low"
 
-                recommendations.append({
-                    'table': table,
-                    'column': column,
-                    'index_type': index_type,
-                    'operator': operator,
-                    'selectivity': selectivity,
-                    'impact': impact,
-                    'estimated_improvement': self._estimate_index_improvement(selectivity),
-                    'recommendation': f'Create {index_type} index on {table}.{column}',
-                })
+                recommendations.append(
+                    {
+                        "table": table,
+                        "column": column,
+                        "index_type": index_type,
+                        "operator": operator,
+                        "selectivity": selectivity,
+                        "impact": impact,
+                        "estimated_improvement": self._estimate_index_improvement(selectivity),
+                        "recommendation": f"Create {index_type} index on {table}.{column}",
+                    }
+                )
 
         # Analyze JOIN conditions
         join_conditions = query_context.get("join_conditions", [])
@@ -472,41 +481,49 @@ class C1QueryOptimizer(BaseMLModel):
 
             if left_table and left_column and right_table and right_column:
                 # Recommend foreign key indexes
-                recommendations.append({
-                    'table': left_table,
-                    'column': left_column,
-                    'index_type': 'B-Tree',
-                    'purpose': 'foreign_key',
-                    'impact': 'High',
-                    'estimated_improvement': 0.3,
-                    'recommendation': f'Create index on {left_table}.{left_column} for join optimization',
-                })
+                recommendations.append(
+                    {
+                        "table": left_table,
+                        "column": left_column,
+                        "index_type": "B-Tree",
+                        "purpose": "foreign_key",
+                        "impact": "High",
+                        "estimated_improvement": 0.3,
+                        "recommendation": f"Create index on {left_table}.{left_column} for join optimization",
+                    }
+                )
 
-                recommendations.append({
-                    'table': right_table,
-                    'column': right_column,
-                    'index_type': 'B-Tree',
-                    'purpose': 'foreign_key',
-                    'impact': 'High',
-                    'estimated_improvement': 0.3,
-                    'recommendation': f'Create index on {right_table}.{right_column} for join optimization',
-                })
+                recommendations.append(
+                    {
+                        "table": right_table,
+                        "column": right_column,
+                        "index_type": "B-Tree",
+                        "purpose": "foreign_key",
+                        "impact": "High",
+                        "estimated_improvement": 0.3,
+                        "recommendation": f"Create index on {right_table}.{right_column} for join optimization",
+                    }
+                )
 
         # Sort by impact and remove duplicates
         unique_recommendations = {}
         for rec in recommendations:
             key = f"{rec['table']}.{rec['column']}"
-            if key not in unique_recommendations or rec['impact'] == "High":
+            if key not in unique_recommendations or rec["impact"] == "High":
                 unique_recommendations[key] = rec
 
         final_recommendations = list(unique_recommendations.values())
-        final_recommendations.sort(key=lambda x: {'High': 3, 'Medium': 2, 'Low': 1}[x['impact']], reverse=True)
+        final_recommendations.sort(
+            key=lambda x: {"High": 3, "Medium": 2, "Low": 1}[x["impact"]], reverse=True
+        )
 
         return {
-            'recommendations': final_recommendations[:10],  # Top 10 recommendations
-            'total_recommendations': len(final_recommendations),
-            'high_impact_count': len([r for r in final_recommendations if r['impact'] == 'High']),
-            'estimated_overall_improvement': sum(r.get('estimated_improvement', 0) for r in final_recommendations[:5]),
+            "recommendations": final_recommendations[:10],  # Top 10 recommendations
+            "total_recommendations": len(final_recommendations),
+            "high_impact_count": len([r for r in final_recommendations if r["impact"] == "High"]),
+            "estimated_overall_improvement": sum(
+                r.get("estimated_improvement", 0) for r in final_recommendations[:5]
+            ),
         }
 
     def _generate_optimization_recommendations(
@@ -519,74 +536,92 @@ class C1QueryOptimizer(BaseMLModel):
         recommendations = []
 
         if action == "Add_Index":
-            recommendations.extend([
-                "Create appropriate indexes for frequently queried columns",
-                "Analyze WHERE clause predicates for index candidates",
-                "Consider composite indexes for multi-column queries",
-                "Monitor index usage and effectiveness",
-            ])
+            recommendations.extend(
+                [
+                    "Create appropriate indexes for frequently queried columns",
+                    "Analyze WHERE clause predicates for index candidates",
+                    "Consider composite indexes for multi-column queries",
+                    "Monitor index usage and effectiveness",
+                ]
+            )
         elif action == "Rewrite_Query":
-            recommendations.extend([
-                "Restructure query for better performance",
-                "Eliminate unnecessary subqueries and CTEs",
-                "Use appropriate join types and order",
-                "Optimize WHERE clauses and predicates",
-            ])
+            recommendations.extend(
+                [
+                    "Restructure query for better performance",
+                    "Eliminate unnecessary subqueries and CTEs",
+                    "Use appropriate join types and order",
+                    "Optimize WHERE clauses and predicates",
+                ]
+            )
         elif action == "Optimize_Joins":
-            recommendations.extend([
-                "Review and optimize join operations",
-                "Ensure proper join order based on table sizes",
-                "Consider join hints if necessary",
-                "Add indexes on foreign key columns",
-            ])
+            recommendations.extend(
+                [
+                    "Review and optimize join operations",
+                    "Ensure proper join order based on table sizes",
+                    "Consider join hints if necessary",
+                    "Add indexes on foreign key columns",
+                ]
+            )
         elif action == "Add_Caching":
-            recommendations.extend([
-                "Implement query result caching",
-                "Cache frequently accessed data",
-                "Consider application-level caching",
-                "Monitor cache hit rates",
-            ])
+            recommendations.extend(
+                [
+                    "Implement query result caching",
+                    "Cache frequently accessed data",
+                    "Consider application-level caching",
+                    "Monitor cache hit rates",
+                ]
+            )
         elif action == "Update_Statistics":
-            recommendations.extend([
-                "Update table statistics for better query plans",
-                "Run ANALYZE on modified tables",
-                "Consider automatic statistics updates",
-                "Monitor query plan changes",
-            ])
+            recommendations.extend(
+                [
+                    "Update table statistics for better query plans",
+                    "Run ANALYZE on modified tables",
+                    "Consider automatic statistics updates",
+                    "Monitor query plan changes",
+                ]
+            )
         elif action == "Partition_Table":
-            recommendations.extend([
-                "Implement table partitioning for large tables",
-                "Choose appropriate partitioning strategy",
-                "Consider partition pruning benefits",
-                "Monitor partition performance",
-            ])
+            recommendations.extend(
+                [
+                    "Implement table partitioning for large tables",
+                    "Choose appropriate partitioning strategy",
+                    "Consider partition pruning benefits",
+                    "Monitor partition performance",
+                ]
+            )
         elif action == "Materialize_View":
-            recommendations.extend([
-                "Create materialized views for complex queries",
-                "Schedule regular view refreshes",
-                "Monitor view performance and usage",
-                "Consider incremental maintenance",
-            ])
+            recommendations.extend(
+                [
+                    "Create materialized views for complex queries",
+                    "Schedule regular view refreshes",
+                    "Monitor view performance and usage",
+                    "Consider incremental maintenance",
+                ]
+            )
         else:  # No_Optimization
-            recommendations.extend([
-                "Query is already optimally structured",
-                "Continue monitoring query performance",
-                "Maintain current indexes and statistics",
-                "Regular performance reviews recommended",
-            ])
+            recommendations.extend(
+                [
+                    "Query is already optimally structured",
+                    "Continue monitoring query performance",
+                    "Maintain current indexes and statistics",
+                    "Regular performance reviews recommended",
+                ]
+            )
 
         # Add context-specific recommendations
-        complexity_score = features.get('query_complexity_score', 0)
+        complexity_score = features.get("query_complexity_score", 0)
         if complexity_score > 0.7:
             recommendations.append("High complexity query - consider breaking into smaller queries")
 
-        cache_hit_rate = features.get('cache_hit_rate', 0)
+        cache_hit_rate = features.get("cache_hit_rate", 0)
         if cache_hit_rate < 0.5:
             recommendations.append("Low cache hit rate - implement query caching")
 
         return recommendations
 
-    def _generate_optimized_query(self, action: str, original_query: str, context: dict[str, Any]) -> str | None:
+    def _generate_optimized_query(
+        self, action: str, original_query: str, context: dict[str, Any]
+    ) -> str | None:
         """Generate optimized query based on action."""
         if not original_query or action == "No_Optimization":
             return None
@@ -600,7 +635,9 @@ class C1QueryOptimizer(BaseMLModel):
                 # Suggest specific columns
                 tables = context.get("tables", [])
                 if tables:
-                    optimized_query = original_query.replace("SELECT *", f"SELECT specific_columns FROM {tables[0]}")
+                    optimized_query = original_query.replace(
+                        "SELECT *", f"SELECT specific_columns FROM {tables[0]}"
+                    )
 
         elif action == "Optimize_Joins":
             # Basic join optimization hints
@@ -724,35 +761,37 @@ class C1QueryOptimizer(BaseMLModel):
 
     def _extract_plan_features(self, query_plan: dict[str, Any]) -> dict[str, float]:
         """Extract features from query execution plan."""
-        operations = query_plan.get('operations', [])
+        operations = query_plan.get("operations", [])
 
         features = {
-            'operation_count': len(operations),
-            'total_cost': sum(op.get('cost', 0) for op in operations),
-            'table_scans': len([op for op in operations if op.get('operation_type') == 'Table Scan']),
-            'index_scans': len([op for op in operations if 'Index Scan' in op.get('operation_type', '')]),
-            'join_operations': len([op for op in operations if 'Join' in op.get('operation_type', '')]),
+            "operation_count": len(operations),
+            "total_cost": sum(op.get("cost", 0) for op in operations),
+            "table_scans": len([op for op in operations if op.get("operation_type") == "Table Scan"]),
+            "index_scans": len([op for op in operations if "Index Scan" in op.get("operation_type", "")]),
+            "join_operations": len([op for op in operations if "Join" in op.get("operation_type", "")]),
         }
 
         return features
 
-    def _generate_plan_suggestions(self, query_plan: dict[str, Any], insights: list[dict[str, Any]]) -> list[str]:
+    def _generate_plan_suggestions(
+        self, query_plan: dict[str, Any], insights: list[dict[str, Any]]
+    ) -> list[str]:
         """Generate suggestions based on plan analysis."""
         suggestions = []
 
         # Add suggestions based on insights
         for insight in insights:
-            if insight.get('recommendation'):
-                suggestions.append(insight['recommendation'])
+            if insight.get("recommendation"):
+                suggestions.append(insight["recommendation"])
 
         # Add general suggestions
-        operations = query_plan.get('operations', [])
-        total_cost = sum(op.get('cost', 0) for op in operations)
+        operations = query_plan.get("operations", [])
+        total_cost = sum(op.get("cost", 0) for op in operations)
 
         if total_cost > 1000:
             suggestions.append("Consider query restructuring to reduce execution cost")
 
-        table_scans = len([op for op in operations if op.get('operation_type') == 'Table Scan'])
+        table_scans = len([op for op in operations if op.get("operation_type") == "Table Scan"])
         if table_scans > 0:
             suggestions.append(f"Add indexes to eliminate {table_scans} table scan(s)")
 
@@ -760,8 +799,8 @@ class C1QueryOptimizer(BaseMLModel):
 
     def _determine_optimization_priority(self, insights: list[dict[str, Any]]) -> str:
         """Determine optimization priority based on insights."""
-        high_severity = len([i for i in insights if i.get('severity') == 'high'])
-        medium_severity = len([i for i in insights if i.get('severity') == 'medium'])
+        high_severity = len([i for i in insights if i.get("severity") == "high"])
+        medium_severity = len([i for i in insights if i.get("severity") == "medium"])
 
         if high_severity > 0:
             return "High"
@@ -791,7 +830,7 @@ class C1QueryOptimizer(BaseMLModel):
 
         try:
             # Get feature importances from Gradient Boosting
-            gb_model = self.pipeline.named_steps['classifier']
+            gb_model = self.pipeline.named_steps["classifier"]
             importances = gb_model.feature_importances_
 
             # Get feature names
@@ -800,20 +839,24 @@ class C1QueryOptimizer(BaseMLModel):
             # Create feature importance list
             feature_importance = []
             for i, (name, importance) in enumerate(zip(feature_names, importances)):
-                feature_importance.append({
-                    'feature_name': name,
-                    'importance_score': float(importance),
-                    'feature_value': model_input.features.get(name),
-                    'rank': i + 1,
-                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0,
-                })
+                feature_importance.append(
+                    {
+                        "feature_name": name,
+                        "importance_score": float(importance),
+                        "feature_value": model_input.features.get(name),
+                        "rank": i + 1,
+                        "relative_importance": float(importance / max(importances))
+                        if max(importances) > 0
+                        else 0.0,
+                    }
+                )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -877,8 +920,8 @@ class C1QueryOptimizer(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert optimization type string to class index
             if isinstance(label, str):
@@ -898,17 +941,22 @@ class C1QueryOptimizer(BaseMLModel):
         y = np.array(y)
 
         # Create pipeline with scaling and Gradient Boosting
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', GradientBoostingClassifier(
-                n_estimators=100,
-                learning_rate=0.1,
-                max_depth=6,
-                min_samples_split=5,
-                min_samples_leaf=2,
-                random_state=42,
-            )),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    GradientBoostingClassifier(
+                        n_estimators=100,
+                        learning_rate=0.1,
+                        max_depth=6,
+                        min_samples_split=5,
+                        min_samples_leaf=2,
+                        random_state=42,
+                    ),
+                ),
+            ]
+        )
 
         # Train model
         self.pipeline.fit(X, y)

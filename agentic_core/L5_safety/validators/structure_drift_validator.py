@@ -215,7 +215,9 @@ def generate_structure_manifest() -> dict[str, Any]:
         relative_path = py_file.relative_to(PROJECT_ROOT).as_posix()
         manifest["python_files"].append(relative_path)
     content_for_hash = json.dumps(
-        {k: v for k, v in manifest.items() if k != "hash"}, sort_keys=True, separators=(",", ":"),
+        {k: v for k, v in manifest.items() if k != "hash"},
+        sort_keys=True,
+        separators=(",", ":"),
     )
     manifest["hash"] = hashlib.sha256(content_for_hash.encode()).hexdigest()
     return manifest

@@ -112,7 +112,7 @@ class AICheckAuditEmitter:
             try:
                 with open(self._path, "a", encoding="utf-8") as f:
                     f.write(record.to_jsonl() + "\n")
-            except OSError as exc:    # guardian: Add error context logging
+            except OSError as exc:  # guardian: Add error context logging
                 logger.warning("AICheckAuditEmitter: write failed: %s", exc)
         if human_enqueued:
             logger.warning(

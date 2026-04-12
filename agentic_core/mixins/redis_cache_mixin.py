@@ -179,8 +179,11 @@ class CircuitBreaker:
 
     def record_failure(self) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.record_failure")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreaker.record_failure"
+        )
 
         self.failure_count += 1
         self.last_failure_time = time.time()
@@ -226,6 +229,7 @@ class RedisCacheMixin:
         to ensure connection pool reuse and centralized auditing.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RedisCacheMixin.redis")
 

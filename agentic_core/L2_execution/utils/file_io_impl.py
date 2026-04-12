@@ -233,7 +233,9 @@ class FileIo:
             with open(file_path, "rb") as f:
                 reader = PyPDF2.PdfReader(f)
                 return self._extract_pdf_pages_text(reader, file_path)
-        except PyPDF2.errors.PdfReadError as e:    # guardian: File operations should check existence before access
+        except (
+            PyPDF2.errors.PdfReadError
+        ) as e:  # guardian: File operations should check existence before access
             return f"Read Error (PDF): Could not read PDF file '{file_path}'. {e}"
         except FileNotFoundError:
             return f"Read Error: File not found at '{file_path}'."
@@ -258,19 +260,19 @@ class FileIo:
 
     def _read_text_file(self, file_path: str) -> str:
         """
-        Helper to read content from a text-based file.
-    # guardian: File operations should check existence before access
-        Args:
-            file_path (str): The path to the text file.    # guardian: Encoding errors should specify fallback encoding strategy
+            Helper to read content from a text-based file.
+        # guardian: File operations should check existence before access
+            Args:
+                file_path (str): The path to the text file.    # guardian: Encoding errors should specify fallback encoding strategy
 
-        Returns:
-            str: The content of the text file.
+            Returns:
+                str: The content of the text file.
         """
         try:
             with open(file_path, encoding="utf-8") as f:
-                return f.read()    # guardian: File operations should check existence before access
+                return f.read()  # guardian: File operations should check existence before access
         except FileNotFoundError:
-            return f"Read Error: File not found at '{file_path}'."    # guardian: Encoding errors should specify fallback encoding strategy
+            return f"Read Error: File not found at '{file_path}'."  # guardian: Encoding errors should specify fallback encoding strategy
         except UnicodeDecodeError:
             return f"Read Error: Could not decode file '{file_path}' with utf-8. Try a different encoding."
         except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
@@ -323,7 +325,7 @@ class FileIo:
         _invoke_authorize_and_execute(
             _ectx,
             lambda p: p,
-            "default",    # guardian: Add error context logging
+            "default",  # guardian: Add error context logging
             file_path,
             target_name="file_io_impl.save_file",
         )
@@ -332,7 +334,7 @@ class FileIo:
             with open(file_path, "w", encoding="utf-8") as f:
                 f.write(content)
             return f"[OK] File saved successfully: {file_path}"
-        except OSError as e:    # guardian: Add error context logging
+        except OSError as e:  # guardian: Add error context logging
             return f"Save Error (IO): Could not save file '{file_path}'. {e}"
         except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
             return f"Save Error (Unexpected): {e}"

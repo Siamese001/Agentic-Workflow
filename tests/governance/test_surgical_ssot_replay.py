@@ -133,7 +133,10 @@ class TestSurgicalSSOTReplay:
         store1._files = initial_state.copy()
 
         manifest1 = SurgicalManifest(
-            manifest_id="deterministic_test", changes=changes, ssot_hash="", timestamp=1234567890.0,
+            manifest_id="deterministic_test",
+            changes=changes,
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         store1.apply_surgical_manifest(manifest1)
@@ -144,7 +147,10 @@ class TestSurgicalSSOTReplay:
         store2._files = initial_state.copy()
 
         manifest2 = SurgicalManifest(
-            manifest_id="deterministic_test", changes=changes, ssot_hash="", timestamp=1234567890.0,
+            manifest_id="deterministic_test",
+            changes=changes,
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         store2.apply_surgical_manifest(manifest2)
@@ -163,7 +169,10 @@ class TestSurgicalSSOTReplay:
         ]
 
         manifest = SurgicalManifest(
-            manifest_id="replay_manifest", changes=changes, ssot_hash="", timestamp=1234567890.0,
+            manifest_id="replay_manifest",
+            changes=changes,
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         # Run 1
@@ -190,7 +199,10 @@ class TestSurgicalSSOTReplay:
         changes = [SurgicalChange(target="important.py", operation="replace", content="modified_content")]
 
         manifest = SurgicalManifest(
-            manifest_id="secure_manifest", changes=changes, ssot_hash="", timestamp=1234567890.0,
+            manifest_id="secure_manifest",
+            changes=changes,
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         # When - Apply changes
@@ -215,12 +227,18 @@ class TestSurgicalSSOTReplay:
 
         # Manifest 1: A then B
         manifest1 = SurgicalManifest(
-            manifest_id="order_test_1", changes=[change_a, change_b], ssot_hash="", timestamp=1234567890.0,
+            manifest_id="order_test_1",
+            changes=[change_a, change_b],
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         # Manifest 2: B then A
         manifest2 = SurgicalManifest(
-            manifest_id="order_test_2", changes=[change_b, change_a], ssot_hash="", timestamp=1234567890.0,
+            manifest_id="order_test_2",
+            changes=[change_b, change_a],
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         # Apply both
@@ -241,12 +259,18 @@ class TestSurgicalSSOTReplay:
         changes = [SurgicalChange(target="signature_test.py", operation="insert", content="test_content")]
 
         manifest = SurgicalManifest(
-            manifest_id="signature_manifest", changes=changes, ssot_hash="", timestamp=1234567890.0,
+            manifest_id="signature_manifest",
+            changes=changes,
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         # When - Create identical manifest
         identical_manifest = SurgicalManifest(
-            manifest_id="signature_manifest", changes=changes, ssot_hash="", timestamp=1234567890.0,
+            manifest_id="signature_manifest",
+            changes=changes,
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         # Then - Signatures should be identical
@@ -264,7 +288,10 @@ class TestSurgicalSSOTReplay:
         ]
 
         tampered_manifest = SurgicalManifest(
-            manifest_id="signature_manifest", changes=tampered_changes, ssot_hash="", timestamp=1234567890.0,
+            manifest_id="signature_manifest",
+            changes=tampered_changes,
+            ssot_hash="",
+            timestamp=1234567890.0,
         )
 
         assert manifest.signature != tampered_manifest.signature, (

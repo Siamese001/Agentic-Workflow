@@ -4,6 +4,7 @@ fan_in=13 — this module is imported by 13 other modules.
 ADG contract: import-hygiene is covered by test_ProvenancetrackerStrategy_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import sys
@@ -36,12 +37,15 @@ pytestmark = pytest.mark.unit
 class TestSourceCitationContract:
     def test_is_dataclass(self):
         import dataclasses
+
         assert dataclasses.is_dataclass(SourceCitation)
 
     def test_field_names_present(self):
         import dataclasses
+
         field_names = {f.name for f in dataclasses.fields(SourceCitation)}
-        assert field_names >= {'relevance_score', 'citation_type', 'snippet', 'source_id', 'uri'}
+        assert field_names >= {"relevance_score", "citation_type", "snippet", "source_id", "uri"}
+
 
 class TestArtifactLineageContract:
     def test_is_class(self):
@@ -50,35 +54,41 @@ class TestArtifactLineageContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ArtifactLineage, type)
 
+
 class TestProvenanceTrackerContract:
     def test_is_class(self):
         assert isinstance(ProvenanceTracker, type)
 
     def test_has_method_capture_context(self):
-        assert callable(getattr(ProvenanceTracker, 'capture_context', None))
+        assert callable(getattr(ProvenanceTracker, "capture_context", None))
 
     def test_has_method_record_generation(self):
-        assert callable(getattr(ProvenanceTracker, 'record_generation', None))
+        assert callable(getattr(ProvenanceTracker, "record_generation", None))
 
     def test_has_method_verify_citations(self):
-        assert callable(getattr(ProvenanceTracker, 'verify_citations', None))
+        assert callable(getattr(ProvenanceTracker, "verify_citations", None))
 
     def test_has_method_get_lineage(self):
-        assert callable(getattr(ProvenanceTracker, 'get_lineage', None))
+        assert callable(getattr(ProvenanceTracker, "get_lineage", None))
+
 
 class TestProvenanceContextContract:
     def test_is_class(self):
         assert isinstance(ProvenanceContext, type)
 
     def test_has_method_record_generation(self):
-        assert callable(getattr(ProvenanceContext, 'record_generation', None))
+        assert callable(getattr(ProvenanceContext, "record_generation", None))
+
 
 class TestGetProvenanceTrackerFunction:
     def test_is_callable(self):
         pass
+
+
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
+
 
 class TestBatchSizeConstant:
     def test_is_not_none(self):

@@ -261,8 +261,11 @@ class OrchestrationTopology(BaseModel):
     def validate_agents_exist(self) -> OrchestrationTopology:
         """Ensure all agents listed in phases exist in the agent registry."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationTopology.validate_agents_exist")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OrchestrationTopology.validate_agents_exist"
+        )
 
         known_agents = set(self.agents.keys())
         for phase, agent_list in self.phases.items():

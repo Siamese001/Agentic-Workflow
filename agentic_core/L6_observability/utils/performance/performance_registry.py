@@ -354,7 +354,9 @@ class PerformanceRegistry:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "PerformanceRegistry.get_instance",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "PerformanceRegistry.get_instance",
         )
 
         if cls._instance is None:

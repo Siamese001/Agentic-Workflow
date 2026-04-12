@@ -11,6 +11,7 @@ Given a list of patched modules:
 
 This avoids a full 6,290-module rescan when only 10-15 files changed.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -30,9 +31,11 @@ from agentic_core.adg.extraction.static_scanner import Edge, _scan_file
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _latest_sqlite() -> Path:
     """Find the most recent ADG SQLite file."""
     import glob
+
     candidates = sorted(
         glob.glob(str(ROOT / "artifacts" / "adg" / "adg_indexed_*.sqlite")),
         key=os.path.getmtime,
@@ -46,8 +49,10 @@ def _latest_sqlite() -> Path:
 # Step 1 — Impacted closure
 # ---------------------------------------------------------------------------
 
+
 def _compute_impacted_closure(
-    patched_files: list[str], conn: sqlite3.Connection,
+    patched_files: list[str],
+    conn: sqlite3.Connection,
 ) -> set[str]:
     """Compute impacted closure: patched + import neighbors + export neighbors.
 
@@ -91,6 +96,7 @@ def _compute_impacted_closure(
 # Step 2 — Rescan impacted files
 # ---------------------------------------------------------------------------
 
+
 def _rescan_impacted(
     impacted_files: set[str],
     repo_root: Path,
@@ -121,12 +127,14 @@ def _rescan_impacted(
 # Step 3 — Update SQLite (delete-then-insert for impacted files)
 # ---------------------------------------------------------------------------
 
+
 def _resolve_node_id(conn: sqlite3.Connection, adg_name: str, cache: dict[str, int]) -> int:
     """Lookup or create a node by its adg_name.  Uses a session cache."""
     if adg_name in cache:
         return cache[adg_name]
     row = conn.execute(
-        "SELECT id FROM nodes WHERE adg_name = ?", (adg_name,),
+        "SELECT id FROM nodes WHERE adg_name = ?",
+        (adg_name,),
     ).fetchone()
     if row:
         cache[adg_name] = row[0]
@@ -185,6 +193,7 @@ def _update_sqlite(
 # Step 4 — Metrics
 # ---------------------------------------------------------------------------
 
+
 def _compute_metrics(db_path: Path) -> dict:
     """Run the verification SQL pack and compute ratios."""
     conn = sqlite3.connect(str(db_path))
@@ -217,9 +226,12 @@ def _compute_metrics(db_path: Path) -> dict:
         ratio = n / d if d else 0
         gap = max(0, int(target * d - n))
         ratios[label] = {
-            "numerator": n, "denominator": d,
-            "ratio": round(ratio, 4), "target": target,
-            "gap": gap, "pass": ratio >= target,
+            "numerator": n,
+            "denominator": d,
+            "ratio": round(ratio, 4),
+            "target": target,
+            "gap": gap,
+            "pass": ratio >= target,
         }
     return {"counts": counts, "ratios": ratios}
 
@@ -227,6 +239,7 @@ def _compute_metrics(db_path: Path) -> dict:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main():
     parser = argparse.ArgumentParser(description="ADG Incremental Update Engine")
@@ -269,11 +282,16 @@ def main():
 
     # Report
     BASELINE = {
-        "agent_executes_agent": 3136, "applies_guardrail": 3136,
-        "calls": 252355, "dispatches_healing_run": 4235,
-        "emits_determinism_digest": 3077, "emits_metric_event": 18033,
-        "pulls_context": 5980, "records_execution_trace": 21562,
-        "validated_by_safety_plane": 3056, "writes_through": 6070,
+        "agent_executes_agent": 3136,
+        "applies_guardrail": 3136,
+        "calls": 252355,
+        "dispatches_healing_run": 4235,
+        "emits_determinism_digest": 3077,
+        "emits_metric_event": 18033,
+        "pulls_context": 5980,
+        "records_execution_trace": 21562,
+        "validated_by_safety_plane": 3056,
+        "writes_through": 6070,
         "writes_to": 18228,
     }
     print("\n=== POST-WAVE COUNTS ===")

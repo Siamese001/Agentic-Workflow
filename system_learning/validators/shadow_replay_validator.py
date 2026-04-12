@@ -242,8 +242,11 @@ class ShadowReplayValidator:
             ValueError: If *replay_results* is empty.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowReplayValidator.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowReplayValidator.validate"
+        )
 
         if not replay_results:
             raise ValueError("ShadowReplayValidator.validate: replay_results must not be empty")

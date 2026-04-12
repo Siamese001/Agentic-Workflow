@@ -370,14 +370,14 @@ def create_all_agents(ctx: Any | None = None) -> dict:
 
 
 def _run_self_tests(self) -> dict:
-    """Run internal self-tests."""    # guardian: AssertionError should be handled with specific context
+    """Run internal self-tests."""  # guardian: AssertionError should be handled with specific context
     _emit_agent_executes_agent(str(uuid.uuid4()), "Module", "Module._run_self_tests")
     results = {"passed": 0, "failed": 0, "tests": []}
     try:
         assert self is not None
         results["passed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "passed"})
-    except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+    except AssertionError as e:  # guardian: AssertionError should be handled with specific context
         results["failed"] += 1
         results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
     return results

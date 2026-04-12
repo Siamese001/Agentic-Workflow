@@ -27,7 +27,7 @@ from agentic_core.core.documentation_framework import (
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -812,9 +812,9 @@ This guide provides comprehensive patterns and best practices for developing rob
             tutorial_path = tutorials_dir / tutorial["file_name"]
             tutorial_path.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(tutorial_path, 'w', encoding='utf-8') as f:
+            with open(tutorial_path, "w", encoding="utf-8") as f:
                 f.write(f"# {tutorial['title']}\n\n")
-                f.write(tutorial['content'])
+                f.write(tutorial["content"])
 
             logger.info(f"✅ Generated tutorial: {tutorial_path}")
 
@@ -839,7 +839,7 @@ def validate_documentation(docs_dir: Path) -> bool:
 
     for md_file in md_files:
         try:
-            with open(md_file, encoding='utf-8') as f:
+            with open(md_file, encoding="utf-8") as f:
                 content = f.read()
 
             # Simple validation (in real implementation, would use proper parsing)
@@ -973,7 +973,7 @@ If you need help with the documentation:
         index_path = docs_dir / "README.md"
         index_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(index_path, 'w', encoding='utf-8') as f:
+        with open(index_path, "w", encoding="utf-8") as f:
             f.write(index_content)
 
         logger.info(f"✅ Generated documentation index: {index_path}")
@@ -990,39 +990,39 @@ def main():
         description="Documentation Generation Tool - Phase 4 Implementation",
     )
 
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # API documentation command
-    api_parser = subparsers.add_parser('api', help='Generate API documentation')
-    api_parser.add_argument('sources', nargs='+', help='Source files or directories')
-    api_parser.add_argument('--output', default='docs/generated', help='Output directory')
+    api_parser = subparsers.add_parser("api", help="Generate API documentation")
+    api_parser.add_argument("sources", nargs="+", help="Source files or directories")
+    api_parser.add_argument("--output", default="docs/generated", help="Output directory")
 
     # Architecture documentation command
-    arch_parser = subparsers.add_parser('architecture', help='Generate architecture documentation')
-    arch_parser.add_argument('source', help='Source directory for architecture analysis')
-    arch_parser.add_argument('--output', default='docs/generated', help='Output directory')
+    arch_parser = subparsers.add_parser("architecture", help="Generate architecture documentation")
+    arch_parser.add_argument("source", help="Source directory for architecture analysis")
+    arch_parser.add_argument("--output", default="docs/generated", help="Output directory")
 
     # Knowledge transfer command
-    kt_parser = subparsers.add_parser('knowledge-transfer', help='Generate knowledge transfer docs')
-    kt_parser.add_argument('--output', default='docs/generated', help='Output directory')
-    kt_parser.add_argument('--all', action='store_true', help='Generate all knowledge transfer materials')
+    kt_parser = subparsers.add_parser("knowledge-transfer", help="Generate knowledge transfer docs")
+    kt_parser.add_argument("--output", default="docs/generated", help="Output directory")
+    kt_parser.add_argument("--all", action="store_true", help="Generate all knowledge transfer materials")
 
     # Tutorials command
-    tutorials_parser = subparsers.add_parser('tutorials', help='Generate tutorial documentation')
-    tutorials_parser.add_argument('--output', default='docs/generated', help='Output directory')
+    tutorials_parser = subparsers.add_parser("tutorials", help="Generate tutorial documentation")
+    tutorials_parser.add_argument("--output", default="docs/generated", help="Output directory")
 
     # Validation command
-    validate_parser = subparsers.add_parser('validate', help='Validate documentation quality')
-    validate_parser.add_argument('docs_dir', help='Documentation directory to validate')
+    validate_parser = subparsers.add_parser("validate", help="Validate documentation quality")
+    validate_parser.add_argument("docs_dir", help="Documentation directory to validate")
 
     # Index command
-    index_parser = subparsers.add_parser('index', help='Generate documentation index')
-    index_parser.add_argument('--output', default='docs', help='Documentation directory')
+    index_parser = subparsers.add_parser("index", help="Generate documentation index")
+    index_parser.add_argument("--output", default="docs", help="Documentation directory")
 
     # Generate all command
-    all_parser = subparsers.add_parser('all', help='Generate all documentation')
-    all_parser.add_argument('--source', default='agentic_core', help='Source directory')
-    all_parser.add_argument('--output', default='docs/generated', help='Output directory')
+    all_parser = subparsers.add_parser("all", help="Generate all documentation")
+    all_parser.add_argument("--source", default="agentic_core", help="Source directory")
+    all_parser.add_argument("--output", default="docs/generated", help="Output directory")
 
     args = parser.parse_args()
 
@@ -1032,40 +1032,50 @@ def main():
 
     success = True
 
-    if args.command == 'api':
+    if args.command == "api":
         source_paths = [Path(p) for p in args.sources]
         output_dir = Path(args.output)
         success = generate_api_documentation(source_paths, output_dir)
 
-    elif args.command == 'architecture':
+    elif args.command == "architecture":
         source_path = Path(args.source)
         output_dir = Path(args.output)
         success = generate_architecture_documentation(source_path, output_dir)
 
-    elif args.command == 'knowledge-transfer':
+    elif args.command == "knowledge-transfer":
         output_dir = Path(args.output)
         success = generate_knowledge_transfer_docs(output_dir)
 
-    elif args.command == 'tutorials':
+    elif args.command == "tutorials":
         output_dir = Path(args.output)
         success = generate_tutorials(output_dir)
 
-    elif args.command == 'validate':
+    elif args.command == "validate":
         docs_dir = Path(args.docs_dir)
         success = validate_documentation(docs_dir)
 
-    elif args.command == 'index':
+    elif args.command == "index":
         output_dir = Path(args.output)
         success = generate_documentation_index(output_dir)
 
-    elif args.command == 'all':
+    elif args.command == "all":
         source_path = Path(args.source)
         output_dir = Path(args.output)
 
         logger.info("Generating all documentation...")
 
         # Generate API docs
-        api_paths = [source_path / layer for layer in ["L0_routing", "L1_reasoning", "L2_execution", "L3_orchestration", "L4_state", "L5_safety"]]
+        api_paths = [
+            source_path / layer
+            for layer in [
+                "L0_routing",
+                "L1_reasoning",
+                "L2_execution",
+                "L3_orchestration",
+                "L4_state",
+                "L5_safety",
+            ]
+        ]
         success &= generate_api_documentation(api_paths, output_dir)
 
         # Generate architecture docs

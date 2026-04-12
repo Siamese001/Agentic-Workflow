@@ -252,8 +252,11 @@ class PolicyHashReport:
     @property
     def coupling_rate(self) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyHashReport.coupling_rate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyHashReport.coupling_rate"
+        )
 
         total = len(self.instruction_modules)
         if total == 0:

@@ -326,7 +326,7 @@ class DomainPlannerAdapter:
         logger.info(f"DomainPlannerAdapter: executing legacy agent for workflow {workflow_id}")
         try:
             loop = asyncio.get_event_loop()
-        except RuntimeError:    # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
         if loop.is_running():
@@ -334,14 +334,19 @@ class DomainPlannerAdapter:
 
             with concurrent.futures.ThreadPoolExecutor() as executor:
                 future = executor.submit(
-                    asyncio.run, self._legacy_agent.run_async(plan, job_context, workflow_id),
+                    asyncio.run,
+                    self._legacy_agent.run_async(plan, job_context, workflow_id),
                 )
                 return future.result()
         else:
             return loop.run_until_complete(self._legacy_agent.run_async(plan, job_context, workflow_id))
 
     def plan(
-        self, plan: Any, job_context: dict[str, Any], workflow_id: str, context: AdapterContext | None = None,
+        self,
+        plan: Any,
+        job_context: dict[str, Any],
+        workflow_id: str,
+        context: AdapterContext | None = None,
     ) -> AdapterResult:
         """
         Convenience method matching the expected domain planner interface.
@@ -358,7 +363,9 @@ class DomainPlannerAdapter:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(_uuid.uuid4()), LayerSegment.L5_POLICY, f"DomainPlannerAdapter.plan:{workflow_id}",
+            str(_uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"DomainPlannerAdapter.plan:{workflow_id}",
         )
         return self.execute(context=context, plan=plan, job_context=job_context, workflow_id=workflow_id)
 

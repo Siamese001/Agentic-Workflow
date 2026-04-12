@@ -3,11 +3,27 @@ In-memory BM25 retrieval engine for hybrid search operations.
 
 Zero-Ambiguity Standard: Renamed from Bm25Store.py to bm25_store.py
 Moved from semantic_memory/store to L4_state/memory/semantic
+
+SparseIndex (Phase B1)
+──────────────────────
+Persistent sidecar-backed sparse retrieval. Reads from SQLite FTS5 + term_freq
+databases built by tools/generate/ingestion/build_sparse_index.py.
+
+Query contract (same as Bm25Store.query):
+  .search(query: str, top_k: int) -> list[dict]
+  Each dict: {"id", "content", "score", "metadata", "source"="sparse_fts"}
 """
 
 from __future__ import annotations
 
+import json
+import logging
+import re
+import sqlite3
+from pathlib import Path
 from typing import Any
+
+_SparseLogger = logging.getLogger(__name__)
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -248,3 +264,175 @@ _bm25_store: Any = Bm25Store()
 def get_bm25_store() -> Bm25Store:
     """Get the singleton BM25 store instance for hybrid search operations."""
     return _bm25_store
+
+
+# ---------------------------------------------------------------------------
+# SparseIndex — persistent SQLite FTS5 sidecar (Phase B1)
+# ---------------------------------------------------------------------------
+
+_REPO_ROOT = Path(__file__).resolve().parents[4]
+_SPARSE_DIR = _REPO_ROOT / "data" / "cache" / "sparse"
+
+# Collections that have a built sparse sidecar (all 8 canonical — Phase C)
+_SPARSE_COLLECTIONS = frozenset(
+    {
+        "code_chunks",
+        "symbols",
+        "arch_docs",
+        "tests_guardrails",
+        "runtime_evidence",
+        "process_docs",
+        "ext_knowledge",
+        "incidents_rca",
+    }
+)
+
+# Simple tokenizer — must match build_sparse_index.py tokenize() exactly
+_STOP = frozenset(
+    "self cls none true false return if else elif for while try except finally with "
+    "as import from def class pass break continue and or not in is lambda yield raise "
+    "assert del global nonlocal async await the a an of to".split()
+)
+_SPLIT_RE_SPARSE = re.compile(r"[^A-Za-z0-9_]+")
+_CAMEL_RE_SPARSE = re.compile(r"([a-z0-9])([A-Z])")
+
+
+def _tokenize_sparse(text: str) -> list[str]:
+    """Tokenize a query the same way build_sparse_index.py tokenizes documents."""
+    raw = _SPLIT_RE_SPARSE.split(text)
+    tokens: list[str] = []
+    seen: set[str] = set()
+
+    def _emit(t: str) -> None:
+        if t and t not in seen:
+            seen.add(t)
+            tokens.append(t)
+
+    for tok in raw:
+        if not tok or len(tok) < 2:
+            continue
+        lower = tok.lower()
+        if lower in _STOP:
+            continue
+        _emit(lower)
+        # sub-tokens from CamelCase / snake_case splitting
+        parts = lower.split("_")
+        for part in parts:
+            for sub in _CAMEL_RE_SPARSE.sub(r"\1 \2", part).split():
+                if len(sub) > 1 and sub not in _STOP:
+                    _emit(sub)
+
+    return tokens
+
+
+class SparseIndex:
+    """Persistent FTS5-backed sparse retrieval for a single canonical collection.
+
+    Reads from the SQLite sidecar at data/cache/sparse/<collection>.db
+    built by tools/generate/ingestion/build_sparse_index.py.
+
+    API contract (matches HybridSearchEngine._lexical_search expectations):
+      .search(query, top_k) -> list[{"id", "content", "score", "metadata", "source"}]
+    """
+
+    def __init__(self, collection_name: str) -> None:
+        self.collection_name = collection_name
+        self._db_path = _SPARSE_DIR / f"{collection_name}.db"
+        self._available = self._db_path.exists()
+        if self._available:
+            _SparseLogger.info("SparseIndex loaded: %s (%s)", collection_name, self._db_path.name)
+        else:
+            _SparseLogger.warning(
+                "SparseIndex sidecar missing for '%s': %s — run build_sparse_index.py",
+                collection_name,
+                self._db_path,
+            )
+
+    @property
+    def is_available(self) -> bool:
+        return self._available
+
+    def search(self, query: str, top_k: int = 10) -> list[dict[str, Any]]:
+        """FTS5 search against the sidecar DB.
+
+        Uses FTS5 MATCH on the full query text and falls back to
+        per-token OR if the combined phrase yields no hits.
+
+        Returns list of result dicts ordered by FTS5 rank (best first).
+        """
+        if not self._available:
+            return []
+
+        tokens = _tokenize_sparse(query)
+        if not tokens:
+            return []
+
+        results: list[dict[str, Any]] = []
+        try:
+            conn = sqlite3.connect(str(self._db_path))
+            conn.execute("PRAGMA query_only=ON")
+
+            # Strategy 1: exact phrase match (all tokens must appear)
+            fts_query = " ".join(tokens)
+            rows = conn.execute(
+                "SELECT id, document, snippet(docs_fts, 1, '', '', '...', 20) "
+                "FROM docs_fts WHERE docs_fts MATCH ? ORDER BY rank LIMIT ?",
+                (fts_query, top_k * 2),
+            ).fetchall()
+
+            # Strategy 2: OR-fallback if exact phrase yields nothing
+            if not rows and len(tokens) > 1:
+                fts_or = " OR ".join(tokens)
+                rows = conn.execute(
+                    "SELECT id, document, snippet(docs_fts, 1, '', '', '...', 20) "
+                    "FROM docs_fts WHERE docs_fts MATCH ? ORDER BY rank LIMIT ?",
+                    (fts_or, top_k * 2),
+                ).fetchall()
+
+            for rank, (doc_id, document, _snippet) in enumerate(rows):
+                # BM25-like score: FTS5 rank is negative (lower = better), invert to positive
+                # We use position-based score for normalisation (rank 0 = best)
+                score = 1.0 / (1.0 + rank)
+
+                # Fetch metadata from docs table
+                meta_row = conn.execute("SELECT metadata FROM docs WHERE id=?", (doc_id,)).fetchone()
+                metadata: dict[str, Any] = {}
+                if meta_row and meta_row[0]:
+                    try:
+                        metadata = json.loads(meta_row[0])
+                    except (json.JSONDecodeError, ValueError):
+                        pass
+
+                results.append(
+                    {
+                        "id": doc_id,
+                        "content": document,
+                        "score": score,
+                        "metadata": metadata,
+                        "source": "sparse_fts",
+                    }
+                )
+
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            _SparseLogger.error("SparseIndex query failed for '%s': %s", self.collection_name, e)
+
+        return results[:top_k]
+
+
+# Per-collection singletons — created lazily on first access
+_sparse_index_cache: dict[str, SparseIndex] = {}
+
+
+def get_sparse_index(collection_name: str) -> SparseIndex | None:
+    """Return the SparseIndex singleton for *collection_name*, or None if not supported.
+
+    Only collections in _SPARSE_COLLECTIONS (Phase A targets) are supported.
+    Returns None for unsupported collections so callers can degrade gracefully.
+    """
+    if collection_name not in _SPARSE_COLLECTIONS:
+        return None
+    if collection_name not in _sparse_index_cache:
+        _sparse_index_cache[collection_name] = SparseIndex(collection_name)
+    return _sparse_index_cache[collection_name]

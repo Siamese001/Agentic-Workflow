@@ -117,8 +117,12 @@ def calculate_coverage_metrics(
         CoverageMetrics with analysis results
     """
     default_layers = default_layers or [
-        "L0_routing", "L1_cognition", "L2_execution",
-        "L3_orchestration", "L4_state", "L5_safety",
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
     ]
 
     # Ensure all layers have counts
@@ -137,8 +141,13 @@ def calculate_coverage_metrics(
     is_balanced = entropy >= threshold_entropy
 
     # Find underrepresented layer
-    underrepresented = None if is_balanced else find_underrepresented_layer(
-        proportions, priority_boost_layers,
+    underrepresented = (
+        None
+        if is_balanced
+        else find_underrepresented_layer(
+            proportions,
+            priority_boost_layers,
+        )
     )
 
     return CoverageMetrics(
@@ -174,8 +183,7 @@ def generate_coverage_report(metrics: CoverageMetrics) -> str:
         under = metrics.underrepresented_layer
         prop = metrics.proportions.get(under, 0.0) if under else 0.0
         report += (
-            f"IMBALANCE DETECTED — Underrepresented: {under} "
-            f"({prop:.1%}). Triggering active correction."
+            f"IMBALANCE DETECTED — Underrepresented: {under} ({prop:.1%}). Triggering active correction."
         )
 
     return report
@@ -279,6 +287,7 @@ def main():
 
     # Parse layer counts
     import json
+
     layer_counts = json.loads(args.layer_counts) if args.layer_counts else {}
 
     # Calculate metrics

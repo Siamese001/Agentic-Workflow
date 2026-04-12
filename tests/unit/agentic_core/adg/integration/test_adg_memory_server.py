@@ -22,7 +22,9 @@ from pathlib import Path
 import pytest
 
 # Import actual memory server (not just SQLite)
-repo_root = Path(__file__).parent.parent.parent.parent.parent.parent  # tests/unit/agentic_core/adg/integration -> repo_root
+repo_root = Path(
+    __file__
+).parent.parent.parent.parent.parent.parent  # tests/unit/agentic_core/adg/integration -> repo_root
 
 # Verify memory server file exists
 memory_server_path = repo_root / "tools" / "memory" / "adg_memory_server.py"
@@ -31,6 +33,7 @@ MEMORY_SERVER_AVAILABLE = memory_server_path.exists()
 # Try to parse as valid Python
 try:
     import ast
+
     ast.parse(memory_server_path.read_text())
     MEMORY_SERVER_VALID_PYTHON = True
 except SyntaxError:
@@ -40,6 +43,7 @@ except SyntaxError:
 # ============================================================================
 # Entity Creation Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestCreateEntities:
@@ -56,8 +60,7 @@ class TestCreateEntities:
         entity_type = "test"
 
         try:
-            conn.execute("INSERT INTO entities (name, type) VALUES (?, ?)",
-                        (entity_name, entity_type))
+            conn.execute("INSERT INTO entities (name, type) VALUES (?, ?)", (entity_name, entity_type))
             created = True
         except sqlite3.IntegrityError:
             created = False  # Duplicate
@@ -72,13 +75,11 @@ class TestCreateEntities:
         conn.execute("CREATE TABLE entities (name TEXT PRIMARY KEY, type TEXT)")
 
         # Insert first time
-        conn.execute("INSERT INTO entities (name, type) VALUES (?, ?)",
-                    ("Entity1", "type1"))
+        conn.execute("INSERT INTO entities (name, type) VALUES (?, ?)", ("Entity1", "type1"))
 
         # Try to insert duplicate
         try:
-            conn.execute("INSERT INTO entities (name, type) VALUES (?, ?)",
-                        ("Entity1", "type1"))
+            conn.execute("INSERT INTO entities (name, type) VALUES (?, ?)", ("Entity1", "type1"))
             duplicate_inserted = True
         except sqlite3.IntegrityError:
             duplicate_inserted = False  # Should skip silently
@@ -90,6 +91,7 @@ class TestCreateEntities:
 # ============================================================================
 # Observation Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestAddObservations:
@@ -104,8 +106,7 @@ class TestAddObservations:
         entity = "Entity1"
         content = "This is an observation"
 
-        conn.execute("INSERT INTO observations (entity, content) VALUES (?, ?)",
-                    (entity, content))
+        conn.execute("INSERT INTO observations (entity, content) VALUES (?, ?)", (entity, content))
 
         cursor = conn.execute("SELECT COUNT(*) FROM observations WHERE entity=?", (entity,))
         count = cursor.fetchone()[0]
@@ -129,13 +130,11 @@ class TestAddObservations:
         content = "Duplicate observation"
 
         # Insert first time
-        conn.execute("INSERT INTO observations (entity, content) VALUES (?, ?)",
-                    (entity, content))
+        conn.execute("INSERT INTO observations (entity, content) VALUES (?, ?)", (entity, content))
 
         # Try to insert duplicate (should be ignored)
         try:
-            conn.execute("INSERT INTO observations (entity, content) VALUES (?, ?)",
-                        (entity, content))
+            conn.execute("INSERT INTO observations (entity, content) VALUES (?, ?)", (entity, content))
             inserted = True
         except sqlite3.IntegrityError:
             inserted = False  # Ignored silently
@@ -147,6 +146,7 @@ class TestAddObservations:
 # ============================================================================
 # Relation Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestCreateRelations:
@@ -171,8 +171,10 @@ class TestCreateRelations:
                 pass  # Already exists
 
         # Create relation
-        conn.execute("INSERT INTO relations (from_entity, to_entity, rel_type) VALUES (?, ?, ?)",
-                    (from_entity, to_entity, "depends_on"))
+        conn.execute(
+            "INSERT INTO relations (from_entity, to_entity, rel_type) VALUES (?, ?, ?)",
+            (from_entity, to_entity, "depends_on"),
+        )
 
         cursor = conn.execute("SELECT COUNT(*) FROM relations")
         count = cursor.fetchone()[0]
@@ -184,6 +186,7 @@ class TestCreateRelations:
 # ============================================================================
 # Protected Entity Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestProtectedEntities:
@@ -218,12 +221,10 @@ class TestProtectedEntities:
 
         # Add protected entity (old - 40 days ago)
         old_time = 1000  # 40 days before cutoff
-        conn.execute("INSERT INTO entities VALUES (?, ?, ?)",
-                    ("Layer:L0", "ArchitectureLayer", old_time))
+        conn.execute("INSERT INTO entities VALUES (?, ?, ?)", ("Layer:L0", "ArchitectureLayer", old_time))
 
         # Add regular entity (old - 40 days ago)
-        conn.execute("INSERT INTO entities VALUES (?, ?, ?)",
-                    ("Entity1", "general", old_time))
+        conn.execute("INSERT INTO entities VALUES (?, ?, ?)", ("Entity1", "general", old_time))
 
         # Cleanup old entities (older than 30 days)
         # Set current_time such that 40 days ago is before cutoff
@@ -233,11 +234,14 @@ class TestProtectedEntities:
         protected = ["ArchitectureLayer", "ProjectContext", "ConstitutionalRule"]
         placeholders = ",".join(["?"] * len(protected))
 
-        conn.execute(f"""
+        conn.execute(
+            f"""
             DELETE FROM entities
             WHERE last_updated < ?
             AND type NOT IN ({placeholders})
-        """, (cutoff,) + tuple(protected))
+        """,
+            (cutoff,) + tuple(protected),
+        )
 
         # Check Layer:L0 still exists (protected)
         cursor = conn.execute("SELECT name FROM entities WHERE name=?", ("Layer:L0",))
@@ -253,6 +257,7 @@ class TestProtectedEntities:
 # ============================================================================
 # Session Recall Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestMemRecallSessionStart:
@@ -283,6 +288,7 @@ class TestMemRecallSessionStart:
 # ============================================================================
 # Stats Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestMemGetStats:
@@ -317,6 +323,7 @@ class TestMemGetStats:
 # ============================================================================
 # Persistence Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestSQLitePersistence:
@@ -358,6 +365,7 @@ class TestSQLitePersistence:
 # ADG Context Import Tests
 # ============================================================================
 
+
 @pytest.mark.unit
 class TestMemImportAdgContext:
     """Tests for mem_import_adg_context — seed from ADG Redis hot cache."""
@@ -388,6 +396,7 @@ class TestMemImportAdgContext:
 # ============================================================================
 # Memory Server Import Test
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestAdgMemoryServerReal:

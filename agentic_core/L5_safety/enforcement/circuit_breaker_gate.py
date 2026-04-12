@@ -227,6 +227,7 @@ class CircuitBreaker:
         """Emit circuit breaker state transition to system learning."""
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
             bridge.persist_circuit_breaker_event(
                 breaker_name=self.name,
@@ -247,7 +248,9 @@ class CircuitBreaker:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CircuitBreaker.get_time_until_retry",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CircuitBreaker.get_time_until_retry",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

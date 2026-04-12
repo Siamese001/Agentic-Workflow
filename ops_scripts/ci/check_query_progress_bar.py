@@ -155,9 +155,7 @@ def check_file(path: Path) -> list[Violation]:
                 length = end - start
                 if length >= _FUNC_LINE_THRESHOLD:
                     body_src = _extract_source_lines(source, start, end)
-                    has_loop = any(
-                        isinstance(child, ast.For) for child in ast.walk(node)
-                    )
+                    has_loop = any(isinstance(child, ast.For) for child in ast.walk(node))
                     if has_loop and not _has_compliance_marker(body_src):
                         violations.append(
                             Violation(

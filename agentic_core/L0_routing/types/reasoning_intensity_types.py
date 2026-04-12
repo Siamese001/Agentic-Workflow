@@ -439,7 +439,9 @@ def build_profile_hash(
 def build_envelope_hash(route_decision_trace_id: str, profile_hash: str, policy_hash: str) -> str:
     """Compute the envelope_hash for use before constructing SignedExecutionEnvelope."""
     return _compute_envelope_hash(
-        route_decision_trace_id=route_decision_trace_id, profile_hash=profile_hash, policy_hash=policy_hash,
+        route_decision_trace_id=route_decision_trace_id,
+        profile_hash=profile_hash,
+        policy_hash=policy_hash,
     )
 
 
@@ -522,6 +524,8 @@ def compute_complexity_tier(adg_node_count: int, adg_edge_count: int) -> str:
         if adg_node_count <= config["max_adg_nodes"] and adg_edge_count <= config["max_adg_edges"]:
             return tier
     return "deep"
+
+
 __all__ = [
     "TIER_PARAMETER_TABLE",
     "ADG_COMPLEXITY_TIER_TABLE",

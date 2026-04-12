@@ -12,14 +12,16 @@ from typing import Any
 
 class TriageLevel(Enum):
     """Governance triage levels."""
-    NONE = auto()      # No governance needed
-    STATIC = auto()    # Pre-runtime static checks only
-    RUNTIME = auto()   # Full runtime enforcement
-    MAXIMUM = auto()   # Strict with human-in-the-loop
+
+    NONE = auto()  # No governance needed
+    STATIC = auto()  # Pre-runtime static checks only
+    RUNTIME = auto()  # Full runtime enforcement
+    MAXIMUM = auto()  # Strict with human-in-the-loop
 
 
 class AccessType(Enum):
     """Types of access being requested."""
+
     READ = auto()
     TOOL = auto()
     MODEL = auto()
@@ -31,6 +33,7 @@ class AccessType(Enum):
 @dataclass
 class TriageResult:
     """Result of triage selection."""
+
     level: TriageLevel
     access_type: AccessType
     requires_authority: bool

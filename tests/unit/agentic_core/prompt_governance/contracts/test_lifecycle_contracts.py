@@ -17,6 +17,7 @@ import pytest
 # Lazy import fixtures - avoid collection-time import errors
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="session")
 def plc_imports():
     from agentic_core.L0_routing.types.l0_instruction_packet import InstructionPacket
@@ -25,6 +26,7 @@ def plc_imports():
         PromptBOM,
         TemplateManifest,
     )
+
     return {
         "CompiledPromptArtifact": CompiledPromptArtifact,
         "PromptBOM": PromptBOM,
@@ -44,6 +46,7 @@ def plc_direct_imports():
     from agentic_core.prompt_governance.contracts.template_manifest_types import (
         TemplateManifest as TemplateManifestDirect,
     )
+
     return {
         "CompiledPromptArtifactDirect": CompiledPromptArtifactDirect,
         "PromptBOMDirect": PromptBOMDirect,
@@ -54,6 +57,7 @@ def plc_direct_imports():
 # =============================================================================
 # PromptBOM Tests
 # =============================================================================
+
 
 class TestPromptBOM:
     """Test PromptBOM data contract."""
@@ -187,6 +191,7 @@ class TestPromptBOM:
         d = bom.to_dict()
         assert d["exemplars_required"] == ("a_exemplar", "m_exemplar", "z_exemplar")
 
+
 class TestCompiledPromptArtifact:
     """Test CompiledPromptArtifact data contract."""
 
@@ -234,15 +239,19 @@ class TestCompiledPromptArtifact:
         """Test signature verification with valid key."""
         CompiledPromptArtifact = plc_imports["CompiledPromptArtifact"]
         secret_key = b"test-secret-key"
-        canonical = str({
-            "trace_id": "trace-123",
-            "final_system_string": "System",
-            "final_user_string": "User",
-            "allowed_tools_schema": (),
-            "token_estimate": 100,
-        })
+        canonical = str(
+            {
+                "trace_id": "trace-123",
+                "final_system_string": "System",
+                "final_user_string": "User",
+                "allowed_tools_schema": (),
+                "token_estimate": 100,
+            }
+        )
         signature = hmac.new(
-            secret_key, canonical.encode("utf-8"), hashlib.sha256,
+            secret_key,
+            canonical.encode("utf-8"),
+            hashlib.sha256,
         ).hexdigest()
         artifact = CompiledPromptArtifact(
             trace_id="trace-123",
@@ -286,6 +295,7 @@ class TestCompiledPromptArtifact:
 # =============================================================================
 # TemplateManifest Tests
 # =============================================================================
+
 
 class TestTemplateManifest:
     """Test TemplateManifest data contract."""
@@ -380,6 +390,7 @@ class TestTemplateManifest:
 # =============================================================================
 # InstructionPacket Tests
 # =============================================================================
+
 
 class TestInstructionPacket:
     """Test InstructionPacket data contract."""
@@ -493,12 +504,14 @@ class TestInstructionPacket:
 # Contract Export Tests
 # =============================================================================
 
+
 class TestContractExports:
     """Test that all contracts are properly exported."""
 
     def test_prompt_bom_exported(self, plc_direct_imports) -> None:
         """Test PromptBOM is exported from contracts module."""
         from agentic_core.prompt_governance.contracts import PromptBOM as ExportedBOM
+
         assert ExportedBOM is plc_direct_imports["PromptBOMDirect"]
 
     def test_compiled_artifact_exported(self, plc_direct_imports) -> None:
@@ -506,6 +519,7 @@ class TestContractExports:
         from agentic_core.prompt_governance.contracts import (
             CompiledPromptArtifact as ExportedArtifact,
         )
+
         assert ExportedArtifact is plc_direct_imports["CompiledPromptArtifactDirect"]
 
     def test_template_manifest_exported(self, plc_direct_imports) -> None:
@@ -513,6 +527,7 @@ class TestContractExports:
         from agentic_core.prompt_governance.contracts import (
             TemplateManifest as ExportedManifest,
         )
+
         assert ExportedManifest is plc_direct_imports["TemplateManifestDirect"]
 
 

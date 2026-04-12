@@ -4,7 +4,7 @@ import logging
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "enforce_orchestration_policy")
 "Brief description of functionality and purpose."

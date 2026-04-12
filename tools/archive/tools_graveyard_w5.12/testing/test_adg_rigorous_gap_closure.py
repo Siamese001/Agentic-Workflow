@@ -72,20 +72,34 @@ class ADGRigorousTestSuite:
         result = {"success": False, "details": {}}
 
         # Test 1.1: No NULL layers
-        null_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer IS NULL")[0]['count']
-        empty_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = ''")[0]['count']
+        null_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer IS NULL")[0][
+            "count"
+        ]
+        empty_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = ''")[0]["count"]
 
         # Test 1.2: No NULL identity_kind
-        null_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind IS NULL")[0]['count']
-        empty_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind = ''")[0]['count']
+        null_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind IS NULL")[
+            0
+        ]["count"]
+        empty_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind = ''")[
+            0
+        ]["count"]
 
         # Test 1.3: No NULL confidence
-        null_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence IS NULL")[0]['count']
-        empty_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence = ''")[0]['count']
+        null_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence IS NULL")[
+            0
+        ]["count"]
+        empty_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence = ''")[0][
+            "count"
+        ]
 
         # Test 1.4: No NULL critical node fields (resolved_path can be empty for abstract entities)
-        null_adg_name = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE adg_name IS NULL OR adg_name = ''")[0]['count']
-        null_entity_type = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE entity_type IS NULL OR entity_type = ''")[0]['count']
+        null_adg_name = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE adg_name IS NULL OR adg_name = ''"
+        )[0]["count"]
+        null_entity_type = self.execute_query(
+            "SELECT COUNT(*) as count FROM nodes WHERE entity_type IS NULL OR entity_type = ''"
+        )[0]["count"]
 
         # resolved_path is only required for modules and symbols with actual file locations
         null_resolved_path_critical = self.execute_query("""
@@ -93,17 +107,35 @@ class ADGRigorousTestSuite:
             FROM nodes
             WHERE (resolved_path IS NULL OR resolved_path = '')
             AND entity_type IN ('module')
-        """)[0]['count']
+        """)[0]["count"]
 
         # Test 1.5: No NULL critical edge fields
-        null_src_id = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE src_id IS NULL")[0]['count']
-        null_dst_id = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE dst_id IS NULL")[0]['count']
-        null_relation_type = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type IS NULL OR relation_type = ''")[0]['count']
+        null_src_id = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE src_id IS NULL")[0][
+            "count"
+        ]
+        null_dst_id = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE dst_id IS NULL")[0][
+            "count"
+        ]
+        null_relation_type = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type IS NULL OR relation_type = ''"
+        )[0]["count"]
 
         integrity_status = {
-            "layers": {"null": null_layers, "empty": empty_layers, "valid": null_layers == 0 and empty_layers == 0},
-            "identity_kind": {"null": null_identity, "empty": empty_identity, "valid": null_identity == 0 and empty_identity == 0},
-            "confidence": {"null": null_confidence, "empty": empty_confidence, "valid": null_confidence == 0 and empty_confidence == 0},
+            "layers": {
+                "null": null_layers,
+                "empty": empty_layers,
+                "valid": null_layers == 0 and empty_layers == 0,
+            },
+            "identity_kind": {
+                "null": null_identity,
+                "empty": empty_identity,
+                "valid": null_identity == 0 and empty_identity == 0,
+            },
+            "confidence": {
+                "null": null_confidence,
+                "empty": empty_confidence,
+                "valid": null_confidence == 0 and empty_confidence == 0,
+            },
             "node_fields": {
                 "adg_name": null_adg_name,
                 "entity_type": null_entity_type,
@@ -119,16 +151,26 @@ class ADGRigorousTestSuite:
         }
 
         overall_valid = all(
-            integrity_status[key]["valid"] if isinstance(integrity_status[key], dict) and "valid" in integrity_status[key]
-            else integrity_status[key]["valid"] if isinstance(integrity_status[key], dict) and "valid" in integrity_status[key]
+            integrity_status[key]["valid"]
+            if isinstance(integrity_status[key], dict) and "valid" in integrity_status[key]
+            else integrity_status[key]["valid"]
+            if isinstance(integrity_status[key], dict) and "valid" in integrity_status[key]
             else False
             for key in ["layers", "identity_kind", "confidence", "node_fields", "edge_fields"]
         )
 
-        print(f"Layer integrity: {integrity_status['layers']['valid']} (null: {null_layers}, empty: {empty_layers})")
-        print(f"Identity integrity: {integrity_status['identity_kind']['valid']} (null: {null_identity}, empty: {empty_identity})")
-        print(f"Confidence integrity: {integrity_status['confidence']['valid']} (null: {null_confidence}, empty: {empty_confidence})")
-        print(f"Node fields integrity: {integrity_status['node_fields']['valid']} (critical resolved_path: {null_resolved_path_critical})")
+        print(
+            f"Layer integrity: {integrity_status['layers']['valid']} (null: {null_layers}, empty: {empty_layers})"
+        )
+        print(
+            f"Identity integrity: {integrity_status['identity_kind']['valid']} (null: {null_identity}, empty: {empty_identity})"
+        )
+        print(
+            f"Confidence integrity: {integrity_status['confidence']['valid']} (null: {null_confidence}, empty: {empty_confidence})"
+        )
+        print(
+            f"Node fields integrity: {integrity_status['node_fields']['valid']} (critical resolved_path: {null_resolved_path_critical})"
+        )
         print(f"Edge fields integrity: {integrity_status['edge_fields']['valid']}")
 
         result["details"] = integrity_status
@@ -150,16 +192,34 @@ class ADGRigorousTestSuite:
         result = {"success": False, "details": {}}
 
         # Test 2.1: All layers are valid
-        valid_layers = {'L0', 'L1', 'L2', 'L3', 'L4', 'L5', 'L6',
-                        'L_APP', 'L_OPS', 'L_PG', 'L_RUNTIME', 'L_SHARED',
-                        'L_SL', 'L_TEST', 'L_TOOLS', 'L_UNKNOWN'}
+        valid_layers = {
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "L5",
+            "L6",
+            "L_APP",
+            "L_OPS",
+            "L_PG",
+            "L_RUNTIME",
+            "L_SHARED",
+            "L_SL",
+            "L_TEST",
+            "L_TOOLS",
+            "L_UNKNOWN",
+        }
 
-        invalid_layers = self.execute_query("""
+        invalid_layers = self.execute_query(
+            """
             SELECT DISTINCT layer, COUNT(*) as count
             FROM nodes
             WHERE layer NOT IN ({})
             GROUP BY layer
-        """.format(','.join(['?' for _ in valid_layers])), list(valid_layers))
+        """.format(",".join(["?" for _ in valid_layers])),
+            list(valid_layers),
+        )
 
         # Test 2.2: Symbol layers match module layers
         symbol_layer_mismatches = self.execute_query("""
@@ -169,25 +229,33 @@ class ADGRigorousTestSuite:
             WHERE n1.entity_type = 'symbol'
             AND n2.entity_type = 'module'
             AND n1.layer != n2.layer
-        """)[0]['count']
+        """)[0]["count"]
 
         # Test 2.3: Layer distribution sanity check
-        layer_dist = self.execute_query("SELECT layer, COUNT(*) as count FROM nodes GROUP BY layer ORDER BY count DESC")
-        layer_distribution = {row['layer']: row['count'] for row in layer_dist}
+        layer_dist = self.execute_query(
+            "SELECT layer, COUNT(*) as count FROM nodes GROUP BY layer ORDER BY count DESC"
+        )
+        layer_distribution = {row["layer"]: row["count"] for row in layer_dist}
 
         architecture_status = {
             "valid_layers_only": len(invalid_layers) == 0,
-            "invalid_layer_details": [{"layer": row['layer'], "count": row['count']} for row in invalid_layers],
+            "invalid_layer_details": [
+                {"layer": row["layer"], "count": row["count"]} for row in invalid_layers
+            ],
             "symbol_module_consistency": symbol_layer_mismatches == 0,
             "symbol_mismatch_count": symbol_layer_mismatches,
             "layer_distribution": layer_distribution,
             "total_layers": len(layer_distribution),
         }
 
-        overall_valid = architecture_status["valid_layers_only"] and architecture_status["symbol_module_consistency"]
+        overall_valid = (
+            architecture_status["valid_layers_only"] and architecture_status["symbol_module_consistency"]
+        )
 
         print(f"Valid layers only: {architecture_status['valid_layers_only']}")
-        print(f"Symbol-module consistency: {architecture_status['symbol_module_consistency']} (mismatches: {symbol_layer_mismatches})")
+        print(
+            f"Symbol-module consistency: {architecture_status['symbol_module_consistency']} (mismatches: {symbol_layer_mismatches})"
+        )
         print(f"Layer distribution: {len(layer_distribution)} layers")
 
         result["details"] = architecture_status
@@ -214,8 +282,12 @@ class ADGRigorousTestSuite:
 
         # Test 3.1: Generate hash multiple times and verify consistency
         def generate_hashes():
-            node_data = self.execute_query("SELECT adg_name, entity_type, layer, identity_kind, confidence, resolved_path FROM nodes ORDER BY adg_name")
-            edge_data = self.execute_query("SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type")
+            node_data = self.execute_query(
+                "SELECT adg_name, entity_type, layer, identity_kind, confidence, resolved_path FROM nodes ORDER BY adg_name"
+            )
+            edge_data = self.execute_query(
+                "SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type"
+            )
 
             node_hash_input = json.dumps([dict(row) for row in node_data], sort_keys=True)
             node_hash = hashlib.sha256(node_hash_input.encode()).hexdigest()
@@ -229,7 +301,7 @@ class ADGRigorousTestSuite:
         hash_sets = []
         for i in range(3):
             node_hash, edge_hash = generate_hashes()
-            hash_sets.append({"iteration": i+1, "node_hash": node_hash, "edge_hash": edge_hash})
+            hash_sets.append({"iteration": i + 1, "node_hash": node_hash, "edge_hash": edge_hash})
 
         # Verify all hashes are identical
         node_hashes = [h["node_hash"] for h in hash_sets]
@@ -245,7 +317,7 @@ class ADGRigorousTestSuite:
         # Generate hashes again
         node_hash_after, edge_hash_after = generate_hashes()
 
-        hash_stable = (node_hash_after == node_hashes[0] and edge_hash_after == edge_hashes[0])
+        hash_stable = node_hash_after == node_hashes[0] and edge_hash_after == edge_hashes[0]
 
         determinism_status = {
             "hash_iterations": hash_sets,
@@ -284,16 +356,18 @@ class ADGRigorousTestSuite:
 
         # Test 4.1: Required mutation edge types exist
         required_mutation_edges = [
-            'emits_replay_key',
-            'references_policy_hash',
-            'mutation_signature',
-            'parent_snapshot_hash',
-            'links_to_execution_trace',
+            "emits_replay_key",
+            "references_policy_hash",
+            "mutation_signature",
+            "parent_snapshot_hash",
+            "links_to_execution_trace",
         ]
 
         mutation_edge_counts = {}
         for edge_type in required_mutation_edges:
-            count = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = ?", (edge_type,))[0]['count']
+            count = self.execute_query(
+                "SELECT COUNT(*) as count FROM edges WHERE relation_type = ?", (edge_type,)
+            )[0]["count"]
             mutation_edge_counts[edge_type] = count
 
         missing_mutation_edges = [edge for edge, count in mutation_edge_counts.items() if count == 0]
@@ -303,13 +377,16 @@ class ADGRigorousTestSuite:
         for edge_type in required_mutation_edges:
             if mutation_edge_counts[edge_type] > 0:
                 # Check for NULL values in critical fields
-                null_checks = self.execute_query("""
+                null_checks = self.execute_query(
+                    """
                     SELECT
                         COUNT(*) as total,
                         SUM(CASE WHEN src_id IS NULL THEN 1 ELSE 0 END) as null_src,
                         SUM(CASE WHEN dst_id IS NULL THEN 1 ELSE 0 END) as null_dst
                     FROM edges WHERE relation_type = ?
-                """, (edge_type,))[0]
+                """,
+                    (edge_type,),
+                )[0]
 
                 mutation_edge_integrity[edge_type] = {
                     "total": null_checks["total"],
@@ -329,11 +406,17 @@ class ADGRigorousTestSuite:
                 WHERE (e2.src_id = e1.dst_id OR e2.dst_id = e1.dst_id)
                 AND e2.relation_type IN ('links_to_execution_trace', 'mutation_signature', 'emits_determinism_digest', 'parent_snapshot_hash', 'references_policy_hash')
             )
-        """)[0]['disconnected_replay_keys']
+        """)[0]["disconnected_replay_keys"]
 
         # Check total replay keys to calculate connectivity ratio
-        total_replay_keys = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = 'emits_replay_key'")[0]['count']
-        connectivity_ratio = (total_replay_keys - replay_key_connectivity) / total_replay_keys if total_replay_keys > 0 else 1.0
+        total_replay_keys = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type = 'emits_replay_key'"
+        )[0]["count"]
+        connectivity_ratio = (
+            (total_replay_keys - replay_key_connectivity) / total_replay_keys
+            if total_replay_keys > 0
+            else 1.0
+        )
 
         # Consider connectivity acceptable if > 50% are connected (replay keys have varied connectivity patterns)
         connectivity_acceptable = connectivity_ratio >= 0.5
@@ -357,7 +440,9 @@ class ADGRigorousTestSuite:
 
         print(f"Required mutation edges present: {len(missing_mutation_edges) == 0}")
         print(f"Missing edges: {missing_mutation_edges}")
-        print(f"Replay key connectivity: {connectivity_ratio:.1%} ({total_replay_keys - replay_key_connectivity}/{total_replay_keys} connected)")
+        print(
+            f"Replay key connectivity: {connectivity_ratio:.1%} ({total_replay_keys - replay_key_connectivity}/{total_replay_keys} connected)"
+        )
 
         result["details"] = lineage_status
         result["success"] = overall_valid
@@ -382,40 +467,46 @@ class ADGRigorousTestSuite:
         result = {"success": False, "details": {}}
 
         # Test 5.1: Identify critical modules
-        critical_layers = ['L0_FOUNDATION', 'L2_COORDINATION', 'L5_EXECUTION']
-        critical_modules = self.execute_query(f"""
+        critical_layers = ["L0_FOUNDATION", "L2_COORDINATION", "L5_EXECUTION"]
+        critical_modules = self.execute_query(
+            f"""
             SELECT adg_name, layer, id
             FROM nodes
-            WHERE layer IN ({','.join(['?' for _ in critical_layers])})
+            WHERE layer IN ({",".join(["?" for _ in critical_layers])})
             AND entity_type = 'module'
-        """, critical_layers)
+        """,
+            critical_layers,
+        )
 
         # Test 5.2: Required critical edges
         required_critical_edges = [
-            'determinism_seed',
-            'determinism_digest_emit',
-            'policy_verification',
-            'execution_plan_dispatch',
+            "determinism_seed",
+            "determinism_digest_emit",
+            "policy_verification",
+            "execution_plan_dispatch",
         ]
 
         coverage_results = []
         modules_missing_edges = []
 
         for module in critical_modules:
-            module_id = module['id']
+            module_id = module["id"]
 
             # Check for each required edge type
-            module_edges = self.execute_query("""
+            module_edges = self.execute_query(
+                """
                 SELECT DISTINCT relation_type FROM edges
                 WHERE src_id = ? OR dst_id = ?
-            """, (module_id, module_id))
+            """,
+                (module_id, module_id),
+            )
 
-            module_edge_types = {row['relation_type'] for row in module_edges}
+            module_edge_types = {row["relation_type"] for row in module_edges}
             missing_edges = [edge for edge in required_critical_edges if edge not in module_edge_types]
 
             coverage_result = {
-                "module": module['adg_name'],
-                "layer": module['layer'],
+                "module": module["adg_name"],
+                "layer": module["layer"],
                 "has_required_edges": len(missing_edges) == 0,
                 "missing_edges": missing_edges,
                 "present_edge_types": list(module_edge_types),
@@ -424,15 +515,19 @@ class ADGRigorousTestSuite:
             coverage_results.append(coverage_result)
 
             if missing_edges:
-                modules_missing_edges.append({
-                    "module": module['adg_name'],
-                    "layer": module['layer'],
-                    "missing_edges": missing_edges,
-                })
+                modules_missing_edges.append(
+                    {
+                        "module": module["adg_name"],
+                        "layer": module["layer"],
+                        "missing_edges": missing_edges,
+                    }
+                )
 
         # Test 5.3: Edge type distribution sanity
-        edge_type_dist = self.execute_query("SELECT relation_type, COUNT(*) as count FROM edges GROUP BY relation_type ORDER BY count DESC LIMIT 20")
-        edge_distribution = {row['relation_type']: row['count'] for row in edge_type_dist}
+        edge_type_dist = self.execute_query(
+            "SELECT relation_type, COUNT(*) as count FROM edges GROUP BY relation_type ORDER BY count DESC LIMIT 20"
+        )
+        edge_distribution = {row["relation_type"]: row["count"] for row in edge_type_dist}
 
         coverage_status = {
             "critical_modules_count": len(critical_modules),
@@ -472,25 +567,37 @@ class ADGRigorousTestSuite:
         result = {"success": False, "details": {}}
 
         # Test 6.1: Critical layer unresolved imports
-        critical_unresolved = self.execute_query(f"""
+        critical_unresolved = self.execute_query(
+            f"""
             SELECT COUNT(*) as count
             FROM nodes n
-            WHERE n.layer IN ({','.join(['?' for _ in ['L0_FOUNDATION', 'L2_COORDINATION', 'L5_EXECUTION']])})
+            WHERE n.layer IN ({",".join(["?" for _ in ["L0_FOUNDATION", "L2_COORDINATION", "L5_EXECUTION"]])})
             AND EXISTS (
                 SELECT 1 FROM edges e
                 WHERE e.dst_id = n.id AND e.relation_type = 'unresolved_import'
             )
-        """, ['L0_FOUNDATION', 'L2_COORDINATION', 'L5_EXECUTION'])[0]['count']
+        """,
+            ["L0_FOUNDATION", "L2_COORDINATION", "L5_EXECUTION"],
+        )[0]["count"]
 
         # Test 6.2: Edge classification completeness
-        unclassified_edges = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE edge_kind = '' OR edge_kind IS NULL")[0]['count']
+        unclassified_edges = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE edge_kind = '' OR edge_kind IS NULL"
+        )[0]["count"]
 
         # Test 6.3: Boundary edge integrity
-        boundary_edge_types = ['unresolved_import', 'external_http_call', 'reads_secret', 'accesses_credential']
+        boundary_edge_types = [
+            "unresolved_import",
+            "external_http_call",
+            "reads_secret",
+            "accesses_credential",
+        ]
         boundary_edge_counts = {}
 
         for edge_type in boundary_edge_types:
-            count = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = ?", (edge_type,))[0]['count']
+            count = self.execute_query(
+                "SELECT COUNT(*) as count FROM edges WHERE relation_type = ?", (edge_type,)
+            )[0]["count"]
             boundary_edge_counts[edge_type] = count
 
         # Test 6.4: Security boundary validation (test modules can access secrets for testing)
@@ -501,7 +608,7 @@ class ADGRigorousTestSuite:
             JOIN nodes n_dst ON e.dst_id = n_dst.id
             WHERE e.relation_type IN ('reads_secret', 'accesses_credential')
             AND n_src.layer = 'L_TEST'
-        """)[0]['count']
+        """)[0]["count"]
 
         # Test security violations in production layers (L0, L2, L5)
         production_security_violations = self.execute_query("""
@@ -511,7 +618,7 @@ class ADGRigorousTestSuite:
             JOIN nodes n_dst ON e.dst_id = n_dst.id
             WHERE e.relation_type IN ('reads_secret', 'accesses_credential')
             AND n_src.layer IN ('L0_FOUNDATION', 'L2_COORDINATION', 'L5_EXECUTION')
-        """)[0]['count']
+        """)[0]["count"]
 
         boundary_status = {
             "critical_unresolved_imports": critical_unresolved,
@@ -524,7 +631,9 @@ class ADGRigorousTestSuite:
                 "all_edges_classified": unclassified_edges == 0,
                 "no_production_security_violations": production_security_violations == 0,
             },
-            "overall_integrity": critical_unresolved == 0 and unclassified_edges == 0 and production_security_violations == 0,
+            "overall_integrity": critical_unresolved == 0
+            and unclassified_edges == 0
+            and production_security_violations == 0,
         }
 
         overall_valid = boundary_status["overall_integrity"]
@@ -557,22 +666,34 @@ class ADGRigorousTestSuite:
         result = {"success": False, "details": {}}
 
         # Test 7.1: Execution trace edge presence
-        execution_trace_edges = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = 'links_to_execution_trace'")[0]['count']
+        execution_trace_edges = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type = 'links_to_execution_trace'"
+        )[0]["count"]
 
         # Test 7.2: Test result emission completeness
-        test_result_edges = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = 'emits_test_result'")[0]['count']
+        test_result_edges = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type = 'emits_test_result'"
+        )[0]["count"]
 
         # Test 7.3: Regression detection binding
-        regression_detection_edges = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = 'detects_regression'")[0]['count']
+        regression_detection_edges = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type = 'detects_regression'"
+        )[0]["count"]
 
         # Test 7.4: Promotion gating
-        promotion_gating_edges = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = 'gates_promotion'")[0]['count']
+        promotion_gating_edges = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type = 'gates_promotion'"
+        )[0]["count"]
 
         # Test 7.5: Test case definition completeness
-        test_case_definitions = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = 'defines_test_case'")[0]['count']
+        test_case_definitions = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type = 'defines_test_case'"
+        )[0]["count"]
 
         # Test 7.6: Test coverage binding
-        coverage_edges = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = 'covers'")[0]['count']
+        coverage_edges = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE relation_type = 'covers'"
+        )[0]["count"]
 
         binding_status = {
             "execution_trace_edges": execution_trace_edges,
@@ -589,14 +710,16 @@ class ADGRigorousTestSuite:
                 "has_test_cases": test_case_definitions > 0,
                 "has_coverage": coverage_edges > 0,
             },
-            "overall_binding": all([
-                execution_trace_edges > 0,
-                test_result_edges > 0,
-                regression_detection_edges > 0,
-                promotion_gating_edges > 0,
-                test_case_definitions > 0,
-                coverage_edges > 0,
-            ]),
+            "overall_binding": all(
+                [
+                    execution_trace_edges > 0,
+                    test_result_edges > 0,
+                    regression_detection_edges > 0,
+                    promotion_gating_edges > 0,
+                    test_case_definitions > 0,
+                    coverage_edges > 0,
+                ]
+            ),
         }
 
         overall_valid = binding_status["overall_binding"]
@@ -631,20 +754,24 @@ class ADGRigorousTestSuite:
         result = {"success": False, "details": {}}
 
         # Test 8.1: Node-edge consistency
-        node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]['count']
-        edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]['count']
+        node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]["count"]
+        edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]["count"]
 
         # Verify all edge references are valid
-        invalid_src_refs = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE src_id NOT IN (SELECT id FROM nodes)")[0]['count']
-        invalid_dst_refs = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE dst_id NOT IN (SELECT id FROM nodes)")[0]['count']
+        invalid_src_refs = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE src_id NOT IN (SELECT id FROM nodes)"
+        )[0]["count"]
+        invalid_dst_refs = self.execute_query(
+            "SELECT COUNT(*) as count FROM edges WHERE dst_id NOT IN (SELECT id FROM nodes)"
+        )[0]["count"]
 
         # Test 8.2: Entity type consistency
         entity_types = self.execute_query("SELECT DISTINCT entity_type FROM nodes")
-        entity_type_list = [row['entity_type'] for row in entity_types]
+        entity_type_list = [row["entity_type"] for row in entity_types]
 
         # Test 8.3: Relation type consistency
         relation_types = self.execute_query("SELECT DISTINCT relation_type FROM edges")
-        relation_type_list = [row['relation_type'] for row in relation_types]
+        relation_type_list = [row["relation_type"] for row in relation_types]
 
         # Test 8.4: Database size sanity check
         db_size = self.sqlite_path.stat().st_size
@@ -665,11 +792,11 @@ class ADGRigorousTestSuite:
                 "reasonable": size_reasonable,
             },
             "overall_consistency": (
-                invalid_src_refs == 0 and
-                invalid_dst_refs == 0 and
-                size_reasonable and
-                node_count > 0 and
-                edge_count > 0
+                invalid_src_refs == 0
+                and invalid_dst_refs == 0
+                and size_reasonable
+                and node_count > 0
+                and edge_count > 0
             ),
         }
 
@@ -702,13 +829,21 @@ class ADGRigorousTestSuite:
 
             # DATA INTEGRITY TESTS
             print("\n🔧 DATA INTEGRITY TESTS")
-            self.test_results["data_integrity_tests"]["completeness"] = self.test_data_integrity_completeness()
-            self.test_results["data_integrity_tests"]["layer_architecture"] = self.test_layer_architecture_validity()
+            self.test_results["data_integrity_tests"]["completeness"] = (
+                self.test_data_integrity_completeness()
+            )
+            self.test_results["data_integrity_tests"]["layer_architecture"] = (
+                self.test_layer_architecture_validity()
+            )
 
             # REPLAY DETERMINISM TESTS
             print("\n🔧 REPLAY DETERMINISM TESTS")
-            self.test_results["replay_determinism_tests"]["hash_determinism"] = self.test_deterministic_hashes()
-            self.test_results["replay_determinism_tests"]["mutation_lineage"] = self.test_mutation_lineage_completeness()
+            self.test_results["replay_determinism_tests"]["hash_determinism"] = (
+                self.test_deterministic_hashes()
+            )
+            self.test_results["replay_determinism_tests"]["mutation_lineage"] = (
+                self.test_mutation_lineage_completeness()
+            )
 
             # EDGE COVERAGE TESTS
             print("\n🔧 EDGE COVERAGE TESTS")
@@ -716,11 +851,15 @@ class ADGRigorousTestSuite:
 
             # BOUNDARY REGRESSION TESTS
             print("\n🔧 BOUNDARY REGRESSION TESTS")
-            self.test_results["boundary_regression_tests"]["boundary_integrity"] = self.test_boundary_integrity()
+            self.test_results["boundary_regression_tests"]["boundary_integrity"] = (
+                self.test_boundary_integrity()
+            )
 
             # TEST BINDING TESTS
             print("\n🔧 TEST BINDING TESTS")
-            self.test_results["test_binding_tests"]["execution_trace_binding"] = self.test_execution_trace_binding()
+            self.test_results["test_binding_tests"]["execution_trace_binding"] = (
+                self.test_execution_trace_binding()
+            )
 
             # END-TO-END TESTS
             print("\n🔧 END-TO-END TESTS")
@@ -746,7 +885,7 @@ class ADGRigorousTestSuite:
         report_path = REPORTS_DIR / f"rigorous_test_report_{self.timestamp}.json"
         REPORTS_DIR.mkdir(exist_ok=True)
 
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(self.test_results, f, indent=2, sort_keys=True)
 
         print(f"\n📊 Test report saved: {report_path.name}")

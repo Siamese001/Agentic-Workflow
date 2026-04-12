@@ -4,6 +4,7 @@ For each deficit file, ensure every called emit function is actually imported.
 Uses the existing multi-line lifecycle_trace_contract import block if present,
 otherwise adds individual imports.
 """
+
 import ast
 import csv
 import sys
@@ -24,8 +25,12 @@ EMIT_FUNC_TO_IMPORT = {
 }
 
 SKIP_PATTERNS = {
-    "_constants.py", "conftest.py", "structure_blueprint_config.py",
-    "ssot_tier_constants.py", "path_constants.py", "lifecycle_trace_contract.py",
+    "_constants.py",
+    "conftest.py",
+    "structure_blueprint_config.py",
+    "ssot_tier_constants.py",
+    "path_constants.py",
+    "lifecycle_trace_contract.py",
 }
 
 CONTRACT_MODULE = "agentic_core.runtime.lifecycle_trace_contract"
@@ -96,8 +101,7 @@ def fix_file(fp: Path) -> tuple[str, str, list[str]]:
                 last_import = i
         insert_at = last_import + 1
         for j, func in enumerate(missing_imports):
-            lines.insert(insert_at + j,
-                f"from {CONTRACT_MODULE} import {func}  # noqa: E402")
+            lines.insert(insert_at + j, f"from {CONTRACT_MODULE} import {func}  # noqa: E402")
 
     new_src = "\n".join(lines)
 

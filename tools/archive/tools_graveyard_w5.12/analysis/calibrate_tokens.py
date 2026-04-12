@@ -13,6 +13,7 @@ def estimate_tokens(text: str) -> int:
     enc = tiktoken.encoding_for_model("gpt-4")
     return len(enc.encode(text))
 
+
 def calibrate_file_sizes():
     """Calculate actual token requirements."""
     # Standard template
@@ -48,19 +49,20 @@ class TestClassName:
     print(f"Template tokens: {template_tokens}")
 
     # Sample actual broken files
-    tests_dir = pathlib.Path('tests')
+    tests_dir = pathlib.Path("tests")
     sample_sizes = []
 
     count = 0
-    for f in sorted(tests_dir.rglob('test_*.py')):
+    for f in sorted(tests_dir.rglob("test_*.py")):
         if count >= 20:  # Sample 20 files
             break
-        if 'archive' in str(f).lower():
+        if "archive" in str(f).lower():
             continue
 
         try:
-            content = f.read_text(encoding='utf-8', errors='replace')
+            content = f.read_text(encoding="utf-8", errors="replace")
             import ast
+
             ast.parse(content)
             continue
         except SyntaxError:
@@ -85,8 +87,12 @@ class TestClassName:
         print("\nToken requirements (including template):")
         for batch_size in [10, 20, 30, 40, 50, 75, 100]:
             # We need original content + template + overhead for operations
-            total_tokens = (avg_file_tokens * batch_size) + (template_tokens * batch_size) + 5000  # 5K overhead
-            print(f"  {batch_size:3d} files: ~{total_tokens:7.0f} tokens ({total_tokens/128000:.1%} of context)")
+            total_tokens = (
+                (avg_file_tokens * batch_size) + (template_tokens * batch_size) + 5000
+            )  # 5K overhead
+            print(
+                f"  {batch_size:3d} files: ~{total_tokens:7.0f} tokens ({total_tokens / 128000:.1%} of context)"
+            )
 
         # Find optimal batch size
         print("\nOptimal batch sizes for 128K context:")
@@ -99,5 +105,6 @@ class TestClassName:
             else:
                 print(f"  ✗ {batch_size} files: {total_tokens:.0f} tokens (exceeds limit)")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     calibrate_file_sizes()

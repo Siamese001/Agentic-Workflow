@@ -15,11 +15,12 @@ from typing import Any, Callable, Generic, TypeVar
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class PrecisionLayerType(Enum):
     """Mathematically precise layer enumeration with total ordering."""
+
     REDIS_EXACT_MATCH = 1
     SEMANTIC_CACHE = 2
     RAG_RETRIEVAL = 3
@@ -48,6 +49,7 @@ class PrecisionLayerType(Enum):
 
 class PrecisionQueryStatus(Enum):
     """Deterministic query status enumeration with total ordering."""
+
     PENDING = 1
     COMPLETED = 2
     FAILED = 3
@@ -69,6 +71,7 @@ class PrecisionQueryStatus(Enum):
 @dataclass(frozen=True)
 class PrecisionQueryRequest:
     """Immutable query request with cryptographic integrity."""
+
     query_id: str
     user_query: str
     timestamp: datetime
@@ -88,11 +91,11 @@ class PrecisionQueryRequest:
         # Generate deterministic checksum
         content = f"{self.query_id}:{self.user_query}:{self.timestamp.isoformat()}:{self.priority}"
         checksum = hashlib.sha256(content.encode()).hexdigest()[:16]
-        object.__setattr__(self, '_checksum', checksum)
+        object.__setattr__(self, "_checksum", checksum)
 
     @property
     def checksum(self) -> str:
-        return getattr(self, '_checksum', '')
+        return getattr(self, "_checksum", "")
 
     def verify_integrity(self) -> bool:
         """Verify cryptographic integrity of the request."""
@@ -104,6 +107,7 @@ class PrecisionQueryRequest:
 @dataclass(frozen=True)
 class PrecisionLayerResponse:
     """Immutable layer response with deterministic properties."""
+
     layer_type: PrecisionLayerType
     status: PrecisionQueryStatus
     data: Any = None
@@ -113,13 +117,17 @@ class PrecisionLayerResponse:
 
     def __post_init__(self):
         # Generate deterministic checksum
-        content = f"{self.layer_type.value}:{self.status.value}:{self.processing_time_ms}:{self.error_message}"
+        content = (
+            f"{self.layer_type.value}:{self.status.value}:{self.processing_time_ms}:{self.error_message}"
+        )
         checksum = hashlib.sha256(content.encode()).hexdigest()[:16]
-        object.__setattr__(self, 'checksum', checksum)
+        object.__setattr__(self, "checksum", checksum)
 
     def verify_integrity(self) -> bool:
         """Verify cryptographic integrity of the response."""
-        content = f"{self.layer_type.value}:{self.status.value}:{self.processing_time_ms}:{self.error_message}"
+        content = (
+            f"{self.layer_type.value}:{self.status.value}:{self.processing_time_ms}:{self.error_message}"
+        )
         expected = hashlib.sha256(content.encode()).hexdigest()[:16]
         return self.checksum == expected
 
@@ -194,8 +202,8 @@ class PrecisionFourLayerContractGuard:
     """Mathematically precise four-layer contract guard with formal verification."""
 
     # Compile regex patterns once for performance
-    VALID_KEY_PATTERN = re.compile(r'^[a-zA-Z0-9_\-\.]{1,255}$')
-    VALID_QUERY_PATTERN = re.compile(r'^[a-zA-Z0-9\s\?\.\,\!\:\;\-\(\)]{1,1000}$')
+    VALID_KEY_PATTERN = re.compile(r"^[a-zA-Z0-9_\-\.]{1,255}$")
+    VALID_QUERY_PATTERN = re.compile(r"^[a-zA-Z0-9\s\?\.\,\!\:\;\-\(\)]{1,1000}$")
 
     def __init__(self, l4_rate_limit_per_minute: int = 30):
         if l4_rate_limit_per_minute <= 0:
@@ -225,38 +233,50 @@ class PrecisionFourLayerContractGuard:
         try:
             # Verify cryptographic integrity
             if not request.verify_integrity():
-                self._record_violation("cryptographic_integrity", {
-                    "query_id": request.query_id,
-                    "provided_checksum": request.checksum,
-                })
+                self._record_violation(
+                    "cryptographic_integrity",
+                    {
+                        "query_id": request.query_id,
+                        "provided_checksum": request.checksum,
+                    },
+                )
                 return False
 
             # Validate query content with precise regex
             if not self.VALID_QUERY_PATTERN.match(request.user_query):
-                self._record_violation("invalid_query_content", {
-                    "query_id": request.query_id,
-                    "query_length": len(request.user_query),
-                    "query_preview": request.user_query[:100],
-                })
+                self._record_violation(
+                    "invalid_query_content",
+                    {
+                        "query_id": request.query_id,
+                        "query_length": len(request.user_query),
+                        "query_preview": request.user_query[:100],
+                    },
+                )
                 return False
 
             # Validate timestamp (must be within reasonable range)
             now = datetime.now()
             if abs((now - request.timestamp).total_seconds()) > 300:  # 5 minutes
-                self._record_violation("timestamp_out_of_range", {
-                    "query_id": request.query_id,
-                    "timestamp": request.timestamp.isoformat(),
-                    "current_time": now.isoformat(),
-                })
+                self._record_violation(
+                    "timestamp_out_of_range",
+                    {
+                        "query_id": request.query_id,
+                        "timestamp": request.timestamp.isoformat(),
+                        "current_time": now.isoformat(),
+                    },
+                )
                 return False
 
             return True
 
         except Exception as e:
-            self._record_violation("validation_exception", {
-                "query_id": request.query_id,
-                "error": str(e),
-            })
+            self._record_violation(
+                "validation_exception",
+                {
+                    "query_id": request.query_id,
+                    "error": str(e),
+                },
+            )
             return False
 
     def validate_layer_sequence(self, layers: list[PrecisionLayerType]) -> bool:
@@ -269,21 +289,27 @@ class PrecisionFourLayerContractGuard:
 
         # Check for duplicates
         if len(set(layers)) != len(layers):
-            self._record_violation("duplicate_layers", {
-                "layers": [l.value for l in layers],
-                "duplicates": [l.value for l in layers if layers.count(l) > 1],
-            })
+            self._record_violation(
+                "duplicate_layers",
+                {
+                    "layers": [l.value for l in layers],
+                    "duplicates": [l.value for l in layers if layers.count(l) > 1],
+                },
+            )
             return False
 
         # Verify monotonic increasing order (no skipping allowed)
         for i in range(len(layers) - 1):
             if layers[i + 1] <= layers[i]:
-                self._record_violation("invalid_layer_order", {
-                    "sequence": [l.value for l in layers],
-                    "violation_at_index": i,
-                    "current": layers[i].value,
-                    "next": layers[i + 1].value,
-                })
+                self._record_violation(
+                    "invalid_layer_order",
+                    {
+                        "sequence": [l.value for l in layers],
+                        "violation_at_index": i,
+                        "current": layers[i].value,
+                        "next": layers[i + 1].value,
+                    },
+                )
                 return False
 
         # Check for skipped layers (violates cascade principle)
@@ -292,11 +318,14 @@ class PrecisionFourLayerContractGuard:
                 current_val = layers[i].value
                 next_val = layers[i + 1].value
                 if next_val > current_val + 1:
-                    self._record_violation("skipped_layer", {
-                        "sequence": [l.value for l in layers],
-                        "skipped_from": current_val,
-                        "skipped_to": next_val,
-                    })
+                    self._record_violation(
+                        "skipped_layer",
+                        {
+                            "sequence": [l.value for l in layers],
+                            "skipped_from": current_val,
+                            "skipped_to": next_val,
+                        },
+                    )
                     return False
 
         return True
@@ -311,11 +340,14 @@ class PrecisionFourLayerContractGuard:
             key = f"anonymous_{int(time.time())}"
 
         if not self.l4_rate_limiter.consume(key):
-            self._record_violation("layer4_rate_limit", {
-                "key": key,
-                "available_tokens": self.l4_rate_limiter.available_tokens(key),
-                "limit": self.l4_rate_limit_per_minute,
-            })
+            self._record_violation(
+                "layer4_rate_limit",
+                {
+                    "key": key,
+                    "available_tokens": self.l4_rate_limiter.available_tokens(key),
+                    "limit": self.l4_rate_limit_per_minute,
+                },
+            )
             return False
 
         return True
@@ -325,9 +357,12 @@ class PrecisionFourLayerContractGuard:
         self.contract_checks["key_validation"] += 1
 
         if not isinstance(key, str):
-            self._record_violation("invalid_key_type", {
-                "key_type": type(key).__name__,
-            })
+            self._record_violation(
+                "invalid_key_type",
+                {
+                    "key_type": type(key).__name__,
+                },
+            )
             return False
 
         if not key:
@@ -335,17 +370,23 @@ class PrecisionFourLayerContractGuard:
             return False
 
         if len(key) > 255:
-            self._record_violation("key_too_long", {
-                "length": len(key),
-                "max_length": 255,
-            })
+            self._record_violation(
+                "key_too_long",
+                {
+                    "length": len(key),
+                    "max_length": 255,
+                },
+            )
             return False
 
         if not self.VALID_KEY_PATTERN.match(key):
-            self._record_violation("invalid_key_format", {
-                "key": key,
-                "length": len(key),
-            })
+            self._record_violation(
+                "invalid_key_format",
+                {
+                    "key": key,
+                    "length": len(key),
+                },
+            )
             return False
 
         return True

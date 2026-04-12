@@ -178,7 +178,9 @@ class _NullAuthority:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "_NullAuthority.record_breach",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "_NullAuthority.record_breach",
         )
 
         import logging

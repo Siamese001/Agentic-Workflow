@@ -196,11 +196,13 @@ class VLLMServingProfile:
     def __post_init__(self) -> None:
         if self.max_model_len <= 0:
             raise VLLMServingProfileInvalid(
-                profile=self.profile_name, reason=f"max_model_len={self.max_model_len} must be > 0",
+                profile=self.profile_name,
+                reason=f"max_model_len={self.max_model_len} must be > 0",
             )
         if self.max_num_seqs <= 0:
             raise VLLMServingProfileInvalid(
-                profile=self.profile_name, reason=f"max_num_seqs={self.max_num_seqs} must be > 0",
+                profile=self.profile_name,
+                reason=f"max_num_seqs={self.max_num_seqs} must be > 0",
             )
         if not 0.0 < self.gpu_memory_utilization <= 1.0:
             raise VLLMServingProfileInvalid(
@@ -236,7 +238,9 @@ class VLLMServingProfileInvalid(Exception):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "VLLMServingProfileInvalid.__init__",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "VLLMServingProfileInvalid.__init__",
         )
         self.profile = profile
         self.reason = reason

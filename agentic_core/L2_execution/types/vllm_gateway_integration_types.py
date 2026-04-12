@@ -338,7 +338,8 @@ class VLLMCircuitBreakerRegistry:
         with self._lock:
             if tier not in self._breakers:
                 self._breakers[tier] = VLLMCircuitBreaker(
-                    tier=tier, failure_threshold=CIRCUIT_BREAKER_FAILURE_THRESHOLD,
+                    tier=tier,
+                    failure_threshold=CIRCUIT_BREAKER_FAILURE_THRESHOLD,
                 )
             return self._breakers[tier]
 
@@ -483,7 +484,9 @@ def evaluate_gateway_call(
     breaker = breaker_registry.get(tier)
     bp_decision = evaluate_backpressure(queue_state, breaker)
     preflight = run_preflight_budget_check(
-        prompt=prompt, task_class=task_class, max_model_len=profile.max_model_len,
+        prompt=prompt,
+        task_class=task_class,
+        max_model_len=profile.max_model_len,
     )
     if bp_decision.escalate_to_gemini:
         provider_selected = GEMINI_25_PRO_MODEL_ID

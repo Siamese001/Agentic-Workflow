@@ -27,7 +27,7 @@ class MockRuntimeADGStore:
 
         # Store to file
         snapshot_file = self.store_dir / f"runtime_adg_{snapshot_id}.json"
-        with open(snapshot_file, 'w') as f:
+        with open(snapshot_file, "w") as f:
             json.dump(snapshot, f, indent=2)
 
         return snapshot_id
@@ -117,9 +117,9 @@ class MockAgent:
         # Add sub-task spans
         for i in range(3):
             self.trace.add_span(
-                name=f"subtask_{i+1}",
+                name=f"subtask_{i + 1}",
                 kind="SUB_TASK",
-                attributes={"subtask_id": i+1, "parent": self.name},
+                attributes={"subtask_id": i + 1, "parent": self.name},
             )
             time.sleep(0.02)
 
@@ -229,7 +229,7 @@ async def test_runtime_adg_e2e():
 
         elapsed = time.time() - start_time
         print(f"  ✓ 10 agents executed in {elapsed:.2f}s")
-        print(f"  ✓ Average per agent: {elapsed/10:.3f}s")
+        print(f"  ✓ Average per agent: {elapsed / 10:.3f}s")
         assert elapsed < 5.0, "Performance threshold exceeded"
 
         # Test 6: Trace completeness
@@ -247,7 +247,17 @@ async def test_runtime_adg_e2e():
 
         # Verify node structure
         for node in snapshot["nodes"]:
-            node_fields = ["node_id", "name", "kind", "layer", "component", "started_at_utc", "duration_ms", "status", "attributes_json"]
+            node_fields = [
+                "node_id",
+                "name",
+                "kind",
+                "layer",
+                "component",
+                "started_at_utc",
+                "duration_ms",
+                "status",
+                "attributes_json",
+            ]
             for field in node_fields:
                 assert field in node, f"Node missing field: {field}"
 
@@ -265,6 +275,7 @@ async def test_runtime_adg_e2e():
     except Exception as e:
         print(f"\n[E2E TEST] ❌ Validation failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 

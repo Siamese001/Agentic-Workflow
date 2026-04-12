@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class QwenInferenceRequest:
     """Request structure for Qwen inference."""
+
     app_name: str
     prompt: str
     confidence_threshold: float = 0.7
@@ -41,6 +42,7 @@ class QwenInferenceRequest:
 @dataclass(frozen=True)
 class QwenInferenceResponse:
     """Response structure for Qwen inference."""
+
     success: bool
     response: str | None
     confidence: float
@@ -128,7 +130,9 @@ class QwenInferenceGateway:
 
             if vllm_response.success:
                 _emit_captures_evaluation_metric(
-                    request.app_name, "apps_qwen_gateway", "inference_success",
+                    request.app_name,
+                    "apps_qwen_gateway",
+                    "inference_success",
                 )
 
                 return QwenInferenceResponse(
@@ -142,7 +146,9 @@ class QwenInferenceGateway:
                 )
             else:
                 _emit_records_telemetry_event(
-                    request.app_name, "apps_qwen_gateway", "inference_error",
+                    request.app_name,
+                    "apps_qwen_gateway",
+                    "inference_error",
                 )
 
                 return QwenInferenceResponse(
@@ -162,7 +168,9 @@ class QwenInferenceGateway:
             logger.error("[%s] Inference error: %s", request.app_name, error_msg)
 
             _emit_records_telemetry_event(
-                request.app_name, "apps_qwen_gateway", "inference_exception",
+                request.app_name,
+                "apps_qwen_gateway",
+                "inference_exception",
             )
 
             return QwenInferenceResponse(
@@ -247,26 +255,30 @@ class QwenInferenceGateway:
         results = []
         for req, vllm_resp in zip(requests, vllm_responses):
             if isinstance(vllm_resp, Exception):
-                results.append(QwenInferenceResponse(
-                    success=False,
-                    response=None,
-                    confidence=0.0,
-                    model_used=self.model_id,
-                    latency_ms=0.0,
-                    error_message=str(vllm_resp),
-                ))
+                results.append(
+                    QwenInferenceResponse(
+                        success=False,
+                        response=None,
+                        confidence=0.0,
+                        model_used=self.model_id,
+                        latency_ms=0.0,
+                        error_message=str(vllm_resp),
+                    )
+                )
             else:
                 confidence = self._calculate_confidence(vllm_resp, req)
-                results.append(QwenInferenceResponse(
-                    success=vllm_resp.success,
-                    response=vllm_resp.text if vllm_resp.success else None,
-                    confidence=confidence,
-                    model_used=vllm_resp.model or self.model_id,
-                    latency_ms=vllm_resp.latency_ms,
-                    error_message=vllm_resp.error_message,
-                    cached=vllm_resp.cached,
-                    tokens_used=vllm_resp.tokens_used,
-                ))
+                results.append(
+                    QwenInferenceResponse(
+                        success=vllm_resp.success,
+                        response=vllm_resp.text if vllm_resp.success else None,
+                        confidence=confidence,
+                        model_used=vllm_resp.model or self.model_id,
+                        latency_ms=vllm_resp.latency_ms,
+                        error_message=vllm_resp.error_message,
+                        cached=vllm_resp.cached,
+                        tokens_used=vllm_resp.tokens_used,
+                    )
+                )
 
         return results
 

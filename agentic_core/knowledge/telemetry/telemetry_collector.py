@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 class EventType(Enum):
     """Types of telemetry events."""
+
     QUERY_START = "query_start"
     QUERY_END = "query_end"
     CACHE_HIT = "cache_hit"
@@ -36,6 +37,7 @@ class EventType(Enum):
 @dataclass
 class TelemetryEvent:
     """A telemetry event."""
+
     event_type: EventType
     query_id: str
     timestamp: float = field(default_factory=time.time)
@@ -81,7 +83,9 @@ class TelemetryCollector:
         """
         trace_id = f"telemetry_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "TelemetryCollector.record_event",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "TelemetryCollector.record_event",
         )
 
         event = TelemetryEvent(
@@ -95,7 +99,7 @@ class TelemetryCollector:
 
         # Trim if exceeding max
         if len(self._events) > self.max_events:
-            self._events = self._events[-self.max_events:]
+            self._events = self._events[-self.max_events :]
 
         return event
 
@@ -210,5 +214,8 @@ def record_event(
 ) -> TelemetryEvent:
     """Convenience function to record event."""
     return get_telemetry_collector().record_event(
-        event_type, query_id, duration_ms, metadata,
+        event_type,
+        query_id,
+        duration_ms,
+        metadata,
     )

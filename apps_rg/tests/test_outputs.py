@@ -1,6 +1,7 @@
 """
 Test RG Outputs.
 """
+
 import unittest
 
 from apps_rg.outputs import ResumeRenderer, ResumeSummaryRenderer, SectionRenderer

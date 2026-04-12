@@ -335,17 +335,19 @@ class CheckpointManager(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"CheckpointManager.create_checkpoint:{label}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"CheckpointManager.create_checkpoint:{label}",
         )
         checkpoint_id = self._generate_checkpoint_id(label)
-        if self.mode == "SYNC":    # guardian: Runtime errors should be prevented with proper validation
+        if self.mode == "SYNC":  # guardian: Runtime errors should be prevented with proper validation
             return self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
         else:
             try:
                 asyncio.get_running_loop()
                 asyncio.ensure_future(self._save_async(checkpoint_id, state_data, file_hashes, metadata))
                 return checkpoint_id
-            except RuntimeError:    # guardian: Runtime errors should be prevented with proper validation
+            except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
                 return asyncio.run(self._save_async(checkpoint_id, state_data, file_hashes, metadata))
 
     async def create_checkpoint_async(
@@ -371,7 +373,8 @@ class CheckpointManager(SovereignBaseAgent):
         if self.mode == "SYNC":
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
-                None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
+                None,
+                lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
             )
             return checkpoint_id
         else:
@@ -446,7 +449,8 @@ class CheckpointManager(SovereignBaseAgent):
         """
         loop = asyncio.get_event_loop()
         file_path = await loop.run_in_executor(
-            None, lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
+            None,
+            lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
         )
         if self.mode == "AUTONOMOUS":
             task = asyncio.create_task(self._mirror_checkpoint(Path(file_path)))
@@ -788,7 +792,11 @@ class CheckpointManager(SovereignBaseAgent):
             Dictionary with healing results
         """
         super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if _call_path is None:
             _call_path = set()
@@ -819,38 +827,42 @@ class CheckpointManager(SovereignBaseAgent):
             _call_path.discard(agent_name)
 
     def _run_self_tests(self) -> dict[str, Any]:
-        """Run internal self-tests for the unified checkpoint manager."""    # guardian: AssertionError should be handled with specific context
+        """Run internal self-tests for the unified checkpoint manager."""  # guardian: AssertionError should be handled with specific context
         results = {"passed": 0, "failed": 0, "tests": []}
         try:
             assert self.mode in ("SYNC", "ASYNC", "AUTONOMOUS")
             assert self.storage_path.exists()
             results["passed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})    # guardian: AssertionError should be handled with specific context
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )  # guardian: AssertionError should be handled with specific context
         try:
             cp_id = self._generate_checkpoint_id("test")
             assert cp_id.startswith("chk_")
             assert "test" in cp_id
             results["passed"] += 1
             results["tests"].append({"name": "test_checkpoint_id_generation", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_checkpoint_id_generation", "status": "failed", "error": str(e)},
             )
         try:
             cp = Checkpoint(
-                checkpoint_id="test_cp", timestamp=datetime.now(), state_snapshot={"key": "value"},
-            )    # guardian: AssertionError should be handled with specific context
+                checkpoint_id="test_cp",
+                timestamp=datetime.now(),
+                state_snapshot={"key": "value"},
+            )  # guardian: AssertionError should be handled with specific context
             cp_dict = cp.to_dict()
             cp_restored = Checkpoint.from_dict(cp_dict)
             assert cp_restored.checkpoint_id == cp.checkpoint_id
             assert cp_restored.state_snapshot == cp.state_snapshot
             results["passed"] += 1
             results["tests"].append({"name": "test_checkpoint_serialization", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_checkpoint_serialization", "status": "failed", "error": str(e)},
@@ -911,6 +923,7 @@ if __name__ == "__main__":
         print(f"Checkpoint {args.verify}: {('VALID' if is_valid else 'INVALID')}")
     else:
         cp_id = manager.create_checkpoint(
-            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()}, label="demo",
+            state_data={"demo": "checkpoint", "timestamp": datetime.now().isoformat()},
+            label="demo",
         )
         print(f"Created checkpoint: {cp_id}")

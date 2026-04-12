@@ -13,6 +13,7 @@ Usage:
   python tools/test_enforcement/validate_test_imports.py
   python tools/test_enforcement/validate_test_imports.py --strict  # also checks _AVAILABLE patterns
 """
+
 from __future__ import annotations
 
 import ast
@@ -21,11 +22,23 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
-FIRST_PARTY_TOPS = frozenset({
-    "agentic_core", "apps_lic", "apps_rg", "apps_shared", "apps_exec",
-    "apps_rfp", "apps_research", "apps_eval", "system_learning",
-    "infrastructure", "tools", "ops_scripts", "data",
-})
+FIRST_PARTY_TOPS = frozenset(
+    {
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "apps_exec",
+        "apps_rfp",
+        "apps_research",
+        "apps_eval",
+        "system_learning",
+        "infrastructure",
+        "tools",
+        "ops_scripts",
+        "data",
+    }
+)
 
 
 def _is_first_party(module_name: str) -> bool:
@@ -57,9 +70,7 @@ def check_file(filepath: pathlib.Path, strict: bool = False) -> list[str]:
     for node in ast.walk(tree):
         if not isinstance(node, ast.Try):
             continue
-        has_import_error = any(
-            _is_import_error_handler(h) for h in node.handlers
-        )
+        has_import_error = any(_is_import_error_handler(h) for h in node.handlers)
         if not has_import_error:
             continue
 
@@ -93,8 +104,7 @@ def check_file(filepath: pathlib.Path, strict: bool = False) -> list[str]:
                 reason = str(kw.value.value).lower()
         if "import" in reason:
             violations.append(
-                f"{rel}:{node.lineno}: pytest.skip() hides import failure: "
-                f"'{reason[:80]}'",
+                f"{rel}:{node.lineno}: pytest.skip() hides import failure: '{reason[:80]}'",
             )
 
     # Rule 3: No pytest.importorskip in core tests without optional marker

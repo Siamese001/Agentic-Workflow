@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Query ADG violations with histogram and P0-P4 split."""
+
 import sqlite3
 from pathlib import Path
 
-adg_dir = Path('artifacts/adg')
-db_files = sorted(adg_dir.glob('adg_indexed_*.sqlite'))
+adg_dir = Path("artifacts/adg")
+db_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
 db_path = db_files[-1]
 
 print(f"Using: {db_path.name}")
@@ -20,7 +21,7 @@ print(f"\nTables: {tables}")
 # Check if violations table exists
 violations_table = None
 for t in tables:
-    if 'violation' in t.lower():
+    if "violation" in t.lower():
         violations_table = t
         break
 
@@ -39,13 +40,15 @@ print(f"Columns: {columns}")
 # Get total
 cursor.execute(f"SELECT COUNT(*) FROM {violations_table}")
 total = cursor.fetchone()[0]
-print(f"\n{'='*50}")
+print(f"\n{'=' * 50}")
 print(f"TOTAL VIOLATIONS: {total}")
-print(f"{'='*50}")
+print(f"{'=' * 50}")
 
 # Get severity breakdown
-if 'severity' in columns:
-    cursor.execute(f"SELECT severity, COUNT(*) FROM {violations_table} GROUP BY severity ORDER BY COUNT(*) DESC")
+if "severity" in columns:
+    cursor.execute(
+        f"SELECT severity, COUNT(*) FROM {violations_table} GROUP BY severity ORDER BY COUNT(*) DESC"
+    )
     severity_data = cursor.fetchall()
     print("\n=== SEVERITY HISTOGRAM ===")
     for sev, cnt in severity_data:
@@ -57,7 +60,7 @@ if 'severity' in columns:
 print("\n=== P0-P4 SEVERITY SPLIT ===")
 p_map = {"P0": 0, "P1": 0, "P2": 0, "P3": 0, "P4": 0}
 
-if 'severity' in columns:
+if "severity" in columns:
     cursor.execute(f"SELECT severity, COUNT(*) FROM {violations_table} GROUP BY severity")
     for sev, cnt in cursor.fetchall():
         sev_upper = str(sev).upper()
@@ -81,8 +84,10 @@ for p, cnt in p_map.items():
     print(f"  {p}: {cnt:5d} ({pct:5.1f}%) {bar}")
 
 # Violation type histogram
-if 'violation_type' in columns:
-    cursor.execute(f"SELECT violation_type, COUNT(*) FROM {violations_table} GROUP BY violation_type ORDER BY COUNT(*) DESC")
+if "violation_type" in columns:
+    cursor.execute(
+        f"SELECT violation_type, COUNT(*) FROM {violations_table} GROUP BY violation_type ORDER BY COUNT(*) DESC"
+    )
     type_data = cursor.fetchall()
     print("\n=== VIOLATION TYPE HISTOGRAM ===")
     for vtype, cnt in type_data[:15]:  # Top 15
@@ -92,8 +97,10 @@ if 'violation_type' in columns:
         print(f"  {vtype_short:30s}: {cnt:5d} ({pct:5.1f}%) {bar}")
 
 # Category breakdown if available
-if 'category' in columns:
-    cursor.execute(f"SELECT category, COUNT(*) FROM {violations_table} GROUP BY category ORDER BY COUNT(*) DESC")
+if "category" in columns:
+    cursor.execute(
+        f"SELECT category, COUNT(*) FROM {violations_table} GROUP BY category ORDER BY COUNT(*) DESC"
+    )
     cat_data = cursor.fetchall()
     print("\n=== CATEGORY HISTOGRAM ===")
     for cat, cnt in cat_data:
@@ -102,8 +109,10 @@ if 'category' in columns:
         print(f"  {cat:20s}: {cnt:5d} ({pct:5.1f}%) {bar}")
 
 # Top files
-if 'file_path' in columns:
-    cursor.execute(f"SELECT file_path, COUNT(*) FROM {violations_table} GROUP BY file_path ORDER BY COUNT(*) DESC LIMIT 10")
+if "file_path" in columns:
+    cursor.execute(
+        f"SELECT file_path, COUNT(*) FROM {violations_table} GROUP BY file_path ORDER BY COUNT(*) DESC LIMIT 10"
+    )
     file_data = cursor.fetchall()
     print("\n=== TOP 10 FILES BY VIOLATION COUNT ===")
     for fpath, cnt in file_data:
@@ -112,5 +121,5 @@ if 'file_path' in columns:
         print(f"  {cnt:3d} ({pct:4.1f}%) ...{fpath_short}")
 
 conn.close()
-print("\n" + "="*50)
+print("\n" + "=" * 50)
 print("Query complete")

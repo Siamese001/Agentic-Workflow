@@ -232,7 +232,9 @@ class LineageIndex:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "LineageIndex.mutations_for_state",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "LineageIndex.mutations_for_state",
         )
 
         results: list[LineageRecord] = []

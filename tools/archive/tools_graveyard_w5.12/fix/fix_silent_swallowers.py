@@ -26,19 +26,19 @@ class SilentSwallowerFixer:
 
         # Legitimate silent swallower patterns (with guardian comments)
         self.legitimate_patterns = [
-            r'# guardian: allow-silent-swallow',
-            r'# guardian:.*silent.*swallow',
+            r"# guardian: allow-silent-swallow",
+            r"# guardian:.*silent.*swallow",
         ]
 
         # Cases where silent swallowing is NEVER acceptable
         self.never_acceptable = [
-            'ImportError',  # Import errors should fail or use importorskip
-            'ModuleNotFoundError',  # Same as ImportError
-            'AttributeError',  # Should be fixed, not swallowed
-            'TypeError',  # Should be fixed, not swallowed
-            'ValueError',  # Should be fixed, not swallowed
-            'KeyError',  # Should be handled with proper fallback
-            'IndexError',  # Should be handled with bounds checking
+            "ImportError",  # Import errors should fail or use importorskip
+            "ModuleNotFoundError",  # Same as ImportError
+            "AttributeError",  # Should be fixed, not swallowed
+            "TypeError",  # Should be fixed, not swallowed
+            "ValueError",  # Should be fixed, not swallowed
+            "KeyError",  # Should be handled with proper fallback
+            "IndexError",  # Should be handled with bounds checking
         ]
 
     def find_silent_swallowers(self, file_path: Path) -> List[Dict[str, Any]]:
@@ -46,7 +46,7 @@ class SilentSwallowerFixer:
         violations = []
 
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
                 lines = content.splitlines()
         except Exception:
@@ -66,7 +66,9 @@ class SilentSwallowerFixer:
 
         return violations
 
-    def _analyze_exception_handler(self, handler: ast.ExceptHandler, lines: List[str], file_path: Path) -> Dict[str, Any]:
+    def _analyze_exception_handler(
+        self, handler: ast.ExceptHandler, lines: List[str], file_path: Path
+    ) -> Dict[str, Any]:
         """Analyze an exception handler for violations."""
         line_no = handler.lineno - 1  # Convert to 0-based
 
@@ -104,7 +106,9 @@ class SilentSwallowerFixer:
                 if first_stmt.value.value is None:
                     handler_body = ["pass"]
 
-        is_silent = len(handler_body) == 0 or (len(handler_body) == 1 and handler_body[0] in ["pass", "continue"])
+        is_silent = len(handler_body) == 0 or (
+            len(handler_body) == 1 and handler_body[0] in ["pass", "continue"]
+        )
 
         # Determine if this is a violation
         is_violation = False
@@ -128,21 +132,21 @@ class SilentSwallowerFixer:
 
         if is_violation:
             return {
-                'file_path': str(file_path),
-                'line_number': handler.lineno,
-                'exception_type': exception_type,
-                'handler_body': handler_body,
-                'has_guardian': has_guardian,
-                'severity': severity,
-                'code_snippet': lines[line_no] if line_no < len(lines) else "",
+                "file_path": str(file_path),
+                "line_number": handler.lineno,
+                "exception_type": exception_type,
+                "handler_body": handler_body,
+                "has_guardian": has_guardian,
+                "severity": severity,
+                "code_snippet": lines[line_no] if line_no < len(lines) else "",
             }
 
         return None
 
     def fix_violation(self, violation: Dict[str, Any]) -> str:
         """Generate fix for a violation."""
-        exception_type = violation['exception_type']
-        severity = violation['severity']
+        exception_type = violation["exception_type"]
+        severity = violation["severity"]
 
         if severity == "HIGH":
             # High severity: Never acceptable - must be fixed properly
@@ -157,13 +161,13 @@ class SilentSwallowerFixer:
     def _generate_proper_fix(self, exception_type: str, violation: Dict[str, Any]) -> str:
         """Generate proper fix for high-severity violations."""
         fixes = {
-            'ImportError': "# Import errors should surface as failures or use pytest.importorskip",
-            'ModuleNotFoundError': "# Module errors should surface as failures or use pytest.importorskip",
-            'AttributeError': "# AttributeError indicates programming error - fix the attribute access",
-            'TypeError': "# TypeError indicates programming error - fix the type usage",
-            'ValueError': "# ValueError indicates invalid input - validate before use",
-            'KeyError': "# KeyError indicates missing key - check key existence or use dict.get()",
-            'IndexError': "# IndexError indicates out-of-bounds - check array length first",
+            "ImportError": "# Import errors should surface as failures or use pytest.importorskip",
+            "ModuleNotFoundError": "# Module errors should surface as failures or use pytest.importorskip",
+            "AttributeError": "# AttributeError indicates programming error - fix the attribute access",
+            "TypeError": "# TypeError indicates programming error - fix the type usage",
+            "ValueError": "# ValueError indicates invalid input - validate before use",
+            "KeyError": "# KeyError indicates missing key - check key existence or use dict.get()",
+            "IndexError": "# IndexError indicates out-of-bounds - check array length first",
         }
 
         return fixes.get(exception_type, f"# {exception_type} should be handled properly, not swallowed")
@@ -176,7 +180,9 @@ class SilentSwallowerFixer:
 
     def _generate_lightweight_fix(self, exception_type: str, violation: Dict[str, Any]) -> str:
         """Generate lightweight fix for low-severity violations."""
-        return f"# Add guardian comment: # guardian: allow-silent-swallow - {exception_type} is acceptable here"
+        return (
+            f"# Add guardian comment: # guardian: allow-silent-swallow - {exception_type} is acceptable here"
+        )
 
     def scan_all_files(self) -> List[Dict[str, Any]]:
         """Scan all Python files for silent swallowers."""
@@ -186,7 +192,7 @@ class SilentSwallowerFixer:
         python_files = list(PROJECT_ROOT.rglob("*.py"))
 
         # Skip certain directories
-        skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'venv', '.venv', 'node_modules'}
+        skip_dirs = {".git", "__pycache__", ".pytest_cache", "venv", ".venv", "node_modules"}
 
         for file_path in python_files:
             # Skip if in excluded directory
@@ -204,7 +210,7 @@ class SilentSwallowerFixer:
 
         for violation in violations:
             fix = self.fix_violation(violation)
-            violation['recommended_fix'] = fix
+            violation["recommended_fix"] = fix
             self.fixes_applied.append(violation)
 
 
@@ -220,9 +226,9 @@ def main():
     print(f"Found {len(violations)} silent swallower violations")
 
     # Group by severity
-    by_severity = {'HIGH': [], 'MEDIUM': [], 'LOW': []}
+    by_severity = {"HIGH": [], "MEDIUM": [], "LOW": []}
     for violation in violations:
-        by_severity[violation['severity']].append(violation)
+        by_severity[violation["severity"]].append(violation)
 
     print("\nBy severity:")
     for severity, vlist in by_severity.items():
@@ -232,7 +238,7 @@ def main():
     fixer.apply_fixes(violations)
 
     # Show high severity violations (must fix)
-    high_severity = by_severity['HIGH']
+    high_severity = by_severity["HIGH"]
     if high_severity:
         print("\n🚨 HIGH SEVERITY VIOLATIONS (must fix):")
         for violation in high_severity[:10]:
@@ -243,7 +249,7 @@ def main():
             print(f"  ... and {len(high_severity) - 10} more")
 
     # Show medium severity violations
-    medium_severity = by_severity['MEDIUM']
+    medium_severity = by_severity["MEDIUM"]
     if medium_severity:
         print("\n⚠️  MEDIUM SEVERITY VIOLATIONS (should fix):")
         for violation in medium_severity[:5]:
@@ -255,15 +261,16 @@ def main():
 
     # Generate report
     report = {
-        'scan_timestamp': '2026-03-24T18:31:00Z',
-        'total_violations': len(violations),
-        'by_severity': {k: len(v) for k, v in by_severity.items()},
-        'violations': violations,
+        "scan_timestamp": "2026-03-24T18:31:00Z",
+        "total_violations": len(violations),
+        "by_severity": {k: len(v) for k, v in by_severity.items()},
+        "violations": violations,
     }
 
     output_file = PROJECT_ROOT / "silent_swallower_report.json"
     import json
-    with open(output_file, 'w') as f:
+
+    with open(output_file, "w") as f:
         json.dump(report, f, indent=2)
 
     print(f"\n📋 Report written to: {output_file}")

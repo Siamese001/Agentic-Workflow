@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FusionQuery:
     """Enhanced query for fusion execution."""
+
     original_query: str
     routing_decision: RoutingDecision
     query_variations: list[str]
@@ -29,6 +30,7 @@ class FusionQuery:
 @dataclass
 class FusionResult:
     """Result from multi-query fusion."""
+
     original_query: str
     collection_results: dict[str, list[RetrievalResult]]
     fusion_strategy: str
@@ -133,8 +135,10 @@ class MultiQueryFusion:
         collection_results = {}
 
         # Combine primary and secondary collections
-        all_collections = (fusion_query.routing_decision.primary_collections +
-                          fusion_query.routing_decision.secondary_collections)
+        all_collections = (
+            fusion_query.routing_decision.primary_collections
+            + fusion_query.routing_decision.secondary_collections
+        )
 
         # Create search tasks
         tasks = []
@@ -163,9 +167,9 @@ class MultiQueryFusion:
                     collection_results[collection] = []
 
                 # Add results (avoid duplicates)
-                existing_ids = {r.metadata.get('file_path', '') for r in collection_results[collection]}
+                existing_ids = {r.metadata.get("file_path", "") for r in collection_results[collection]}
                 for search_result in search_results:
-                    result_id = search_result.metadata.get('file_path', '')
+                    result_id = search_result.metadata.get("file_path", "")
                     if result_id not in existing_ids:
                         collection_results[collection].append(search_result)
                         existing_ids.add(result_id)
@@ -293,30 +297,30 @@ class MultiQueryFusion:
 
                 if key not in all_results:
                     all_results[key] = {
-                        'result': result,
-                        'rrf_score': 0.0,
-                        'collections': set(),
-                        'ranks': [],
+                        "result": result,
+                        "rrf_score": 0.0,
+                        "collections": set(),
+                        "ranks": [],
                     }
 
                 # Add RRF score: 1 / (k + rank)
                 rrf_score = 1.0 / (k + rank)
-                all_results[key]['rrf_score'] += rrf_score
-                all_results[key]['collections'].add(collection)
-                all_results[key]['ranks'].append(rank)
+                all_results[key]["rrf_score"] += rrf_score
+                all_results[key]["collections"].add(collection)
+                all_results[key]["ranks"].append(rank)
 
         # Sort by RRF score
         sorted_results = sorted(
             all_results.values(),
-            key=lambda x: x['rrf_score'],
+            key=lambda x: x["rrf_score"],
             reverse=True,
         )
 
         # Create final results
         final_results = []
         for item in sorted_results[:max_results]:
-            result = item['result']
-            result.score = item['rrf_score']  # Update score with RRF score
+            result = item["result"]
+            result.score = item["rrf_score"]  # Update score with RRF score
             final_results.append(result)
 
         return final_results
@@ -365,10 +369,14 @@ class MultiQueryFusion:
         """Apply collection priority fusion."""
         # Define collection priorities
         priority_order = [
-            "repo_symbols", "repo_adg_graph",  # Highest priority
-            "repo_code_chunks", "repo_runtime_evidence",  # Medium priority
-            "repo_arch_docs", "repo_tests_guardrails",  # Lower priority
-            "repo_git_history", "repo_incidents_rca",  # Lowest priority
+            "repo_symbols",
+            "repo_adg_graph",  # Highest priority
+            "repo_code_chunks",
+            "repo_runtime_evidence",  # Medium priority
+            "repo_arch_docs",
+            "repo_tests_guardrails",  # Lower priority
+            "repo_git_history",
+            "repo_incidents_rca",  # Lowest priority
         ]
 
         final_results = []
@@ -398,7 +406,8 @@ class MultiQueryFusion:
 
         # Then apply score fusion for remaining
         remaining_collections = {
-            col: results for col, results in collection_results.items()
+            col: results
+            for col, results in collection_results.items()
             if len([r for r in results if r not in priority_results]) > 0
         }
 

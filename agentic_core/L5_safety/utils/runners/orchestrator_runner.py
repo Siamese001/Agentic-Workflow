@@ -228,7 +228,10 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Orchestrator Runner")
     parser.add_argument("--action", choices=["mission"], required=True, help="Action to perform")
     parser.add_argument(
-        "--project-root", type=str, default=None, help="Project root path (defaults to auto-detect)",
+        "--project-root",
+        type=str,
+        default=None,
+        help="Project root path (defaults to auto-detect)",
     )
     parser.add_argument("--targets", type=str, required=True, help="Comma-separated target territories")
     parser.add_argument("--execute", action="store_true", default=False, help="Execute mode (vs dry-run)")

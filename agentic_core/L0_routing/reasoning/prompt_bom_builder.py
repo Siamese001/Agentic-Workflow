@@ -20,12 +20,15 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 # Lazy import to avoid L0->L_PG gravity violation
 def _get_prompt_bom():
     from agentic_core.prompt_governance.contracts.prompt_bom_types import PromptBOM
+
     return PromptBOM
+
 
 # Self-bootstrap governance wiring
 def _get_version_store():
     """Lazy import to avoid circular dependencies."""
     from agentic_core.L4_state.utils.memory.prompt_version_store import get_version_store
+
     return get_version_store()
 
 
@@ -57,7 +60,9 @@ class PromptBOMBuilder:
         PromptBOM = _get_prompt_bom()
         trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L0_ROUTING, "PromptBOMBuilder.build",
+            trace_id,
+            LayerSegment.L0_ROUTING,
+            "PromptBOMBuilder.build",
         )
         emit_replay_key(trace_id, f"bom:{packet.trace_id}")
         emit_determinism_digest(trace_id, f"path:{packet.path}")

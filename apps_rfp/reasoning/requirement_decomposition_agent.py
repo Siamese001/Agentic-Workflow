@@ -96,34 +96,94 @@ class RequirementDecomposer:
     # Pattern maps for requirement classification
     TYPE_PATTERNS: dict[RequirementType, list[str]] = {
         RequirementType.SECURITY: [
-            "encrypt", "authentication", "authorization", "audit", "compliance",
-            "gdpr", "hipaa", "soc2", "penetration test", "vulnerability",
-            "mfa", "sso", "rbac", "access control",
+            "encrypt",
+            "authentication",
+            "authorization",
+            "audit",
+            "compliance",
+            "gdpr",
+            "hipaa",
+            "soc2",
+            "penetration test",
+            "vulnerability",
+            "mfa",
+            "sso",
+            "rbac",
+            "access control",
         ],
         RequirementType.PERFORMANCE: [
-            "latency", "throughput", "concurrent", "scale", "million",
-            "response time", "99th percentile", "availability", "sla",
-            "load balancing", "caching", "optimize",
+            "latency",
+            "throughput",
+            "concurrent",
+            "scale",
+            "million",
+            "response time",
+            "99th percentile",
+            "availability",
+            "sla",
+            "load balancing",
+            "caching",
+            "optimize",
         ],
         RequirementType.INTEGRATION: [
-            "api", "integration", "webhook", "connector", "sync",
-            "import", "export", "etl", "middleware", "protocol",
-            "rest", "graphql", "soap", "message queue",
+            "api",
+            "integration",
+            "webhook",
+            "connector",
+            "sync",
+            "import",
+            "export",
+            "etl",
+            "middleware",
+            "protocol",
+            "rest",
+            "graphql",
+            "soap",
+            "message queue",
         ],
         RequirementType.DATA: [
-            "database", "data warehouse", "lake", "schema", "migration",
-            "backup", "retention", "archive", "analytics", "reporting",
-            "sql", "nosql", "blob", "vector",
+            "database",
+            "data warehouse",
+            "lake",
+            "schema",
+            "migration",
+            "backup",
+            "retention",
+            "archive",
+            "analytics",
+            "reporting",
+            "sql",
+            "nosql",
+            "blob",
+            "vector",
         ],
         RequirementType.UI_UX: [
-            "user interface", "dashboard", "portal", "responsive",
-            "accessibility", "wcag", "mobile", "tablet", "workflow",
-            "drag and drop", "visualization", "chart",
+            "user interface",
+            "dashboard",
+            "portal",
+            "responsive",
+            "accessibility",
+            "wcag",
+            "mobile",
+            "tablet",
+            "workflow",
+            "drag and drop",
+            "visualization",
+            "chart",
         ],
         RequirementType.TESTING: [
-            "test", "validation", "verification", "qa", "acceptance",
-            "unit test", "integration test", "e2e", "automation",
-            "coverage", "regression", "load test",
+            "test",
+            "validation",
+            "verification",
+            "qa",
+            "acceptance",
+            "unit test",
+            "integration test",
+            "e2e",
+            "automation",
+            "coverage",
+            "regression",
+            "load test",
         ],
     }
 
@@ -301,6 +361,7 @@ class RequirementDecomposer:
         ]
 
         import re
+
         parts = [text]
         for sep in separators:
             new_parts: list[str] = []
@@ -316,33 +377,64 @@ class RequirementDecomposer:
 
         # Enterprise indicators
         enterprise_indicators = [
-            "enterprise", "organization-wide", "multi-tenant", "multi-region",
-            "high availability", "99.99", "millions of", "billions of",
-            "machine learning", "ai model", "neural", "nlp", "computer vision",
+            "enterprise",
+            "organization-wide",
+            "multi-tenant",
+            "multi-region",
+            "high availability",
+            "99.99",
+            "millions of",
+            "billions of",
+            "machine learning",
+            "ai model",
+            "neural",
+            "nlp",
+            "computer vision",
         ]
         if any(ind in text_lower for ind in enterprise_indicators):
             return ComplexityTier.ENTERPRISE
 
         # Complex indicators
         complex_indicators = [
-            "integration", "real-time", "streaming", "workflow", "orchestration",
-            "distributed", "microservices", "event-driven", "complex",
+            "integration",
+            "real-time",
+            "streaming",
+            "workflow",
+            "orchestration",
+            "distributed",
+            "microservices",
+            "event-driven",
+            "complex",
         ]
         if any(ind in text_lower for ind in complex_indicators):
             return ComplexityTier.COMPLEX
 
         # Moderate indicators
         moderate_indicators = [
-            "api", "database", "authentication", "authorization", "report",
-            "dashboard", "notification", "batch", "etl",
+            "api",
+            "database",
+            "authentication",
+            "authorization",
+            "report",
+            "dashboard",
+            "notification",
+            "batch",
+            "etl",
         ]
         if any(ind in text_lower for ind in moderate_indicators):
             return ComplexityTier.MODERATE
 
         # Simple indicators
         simple_indicators = [
-            "ui component", "form", "button", "link", "page", "view",
-            "simple", "basic", "standard",
+            "ui component",
+            "form",
+            "button",
+            "link",
+            "page",
+            "view",
+            "simple",
+            "basic",
+            "standard",
         ]
         if any(ind in text_lower for ind in simple_indicators):
             return ComplexityTier.SIMPLE
@@ -369,25 +461,33 @@ class RequirementDecomposer:
 
         # Type-specific criteria
         if req_type == RequirementType.SECURITY:
-            criteria.extend([
-                "Security scan passes with no critical vulnerabilities",
-                "Access controls are properly enforced",
-            ])
+            criteria.extend(
+                [
+                    "Security scan passes with no critical vulnerabilities",
+                    "Access controls are properly enforced",
+                ]
+            )
         elif req_type == RequirementType.PERFORMANCE:
-            criteria.extend([
-                "Performance benchmarks meet specified SLAs",
-                "Load testing confirms scalability requirements",
-            ])
+            criteria.extend(
+                [
+                    "Performance benchmarks meet specified SLAs",
+                    "Load testing confirms scalability requirements",
+                ]
+            )
         elif req_type == RequirementType.INTEGRATION:
-            criteria.extend([
-                "Integration tests pass with mock and real endpoints",
-                "Error handling covers all documented failure modes",
-            ])
+            criteria.extend(
+                [
+                    "Integration tests pass with mock and real endpoints",
+                    "Error handling covers all documented failure modes",
+                ]
+            )
         elif req_type == RequirementType.UI_UX:
-            criteria.extend([
-                "UI renders correctly on target browsers/devices",
-                "Accessibility requirements (WCAG 2.1 AA) are met",
-            ])
+            criteria.extend(
+                [
+                    "UI renders correctly on target browsers/devices",
+                    "Accessibility requirements (WCAG 2.1 AA) are met",
+                ]
+            )
 
         return criteria
 
@@ -531,10 +631,9 @@ class RequirementDecompositionAgent:
             "estimated_sprints": len(sprints),
             "sprint_breakdown": sprints,
             "high_complexity_items": [
-                c.component_id for c in all_components
+                c.component_id
+                for c in all_components
                 if c.complexity in {ComplexityTier.COMPLEX, ComplexityTier.ENTERPRISE}
             ],
-            "risk_flags": list(set(
-                flag for d in decompositions for flag in d.risk_flags
-            )),
+            "risk_flags": list(set(flag for d in decompositions for flag in d.risk_flags)),
         }

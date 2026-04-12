@@ -405,7 +405,9 @@ class UniversalWriteGateway:
             )
             raise ToolNotAllowedError(f"Tool '{tool_name}' is not on the allowlist. Execution blocked.")
         self.record_mutation(
-            path=f"tool_execution/{tool_name}", operation="execute_instruction_allowed", permitted=True,
+            path=f"tool_execution/{tool_name}",
+            operation="execute_instruction_allowed",
+            permitted=True,
         )
 
     def write_file(self, path: str, data: str | bytes) -> SimulationResult | MutationRecord:
@@ -515,7 +517,13 @@ class UniversalWriteGateway:
         self._frozen = True
 
     def write(
-        self, payload: bytes, signature: str, store: Any, *, replay_key: str = "", plan_hash: str = "",
+        self,
+        payload: bytes,
+        signature: str,
+        store: Any,
+        *,
+        replay_key: str = "",
+        plan_hash: str = "",
     ) -> None:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
@@ -572,7 +580,11 @@ class UniversalWriteGateway:
         }
 
     def validate_promotion_pointer_update(
-        self, namespace: str, old_pointer: str, new_pointer: str, capability_token,
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token,
     ) -> bool:
         """Validate promotion pointer update with capability token."""
         if self.replay_mode:
@@ -601,7 +613,11 @@ class UniversalWriteGateway:
         return True
 
     def _simulate_promotion_validation(
-        self, namespace: str, old_pointer: str, new_pointer: str, capability_token,
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token,
     ) -> bool:
         """Simulate promotion validation in replay mode."""
         self.record_mutation(

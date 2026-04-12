@@ -226,8 +226,11 @@ class NormalizedGraph:
 
     def compute_digest(self) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "NormalizedGraph.compute_digest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "NormalizedGraph.compute_digest"
+        )
 
         payload = json.dumps(
             {"nodes": self.nodes, "edges": self.edges},
@@ -297,8 +300,11 @@ class ArtifactNormalizer:
         4. Compute digest and attach metrics.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactNormalizer.normalize")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactNormalizer.normalize"
+        )
 
         # Step 1: build name → id mapping
         name_to_id: dict[str, int] = {}

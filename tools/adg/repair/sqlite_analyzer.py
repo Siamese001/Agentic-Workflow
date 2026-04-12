@@ -107,12 +107,14 @@ class SQLiteAnalyzer:
 
         modules = []
         for row in cursor.fetchall():
-            modules.append({
-                "id": row[0],
-                "resolved_path": row[1],
-                "layer": row[2],
-                "missing_edge": "applies_guardrail",
-            })
+            modules.append(
+                {
+                    "id": row[0],
+                    "resolved_path": row[1],
+                    "layer": row[2],
+                    "missing_edge": "applies_guardrail",
+                }
+            )
 
         return modules
 
@@ -138,13 +140,15 @@ class SQLiteAnalyzer:
 
         imports = []
         for row in cursor.fetchall():
-            imports.append({
-                "edge_id": row[0],
-                "src_id": row[1],
-                "dst_id": row[2],
-                "relation_type": row[3],
-                "src_label": row[4],
-            })
+            imports.append(
+                {
+                    "edge_id": row[0],
+                    "src_id": row[1],
+                    "dst_id": row[2],
+                    "relation_type": row[3],
+                    "src_label": row[4],
+                }
+            )
 
         return imports
 
@@ -207,16 +211,18 @@ class SQLiteAnalyzer:
 
         violations = []
         for row in cursor.fetchall():
-            violations.append({
-                "edge_id": row[0],
-                "src_id": row[1],
-                "dst_id": row[2],
-                "relation_type": row[3],
-                "source_file": row[4],
-                "line_no": row[5],
-                "src_layer": row[6],
-                "dst_layer": row[7],
-            })
+            violations.append(
+                {
+                    "edge_id": row[0],
+                    "src_id": row[1],
+                    "dst_id": row[2],
+                    "relation_type": row[3],
+                    "source_file": row[4],
+                    "line_no": row[5],
+                    "src_layer": row[6],
+                    "dst_layer": row[7],
+                }
+            )
 
         return violations
 
@@ -253,13 +259,15 @@ class SQLiteAnalyzer:
 
         antipatterns = []
         for row in cursor.fetchall():
-            antipatterns.append({
-                "edge_id": row[0],
-                "source_file": row[1] or "",
-                "line_no": row[2],
-                "edge_kind": row[3],
-                "symbol": row[4] or "",
-            })
+            antipatterns.append(
+                {
+                    "edge_id": row[0],
+                    "source_file": row[1] or "",
+                    "line_no": row[2],
+                    "edge_kind": row[3],
+                    "symbol": row[4] or "",
+                }
+            )
 
         return antipatterns
 
@@ -275,45 +283,51 @@ class SQLiteAnalyzer:
 
         # Add governance edge deficiencies
         for module in self.get_modules_missing_governance_edges():
-            deficiencies.append({
-                "id": f"sqlite_gov_{module['id']}",
-                "category": FixCategory.SUGGEST_FIX,
-                "file_path": module["resolved_path"],
-                "line_no": None,
-                "issue_type": "missing_governance_edges",
-                "description": f"Module missing governance edges: {module['missing_edge']}",
-                "confidence": 0.8,
-                "metadata": module,
-            })
+            deficiencies.append(
+                {
+                    "id": f"sqlite_gov_{module['id']}",
+                    "category": FixCategory.SUGGEST_FIX,
+                    "file_path": module["resolved_path"],
+                    "line_no": None,
+                    "issue_type": "missing_governance_edges",
+                    "description": f"Module missing governance edges: {module['missing_edge']}",
+                    "confidence": 0.8,
+                    "metadata": module,
+                }
+            )
 
         # Add layer violations
         for violation in self.get_layer_violations():
-            deficiencies.append({
-                "id": f"sqlite_layer_{violation['edge_id']}",
-                "category": FixCategory.BLOCK_FIX,
-                "file_path": violation["source_file"],
-                "line_no": violation["line_no"],
-                "issue_type": "layer_violation",
-                "description": f"Layer violation: {violation['src_layer']} -> {violation['dst_layer']}",
-                "confidence": 0.9,
-                "metadata": violation,
-            })
+            deficiencies.append(
+                {
+                    "id": f"sqlite_layer_{violation['edge_id']}",
+                    "category": FixCategory.BLOCK_FIX,
+                    "file_path": violation["source_file"],
+                    "line_no": violation["line_no"],
+                    "issue_type": "layer_violation",
+                    "description": f"Layer violation: {violation['src_layer']} -> {violation['dst_layer']}",
+                    "confidence": 0.9,
+                    "metadata": violation,
+                }
+            )
 
         # Add P2 antipatterns (classify only, no auto-fix)
         for antipattern in self.get_p2_antipatterns():
-            deficiencies.append({
-                "id": f"sqlite_p2_{antipattern['edge_id']}",
-                "category": FixCategory.BLOCK_FIX,
-                "file_path": antipattern["source_file"],
-                "line_no": antipattern["line_no"],
-                "issue_type": antipattern["edge_kind"],
-                "description": (
-                    f"P2 antipattern: {antipattern['edge_kind']} "
-                    f"in {antipattern['source_file']}:{antipattern['line_no']}"
-                    + (f" ({antipattern['symbol']})" if antipattern.get("symbol") else "")
-                ),
-                "confidence": 0.95,
-                "metadata": antipattern,
-            })
+            deficiencies.append(
+                {
+                    "id": f"sqlite_p2_{antipattern['edge_id']}",
+                    "category": FixCategory.BLOCK_FIX,
+                    "file_path": antipattern["source_file"],
+                    "line_no": antipattern["line_no"],
+                    "issue_type": antipattern["edge_kind"],
+                    "description": (
+                        f"P2 antipattern: {antipattern['edge_kind']} "
+                        f"in {antipattern['source_file']}:{antipattern['line_no']}"
+                        + (f" ({antipattern['symbol']})" if antipattern.get("symbol") else "")
+                    ),
+                    "confidence": 0.95,
+                    "metadata": antipattern,
+                }
+            )
 
         return deficiencies

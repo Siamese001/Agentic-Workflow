@@ -16,6 +16,7 @@ from .uwg_clerk import WriteRequest
 @dataclass
 class RefreshResult:
     """Result of read surface refresh."""
+
     alias_swap_completed: bool
     caches_cleared: list[str]
     read_surfaces_updated: list[str]

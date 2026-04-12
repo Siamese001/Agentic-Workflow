@@ -176,8 +176,11 @@ class DataEnrichmentEngine(BaseRGEngine):
         Enrich the extracted data from HOP-1.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DataEnrichmentEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DataEnrichmentEngine.execute"
+        )
 
         extracted_data = self.ctx.buffer.read("hop1_extraction")
         if not extracted_data:

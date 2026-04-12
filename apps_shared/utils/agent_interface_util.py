@@ -304,7 +304,10 @@ class AgentResult(Generic[OutputT]):
 
     @classmethod
     def success(
-        cls, output: OutputT, execution_time_ms: float = 0.0, metadata: dict[str, Any] | None = None,
+        cls,
+        output: OutputT,
+        execution_time_ms: float = 0.0,
+        metadata: dict[str, Any] | None = None,
     ) -> AgentResult[OutputT]:
         """Create a successful result."""
         return cls(
@@ -316,7 +319,10 @@ class AgentResult(Generic[OutputT]):
 
     @classmethod
     def failure(
-        cls, error: str, execution_time_ms: float = 0.0, metadata: dict[str, Any] | None = None,
+        cls,
+        error: str,
+        execution_time_ms: float = 0.0,
+        metadata: dict[str, Any] | None = None,
     ) -> AgentResult[OutputT]:
         """Create a failed result."""
         return cls(
@@ -328,7 +334,9 @@ class AgentResult(Generic[OutputT]):
 
     @classmethod
     def timeout(
-        cls, execution_time_ms: float = 0.0, metadata: dict[str, Any] | None = None,
+        cls,
+        execution_time_ms: float = 0.0,
+        metadata: dict[str, Any] | None = None,
     ) -> AgentResult[OutputT]:
         """Create a timeout result."""
         return cls(
@@ -430,6 +438,7 @@ class BaseAgent(IAgent[InputT, OutputT]):
     def execute(self, input_data: InputT, context: AgentContext) -> AgentResult[OutputT]:
         """Execute with timing, error handling, and retry logic."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseAgent.execute")
 
@@ -500,6 +509,7 @@ class AgentRegistry:
     def register(self, agent: IAgent) -> None:
         """Register an agent."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistry.register")
 

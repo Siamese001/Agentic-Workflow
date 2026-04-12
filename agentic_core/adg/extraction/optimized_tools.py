@@ -43,6 +43,7 @@ class OptimizedCoverageAnalyzer:
     def analyze_parallel(self) -> dict[str, Any]:
         """Run parallel coverage analysis."""
         import time
+
         start = time.time()
 
         conn = sqlite3.connect(self.db_path)
@@ -63,7 +64,8 @@ class OptimizedCoverageAnalyzer:
 
         def check_coverage(src_path: str) -> dict:
             """Check coverage for single source file."""
-            cursor = conn.execute("""
+            cursor = conn.execute(
+                """
                 SELECT COUNT(*) as test_count
                 FROM edges e
                 JOIN nodes n1 ON e.src_id = n1.id
@@ -71,7 +73,9 @@ class OptimizedCoverageAnalyzer:
                 WHERE e.relation_type = 'imports'
                 AND n1.resolved_path LIKE 'tests/%'
                 AND n2.resolved_path = ?
-            """, (src_path,))
+            """,
+                (src_path,),
+            )
 
             row = cursor.fetchone()
             return {
@@ -93,11 +97,13 @@ class OptimizedCoverageAnalyzer:
         total = len(results)
 
         elapsed_ms = (time.time() - start) * 1000
-        self.metrics.update({
-            "files_processed": total,
-            "coverage_calculated": covered,
-            "time_ms": elapsed_ms,
-        })
+        self.metrics.update(
+            {
+                "files_processed": total,
+                "coverage_calculated": covered,
+                "time_ms": elapsed_ms,
+            }
+        )
 
         return {
             "total_modules": total,
@@ -120,6 +126,7 @@ class OptimizedLayerBoundaryChecker:
     ) -> list[dict]:
         """Check all files in directory in parallel."""
         import time
+
         start = time.time()
 
         # Get all Python files
@@ -137,16 +144,16 @@ class OptimizedLayerBoundaryChecker:
             violations = []
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
-                    lines = content.split('\n')
+                    lines = content.split("\n")
 
                 # Detect layer from path
                 layer = self._detect_layer(file_path)
 
                 # Check imports
                 for line_no, line in enumerate(lines, 1):
-                    if line.strip().startswith(('import ', 'from ')):
+                    if line.strip().startswith(("import ", "from ")):
                         violation = self._check_import(layer, line, line_no, file_path)
                         if violation:
                             violations.append(violation)
@@ -167,8 +174,7 @@ class OptimizedLayerBoundaryChecker:
         elapsed_ms = (time.time() - start) * 1000
 
         logger.info(
-            f"Found {len(all_violations)} violations in {len(file_paths)} files "
-            f"({elapsed_ms:.1f}ms)",
+            f"Found {len(all_violations)} violations in {len(file_paths)} files ({elapsed_ms:.1f}ms)",
         )
 
         return all_violations
@@ -177,7 +183,7 @@ class OptimizedLayerBoundaryChecker:
         """Detect layer from file path."""
         parts = Path(file_path).parts
         for part in parts:
-            if part.startswith('L') and len(part) <= 3:
+            if part.startswith("L") and len(part) <= 3:
                 return part
         return "unknown"
 
@@ -190,22 +196,22 @@ class OptimizedLayerBoundaryChecker:
     ) -> dict | None:
         """Check if import violates layer boundary."""
         # Simplified check - full implementation would use ADG
-        if 'agentic_core' in line:
+        if "agentic_core" in line:
             # Extract target layer from import
             target_layer = "unknown"
-            if 'L0_' in line:
+            if "L0_" in line:
                 target_layer = "L0"
-            elif 'L1_' in line:
+            elif "L1_" in line:
                 target_layer = "L1"
-            elif 'L2_' in line:
+            elif "L2_" in line:
                 target_layer = "L2"
-            elif 'L3_' in line:
+            elif "L3_" in line:
                 target_layer = "L3"
-            elif 'L4_' in line:
+            elif "L4_" in line:
                 target_layer = "L4"
-            elif 'L5_' in line:
+            elif "L5_" in line:
                 target_layer = "L5"
-            elif 'L6_' in line:
+            elif "L6_" in line:
                 target_layer = "L6"
 
             # Check if violation
@@ -244,6 +250,7 @@ class OptimizedRedisIngest:
     ) -> dict[str, Any]:
         """Ingest ADG data to Redis using batch pipelines."""
         import time
+
         start = time.time()
 
         conn = sqlite3.connect(db_path)

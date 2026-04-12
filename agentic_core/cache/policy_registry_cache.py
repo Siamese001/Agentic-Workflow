@@ -185,8 +185,11 @@ class PolicyRegistryCache:
             Policy definition dict
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyRegistryCache.get_or_fetch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyRegistryCache.get_or_fetch"
+        )
 
         if not policy_id or not policy_id.strip():
             raise ValueError("Policy ID must not be empty")
@@ -225,6 +228,7 @@ class PolicyRegistryCache:
 def get_policy_registry_cache() -> PolicyRegistryCache:
     """Get the singleton policy registry cache instance."""
     return PolicyRegistryCache()
+
 
 _emit_reads_through("l4", "policy_registry_cache", "urg_read_1")
 _emit_reads_through("l4", "policy_registry_cache", "urg_read_2")

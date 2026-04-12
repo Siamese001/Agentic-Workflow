@@ -13,6 +13,7 @@ from collections import deque
 @dataclass
 class DriftSignal:
     """Drift detection signal."""
+
     drift_type: str
     severity: float  # 0.0 to 1.0
     metric: str
@@ -78,7 +79,7 @@ class DriftDetector:
         if len(history) >= 10:
             mean = sum(history) / len(history)
             variance = sum((x - mean) ** 2 for x in history) / len(history)
-            std = variance ** 0.5
+            std = variance**0.5
 
             if std > 0 and abs(value - mean) > 3 * std:
                 self._drift_count += 1

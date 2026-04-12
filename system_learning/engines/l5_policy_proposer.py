@@ -194,8 +194,11 @@ class L5PolicyChangePackage:
 
     def canonical_bytes(self) -> bytes:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L5PolicyChangePackage.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L5PolicyChangePackage.canonical_bytes"
+        )
 
         data = {
             "surface_name": self.surface_name,
@@ -221,7 +224,14 @@ class L5PolicyProposer:
     """
 
     def propose(
-        self, snapshot: Any, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any,
+        self,
+        snapshot: Any,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
     ) -> L5PolicyChangePackage | None:
         """Propose L5 policy changes based on safety block accuracy.
 
@@ -241,6 +251,7 @@ class L5PolicyProposer:
             Proposal or None if no adjustment warranted.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L5PolicyProposer.propose")
 

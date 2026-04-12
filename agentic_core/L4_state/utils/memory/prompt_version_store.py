@@ -257,6 +257,7 @@ class PromptVersionStore:
         Returns a SHA-256 hex digest of all stored versions.
         """
         import hashlib
+
         sorted_versions = sorted(_versions.keys())
         combined = "|".join(sorted_versions)
         return hashlib.sha256(combined.encode("utf-8")).hexdigest()

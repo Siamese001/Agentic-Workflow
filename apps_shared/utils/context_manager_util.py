@@ -208,8 +208,11 @@ class ContextManager:
             ContextWindow with messages and token info
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextManager.get_context_window")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ContextManager.get_context_window"
+        )
 
         messages = []
         if self.system_message:

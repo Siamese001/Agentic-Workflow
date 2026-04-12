@@ -253,7 +253,9 @@ def capture_provider_bindings(overrides: dict[str, str] | None = None) -> Provid
         ),
     )
     material = {
-        "bindings": [{"model_id": b.model_id, "provider_id": b.provider_id, "tier": b.tier} for b in bindings],
+        "bindings": [
+            {"model_id": b.model_id, "provider_id": b.provider_id, "tier": b.tier} for b in bindings
+        ],
     }
     fingerprint = hashlib.sha256(_canonical_json_bytes(material)).hexdigest()
     return ProviderBindingFingerprint(bindings=bindings, fingerprint=fingerprint)

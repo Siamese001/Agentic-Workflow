@@ -1,4 +1,5 @@
 """ADG Insight CLI - CLI for ADG insights and analysis."""
+
 from __future__ import annotations
 
 from typing import Any

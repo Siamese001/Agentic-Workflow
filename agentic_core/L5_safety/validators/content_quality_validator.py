@@ -213,7 +213,8 @@ class ContentQualityValidator:
             config: Configuration dictionary containing validation rules
         """
         self.placeholder_patterns = config.get(
-            "placeholder_patterns", ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$.*?\\$"],
+            "placeholder_patterns",
+            ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$.*?\\$"],
         )
         self.quantified_patterns = config.get(
             "quantified_patterns",
@@ -228,7 +229,9 @@ class ContentQualityValidator:
         self.min_skill_matches = config.get("min_skill_matches", 3)
 
     def validate_content_quality(
-        self, resume: dict[str, Any], job_desc: str | None = None,
+        self,
+        resume: dict[str, Any],
+        job_desc: str | None = None,
     ) -> QualityValidationResult:
         """
         Validate content quality using purely deterministic logic.
@@ -244,7 +247,9 @@ class ContentQualityValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ContentQualityValidator.validate_content_quality",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "ContentQualityValidator.validate_content_quality",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -302,7 +307,9 @@ class ContentQualityValidator:
         return issues
 
     def _validate_skills(
-        self, resume: dict[str, Any], job_desc: str | None = None,
+        self,
+        resume: dict[str, Any],
+        job_desc: str | None = None,
     ) -> tuple[list[str], list[str]]:
         """
         Validate skills using deterministic rule-based logic.

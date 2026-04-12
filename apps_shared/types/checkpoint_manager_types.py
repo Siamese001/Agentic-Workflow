@@ -386,7 +386,10 @@ class FileCheckpointStorage(CheckpointStorageBackend):
         try:
             path = self._get_checkpoint_path(envelope.trace_id)
             data = envelope.to_dict()
-            data["_checkpoint_metadata"] = {"saved_at": datetime.now(timezone.utc).isoformat(), "version": "1.0"}
+            data["_checkpoint_metadata"] = {
+                "saved_at": datetime.now(timezone.utc).isoformat(),
+                "version": "1.0",
+            }
             content = json.dumps(data, indent=2)
             temp_path = path.with_suffix(".tmp")
             async with aiofiles.open(temp_path, "w") as f:
@@ -547,7 +550,10 @@ class RedisCheckpointStorage(CheckpointStorageBackend):
             redis = await self._get_redis()
             key = self._get_key(envelope.trace_id)
             data = envelope.to_dict()
-            data["_checkpoint_metadata"] = {"saved_at": datetime.now(timezone.utc).isoformat(), "version": "1.0"}
+            data["_checkpoint_metadata"] = {
+                "saved_at": datetime.now(timezone.utc).isoformat(),
+                "version": "1.0",
+            }
             content = json.dumps(data)
             await redis.setex(key, self.ttl_seconds, content)
             logger.debug(f"Saved checkpoint for {envelope.trace_id} to Redis")
@@ -756,7 +762,9 @@ class CheckpointManager:
             return FileCheckpointStorage(self.config.storage_path, self.config.compression)
         elif self.config.storage_type == CheckpointStorage.REDIS:
             return RedisCheckpointStorage(
-                self.config.redis_url, self.config.redis_prefix, self.config.ttl_seconds,
+                self.config.redis_url,
+                self.config.redis_prefix,
+                self.config.ttl_seconds,
             )
         else:
             return MemoryCheckpointStorage(self.config.max_checkpoints)
@@ -834,8 +842,11 @@ class CheckpointManager:
             envelope with completed stages marked
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CheckpointManager.resume_from_checkpoint")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CheckpointManager.resume_from_checkpoint"
+        )
 
         envelope = await self.load_checkpoint(trace_id)
         if not envelope:

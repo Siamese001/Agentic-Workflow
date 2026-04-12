@@ -227,7 +227,7 @@ def get_file_imports(file_path: Path) -> list[tuple[str, int]]:
         visitor = GravityVisitor("unknown", file_path)
         visitor.visit(tree)
         return visitor.imports
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         Logger.debug(f"Syntax error in {file_path}: {e}")
         return []
     # guardian: allow-silent-swallow
@@ -280,7 +280,9 @@ def extract_layer_from_import(import_path: str) -> str | None:
 
 
 def check_gravity_violation(
-    source_layer: str, target_layer: str, gravity_rules: dict[str, set[str]] | None = None,
+    source_layer: str,
+    target_layer: str,
+    gravity_rules: dict[str, set[str]] | None = None,
 ) -> bool:
     """
     Check if importing from target_layer violates gravity rules.

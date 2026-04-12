@@ -27,13 +27,18 @@ def run_npx_command(command_args):
     except Exception as e:
         return False, "", str(e)
 
+
 def test_sequential_thinking_package():
     """Test if the sequential thinking package is installed and accessible."""
     print("🔍 Testing sequential thinking package installation...")
 
     # Check if the package is installed globally
     try:
-        cmd = ["node", "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js", "--help"]
+        cmd = [
+            "node",
+            "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js",
+            "--help",
+        ]
         result = subprocess.run(
             cmd,
             capture_output=True,
@@ -42,7 +47,11 @@ def test_sequential_thinking_package():
             cwd=Path(__file__).parent,
         )
 
-        if result.returncode == 0 or "sequential-thinking" in result.stdout.lower() or "sequential-thinking" in result.stderr.lower():
+        if (
+            result.returncode == 0
+            or "sequential-thinking" in result.stdout.lower()
+            or "sequential-thinking" in result.stderr.lower()
+        ):
             print("✅ Sequential thinking package is installed and accessible")
             return True
         else:
@@ -55,6 +64,7 @@ def test_sequential_thinking_package():
     except Exception as e:
         print(f"❌ Failed to access sequential thinking package: {e}")
         return False
+
 
 def test_repository_context():
     """Gather repository context for sequential thinking test."""
@@ -83,6 +93,7 @@ def test_repository_context():
 
     return context
 
+
 def create_sequential_thinking_test():
     """Create a sequential thinking test scenario."""
     print("\n🧠 Creating sequential thinking test scenario...")
@@ -93,10 +104,10 @@ def create_sequential_thinking_test():
     problem = f"""
     Analyze the Agentic-Workflow repository architecture and provide a structured assessment:
 
-    Repository: {context['repository_name']}
-    - Python files: {context['python_files_count']}
-    - Markdown files: {context['markdown_files_count']}
-    - Python modules: {context['total_modules']}
+    Repository: {context["repository_name"]}
+    - Python files: {context["python_files_count"]}
+    - Markdown files: {context["markdown_files_count"]}
+    - Python modules: {context["total_modules"]}
 
     Problem: How should we optimize the testing strategy for this multi-layered agentic system?
 
@@ -110,6 +121,7 @@ def create_sequential_thinking_test():
     """
 
     return problem
+
 
 def test_mcp_config():
     """Test the MCP configuration file."""
@@ -139,6 +151,7 @@ def test_mcp_config():
     except Exception as e:
         print(f"❌ Error reading MCP config: {e}")
         return False
+
 
 def main():
     """Main test function."""
@@ -173,6 +186,7 @@ def main():
     else:
         print("\n❌ Issues found. Please check the errors above.")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

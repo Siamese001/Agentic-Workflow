@@ -14,13 +14,5 @@ class TestAdgArtifactVerification:
     """Test ADG artifact verification functionality."""
 
 
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()

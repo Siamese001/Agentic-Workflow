@@ -74,12 +74,10 @@ def diff_artifacts(
     entities_added, entities_removed = _set_diff(baseline_entity_names, current_entity_names)
 
     baseline_rel_keys = [
-        f"{r['from_name']}|{r['relation_type']}|{r['to_name']}"
-        for r in baseline.get("relations", [])
+        f"{r['from_name']}|{r['relation_type']}|{r['to_name']}" for r in baseline.get("relations", [])
     ]
     current_rel_keys = [
-        f"{r['from_name']}|{r['relation_type']}|{r['to_name']}"
-        for r in current.get("relations", [])
+        f"{r['from_name']}|{r['relation_type']}|{r['to_name']}" for r in current.get("relations", [])
     ]
     rels_added, rels_removed = _set_diff(baseline_rel_keys, current_rel_keys)
 
@@ -89,10 +87,7 @@ def diff_artifacts(
     baseline_health = baseline.get("identity_health", {}).get("by_identity_kind", {})
     current_health = current.get("identity_health", {}).get("by_identity_kind", {})
     all_kinds = sorted(set(baseline_health) | set(current_health))
-    identity_health_delta = {
-        k: current_health.get(k, 0) - baseline_health.get(k, 0)
-        for k in all_kinds
-    }
+    identity_health_delta = {k: current_health.get(k, 0) - baseline_health.get(k, 0) for k in all_kinds}
 
     return {
         "schema_versions": {
@@ -135,8 +130,7 @@ def diff_artifacts(
             "baseline_count": baseline_metrics.get("orphan_module_count", 0),
             "current_count": current_metrics.get("orphan_module_count", 0),
             "delta": (
-                current_metrics.get("orphan_module_count", 0)
-                - baseline_metrics.get("orphan_module_count", 0)
+                current_metrics.get("orphan_module_count", 0) - baseline_metrics.get("orphan_module_count", 0)
             ),
         },
         "identity_health_delta": identity_health_delta,

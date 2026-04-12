@@ -174,7 +174,10 @@ class SkillStatusDashboard:
             # Try to run the skill with --help or similar
             main_script = Path(skill_info["path"]) / "main.py"
             result = subprocess.run(
-                ["python", str(main_script), "--help"], capture_output=True, text=True, timeout=10,
+                ["python", str(main_script), "--help"],
+                capture_output=True,
+                text=True,
+                timeout=10,
             )
 
             duration = time.time() - start_time

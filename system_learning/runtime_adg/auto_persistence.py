@@ -19,13 +19,17 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 # Import OpenTelemetryTracingAdapter at module level for inheritance
 try:
     from apps_shared.utils.open_telemetry_tracing_adapter_util import OpenTelemetryTracingAdapter
+
     OTEL_ADAPTER_AVAILABLE = True
 except ImportError:
     OTEL_ADAPTER_AVAILABLE = False
+
     # Create a dummy base class if not available
     class OpenTelemetryTracingAdapter:  # type: ignore[no-redef]
         """Dummy base class when OpenTelemetry is not available."""
+
         pass
+
 
 from system_learning.runtime_adg import (
     FileBackedRuntimeADGStore,
@@ -76,6 +80,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
                 # Initialize L4 store
                 if l4_store_path:
                     from pathlib import Path
+
                     self._l4_store = FileBackedRuntimeADGStore(Path(l4_store_path))
                 else:
                     self._l4_store = FileBackedRuntimeADGStore()  # Uses L4 default
@@ -83,6 +88,7 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
                 # Initialize L6 bridge
                 if l6_base_dir:
                     from pathlib import Path
+
                     self._l6_bridge = L6MetaLearningBridge(Path(l6_base_dir))
                 else:
                     self._l6_bridge = L6MetaLearningBridge()  # Uses L6 default

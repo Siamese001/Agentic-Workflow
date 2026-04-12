@@ -62,6 +62,7 @@ class IntakeClerk:
             def csv_loader_wrapper(file_path):
                 records = CSVDocumentLoader.load(file_path)
                 return str(records)  # Convert to string for processing
+
             self._loaders[ContentType.CSV] = csv_loader_wrapper
 
     def ingest_document(self, file_path: str | Path) -> IngestionResult:
@@ -78,7 +79,9 @@ class IntakeClerk:
 
         trace_id = f"ingest_{file_path.stem}_{int(start_time)}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L3_ORCHESTRATION, "IntakeClerk.ingest_document",
+            trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "IntakeClerk.ingest_document",
         )
 
         try:

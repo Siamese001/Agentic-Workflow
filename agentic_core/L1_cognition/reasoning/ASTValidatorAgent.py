@@ -203,7 +203,9 @@ class ASTValidatorBase(ast.NodeVisitor):
         """Report a violation found during AST traversal."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ASTValidatorBase.report:{self._current_file}",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"ASTValidatorBase.report:{self._current_file}",
         )
         self.violations.append(
             {
@@ -348,7 +350,11 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             Dictionary with healing results
         """
         return super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
 
     # guardian: allow-type-erasure
@@ -403,72 +409,74 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             assert self is not None
             results["passed"] += 1
             results["tests"].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
-            results["tests"].append({"name": "test_instantiation", "status": "failed", "error": str(e)})    # guardian: AssertionError should be handled with specific context
+            results["tests"].append(
+                {"name": "test_instantiation", "status": "failed", "error": str(e)}
+            )  # guardian: AssertionError should be handled with specific context
         try:
             test_code = "try:\n    pass\nexcept:\n    pass"
             violations = self.validate(test_code)
             assert any("bare except" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_bare_except_detection", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_bare_except_detection", "status": "failed", "error": str(e)},
             )
-        try:    # guardian: AssertionError should be handled with specific context
+        try:  # guardian: AssertionError should be handled with specific context
             self.clear_violations()
             test_code = "try:\n    pass\nexcept Exception:\n    pass"
             violations = self.validate(test_code)
             assert any("empty except" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_empty_except_detection", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_empty_except_detection", "status": "failed", "error": str(e)},
             )
-        try:    # guardian: AssertionError should be handled with specific context
+        try:  # guardian: AssertionError should be handled with specific context
             self.clear_violations()
             test_code = "x = eval('1+1')"
             violations = self.validate(test_code)
             assert any("eval" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_eval_detection", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_eval_detection", "status": "failed", "error": str(e)})
-        try:    # guardian: AssertionError should be handled with specific context
+        try:  # guardian: AssertionError should be handled with specific context
             self.clear_violations()
             test_code = "x = globals()"
             violations = self.validate(test_code)
             assert any("dangerous builtin" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_dangerous_builtins_detection", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append(
                 {"name": "test_dangerous_builtins_detection", "status": "failed", "error": str(e)},
             )
-        try:    # guardian: AssertionError should be handled with specific context
+        try:  # guardian: AssertionError should be handled with specific context
             self.clear_violations()
             test_code = "breakpoint()"
             violations = self.validate(test_code)
             assert any("breakpoint" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_debugger_detection", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_debugger_detection", "status": "failed", "error": str(e)})
-        try:    # guardian: AssertionError should be handled with specific context
+        try:  # guardian: AssertionError should be handled with specific context
             self.clear_violations()
             test_code = "\nfrom typing import TYPE_CHECKING\nfrom agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin\nif TYPE_CHECKING:\n    eval('should be ignored')\n"
             violations = self.validate(test_code)
             assert not any("eval" in v.get("message", "").lower() for v in violations)
             results["passed"] += 1
             results["tests"].append({"name": "test_type_checking_skip", "status": "passed"})
-        except AssertionError as e:    # guardian: AssertionError should be handled with specific context
+        except AssertionError as e:  # guardian: AssertionError should be handled with specific context
             results["failed"] += 1
             results["tests"].append({"name": "test_type_checking_skip", "status": "failed", "error": str(e)})
         return results

@@ -34,6 +34,7 @@ def test_trace_retrieval():
 
     # Generate a simple mock embedding for testing
     import random
+
     query_embedding = [[random.uniform(-1, 1) for _ in range(1536)]]
 
     try:
@@ -45,8 +46,10 @@ def test_trace_retrieval():
         print(f"✅ Retrieved {len(results['ids'][0])} trace results")
 
         # Show first few results
-        for i, (doc_id, document, metadata) in enumerate(zip(results['ids'][0][:3], results['documents'][0][:3], results['metadatas'][0][:3])):
-            print(f"\nResult {i+1}:")
+        for i, (doc_id, document, metadata) in enumerate(
+            zip(results["ids"][0][:3], results["documents"][0][:3], results["metadatas"][0][:3])
+        ):
+            print(f"\nResult {i + 1}:")
             print(f"  ID: {doc_id}")
             print(f"  Trace ID: {metadata.get('trace_id', 'unknown')}")
             print(f"  Type: {metadata.get('trace_type', 'unknown')}")
@@ -75,8 +78,8 @@ def test_trace_type_filtering():
         results = collection.get(limit=100)
 
         trace_types = {}
-        for metadata in results['metadatas']:
-            trace_type = metadata.get('trace_type', 'unknown')
+        for metadata in results["metadatas"]:
+            trace_type = metadata.get("trace_type", "unknown")
             trace_types[trace_type] = trace_types.get(trace_type, 0) + 1
 
         print("\n📊 Trace Type Distribution (sample of 100):")

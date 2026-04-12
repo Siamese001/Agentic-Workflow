@@ -212,8 +212,11 @@ class AdversarialValidator:
             dict with keys: valid, errors, threat_assessment
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AdversarialValidator.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AdversarialValidator.validate"
+        )
 
         self._ensure_initialized()
         if self._agent is None:
@@ -285,6 +288,7 @@ class BoundaryValidator:
             dict with keys: valid, errors, recommendations
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BoundaryValidator.validate")
 

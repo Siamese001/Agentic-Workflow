@@ -16,6 +16,7 @@ import pytest
 @pytest.fixture
 def planning_preflight_hook(tmp_path):
     from tools.utils.planning.preflight_hook import PlanningPreflightHook
+
     budget_file = tmp_path / "history_test_budget.json"
     return PlanningPreflightHook(budget_file=budget_file)
 
@@ -26,6 +27,7 @@ class TestBudgetHistoryPersistence:
     def setup_method(self):
         """Setup test fixtures"""
         from tools.utils.planning.preflight_hook import PlanningPreflightHook
+
         self.temp_dir = Path(tempfile.mkdtemp())
         self.budget_file = self.temp_dir / "history_test_budget.json"
         self.hook = PlanningPreflightHook(budget_file=self.budget_file)
@@ -55,17 +57,18 @@ class TestBudgetHistoryPersistence:
             estimates_1.append(estimate)
 
         summary_1 = self.hook.get_budget_summary()
-        assert summary_1['total_steps'] == 10
+        assert summary_1["total_steps"] == 10
 
         # Session 2: Create new hook (simulating restart)
         from tools.utils.planning.preflight_hook import PlanningPreflightHook
+
         new_hook = PlanningPreflightHook(budget_file=self.budget_file)
         summary_2 = new_hook.get_budget_summary()
 
         # Should have persisted all data
-        assert summary_2['total_steps'] == 10
-        assert summary_2['average_tokens_per_step'] == summary_1['average_tokens_per_step']
-        assert summary_2['total_tokens'] == summary_1['total_tokens']
+        assert summary_2["total_steps"] == 10
+        assert summary_2["average_tokens_per_step"] == summary_1["average_tokens_per_step"]
+        assert summary_2["total_tokens"] == summary_1["total_tokens"]
 
         # Session 3: Add more estimates
         for i in range(5):
@@ -81,11 +84,11 @@ class TestBudgetHistoryPersistence:
             )
 
         final_summary = new_hook.get_budget_summary()
-        assert final_summary['total_steps'] == 15  # 10 + 5
+        assert final_summary["total_steps"] == 15  # 10 + 5
 
         # Verify data integrity
-        assert final_summary['total_tokens'] > summary_2['total_tokens']
-        assert final_summary['average_tokens_per_step'] > 0
+        assert final_summary["total_tokens"] > summary_2["total_tokens"]
+        assert final_summary["average_tokens_per_step"] > 0
 
     def test_data_accuracy_and_consistency(self):
         """Test data accuracy and consistency over many operations"""
@@ -123,18 +126,18 @@ class TestBudgetHistoryPersistence:
 
         # Check that total matches sum of individual estimates
         expected_total = sum(expected_totals)
-        assert summary['total_tokens'] == expected_total
+        assert summary["total_tokens"] == expected_total
 
         # Check average calculation
         expected_average = expected_total / len(expected_totals)
-        assert abs(summary['average_tokens_per_step'] - expected_average) < 1
+        assert abs(summary["average_tokens_per_step"] - expected_average) < 1
 
         # Check step count
-        assert summary['total_steps'] == len(test_scenarios)
+        assert summary["total_steps"] == len(test_scenarios)
 
         # Check min/max calculations
-        assert summary['min_tokens'] == min(expected_totals)
-        assert summary['max_tokens'] == max(expected_totals)
+        assert summary["min_tokens"] == min(expected_totals)
+        assert summary["max_tokens"] == max(expected_totals)
 
     def test_concurrent_access_safety(self):
         """Test safety under concurrent access simulation"""
@@ -156,19 +159,19 @@ class TestBudgetHistoryPersistence:
 
         # Verify all operations were recorded
         summary = self.hook.get_budget_summary()
-        assert summary['total_steps'] == 50
+        assert summary["total_steps"] == 50
 
         # Verify data integrity through totals
         expected_total = sum(op.total_projected_tokens for op in operations)
-        assert summary['total_tokens'] == expected_total
+        assert summary["total_tokens"] == expected_total
 
         # Verify step count
-        assert summary['total_steps'] == len(operations)
+        assert summary["total_steps"] == len(operations)
 
         # Verify all estimates are valid
         for estimate in operations:
             assert estimate.total_projected_tokens > 0
-            assert estimate.status in ['green', 'yellow', 'red']
+            assert estimate.status in ["green", "yellow", "red"]
 
     def test_file_corruption_recovery(self):
         """Test recovery from corrupted budget file"""
@@ -186,12 +189,13 @@ class TestBudgetHistoryPersistence:
             )
 
         # Corrupt the file
-        with open(self.budget_file, 'w') as f:
+        with open(self.budget_file, "w") as f:
             f.write("{ invalid json content")
 
         # Should recover gracefully
         try:
             from tools.utils.planning.preflight_hook import PlanningPreflightHook
+
             corrupted_hook = PlanningPreflightHook(budget_file=self.budget_file)
 
             # Should be able to add new data
@@ -210,7 +214,7 @@ class TestBudgetHistoryPersistence:
 
             # Should have new data (old data lost due to corruption)
             summary = corrupted_hook.get_budget_summary()
-            assert summary['total_steps'] == 1  # Only the recovery test
+            assert summary["total_steps"] == 1  # Only the recovery test
 
         except Exception as e:
             pytest.fail(f"Should handle corrupted file gracefully: {e}")
@@ -250,14 +254,16 @@ class TestBudgetHistoryPersistence:
         assert clear_time < 1.0, f"History clearing too slow: {clear_time:.2f}s"
 
         # Verify data accuracy before clearing
-        assert summary['total_steps'] == 500
-        assert summary['average_tokens_per_step'] > 0
+        assert summary["total_steps"] == 500
+        assert summary["average_tokens_per_step"] > 0
 
         # Verify clearing worked
         cleared_summary = self.hook.get_budget_summary()
-        assert cleared_summary['total_steps'] == 0
+        assert cleared_summary["total_steps"] == 0
 
-        print(f"Large dataset performance: add={add_time:.2f}s, summary={summary_time:.2f}s, clear={clear_time:.2f}s")
+        print(
+            f"Large dataset performance: add={add_time:.2f}s, summary={summary_time:.2f}s, clear={clear_time:.2f}s"
+        )
 
     def test_data_type_consistency(self):
         """Test data type consistency in stored data"""
@@ -286,15 +292,15 @@ class TestBudgetHistoryPersistence:
         summary = self.hook.get_budget_summary()
 
         # Check all fields have correct types
-        assert isinstance(summary['total_steps'], int)
-        assert isinstance(summary['total_tokens'], int)
-        assert isinstance(summary['average_tokens_per_step'], (int, float))
-        assert isinstance(summary['status_distribution'], dict)
-        assert isinstance(summary['max_tokens'], int)
-        assert isinstance(summary['min_tokens'], int)
+        assert isinstance(summary["total_steps"], int)
+        assert isinstance(summary["total_tokens"], int)
+        assert isinstance(summary["average_tokens_per_step"], (int, float))
+        assert isinstance(summary["status_distribution"], dict)
+        assert isinstance(summary["max_tokens"], int)
+        assert isinstance(summary["min_tokens"], int)
 
         # Check status distribution has correct types
-        for status, count in summary['status_distribution'].items():
+        for status, count in summary["status_distribution"].items():
             assert isinstance(status, str)
             assert isinstance(count, int)
 
@@ -340,7 +346,9 @@ class TestBudgetHistoryPersistence:
         assert summary_memory_mb < 20, f"Summary memory growth too high: {summary_memory_mb:.2f}MB"
         # Memory may not be immediately freed due to Python's GC
 
-        print(f"Memory efficiency: growth={memory_growth_mb:.2f}MB, summary={summary_memory_mb:.2f}MB, freed={clear_memory_mb:.2f}MB")
+        print(
+            f"Memory efficiency: growth={memory_growth_mb:.2f}MB, summary={summary_memory_mb:.2f}MB, freed={clear_memory_mb:.2f}MB"
+        )
 
     def test_timestamp_accuracy(self):
         """Test timestamp accuracy and consistency"""
@@ -368,11 +376,11 @@ class TestBudgetHistoryPersistence:
         summary = self.hook.get_budget_summary()
 
         # Check that all entries were recorded
-        assert summary['total_steps'] == 10
+        assert summary["total_steps"] == 10
 
         # Check that data is consistent
-        assert summary['total_tokens'] > 0
-        assert summary['average_tokens_per_step'] > 0
+        assert summary["total_tokens"] > 0
+        assert summary["average_tokens_per_step"] > 0
 
         # Verify chronological order through step names (since we don't have direct timestamp access)
         # The fact that we have 10 steps in order suggests proper timestamp handling
@@ -398,14 +406,15 @@ class TestBudgetHistoryPersistence:
                 content = f.read()
 
             # Truncate to simulate partial write
-            truncated_content = content[:len(content)//2]
+            truncated_content = content[: len(content) // 2]
 
-            with open(self.budget_file, 'w') as f:
+            with open(self.budget_file, "w") as f:
                 f.write(truncated_content)
 
         # Should recover gracefully
         try:
             from tools.utils.planning.preflight_hook import PlanningPreflightHook
+
             recovered_hook = PlanningPreflightHook(budget_file=self.budget_file)
 
             # Should be able to add new data
@@ -424,7 +433,7 @@ class TestBudgetHistoryPersistence:
 
             # Should have some data (may be partial due to truncation)
             summary = recovered_hook.get_budget_summary()
-            assert summary['total_steps'] >= 1  # At least the recovery test
+            assert summary["total_steps"] >= 1  # At least the recovery test
 
         except Exception as e:
             pytest.fail(f"Should handle partial file writes gracefully: {e}")
@@ -456,11 +465,11 @@ class TestBudgetHistoryPersistence:
 
         # Verify all data persisted correctly
         summary = self.hook.get_budget_summary()
-        assert summary['total_steps'] == len(test_files)
+        assert summary["total_steps"] == len(test_files)
 
         # Verify data consistency through summary statistics
-        assert summary['total_tokens'] > 0
-        assert summary['average_tokens_per_step'] > 0
+        assert summary["total_tokens"] > 0
+        assert summary["average_tokens_per_step"] > 0
 
     def test_data_integrity_under_stress(self):
         """Test data integrity under stress conditions"""
@@ -486,16 +495,16 @@ class TestBudgetHistoryPersistence:
             # Verify data accumulation
             summary = self.hook.get_budget_summary()
             expected_steps = (cycle + 1) * 10
-            assert summary['total_steps'] == expected_steps
+            assert summary["total_steps"] == expected_steps
 
         # Final verification of all data
         final_summary = self.hook.get_budget_summary()
-        assert final_summary['total_steps'] == 30  # 3 cycles * 10 items
-        assert final_summary['average_tokens_per_step'] > 0
+        assert final_summary["total_steps"] == 30  # 3 cycles * 10 items
+        assert final_summary["average_tokens_per_step"] > 0
 
         # Verify total tokens match sum of all estimates
         expected_total = sum(e.total_projected_tokens for e in total_estimates)
-        assert final_summary['total_tokens'] == expected_total
+        assert final_summary["total_tokens"] == expected_total
 
 
 if __name__ == "__main__":

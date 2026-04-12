@@ -174,7 +174,9 @@ class PerformanceOptimizedCollector:
         )
         self._flush_thread.start()
 
-        Logger.info(f"[PERF_COLLECTOR] Started optimized collection with {self._config.max_processing_threads} processing threads")
+        Logger.info(
+            f"[PERF_COLLECTOR] Started optimized collection with {self._config.max_processing_threads} processing threads"
+        )
 
     def stop_collection(self) -> None:
         """Stop collection gracefully."""
@@ -215,7 +217,7 @@ class PerformanceOptimizedCollector:
         self._registered_agents[agent_id] = agent_instance
 
         # Enable performance optimizations on agent
-        if hasattr(agent_instance, '_performance_optimized'):
+        if hasattr(agent_instance, "_performance_optimized"):
             agent_instance._performance_optimized = True
 
         Logger.info(f"[PERF_COLLECTOR] Registered agent {agent_id}")
@@ -267,7 +269,8 @@ class PerformanceOptimizedCollector:
             if attributes:
                 # Filter attributes to keep only important ones
                 filtered_attrs = {
-                    k: v for k, v in attributes.items()
+                    k: v
+                    for k, v in attributes.items()
                     if k in ["error", "error_type", "component", "layer", "mission"]
                 }
                 if filtered_attrs:
@@ -306,7 +309,7 @@ class PerformanceOptimizedCollector:
         """Collect spans from all registered agents."""
         for agent_id, agent_instance in self._registered_agents.items():
             try:
-                if hasattr(agent_instance, 'flush_traces'):
+                if hasattr(agent_instance, "flush_traces"):
                     spans = agent_instance.flush_traces()
                     if spans:
                         self.collect_spans_from_agent(agent_id, spans)
@@ -390,7 +393,9 @@ class PerformanceOptimizedCollector:
                 # Store compressed data
                 self._compression_buffer.append(compressed_data)
 
-                Logger.debug(f"[PERF_COLLECTOR] Compressed {len(spans_to_compress)} spans, ratio: {compression_ratio:.2f}")
+                Logger.debug(
+                    f"[PERF_COLLECTOR] Compressed {len(spans_to_compress)} spans, ratio: {compression_ratio:.2f}"
+                )
 
         except Exception as e:
             Logger.error(f"[PERF_COLLECTOR] Compression error: {e}")
@@ -464,16 +469,20 @@ class PerformanceOptimizedCollector:
             attributes = span.get("attributes", {})
 
             # Add performance metadata
-            attributes.update({
-                "performance_collected": True,
-                "collection_timestamp": time.time(),
-                "optimized": True,
-            })
+            attributes.update(
+                {
+                    "performance_collected": True,
+                    "collection_timestamp": time.time(),
+                    "optimized": True,
+                }
+            )
 
             # Create appropriate OpenTelemetry span
             if "cognitive" in operation_name.lower():
                 reasoning_mode = attributes.get("reasoning_mode", "react")
-                span_context = self._otel_tracer.trace_cognitive(operation_name, reasoning_mode=reasoning_mode, metadata=attributes)
+                span_context = self._otel_tracer.trace_cognitive(
+                    operation_name, reasoning_mode=reasoning_mode, metadata=attributes
+                )
             elif "tool" in operation_name.lower():
                 tool_name = attributes.get("tool_name", operation_name)
                 span_context = self._otel_tracer.trace_tool(tool_name, attributes)
@@ -503,7 +512,9 @@ class PerformanceOptimizedCollector:
 
         # Calculate average processing time
         if self._processing_times:
-            self._performance_metrics.avg_processing_time_ms = sum(self._processing_times) / len(self._processing_times)
+            self._performance_metrics.avg_processing_time_ms = sum(self._processing_times) / len(
+                self._processing_times
+            )
 
         # Get system metrics
         try:
@@ -511,15 +522,20 @@ class PerformanceOptimizedCollector:
             self._performance_metrics.memory_usage_mb = process.memory_info().rss / 1024 / 1024
             self._performance_metrics.cpu_usage_percent = process.cpu_percent()
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("performance_optimized_collector: Exception swallowed at L513: %s", e)
+            logging.getLogger(__name__).debug(
+                "performance_optimized_collector: Exception swallowed at L513: %s", e
+            )
 
         # Calculate buffer utilization
         self._performance_metrics.buffer_utilization = len(self._span_buffer) / self._config.max_buffer_size
 
         # Calculate batch efficiency
         if self._config.batch_size > 0:
-            self._performance_metrics.batch_efficiency = (len(self._span_buffer) + len(self._compression_buffer) * self._config.batch_size) / self._config.batch_size
+            self._performance_metrics.batch_efficiency = (
+                len(self._span_buffer) + len(self._compression_buffer) * self._config.batch_size
+            ) / self._config.batch_size
 
     def _adaptive_scheduling(self) -> None:
         """Adapt scheduling based on system load."""
@@ -529,11 +545,13 @@ class PerformanceOptimizedCollector:
             memory_percent = psutil.virtual_memory().percent
 
             # Store in history
-            self._system_load_history.append({
-                "cpu": cpu_percent,
-                "memory": memory_percent,
-                "timestamp": time.time(),
-            })
+            self._system_load_history.append(
+                {
+                    "cpu": cpu_percent,
+                    "memory": memory_percent,
+                    "timestamp": time.time(),
+                }
+            )
 
             # Keep only recent history
             if len(self._system_load_history) > 100:
@@ -595,55 +613,63 @@ class PerformanceOptimizedCollector:
 
         # Memory recommendations
         if metrics.memory_usage_mb > self._config.memory_threshold_mb:
-            recommendations.append({
-                "type": "memory",
-                "priority": "high",
-                "description": f"High memory usage: {metrics.memory_usage_mb:.1f} MB",
-                "actions": [
-                    "Increase buffer size limits",
-                    "Enable more aggressive compression",
-                    "Reduce batch size",
-                ],
-            })
+            recommendations.append(
+                {
+                    "type": "memory",
+                    "priority": "high",
+                    "description": f"High memory usage: {metrics.memory_usage_mb:.1f} MB",
+                    "actions": [
+                        "Increase buffer size limits",
+                        "Enable more aggressive compression",
+                        "Reduce batch size",
+                    ],
+                }
+            )
 
         # CPU recommendations
         if metrics.cpu_usage_percent > self._config.cpu_threshold_percent:
-            recommendations.append({
-                "type": "cpu",
-                "priority": "high",
-                "description": f"High CPU usage: {metrics.cpu_usage_percent:.1f}%",
-                "actions": [
-                    "Reduce processing threads",
-                    "Increase flush interval",
-                    "Enable adaptive scheduling",
-                ],
-            })
+            recommendations.append(
+                {
+                    "type": "cpu",
+                    "priority": "high",
+                    "description": f"High CPU usage: {metrics.cpu_usage_percent:.1f}%",
+                    "actions": [
+                        "Reduce processing threads",
+                        "Increase flush interval",
+                        "Enable adaptive scheduling",
+                    ],
+                }
+            )
 
         # Buffer recommendations
         if metrics.buffer_utilization > 0.8:
-            recommendations.append({
-                "type": "buffer",
-                "priority": "medium",
-                "description": f"High buffer utilization: {metrics.buffer_utilization:.1%}",
-                "actions": [
-                    "Increase buffer size",
-                    "Reduce collection frequency",
-                    "Enable compression",
-                ],
-            })
+            recommendations.append(
+                {
+                    "type": "buffer",
+                    "priority": "medium",
+                    "description": f"High buffer utilization: {metrics.buffer_utilization:.1%}",
+                    "actions": [
+                        "Increase buffer size",
+                        "Reduce collection frequency",
+                        "Enable compression",
+                    ],
+                }
+            )
 
         # Processing time recommendations
         if metrics.avg_processing_time_ms > 100:
-            recommendations.append({
-                "type": "processing",
-                "priority": "medium",
-                "description": f"Slow processing: {metrics.avg_processing_time_ms:.1f} ms",
-                "actions": [
-                    "Optimize span processing",
-                    "Reduce batch size",
-                    "Enable compression",
-                ],
-            })
+            recommendations.append(
+                {
+                    "type": "processing",
+                    "priority": "medium",
+                    "description": f"Slow processing: {metrics.avg_processing_time_ms:.1f} ms",
+                    "actions": [
+                        "Optimize span processing",
+                        "Reduce batch size",
+                        "Enable compression",
+                    ],
+                }
+            )
 
         return recommendations
 

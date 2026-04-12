@@ -258,46 +258,64 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRedisOrchestrator.get",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SovereignRedisOrchestrator.get",
         )
 
         if self._use_mcp:
-            result = self._mcp_call("redis_get", {"key": key})    # guardian:  should be handled with specific context
+            result = self._mcp_call(
+                "redis_get", {"key": key}
+            )  # guardian:  should be handled with specific context
             if result is not None and result != {}:
                 return result.get("value") if isinstance(result, dict) else result
         try:
             if not self.connection:
                 self.connection = self._create_connection()
             return self.connection.get(key)
-        except (redis.ConnectionError, redis.TimeoutError) as exc:    # guardian:  should be handled with specific context
+        except (
+            redis.ConnectionError,
+            redis.TimeoutError,
+        ) as exc:  # guardian:  should be handled with specific context
             raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     # guardian: allow-type-erasure
     def set(self, key: str, value: Any) -> Any:
         """Execute set operation (MCP-routed when REDIS_MCP_ENABLED)."""
         if self._use_mcp:
-            result = self._mcp_call("redis_set", {"key": key, "value": value})    # guardian:  should be handled with specific context
+            result = self._mcp_call(
+                "redis_set", {"key": key, "value": value}
+            )  # guardian:  should be handled with specific context
             if result is not None and result != {}:
                 return result
         try:
             if not self.connection:
                 self.connection = self._create_connection()
             self.connection.set(key, value)
-        except (redis.ConnectionError, redis.TimeoutError) as exc:    # guardian:  should be handled with specific context
+        except (
+            redis.ConnectionError,
+            redis.TimeoutError,
+        ) as exc:  # guardian:  should be handled with specific context
             raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     def delete(self, key: str) -> bool:
         """Delete a key from Redis (MCP-routed when REDIS_MCP_ENABLED)."""
         if self._use_mcp:
-            result = self._mcp_call("redis_delete", {"key": key})    # guardian:  should be handled with specific context
+            result = self._mcp_call(
+                "redis_delete", {"key": key}
+            )  # guardian:  should be handled with specific context
             if result is not None and result != {}:
                 return bool(result.get("deleted", False)) if isinstance(result, dict) else bool(result)
         try:
             if not self.connection:
                 self.connection = self._create_connection()
             return self.connection.delete(key) > 0
-        except (redis.ConnectionError, redis.TimeoutError) as exc:    # guardian:  should be handled with specific context
+        except (
+            redis.ConnectionError,
+            redis.TimeoutError,
+        ) as exc:  # guardian:  should be handled with specific context
             raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
+
     # guardian:  should be handled with specific context
     def exists(self, key: str) -> bool:
         """Check if key exists in Redis."""
@@ -305,7 +323,10 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
             if not self.connection:
                 self.connection = self._create_connection()
             return self.connection.exists(key) > 0
-        except (redis.ConnectionError, redis.TimeoutError) as exc:    # guardian:  should be handled with specific context
+        except (
+            redis.ConnectionError,
+            redis.TimeoutError,
+        ) as exc:  # guardian:  should be handled with specific context
             raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     # guardian: allow-type-erasure
@@ -315,7 +336,10 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
             if not self.connection:
                 self.connection = self._create_connection()
             self.connection.flushdb()
-        except (redis.ConnectionError, redis.TimeoutError) as exc:    # guardian:  should be handled with specific context
+        except (
+            redis.ConnectionError,
+            redis.TimeoutError,
+        ) as exc:  # guardian:  should be handled with specific context
             raise InfrastructureDependencyError(f"Redis unavailable at {self.redis_url}: {exc}") from exc
 
     # guardian: allow-type-erasure

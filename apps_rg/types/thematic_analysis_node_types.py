@@ -214,8 +214,11 @@ class ThematicAnalysisNode:
         Current implementation uses heuristic logic for immediate integration.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThematicAnalysisNode.analyze_thematic_resonance")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ThematicAnalysisNode.analyze_thematic_resonance"
+        )
 
         primary, secondary = self._extract_themes(job_description)
         authenticity = AuthenticityPatterns(

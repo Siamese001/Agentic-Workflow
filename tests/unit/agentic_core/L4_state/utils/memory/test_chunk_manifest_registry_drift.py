@@ -4,6 +4,7 @@ Unit tests for ChunkManifestRegistry drift detection methods (W3-P5).
 Tests for check_drift() and verify_fact_vec_hash() methods added
 to detect ChromaDB <-> SQLite fact_vec drift.
 """
+
 import hashlib
 import json
 import tempfile

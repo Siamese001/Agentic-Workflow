@@ -16,14 +16,17 @@ class TestTraceabilityTypesAdg:
     def test_traceability_types_adg_imports(self):
         """Test traceability_types_adg module imports."""
         from agentic_core import traceability_types_adg
+
         assert traceability_types_adg is not None
 
     def test_traceability_types_adg_class(self):
         """Test TraceabilityTypesAdg class exists."""
         from agentic_core import TraceabilityTypesAdg
+
         assert TraceabilityTypesAdg is not None
 
     def test_traceability_types_adg_callable(self):
         """Test traceability_types_adg functions are callable."""
         from agentic_core import validate_traceability_types_adg
+
         assert callable(validate_traceability_types_adg)

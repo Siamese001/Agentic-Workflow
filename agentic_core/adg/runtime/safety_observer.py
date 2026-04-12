@@ -302,8 +302,11 @@ class RuntimeSafetyReport:
     @property
     def guardrail_pass_rate(self) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyReport.guardrail_pass_rate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyReport.guardrail_pass_rate"
+        )
 
         if not self.guardrail_executions:
             return 1.0
@@ -365,8 +368,11 @@ class RuntimeSafetyObserver(RuntimeGraphCollector):
     ) -> None:
         """Record a guardrail execution and emit a RuntimeEdge."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyObserver.guardrail_check")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyObserver.guardrail_check"
+        )
 
         record = GuardrailExecution(
             guardrail=guardrail,

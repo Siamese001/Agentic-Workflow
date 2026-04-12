@@ -26,6 +26,7 @@ Usage:
     python tools/repair/fix_silent_swallows.py --scan
     python tools/repair/fix_silent_swallows.py --fix --confirm
 """
+
 from __future__ import annotations
 
 import argparse
@@ -49,16 +50,16 @@ INTENTIONAL_PASS_PATTERNS = {
 
 # Exceptions that are almost always intentional control flow when caught with pass
 CONTROL_FLOW_EXCEPTIONS = {
-    "ValueError",       # often from relative_to, int(), etc. as a test
-    "ImportError",      # optional dependency check
+    "ValueError",  # often from relative_to, int(), etc. as a test
+    "ImportError",  # optional dependency check
     "ModuleNotFoundError",
     "FileNotFoundError",
-    "AttributeError",   # hasattr-equivalent
-    "KeyError",         # dict membership test
-    "IndexError",       # sequence bounds test
-    "StopIteration",    # iterator exhaustion
+    "AttributeError",  # hasattr-equivalent
+    "KeyError",  # dict membership test
+    "IndexError",  # sequence bounds test
+    "StopIteration",  # iterator exhaustion
     "ProcessLookupError",  # process already dead
-    "TypeError",        # type-check equivalent
+    "TypeError",  # type-check equivalent
 }
 
 
@@ -76,10 +77,7 @@ def get_violations(db_path: Path) -> list[dict]:
         ORDER BY n.layer, e.source_file, e.line_no
     """).fetchall()
     conn.close()
-    return [
-        {"file": r[0], "line": r[1], "exc_type": r[2] or "Exception", "layer": r[3]}
-        for r in rows
-    ]
+    return [{"file": r[0], "line": r[1], "exc_type": r[2] or "Exception", "layer": r[3]} for r in rows]
 
 
 def classify_violation(v: dict, source_lines: list[str]) -> str:
@@ -201,8 +199,8 @@ def make_log_fix(source_lines: list[str], v: dict) -> list[str] | None:
 
     file_stem = Path(v["file"]).stem
     log_line = (
-        f'{body_indent}import logging; '
-        f'logging.getLogger(__name__).debug('
+        f"{body_indent}import logging; "
+        f"logging.getLogger(__name__).debug("
         f'"{file_stem}: {exc_type} swallowed at L{v["line"]}: %s", {var_name})'
     )
 

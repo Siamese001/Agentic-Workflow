@@ -173,16 +173,18 @@ class ThresholdTransformer(ast.NodeTransformer):
 
     def visit_keyword(self, node: ast.keyword) -> ast.keyword:
         """Replace threshold=0.95 in function calls."""
-        if node.arg == 'threshold':
+        if node.arg == "threshold":
             if isinstance(node.value, ast.Constant):
                 if node.value.value == 0.95:
                     # Replace with THRESHOLD reference
-                    node.value = ast.Name(id='THRESHOLD', ctx=ast.Load())
+                    node.value = ast.Name(id="THRESHOLD", ctx=ast.Load())
                     self.modified = True
-                    self.modifications.append({
-                        'line': getattr(node, 'lineno', 0),
-                        'type': 'keyword_arg',
-                    })
+                    self.modifications.append(
+                        {
+                            "line": getattr(node, "lineno", 0),
+                            "type": "keyword_arg",
+                        }
+                    )
         return node
 
 
@@ -200,19 +202,19 @@ class ImportAdder(ast.NodeTransformer):
         # First pass: check existing imports
         for i, stmt in enumerate(node.body):
             if isinstance(stmt, ast.ImportFrom):
-                if stmt.module and 'path_constants' in stmt.module:
+                if stmt.module and "path_constants" in stmt.module:
                     self.has_path_constants_import = True
                     self.import_node_index = i
 
                     # Check if THRESHOLD already imported
                     for alias in stmt.names:
-                        if alias.name == 'THRESHOLD':
+                        if alias.name == "THRESHOLD":
                             self.has_threshold_import = True
                             break
 
                     if not self.has_threshold_import:
                         # Add THRESHOLD to existing import
-                        stmt.names.append(ast.alias(name='THRESHOLD', asname=None))
+                        stmt.names.append(ast.alias(name="THRESHOLD", asname=None))
                         self.added_import = True
                     break
 
@@ -230,8 +232,8 @@ class ImportAdder(ast.NodeTransformer):
 
             # Create new import
             new_import = ast.ImportFrom(
-                module='agentic_core.L0_routing.config.path_constants',
-                names=[ast.alias(name='THRESHOLD', asname=None)],
+                module="agentic_core.L0_routing.config.path_constants",
+                names=[ast.alias(name="THRESHOLD", asname=None)],
                 level=0,
             )
 
@@ -246,10 +248,10 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
     """Fix a single file using AST transformation."""
     try:
         # Skip if this is path_constants.py itself
-        if file_path.name == 'path_constants.py' and 'L0_routing' in str(file_path):
-            return {'status': 'skipped', 'reason': 'ssot_source'}
+        if file_path.name == "path_constants.py" and "L0_routing" in str(file_path):
+            return {"status": "skipped", "reason": "ssot_source"}
 
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
 
         # Parse AST
         tree = ast.parse(source, filename=str(file_path))
@@ -259,7 +261,7 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
         tree = transformer.visit(tree)
 
         if not transformer.modified:
-            return {'status': 'skipped', 'reason': 'no_modifications'}
+            return {"status": "skipped", "reason": "no_modifications"}
 
         # Add import if modifications were made
         import_adder = ImportAdder()
@@ -272,28 +274,28 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
         new_source = ast.unparse(tree)
 
         if not dry_run:
-            file_path.write_text(new_source, encoding='utf-8')
+            file_path.write_text(new_source, encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'modifications': len(transformer.modifications),
-            'added_import': import_adder.added_import,
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "modifications": len(transformer.modifications),
+            "added_import": import_adder.added_import,
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': f'SyntaxError: {e}',
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": f"SyntaxError: {e}",
         }
     except (ValueError, TypeError, RuntimeError) as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
         }
 
 
@@ -301,10 +303,10 @@ def main():
     """Main execution."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='AST-based threshold fixer')
-    parser.add_argument('--execute', action='store_true', help='Actually write changes')
-    parser.add_argument('--limit', type=int, default=50, help='Max files to process')
-    parser.add_argument('--file', type=str, help='Fix specific file')
+    parser = argparse.ArgumentParser(description="AST-based threshold fixer")
+    parser.add_argument("--execute", action="store_true", help="Actually write changes")
+    parser.add_argument("--limit", type=int, default=50, help="Max files to process")
+    parser.add_argument("--file", type=str, help="Fix specific file")
 
     args = parser.parse_args()
 
@@ -319,11 +321,11 @@ def main():
 
         result = fix_file(file_path, dry_run=not args.execute)
 
-        if result['status'] == 'success':
+        if result["status"] == "success":
             print(f"✓ {result['file']}")
             print(f"  Modifications: {result['modifications']}")
             print(f"  Added import: {result['added_import']}")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
         else:
             print(f"- {result.get('file', args.file)}: {result['reason']}")
@@ -334,13 +336,13 @@ def main():
     baseline_file = project_root / "ops_scripts" / "hooks" / "landmine_baseline.txt"
 
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if 'threshold=0.95' in line:
-                file_path = line.split(':')[0]
+            if "threshold=0.95" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
-    unique_files = sorted(set(violations))[:args.limit]
+    unique_files = sorted(set(violations))[: args.limit]
 
     print(f"[INFO] Processing {len(unique_files)} files")
     print(f"[MODE] {'EXECUTE' if args.execute else 'DRY RUN'}")
@@ -354,14 +356,14 @@ def main():
         result = fix_file(file_path, dry_run=not args.execute)
         results.append(result)
 
-        if result['status'] == 'success':
+        if result["status"] == "success":
             print(f"✓ {result['file']}")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
 
-    success = len([r for r in results if r['status'] == 'success'])
-    errors = len([r for r in results if r['status'] == 'error'])
-    skipped = len([r for r in results if r['status'] == 'skipped'])
+    success = len([r for r in results if r["status"] == "success"])
+    errors = len([r for r in results if r["status"] == "error"])
+    skipped = len([r for r in results if r["status"] == "skipped"])
 
     print()
     print(f"[SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}")
@@ -372,5 +374,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

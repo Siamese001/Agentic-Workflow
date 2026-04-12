@@ -16,14 +16,17 @@ class TestAuthorityHardening:
     def test_authority_hardening_imports(self):
         """Test authority hardening module imports."""
         from agentic_core.L5_safety import authority_hardening
+
         assert authority_hardening is not None
 
     def test_authority_hardening_class(self):
         """Test authority hardening class exists."""
         from agentic_core.L5_safety.authority_hardening import AuthorityHardening
+
         assert AuthorityHardening is not None
 
     def test_harden_authority(self):
         """Test harden authority function."""
         from agentic_core.L5_safety.authority_hardening import harden_authority
+
         assert callable(harden_authority)

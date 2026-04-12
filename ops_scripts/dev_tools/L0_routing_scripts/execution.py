@@ -190,7 +190,11 @@ class DAGStrategy(ExecutionStrategy):
                     completed.add(step_id)
                     steps_executed += 1
                 # guardian: allow-silent-swallow
-                except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-specific -- step execution failure returns workflow error
+                except (
+                    RuntimeError,
+                    ValueError,
+                    TypeError,
+                ) as e:  # guardian: allow-specific -- step execution failure returns workflow error
                     return WorkflowResult(
                         workflow_id=context.workflow_id,
                         status=ExecutionStatus.FAILED,
@@ -270,7 +274,11 @@ class StateMachineStrategy(ExecutionStrategy):
                     else:
                         current_state = "end"
             # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-specific -- state execution failure returns workflow error
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-specific -- state execution failure returns workflow error
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
@@ -343,7 +351,11 @@ class EventDrivenStrategy(ExecutionStrategy):
                     else:
                         await event_queue.put("complete")
             # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-specific -- event execution failure returns workflow error
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-specific -- event execution failure returns workflow error
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,
@@ -398,7 +410,11 @@ class ReactiveStrategy(ExecutionStrategy):
                 current_value = result
                 steps_executed += 1
             # guardian: allow-silent-swallow
-            except (RuntimeError, ValueError, TypeError) as e:  # guardian: allow-specific -- stream step failure returns workflow error
+            except (
+                RuntimeError,
+                ValueError,
+                TypeError,
+            ) as e:  # guardian: allow-specific -- stream step failure returns workflow error
                 return WorkflowResult(
                     workflow_id=context.workflow_id,
                     status=ExecutionStatus.FAILED,

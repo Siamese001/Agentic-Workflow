@@ -74,14 +74,14 @@ class L3BranchRanker(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.model = model_data.get('model')
-            self.feature_names = model_data.get('feature_names', [])
-            self.feature_importances = model_data.get('feature_importances', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.model = model_data.get("model")
+            self.feature_names = model_data.get("feature_names", [])
+            self.feature_importances = model_data.get("feature_importances", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             if self.model is None:
                 raise ValueError("No model found in saved file")
@@ -97,23 +97,23 @@ class L3BranchRanker(BaseMLModel):
             raise RuntimeError("No model to save")
 
         model_data = {
-            'model': self.model,
-            'feature_names': self.feature_names,
-            'feature_importances': self.feature_importances,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
-                'lightgbm_params': getattr(self.model, 'params', {}),
+            "model": self.model,
+            "feature_names": self.feature_names,
+            "feature_importances": self.feature_importances,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
+                "lightgbm_params": getattr(self.model, "params", {}),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -204,14 +204,16 @@ class L3BranchRanker(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'ranking_score': ranking_score,
-                'is_above_threshold': passes_threshold,
-                'ranking_position': None,  # Will be set during batch ranking
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "ranking_score": ranking_score,
+                    "is_above_threshold": passes_threshold,
+                    "ranking_position": None,  # Will be set during batch ranking
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -292,33 +294,37 @@ class L3BranchRanker(BaseMLModel):
                     policy_hash=policy_hash,
                 )
 
-                branch_scores.append({
-                    'branch': branch,
-                    'original_index': i,
-                    'ranking_score': prediction.prediction,
-                    'confidence': prediction.confidence,
-                    'top_features': prediction.top_features,
-                    'decision_mode': prediction.decision_mode,
-                    'prediction_metadata': prediction.model_metadata,
-                })
+                branch_scores.append(
+                    {
+                        "branch": branch,
+                        "original_index": i,
+                        "ranking_score": prediction.prediction,
+                        "confidence": prediction.confidence,
+                        "top_features": prediction.top_features,
+                        "decision_mode": prediction.decision_mode,
+                        "prediction_metadata": prediction.model_metadata,
+                    }
+                )
             else:
                 # Feature extraction failed - give low score
-                branch_scores.append({
-                    'branch': branch,
-                    'original_index': i,
-                    'ranking_score': 0.1,
-                    'confidence': 0.0,
-                    'top_features': [],
-                    'decision_mode': DecisionMode.BLOCKED,
-                    'prediction_metadata': {'error': 'Feature extraction failed'},
-                })
+                branch_scores.append(
+                    {
+                        "branch": branch,
+                        "original_index": i,
+                        "ranking_score": 0.1,
+                        "confidence": 0.0,
+                        "top_features": [],
+                        "decision_mode": DecisionMode.BLOCKED,
+                        "prediction_metadata": {"error": "Feature extraction failed"},
+                    }
+                )
 
         # Sort by ranking score (descending)
-        branch_scores.sort(key=lambda x: x['ranking_score'], reverse=True)
+        branch_scores.sort(key=lambda x: x["ranking_score"], reverse=True)
 
         # Update ranking positions
         for rank, branch_score in enumerate(branch_scores[:max_branches]):
-            branch_score['ranking_position'] = rank + 1
+            branch_score["ranking_position"] = rank + 1
 
         # Return top branches
         return branch_scores[:max_branches]
@@ -368,8 +374,8 @@ class L3BranchRanker(BaseMLModel):
             ready_branches = []
 
             for branch_score in remaining_branches:
-                branch = branch_score['branch']
-                dependencies = branch.get('dependencies', [])
+                branch = branch_score["branch"]
+                dependencies = branch.get("dependencies", [])
 
                 # Check if all dependencies are processed
                 deps_satisfied = True
@@ -388,7 +394,7 @@ class L3BranchRanker(BaseMLModel):
             # Add highest priority ready branch
             selected_branch = ready_branches[0]
             ordered_branches.append(selected_branch)
-            processed_branches.add(selected_branch['branch'].get('id', selected_branch['original_index']))
+            processed_branches.add(selected_branch["branch"].get("id", selected_branch["original_index"]))
 
             # Remove from remaining
             remaining_branches.remove(selected_branch)
@@ -407,20 +413,24 @@ class L3BranchRanker(BaseMLModel):
             # Create feature importance list
             feature_importance = []
             for i, (name, importance) in enumerate(zip(feature_names, self.feature_importances)):
-                feature_importance.append({
-                    'feature_name': name,
-                    'importance_score': float(importance),
-                    'feature_value': model_input.features.get(name),
-                    'rank': i + 1,
-                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0,
-                })
+                feature_importance.append(
+                    {
+                        "feature_name": name,
+                        "importance_score": float(importance),
+                        "feature_value": model_input.features.get(name),
+                        "rank": i + 1,
+                        "relative_importance": float(importance / max(self.feature_importances))
+                        if max(self.feature_importances) > 0
+                        else 0.0,
+                    }
+                )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -524,9 +534,9 @@ class L3BranchRanker(BaseMLModel):
 
         current_group = []
         for example in training_data:
-            features = example['features']
-            label = example['label']  # Ranking score or relevance
-            query_id = example.get('query_id', 0)
+            features = example["features"]
+            label = example["label"]  # Ranking score or relevance
+            query_id = example.get("query_id", 0)
 
             feature_vector = []
             for feature_name in feature_names:
@@ -540,7 +550,7 @@ class L3BranchRanker(BaseMLModel):
             # Start new group when query_id changes
             if example != training_data[-1]:  # Not the last example
                 next_example = training_data[training_data.index(example) + 1]
-                if next_example.get('query_id', 0) != query_id:
+                if next_example.get("query_id", 0) != query_id:
                     group.extend(current_group)
                     current_group = []
 
@@ -553,17 +563,17 @@ class L3BranchRanker(BaseMLModel):
 
         # Default LambdaMART parameters
         default_params = {
-            'objective': 'lambdarank',
-            'metric': 'ndcg',
-            'boosting_type': 'gbdt',
-            'num_leaves': 31,
-            'learning_rate': 0.05,
-            'feature_fraction': 0.9,
-            'bagging_fraction': 0.8,
-            'bagging_freq': 5,
-            'verbose': -1,
-            'random_state': 42,
-            'label_gain': [0, 1, 3, 7, 15, 31, 63, 127],  # LambdaMART label gains
+            "objective": "lambdarank",
+            "metric": "ndcg",
+            "boosting_type": "gbdt",
+            "num_leaves": 31,
+            "learning_rate": 0.05,
+            "feature_fraction": 0.9,
+            "bagging_fraction": 0.8,
+            "bagging_freq": 5,
+            "verbose": -1,
+            "random_state": 42,
+            "label_gain": [0, 1, 3, 7, 15, 31, 63, 127],  # LambdaMART label gains
         }
 
         # Merge with provided parameters

@@ -35,22 +35,59 @@ logger = logging.getLogger(__name__)
 
 # Safety configuration
 ALLOWED_COMMANDS = {
-    "python", "pytest", "git", "ls", "cat", "pwd", "cd", "echo",
-    "find", "grep", "head", "tail", "wc", "sort", "uniq", "cut",
-    "mkdir", "touch", "cp", "mv", "rm", "chmod", "chown",
-    "pip", "uv", "node", "npm",
+    "python",
+    "pytest",
+    "git",
+    "ls",
+    "cat",
+    "pwd",
+    "cd",
+    "echo",
+    "find",
+    "grep",
+    "head",
+    "tail",
+    "wc",
+    "sort",
+    "uniq",
+    "cut",
+    "mkdir",
+    "touch",
+    "cp",
+    "mv",
+    "rm",
+    "chmod",
+    "chown",
+    "pip",
+    "uv",
+    "node",
+    "npm",
 }
 
 DANGEROUS_PATTERNS = {
-    "rm -rf /", "rm -rf /*", "sudo rm", "format", "fdisk",
-    "mkfs", "dd if=", "shutdown", "reboot", "halt", "poweroff",
-    ">:>", ">>/dev/", ">/dev/null", "curl | sh", "wget | sh",
+    "rm -rf /",
+    "rm -rf /*",
+    "sudo rm",
+    "format",
+    "fdisk",
+    "mkfs",
+    "dd if=",
+    "shutdown",
+    "reboot",
+    "halt",
+    "poweroff",
+    ">:>",
+    ">>/dev/",
+    ">/dev/null",
+    "curl | sh",
+    "wget | sh",
 }
 
 # Repo root restriction
 REPO_ROOT = Path(__file__).parent.parent.parent
 MAX_EXECUTION_TIME = 30  # seconds
 MAX_OUTPUT_SIZE = 10000  # characters
+
 
 class TerminalMCPServer:
     def __init__(self):
@@ -148,10 +185,12 @@ class TerminalMCPServer:
             cwd.resolve().relative_to(REPO_ROOT.resolve())
         except ValueError:
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"ERROR: Working directory {cwd} is outside repository root {REPO_ROOT}",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"ERROR: Working directory {cwd} is outside repository root {REPO_ROOT}",
+                    )
+                ],
                 isError=True,
             )
 
@@ -176,18 +215,22 @@ class TerminalMCPServer:
                 output = output[:MAX_OUTPUT_SIZE] + "\n... (output truncated)"
 
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"Exit Code: {result.returncode}\n\nOutput:\n{output}",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"Exit Code: {result.returncode}\n\nOutput:\n{output}",
+                    )
+                ],
             )
 
         except subprocess.TimeoutExpired:
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"Command timed out after {timeout} seconds",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"Command timed out after {timeout} seconds",
+                    )
+                ],
                 isError=True,
             )
         except Exception as e:
@@ -204,10 +247,12 @@ class TerminalMCPServer:
         for pattern in DANGEROUS_PATTERNS:
             if pattern in command:
                 return CallToolResult(
-                    content=[TextContent(
-                        type="text",
-                        text=f"UNSAFE: Command contains dangerous pattern: {pattern}",
-                    )],
+                    content=[
+                        TextContent(
+                            type="text",
+                            text=f"UNSAFE: Command contains dangerous pattern: {pattern}",
+                        )
+                    ],
                     isError=True,
                 )
 
@@ -215,20 +260,24 @@ class TerminalMCPServer:
         first_word = command.split()[0] if command.split() else ""
         if first_word not in ALLOWED_COMMANDS:
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text=f"UNSAFE: Command '{first_word}' not in allowed commands",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text=f"UNSAFE: Command '{first_word}' not in allowed commands",
+                    )
+                ],
                 isError=True,
             )
 
         # Check for path traversal attempts
         if "../" in command or "..\\" in command:
             return CallToolResult(
-                content=[TextContent(
-                    type="text",
-                    text="UNSAFE: Path traversal detected",
-                )],
+                content=[
+                    TextContent(
+                        type="text",
+                        text="UNSAFE: Path traversal detected",
+                    )
+                ],
                 isError=True,
             )
 
@@ -240,11 +289,14 @@ class TerminalMCPServer:
         """List all allowed commands"""
         commands = sorted(ALLOWED_COMMANDS)
         return CallToolResult(
-            content=[TextContent(
-                type="text",
-                text="Allowed commands:\n" + "\n".join(f"- {cmd}" for cmd in commands),
-            )],
+            content=[
+                TextContent(
+                    type="text",
+                    text="Allowed commands:\n" + "\n".join(f"- {cmd}" for cmd in commands),
+                )
+            ],
         )
+
 
 async def main():
     """Main entry point"""
@@ -268,6 +320,7 @@ async def main():
                 ),
             ),
         )
+
 
 if __name__ == "__main__":
     try:

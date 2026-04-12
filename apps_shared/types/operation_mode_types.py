@@ -385,13 +385,19 @@ class ObservabilityOperationPerformer:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"OperationRegistry.register_operation:{operation_def.operation_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"OperationRegistry.register_operation:{operation_def.operation_id}",
+        )
         self._registered_operations[operation_def.operation_id] = operation_def
         self._operation_handlers[operation_def.operation_id] = handler
         self.logger.info(f"Registered operation: {operation_def.operation_id}")
 
     def perform_operation(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Perform an observability operation.
 
@@ -459,7 +465,9 @@ class ObservabilityOperationPerformer:
         yield from handler(inputs, stream=True)
 
     def perform_operations_batch(
-        self, contexts: list[OperationExecutionContext], inputs_list: list[dict[str, Any]],
+        self,
+        contexts: list[OperationExecutionContext],
+        inputs_list: list[dict[str, Any]],
     ) -> list[OperationExecutionResult]:
         """Perform multiple operations.
 
@@ -531,7 +539,9 @@ class ObservabilityOperationPerformer:
         return self._active_executions.get(execution_id)
 
     def _execute_synchronous(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation synchronously."""
         handler = self._operation_handlers[context.operation_id]
@@ -550,7 +560,9 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_asynchronous(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation asynchronously."""
         handler = self._operation_handlers[context.operation_id]
@@ -564,7 +576,9 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_streaming(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation in streaming mode."""
         return OperationExecutionResult(
@@ -576,7 +590,9 @@ class ObservabilityOperationPerformer:
         )
 
     def _execute_batch(
-        self, context: OperationExecutionContext, inputs: dict[str, Any],
+        self,
+        context: OperationExecutionContext,
+        inputs: dict[str, Any],
     ) -> OperationExecutionResult:
         """Execute operation in batch mode."""
         batch_items = inputs.get("batch_items", [])
@@ -663,7 +679,9 @@ class ObservabilityOperationPerformer:
         }
 
     def _track_execution_complete(
-        self, context: OperationExecutionContext, result: OperationExecutionResult,
+        self,
+        context: OperationExecutionContext,
+        result: OperationExecutionResult,
     ) -> None:
         """Track execution completion."""
         if context.execution_id in self._active_executions:
@@ -673,7 +691,11 @@ class ObservabilityOperationPerformer:
             execution["execution_time"] = result.execution_time
 
     def _create_error_result(
-        self, execution_id: str, operation_id: str, error: str, start_time: float,
+        self,
+        execution_id: str,
+        operation_id: str,
+        error: str,
+        start_time: float,
     ) -> OperationExecutionResult:
         """Create error result."""
         return OperationExecutionResult(
@@ -781,7 +803,10 @@ class ObservabilityOperationPerformer:
 
 # guardian: allow-magic-config
 def create_observability_operation_performer(
-    default_timeout: float = 30.0, enable_tracing: bool = True, enable_metrics: bool = True, **kwargs: object,
+    default_timeout: float = 30.0,
+    enable_tracing: bool = True,
+    enable_metrics: bool = True,
+    **kwargs: object,
 ) -> ObservabilityOperationPerformer:
     """Create a configured observability operation performer."""
     config = OperationExecutionConfig(

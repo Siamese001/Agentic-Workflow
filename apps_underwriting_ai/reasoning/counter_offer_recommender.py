@@ -1,6 +1,7 @@
 """
 Counter Offer Recommender - Recommends revised terms when original request is too aggressive.
 """
+
 from dataclasses import dataclass
 from typing import List, Optional
 
@@ -10,6 +11,7 @@ from ..types import RiskFeatures, UnderwritingRequest
 @dataclass
 class CounterOfferTerms:
     """Recommended counter-offer terms."""
+
     recommended_amount: float
     recommended_term_months: int
     pricing_adjustment_bps: int
@@ -68,7 +70,8 @@ class CounterOfferRecommender:
             recommended_term_months=int(original_term * (1 - term_reduction)),
             pricing_adjustment_bps=pricing_adj,
             additional_collateral_required=features.collateral.collateral_quality_score < 0.5,
-            additional_guarantor_required=features.credit.personal_fico_min and features.credit.personal_fico_min < 680,
+            additional_guarantor_required=features.credit.personal_fico_min
+            and features.credit.personal_fico_min < 680,
             rationale=rationale,
         )
 

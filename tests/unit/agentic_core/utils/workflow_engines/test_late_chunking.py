@@ -16,14 +16,17 @@ class TestLateChunking:
     def test_late_chunking_imports(self):
         """Test late_chunking module imports."""
         from agentic_core import late_chunking
+
         assert late_chunking is not None
 
     def test_late_chunking_class(self):
         """Test LateChunking class exists."""
         from agentic_core import LateChunking
+
         assert LateChunking is not None
 
     def test_late_chunking_callable(self):
         """Test late_chunking functions are callable."""
         from agentic_core import validate_late_chunking
+
         assert callable(validate_late_chunking)

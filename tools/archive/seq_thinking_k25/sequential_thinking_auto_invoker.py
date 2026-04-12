@@ -15,6 +15,7 @@ from typing import Any
 @dataclass
 class SequentialThinkingContext:
     """Context for sequential thinking invocation."""
+
     thought_number: int = 1
     total_thoughts: int = 1
     next_thought_needed: bool = True
@@ -40,38 +41,40 @@ class SequentialThinkingAutoInvoker:
 
     # Patterns that indicate complex reasoning is needed
     COMPLEXITY_PATTERNS = [
-        r'plan|design|architect',
-        r'analyze|investigate|debug',
-        r'implement|create|build',
-        r'refactor|restructure|migrate',
-        r'test|validate|verify',
-        r'optimize|improve|enhance',
-        r'fix|resolve|troubleshoot',
-        r'review|audit|assess',
-        r'compare|evaluate|decide',
-        r'strategize|approach|method',
+        r"plan|design|architect",
+        r"analyze|investigate|debug",
+        r"implement|create|build",
+        r"refactor|restructure|migrate",
+        r"test|validate|verify",
+        r"optimize|improve|enhance",
+        r"fix|resolve|troubleshoot",
+        r"review|audit|assess",
+        r"compare|evaluate|decide",
+        r"strategize|approach|method",
     ]
 
     # Always trigger for these task types
     ALWAYS_TRIGGER = [
-        'create plan',
-        'design architecture',
-        'implement feature',
-        'refactor code',
-        'debug issue',
-        'analyze codebase',
-        'write tests',
-        'optimize performance',
-        'review code',
-        'migrate system',
+        "create plan",
+        "design architecture",
+        "implement feature",
+        "refactor code",
+        "debug issue",
+        "analyze codebase",
+        "write tests",
+        "optimize performance",
+        "review code",
+        "migrate system",
     ]
 
     def __init__(self):
-        self.enabled = os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'false').lower() == 'true'
-        self.aggressive_mode = os.environ.get('SEQUENTIAL_THINKING_AGGRESSIVE_MODE', 'false').lower() == 'enabled'
-        self.min_complexity = os.environ.get('SEQUENTIAL_THINKING_MIN_COMPLEXITY', 'medium')
-        self.max_thoughts = int(os.environ.get('SEQUENTIAL_THINKING_MAX_THOUGHTS', '25'))
-        self.token_budget = int(os.environ.get('SEQUENTIAL_THINKING_TOKEN_BUDGET', '50000'))
+        self.enabled = os.environ.get("SEQUENTIAL_THINKING_AUTO_TRIGGER", "false").lower() == "true"
+        self.aggressive_mode = (
+            os.environ.get("SEQUENTIAL_THINKING_AGGRESSIVE_MODE", "false").lower() == "enabled"
+        )
+        self.min_complexity = os.environ.get("SEQUENTIAL_THINKING_MIN_COMPLEXITY", "medium")
+        self.max_thoughts = int(os.environ.get("SEQUENTIAL_THINKING_MAX_THOUGHTS", "25"))
+        self.token_budget = int(os.environ.get("SEQUENTIAL_THINKING_TOKEN_BUDGET", "50000"))
         self.invocation_count = 0
 
     def should_trigger(self, prompt: str) -> bool:
@@ -96,7 +99,7 @@ class SequentialThinkingAutoInvoker:
                 return True
 
         # Check for question/problem indicators
-        if any(word in prompt_lower for word in ['how', 'why', 'what', 'when', 'should', 'best', 'approach']):
+        if any(word in prompt_lower for word in ["how", "why", "what", "when", "should", "best", "approach"]):
             return True
 
         # Check prompt length (longer prompts likely need structured thinking)
@@ -138,15 +141,15 @@ Proceeding with thought {self.invocation_count} of structured analysis."""
         prompt_lower = prompt.lower()
 
         # Score based on keywords
-        if any(word in prompt_lower for word in ['architecture', 'design', 'system']):
+        if any(word in prompt_lower for word in ["architecture", "design", "system"]):
             complexity_score += 3
-        if any(word in prompt_lower for word in ['implement', 'create', 'build']):
+        if any(word in prompt_lower for word in ["implement", "create", "build"]):
             complexity_score += 2
-        if any(word in prompt_lower for word in ['debug', 'fix', 'troubleshoot']):
+        if any(word in prompt_lower for word in ["debug", "fix", "troubleshoot"]):
             complexity_score += 2
-        if any(word in prompt_lower for word in ['optimize', 'refactor', 'migrate']):
+        if any(word in prompt_lower for word in ["optimize", "refactor", "migrate"]):
             complexity_score += 3
-        if any(word in prompt_lower for word in ['test', 'validate', 'verify']):
+        if any(word in prompt_lower for word in ["test", "validate", "verify"]):
             complexity_score += 1
 
         # Score based on length
@@ -236,19 +239,19 @@ class CascadeChatInterceptor:
             payload = self.invoker.create_sequential_thinking_payload(prompt)
 
             return {
-                'should_invoke': True,
-                'modified_prompt': modified_prompt,
-                'payload': payload,
-                'tool_name': 'sequential-thinking',
-                'tool_method': 'sequentialthinking',
+                "should_invoke": True,
+                "modified_prompt": modified_prompt,
+                "payload": payload,
+                "tool_name": "sequential-thinking",
+                "tool_method": "sequentialthinking",
             }
         else:
             return {
-                'should_invoke': False,
-                'modified_prompt': prompt,
-                'payload': None,
-                'tool_name': None,
-                'tool_method': None,
+                "should_invoke": False,
+                "modified_prompt": prompt,
+                "payload": None,
+                "tool_name": None,
+                "tool_method": None,
             }
 
     def get_invocation_instruction(self) -> str:
@@ -281,9 +284,9 @@ def force_sequential_thinking(prompt: str) -> str:
     interceptor = CascadeChatInterceptor()
     result = interceptor.intercept_prompt(prompt)
 
-    if result['should_invoke']:
+    if result["should_invoke"]:
         # Add explicit tool invocation instruction
-        return result['modified_prompt'] + "\n\n" + interceptor.get_invocation_instruction()
+        return result["modified_prompt"] + "\n\n" + interceptor.get_invocation_instruction()
     else:
         return prompt
 
@@ -292,20 +295,20 @@ def get_sequential_thinking_payload(prompt: str) -> dict[str, Any] | None:
     """Get the payload for sequential thinking invocation if it should be triggered."""
     interceptor = CascadeChatInterceptor()
     result = interceptor.intercept_prompt(prompt)
-    return result.get('payload')
+    return result.get("payload")
 
 
 # Environment setup for automatic invocation
 def setup_auto_invocation():
     """Setup environment for automatic sequential thinking invocation."""
     env_vars = {
-        'SEQUENTIAL_THINKING_AUTO_TRIGGER': 'true',
-        'SEQUENTIAL_THINKING_AGGRESSIVE_MODE': 'enabled',
-        'SEQUENTIAL_THINKING_MIN_COMPLEXITY': 'minimal',
-        'SEQUENTIAL_THINKING_MAX_THOUGHTS': '25',
-        'SEQUENTIAL_THINKING_TOKEN_BUDGET': '50000',
-        'MCP_FORCE_SEQUENTIAL_THINKING': 'true',
-        'KIMI_K2_5_SEQUENTIAL_THINKING_REQUIRED': 'true',
+        "SEQUENTIAL_THINKING_AUTO_TRIGGER": "true",
+        "SEQUENTIAL_THINKING_AGGRESSIVE_MODE": "enabled",
+        "SEQUENTIAL_THINKING_MIN_COMPLEXITY": "minimal",
+        "SEQUENTIAL_THINKING_MAX_THOUGHTS": "25",
+        "SEQUENTIAL_THINKING_TOKEN_BUDGET": "50000",
+        "MCP_FORCE_SEQUENTIAL_THINKING": "true",
+        "KIMI_K2_5_SEQUENTIAL_THINKING_REQUIRED": "true",
     }
 
     for key, value in env_vars.items():
@@ -321,7 +324,7 @@ def setup_auto_invocation():
     print("=" * 60)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Test the auto-invoker
     setup_auto_invocation()
 
@@ -336,5 +339,5 @@ if __name__ == '__main__':
     print("\nTest Results:")
     for prompt in test_prompts:
         result = cascade_interceptor.intercept_prompt(prompt)
-        status = "INVOKING" if result['should_invoke'] else "SKIPPING"
+        status = "INVOKING" if result["should_invoke"] else "SKIPPING"
         print(f"  [{status}] {prompt[:50]}...")

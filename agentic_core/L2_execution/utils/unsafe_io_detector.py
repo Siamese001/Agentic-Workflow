@@ -347,7 +347,9 @@ def scan_for_unsafe_patterns(code: str, file_path: str) -> list[UnsafePattern]:
 
 
 def scan_directory_for_unsafe_patterns(
-    directory: Path, recursive: bool = True, file_pattern: str = "*.py",
+    directory: Path,
+    recursive: bool = True,
+    file_pattern: str = "*.py",
 ) -> list[UnsafePattern]:
     """
     Scan a directory for unsafe patterns in Python files.

@@ -7,13 +7,15 @@ tasks are not blocked by lower-priority ones.
 # guardian: allow-magic-config
 """
 
+
 # Stub classes for missing imports - defined before imports
 class CircuitBreaker:
     """Stub CircuitBreaker."""
+
     def __init__(self, name: str, config):
         self.name = name
         self.config = config
-        self.state = type('State', (), {'value': 'CLOSED'})()
+        self.state = type("State", (), {"value": "CLOSED"})()
 
     def can_execute(self):
         return True
@@ -27,6 +29,7 @@ class CircuitBreaker:
 
 class CircuitBreakerConfig:
     """Stub CircuitBreakerConfig."""
+
     def __init__(self, failure_threshold=3, timeout=30.0, failure_rate_threshold=0.5):
         self.failure_threshold = failure_threshold
         self.timeout = timeout
@@ -35,13 +38,18 @@ class CircuitBreakerConfig:
 
 async def get_circuit_breaker_registry():
     """Stub registry."""
-    return type('Registry', (), {
-        'get_circuit_breaker': lambda self, name, config: CircuitBreaker(name, config),
-    })()
+    return type(
+        "Registry",
+        (),
+        {
+            "get_circuit_breaker": lambda self, name, config: CircuitBreaker(name, config),
+        },
+    )()
 
 
 class EngineType:
     """Stub EngineType."""
+
     RESUME = "resume"
     OUTREACH = "outreach"
 
@@ -279,7 +287,9 @@ class Bulkhead:
         self.semaphore = asyncio.Semaphore(config.max_concurrency)
         self.queue = asyncio.Queue(maxsize=config.queue_size)
         self.metrics = BulkheadMetrics(
-            name=name, max_concurrency=config.max_concurrency, queue_size=config.queue_size,
+            name=name,
+            max_concurrency=config.max_concurrency,
+            queue_size=config.queue_size,
         )
         self._active_tasks: set[asyncio.Task] = set()
         self._wait_times: deque = deque(maxlen=1000)
@@ -303,7 +313,8 @@ class Bulkhead:
         if self.circuit_breaker is None and hasattr(self, "_circuit_breaker_config"):
             registry = await get_circuit_breaker_registry()
             self.circuit_breaker = await registry.get_circuit_breaker(
-                f"bulkhead_{self.name}", self._circuit_breaker_config,
+                f"bulkhead_{self.name}",
+                self._circuit_breaker_config,
             )
         return self.circuit_breaker
 
@@ -335,7 +346,8 @@ class Bulkhead:
                 if circuit_breaker:
                     circuit_breaker.record_failure(ResourceExhaustedError(self.name, "Queue full"), 0)
                 raise ResourceExhaustedError(
-                    self.name, f"Queue full ({self.queue.qsize()}/{self.config.queue_size})",
+                    self.name,
+                    f"Queue full ({self.queue.qsize()}/{self.config.queue_size})",
                 )
             await self.queue.put(None)
             try:
@@ -346,7 +358,8 @@ class Bulkhead:
                 self.metrics.rejected_tasks = self._rejected_count
                 if circuit_breaker:
                     circuit_breaker.record_failure(
-                        asyncio.TimeoutError(f"Timeout acquiring semaphore after {timeout}s"), timeout * 1000,
+                        asyncio.TimeoutError(f"Timeout acquiring semaphore after {timeout}s"),
+                        timeout * 1000,
                     )
                 raise ResourceExhaustedError(self.name, f"Timeout acquiring semaphore after {timeout}s")
             wait_time = (time.time() - start_time) * 1000
@@ -459,13 +472,20 @@ class BulkheadManager:
         self._default_configs = {
             "RESUME_GENERATION": BulkheadConfig(max_concurrency=5, priority=TaskPriority.HIGH, queue_size=50),
             "OUTREACH_GENERATION": BulkheadConfig(
-                max_concurrency=10, priority=TaskPriority.MEDIUM, queue_size=100,
+                max_concurrency=10,
+                priority=TaskPriority.MEDIUM,
+                queue_size=100,
             ),
             "BACKGROUND_ANALYSIS": BulkheadConfig(
-                max_concurrency=2, priority=TaskPriority.LOW, queue_size=20,
+                max_concurrency=2,
+                priority=TaskPriority.LOW,
+                queue_size=20,
             ),
             "CRITICAL_OPERATIONS": BulkheadConfig(
-                max_concurrency=3, priority=TaskPriority.CRITICAL, queue_size=10, timeout_seconds=60.0,
+                max_concurrency=3,
+                priority=TaskPriority.CRITICAL,
+                queue_size=10,
+                timeout_seconds=60.0,
             ),
         }
         for name, config in self._default_configs.items():
@@ -518,7 +538,12 @@ class BulkheadManager:
         return False
 
     async def execute(
-        self, bulkhead_name: str, coro: Callable, *args, timeout: float | None = None, **kwargs,
+        self,
+        bulkhead_name: str,
+        coro: Callable,
+        *args,
+        timeout: float | None = None,
+        **kwargs,
     ) -> Any:
         """Execute a coroutine in a specific bulkhead.
 
@@ -537,7 +562,9 @@ class BulkheadManager:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"BulkheadManager.execute:{bulkhead_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"BulkheadManager.execute:{bulkhead_name}"
+        )
         bulkhead = self.get_bulkhead(bulkhead_name)
         if not bulkhead:
             raise ResourceExhaustedError(bulkhead_name, "Bulkhead not found")
@@ -558,7 +585,12 @@ class BulkheadManager:
             return "OUTREACH_GENERATION"
 
     async def execute_for_engine(
-        self, engine_type: EngineType, coro: Callable, *args, timeout: float | None = None, **kwargs,
+        self,
+        engine_type: EngineType,
+        coro: Callable,
+        *args,
+        timeout: float | None = None,
+        **kwargs,
     ) -> Any:
         """Execute a coroutine for a specific engine.
 

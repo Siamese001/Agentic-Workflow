@@ -224,6 +224,7 @@ class SandboxAirlockRecorder:
     def session_summary(self) -> dict[str, Any]:
         return self.session.to_dict()
 
+
 _emit_reads_through("l4", "sandbox_airlock", "urg_read_1")
 _emit_reads_through("l4", "sandbox_airlock", "urg_read_2")
 _emit_reads_through("l4", "sandbox_airlock", "urg_read_3")

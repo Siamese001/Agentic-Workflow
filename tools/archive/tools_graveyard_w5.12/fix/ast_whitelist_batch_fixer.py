@@ -194,16 +194,27 @@ _emit_reads_through("l4", "ast_whitelist_batch_fixer", "urg_read_25")
 _emit_reads_through("l4", "ast_whitelist_batch_fixer", "urg_read_26")
 
 WHITELIST_MAP = {
-    'path_fragility': '# guardian: allow-path-string',
-    'type_erasure': '# guardian: allow-type-erasure',
-    'config_with_logic': '# guardian: allow-config-with-logic',
-    'direct_prompt_compilation': '# guardian: allow-direct-prompt-compilation',
+    "path_fragility": "# guardian: allow-path-string",
+    "type_erasure": "# guardian: allow-type-erasure",
+    "config_with_logic": "# guardian: allow-config-with-logic",
+    "direct_prompt_compilation": "# guardian: allow-direct-prompt-compilation",
 }
 
 # os.path functions that trigger path_fragility
 OS_PATH_FUNCS = {
-    'join', 'exists', 'isfile', 'isdir', 'abspath', 'dirname', 'basename',
-    'splitext', 'normpath', 'realpath', 'expanduser', 'expandvars', 'getcwd',
+    "join",
+    "exists",
+    "isfile",
+    "isdir",
+    "abspath",
+    "dirname",
+    "basename",
+    "splitext",
+    "normpath",
+    "realpath",
+    "expanduser",
+    "expandvars",
+    "getcwd",
 }
 
 
@@ -217,17 +228,22 @@ def _is_path_fragility_call(node: ast.AST) -> bool:
     if not isinstance(call.func, ast.Attribute):
         return False
     # os.path.func(...)
-    if (call.func.attr in OS_PATH_FUNCS
-            and isinstance(call.func.value, ast.Attribute)
-            and call.func.value.attr == 'path'
-            and isinstance(call.func.value.value, ast.Name)
-            and call.func.value.value.id == 'os'):
+    if (
+        call.func.attr in OS_PATH_FUNCS
+        and isinstance(call.func.value, ast.Attribute)
+        and call.func.value.attr == "path"
+        and isinstance(call.func.value.value, ast.Name)
+        and call.func.value.value.id == "os"
+    ):
         return True
     # os.getcwd() or os.chdir()
-    if (call.func.attr in ('getcwd', 'chdir')
-            and isinstance(call.func.value, ast.Name)
-            and call.func.value.value.id == 'os'
-            if hasattr(call.func.value, 'id') else False):
+    if (
+        call.func.attr in ("getcwd", "chdir")
+        and isinstance(call.func.value, ast.Name)
+        and call.func.value.value.id == "os"
+        if hasattr(call.func.value, "id")
+        else False
+    ):
         return True
     return False
 
@@ -243,24 +259,28 @@ def _collect_path_fragility_lines(tree: ast.Module, source_lines: list[str]) -> 
                 func = child.func
                 if isinstance(func, ast.Attribute):
                     # os.path.func
-                    if (func.attr in OS_PATH_FUNCS
-                            and isinstance(func.value, ast.Attribute)
-                            and func.value.attr == 'path'
-                            and isinstance(func.value.value, ast.Name)
-                            and func.value.value.id == 'os'):
+                    if (
+                        func.attr in OS_PATH_FUNCS
+                        and isinstance(func.value, ast.Attribute)
+                        and func.value.attr == "path"
+                        and isinstance(func.value.value, ast.Name)
+                        and func.value.value.id == "os"
+                    ):
                         targets.append(child.lineno)
                     # os.getcwd / os.chdir
-                    elif (func.attr in ('getcwd', 'chdir')
-                          and isinstance(func.value, ast.Name)
-                          and func.value.id == 'os'):
+                    elif (
+                        func.attr in ("getcwd", "chdir")
+                        and isinstance(func.value, ast.Name)
+                        and func.value.id == "os"
+                    ):
                         targets.append(child.lineno)
             # String concatenation with path separators
             elif isinstance(child, ast.BinOp) and isinstance(child.op, ast.Add):
-                if hasattr(child, 'lineno'):
+                if hasattr(child, "lineno"):
                     # Check if string concat involves path-like strings
                     if isinstance(child.right, ast.Constant):
                         val = child.right.value
-                        if isinstance(val, str) and ('/' in val or '\\' in val):
+                        if isinstance(val, str) and ("/" in val or "\\" in val):
                             targets.append(child.lineno)
 
     _check_node(tree)
@@ -276,21 +296,21 @@ def _collect_type_erasure_lines(tree: ast.Module) -> list[int]:
                 continue
             ret = node.returns
             # Returns Any
-            if isinstance(ret, ast.Name) and ret.id == 'Any':
+            if isinstance(ret, ast.Name) and ret.id == "Any":
                 targets.append(node.lineno)
             # Returns dict (unparameterized)
-            elif isinstance(ret, ast.Name) and ret.id == 'dict':
+            elif isinstance(ret, ast.Name) and ret.id == "dict":
                 targets.append(node.lineno)
             # Returns dict[str, Any] or dict[str, Any] | None
             elif isinstance(ret, ast.Subscript):
-                if isinstance(ret.value, ast.Name) and ret.value.id in ('dict', 'Dict'):
+                if isinstance(ret.value, ast.Name) and ret.value.id in ("dict", "Dict"):
                     ret_str = ast.dump(ret)
-                    if 'Any' in ret_str:
+                    if "Any" in ret_str:
                         targets.append(node.lineno)
             # Returns dict[str, Any] | None  (BinOp in 3.10+ union syntax)
             elif isinstance(ret, ast.BinOp) and isinstance(ret.op, ast.BitOr):
                 ret_str = ast.dump(ret)
-                if ('dict' in ret_str or 'Dict' in ret_str) and 'Any' in ret_str:
+                if ("dict" in ret_str or "Dict" in ret_str) and "Any" in ret_str:
                     targets.append(node.lineno)
     return list(set(targets))
 
@@ -317,12 +337,12 @@ def _collect_config_with_logic_lines(tree: ast.Module) -> list[int]:
                 if _is_config_name(target):
                     for child in ast.walk(node.value):
                         if isinstance(child, ast.Lambda):
-                            targets.append(getattr(child, 'lineno', node.lineno))
+                            targets.append(getattr(child, "lineno", node.lineno))
         elif isinstance(node, ast.AnnAssign):
             if node.value and _is_config_name(node.target):
                 for child in ast.walk(node.value):
                     if isinstance(child, ast.Lambda):
-                        targets.append(getattr(child, 'lineno', node.lineno))
+                        targets.append(getattr(child, "lineno", node.lineno))
         # Function *_config/*_spec/*_policy containing if-branches
         elif isinstance(node, ast.FunctionDef):
             if any(node.name.endswith(s) for s in _CONFIG_SUFFIXES):
@@ -341,22 +361,24 @@ def _collect_direct_prompt_lines(tree: ast.Module) -> list[int]:
         for child in ast.walk(node):
             if isinstance(child, ast.Name) and any(child.id.startswith(p) for p in _PROMPT_SLOT_PREFIXES):
                 return True
-            if isinstance(child, ast.Attribute) and any(child.attr.startswith(p) for p in _PROMPT_SLOT_PREFIXES):
+            if isinstance(child, ast.Attribute) and any(
+                child.attr.startswith(p) for p in _PROMPT_SLOT_PREFIXES
+            ):
                 return True
         return False
 
     for node in ast.walk(tree):
         # f-string with prompt-slot names
-        if isinstance(node, ast.JoinedStr) and hasattr(node, 'lineno'):
+        if isinstance(node, ast.JoinedStr) and hasattr(node, "lineno"):
             if _has_prompt_slot(node):
                 targets.append(node.lineno)
         # BinOp (str concat) with prompt-slot names
-        elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add) and hasattr(node, 'lineno'):
+        elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add) and hasattr(node, "lineno"):
             if _has_prompt_slot(node):
                 targets.append(node.lineno)
         # str.join / str.format with prompt-slot names
-        elif isinstance(node, ast.Call) and hasattr(node, 'lineno'):
-            if isinstance(node.func, ast.Attribute) and node.func.attr in ('join', 'format'):
+        elif isinstance(node, ast.Call) and hasattr(node, "lineno"):
+            if isinstance(node.func, ast.Attribute) and node.func.attr in ("join", "format"):
                 if _has_prompt_slot(node):
                     targets.append(node.lineno)
 
@@ -372,7 +394,7 @@ def fix_file_for_category(
 ) -> dict:
     """Add whitelist comments to target lines."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         lines = source.splitlines(keepends=True)
 
         lines_to_fix = []
@@ -385,85 +407,86 @@ def fix_file_for_category(
             lines_to_fix.append(lineno)
 
         if not lines_to_fix:
-            return {'status': 'skipped', 'reason': 'already_whitelisted'}
+            return {"status": "skipped", "reason": "already_whitelisted"}
 
         if not dry_run:
             for lineno in sorted(lines_to_fix, reverse=True):
                 idx = lineno - 1
                 indent = len(lines[idx]) - len(lines[idx].lstrip())
-                comment_line = ' ' * indent + whitelist_comment + '\n'
+                comment_line = " " * indent + whitelist_comment + "\n"
                 lines.insert(idx, comment_line)
-            file_path.write_text(''.join(lines), encoding='utf-8')
+            file_path.write_text("".join(lines), encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'category': category,
-            'fixed_count': len(lines_to_fix),
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "category": category,
+            "fixed_count": len(lines_to_fix),
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
-        return {'status': 'error', 'file': str(file_path), 'error': f'SyntaxError: {e}'}
+        return {"status": "error", "file": str(file_path), "error": f"SyntaxError: {e}"}
     except (ValueError, TypeError, RuntimeError) as e:
-        return {'status': 'error', 'file': str(file_path), 'error': str(e)}
+        return {"status": "error", "file": str(file_path), "error": str(e)}
 
 
 def fix_file(file_path: Path, category: str, dry_run: bool = True) -> dict:
     """Fix a file for the given anti-pattern category."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(file_path))
         lines = source.splitlines(keepends=True)
         # guardian: allow-silent-swallow - acceptable exception handling
         whitelist_comment = WHITELIST_MAP[category]
     except SyntaxError as e:
-        return {'status': 'error', 'file': str(file_path), 'error': f'SyntaxError: {e}'}
+        return {"status": "error", "file": str(file_path), "error": f"SyntaxError: {e}"}
     except (ValueError, TypeError, RuntimeError) as e:
-        return {'status': 'error', 'file': str(file_path), 'error': str(e)}
+        return {"status": "error", "file": str(file_path), "error": str(e)}
 
-    if category == 'path_fragility':
+    if category == "path_fragility":
         target_lines = _collect_path_fragility_lines(tree, lines)
-    elif category == 'type_erasure':
+    elif category == "type_erasure":
         target_lines = _collect_type_erasure_lines(tree)
-    elif category == 'config_with_logic':
+    elif category == "config_with_logic":
         target_lines = _collect_config_with_logic_lines(tree)
-    elif category == 'direct_prompt_compilation':
+    elif category == "direct_prompt_compilation":
         target_lines = _collect_direct_prompt_lines(tree)
     else:
-        return {'status': 'skipped', 'reason': f'no_fixer_for_{category}'}
+        return {"status": "skipped", "reason": f"no_fixer_for_{category}"}
 
     if not target_lines:
-        return {'status': 'skipped', 'reason': 'no_targets'}
+        return {"status": "skipped", "reason": "no_targets"}
 
     return fix_file_for_category(file_path, category, target_lines, whitelist_comment, dry_run)
 
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--execute', action='store_true')
-    parser.add_argument('--limit', type=int, default=500)
-    parser.add_argument('--category', choices=list(WHITELIST_MAP.keys()), default=None)
+    parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--limit", type=int, default=500)
+    parser.add_argument("--category", choices=list(WHITELIST_MAP.keys()), default=None)
     args = parser.parse_args()
 
     project_root = get_validated_project_root()
-    baseline_file = project_root / 'ops_scripts/hooks/landmine_baseline.txt'
+    baseline_file = project_root / "ops_scripts/hooks/landmine_baseline.txt"
 
-    categories_to_fix = [args.category] if args.category else ['path_fragility', 'type_erasure']
+    categories_to_fix = [args.category] if args.category else ["path_fragility", "type_erasure"]
 
     for category in categories_to_fix:
         violations = []
-        with open(baseline_file, encoding='utf-8') as f:
+        with open(baseline_file, encoding="utf-8") as f:
             for line in f:
-                if f':{category}:' in line:
-                    file_path = line.split(':')[0]
+                if f":{category}:" in line:
+                    file_path = line.split(":")[0]
                     violations.append(project_root / file_path)
 
-        unique_files = sorted(set(violations))[:args.limit]
-        print(f'\n[{category}] Processing {len(unique_files)} files')
-        print(f'[MODE] {"EXECUTE" if args.execute else "DRY RUN"}')
+        unique_files = sorted(set(violations))[: args.limit]
+        print(f"\n[{category}] Processing {len(unique_files)} files")
+        print(f"[MODE] {'EXECUTE' if args.execute else 'DRY RUN'}")
 
         results = []
         for file_path in unique_files:
@@ -471,20 +494,20 @@ def main():
                 continue
             result = fix_file(file_path, category, dry_run=not args.execute)
             results.append(result)
-            if result['status'] == 'success':
+            if result["status"] == "success":
                 print(f"  ✓ {result['file']} ({result['fixed_count']} sites)")
-            elif result['status'] == 'error':
+            elif result["status"] == "error":
                 print(f"  ✗ {result.get('file', '?')}: {result['error']}")
 
-        success = len([r for r in results if r['status'] == 'success'])
-        errors = len([r for r in results if r['status'] == 'error'])
-        skipped = len([r for r in results if r['status'] == 'skipped'])
-        print(f'  [SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}')
+        success = len([r for r in results if r["status"] == "success"])
+        errors = len([r for r in results if r["status"] == "error"])
+        skipped = len([r for r in results if r["status"] == "skipped"])
+        print(f"  [SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}")
 
     if not args.execute:
-        print('\n[NEXT] Run with --execute to apply')
+        print("\n[NEXT] Run with --execute to apply")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

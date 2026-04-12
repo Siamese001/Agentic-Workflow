@@ -185,8 +185,11 @@ class L6ObservabilityBase(SovereignBaseAgent):
         Override in subclasses for specialized metric collection.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L6ObservabilityBase.collect_metrics")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L6ObservabilityBase.collect_metrics"
+        )
 
         _adg_health: dict[str, Any] = {}
         try:
@@ -205,8 +208,9 @@ class L6ObservabilityBase(SovereignBaseAgent):
                 }
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("L6ObservabilityBase: Exception swallowed at L207: %s", e)
+            logging.getLogger(__name__).debug("L6ObservabilityBase: Exception swallowed at L207: %s", e)
         return {"metrics": {}, "timestamp": None, **_adg_health}
 
     def emit_telemetry(self, event: dict[str, Any]) -> bool:

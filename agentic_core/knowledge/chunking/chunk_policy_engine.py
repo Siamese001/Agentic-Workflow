@@ -29,6 +29,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class ChunkPolicy:
     """Policy configuration for chunking."""
+
     strategy: str
     chunk_size: int
     overlap: int
@@ -41,6 +42,7 @@ class ChunkPolicy:
 @dataclass
 class ChunkResult:
     """Result of chunking with policy."""
+
     chunks: list[Chunk]
     policy: ChunkPolicy
     corpus_type: CorpusType
@@ -156,7 +158,9 @@ class ChunkPolicyEngine:
         """
         trace_id = f"chunk_{doc_id}_{int(time.time())}" if doc_id else f"chunk_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "ChunkPolicyEngine.chunk_document",
+            trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ChunkPolicyEngine.chunk_document",
         )
 
         # Determine policy if not provided
@@ -280,18 +284,20 @@ class ChunkPolicyEngine:
     def _extract_headings(self, content: str) -> list[str]:
         """Extract heading lines from content."""
         import re
+
         headings = []
-        for line in content.split('\n'):
-            if re.match(r'^#{1,6}\s+', line):
+        for line in content.split("\n"):
+            if re.match(r"^#{1,6}\s+", line):
                 headings.append(line.strip())
         return headings
 
     def _detect_section_level(self, content: str) -> int:
         """Detect the minimum heading level in content."""
         import re
+
         levels = []
-        for line in content.split('\n'):
-            match = re.match(r'^(#{1,6})\s+', line)
+        for line in content.split("\n"):
+            match = re.match(r"^(#{1,6})\s+", line)
             if match:
                 levels.append(len(match.group(1)))
         return min(levels) if levels else 0
@@ -299,8 +305,9 @@ class ChunkPolicyEngine:
     def _extract_event_markers(self, content: str) -> list[str]:
         """Extract event/timestamp markers."""
         import re
+
         markers = []
-        timestamp_pattern = r'\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}'
+        timestamp_pattern = r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}"
         for match in re.finditer(timestamp_pattern, content):
             markers.append(match.group())
         return markers
@@ -308,21 +315,23 @@ class ChunkPolicyEngine:
     def _extract_symbols(self, content: str) -> list[str]:
         """Extract code symbols (function/class names)."""
         import re
+
         symbols = []
         # Match function definitions
-        for match in re.finditer(r'(?:def|function|class)\s+(\w+)', content):
+        for match in re.finditer(r"(?:def|function|class)\s+(\w+)", content):
             symbols.append(match.group(1))
         return symbols
 
     def _detect_code_blocks(self, content: str) -> int:
         """Count code blocks in content."""
-        return content.count('```') // 2
+        return content.count("```") // 2
 
     def _count_visual_elements(self, content: str) -> int:
         """Count visual elements (images, tables)."""
         import re
-        images = len(re.findall(r'!\[.*?\]\(.*?\)', content))
-        tables = len(re.findall(r'\|[-:]+\|', content))
+
+        images = len(re.findall(r"!\[.*?\]\(.*?\)", content))
+        tables = len(re.findall(r"\|[-:]+\|", content))
         return images + tables
 
 

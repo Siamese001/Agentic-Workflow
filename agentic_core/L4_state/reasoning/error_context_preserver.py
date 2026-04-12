@@ -228,7 +228,10 @@ class ErrorContext:
 
 
 def preserve_error_context(
-    error: Exception, agent_state: AgentState, execution_trace: ExecutionTrace, prev_hash: str,
+    error: Exception,
+    agent_state: AgentState,
+    execution_trace: ExecutionTrace,
+    prev_hash: str,
 ) -> PreservationResult:
     """
     Preserves the full error context in L4 with content-hash chaining.
@@ -254,5 +257,7 @@ def preserve_error_context(
     ).with_chain(prev_hash)
     l4_storage_path = f"l4/errors/{context.context_hash}.json"
     return PreservationResult(
-        context_hash=context.context_hash, prev_hash=prev_hash, l4_storage_path=l4_storage_path,
+        context_hash=context.context_hash,
+        prev_hash=prev_hash,
+        l4_storage_path=l4_storage_path,
     )

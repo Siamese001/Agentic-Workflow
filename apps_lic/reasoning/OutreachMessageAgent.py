@@ -200,7 +200,11 @@ class OutreachMessageAgent:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "OutreachMessageAgent.generate_connection_request")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "OutreachMessageAgent.generate_connection_request",
+        )
         template_path = self.prompt_root / "shared" / "connection_request.md"
         return self._load_markdown_template(template_path, payload)
 
@@ -264,9 +268,12 @@ class OutreachMessageAgent:
         try:
             content = template_path.read_text(encoding="utf-8")
             return content.format(**payload)
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             raise OutreachTemplateError(f"Template file not found: {template_path}")
-        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: File operations with encoding need error-specific handling
             raise OutreachTemplateError(f"Error reading template file {template_path}: {e}")
         except KeyError as e:
             raise OutreachTemplateError(f"Missing template variable {e} in {template_path}")

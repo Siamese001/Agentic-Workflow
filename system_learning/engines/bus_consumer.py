@@ -45,7 +45,8 @@ def drain_and_apply(bus: MetaLearningBus, store: HealingSuccessRateStore) -> int
         processed += 1
         if pkg.kind != _KIND_HEALING_OUTCOME:
             logger.debug(
-                "bus_consumer: skipping unknown kind", extra={"kind": pkg.kind, "trace_id": pkg.trace_id},
+                "bus_consumer: skipping unknown kind",
+                extra={"kind": pkg.kind, "trace_id": pkg.trace_id},
             )
             continue
         payload = pkg.payload
@@ -53,7 +54,8 @@ def drain_and_apply(bus: MetaLearningBus, store: HealingSuccessRateStore) -> int
         success = bool(payload.get("success", False))
         if not error_signature:
             logger.warning(
-                "bus_consumer: missing error_signature in payload", extra={"trace_id": pkg.trace_id},
+                "bus_consumer: missing error_signature in payload",
+                extra={"trace_id": pkg.trace_id},
             )
             continue
         store.record_outcome(error_signature, success)

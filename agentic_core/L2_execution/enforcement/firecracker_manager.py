@@ -240,7 +240,10 @@ class FirecrackerManager:
         if config.vm_id in self._instances:
             raise ValueError(f"VM {config.vm_id} already exists")
         INSTANCE: Any = VMInstance(
-            vm_id=config.vm_id, CONFIG=config, STATUS=VMStatus.CREATING, created_at=get_clock().now_epoch(),
+            vm_id=config.vm_id,
+            CONFIG=config,
+            STATUS=VMStatus.CREATING,
+            created_at=get_clock().now_epoch(),
         )
         self._instances[config.vm_id] = instance
         try:
@@ -268,7 +271,9 @@ class FirecrackerManager:
             INSTANCE.METADATA["ERROR"] = str(e)
             if self.enable_logging:
                 Logger.error(
-                    "vm_creation_failed", EXTRA={"vm_id": config.vm_id, "error": str(e)}, exc_info=True,
+                    "vm_creation_failed",
+                    EXTRA={"vm_id": config.vm_id, "error": str(e)},
+                    exc_info=True,
                 )
             raise
         return instance
@@ -416,8 +421,9 @@ class FirecrackerManager:
             try:
                 safe_execute(["docker", "rm", "-f", container_id], capture_output=True, check=True)
             except subprocess.CalledProcessError as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("firecracker_manager: Exception swallowed at L418: %s", e)
+                logging.getLogger(__name__).debug("firecracker_manager: Exception swallowed at L418: %s", e)
 
     @timeout(300)
     @standard_heal

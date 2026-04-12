@@ -261,8 +261,11 @@ class DynamicInvocationReport:
     @property
     def by_kind(self) -> dict[str, int]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicInvocationReport.by_kind")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicInvocationReport.by_kind"
+        )
 
         result: dict[str, int] = {}
         for r in self.records:
@@ -318,8 +321,11 @@ class DynamicInvocationTracker:
     ) -> DynamicInvocationRecord:
         """Record a dynamic invocation of any kind."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicInvocationTracker.record")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicInvocationTracker.record"
+        )
 
         rec = DynamicInvocationRecord(
             agent_id=self._agent_id,
@@ -344,24 +350,40 @@ class DynamicInvocationTracker:
         return self.record(DynamicInvocationKind.EXEC, source_file, line_no, "exec", arg)
 
     def record_importlib(
-        self, module_name: str, source_file: str = "", line_no: int = 0,
+        self,
+        module_name: str,
+        source_file: str = "",
+        line_no: int = 0,
     ) -> DynamicInvocationRecord:
         """Convenience: record an importlib.import_module() call."""
         return self.record(
-            DynamicInvocationKind.IMPORT_MODULE, source_file, line_no, "importlib.import_module", module_name,
+            DynamicInvocationKind.IMPORT_MODULE,
+            source_file,
+            line_no,
+            "importlib.import_module",
+            module_name,
         )
 
     def record_getattr(
-        self, obj_name: str, attr_name: str, source_file: str = "", line_no: int = 0,
+        self,
+        obj_name: str,
+        attr_name: str,
+        source_file: str = "",
+        line_no: int = 0,
     ) -> DynamicInvocationRecord:
         """Convenience: record a getattr() call."""
         return self.record(
-            DynamicInvocationKind.GETATTR, source_file, line_no, "getattr", f"{obj_name}.{attr_name}",
+            DynamicInvocationKind.GETATTR,
+            source_file,
+            line_no,
+            "getattr",
+            f"{obj_name}.{attr_name}",
         )
 
     def suppress(self, record: DynamicInvocationRecord, reason: str = "") -> None:
         """Mark a dynamic invocation record as suppressed (reviewed and approved)."""
         record.suppressed = True
+
 
 _emit_reads_through("l4", "dynamic_invocation", "urg_read_1")
 _emit_reads_through("l4", "dynamic_invocation", "urg_read_2")

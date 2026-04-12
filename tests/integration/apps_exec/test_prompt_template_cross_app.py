@@ -2,6 +2,7 @@
 
 Validates that all apps_* modules have working prompt template infrastructure.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -18,8 +19,8 @@ class TestCrossAppPromptTemplateWiring:
         from apps_rg.types.PromptTemplate import FROZEN_SNAPSHOT, get_prompt
 
         assert FROZEN_SNAPSHOT is not None
-        assert hasattr(FROZEN_SNAPSHOT, 'prompts')
-        assert hasattr(FROZEN_SNAPSHOT, 'nodes')
+        assert hasattr(FROZEN_SNAPSHOT, "prompts")
+        assert hasattr(FROZEN_SNAPSHOT, "nodes")
 
         # Test get_prompt returns non-empty for known prompt
         result = get_prompt("input_jd")

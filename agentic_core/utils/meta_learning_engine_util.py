@@ -201,8 +201,11 @@ class MetaLearningEngine:
     def discover_agent_context(cls, agent_name: str) -> dict[str, Any]:
         """Auto-discover context for an agent from the Knowledge Graph."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningEngine.discover_agent_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningEngine.discover_agent_context"
+        )
 
         if cls._kg_bridge is None:
             return {}
@@ -283,14 +286,21 @@ class MetaLearningEngine:
 
     @classmethod
     def record_agent_interaction(
-        cls, caller_agent: str, callee_agent: str, success: bool, error_type: str | None = None,
+        cls,
+        caller_agent: str,
+        callee_agent: str,
+        success: bool,
+        error_type: str | None = None,
     ) -> None:
         """Record an interaction between agents in the Knowledge Graph."""
         if cls._kg_bridge is None:
             return
         try:
             cls._kg_bridge.record_agent_interaction(
-                caller_agent=caller_agent, callee_agent=callee_agent, success=success, error_type=error_type,
+                caller_agent=caller_agent,
+                callee_agent=callee_agent,
+                success=success,
+                error_type=error_type,
             )
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller

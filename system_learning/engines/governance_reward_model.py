@@ -256,12 +256,14 @@ def _build_score_id(
     signal_count: int,
     timestamp_utc: int,
 ) -> str:
-    canonical = deterministic_json({
-        "aggregate_score": round(aggregate_score, 6),
-        "proposal_id": proposal_id,
-        "signal_count": signal_count,
-        "timestamp_utc": timestamp_utc,
-    })
+    canonical = deterministic_json(
+        {
+            "aggregate_score": round(aggregate_score, 6),
+            "proposal_id": proposal_id,
+            "signal_count": signal_count,
+            "timestamp_utc": timestamp_utc,
+        }
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -307,6 +309,7 @@ class GovernanceRewardModel:
         GovernanceRewardScore
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GovernanceRewardModel.score")
 
@@ -326,7 +329,10 @@ class GovernanceRewardModel:
             # Zero-signal score — invariant_preserved=False so proposal cannot
             # proceed without evidence
             score_id = _build_score_id(
-                proposal.proposal_id, 0.0, 0, timestamp_utc,
+                proposal.proposal_id,
+                0.0,
+                0,
+                timestamp_utc,
             )
             return GovernanceRewardScore(
                 score_id=score_id,
@@ -359,19 +365,21 @@ class GovernanceRewardModel:
         mc_contrib = round(cfg.weight_mutation_correctness * mc_mean, 6)
 
         aggregate = round(
-            g_contrib + p_contrib + r_contrib + gc_contrib + mc_contrib, 6,
+            g_contrib + p_contrib + r_contrib + gc_contrib + mc_contrib,
+            6,
         )
         aggregate = max(0.0, min(1.0, aggregate))
 
         # --- Invariant check ---
         invariant_preserved = (
-            aggregate >= cfg.invariant_floor
-            and p_mean >= cfg.policy_floor
-            and r_mean >= cfg.replay_floor
+            aggregate >= cfg.invariant_floor and p_mean >= cfg.policy_floor and r_mean >= cfg.replay_floor
         )
 
         score_id = _build_score_id(
-            proposal.proposal_id, aggregate, len(valid_signals), timestamp_utc,
+            proposal.proposal_id,
+            aggregate,
+            len(valid_signals),
+            timestamp_utc,
         )
 
         return GovernanceRewardScore(
@@ -435,9 +443,7 @@ class GovernanceRewardModel:
         downstream validation and commit stages can read the score.
         Proposals without a matching score are returned unchanged.
         """
-        score_by_pid: dict[str, GovernanceRewardScore] = {
-            s.proposal_id: s for s in scores
-        }
+        score_by_pid: dict[str, GovernanceRewardScore] = {s.proposal_id: s for s in scores}
         annotated: list[OptimizationProposal] = []
         for p in proposals:
             gs = score_by_pid.get(p.proposal_id)
@@ -446,6 +452,7 @@ class GovernanceRewardModel:
                 continue
             # Rebuild with reward_score populated (frozen dataclass copy pattern)
             import dataclasses
+
             annotated.append(
                 dataclasses.replace(p, reward_score=gs.aggregate_score),
             )

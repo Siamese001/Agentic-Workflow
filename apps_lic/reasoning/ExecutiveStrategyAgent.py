@@ -217,7 +217,9 @@ class ExecutiveStrategyAgent:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "ExecutiveStrategyAgent.conduct_shadow_audit")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, "ExecutiveStrategyAgent.conduct_shadow_audit"
+        )
         return self._render("executive", "k11_shadow_audit", payload)
 
     def generate_strategy_roadmap(self, payload: dict[str, Any]) -> str:

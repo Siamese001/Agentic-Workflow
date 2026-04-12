@@ -20,6 +20,7 @@ configuration (Environment Variables):
 
 [SSOT] This is the canonical location for the Hive Mind infrastructure.
 """
+
 import hashlib
 import json
 import logging
@@ -33,10 +34,28 @@ from typing import Any
 # GPTCacheClient import for persistent Layer 2 backend
 try:
     from agentic_core.L4_state.cache.gptcache_client import GPTCacheClient
+
     _GPTCACHE_AVAILABLE = True
 except ImportError:
     _GPTCACHE_AVAILABLE = False
     GPTCacheClient = None  # type: ignore[misc, assignment]
+
+try:
+    from agentic_core.cache.cache_key_builders import build_semantic_cache_d2_key as _build_d2_key
+
+    _D2_KEY_BUILDER_AVAILABLE = True
+except ImportError:
+    _D2_KEY_BUILDER_AVAILABLE = False
+    _build_d2_key = None  # type: ignore[assignment]
+
+try:
+    from agentic_core.embeddings.embedding_factory import get_active_embedding_model_id as _get_model_id
+except ImportError:
+
+    def _get_model_id() -> str:  # type: ignore[misc]
+        """Fallback when embedding factory is unavailable."""
+        return os.environ.get("EMBEDDING_MODEL_ID", "bge-m3-v1")
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -66,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _record_semantic_cache_prom_event,
 )
 
 _emit_emits_metric_event("semantic_cache_manager", "p4obs", "metric_1")
@@ -251,6 +271,15 @@ class SemanticCacheManager:
     DEFAULT_PROMOTION_THRESHOLD = 0.8
     DEFAULT_WORKING_MEMORY_TTL = 86400
     DEFAULT_LONG_TERM_TTL = 86400 * 7
+    MUST_BYPASS_FLOWS: frozenset[str] = frozenset(
+        {
+            "D4_ACTION",
+            "HITL",
+            "UWG_WRITE",
+            "AUDIT_EXIT",
+            "REPLAY",
+        }
+    )
 
     @classmethod
     def get_instance(cls, api_key: str | None = None) -> "SemanticCacheManager":
@@ -372,11 +401,13 @@ class SemanticCacheManager:
                 similarity_threshold=self.similarity_threshold,
                 max_entries=10000,
                 embedding_provider="bge-m3",
-                embedding_model="BAAI/bge-m3",
+                embedding_model=_get_model_id(),  # Phase C: pass active model ID
             )
             # Check if it's using real implementation or mock
             if self._gptcache._cache == "mock":
-                Logger.warning("[HiveMind] Native L2 cache using mock implementation (ChromaDB not installed)")
+                Logger.warning(
+                    "[HiveMind] Native L2 cache using mock implementation (ChromaDB not installed)"
+                )
                 return ValueError("Native L2 cache in mock mode")
             self.gptcache_enabled = True
             Logger.info("[HiveMind] Native L2 cache initialized at artifacts/gptcache/")
@@ -411,17 +442,49 @@ class SemanticCacheManager:
     _EMBEDDING_MODEL_VERSION: str = os.environ.get("HIVE_MIND_EMBEDDING_MODEL_VERSION", "bge-m3-v1")
     _RETRIEVAL_CONFIG_HASH: str = os.environ.get("HIVE_MIND_RETRIEVAL_CONFIG_HASH", "default")
 
-    def _compute_hash(self, context: str, namespace: str) -> str:
-        """Compute SHA256 hash for exact matching.
+    def _compute_hash(
+        self,
+        context: str,
+        namespace: str,
+        *,
+        tenant_id: str = "",
+        embedding_model_id: str = "",
+        corpus_version: str = "",
+    ) -> str:
+        """Compute cache key.
 
-        Key includes determinism anchors (embedding model version and retrieval
-        config hash) so cached results are automatically invalidated when either
-        changes, preventing stale or inconsistent retrieval results.
+        When tenant_id is provided, uses build_semantic_cache_d2_key() for D2-compliant
+        key derivation. Falls back to legacy SHA256 for backward compatibility (L1 path).
         """
+        if tenant_id and _D2_KEY_BUILDER_AVAILABLE and _build_d2_key is not None:
+            active_model = embedding_model_id or self._EMBEDDING_MODEL_VERSION
+            raw_corpus = corpus_version or self._RETRIEVAL_CONFIG_HASH
+            if len(raw_corpus) != 64 or not all(c in "0123456789abcdef" for c in raw_corpus.lower()):
+                raw_corpus = hashlib.sha256(raw_corpus.encode()).hexdigest()
+            query_hash = hashlib.sha256(context.encode()).hexdigest()
+            try:
+                return _build_d2_key(
+                    tenant_id=tenant_id,
+                    namespace=namespace,
+                    embedding_model_id=active_model,
+                    corpus_version=raw_corpus,
+                    query_hash=query_hash,
+                )
+            except ValueError:
+                pass
+        # Legacy path: L1 Redis and fallback
         key = "|".join([namespace, self._EMBEDDING_MODEL_VERSION, self._RETRIEVAL_CONFIG_HASH, context])
         return hashlib.sha256(key.encode()).hexdigest()
 
-    def recall(self, context: str, namespace: str) -> dict[str, Any] | None:
+    def recall(
+        self,
+        context: str,
+        namespace: str,
+        *,
+        tenant_id: str = "",
+        replay_mode: bool = False,
+        flow_class: str | None = None,
+    ) -> dict[str, Any] | None:
         """
         Recall a result based on exact or semantic match.
 
@@ -434,9 +497,36 @@ class SemanticCacheManager:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SemanticCacheManager.recall:{namespace}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"SemanticCacheManager.recall:{namespace}",
         )
         if self.stateless_mode:
+            return None
+        if replay_mode:
+            Logger.debug(
+                "[HiveMind] semantic_cache_bypass: bypass_reason=replay namespace=%s",
+                namespace,
+            )
+            _emit_emits_metric_event(
+                "semantic_cache_manager",
+                "p4obs",
+                f"semantic_cache_bypass:replay:{namespace}",
+            )
+            _record_semantic_cache_prom_event("bypass", namespace)
+            return None
+        if flow_class is not None and flow_class in self.MUST_BYPASS_FLOWS:
+            Logger.debug(
+                "[HiveMind] semantic_cache_bypass: bypass_reason=flow_class flow_class=%s namespace=%s",
+                flow_class,
+                namespace,
+            )
+            _emit_emits_metric_event(
+                "semantic_cache_manager",
+                "p4obs",
+                f"semantic_cache_bypass:flow_class:{namespace}",
+            )
+            _record_semantic_cache_prom_event("bypass", namespace)
             return None
         ctx_hash = self._compute_hash(context, namespace)
         if self.redis_enabled:
@@ -446,15 +536,22 @@ class SemanticCacheManager:
                     Logger.debug(f"[HiveMind] Redis HIT for {namespace}")
                     with self._lock:
                         self.stats["redis_hits"] += 1
+                    _emit_emits_metric_event(
+                        "semantic_cache_manager", "p4obs", f"l1_hit:{namespace}"
+                    )  # [Phase A]
+                    _record_semantic_cache_prom_event("hit", namespace)
                     return json.loads(cached)
             # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.debug(f"[HiveMind] Redis recall failed: {e}")
+        # Reaching here means L1 was not hit (Redis disabled, miss, or error)
+        _emit_emits_metric_event("semantic_cache_manager", "p4obs", f"l1_miss:{namespace}")  # [Phase A]
         if self.gptcache_enabled and self._gptcache:
             try:
                 # Use Native L2 cache for semantic search (persistent Layer 2)
                 # Native L2 handles embedding internally via BGE-M3
-                result = self._gptcache.get(context)
+                active_model = self._EMBEDDING_MODEL_VERSION
+                result = self._gptcache.get(context, tenant_id=tenant_id, embedding_model_id=active_model)
                 if result:
                     # Result is already a JSON string from previous storage
                     cached_result = json.loads(result)
@@ -463,12 +560,18 @@ class SemanticCacheManager:
                         Logger.info(f"[HiveMind] Native L2 HIT for {namespace}")
                         with self._lock:
                             self.stats["gptcache_hits"] += 1
+                        _emit_emits_metric_event(
+                            "semantic_cache_manager", "p4obs", f"l2_hit:{namespace}"
+                        )  # [Phase A]
+                        _record_semantic_cache_prom_event("hit", namespace)
                         return cached_result
             # guardian: allow-silent-swallow
             except Exception as e:
                 Logger.debug(f"[HiveMind] Native L2 recall failed: {e}")
         with self._lock:
             self.stats["cache_misses"] += 1
+        _emit_emits_metric_event("semantic_cache_manager", "p4obs", f"l2_miss:{namespace}")  # [Phase A]
+        _record_semantic_cache_prom_event("miss", namespace)
         return None
 
     def _should_sample_trace(self, trace_id: str | None = None) -> bool:
@@ -493,7 +596,13 @@ class SemanticCacheManager:
         return hash_int & 4294967295 < threshold
 
     def learn(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None,
+        self,
+        context: str,
+        namespace: str,
+        result: dict[str, Any],
+        feedback_score: float | None = None,
+        *,
+        tenant_id: str = "",
     ) -> None:
         """
         Teach the Hive Mind a new result (Working Memory).
@@ -507,9 +616,18 @@ class SemanticCacheManager:
             namespace: The namespace (typically agent class name)
             result: The result to store
             feedback_score: Optional feedback score (0.0 to 1.0) for promotion consideration
+            tenant_id: Tenant identifier for cache key derivation (Phase B)
         """
         if self.stateless_mode:
             return
+        # Phase B: embedding_model_id validation
+        active_model = _get_model_id()
+        payload_model = result.get("embedding_model_id", "")
+        if payload_model and payload_model != active_model:
+            Logger.warning(
+                f"[HiveMind] learn: embedding_model_id mismatch "
+                f"payload={payload_model!r} active={active_model!r}"
+            )
         sanitized_context = self.sanitizer.sanitize(context)
         ctx_hash = self._compute_hash(sanitized_context, namespace)
         if not self._should_sample_trace(ctx_hash):
@@ -535,11 +653,21 @@ class SemanticCacheManager:
             except Exception as e:
                 raise
                 Logger.debug(f"[HiveMind] Redis learn failed: {e}")
+        if (
+            self.redis_enabled
+        ):  # [Phase A] fires only after successful Redis write (raise re-propagates on failure)
+            _emit_writes_observability_log(
+                "semantic_cache_manager", "p4obs", f"l1_write:{namespace}:{ctx_hash[:8]}"
+            )  # [Phase A]
         with self._lock:
             self.stats["cache_stores"] += 1
 
     async def learn_async(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None,
+        self,
+        context: str,
+        namespace: str,
+        result: dict[str, Any],
+        feedback_score: float | None = None,
     ) -> None:
         """
         [PHASE 25] Async version of learn for fire-and-forget pattern.
@@ -575,7 +703,11 @@ class SemanticCacheManager:
             self.stats["cache_stores"] += 1
 
     async def promote_to_long_term(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float,
+        self,
+        context: str,
+        namespace: str,
+        result: dict[str, Any],
+        feedback_score: float,
     ) -> bool:
         """
         Promote a memory to Long-Term DNA storage (Native L2 persistent backend).
@@ -596,9 +728,30 @@ class SemanticCacheManager:
             Logger.debug(
                 f"[HiveMind] Promotion rejected: feedback_score={feedback_score} < threshold={self.promotion_threshold}",
             )
+            _emit_writes_observability_log(
+                "semantic_cache_manager", "p4obs", f"l2_promote_rejected:{namespace}:score_too_low"
+            )  # [Phase A]
+            return False
+        # Phase B: content quality gates
+        evidence_ids = result.get("evidence_ids", [])
+        grounding_complete = result.get("grounding_complete", False)
+        if not evidence_ids:
+            Logger.warning(f"[HiveMind] Promotion rejected: evidence_ids empty for {namespace}")
+            _emit_writes_observability_log(
+                "semantic_cache_manager", "p4obs", f"l2_promote_rejected:{namespace}:evidence_ids_empty"
+            )
+            return False
+        if not grounding_complete:
+            Logger.warning(f"[HiveMind] Promotion rejected: grounding_complete=False for {namespace}")
+            _emit_writes_observability_log(
+                "semantic_cache_manager", "p4obs", f"l2_promote_rejected:{namespace}:grounding_incomplete"
+            )
             return False
         if not self.gptcache_enabled:
             Logger.warning("[HiveMind] Cannot promote: Native L2 cache not available")
+            _emit_writes_observability_log(
+                "semantic_cache_manager", "p4obs", f"l2_promote_rejected:{namespace}:l2_unavailable"
+            )  # [Phase A]
             return False
         sanitized_context = self.sanitizer.sanitize(context)
         ctx_hash = self._compute_hash(sanitized_context, namespace)
@@ -616,7 +769,12 @@ class SemanticCacheManager:
         try:
             # Store in Native L2 cache (persistent Layer 2)
             # Native L2 handles embedding internally via BGE-M3
-            self._gptcache.set(sanitized_context, payload_json)
+            self._gptcache.set(
+                sanitized_context,
+                payload_json,
+                evidence_ids=result.get("evidence_ids", []),
+                grounding_complete=bool(result.get("grounding_complete", False)),
+            )
             if self.redis_enabled:
                 try:
                     self.redis_client.setex(f"memory:{ctx_hash}", self.DEFAULT_LONG_TERM_TTL, payload_json)
@@ -628,11 +786,46 @@ class SemanticCacheManager:
             Logger.info(
                 f"[HiveMind] Memory promoted to DNA: {namespace} (feedback_score={feedback_score:.2f})",
             )
+            _emit_writes_observability_log(
+                "semantic_cache_manager", "p4obs", f"l2_promote:{namespace}:{ctx_hash[:8]}"
+            )  # [Phase A]
             return True
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"[HiveMind] Promotion failed: {e}")
+            _emit_writes_observability_log(
+                "semantic_cache_manager", "p4obs", f"l2_promote_failed:{namespace}"
+            )  # [Phase A]
             return False
+
+    def invalidate_cache(
+        self,
+        *,
+        tenant_id: str | None = None,
+        corpus_version: str | None = None,
+        embedding_model_id: str | None = None,
+    ) -> int:
+        """Invalidate L2 cache entries matching the given scope.
+
+        Thin wrapper over NativePersistentCacheClient.invalidate_by().
+        Raises ValueError if all params are None.
+        Returns the number of entries invalidated.
+        """
+        if not self.gptcache_enabled or self._gptcache is None:
+            Logger.warning("[HiveMind] invalidate_cache: L2 cache not available")
+            return 0
+        count = self._gptcache.invalidate_by(
+            tenant_id=tenant_id,
+            corpus_version=corpus_version,
+            embedding_model_id=embedding_model_id,
+        )
+        _emit_writes_observability_log(
+            "semantic_cache_manager",
+            "p4obs",
+            f"semantic_cache_invalidated:count={count}",
+        )
+        _record_semantic_cache_prom_event("invalidation", tenant_id or "")
+        return count
 
     def update_feedback_score(self, context: str, namespace: str, feedback_score: float) -> bool:
         """

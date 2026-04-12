@@ -39,7 +39,7 @@ sys.path.insert(0, str(ROOT))
 # ---------------------------------------------------------------------------
 
 ITERATIONS = 5  # Number of iterations per benchmark for statistical stability
-WARMUP = 1      # Warmup iterations (discarded)
+WARMUP = 1  # Warmup iterations (discarded)
 
 
 @dataclass
@@ -104,6 +104,7 @@ def _run_benchmark(pre_func, post_func, iterations=ITERATIONS, warmup=WARMUP):
 # Benchmark A1: orjson vs json for serialization (scan_cache save path)
 # ---------------------------------------------------------------------------
 
+
 def benchmark_a1_orjson_serialization() -> BenchmarkResult:
     """orjson.dumps vs json.dumps for large edge payloads."""
     result = BenchmarkResult(
@@ -121,15 +122,17 @@ def benchmark_a1_orjson_serialization() -> BenchmarkResult:
     # Build realistic payload: 50k edges
     edges = []
     for i in range(50_000):
-        edges.append({
-            "from_name": f"ADG::Module::agentic_core/L{i % 7}_layer/module_{i}.py",
-            "relation_type": "imports",
-            "to_name": f"ADG::Symbol::agentic_core.L{(i+1) % 7}_layer.symbol_{i}",
-            "edge_kind": "static_import",
-            "source_file": f"agentic_core/L{i % 7}_layer/module_{i}.py",
-            "line_no": i % 500 + 1,
-            "symbol": f"symbol_{i}",
-        })
+        edges.append(
+            {
+                "from_name": f"ADG::Module::agentic_core/L{i % 7}_layer/module_{i}.py",
+                "relation_type": "imports",
+                "to_name": f"ADG::Symbol::agentic_core.L{(i + 1) % 7}_layer.symbol_{i}",
+                "edge_kind": "static_import",
+                "source_file": f"agentic_core/L{i % 7}_layer/module_{i}.py",
+                "line_no": i % 500 + 1,
+                "symbol": f"symbol_{i}",
+            }
+        )
     payload = {"version": "2", "entries": {"test": {"file_hash": "abc123", "edges": edges}}}
 
     def pre_json():
@@ -147,6 +150,7 @@ def benchmark_a1_orjson_serialization() -> BenchmarkResult:
 # Benchmark A2: orjson vs json for deserialization (scan_cache load path)
 # ---------------------------------------------------------------------------
 
+
 def benchmark_a2_orjson_deserialization() -> BenchmarkResult:
     """orjson.loads vs json.loads for large cache payloads."""
     result = BenchmarkResult(
@@ -163,15 +167,17 @@ def benchmark_a2_orjson_deserialization() -> BenchmarkResult:
 
     edges = []
     for i in range(50_000):
-        edges.append({
-            "from_name": f"ADG::Module::module_{i}.py",
-            "relation_type": "imports",
-            "to_name": f"ADG::Symbol::symbol_{i}",
-            "edge_kind": "static_import",
-            "source_file": f"module_{i}.py",
-            "line_no": i % 500 + 1,
-            "symbol": f"sym_{i}",
-        })
+        edges.append(
+            {
+                "from_name": f"ADG::Module::module_{i}.py",
+                "relation_type": "imports",
+                "to_name": f"ADG::Symbol::symbol_{i}",
+                "edge_kind": "static_import",
+                "source_file": f"module_{i}.py",
+                "line_no": i % 500 + 1,
+                "symbol": f"sym_{i}",
+            }
+        )
     payload = {"version": "2", "entries": {"test": {"file_hash": "abc", "edges": edges}}}
     json_bytes = json.dumps(payload).encode("utf-8")
 
@@ -189,6 +195,7 @@ def benchmark_a2_orjson_deserialization() -> BenchmarkResult:
 # ---------------------------------------------------------------------------
 # Benchmark A3: orjson vs json for report generation
 # ---------------------------------------------------------------------------
+
 
 def benchmark_a3_orjson_report_gen() -> BenchmarkResult:
     """orjson vs json for ADG report file generation (sorted, indented)."""
@@ -225,6 +232,7 @@ def benchmark_a3_orjson_report_gen() -> BenchmarkResult:
 # Benchmark B: _EDGE_FIELD_NAMES pre-computed vs per-call set()
 # ---------------------------------------------------------------------------
 
+
 def benchmark_b_edge_field_names() -> BenchmarkResult:
     """Pre-computed frozenset of Edge field names vs per-call set(f.name for f in fields(Edge))."""
     result = BenchmarkResult(
@@ -240,17 +248,19 @@ def benchmark_b_edge_field_names() -> BenchmarkResult:
     # Build 100k edge dicts (scaled down from 730k for benchmark speed)
     edge_dicts = []
     for i in range(100_000):
-        edge_dicts.append({
-            "from_name": f"ADG::Module::mod_{i}.py",
-            "relation_type": "imports",
-            "to_name": f"ADG::Symbol::sym_{i}",
-            "edge_kind": "static_import",
-            "source_file": f"mod_{i}.py",
-            "line_no": i % 500,
-            "symbol": f"sym_{i}",
-            "extra_field_1": "ignored",
-            "extra_field_2": "ignored",
-        })
+        edge_dicts.append(
+            {
+                "from_name": f"ADG::Module::mod_{i}.py",
+                "relation_type": "imports",
+                "to_name": f"ADG::Symbol::sym_{i}",
+                "edge_kind": "static_import",
+                "source_file": f"mod_{i}.py",
+                "line_no": i % 500,
+                "symbol": f"sym_{i}",
+                "extra_field_1": "ignored",
+                "extra_field_2": "ignored",
+            }
+        )
 
     def pre_per_call():
         """Old path: compute field names on every call."""
@@ -269,7 +279,9 @@ def benchmark_b_edge_field_names() -> BenchmarkResult:
         return results
 
     # Use fewer iterations for this heavy benchmark
-    result.pre_times, result.post_times = _run_benchmark(pre_per_call, post_precomputed, iterations=3, warmup=1)
+    result.pre_times, result.post_times = _run_benchmark(
+        pre_per_call, post_precomputed, iterations=3, warmup=1
+    )
     result.compute()
     return result
 
@@ -277,6 +289,7 @@ def benchmark_b_edge_field_names() -> BenchmarkResult:
 # ---------------------------------------------------------------------------
 # Benchmark D: lru_cache on module_path_to_layer vs uncached
 # ---------------------------------------------------------------------------
+
 
 def benchmark_d_lru_cache_layer() -> BenchmarkResult:
     """lru_cache on module_path_to_layer vs uncached repeated calls."""
@@ -298,11 +311,17 @@ def benchmark_d_lru_cache_layer() -> BenchmarkResult:
     # Generate realistic module paths (repeating, as they would in real scan)
     paths = []
     layer_dirs = [
-        "agentic_core/L0_routing", "agentic_core/L1_cognition",
-        "agentic_core/L2_execution", "agentic_core/L3_orchestration",
-        "agentic_core/L4_state", "agentic_core/L5_safety",
-        "apps_lic/reasoning", "apps_rg/engines", "tools/adg",
-        "tests/unit", "system_learning/engines",
+        "agentic_core/L0_routing",
+        "agentic_core/L1_cognition",
+        "agentic_core/L2_execution",
+        "agentic_core/L3_orchestration",
+        "agentic_core/L4_state",
+        "agentic_core/L5_safety",
+        "apps_lic/reasoning",
+        "apps_rg/engines",
+        "tools/adg",
+        "tests/unit",
+        "system_learning/engines",
     ]
     for i in range(150_000):
         ld = layer_dirs[i % len(layer_dirs)]
@@ -310,6 +329,7 @@ def benchmark_d_lru_cache_layer() -> BenchmarkResult:
 
     # Cached version (from schema_util)
     from agentic_core.adg.contracts.schema_util import module_path_to_layer
+
     # Clear cache for fair measurement
     module_path_to_layer.cache_clear()
 
@@ -330,6 +350,7 @@ def benchmark_d_lru_cache_layer() -> BenchmarkResult:
 # ---------------------------------------------------------------------------
 # Benchmark E: Real scan_cache.json load with orjson vs json
 # ---------------------------------------------------------------------------
+
 
 def benchmark_e_real_cache_load() -> BenchmarkResult:
     """Load the actual 453MB scan_result_cache.json with orjson vs json."""
@@ -370,7 +391,9 @@ def benchmark_e_real_cache_load() -> BenchmarkResult:
         return orjson.loads(raw)
 
     # Only 3 iterations due to file size
-    result.pre_times, result.post_times = _run_benchmark(pre_json_load, post_orjson_load, iterations=3, warmup=1)
+    result.pre_times, result.post_times = _run_benchmark(
+        pre_json_load, post_orjson_load, iterations=3, warmup=1
+    )
     result.compute()
     return result
 
@@ -378,6 +401,7 @@ def benchmark_e_real_cache_load() -> BenchmarkResult:
 # ---------------------------------------------------------------------------
 # Benchmark F: _EDGE_SORT_KEY lambda vs default dataclass __lt__
 # ---------------------------------------------------------------------------
+
 
 def benchmark_f_edge_sort_key() -> BenchmarkResult:
     """Fast sort key (5-field tuple) vs default dataclass comparison (13+ fields)."""
@@ -390,18 +414,21 @@ def benchmark_f_edge_sort_key() -> BenchmarkResult:
     import random
 
     from agentic_core.adg.extraction.static_scanner import Edge
+
     random.seed(42)
     edges = []
     for i in range(100_000):
-        edges.append(Edge(
-            from_name=f"ADG::Module::mod_{random.randint(0, 5000)}.py",
-            relation_type=random.choice(["imports", "calls", "exports", "violates", "reads_from"]),
-            to_name=f"ADG::Symbol::sym_{random.randint(0, 10000)}",
-            edge_kind=random.choice(["static_import", "dynamic_exec", "lazy_import"]),
-            source_file=f"mod_{random.randint(0, 5000)}.py",
-            line_no=random.randint(1, 500),
-            symbol=f"sym_{random.randint(0, 10000)}",
-        ))
+        edges.append(
+            Edge(
+                from_name=f"ADG::Module::mod_{random.randint(0, 5000)}.py",
+                relation_type=random.choice(["imports", "calls", "exports", "violates", "reads_from"]),
+                to_name=f"ADG::Symbol::sym_{random.randint(0, 10000)}",
+                edge_kind=random.choice(["static_import", "dynamic_exec", "lazy_import"]),
+                source_file=f"mod_{random.randint(0, 5000)}.py",
+                line_no=random.randint(1, 500),
+                symbol=f"sym_{random.randint(0, 10000)}",
+            )
+        )
 
     # Optimized sort key
     _EDGE_SORT_KEY = lambda e: (e.from_name, e.relation_type, e.to_name, e.source_file, e.line_no)
@@ -412,7 +439,9 @@ def benchmark_f_edge_sort_key() -> BenchmarkResult:
     def post_key_sort():
         return sorted(edges, key=_EDGE_SORT_KEY)
 
-    result.pre_times, result.post_times = _run_benchmark(pre_default_sort, post_key_sort, iterations=5, warmup=1)
+    result.pre_times, result.post_times = _run_benchmark(
+        pre_default_sort, post_key_sort, iterations=5, warmup=1
+    )
     result.compute()
     return result
 
@@ -420,6 +449,7 @@ def benchmark_f_edge_sort_key() -> BenchmarkResult:
 # ---------------------------------------------------------------------------
 # Benchmark G: ADG_SKIP_SELF_TEST timing
 # ---------------------------------------------------------------------------
+
 
 def benchmark_g_self_test_gate() -> BenchmarkResult:
     """Measure cost of run_scanner_self_test()."""
@@ -450,6 +480,7 @@ def benchmark_g_self_test_gate() -> BenchmarkResult:
 # ---------------------------------------------------------------------------
 # Benchmark H: AMDCPUOptimizer infrastructure validation
 # ---------------------------------------------------------------------------
+
 
 def benchmark_h_cpu_optimizer() -> BenchmarkResult:
     """Validate AMDCPUOptimizer detects CPU correctly and provides optimal workers."""
@@ -529,6 +560,7 @@ def benchmark_h_cpu_optimizer() -> BenchmarkResult:
 # Benchmark I: Full ADG scan timing (with vs without skip_self_test)
 # ---------------------------------------------------------------------------
 
+
 def benchmark_i_full_scan_timing() -> BenchmarkResult:
     """Time a full cached ADG scan with ADG_SKIP_SELF_TEST=1 vs default."""
     result = BenchmarkResult(
@@ -586,6 +618,7 @@ def benchmark_i_full_scan_timing() -> BenchmarkResult:
 # Report generation
 # ---------------------------------------------------------------------------
 
+
 def generate_report(results: list[BenchmarkResult]) -> str:
     """Generate markdown report with pre/post times and % gain."""
     lines = []
@@ -598,6 +631,7 @@ def generate_report(results: list[BenchmarkResult]) -> str:
 
     try:
         import psutil
+
         lines.append(f"**Physical Cores:** {psutil.cpu_count(logical=False)}")
         lines.append(f"**Logical Cores:** {psutil.cpu_count(logical=True)}")
     except ImportError:
@@ -619,7 +653,9 @@ def generate_report(results: list[BenchmarkResult]) -> str:
         speedup_str = f"{r.speedup:.1f}x" if r.speedup > 0 else "N/A"
         pct_str = f"{r.pct_gain:.1f}%" if r.pct_gain != 0 else "0.0%"
         status_emoji = {"PASS": "✅", "NO GAIN": "❌", "SKIP": "⏭️"}.get(r.status, "⚠️")
-        lines.append(f"| {i} | {r.name} | {pre_str} | {post_str} | {speedup_str} | {pct_str} | {status_emoji} {r.status} |")
+        lines.append(
+            f"| {i} | {r.name} | {pre_str} | {post_str} | {speedup_str} | {pct_str} | {status_emoji} {r.status} |"
+        )
 
     lines.append("")
     lines.append("---")
@@ -652,9 +688,13 @@ def generate_report(results: list[BenchmarkResult]) -> str:
             lines.append("")
             lines.append("**Root Cause Analysis:**")
             if "parallel" in r.name.lower() or "CPU" in r.name:
-                lines.append("- Windows `spawn` overhead for ProcessPoolExecutor exceeds gains for short tasks")
+                lines.append(
+                    "- Windows `spawn` overhead for ProcessPoolExecutor exceeds gains for short tasks"
+                )
                 lines.append("- ThreadPoolExecutor is GIL-bound; true parallelism requires ProcessPool")
-                lines.append("- Recommendation: Use for tasks >100ms per item; serial is faster for micro-tasks")
+                lines.append(
+                    "- Recommendation: Use for tasks >100ms per item; serial is faster for micro-tasks"
+                )
             else:
                 lines.append("- Optimization may not provide measurable gain at this scale")
                 lines.append("- Check if the bottleneck has shifted to another component")
@@ -689,6 +729,7 @@ def generate_report(results: list[BenchmarkResult]) -> str:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     print("=" * 72)
     print("CPU OPTIMIZATION BENCHMARK — Pre/Post Evidence Generator")
@@ -716,8 +757,10 @@ def main() -> None:
             results.append(r)
             status = r.status
             if r.pre_median > 0 and r.post_median > 0:
-                print(f"    Pre: {r.pre_median:.4f}s | Post: {r.post_median:.4f}s | "
-                      f"Speedup: {r.speedup:.1f}x | Gain: {r.pct_gain:.1f}% | {status}")
+                print(
+                    f"    Pre: {r.pre_median:.4f}s | Post: {r.post_median:.4f}s | "
+                    f"Speedup: {r.speedup:.1f}x | Gain: {r.pct_gain:.1f}% | {status}"
+                )
             else:
                 print(f"    Status: {status} | {r.debug_note}")
         except Exception as e:
@@ -738,18 +781,20 @@ def main() -> None:
     evidence_path = ROOT / "artifacts" / "cpu_benchmark_evidence.json"
     evidence = []
     for r in results:
-        evidence.append({
-            "name": r.name,
-            "description": r.description,
-            "pre_times": r.pre_times,
-            "post_times": r.post_times,
-            "pre_median": r.pre_median,
-            "post_median": r.post_median,
-            "speedup": r.speedup,
-            "pct_gain": r.pct_gain,
-            "status": r.status,
-            "debug_note": r.debug_note,
-        })
+        evidence.append(
+            {
+                "name": r.name,
+                "description": r.description,
+                "pre_times": r.pre_times,
+                "post_times": r.post_times,
+                "pre_median": r.pre_median,
+                "post_median": r.post_median,
+                "speedup": r.speedup,
+                "pct_gain": r.pct_gain,
+                "status": r.status,
+                "debug_note": r.debug_note,
+            }
+        )
     evidence_path.write_text(json.dumps(evidence, indent=2), encoding="utf-8")
     print(f"Evidence JSON saved to: {evidence_path}")
 

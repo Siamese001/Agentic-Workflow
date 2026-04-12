@@ -218,7 +218,9 @@ class SovereignReasoningMemory(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "SovereignReasoningMemory.add_thought",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "SovereignReasoningMemory.add_thought",
         )
 
         if len(thought) > self.max_thought_length:
@@ -249,8 +251,11 @@ class SovereignReasoningMemory(SovereignBaseAgent):
                 return [json.loads(x) for x in raw]
             # guardian: allow-silent-swallow
             except Exception as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("sovereign_reasoning_memory_ledger: Exception swallowed at L251: %s", e)
+                logging.getLogger(__name__).debug(
+                    "sovereign_reasoning_memory_ledger: Exception swallowed at L251: %s", e
+                )
         with self.history_lock:
             return list(self.thought_history)
 

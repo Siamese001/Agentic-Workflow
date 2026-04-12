@@ -172,7 +172,9 @@ class FrozenTranscript(MutableSequence[Any]):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "FrozenTranscript._raise_violation",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "FrozenTranscript._raise_violation",
         )
         raise TranscriptMutationViolation(
             "Cannot mutate a frozen transcript. It has been sealed for digest computation.",
@@ -191,57 +193,57 @@ class FrozenTranscript(MutableSequence[Any]):
 
 def freeze_transcript(transcript: list[Any]) -> FrozenTranscript:
     """
-    Freezes an execution transcript, making it immutable.
+        Freezes an execution transcript, making it immutable.
 
-    This is a critical sovereign gate that must be called before computing the
-    determinism digest. It prevents late-arriving or asynchronous operations
-    from silently altering the transcript after it has been used as input for
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_pulls_context,
-    _emit_execution_terminates_at_uwg,
-    _emit_writes_through,
-    _emit_validated_by_safety_plane,
-    _emit_invokes_eval,
-    _emit_proposal_commits_routing,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-)
-from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through
-_emit_pulls_context("p1", "transcript_freezer", "context_pull")
-_emit_pulls_context("p1", "transcript_freezer", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "transcript_freezer", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "transcript_freezer", "uwg_term_secondary")
-_emit_writes_through("p1", "transcript_freezer", "write_through")
-_emit_writes_through("p1", "transcript_freezer", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "transcript_freezer", "safety_validation")
-_emit_invokes_eval("p1", "transcript_freezer", "eval_call")
-_emit_proposal_commits_routing("p1", "transcript_freezer", "routing_commit")
-    the digest, which would break determinism.
+        This is a critical sovereign gate that must be called before computing the
+        determinism digest. It prevents late-arriving or asynchronous operations
+        from silently altering the transcript after it has been used as input for
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+        _emit_pulls_context,
+        _emit_execution_terminates_at_uwg,
+        _emit_writes_through,
+        _emit_validated_by_safety_plane,
+        _emit_invokes_eval,
+        _emit_proposal_commits_routing,
+        _emit_checks_agent_registry,
+        _emit_validates_agent_capability,
+        _emit_dispatches_execution_plan,
+        _emit_agent_executes_agent,
+        _emit_routes_to_agent,
+        _emit_verifies_policy,
+        _emit_observes_runtime_state,
+        _emit_verifies_boundary,
+        _emit_transcripts_response,
+        _emit_hard_fails_untranscripted,
+        _emit_gated_by_confidence,
+        _emit_checks_agent_registry,
+        _emit_validates_agent_capability,
+        _emit_dispatches_execution_plan,
+        _emit_agent_executes_agent,
+        _emit_routes_to_agent,
+        _emit_verifies_policy,
+        _emit_observes_runtime_state,
+        _emit_verifies_boundary,
+        _emit_transcripts_response,
+        _emit_hard_fails_untranscripted,
+        _emit_gated_by_confidence,
+    )
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through
+    _emit_pulls_context("p1", "transcript_freezer", "context_pull")
+    _emit_pulls_context("p1", "transcript_freezer", "context_pull_secondary")
+    _emit_execution_terminates_at_uwg("p1", "transcript_freezer", "uwg_term")
+    _emit_execution_terminates_at_uwg("p1", "transcript_freezer", "uwg_term_secondary")
+    _emit_writes_through("p1", "transcript_freezer", "write_through")
+    _emit_writes_through("p1", "transcript_freezer", "write_through_secondary")
+    _emit_validated_by_safety_plane("p1", "transcript_freezer", "safety_validation")
+    _emit_invokes_eval("p1", "transcript_freezer", "eval_call")
+    _emit_proposal_commits_routing("p1", "transcript_freezer", "routing_commit")
+        the digest, which would break determinism.
 
-    Args:
-        transcript: The mutable list representing the execution transcript.
+        Args:
+            transcript: The mutable list representing the execution transcript.
 
-    Returns:
-        A FrozenTranscript instance that provides a read-only view of the transcript.
+        Returns:
+            A FrozenTranscript instance that provides a read-only view of the transcript.
     """
     return FrozenTranscript(transcript)

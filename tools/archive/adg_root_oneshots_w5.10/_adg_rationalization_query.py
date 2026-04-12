@@ -70,10 +70,6 @@ for e in import_edges:
 # and import sources (who imports it)
 
 
-
-
-
-
 print("=" * 70)
 print("ADG RATIONALIZATION PRECISION REPORT")
 print("=" * 70)

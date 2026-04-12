@@ -52,33 +52,55 @@ from typing import Any
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+
 class IdentityCompletenessError(Exception):
     """Raised when identity completeness verification fails."""
+
     pass
+
 
 class ADGIdentityCompletenessVerifier:
     """Verifies ADG identity completeness and schema compliance."""
 
     # Required node fields
     REQUIRED_NODE_FIELDS = {
-        "id", "adg_name", "entity_type", "layer", "confidence",
+        "id",
+        "adg_name",
+        "entity_type",
+        "layer",
+        "confidence",
     }
 
     # Enhanced node fields for decision-grade analysis
     ENHANCED_NODE_FIELDS = {
-        "resolved_path", "identity_origin", "domain", "owner_surface",
-        "canonical_symbol", "source_hash",
+        "resolved_path",
+        "identity_origin",
+        "domain",
+        "owner_surface",
+        "canonical_symbol",
+        "source_hash",
     }
 
     # Required edge fields
     REQUIRED_EDGE_FIELDS = {
-        "id", "src_id", "dst_id", "relation_type", "edge_kind", "source_file", "line_no", "symbol",
+        "id",
+        "src_id",
+        "dst_id",
+        "relation_type",
+        "edge_kind",
+        "source_file",
+        "line_no",
+        "symbol",
     }
 
     # Enhanced edge fields for decision-grade analysis
     ENHANCED_EDGE_FIELDS = {
-        "confidence", "extraction_rule", "authority_level", "policy_scope",
-        "replay_relevance", "learning_relevance",
+        "confidence",
+        "extraction_rule",
+        "authority_level",
+        "policy_scope",
+        "replay_relevance",
+        "learning_relevance",
     }
 
     # Valid values for enum fields
@@ -167,7 +189,9 @@ class ADGIdentityCompletenessVerifier:
 
                 # Check identity_origin values if field exists
                 if "identity_origin" in self._get_table_columns("nodes"):
-                    cursor.execute("SELECT DISTINCT identity_origin FROM nodes WHERE identity_origin IS NOT NULL")
+                    cursor.execute(
+                        "SELECT DISTINCT identity_origin FROM nodes WHERE identity_origin IS NOT NULL"
+                    )
                     origins = {row[0] for row in cursor.fetchall()}
                     invalid_origins = origins - self.VALID_IDENTITY_ORIGINS
                     if invalid_origins:
@@ -198,7 +222,9 @@ class ADGIdentityCompletenessVerifier:
 
                 # Check authority_level values if field exists
                 if "authority_level" in self._get_table_columns("edges"):
-                    cursor.execute("SELECT DISTINCT authority_level FROM edges WHERE authority_level IS NOT NULL")
+                    cursor.execute(
+                        "SELECT DISTINCT authority_level FROM edges WHERE authority_level IS NOT NULL"
+                    )
                     authority_levels = {row[0] for row in cursor.fetchall()}
                     invalid_authority = authority_levels - self.VALID_AUTHORITY_LEVELS
                     if invalid_authority:
@@ -258,7 +284,9 @@ class ADGIdentityCompletenessVerifier:
                     missing_canonical = cursor.fetchone()[0]
 
                     if missing_canonical > 0:
-                        self.warnings.append(f"{missing_canonical} first-party modules missing canonical_symbol")
+                        self.warnings.append(
+                            f"{missing_canonical} first-party modules missing canonical_symbol"
+                        )
 
                 # Check L4 layer completeness
                 cursor.execute("""
@@ -488,10 +516,15 @@ class ADGIdentityCompletenessVerifier:
             node_comp = metrics.get("node_field_completeness", {})
             edge_comp = metrics.get("edge_field_completeness", {})
             print("📊 Schema completeness:")
-            print(f"   Node fields: {node_comp.get('required_fields', 0)}/{node_comp.get('total_required', 0)} required, {node_comp.get('enhanced_fields', 0)}/{node_comp.get('total_enhanced', 0)} enhanced")
-            print(f"   Edge fields: {edge_comp.get('required_fields', 0)}/{edge_comp.get('total_required', 0)} required, {edge_comp.get('enhanced_fields', 0)}/{edge_comp.get('total_enhanced', 0)} enhanced")
+            print(
+                f"   Node fields: {node_comp.get('required_fields', 0)}/{node_comp.get('total_required', 0)} required, {node_comp.get('enhanced_fields', 0)}/{node_comp.get('total_enhanced', 0)} enhanced"
+            )
+            print(
+                f"   Edge fields: {edge_comp.get('required_fields', 0)}/{edge_comp.get('total_required', 0)} required, {edge_comp.get('enhanced_fields', 0)}/{edge_comp.get('total_enhanced', 0)} enhanced"
+            )
 
         return result
+
 
 def main():
     """CLI entry point."""
@@ -517,18 +550,21 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, 'w') as f:
+            with open(args.output, "w") as f:
                 json.dump(result, f, indent=2, default=str)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1
 
-    except IdentityCompletenessError as e:    # guardian: IdentityCompletenessError should be handled with specific context
+    except (
+        IdentityCompletenessError
+    ) as e:  # guardian: IdentityCompletenessError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:
         print(f"💥 Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

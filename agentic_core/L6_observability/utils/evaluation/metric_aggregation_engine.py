@@ -220,10 +220,7 @@ class MetricAggregationEngine:
         window_seconds = self._get_window_seconds(time_window)
         start_time = current_time - window_seconds if window_seconds > 0 else 0.0
 
-        filtered_points = [
-            dp for dp in self._metrics[metric_name]
-            if dp.timestamp_utc >= start_time
-        ]
+        filtered_points = [dp for dp in self._metrics[metric_name] if dp.timestamp_utc >= start_time]
 
         if not filtered_points:
             return None
@@ -308,10 +305,7 @@ class MetricAggregationEngine:
         window_seconds = self._get_window_seconds(time_window)
         start_time = current_time - window_seconds if window_seconds > 0 else 0.0
 
-        filtered_points = [
-            dp for dp in self._metrics[metric_name]
-            if dp.timestamp_utc >= start_time
-        ]
+        filtered_points = [dp for dp in self._metrics[metric_name] if dp.timestamp_utc >= start_time]
 
         if not filtered_points:
             return []
@@ -369,7 +363,7 @@ class MetricAggregationEngine:
         elif time_window == TimeWindow.LAST_MONTH:
             return 2592000.0
         else:  # ALL_TIME
-            return float('inf')
+            return float("inf")
 
     @staticmethod
     def _percentile(sorted_values: list[float], percentile: int) -> float:

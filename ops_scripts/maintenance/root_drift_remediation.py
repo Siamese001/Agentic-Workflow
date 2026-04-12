@@ -321,7 +321,9 @@ def validate_structure():
                 content = py_file.read_text(encoding="utf-8")
                 if AGENTIC_CORE_DIR in content:
                     issues.append(f"Core dependency found in ops_scripts/{py_file.name}")
-            except Exception:  # guardian: allow-silent-swallow -- non-critical: file read failure skipped silently
+            except (
+                Exception
+            ):  # guardian: allow-silent-swallow -- non-critical: file read failure skipped silently
                 pass
 
     if issues:

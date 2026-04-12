@@ -54,6 +54,7 @@ def patch_static_scanner():
 
     return False
 
+
 if __name__ == "__main__":
     success = patch_static_scanner()
     sys.exit(0 if success else 1)

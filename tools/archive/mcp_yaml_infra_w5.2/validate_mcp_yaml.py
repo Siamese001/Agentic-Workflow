@@ -99,7 +99,8 @@ def main() -> int:
         description="Validate MCP YAML configuration",
     )
     parser.add_argument(
-        "--verbose", "-v",
+        "--verbose",
+        "-v",
         action="store_true",
         help="Show detailed output even on success",
     )
@@ -126,6 +127,7 @@ def main() -> int:
         # Show summary
         try:
             from agentic_core.config.mcp_loader import MCPLoader
+
             loader = MCPLoader(YAML_CONFIG_PATH)
             config = loader.load()
             print(f"[MCP-VALIDATE] Servers: {len(config.servers)}")

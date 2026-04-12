@@ -101,7 +101,9 @@ class ReasoningContextEnvelope:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "ReasoningContextEnvelope.is_high_confidence",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "ReasoningContextEnvelope.is_high_confidence",
         )
 
         if not self.retrieval_results:
@@ -176,7 +178,9 @@ class ReasoningContextEnvelopeBuilder:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "ReasoningContextEnvelopeBuilder.pull_context",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "ReasoningContextEnvelopeBuilder.pull_context",
         )
 
         with self._lock:

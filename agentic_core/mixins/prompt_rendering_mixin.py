@@ -24,7 +24,9 @@ def _get_prompt_renderer():
     from agentic_core.prompt_governance.core.sovereign_prompt_renderer import (
         SovereignPromptRenderer,
     )
+
     return SovereignPromptRenderer
+
 
 def _get_template_catalog():
     from agentic_core.prompt_governance.core.template_catalog import (
@@ -33,8 +35,8 @@ def _get_template_catalog():
         TemplateCategory,
         TemplateStatus,
     )
-    return TEMPLATE_CATALOG, TemplateCatalogEntry, TemplateCategory, TemplateStatus
 
+    return TEMPLATE_CATALOG, TemplateCatalogEntry, TemplateCategory, TemplateStatus
 
 
 class PromptRenderingMixin:
@@ -78,7 +80,8 @@ class PromptRenderingMixin:
         return self._assigned_templates
 
     def get_primary_template(
-        self, category: TemplateCategory = TemplateCategory.INSTRUCTIONAL,
+        self,
+        category: TemplateCategory = TemplateCategory.INSTRUCTIONAL,
     ) -> TemplateCatalogEntry | None:
         """Get the first assigned template of a given category.
 

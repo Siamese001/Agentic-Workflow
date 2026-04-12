@@ -175,6 +175,7 @@ _emit_proposal_commits_routing("p1", "execution_trace_types", "routing_commit")
 
 def _compute_replay_key(trace_id: str, plan_hash: str, transcript_hash: str) -> str:
     from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError  # noqa: F401
+
     raw = (trace_id + plan_hash + transcript_hash).encode("ascii", errors="replace")
     return hashlib.sha256(raw).hexdigest()
 

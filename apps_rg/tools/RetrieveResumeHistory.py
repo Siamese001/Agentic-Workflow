@@ -170,8 +170,11 @@ class RetrieveResumeHistory:
     def retrieve(self, query: str, filters: dict | None = None, limit: int = 10) -> RetrievalResult:
         """Retrieve items."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrieveResumeHistory.retrieve")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrieveResumeHistory.retrieve"
+        )
 
         cache_key = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:

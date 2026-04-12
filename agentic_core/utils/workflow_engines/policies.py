@@ -260,6 +260,7 @@ class FixedTokenChunkPolicy(ChunkPolicy):
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FixedTokenChunkPolicy.chunk")
 
@@ -301,8 +302,11 @@ class OverlapWindowChunkPolicy(ChunkPolicy):
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OverlapWindowChunkPolicy.chunk")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OverlapWindowChunkPolicy.chunk"
+        )
 
         words = document.split()
         step = self.chunk_size - self.overlap
@@ -346,8 +350,11 @@ class SectionAwareChunkPolicy(ChunkPolicy):
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SectionAwareChunkPolicy.chunk")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SectionAwareChunkPolicy.chunk"
+        )
 
         sections = re.split("(?m)^#{1,3}\\s+", document)
         chunks: list[Chunk] = []
@@ -395,6 +402,7 @@ class SemanticChunkPolicy(ChunkPolicy):
 
     def chunk(self, document: str, doc_id: str = "doc") -> list[Chunk]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticChunkPolicy.chunk")
 

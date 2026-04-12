@@ -10,6 +10,7 @@ Strategy:
 - Pattern 2: Remove try/except wrapper inside test functions, use direct import
 - Pattern 3: Remove try/except + pytest.skip, use direct import at module level
 """
+
 from __future__ import annotations
 
 import json
@@ -69,8 +70,12 @@ def fix_try_except_importorskip_in_except(filepath: pathlib.Path) -> dict:
 
                 # Check if any of the imports are first-party
                 has_first_party = any(
-                    "agentic_core" in l or "apps_" in l or "system_learning" in l or
-                    "infrastructure" in l or "tools" in l or "ops_scripts" in l
+                    "agentic_core" in l
+                    or "apps_" in l
+                    or "system_learning" in l
+                    or "infrastructure" in l
+                    or "tools" in l
+                    or "ops_scripts" in l
                     for l in try_imports
                 )
 
@@ -116,11 +121,11 @@ def fix_inline_try_except_skip(filepath: pathlib.Path) -> dict:
 
     # Use regex to match these blocks
     pattern = re.compile(
-        r'(\s+)try:\n'
-        r'\1    (import [^\n]+)\n'
-        r'(?:\1    [^\n]*\n)*?'  # Optional additional lines in try
-        r'\1except \(?(?:ImportError|ModuleNotFoundError)[^:]*:\n'
-        r'(?:\1    [^\n]*\n)*',  # except body
+        r"(\s+)try:\n"
+        r"\1    (import [^\n]+)\n"
+        r"(?:\1    [^\n]*\n)*?"  # Optional additional lines in try
+        r"\1except \(?(?:ImportError|ModuleNotFoundError)[^:]*:\n"
+        r"(?:\1    [^\n]*\n)*",  # except body
         re.MULTILINE,
     )
 
@@ -154,10 +159,10 @@ def fix_skip_cannot_import(filepath: pathlib.Path) -> dict:
 
     # Replace with direct import (remove try/except)
     pattern = re.compile(
-        r'(\s+)try:\n'
-        r'((?:\1    (?:from |import )[^\n]+\n)+)'  # import lines
-        r'\1except (?:\(?(?:ImportError|ModuleNotFoundError)[^:]*\)?:\n)'
-        r'\1    pytest\.skip\([^\)]+\)\n',
+        r"(\s+)try:\n"
+        r"((?:\1    (?:from |import )[^\n]+\n)+)"  # import lines
+        r"\1except (?:\(?(?:ImportError|ModuleNotFoundError)[^:]*\)?:\n)"
+        r"\1    pytest\.skip\([^\)]+\)\n",
         re.MULTILINE,
     )
 
@@ -168,7 +173,7 @@ def fix_skip_cannot_import(filepath: pathlib.Path) -> dict:
         dedented = []
         for line in import_lines.splitlines():
             if line.startswith(indent + "    "):
-                dedented.append(indent + line[len(indent) + 4:])
+                dedented.append(indent + line[len(indent) + 4 :])
             else:
                 dedented.append(line)
         return "\n".join(dedented) + "\n"
@@ -200,8 +205,9 @@ def main():
     fixed_count = 0
 
     # Fix importorskip_in_core + first_party_import_skip (module-level try/except)
-    module_level_files = files_by_type.get("importorskip_in_core", set()) | \
-                         files_by_type.get("first_party_import_skip", set())
+    module_level_files = files_by_type.get("importorskip_in_core", set()) | files_by_type.get(
+        "first_party_import_skip", set()
+    )
 
     print(f"\nFixing {len(module_level_files)} files with module-level try/except...")
     for fp in sorted(module_level_files):
@@ -267,6 +273,7 @@ def main():
 
     # Verify no syntax errors introduced
     import ast
+
     syntax_errors = 0
     for fp_set in files_by_type.values():
         for fp in fp_set:

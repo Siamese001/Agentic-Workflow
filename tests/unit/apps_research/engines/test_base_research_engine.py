@@ -1,4 +1,5 @@
 """Foundational behavioral tests for apps_research/engines/base_research_engine.py."""
+
 from __future__ import annotations
 
 import sys

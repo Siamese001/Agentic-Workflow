@@ -187,7 +187,11 @@ class PolicyRecommendationEngine:
     """Generates deterministic, bounded policy recommendations from drift analysis."""
 
     def generate_recommendation(
-        self, *, drift_summary: DriftSummary, active_profile: RetrievalProfile, now_utc: int,
+        self,
+        *,
+        drift_summary: DriftSummary,
+        active_profile: RetrievalProfile,
+        now_utc: int,
     ) -> PolicyRecommendation:
         """Generate policy recommendation based on drift analysis.
 
@@ -278,10 +282,16 @@ class MemoryAwarePolicyRecommendationEngine(PolicyRecommendationEngine):
     """
 
     def generate_recommendation(
-        self, *, drift_summary: DriftSummary, active_profile: RetrievalProfile, now_utc: int,
+        self,
+        *,
+        drift_summary: DriftSummary,
+        active_profile: RetrievalProfile,
+        now_utc: int,
     ) -> PolicyRecommendation:
         recommendation = super().generate_recommendation(
-            drift_summary=drift_summary, active_profile=active_profile, now_utc=now_utc,
+            drift_summary=drift_summary,
+            active_profile=active_profile,
+            now_utc=now_utc,
         )
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
@@ -294,15 +304,19 @@ class MemoryAwarePolicyRecommendationEngine(PolicyRecommendationEngine):
                 # Query recent retrieval quality metrics
                 recent_quality = bridge._query_recent_healing_memory_quality(hours=24)
                 if recent_quality:
-                    avg_quality_score = sum(q.get('score', 0.5) for q in recent_quality) / len(recent_quality)
+                    avg_quality_score = sum(q.get("score", 0.5) for q in recent_quality) / len(recent_quality)
                     # Adjust confidence based on retrieval quality
                     quality_adjustment = (avg_quality_score - 0.5) * 0.2  # ±10% adjustment
-                    recommendation.confidence_score = max(0.0, min(1.0,
-                        recommendation.confidence_score + quality_adjustment))
+                    recommendation.confidence_score = max(
+                        0.0, min(1.0, recommendation.confidence_score + quality_adjustment)
+                    )
             except Exception as e:
-
                 # Quality adjustment unavailable - continue without it
-                import logging; logging.getLogger(__name__).debug("policy_recommendation_engine: Exception swallowed at L302: %s", e)
+                import logging
+
+                logging.getLogger(__name__).debug(
+                    "policy_recommendation_engine: Exception swallowed at L302: %s", e
+                )
         # guardian: allow-silent-swallow
         except Exception:
             pass

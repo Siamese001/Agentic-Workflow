@@ -379,11 +379,7 @@ class AntiPatternScanner:
             exclude_patterns: Glob patterns to exclude
         """
         root_path = Path(project_root)
-        if (
-            isinstance(project_root, str)
-            and root_path.drive == ""
-            and project_root.startswith("/")
-        ):
+        if isinstance(project_root, str) and root_path.drive == "" and project_root.startswith("/"):
             raise FileNotFoundError(f"Project root does not exist: {project_root}")
         self.project_root = root_path.resolve()
         if not self.project_root.is_dir():
@@ -594,7 +590,9 @@ class AntiPatternScanner:
             Action to take: "pass", "warn", "soft_block", "hard_block"
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "AntiPatternScanner.get_enforcement_action", "L5_POLICY",
+            str(uuid.uuid4()),
+            "AntiPatternScanner.get_enforcement_action",
+            "L5_POLICY",
         )
         if report.passed:
             return "pass"

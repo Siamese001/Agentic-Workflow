@@ -164,8 +164,11 @@ class FailureFingerprinter:
     def fingerprint(self, event: FailureEvent) -> FailureFingerprint:
         """Generate deterministic fingerprint for failure event."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FailureFingerprinter.fingerprint")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FailureFingerprinter.fingerprint"
+        )
 
         if not isinstance(event, FailureEvent):
             raise TypeError(f"Expected FailureEvent, got {type(event).__name__}")

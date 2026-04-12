@@ -207,7 +207,10 @@ class CampaignBalanceValidator:
         self.thresholds = thresholds or {"max_leads_per_message": 100, "min_leads_per_message": 1}
 
     def validate_campaign_balance(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
+        self,
+        campaign: dict[str, Any],
+        leads: list[Any],
+        messages: list[Any],
     ) -> BalanceResult:
         """
         Validate campaign balance using purely deterministic logic.
@@ -224,7 +227,9 @@ class CampaignBalanceValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CampaignBalanceValidator.validate_campaign_balance",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CampaignBalanceValidator.validate_campaign_balance",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -241,7 +246,10 @@ class CampaignBalanceValidator:
         field_issues = self._validate_required_fields(campaign)
         issues.extend(field_issues)
         return BalanceResult(
-            passed=len(issues) == 0, issues=issues, ratio=ratio, metadata={"validation_type": "deterministic"},
+            passed=len(issues) == 0,
+            issues=issues,
+            ratio=ratio,
+            metadata={"validation_type": "deterministic"},
         )
 
     def _calculate_lead_message_ratio(self, leads: list[Any], messages: list[Any]) -> float | None:
@@ -285,7 +293,10 @@ class CampaignBalanceValidator:
         return issues
 
     def calculate_balance_score(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
+        self,
+        campaign: dict[str, Any],
+        leads: list[Any],
+        messages: list[Any],
     ) -> float:
         """
         Calculate overall balance score using deterministic algorithm.
@@ -311,7 +322,10 @@ class CampaignBalanceValidator:
         return max(0.0, score)
 
     def suggest_improvements(
-        self, campaign: dict[str, Any], leads: list[Any], messages: list[Any],
+        self,
+        campaign: dict[str, Any],
+        leads: list[Any],
+        messages: list[Any],
     ) -> list[str]:
         """
         Generate deterministic improvement suggestions.

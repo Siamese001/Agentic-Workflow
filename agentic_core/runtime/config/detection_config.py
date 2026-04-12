@@ -12,6 +12,7 @@ from typing import Any
 
 # Configuration constants
 
+
 class Severity(Enum):
     """Severity levels for detection signals."""
 

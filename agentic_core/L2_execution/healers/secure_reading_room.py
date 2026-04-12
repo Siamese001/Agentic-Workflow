@@ -15,6 +15,7 @@ from .failure_signal import FailureSignal
 
 class HITLDecisionType(Enum):
     """HITL decision types."""
+
     APPROVE = auto()
     MODIFY = auto()
     REJECT = auto()
@@ -23,6 +24,7 @@ class HITLDecisionType(Enum):
 @dataclass
 class HITLDecision:
     """HITL decision in secure reading room."""
+
     decision: HITLDecisionType
     reviewer_id: str
     reviewed_at: float
@@ -71,8 +73,7 @@ class SecureReadingRoom:
             },
             "proposed_repair": proposed_repair,
             "relevant_context": {  # Limited context only
-                k: v for k, v in context.items()
-                if k in ["schema", "validation_rules", "data_sample"]
+                k: v for k, v in context.items() if k in ["schema", "validation_rules", "data_sample"]
             },
             "actions_available": ["APPROVE", "MODIFY", "REJECT"],
             "actions_not_available": [

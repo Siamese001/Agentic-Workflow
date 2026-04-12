@@ -278,8 +278,11 @@ class ExecAgentSpecs(BaseModel):
     @model_validator(mode="after")
     def validate_personas_non_empty(self) -> ExecAgentSpecs:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ExecAgentSpecs.validate_personas_non_empty")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ExecAgentSpecs.validate_personas_non_empty"
+        )
 
         if not self.personas:
             raise ValueError("ExecAgentSpecs.personas must define at least one persona")

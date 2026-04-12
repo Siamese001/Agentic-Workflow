@@ -28,18 +28,18 @@ t0 = time.perf_counter()
 for f in bench:
     _scan_file(f, ROOT, include_tests=True, identity_normalizer=None)
 old_time = time.perf_counter() - t0
-print(f"OLD (normalizer per file): {old_time:.2f}s  ({old_time/len(bench)*1000:.0f}ms/file)")
+print(f"OLD (normalizer per file): {old_time:.2f}s  ({old_time / len(bench) * 1000:.0f}ms/file)")
 
 # --- NEW behaviour: one shared normalizer ---
 shared = IdentityNormalizer(repo_root=ROOT)
-_ = shared._get_known_files()   # pre-warm
+_ = shared._get_known_files()  # pre-warm
 t0 = time.perf_counter()
 for f in bench:
     _scan_file(f, ROOT, include_tests=True, identity_normalizer=shared)
 new_time = time.perf_counter() - t0
-print(f"NEW (shared normalizer):   {new_time:.2f}s  ({new_time/len(bench)*1000:.0f}ms/file)")
+print(f"NEW (shared normalizer):   {new_time:.2f}s  ({new_time / len(bench) * 1000:.0f}ms/file)")
 
-speedup = old_time / new_time if new_time > 0 else float('inf')
+speedup = old_time / new_time if new_time > 0 else float("inf")
 print(f"\nSpeedup: {speedup:.1f}x")
 
 # Project to full run
@@ -47,8 +47,8 @@ total_files = len(files)
 projected_old = old_time / len(bench) * total_files
 projected_new = new_time / len(bench) * total_files
 print(f"\nProjected full scan ({total_files} files):")
-print(f"  OLD: {projected_old/60:.1f} minutes")
-print(f"  NEW: {projected_new/60:.1f} minutes")
+print(f"  OLD: {projected_old / 60:.1f} minutes")
+print(f"  NEW: {projected_new / 60:.1f} minutes")
 
 assert speedup >= 5.0, f"Expected >=5x speedup, got {speedup:.1f}x"
 print(f"\n✅ PASS: {speedup:.1f}x speedup confirmed")

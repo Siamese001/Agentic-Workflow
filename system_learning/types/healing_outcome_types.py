@@ -273,12 +273,19 @@ class HealingOutcomeStats:
 
     @staticmethod
     def from_counts(
-        healer_id: str, tier: str, failure_type: str, success_count: int, failure_count: int,
+        healer_id: str,
+        tier: str,
+        failure_type: str,
+        success_count: int,
+        failure_count: int,
     ) -> HealingOutcomeStats:
         """Build stats from raw counts with stable rounding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeStats.from_counts")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeStats.from_counts"
+        )
 
         total = success_count + failure_count
         return HealingOutcomeStats(

@@ -1,6 +1,5 @@
 """Semantic type classification maps for ADG edges."""
 
-
 # Semantic type classification map — maps (edge_kind, relation_type) to
 # semantic_type. Edges with semantic_type already set are left untouched.
 _SEMANTIC_TYPE_MAP: dict[tuple[str, str], str] = {

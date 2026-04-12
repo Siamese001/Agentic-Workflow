@@ -45,8 +45,15 @@ class GravityStateAgent(SovereignBaseAgent):
 
         self._manager = _GravityStateManager(project_root or Path.cwd())
 
-    def record_healing(self, file_path: str, original_import: str, healed_import: str,
-                       violation_type: str, healing_strategy: str, **kwargs) -> bool:
+    def record_healing(
+        self,
+        file_path: str,
+        original_import: str,
+        healed_import: str,
+        violation_type: str,
+        healing_strategy: str,
+        **kwargs,
+    ) -> bool:
         """Record a healing operation."""
         return self._manager.record_healing(
             file_path=file_path,

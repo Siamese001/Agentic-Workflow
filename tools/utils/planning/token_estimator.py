@@ -20,9 +20,11 @@ from agentic_core.config.token_budget_loader import DEFAULT_TOKEN_BUDGET
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class TokenBudget:
     """Token budget configuration for Kimi K2.5"""
+
     # Load defaults from YAML SSOT
     HARD_MAX_CONTEXT: int = DEFAULT_TOKEN_BUDGET.hard_max_context
     SAFE_OPERATING_CAP: int = DEFAULT_TOKEN_BUDGET.safe_operating_cap
@@ -41,9 +43,11 @@ class TokenBudget:
         if self.DEFAULT_RESERVED_OUTPUT < 0 or self.DEFAULT_SAFETY_BUFFER < 0:
             raise ValueError("Reserved output and safety buffer must be >= 0")
 
+
 @dataclass
 class ContextSource:
     """Represents a source of context tokens"""
+
     source_type: str
     content: str
     tokens: int = 0
@@ -54,9 +58,11 @@ class ContextSource:
         normalized = self.content.strip().encode("utf-8", errors="ignore")
         return hashlib.sha256(normalized).hexdigest()
 
+
 @dataclass
 class TokenEstimate:
     """Token estimation result for a plan step"""
+
     plan_step: str
     estimated_input_tokens: int
     reserved_output_tokens: int
@@ -67,6 +73,7 @@ class TokenEstimate:
     top_contributors: list[dict[str, Any]]
     recommended_reductions: list[str]
     compression_applied: list[str] = field(default_factory=list)
+
 
 class ContextWindowEstimator:
     """
@@ -79,57 +86,59 @@ class ContextWindowEstimator:
     def __init__(self, budget: TokenBudget | None = None):
         self.budget = budget or TokenBudget()
         self.compression_policies = self._init_compression_policies()
-        self._error_pattern = re.compile(r'(?i)(error|traceback|exception|failed)')
+        self._error_pattern = re.compile(r"(?i)(error|traceback|exception|failed)")
 
         # Conservative token estimation rates (chars -> tokens, biased high)
         self.token_rates = {
-            'code': 0.35,  # ~3 chars per token for code
-            'text': 0.4,   # ~2.5 chars per token for text
-            'json': 0.33,  # ~3 chars per token for JSON
-            'diff': 0.3,   # ~3.3 chars per token for diffs
-            'log': 0.38,   # ~2.6 chars per token for logs
-            'system': 0.42,  # ~2.4 chars per token for system prompts
+            "code": 0.35,  # ~3 chars per token for code
+            "text": 0.4,  # ~2.5 chars per token for text
+            "json": 0.33,  # ~3 chars per token for JSON
+            "diff": 0.3,  # ~3.3 chars per token for diffs
+            "log": 0.38,  # ~2.6 chars per token for logs
+            "system": 0.42,  # ~2.4 chars per token for system prompts
         }
         self.min_tokens_by_type = {
-            'system': 8,
-            'user_prompt': 8,
-            'file': 4,
-            'diff': 4,
-            'log': 4,
-            'retrieval': 4,
-            'prior_step': 4,
+            "system": 8,
+            "user_prompt": 8,
+            "file": 4,
+            "diff": 4,
+            "log": 4,
+            "retrieval": 4,
+            "prior_step": 4,
         }
 
     def _init_compression_policies(self) -> dict[str, Any]:
         """Initialize compression policies for different content types"""
         return {
-            'compression_order': [
-                'remove_duplicates',
-                'trim_retry_history',
-                'summarize_files',
-                'trim_logs_to_errors',
-                'reduce_retrieval_chunks',
-                'diff_or_file_not_both',
-                'drop_low_relevance_files',
+            "compression_order": [
+                "remove_duplicates",
+                "trim_retry_history",
+                "summarize_files",
+                "trim_logs_to_errors",
+                "reduce_retrieval_chunks",
+                "diff_or_file_not_both",
+                "drop_low_relevance_files",
             ],
-            'max_log_lines': 50,
-            'max_retry_history': 3,
-            'max_retrieval_chunks': 10,
-            'file_summary_threshold': 1000,  # lines
-            'duplicate_detection': True,
+            "max_log_lines": 50,
+            "max_retry_history": 3,
+            "max_retrieval_chunks": 10,
+            "file_summary_threshold": 1000,  # lines
+            "duplicate_detection": True,
         }
 
-    def estimate_step_tokens(self,
-                           plan_step: str,
-                           system_prompt: str,
-                           user_prompt: str,
-                           files: list[dict[str, Any]],
-                           diffs: list[dict[str, Any]],
-                           logs: list[dict[str, Any]],
-                           retrieved_context: list[dict[str, Any]],
-                           prior_steps: list[str],
-                           reserved_output: int | None = None,
-                           safety_buffer: int | None = None) -> TokenEstimate:
+    def estimate_step_tokens(
+        self,
+        plan_step: str,
+        system_prompt: str,
+        user_prompt: str,
+        files: list[dict[str, Any]],
+        diffs: list[dict[str, Any]],
+        logs: list[dict[str, Any]],
+        retrieved_context: list[dict[str, Any]],
+        prior_steps: list[str],
+        reserved_output: int | None = None,
+        safety_buffer: int | None = None,
+    ) -> TokenEstimate:
         """
         Estimate tokens for a complete plan step payload
 
@@ -156,16 +165,8 @@ class ContextWindowEstimator:
         prior_steps = prior_steps or []
 
         # Use defaults if not provided
-        reserved_output = (
-            self.budget.DEFAULT_RESERVED_OUTPUT
-            if reserved_output is None
-            else reserved_output
-        )
-        safety_buffer = (
-            self.budget.DEFAULT_SAFETY_BUFFER
-            if safety_buffer is None
-            else safety_buffer
-        )
+        reserved_output = self.budget.DEFAULT_RESERVED_OUTPUT if reserved_output is None else reserved_output
+        safety_buffer = self.budget.DEFAULT_SAFETY_BUFFER if safety_buffer is None else safety_buffer
         if reserved_output < 0 or safety_buffer < 0:
             raise ValueError("reserved_output and safety_buffer must be >= 0")
 
@@ -174,90 +175,104 @@ class ContextWindowEstimator:
 
         # Add system prompts
         if system_prompt:
-            sources.append(ContextSource(
-                'system_prompt',
-                system_prompt,
-                self._estimate_source_tokens('system_prompt', system_prompt, 'system'),
-                metadata={'type': 'system'},
-            ))
+            sources.append(
+                ContextSource(
+                    "system_prompt",
+                    system_prompt,
+                    self._estimate_source_tokens("system_prompt", system_prompt, "system"),
+                    metadata={"type": "system"},
+                )
+            )
 
         # Add user prompt
         if user_prompt:
-            sources.append(ContextSource(
-                'user_prompt',
-                user_prompt,
-                self._estimate_source_tokens('user_prompt', user_prompt, 'text'),
-                metadata={'type': 'prompt'},
-            ))
+            sources.append(
+                ContextSource(
+                    "user_prompt",
+                    user_prompt,
+                    self._estimate_source_tokens("user_prompt", user_prompt, "text"),
+                    metadata={"type": "prompt"},
+                )
+            )
 
         # Add files
         for file_info in files:
-            content = file_info.get('content', '')
-            file_type = self._detect_content_type(content, file_info.get('path', ''))
-            sources.append(ContextSource(
-                'file',
-                content,
-                self._estimate_source_tokens('file', content, file_type),
-                metadata={
-                    'path': file_info.get('path', ''),
-                    'type': file_type,
-                    'size': len(content),
-                    'lines': len(content.splitlines()),
-                },
-            ))
+            content = file_info.get("content", "")
+            file_type = self._detect_content_type(content, file_info.get("path", ""))
+            sources.append(
+                ContextSource(
+                    "file",
+                    content,
+                    self._estimate_source_tokens("file", content, file_type),
+                    metadata={
+                        "path": file_info.get("path", ""),
+                        "type": file_type,
+                        "size": len(content),
+                        "lines": len(content.splitlines()),
+                    },
+                )
+            )
 
         # Add diffs
         for diff_info in diffs:
-            content = diff_info.get('content', '')
-            sources.append(ContextSource(
-                'diff',
-                content,
-                self._estimate_source_tokens('diff', content, 'diff'),
-                metadata={
-                    'path': diff_info.get('path', ''),
-                    'lines_added': self._count_diff_lines(content, prefix='+'),
-                    'lines_removed': self._count_diff_lines(content, prefix='-'),
-                    'hunks': content.count('@@'),
-                },
-            ))
+            content = diff_info.get("content", "")
+            sources.append(
+                ContextSource(
+                    "diff",
+                    content,
+                    self._estimate_source_tokens("diff", content, "diff"),
+                    metadata={
+                        "path": diff_info.get("path", ""),
+                        "lines_added": self._count_diff_lines(content, prefix="+"),
+                        "lines_removed": self._count_diff_lines(content, prefix="-"),
+                        "hunks": content.count("@@"),
+                    },
+                )
+            )
 
         # Add logs
         for log_info in logs:
-            content = log_info.get('content', '')
-            sources.append(ContextSource(
-                'log',
-                content,
-                self._estimate_source_tokens('log', content, 'log'),
-                metadata={
-                    'source': log_info.get('source', ''),
-                    'lines': len(content.splitlines()),
-                    'has_errors': bool(self._error_pattern.search(content)),
-                },
-            ))
+            content = log_info.get("content", "")
+            sources.append(
+                ContextSource(
+                    "log",
+                    content,
+                    self._estimate_source_tokens("log", content, "log"),
+                    metadata={
+                        "source": log_info.get("source", ""),
+                        "lines": len(content.splitlines()),
+                        "has_errors": bool(self._error_pattern.search(content)),
+                    },
+                )
+            )
 
         # Add retrieved context
         for ctx_info in retrieved_context:
-            content = ctx_info.get('content', '')
-            sources.append(ContextSource(
-                'retrieval',
-                content,
-                self._estimate_source_tokens('retrieval', content, 'text'),
-                metadata={
-                    'source': ctx_info.get('source', ''),
-                    'chunk_id': ctx_info.get('chunk_id', ''),
-                    'overlap': ctx_info.get('overlap', False),
-                },
-            ))
+            content = ctx_info.get("content", "")
+            sources.append(
+                ContextSource(
+                    "retrieval",
+                    content,
+                    self._estimate_source_tokens("retrieval", content, "text"),
+                    metadata={
+                        "source": ctx_info.get("source", ""),
+                        "chunk_id": ctx_info.get("chunk_id", ""),
+                        "overlap": ctx_info.get("overlap", False),
+                    },
+                )
+            )
 
         # Add prior steps
         for i, step_content in enumerate(prior_steps):
             if step_content:
-                sources.append(ContextSource(
-                    'prior_step',
-                    step_content,
-                    self._estimate_source_tokens('prior_step', step_content, 'text'),
-                    metadata={'step_index': i},
-                ))
+                sources.append(
+                    ContextSource(
+                        "prior_step",
+                        step_content,
+                        self._estimate_source_tokens("prior_step", step_content, "text"),
+                        metadata={"step_index": i},
+                    )
+                )
 
         # Calculate totals
         input_tokens = sum(s.tokens for s in sources)
@@ -271,7 +286,9 @@ class ContextWindowEstimator:
 
         # Generate recommendations
         recommended_reductions = self._generate_recommendations(
-            sources, status, total_projected,
+            sources,
+            status,
+            total_projected,
         )
 
         # Create estimate
@@ -288,7 +305,7 @@ class ContextWindowEstimator:
         )
 
         # Apply compression if needed
-        if action in ['compress', 'block']:
+        if action in ["compress", "block"]:
             estimate = self._apply_compression(estimate, sources)
 
         return estimate
@@ -303,7 +320,7 @@ class ContextWindowEstimator:
             return 0
 
         # Get appropriate token rate
-        rate = self.token_rates.get(content_type, self.token_rates['text'])
+        rate = self.token_rates.get(content_type, self.token_rates["text"])
 
         # Apply conservative multiplier (bias high)
         conservative_multiplier = 1.1
@@ -331,27 +348,27 @@ class ContextWindowEstimator:
         path_lower = file_path.lower()
 
         # Check file extension
-        if path_lower.endswith(('.py', '.js', '.ts', '.java', '.cpp', '.c')):
-            return 'code'
-        elif path_lower.endswith('.json'):
-            return 'json'
-        elif 'diff' in path_lower or content.startswith('diff '):
-            return 'diff'
-        elif any(keyword in content.lower() for keyword in ['error', 'traceback', 'exception']):
-            return 'log'
+        if path_lower.endswith((".py", ".js", ".ts", ".java", ".cpp", ".c")):
+            return "code"
+        elif path_lower.endswith(".json"):
+            return "json"
+        elif "diff" in path_lower or content.startswith("diff "):
+            return "diff"
+        elif any(keyword in content.lower() for keyword in ["error", "traceback", "exception"]):
+            return "log"
         else:
-            return 'text'
+            return "text"
 
     def _determine_status_action(self, total_tokens: int) -> tuple[str, str]:
         """Determine status and action based on token count"""
         if total_tokens > self.budget.HARD_MAX_CONTEXT:
-            return 'red', 'block'
+            return "red", "block"
         if total_tokens <= self.budget.WARNING_THRESHOLD:
-            return 'green', 'proceed'
+            return "green", "proceed"
         elif total_tokens <= self.budget.SAFE_OPERATING_CAP:
-            return 'yellow', 'compress'
+            return "yellow", "compress"
         else:
-            return 'red', 'block'
+            return "red", "block"
 
     def _get_top_contributors(self, sources: list[ContextSource]) -> list[dict[str, Any]]:
         """Get top contributors to token count"""
@@ -368,19 +385,15 @@ class ContextWindowEstimator:
         )
 
         # Return top contributors
-        return [
-            {"type": ctype, "tokens": tokens}
-            for ctype, tokens in sorted_contributors[:5]
-        ]
+        return [{"type": ctype, "tokens": tokens} for ctype, tokens in sorted_contributors[:5]]
 
-    def _generate_recommendations(self,
-                                sources: list[ContextSource],
-                                status: str,
-                                total_tokens: int) -> list[str]:
+    def _generate_recommendations(
+        self, sources: list[ContextSource], status: str, total_tokens: int
+    ) -> list[str]:
         """Generate reduction recommendations based on analysis"""
         recommendations: list[str] = []
 
-        if status == 'green':
+        if status == "green":
             return recommendations
 
         # Analyze sources for reduction opportunities
@@ -389,104 +402,102 @@ class ContextWindowEstimator:
             type_totals[source.source_type] = type_totals.get(source.source_type, 0) + source.tokens
 
         # Check for large files
-        large_files = [
-            s for s in sources
-            if s.source_type == 'file' and s.metadata.get('lines', 0) > 500
-        ]
+        large_files = [s for s in sources if s.source_type == "file" and s.metadata.get("lines", 0) > 500]
         if large_files:
             recommendations.append(f"Summarize {len(large_files)} large files (>500 lines)")
 
         # Check for verbose logs
-        log_sources = [s for s in sources if s.source_type == 'log']
+        log_sources = [s for s in sources if s.source_type == "log"]
         if log_sources:
-            total_log_lines = sum(s.metadata.get('lines', 0) for s in log_sources)
+            total_log_lines = sum(s.metadata.get("lines", 0) for s in log_sources)
             if total_log_lines > 100:
                 recommendations.append(f"Trim logs to errors only ({total_log_lines} lines)")
 
         # Check for duplicates
-        if len([s for s in sources if s.source_type == 'file']) > 10:
+        if len([s for s in sources if s.source_type == "file"]) > 10:
             recommendations.append("Remove duplicate or similar file content")
 
         # Check for retrieval chunks
-        retrieval_sources = [s for s in sources if s.source_type == 'retrieval']
+        retrieval_sources = [s for s in sources if s.source_type == "retrieval"]
         if len(retrieval_sources) > 15:
             recommendations.append(f"Reduce retrieval chunks ({len(retrieval_sources)} → 10)")
 
         # Check for diff + file both present
-        file_paths = {s.metadata.get('path', '') for s in sources if s.source_type == 'file'}
-        diff_paths = {s.metadata.get('path', '') for s in sources if s.source_type == 'diff'}
+        file_paths = {s.metadata.get("path", "") for s in sources if s.source_type == "file"}
+        diff_paths = {s.metadata.get("path", "") for s in sources if s.source_type == "diff"}
         overlap = file_paths & diff_paths
         if overlap:
             recommendations.append(f"Use diff OR full file for {len(overlap)} files, not both")
 
         # Check prior steps
-        prior_steps = [s for s in sources if s.source_type == 'prior_step']
+        prior_steps = [s for s in sources if s.source_type == "prior_step"]
         if len(prior_steps) > 3:
             recommendations.append("Reduce prior step carry-forward (keep only last 2-3)")
 
         # General recommendation based on how far over budget
         if total_tokens > self.budget.SAFE_OPERATING_CAP:
-            recommendations.append("Critical: Reduce context by at least " +
-                                 f"{total_tokens - self.budget.SAFE_OPERATING_CAP} tokens")
+            recommendations.append(
+                "Critical: Reduce context by at least "
+                + f"{total_tokens - self.budget.SAFE_OPERATING_CAP} tokens"
+            )
         elif total_tokens > self.budget.WARNING_THRESHOLD:
-            recommendations.append("Moderate: Reduce context by " +
-                                 f"{total_tokens - self.budget.WARNING_THRESHOLD} tokens")
+            recommendations.append(
+                "Moderate: Reduce context by " + f"{total_tokens - self.budget.WARNING_THRESHOLD} tokens"
+            )
 
         return recommendations
 
-    def _apply_compression(self,
-                          estimate: TokenEstimate,
-                          sources: list[ContextSource]) -> TokenEstimate:
+    def _apply_compression(self, estimate: TokenEstimate, sources: list[ContextSource]) -> TokenEstimate:
         """Apply compression policies to reduce token count"""
         compressed_sources = copy.deepcopy(sources)
         compression_applied = []
 
         # Apply compression in order
-        for policy in self.compression_policies['compression_order']:
+        for policy in self.compression_policies["compression_order"]:
             if estimate.total_projected_tokens <= self.budget.WARNING_THRESHOLD:
                 break
 
-            if policy == 'remove_duplicates':
+            if policy == "remove_duplicates":
                 compressed_sources, applied = self._remove_duplicates(compressed_sources)
                 if applied:
-                    compression_applied.append('removed_duplicates')
+                    compression_applied.append("removed_duplicates")
 
-            elif policy == 'trim_retry_history':
+            elif policy == "trim_retry_history":
                 compressed_sources, applied = self._trim_retry_history(compressed_sources)
                 if applied:
-                    compression_applied.append('trimmed_retry_history')
+                    compression_applied.append("trimmed_retry_history")
 
-            elif policy == 'summarize_files':
+            elif policy == "summarize_files":
                 compressed_sources, applied = self._summarize_large_files(compressed_sources)
                 if applied:
-                    compression_applied.append('summarized_large_files')
+                    compression_applied.append("summarized_large_files")
 
-            elif policy == 'trim_logs_to_errors':
+            elif policy == "trim_logs_to_errors":
                 compressed_sources, applied = self._trim_logs_to_errors(compressed_sources)
                 if applied:
-                    compression_applied.append('trimmed_logs_to_errors')
+                    compression_applied.append("trimmed_logs_to_errors")
 
-            elif policy == 'reduce_retrieval_chunks':
+            elif policy == "reduce_retrieval_chunks":
                 compressed_sources, applied = self._reduce_retrieval_chunks(compressed_sources)
                 if applied:
-                    compression_applied.append('reduced_retrieval_chunks')
+                    compression_applied.append("reduced_retrieval_chunks")
 
-            elif policy == 'diff_or_file_not_both':
+            elif policy == "diff_or_file_not_both":
                 compressed_sources, applied = self._prefer_diff_over_file(compressed_sources)
                 if applied:
-                    compression_applied.append('preferred_diff_over_file')
+                    compression_applied.append("preferred_diff_over_file")
 
-            elif policy == 'drop_low_relevance_files':
+            elif policy == "drop_low_relevance_files":
                 compressed_sources, applied = self._drop_low_relevance_files(compressed_sources)
                 if applied:
-                    compression_applied.append('dropped_low_relevance_files')
+                    compression_applied.append("dropped_low_relevance_files")
 
             # Recalculate totals
             new_input_tokens = sum(s.tokens for s in compressed_sources)
             estimate.estimated_input_tokens = new_input_tokens
-            estimate.total_projected_tokens = (new_input_tokens +
-                                              estimate.reserved_output_tokens +
-                                              estimate.safety_buffer_tokens)
+            estimate.total_projected_tokens = (
+                new_input_tokens + estimate.reserved_output_tokens + estimate.safety_buffer_tokens
+            )
 
             # Update status and action
             estimate.status, estimate.action = self._determine_status_action(
@@ -525,12 +536,12 @@ class ContextWindowEstimator:
         """Trim retry history in logs"""
         trimmed = False
         for source in sources:
-            if source.source_type == 'log':
+            if source.source_type == "log":
                 lines = source.content.splitlines()
                 # Keep only last N lines for retry history
-                if len(lines) > self.compression_policies['max_retry_history'] * 10:
-                    source.content = '\n'.join(lines[-self.compression_policies['max_retry_history'] * 10:])
-                    source.tokens = self._estimate_tokens(source.content, 'log')
+                if len(lines) > self.compression_policies["max_retry_history"] * 10:
+                    source.content = "\n".join(lines[-self.compression_policies["max_retry_history"] * 10 :])
+                    source.tokens = self._estimate_tokens(source.content, "log")
                     trimmed = True
 
         return sources, trimmed
@@ -538,12 +549,10 @@ class ContextWindowEstimator:
     def _summarize_large_files(self, sources: list[ContextSource]) -> tuple[list[ContextSource], bool]:
         """Summarize large files"""
         summarized = False
-        threshold = self.compression_policies['file_summary_threshold']
+        threshold = self.compression_policies["file_summary_threshold"]
 
         for source in sources:
-            if (source.source_type == 'file' and
-                source.metadata.get('lines', 0) > threshold):
-
+            if source.source_type == "file" and source.metadata.get("lines", 0) > threshold:
                 # Create summary
                 lines = source.content.splitlines()
                 summary = f"# File: {source.metadata.get('path', 'unknown')}\n"
@@ -561,7 +570,7 @@ class ContextWindowEstimator:
                     summary = source.content  # Keep as-is if not too large
 
                 source.content = summary
-                source.tokens = self._estimate_tokens(summary, 'text')
+                source.tokens = self._estimate_tokens(summary, "text")
                 source.compressed = True
                 summarized = True
 
@@ -572,7 +581,7 @@ class ContextWindowEstimator:
         trimmed = False
 
         for source in sources:
-            if source.source_type == 'log':
+            if source.source_type == "log":
                 lines = source.content.splitlines()
 
                 # Fast pre-check to avoid processing if no errors exist
@@ -588,19 +597,19 @@ class ContextWindowEstimator:
 
                 if trimmed_lines:
                     unique_lines = list(dict.fromkeys(trimmed_lines))
-                    if len(unique_lines) > self.compression_policies['max_log_lines']:
-                        unique_lines = unique_lines[:self.compression_policies['max_log_lines']]
+                    if len(unique_lines) > self.compression_policies["max_log_lines"]:
+                        unique_lines = unique_lines[: self.compression_policies["max_log_lines"]]
 
-                    source.content = '\n'.join(unique_lines)
-                    source.tokens = self._estimate_tokens(source.content, 'log')
+                    source.content = "\n".join(unique_lines)
+                    source.tokens = self._estimate_tokens(source.content, "log")
                     trimmed = True
 
         return sources, trimmed
 
     def _reduce_retrieval_chunks(self, sources: list[ContextSource]) -> tuple[list[ContextSource], bool]:
         """Reduce number of retrieval chunks"""
-        retrieval_sources = [s for s in sources if s.source_type == 'retrieval']
-        max_chunks = self.compression_policies['max_retrieval_chunks']
+        retrieval_sources = [s for s in sources if s.source_type == "retrieval"]
+        max_chunks = self.compression_policies["max_retrieval_chunks"]
 
         if len(retrieval_sources) <= max_chunks:
             return sources, False
@@ -618,10 +627,7 @@ class ContextWindowEstimator:
         kept_ids = {id(s) for s in kept_chunks}
 
         # Remove removed chunks from sources
-        filtered_sources = [
-            s for s in sources
-            if s.source_type != 'retrieval' or id(s) in kept_ids
-        ]
+        filtered_sources = [s for s in sources if s.source_type != "retrieval" or id(s) in kept_ids]
 
         return filtered_sources, True
 
@@ -632,10 +638,10 @@ class ContextWindowEstimator:
 
         # Index files and diffs by path
         for i, source in enumerate(sources):
-            path = source.metadata.get('path', '')
-            if source.source_type == 'file':
+            path = source.metadata.get("path", "")
+            if source.source_type == "file":
                 file_paths[path] = i
-            elif source.source_type == 'diff':
+            elif source.source_type == "diff":
                 diff_paths[path] = i
 
         # Find overlaps and remove files
@@ -643,8 +649,9 @@ class ContextWindowEstimator:
         if overlap_paths:
             # Remove full files, keep diffs
             filtered_sources = [
-                s for s in sources
-                if not (s.source_type == 'file' and s.metadata.get('path', '') in overlap_paths)
+                s
+                for s in sources
+                if not (s.source_type == "file" and s.metadata.get("path", "") in overlap_paths)
             ]
             return filtered_sources, True
 
@@ -653,16 +660,23 @@ class ContextWindowEstimator:
     def _drop_low_relevance_files(self, sources: list[ContextSource]) -> tuple[list[ContextSource], bool]:
         """Drop low relevance files (generated files, lock files, etc.)"""
         low_relevance_patterns = [
-            '.lock', '.log', '.tmp', '.cache', '__pycache__',
-            'node_modules', '.git', 'package-lock.json', 'yarn.lock',
+            ".lock",
+            ".log",
+            ".tmp",
+            ".cache",
+            "__pycache__",
+            "node_modules",
+            ".git",
+            "package-lock.json",
+            "yarn.lock",
         ]
 
         filtered_sources = []
         dropped = False
 
         for source in sources:
-            if source.source_type == 'file':
-                path = source.metadata.get('path', '').lower()
+            if source.source_type == "file":
+                path = source.metadata.get("path", "").lower()
                 is_low_relevance = any(pattern in path for pattern in low_relevance_patterns)
 
                 if not is_low_relevance:
@@ -677,28 +691,28 @@ class ContextWindowEstimator:
     def to_dict(self, estimate: TokenEstimate) -> dict[str, Any]:
         """Convert estimate to dictionary for JSON serialization"""
         return {
-            'plan_step': estimate.plan_step,
-            'estimated_input_tokens': estimate.estimated_input_tokens,
-            'reserved_output_tokens': estimate.reserved_output_tokens,
-            'safety_buffer_tokens': estimate.safety_buffer_tokens,
-            'total_projected_tokens': estimate.total_projected_tokens,
-            'status': estimate.status,
-            'action': estimate.action,
-            'top_contributors': estimate.top_contributors,
-            'recommended_reductions': estimate.recommended_reductions,
-            'compression_applied': estimate.compression_applied,
+            "plan_step": estimate.plan_step,
+            "estimated_input_tokens": estimate.estimated_input_tokens,
+            "reserved_output_tokens": estimate.reserved_output_tokens,
+            "safety_buffer_tokens": estimate.safety_buffer_tokens,
+            "total_projected_tokens": estimate.total_projected_tokens,
+            "status": estimate.status,
+            "action": estimate.action,
+            "top_contributors": estimate.top_contributors,
+            "recommended_reductions": estimate.recommended_reductions,
+            "compression_applied": estimate.compression_applied,
         }
 
     def print_report(self, estimate: TokenEstimate) -> None:
         """Print a formatted token budget report"""
         status_colors = {
-            'green': '\033[92m',  # Bright green
-            'yellow': '\033[93m', # Bright yellow
-            'red': '\033[91m',     # Bright red
+            "green": "\033[92m",  # Bright green
+            "yellow": "\033[93m",  # Bright yellow
+            "red": "\033[91m",  # Bright red
         }
-        reset_color = '\033[0m'
+        reset_color = "\033[0m"
 
-        color = status_colors.get(estimate.status, '')
+        color = status_colors.get(estimate.status, "")
 
         print(f"\n{color}=== Token Budget Report ==={reset_color}")
         print(f"Plan Step: {estimate.plan_step}")
@@ -819,16 +833,18 @@ Examples:
         if args.json:
             print(json.dumps(result, indent=2))
         else:
-            estimator.print_report(estimator.estimate_step_tokens(
-                plan_step="demo_estimation",
-                system_prompt="You are a helpful assistant.",
-                user_prompt="Estimate tokens for this request.",
-                files=[],
-                diffs=[],
-                logs=[],
-                retrieved_context=[],
-                prior_steps=[],
-            ))
+            estimator.print_report(
+                estimator.estimate_step_tokens(
+                    plan_step="demo_estimation",
+                    system_prompt="You are a helpful assistant.",
+                    user_prompt="Estimate tokens for this request.",
+                    files=[],
+                    diffs=[],
+                    logs=[],
+                    retrieved_context=[],
+                    prior_steps=[],
+                )
+            )
         sys.exit(0)
 
     parser.print_help()

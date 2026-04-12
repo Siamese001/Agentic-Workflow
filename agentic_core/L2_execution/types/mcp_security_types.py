@@ -255,7 +255,9 @@ class MCPSecurityGuardrail:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "MCPSecurityGuardrail.validate_tool_call",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "MCPSecurityGuardrail.validate_tool_call",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -285,7 +287,9 @@ class MCPSecurityGuardrail:
         if sanitized != args:
             self.args_sanitized += 1
         return MCPSecurityResult(
-            allowed=not any(v.blocked for v in violations), violations=violations, sanitized_args=sanitized,
+            allowed=not any(v.blocked for v in violations),
+            violations=violations,
+            sanitized_args=sanitized,
         )
 
     def _is_tool_allowed(self, tool_name: str) -> bool:

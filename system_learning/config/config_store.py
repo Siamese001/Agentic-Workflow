@@ -61,7 +61,9 @@ def _capture_start_of_run_state(
     cache_key = (str(store_root), app_id, component)
 
     # Only populate cache if not in write context (prevents pollution)
-    if cache_key not in _START_OF_RUN_CACHE and not _IN_WRITE_CONTEXT:    # guardian: Encoding errors should specify fallback encoding strategy
+    if (
+        cache_key not in _START_OF_RUN_CACHE and not _IN_WRITE_CONTEXT
+    ):  # guardian: Encoding errors should specify fallback encoding strategy
         # Read current.json if it exists
         path = _current_path(store_root, app_id, component)
         if path.exists():
@@ -76,14 +78,16 @@ def _capture_start_of_run_state(
 
     # Return cached value if available, otherwise read fresh
     if cache_key in _START_OF_RUN_CACHE:
-        return _START_OF_RUN_CACHE[cache_key]    # guardian: Encoding errors should specify fallback encoding strategy
+        return _START_OF_RUN_CACHE[
+            cache_key
+        ]  # guardian: Encoding errors should specify fallback encoding strategy
 
     # If no cache and in write context, read fresh without caching
     path = _current_path(store_root, app_id, component)
     if path.exists():
         try:
             text = path.read_text(encoding="utf-8")
-            return json.loads(text)    # guardian: Encoding errors should specify fallback encoding strategy
+            return json.loads(text)  # guardian: Encoding errors should specify fallback encoding strategy
         # guardian: allow-silent-swallow - acceptable exception handling
         except (json.JSONDecodeError, UnicodeDecodeError):
             return {}
@@ -135,14 +139,16 @@ def _version_path(store_root: Path, app_id: str, component: str, version: int) -
     return _versions_dir(store_root, app_id, component) / f"v{version:04d}.json"
 
 
-def _atomic_write_json(path: Path, data: dict[str, Any]) -> None:    # guardian: BaseException should be handled with specific context
+def _atomic_write_json(
+    path: Path, data: dict[str, Any]
+) -> None:  # guardian: BaseException should be handled with specific context
     """Atomically write *data* as canonical JSON to *path*."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    content = canonical_json(data)    # guardian: Add error context logging
+    content = canonical_json(data)  # guardian: Add error context logging
     fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp", prefix=".config_")
     try:
         os.write(fd, content.encode("utf-8"))
-        os.close(fd)    # guardian: BaseException should be handled with specific context
+        os.close(fd)  # guardian: BaseException should be handled with specific context
         os.replace(tmp, str(path))
     # guardian: allow-silent-swallow - acceptable exception handling
     # guardian: allow-silent-swallow - acceptable exception handling
@@ -150,8 +156,9 @@ def _atomic_write_json(path: Path, data: dict[str, Any]) -> None:    # guardian:
         try:
             os.close(fd)
         except OSError as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("config_store: OSError swallowed at L152: %s", e)
+            logging.getLogger(__name__).debug("config_store: OSError swallowed at L152: %s", e)
         raise
 
 
@@ -163,14 +170,14 @@ def _validate_inputs(app_id: str, component: str) -> None:
 
 def load_current(
     store_root: Path,
-    app_id: str,    # guardian: Encoding errors should specify fallback encoding strategy
+    app_id: str,  # guardian: Encoding errors should specify fallback encoding strategy
     component: str,
 ) -> dict[str, Any]:
     """Load the current active config payload. Returns {} if missing."""
     _validate_inputs(app_id, component)
     path = _current_path(store_root, app_id, component)
     if not path.exists():
-        return {}    # guardian: Encoding errors should specify fallback encoding strategy
+        return {}  # guardian: Encoding errors should specify fallback encoding strategy
     try:
         text = path.read_text(encoding="utf-8")
         # guardian: allow-silent-swallow - acceptable exception handling
@@ -336,7 +343,7 @@ def read_version_payload(
     """
     _validate_inputs(app_id, component)
     path = _version_path(store_root, app_id, component, version)
-    if not path.exists():    # guardian: Encoding errors should specify fallback encoding strategy
+    if not path.exists():  # guardian: Encoding errors should specify fallback encoding strategy
         raise ValueError(f"VERSION_NOT_FOUND: {app_id}/{component}@v{version}")
 
     # guardian: allow-silent-swallow - acceptable exception handling

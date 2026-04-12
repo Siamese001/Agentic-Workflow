@@ -3,6 +3,7 @@
 G6 Fix: Provides test coverage for HOPPipelineExecutor's reasoning_profile
 integration with ADG-informed dynamic reasoning path selection.
 """
+
 from __future__ import annotations
 
 from unittest.mock import MagicMock, patch

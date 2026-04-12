@@ -16,14 +16,17 @@ class TestSubprocessSecurityUtilAdg:
     def test_subprocess_security_util_adg_imports(self):
         """Test subprocess_security_util_adg module imports."""
         from agentic_core import subprocess_security_util_adg
+
         assert subprocess_security_util_adg is not None
 
     def test_subprocess_security_util_adg_class(self):
         """Test SubprocessSecurityUtilAdg class exists."""
         from agentic_core import SubprocessSecurityUtilAdg
+
         assert SubprocessSecurityUtilAdg is not None
 
     def test_subprocess_security_util_adg_callable(self):
         """Test subprocess_security_util_adg functions are callable."""
         from agentic_core import validate_subprocess_security_util_adg
+
         assert callable(validate_subprocess_security_util_adg)

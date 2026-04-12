@@ -380,14 +380,17 @@ class ADGArtifact:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ADGBuilder.compute_digest",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "ADGBuilder.compute_digest",
         )
         h = hashlib.sha256()
         h.update(self.schema_version.encode("utf-8"))
         h.update(b"\x00")
 
         sorted_entities = sorted(
-            (e.to_dict() for e in self.entities), key=lambda x: x["adg_name"],
+            (e.to_dict() for e in self.entities),
+            key=lambda x: x["adg_name"],
         )
         for e in sorted_entities:
             h.update(e["adg_name"].encode("utf-8"))

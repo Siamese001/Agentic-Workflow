@@ -239,7 +239,10 @@ class RedTeamValidationSuite:
             self._initialized = True
 
     def run_validator(
-        self, validator_name: str, content: Any, context: dict | None = None,
+        self,
+        validator_name: str,
+        content: Any,
+        context: dict | None = None,
     ) -> SecurityValidationResult:
         """
         Run a specific validator.
@@ -256,7 +259,9 @@ class RedTeamValidationSuite:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "RedTeamValidationSuite.run_validator",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "RedTeamValidationSuite.run_validator",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -269,7 +274,9 @@ class RedTeamValidationSuite:
         context = context or {}
         if validator_name not in self._validators:
             return SecurityValidationResult(
-                validator_name=validator_name, valid=False, errors=[f"Validator '{validator_name}' not found"],
+                validator_name=validator_name,
+                valid=False,
+                errors=[f"Validator '{validator_name}' not found"],
             )
         try:
             validator = self._validators[validator_name]
@@ -285,7 +292,9 @@ class RedTeamValidationSuite:
         except (ValueError, TypeError) as e:
             Logger.error(f"[SecuritySuite] Validator {validator_name} failed: {e}")
             return SecurityValidationResult(
-                validator_name=validator_name, valid=False, errors=[f"Validator error: {str(e)}"],
+                validator_name=validator_name,
+                valid=False,
+                errors=[f"Validator error: {str(e)}"],
             )
 
     def run_all(self, content: Any, context: dict | None = None) -> SecuritySuiteResult:

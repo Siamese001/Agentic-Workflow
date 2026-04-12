@@ -38,7 +38,10 @@ def test_query_intent_detector_hybrid():
     detector = QueryIntentDetector()
 
     # Mixed patterns
-    assert detector.detect_intent("how to use this and what it calls") == QueryIntent.HYBRID or detector.detect_intent("how to use this and what it calls") == QueryIntent.SEMANTIC
+    assert (
+        detector.detect_intent("how to use this and what it calls") == QueryIntent.HYBRID
+        or detector.detect_intent("how to use this and what it calls") == QueryIntent.SEMANTIC
+    )
 
 
 def test_query_intent_detector_confidence():
@@ -108,13 +111,18 @@ def test_governance_filters_multiple():
     engine = HybridSearchEngine()
 
     results = [
-        HybridSearchResult(chunk_id="1", content="test1", metadata={"layer": "L2", "entity_type": "function"}),
-        HybridSearchResult(chunk_id="2", content="test2", metadata={"layer": "L3", "entity_type": "function"}),
+        HybridSearchResult(
+            chunk_id="1", content="test1", metadata={"layer": "L2", "entity_type": "function"}
+        ),
+        HybridSearchResult(
+            chunk_id="2", content="test2", metadata={"layer": "L3", "entity_type": "function"}
+        ),
         HybridSearchResult(chunk_id="3", content="test3", metadata={"layer": "L2", "entity_type": "class"}),
     ]
 
     filtered = engine._apply_governance_filters(
-        results, {"layers": ["L2"], "entity_types": ["function"]},
+        results,
+        {"layers": ["L2"], "entity_types": ["function"]},
     )
     assert len(filtered) == 1
     assert filtered[0].chunk_id == "1"

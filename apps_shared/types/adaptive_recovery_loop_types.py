@@ -254,7 +254,10 @@ class AdaptiveRecoveryLoop:
         self.temperature_history: list[TemperatureAdjustment] = []
 
     def record_failure(
-        self, gate_id: str, message: str, details: dict[str, Any] | None = None,
+        self,
+        gate_id: str,
+        message: str,
+        details: dict[str, Any] | None = None,
     ) -> RecoveryResult:
         """
         Record a validation failure and determine recovery action.
@@ -262,8 +265,11 @@ class AdaptiveRecoveryLoop:
         Returns RecoveryResult with action and new temperature.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AdaptiveRecoveryLoop.record_failure")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AdaptiveRecoveryLoop.record_failure"
+        )
 
         self.attempt_count += 1
         failure_type = self._classify_failure(message, details)

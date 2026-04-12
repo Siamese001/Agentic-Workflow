@@ -206,11 +206,13 @@ class RuleDraftingEngine:
     DEFAULT_MIN_CONFIDENCE: float = 0.6
     DEFAULT_MAX_PROPOSALS: int = 3
 
-    MUTABLE_COMPONENTS: frozenset[str] = frozenset({
-        "prompt_templates",
-        "routing_thresholds",
-        "tool_policies",
-    })
+    MUTABLE_COMPONENTS: frozenset[str] = frozenset(
+        {
+            "prompt_templates",
+            "routing_thresholds",
+            "tool_policies",
+        }
+    )
 
     def __init__(
         self,
@@ -283,17 +285,19 @@ class RuleDraftingEngine:
 
             # Sort by confidence and limit
             proposals.sort(key=lambda p: p.confidence, reverse=True)
-            proposals = proposals[:self.max_proposals_per_incident]
+            proposals = proposals[: self.max_proposals_per_incident]
 
             _emit_records_execution_trace("rule_drafting_engine", "draft_complete", incident_trace_id)
 
             result = RuleDraftingResult(
                 artifact_type="RULE_DRAFTING_RESULT",
-                result_id=stable_sha256_json({
-                    "incident_trace_id": incident_trace_id,
-                    "proposal_count": len(proposals),
-                    "timestamp_utc": timestamp_utc,
-                }),
+                result_id=stable_sha256_json(
+                    {
+                        "incident_trace_id": incident_trace_id,
+                        "proposal_count": len(proposals),
+                        "timestamp_utc": timestamp_utc,
+                    }
+                ),
                 incident_trace_id=incident_trace_id,
                 proposals=tuple(proposals),
                 success=True,
@@ -313,11 +317,13 @@ class RuleDraftingEngine:
             logger.error("Rule drafting failed: %s", e)
             return RuleDraftingResult(
                 artifact_type="RULE_DRAFTING_RESULT",
-                result_id=stable_sha256_json({
-                    "incident_trace_id": incident_trace_id,
-                    "error": str(e),
-                    "timestamp_utc": timestamp_utc,
-                }),
+                result_id=stable_sha256_json(
+                    {
+                        "incident_trace_id": incident_trace_id,
+                        "error": str(e),
+                        "timestamp_utc": timestamp_utc,
+                    }
+                ),
                 incident_trace_id=incident_trace_id,
                 proposals=(),
                 success=False,
@@ -341,12 +347,14 @@ class RuleDraftingEngine:
             for component in affected_components:
                 if component in self.MUTABLE_COMPONENTS:
                     proposal = RuleProposal(
-                        proposal_id=stable_sha256_json({
-                            "incident": incident_trace_id,
-                            "type": "STRUCTURE_IMPROVEMENT",
-                            "component": component,
-                            "timestamp_utc": timestamp_utc,
-                        }),
+                        proposal_id=stable_sha256_json(
+                            {
+                                "incident": incident_trace_id,
+                                "type": "STRUCTURE_IMPROVEMENT",
+                                "component": component,
+                                "timestamp_utc": timestamp_utc,
+                            }
+                        ),
                         target_component=component,
                         change_type="STRUCTURE_IMPROVEMENT",
                         change_spec={
@@ -379,13 +387,15 @@ class RuleDraftingEngine:
                 fix_action = self._determine_fix_action(root_cause)
 
                 proposal = RuleProposal(
-                    proposal_id=stable_sha256_json({
-                        "incident": incident_trace_id,
-                        "type": "FIX_TARGET",
-                        "component": component,
-                        "action": fix_action,
-                        "timestamp_utc": timestamp_utc,
-                    }),
+                    proposal_id=stable_sha256_json(
+                        {
+                            "incident": incident_trace_id,
+                            "type": "FIX_TARGET",
+                            "component": component,
+                            "action": fix_action,
+                            "timestamp_utc": timestamp_utc,
+                        }
+                    ),
                     target_component=component,
                     change_type="FIX_TARGET",
                     change_spec={
@@ -419,12 +429,14 @@ class RuleDraftingEngine:
             for component in affected_components:
                 if component in self.MUTABLE_COMPONENTS:
                     proposal = RuleProposal(
-                        proposal_id=stable_sha256_json({
-                            "incident": incident_trace_id,
-                            "type": "CONTROL_REVERT",
-                            "component": component,
-                            "timestamp_utc": timestamp_utc,
-                        }),
+                        proposal_id=stable_sha256_json(
+                            {
+                                "incident": incident_trace_id,
+                                "type": "CONTROL_REVERT",
+                                "component": component,
+                                "timestamp_utc": timestamp_utc,
+                            }
+                        ),
                         target_component=component,
                         change_type="CONTROL_REVERT",
                         change_spec={

@@ -1,4 +1,5 @@
 """Redis degradation tests — Server survives Redis failures."""
+
 from tools.adg.core.service import ADGService
 
 

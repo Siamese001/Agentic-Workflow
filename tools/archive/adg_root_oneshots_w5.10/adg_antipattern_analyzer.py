@@ -169,114 +169,116 @@ def analyze_violations_by_category(baseline_path: Path) -> dict:
     """Analyze violations grouped by category with file clustering."""
     violations = defaultdict(lambda: defaultdict(list))
 
-    with open(baseline_path, encoding='utf-8') as f:
+    with open(baseline_path, encoding="utf-8") as f:
         for line in f:
-            parts = line.strip().split(':')
+            parts = line.strip().split(":")
             if len(parts) < 4:
                 continue
 
             file_path = parts[0]
             line_num = parts[1]
             category = parts[2]
-            message = ':'.join(parts[3:])
+            message = ":".join(parts[3:])
 
-            violations[category][file_path].append({
-                'line': int(line_num),
-                'message': message,
-            })
+            violations[category][file_path].append(
+                {
+                    "line": int(line_num),
+                    "message": message,
+                }
+            )
 
     return violations
 
 
 def analyze_silent_swallowers(violations: dict, adg_path: Path) -> dict:
     """Analyze silent swallower patterns using ADG."""
-    swallowers = violations.get('silent_swallower', {})
+    swallowers = violations.get("silent_swallower", {})
 
     # Load ADG for dependency analysis
-    with open(adg_path, encoding='utf-8') as f:
+    with open(adg_path, encoding="utf-8") as f:
         adg = json.load(f)
 
     # Categorize by pattern
     patterns = {
-        'bare_except': [],
-        'exception_without_raise': [],
-        'pass_in_except': [],
+        "bare_except": [],
+        "exception_without_raise": [],
+        "pass_in_except": [],
     }
 
     for file_path, viols in swallowers.items():
         for v in viols:
-            msg = v['message'].lower()
-            if 'bare except' in msg:
-                patterns['bare_except'].append((file_path, v))
-            elif 'without raise' in msg:
-                patterns['exception_without_raise'].append((file_path, v))
-            elif 'pass' in msg:
-                patterns['pass_in_except'].append((file_path, v))
+            msg = v["message"].lower()
+            if "bare except" in msg:
+                patterns["bare_except"].append((file_path, v))
+            elif "without raise" in msg:
+                patterns["exception_without_raise"].append((file_path, v))
+            elif "pass" in msg:
+                patterns["pass_in_except"].append((file_path, v))
 
     return {
-        'total': len(swallowers),
-        'files': len(swallowers.keys()),
-        'patterns': {k: len(v) for k, v in patterns.items()},
-        'pattern_details': patterns,
+        "total": len(swallowers),
+        "files": len(swallowers.keys()),
+        "patterns": {k: len(v) for k, v in patterns.items()},
+        "pattern_details": patterns,
     }
 
 
 def analyze_path_fragility(violations: dict) -> dict:
     """Analyze path fragility patterns."""
-    fragility = violations.get('path_fragility', {})
+    fragility = violations.get("path_fragility", {})
 
     patterns = {
-        'os_path_join': [],
-        'os_path_basename': [],
-        'os_path_dirname': [],
-        'string_concat': [],
+        "os_path_join": [],
+        "os_path_basename": [],
+        "os_path_dirname": [],
+        "string_concat": [],
     }
 
     for file_path, viols in fragility.items():
         for v in viols:
-            msg = v['message'].lower()
-            if 'os.path.join' in msg:
-                patterns['os_path_join'].append((file_path, v))
-            elif 'os.path.basename' in msg:
-                patterns['os_path_basename'].append((file_path, v))
-            elif 'os.path.dirname' in msg:
-                patterns['os_path_dirname'].append((file_path, v))
-            elif 'string concatenation' in msg:
-                patterns['string_concat'].append((file_path, v))
+            msg = v["message"].lower()
+            if "os.path.join" in msg:
+                patterns["os_path_join"].append((file_path, v))
+            elif "os.path.basename" in msg:
+                patterns["os_path_basename"].append((file_path, v))
+            elif "os.path.dirname" in msg:
+                patterns["os_path_dirname"].append((file_path, v))
+            elif "string concatenation" in msg:
+                patterns["string_concat"].append((file_path, v))
 
     return {
-        'total': len(fragility),
-        'files': len(fragility.keys()),
-        'patterns': {k: len(v) for k, v in patterns.items()},
-        'pattern_details': patterns,
+        "total": len(fragility),
+        "files": len(fragility.keys()),
+        "patterns": {k: len(v) for k, v in patterns.items()},
+        "pattern_details": patterns,
     }
 
 
 def analyze_global_mutation(violations: dict) -> dict:
     """Analyze global mutation patterns."""
-    mutations = violations.get('global_mutation', {})
+    mutations = violations.get("global_mutation", {})
 
     patterns = {
-        'os_environ': [],
-        'sys_path': [],
-        'global_var': [],
+        "os_environ": [],
+        "sys_path": [],
+        "global_var": [],
     }
 
     for file_path, viols in mutations.items():
         for v in viols:
-            msg = v['message'].lower()
-            if 'os.environ' in msg:
-                patterns['os_environ'].append((file_path, v))
-            elif 'sys.path' in msg:
-                patterns['sys_path'].append((file_path, v))
+            msg = v["message"].lower()
+            if "os.environ" in msg:
+                patterns["os_environ"].append((file_path, v))
+            elif "sys.path" in msg:
+                patterns["sys_path"].append((file_path, v))
             else:
-                patterns['global_var'].append((file_path, v))
+                patterns["global_var"].append((file_path, v))
 
     return {
-        'total': len(mutations),
-        'files': len(mutations.keys()),
-        'patterns': {k: len(v) for k, v in patterns.items()},
-        'pattern_details': patterns,
+        "total": len(mutations),
+        "files": len(mutations.keys()),
+        "patterns": {k: len(v) for k, v in patterns.items()},
+        "pattern_details": patterns,
     }
 
 
@@ -314,19 +316,21 @@ def detect_antipattern_hotspots(violations: dict) -> dict:
                     # Get centrality score
                     centrality = graph_store.get_centrality(entity.id)
                     if isinstance(centrality, float) and centrality > 0.5:
-                        hotspots.append({
-                            'file_path': file_path,
-                            'entity_id': entity.id,
-                            'entity_name': entity.name,
-                            'entity_type': entity.entity_type,
-                            'centrality': centrality,
-                            'layer': entity.metadata.get('layer', 'unknown'),
-                        })
+                        hotspots.append(
+                            {
+                                "file_path": file_path,
+                                "entity_id": entity.id,
+                                "entity_name": entity.name,
+                                "entity_type": entity.entity_type,
+                                "centrality": centrality,
+                                "layer": entity.metadata.get("layer", "unknown"),
+                            }
+                        )
             except Exception:
                 continue
 
         # Sort by centrality (descending)
-        hotspots.sort(key=lambda x: x['centrality'], reverse=True)
+        hotspots.sort(key=lambda x: x["centrality"], reverse=True)
 
         # Detect communities of hotspots
         communities = []
@@ -335,29 +339,30 @@ def detect_antipattern_hotspots(violations: dict) -> dict:
                 detected_communities = graph_store.detect_communities()
                 for community in detected_communities:
                     # Check if any hotspot is in this community
-                    community_hotspots = [
-                        h for h in hotspots if h['entity_id'] in community.entities
-                    ]
+                    community_hotspots = [h for h in hotspots if h["entity_id"] in community.entities]
                     if community_hotspots:
-                        communities.append({
-                            'community_id': community.id,
-                            'description': community.description,
-                            'size': len(community.entities),
-                            'hotspot_count': len(community_hotspots),
-                            'avg_centrality': sum(h['centrality'] for h in community_hotspots) / len(community_hotspots),
-                            'hotspots': community_hotspots[:5],  # Top 5 hotspots in this community
-                        })
+                        communities.append(
+                            {
+                                "community_id": community.id,
+                                "description": community.description,
+                                "size": len(community.entities),
+                                "hotspot_count": len(community_hotspots),
+                                "avg_centrality": sum(h["centrality"] for h in community_hotspots)
+                                / len(community_hotspots),
+                                "hotspots": community_hotspots[:5],  # Top 5 hotspots in this community
+                            }
+                        )
             except Exception:
                 pass
 
         return {
-            'method': 'graph_store',
-            'total_hotspots': len(hotspots),
-            'hotspots': hotspots[:20],  # Top 20 hotspots
-            'communities': communities[:10],  # Top 10 communities
-            'summary': {
-                'high_centrality_count': len([h for h in hotspots if h['centrality'] > 0.8]),
-                'medium_centrality_count': len([h for h in hotspots if 0.5 < h['centrality'] <= 0.8]),
+            "method": "graph_store",
+            "total_hotspots": len(hotspots),
+            "hotspots": hotspots[:20],  # Top 20 hotspots
+            "communities": communities[:10],  # Top 10 communities
+            "summary": {
+                "high_centrality_count": len([h for h in hotspots if h["centrality"] > 0.8]),
+                "medium_centrality_count": len([h for h in hotspots if 0.5 < h["centrality"] <= 0.8]),
             },
         }
 
@@ -374,9 +379,9 @@ def main():
     print("[INFO] Analyzing violations by category...")
     violations = analyze_violations_by_category(baseline_path)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("ADG-DRIVEN ANTI-PATTERN ANALYSIS")
-    print("="*80)
+    print("=" * 80)
 
     # Analyze silent swallowers
     print("\n[1] SILENT SWALLOWERS")
@@ -384,7 +389,7 @@ def main():
     print(f"  Total violations: {swallow_analysis['total']}")
     print(f"  Affected files: {swallow_analysis['files']}")
     print("  Patterns:")
-    for pattern, count in swallow_analysis['patterns'].items():
+    for pattern, count in swallow_analysis["patterns"].items():
         print(f"    - {pattern}: {count}")
 
     # Analyze path fragility
@@ -393,7 +398,7 @@ def main():
     print(f"  Total violations: {path_analysis['total']}")
     print(f"  Affected files: {path_analysis['files']}")
     print("  Patterns:")
-    for pattern, count in path_analysis['patterns'].items():
+    for pattern, count in path_analysis["patterns"].items():
         print(f"    - {pattern}: {count}")
 
     # Analyze global mutation
@@ -402,13 +407,13 @@ def main():
     print(f"  Total violations: {mutation_analysis['total']}")
     print(f"  Affected files: {mutation_analysis['files']}")
     print("  Patterns:")
-    for pattern, count in mutation_analysis['patterns'].items():
+    for pattern, count in mutation_analysis["patterns"].items():
         print(f"    - {pattern}: {count}")
 
     # Show top files for each category
     print("\n[TOP VIOLATORS BY CATEGORY]")
 
-    for category in ['silent_swallower', 'path_fragility', 'global_mutation']:
+    for category in ["silent_swallower", "path_fragility", "global_mutation"]:
         if category in violations:
             sorted_files = sorted(
                 violations[category].items(),
@@ -423,5 +428,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

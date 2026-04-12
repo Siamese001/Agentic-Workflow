@@ -235,7 +235,10 @@ class SpecificityProseEngine:
         )
 
     def generate_cover_letter(
-        self, company_research: dict[str, Any], resume_highlights: list[str], context: dict[str, Any],
+        self,
+        company_research: dict[str, Any],
+        resume_highlights: list[str],
+        context: dict[str, Any],
     ) -> SpecificityProseResult:
         """
         Generate cover letter with company-specific details.
@@ -250,7 +253,9 @@ class SpecificityProseEngine:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SpecificityProseGenerator.generate_cover_letter",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "SpecificityProseGenerator.generate_cover_letter",
         )
         self.recovery_loop.reset(self.config.temperature)
         validation_results: Any = []
@@ -400,7 +405,9 @@ class SpecificityProseEngine:
         )
 
     def _extract_company_specifics(
-        self, cover_letter: str, company_research: dict[str, Any],
+        self,
+        cover_letter: str,
+        company_research: dict[str, Any],
     ) -> list[CompanySpecificDetail]:
         """Extract company-specific details from cover letter"""
         SPECIFICS = []
@@ -410,7 +417,9 @@ class SpecificityProseEngine:
             for _i in range(COUNT):
                 SPECIFICS.append(
                     CompanySpecificDetail(
-                        DETAIL=company_name, CATEGORY="COMPANY_NAME", SOURCE="company_research",
+                        DETAIL=company_name,
+                        CATEGORY="COMPANY_NAME",
+                        SOURCE="company_research",
                     ),
                 )
         for category, keywords in self.COMPANY_SPECIFIC_CATEGORIES.items():
@@ -420,7 +429,9 @@ class SpecificityProseEngine:
                         if value in cover_letter:
                             SPECIFICS.append(
                                 CompanySpecificDetail(
-                                    DETAIL=value, CATEGORY=category, SOURCE=f"company_research.{key}",
+                                    DETAIL=value,
+                                    CATEGORY=category,
+                                    SOURCE=f"company_research.{key}",
                                 ),
                             )
         return SPECIFICS[:10]
@@ -451,7 +462,9 @@ class SpecificityProseEngine:
         )
 
     def _execute_find_replace_test(
-        self, cover_letter: str, company_specifics: list[CompanySpecificDetail],
+        self,
+        cover_letter: str,
+        company_specifics: list[CompanySpecificDetail],
     ) -> bool:
         """
         Execute find-replace test - letter should break if specifics removed.

@@ -21,6 +21,7 @@ from typing import Any
 #     load_agent_config,
 # )
 
+
 # Stub implementations
 class ConfigLoadResult:
     def __init__(self, success: bool = True, config: dict | None = None, errors: list | None = None):
@@ -28,11 +29,14 @@ class ConfigLoadResult:
         self.config = config or {}
         self.errors = errors or []
 
+
 def get_config_loader():
     return None
 
+
 def load_agent_config(agent_id: str) -> ConfigLoadResult:
     return ConfigLoadResult(success=True, config={"agent_id": agent_id})
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -317,7 +321,7 @@ def load_unified_config(
         config = load_agent_config(agent_name, config_file, fallback_config=defaults)
         # Merge with defaults to ensure all required fields exist
         return merge_with_defaults(config, category)
-    except RuntimeError:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
         # If file not found, use defaults
         logger.debug(f"No config file for {agent_name}, using {category} defaults")
         return defaults
@@ -411,6 +415,7 @@ class UnifiedConfigLoader:
             Configuration dictionary
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UnifiedConfigLoader.load")
 

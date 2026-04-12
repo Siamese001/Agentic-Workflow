@@ -66,7 +66,7 @@ class SectionRenderer:
         lines = [
             f"<h2>{heading}</h2>",
             "",
-            f"<div class=\"section\">{section.content.replace(chr(10), '<br/>')}</div>",
+            f'<div class="section">{section.content.replace(chr(10), "<br/>")}</div>',
             "",
             f"<p><em>Word count: {section.word_count}</em></p>",
         ]

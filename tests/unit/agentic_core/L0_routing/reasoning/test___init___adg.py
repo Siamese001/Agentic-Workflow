@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L0_routing.reasoning."""
+
 from __future__ import annotations
 
 import importlib

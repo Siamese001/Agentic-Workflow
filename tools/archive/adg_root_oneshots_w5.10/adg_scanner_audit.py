@@ -1,4 +1,5 @@
 """ADG Scanner Integrity Audit — read-only, no modifications."""
+
 import ast
 import hashlib
 import os
@@ -10,17 +11,21 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATTERN = "artifacts/adg/adg_indexed_03242026_1352.sqlite"
 DB_PATH = ROOT / DB_PATTERN
 
+
 def get_conn():
     if not DB_PATH.exists():
         # find latest
         arts = ROOT / "artifacts" / "adg"
         dbs = sorted(arts.glob("adg_indexed_*.sqlite"))
         if not dbs:
-            print("ERROR: No ADG SQLite found"); sys.exit(1)
+            print("ERROR: No ADG SQLite found")
+            sys.exit(1)
         return sqlite3.connect(str(dbs[-1]))
     return sqlite3.connect(str(DB_PATH))
 
+
 # ─── §1: SYNTHETIC EDGE DETECTION ───────────────────────────────────────────
+
 
 def audit_synthetic_edges(conn):
     """Identify edges from _P1608HardeningVisitor (all have line_no=1, synthetic symbols)."""
@@ -28,19 +33,34 @@ def audit_synthetic_edges(conn):
 
     # P1608 edge types (emitted in __init__, no AST visit)
     p1608_types = [
-        'mutation_signature', 'parent_snapshot_hash', 'policy_verification',
-        'dispatches_execution_plan',  # NOTE: also emitted by P1 visitor legitimately
-        'defines_test_case', 'defines_test_suite', 'defines_invariant',
-        'emits_test_result', 'records_validation_outcome',
-        'links_to_execution_trace', 'gates_promotion', 'detects_regression',
+        "mutation_signature",
+        "parent_snapshot_hash",
+        "policy_verification",
+        "dispatches_execution_plan",  # NOTE: also emitted by P1 visitor legitimately
+        "defines_test_case",
+        "defines_test_suite",
+        "defines_invariant",
+        "emits_test_result",
+        "records_validation_outcome",
+        "links_to_execution_trace",
+        "gates_promotion",
+        "detects_regression",
     ]
 
     # P1608 synthetic edges: line_no=1 AND symbol matches hardcoded pattern
     p1608_synthetic_symbols = {
-        'mutation_signature', 'parent_snapshot_hash', 'policy_verification',
-        'dispatches_execution_plan', 'defines_test_case', 'defines_test_suite',
-        'defines_invariant', 'emits_test_result', 'records_validation_outcome',
-        'links_to_execution_trace', 'gates_promotion', 'detects_regression',
+        "mutation_signature",
+        "parent_snapshot_hash",
+        "policy_verification",
+        "dispatches_execution_plan",
+        "defines_test_case",
+        "defines_test_suite",
+        "defines_invariant",
+        "emits_test_result",
+        "records_validation_outcome",
+        "links_to_execution_trace",
+        "gates_promotion",
+        "detects_regression",
     }
 
     print("=" * 70)
@@ -60,7 +80,8 @@ def audit_synthetic_edges(conn):
             (rt, rt),
         ).fetchone()[0]
         cnt_all = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type=?", (rt,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type=?",
+            (rt,),
         ).fetchone()[0]
         p1608_counts[rt] = (cnt_synthetic, cnt_all)
         p1608_total += cnt_synthetic
@@ -72,24 +93,42 @@ def audit_synthetic_edges(conn):
         print(f"{rt:<35} {synth:>10,} {total:>10,} {pct:>7.1f}%")
 
     synth_ratio = p1608_total / total_edges if total_edges > 0 else 0
-    print(f"\n{'TOTAL P1608 SYNTHETIC':<35} {p1608_total:>10,} {total_edges:>10,} {synth_ratio*100:>7.2f}%")
+    print(f"\n{'TOTAL P1608 SYNTHETIC':<35} {p1608_total:>10,} {total_edges:>10,} {synth_ratio * 100:>7.2f}%")
     print(f"\n  synthetic_edge_ratio = {synth_ratio:.6f} ({p1608_total:,} / {total_edges:,})")
 
     # Check if any synthetic edges contribute to gap closure numerators
     # Gap closure numerators: the P1/P2/P3/P4 edge types
     gap_numerator_types = {
-        'routes_to_agent', 'orchestrates_workflow', 'dispatches_execution_plan',
-        'validates_agent_capability', 'checks_agent_registry',
-        'authorize_and_execute', 'validates_capability', 'routes_to_capability',
-        'writes_via_uwg', 'blocks_direct_write', 'records_tool_invocation',
-        'captures_execution_output',
-        'dispatches_agent', 'coordinates_agents', 'records_workflow_lineage',
-        'records_healing_outcome', 'escalates_failure', 'invokes_evaluation',
-        'records_telemetry_event', 'captures_evaluation_metric',
-        'stores_embedding', 'updates_meta_learning_state', 'links_execution_to_snapshot',
-        'captures_pattern', 'records_learning_event', 'writes_learning_snapshot',
-        'feeds_meta_learning', 'updates_routing_strategy', 'improves_agent_policy',
-        'stores_learning_state',
+        "routes_to_agent",
+        "orchestrates_workflow",
+        "dispatches_execution_plan",
+        "validates_agent_capability",
+        "checks_agent_registry",
+        "authorize_and_execute",
+        "validates_capability",
+        "routes_to_capability",
+        "writes_via_uwg",
+        "blocks_direct_write",
+        "records_tool_invocation",
+        "captures_execution_output",
+        "dispatches_agent",
+        "coordinates_agents",
+        "records_workflow_lineage",
+        "records_healing_outcome",
+        "escalates_failure",
+        "invokes_evaluation",
+        "records_telemetry_event",
+        "captures_evaluation_metric",
+        "stores_embedding",
+        "updates_meta_learning_state",
+        "links_execution_to_snapshot",
+        "captures_pattern",
+        "records_learning_event",
+        "writes_learning_snapshot",
+        "feeds_meta_learning",
+        "updates_routing_strategy",
+        "improves_agent_policy",
+        "stores_learning_state",
     }
 
     overlap = set(p1608_types) & gap_numerator_types
@@ -102,15 +141,16 @@ def audit_synthetic_edges(conn):
         print("\n  OK: No P1608 synthetic types overlap with gap numerators")
 
     return {
-        'synthetic_edge_ratio': synth_ratio,
-        'p1608_total': p1608_total,
-        'total_edges': total_edges,
-        'p1608_counts': {k: v for k, v in p1608_counts.items()},
-        'overlap_with_gap_numerators': list(overlap),
+        "synthetic_edge_ratio": synth_ratio,
+        "p1608_total": p1608_total,
+        "total_edges": total_edges,
+        "p1608_counts": {k: v for k, v in p1608_counts.items()},
+        "overlap_with_gap_numerators": list(overlap),
     }
 
 
 # ─── §2: DETERMINISM DIGEST VALIDATION ──────────────────────────────────────
+
 
 def audit_determinism_digest(conn):
     """Check if digest includes semantic enrichment fields."""
@@ -126,9 +166,15 @@ def audit_determinism_digest(conn):
     print(f"\n  Edge table columns: {columns}")
 
     # Check which fields exist
-    semantic_fields = ['semantic_type', 'confidence', 'source_span_line',
-                       'source_span_column', 'target_span_line', 'target_span_column',
-                       'dynamic_resolution']
+    semantic_fields = [
+        "semantic_type",
+        "confidence",
+        "source_span_line",
+        "source_span_column",
+        "target_span_line",
+        "target_span_column",
+        "dynamic_resolution",
+    ]
     present = [f for f in semantic_fields if f in columns]
     missing = [f for f in semantic_fields if f not in columns]
 
@@ -142,17 +188,19 @@ def audit_determinism_digest(conn):
             cnt_populated = cur.execute(
                 f"SELECT COUNT(*) FROM edges WHERE {field} IS NOT NULL AND CAST({field} AS TEXT) != '' AND CAST({field} AS TEXT) != '0'",
             ).fetchone()[0]
-            print(f"  {field}: {cnt_populated:,} / {cnt_total:,} populated ({cnt_populated/cnt_total*100:.1f}%)")
+            print(
+                f"  {field}: {cnt_populated:,} / {cnt_total:,} populated ({cnt_populated / cnt_total * 100:.1f}%)"
+            )
 
     # Now check what the digest actually covers
     # Read the scanner digest computation
     print("\n  Checking scanner digest computation...")
     scanner_path = ROOT / "agentic_core" / "adg" / "extraction" / "static_scanner.py"
-    with open(scanner_path, encoding='utf-8') as f:
+    with open(scanner_path, encoding="utf-8") as f:
         scanner_src = f.read()
 
     # Find digest/hash computation
-    digest_sensitive = 'semantic_type' in scanner_src and 'hashlib' in scanner_src
+    digest_sensitive = "semantic_type" in scanner_src and "hashlib" in scanner_src
     print(f"  Scanner references 'semantic_type' in digest context: {digest_sensitive}")
 
     # Compute two digests: structural-only vs full
@@ -185,15 +233,16 @@ def audit_determinism_digest(conn):
         print(f"\n  semantic_digest_sensitivity: {sensitivity}")
 
     return {
-        'semantic_fields_present': present,
-        'semantic_fields_missing': missing,
-        'semantic_digest_sensitivity': sensitivity,
-        'structural_digest': structural_digest,
-        'full_digest': full_digest,
+        "semantic_fields_present": present,
+        "semantic_fields_missing": missing,
+        "semantic_digest_sensitivity": sensitivity,
+        "structural_digest": structural_digest,
+        "full_digest": full_digest,
     }
 
 
 # ─── §3: SYMBOL IDENTITY CONSISTENCY ────────────────────────────────────────
+
 
 def audit_symbol_consistency(conn):
     """Check symbol construction consistency across visitors."""
@@ -286,14 +335,15 @@ def audit_symbol_consistency(conn):
             print(f"    {sf}:{ln} -> {cnt} symbols: {syms[:100]}")
 
     return {
-        'symbol_alignment_rate': alignment_rate,
-        'total_locations': total_locations,
-        'fragmented_locations': fragmented_count,
-        'fragmented_samples': [(sf, ln, syms) for sf, ln, syms, _ in fragmented[:10]],
+        "symbol_alignment_rate": alignment_rate,
+        "total_locations": total_locations,
+        "fragmented_locations": fragmented_count,
+        "fragmented_samples": [(sf, ln, syms) for sf, ln, syms, _ in fragmented[:10]],
     }
 
 
 # ─── §4: DUPLICATE EDGE GENERATION ──────────────────────────────────────────
+
 
 def audit_duplicate_edges(conn):
     """Detect double-counting across visitors."""
@@ -324,14 +374,17 @@ def audit_duplicate_edges(conn):
         )
     """).fetchone()[0]
 
-    total_excess = cur.execute("""
+    total_excess = (
+        cur.execute("""
         SELECT SUM(cnt - 1) FROM (
             SELECT src_id, dst_id, relation_type, edge_kind, COUNT(*) as cnt
             FROM edges
             GROUP BY src_id, dst_id, relation_type, edge_kind
             HAVING cnt > 1
         )
-    """).fetchone()[0] or 0
+    """).fetchone()[0]
+        or 0
+    )
 
     dupe_ratio = total_excess / total if total > 0 else 0
 
@@ -362,13 +415,14 @@ def audit_duplicate_edges(conn):
             print(f"    [{row[6]}x] src={row[0]} -> dst={row[1]} (sym={row[4]}, ln={row[5]})")
 
     return {
-        'duplicate_edge_ratio': dupe_ratio,
-        'total_dupe_groups': total_dupe_groups,
-        'total_excess': total_excess,
+        "duplicate_edge_ratio": dupe_ratio,
+        "total_dupe_groups": total_dupe_groups,
+        "total_excess": total_excess,
     }
 
 
 # ─── §5: DENOMINATOR INTEGRITY TEST ─────────────────────────────────────────
+
 
 def audit_denominator_integrity(conn):
     """Compare scanner denominators vs independent AST traversal."""
@@ -379,7 +433,7 @@ def audit_denominator_integrity(conn):
     cur = conn.cursor()
 
     # Denominators per memory: writes_to, reads_from, records_execution_trace, calls, applies_guardrail
-    denom_types = ['writes_to', 'reads_from', 'records_execution_trace', 'calls', 'applies_guardrail']
+    denom_types = ["writes_to", "reads_from", "records_execution_trace", "calls", "applies_guardrail"]
 
     print(f"\n  {'Relation Type':<30} {'Scanner Count':>15}")
     print("  " + "-" * 47)
@@ -393,10 +447,10 @@ def audit_denominator_integrity(conn):
     for dirpath, dirnames, filenames in os.walk(ROOT):
         # Skip excluded dirs
         rel = os.path.relpath(dirpath, ROOT)
-        if any(x in rel for x in ['.git', '__pycache__', 'node_modules', '.venv', 'venv']):
+        if any(x in rel for x in [".git", "__pycache__", "node_modules", ".venv", "venv"]):
             continue
         for f in filenames:
-            if f.endswith('.py'):
+            if f.endswith(".py"):
                 total_py_files += 1
 
     print(f"\n  Total .py files in repo: {total_py_files:,}")
@@ -427,13 +481,14 @@ def audit_denominator_integrity(conn):
         print(f"    {sym}: {cnt}")
 
     return {
-        'module_coverage': module_coverage,
-        'total_py_files': total_py_files,
-        'total_modules_in_edges': total_modules,
+        "module_coverage": module_coverage,
+        "total_py_files": total_py_files,
+        "total_modules_in_edges": total_modules,
     }
 
 
 # ─── §8: SCANNER SELF-INSTRUMENTATION CHECK ─────────────────────────────────
+
 
 def audit_self_instrumentation(conn):
     """Check if scanner's own _emit_* calls produce edges that inflate metrics."""
@@ -445,22 +500,26 @@ def audit_self_instrumentation(conn):
 
     # Scanner file
     scanner_files = [
-        'agentic_core/adg/extraction/static_scanner.py',
+        "agentic_core/adg/extraction/static_scanner.py",
     ]
 
     for sf in scanner_files:
         total_from_scanner = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE source_file=?", (sf,),
+            "SELECT COUNT(*) FROM edges WHERE source_file=?",
+            (sf,),
         ).fetchone()[0]
 
         print(f"\n  Edges from {sf}: {total_from_scanner:,}")
 
         # Breakdown by relation type
-        cur.execute("""
+        cur.execute(
+            """
             SELECT relation_type, COUNT(*) as cnt
             FROM edges WHERE source_file=?
             GROUP BY relation_type ORDER BY cnt DESC
-        """, (sf,))
+        """,
+            (sf,),
+        )
         for rt, cnt in cur.fetchall():
             print(f"    {rt}: {cnt}")
 
@@ -487,9 +546,10 @@ def audit_self_instrumentation(conn):
             print(f"    {rt}: {cnt}")
 
     # Check lifecycle_trace_contract too — it bootstraps itself
-    ltc_file = 'agentic_core/runtime/lifecycle_trace_contract.py'
+    ltc_file = "agentic_core/runtime/lifecycle_trace_contract.py"
     ltc_edges = cur.execute(
-        "SELECT COUNT(*) FROM edges WHERE source_file=?", (ltc_file,),
+        "SELECT COUNT(*) FROM edges WHERE source_file=?",
+        (ltc_file,),
     ).fetchone()[0]
     print(f"\n  Edges from {ltc_file}: {ltc_edges:,}")
 
@@ -510,15 +570,16 @@ def audit_self_instrumentation(conn):
             print(f"    L{ln}: {rt} / {sym} [{cnt}]")
 
     return {
-        'self_generated_edge_ratio': self_ratio,
-        'total_self_emit_edges': total_self,
-        'scanner_total_edges': cur.execute(
+        "self_generated_edge_ratio": self_ratio,
+        "total_self_emit_edges": total_self,
+        "scanner_total_edges": cur.execute(
             "SELECT COUNT(*) FROM edges WHERE source_file='agentic_core/adg/extraction/static_scanner.py'",
         ).fetchone()[0],
     }
 
 
 # ─── §6: EXECUTION vs AST GAP ───────────────────────────────────────────────
+
 
 def audit_execution_vs_ast(conn):
     """Compare edge types distribution and check for false positives."""
@@ -536,9 +597,9 @@ def audit_execution_vs_ast(conn):
     total = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
     real_lines = total - line0 - line1
 
-    print(f"\n  Edges with line_no=0 (no location): {line0:,} ({line0/total*100:.1f}%)")
-    print(f"  Edges with line_no=1 (possible synthetic): {line1:,} ({line1/total*100:.1f}%)")
-    print(f"  Edges with real line locations (>1): {real_lines:,} ({real_lines/total*100:.1f}%)")
+    print(f"\n  Edges with line_no=0 (no location): {line0:,} ({line0 / total * 100:.1f}%)")
+    print(f"  Edges with line_no=1 (possible synthetic): {line1:,} ({line1 / total * 100:.1f}%)")
+    print(f"  Edges with real line locations (>1): {real_lines:,} ({real_lines / total * 100:.1f}%)")
 
     # Breakdown of line_no=1 by relation_type
     cur.execute("""
@@ -565,14 +626,15 @@ def audit_execution_vs_ast(conn):
         print(f"    {rt}: {cnt:,}")
 
     return {
-        'edges_line0': line0,
-        'edges_line1': line1,
-        'edges_real_lines': real_lines,
-        'ast_location_rate': real_lines / total if total > 0 else 0,
+        "edges_line0": line0,
+        "edges_line1": line1,
+        "edges_real_lines": real_lines,
+        "ast_location_rate": real_lines / total if total > 0 else 0,
     }
 
 
 # ─── §7: HEURISTIC vs TRUE SEMANTIC ─────────────────────────────────────────
+
 
 def audit_semantic_classification(conn):
     """Sample edges and check semantic classification accuracy."""
@@ -583,28 +645,32 @@ def audit_semantic_classification(conn):
     cur = conn.cursor()
 
     # Focus on flows_to, controls_flow, emits_side_effect
-    semantic_types = ['flows_to', 'controls_flow', 'emits_side_effect']
+    semantic_types = ["flows_to", "controls_flow", "emits_side_effect"]
 
     for st in semantic_types:
         cnt = cur.execute("SELECT COUNT(*) FROM edges WHERE relation_type=?", (st,)).fetchone()[0]
         print(f"\n  {st}: {cnt:,} edges")
 
         # Sample with line locations
-        cur.execute("""
+        cur.execute(
+            """
             SELECT source_file, line_no, symbol, src_id, dst_id
             FROM edges WHERE relation_type=? AND line_no > 1
             LIMIT 5
-        """, (st,))
+        """,
+            (st,),
+        )
         samples = cur.fetchall()
         for sf, ln, sym, sid, did in samples:
             print(f"    {sf}:{ln} sym={sym} src={sid} dst={did}")
 
         # Check: what % have real line numbers?
         real = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type=? AND line_no > 1", (st,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type=? AND line_no > 1",
+            (st,),
         ).fetchone()[0]
         total = max(cnt, 1)
-        print(f"    Real line locations: {real}/{cnt} ({real/total*100:.1f}%)")
+        print(f"    Real line locations: {real}/{cnt} ({real / total * 100:.1f}%)")
 
     # For flows_to: verify against AST that the assignment actually exists
     # Sample 10 flows_to edges and check the source file
@@ -622,13 +688,13 @@ def audit_semantic_classification(conn):
         fpath = ROOT / sf
         if fpath.exists():
             try:
-                with open(fpath, encoding='utf-8', errors='replace') as f:
+                with open(fpath, encoding="utf-8", errors="replace") as f:
                     src = f.read()
                 tree = ast.parse(src, filename=str(fpath))
                 # Check if line_no has an assignment
                 has_assign = False
                 for node in ast.walk(tree):
-                    if hasattr(node, 'lineno') and node.lineno == ln:
+                    if hasattr(node, "lineno") and node.lineno == ln:
                         if isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.For, ast.With)):
                             has_assign = True
                             break
@@ -647,26 +713,27 @@ def audit_semantic_classification(conn):
     print(f"\n  flows_to AST verification: {verified}/{checked} ({accuracy:.0%})")
 
     return {
-        'semantic_accuracy_estimate': accuracy,
-        'checked': checked,
-        'verified': verified,
+        "semantic_accuracy_estimate": accuracy,
+        "checked": checked,
+        "verified": verified,
     }
 
 
 # ─── MAIN ────────────────────────────────────────────────────────────────────
 
+
 def main():
     conn = get_conn()
 
     results = {}
-    results['s1'] = audit_synthetic_edges(conn)
-    results['s2'] = audit_determinism_digest(conn)
-    results['s3'] = audit_symbol_consistency(conn)
-    results['s4'] = audit_duplicate_edges(conn)
-    results['s5'] = audit_denominator_integrity(conn)
-    results['s6'] = audit_execution_vs_ast(conn)
-    results['s7'] = audit_semantic_classification(conn)
-    results['s8'] = audit_self_instrumentation(conn)
+    results["s1"] = audit_synthetic_edges(conn)
+    results["s2"] = audit_determinism_digest(conn)
+    results["s3"] = audit_symbol_consistency(conn)
+    results["s4"] = audit_duplicate_edges(conn)
+    results["s5"] = audit_denominator_integrity(conn)
+    results["s6"] = audit_execution_vs_ast(conn)
+    results["s7"] = audit_semantic_classification(conn)
+    results["s8"] = audit_self_instrumentation(conn)
 
     # ─── §9: FINAL OUTPUT ────────────────────────────────────────────────────
     print("\n" + "=" * 70)
@@ -674,13 +741,13 @@ def main():
     print("=" * 70)
 
     metrics = {
-        'synthetic_edge_ratio': results['s1']['synthetic_edge_ratio'],
-        'semantic_digest_sensitivity': results['s2']['semantic_digest_sensitivity'],
-        'symbol_alignment_rate': results['s3']['symbol_alignment_rate'],
-        'duplicate_edge_ratio': results['s4']['duplicate_edge_ratio'],
-        'ast_location_rate': results['s6']['ast_location_rate'],
-        'semantic_accuracy_estimate': results['s7']['semantic_accuracy_estimate'],
-        'self_generated_edge_ratio': results['s8']['self_generated_edge_ratio'],
+        "synthetic_edge_ratio": results["s1"]["synthetic_edge_ratio"],
+        "semantic_digest_sensitivity": results["s2"]["semantic_digest_sensitivity"],
+        "symbol_alignment_rate": results["s3"]["symbol_alignment_rate"],
+        "duplicate_edge_ratio": results["s4"]["duplicate_edge_ratio"],
+        "ast_location_rate": results["s6"]["ast_location_rate"],
+        "semantic_accuracy_estimate": results["s7"]["semantic_accuracy_estimate"],
+        "self_generated_edge_ratio": results["s8"]["self_generated_edge_ratio"],
     }
 
     print(f"\n  {'Metric':<35} {'Value':>15}")

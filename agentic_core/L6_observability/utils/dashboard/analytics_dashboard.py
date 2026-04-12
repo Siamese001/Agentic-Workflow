@@ -113,6 +113,7 @@ class AnalyticsDashboard:
         try:
             # Advanced analytics
             from system_learning.runtime_adg.advanced_analytics import get_global_analytics
+
             self._analytics_engine = get_global_analytics()
 
         except ImportError:
@@ -121,6 +122,7 @@ class AnalyticsDashboard:
         try:
             # Enhanced observability
             from agentic_core.L6_observability.utils.enhanced_observability import get_global_observability
+
             self._observability_system = get_global_observability()
 
         except ImportError:
@@ -129,6 +131,7 @@ class AnalyticsDashboard:
         try:
             # Distributed tracing coordinator
             from agentic_core.tracing.distributed_tracing_coordinator import get_global_coordinator
+
             self._distributed_coordinator = get_global_coordinator()
 
         except ImportError:
@@ -269,7 +272,7 @@ class AnalyticsDashboard:
         for widget_id, widget in self._widgets.items():
             try:
                 # Check if widget needs update
-                if current_time - getattr(widget, '_last_update', 0) >= widget.refresh_rate:
+                if current_time - getattr(widget, "_last_update", 0) >= widget.refresh_rate:
                     self._update_widget(widget)
                     widget._last_update = current_time
 
@@ -332,11 +335,13 @@ class AnalyticsDashboard:
 
                 rows = []
                 for alert in alerts[:10]:  # Top 10 alerts
-                    rows.append([
-                        alert.severity.value,
-                        alert.description,
-                        datetime.fromtimestamp(alert.timestamp).strftime("%H:%M:%S"),
-                    ])
+                    rows.append(
+                        [
+                            alert.severity.value,
+                            alert.description,
+                            datetime.fromtimestamp(alert.timestamp).strftime("%H:%M:%S"),
+                        ]
+                    )
 
                 widget.data = {
                     "columns": widget.data["columns"],
@@ -370,16 +375,20 @@ class AnalyticsDashboard:
 
             # Distributed tracing stats
             if self._distributed_coordinator:
-                self._real_time_data["distributed_stats"] = self._distributed_coordinator.get_coordination_stats()
+                self._real_time_data["distributed_stats"] = (
+                    self._distributed_coordinator.get_coordination_stats()
+                )
 
             # Performance stats
             try:
                 from agentic_core.mixins.performance_optimized_collector import get_global_optimized_collector
+
                 perf_collector = get_global_optimized_collector()
                 self._real_time_data["performance_stats"] = perf_collector.get_performance_stats()
             except Exception as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("analytics_dashboard: Exception swallowed at L380: %s", e)
+                logging.getLogger(__name__).debug("analytics_dashboard: Exception swallowed at L380: %s", e)
 
             # Timestamp
             self._real_time_data["timestamp"] = time.time()
@@ -492,11 +501,19 @@ class AnalyticsDashboard:
                 config_data = config["config"]
                 self._config.host = config_data.get("host", self._config.host)
                 self._config.port = config_data.get("port", self._config.port)
-                self._config.refresh_interval_seconds = config_data.get("refresh_interval_seconds", self._config.refresh_interval_seconds)
-                self._config.max_data_points = config_data.get("max_data_points", self._config.max_data_points)
-                self._config.enable_real_time = config_data.get("enable_real_time", self._config.enable_real_time)
+                self._config.refresh_interval_seconds = config_data.get(
+                    "refresh_interval_seconds", self._config.refresh_interval_seconds
+                )
+                self._config.max_data_points = config_data.get(
+                    "max_data_points", self._config.max_data_points
+                )
+                self._config.enable_real_time = config_data.get(
+                    "enable_real_time", self._config.enable_real_time
+                )
                 self._config.enable_alerts = config_data.get("enable_alerts", self._config.enable_alerts)
-                self._config.enable_optimization = config_data.get("enable_optimization", self._config.enable_optimization)
+                self._config.enable_optimization = config_data.get(
+                    "enable_optimization", self._config.enable_optimization
+                )
 
             # Update widgets
             if "widgets" in config:

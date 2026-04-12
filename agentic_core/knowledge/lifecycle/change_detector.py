@@ -15,6 +15,7 @@ from typing import Callable
 try:
     from watchdog.events import FileSystemEventHandler
     from watchdog.observers import Observer
+
     HAS_WATCHDOG = True
 except ImportError:
     HAS_WATCHDOG = False
@@ -32,6 +33,7 @@ log = logging.getLogger(__name__)
 
 class ChangeType(Enum):
     """Type of file system change."""
+
     CREATED = "created"
     MODIFIED = "modified"
     DELETED = "deleted"
@@ -41,6 +43,7 @@ class ChangeType(Enum):
 @dataclass
 class ChangeEvent:
     """A file system change event."""
+
     file_path: str
     change_type: ChangeType
     timestamp: float = field(default_factory=time.time)
@@ -233,7 +236,9 @@ class ChangeDetector:
         """Handle a change event."""
         trace_id = f"change_{event.change_type.value}_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "ChangeDetector._handle_change",
+            trace_id,
+            LayerSegment.L4_STATE,
+            "ChangeDetector._handle_change",
         )
 
         _emit_records_telemetry_event(

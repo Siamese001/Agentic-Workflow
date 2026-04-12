@@ -319,7 +319,9 @@ class DefaultFormatter(FormatterStrategy):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "UnifiedFormatter.format")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "UnifiedFormatter.format"
+        )
         try:
             if isinstance(data, str):
                 formatted = data.strip()
@@ -328,7 +330,9 @@ class DefaultFormatter(FormatterStrategy):
             else:
                 formatted = str(data)
             return FormatResult(
-                data=formatted, format_type=self.format_name, metadata={"original_type": type(data).__name__},
+                data=formatted,
+                format_type=self.format_name,
+                metadata={"original_type": type(data).__name__},
             )
         except Exception as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
@@ -362,7 +366,9 @@ class ResumeBulletFormatter(FormatterStrategy):
             if config:
                 bullets = self._apply_config(bullets, config)
             return FormatResult(
-                data=bullets, format_type=self.format_name, metadata={"bullet_count": len(bullets)},
+                data=bullets,
+                format_type=self.format_name,
+                metadata={"bullet_count": len(bullets)},
             )
         except Exception as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
@@ -572,7 +578,9 @@ class OutreachMessageFormatter(FormatterStrategy):
             else:
                 formatted = str(data)
             return FormatResult(
-                data=formatted, format_type=self.format_name, metadata={"message_length": len(str(formatted))},
+                data=formatted,
+                format_type=self.format_name,
+                metadata={"message_length": len(str(formatted))},
             )
         except Exception as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])
@@ -644,7 +652,9 @@ class OutreachSubjectFormatter(FormatterStrategy):
             else:
                 formatted = str(data)
             return FormatResult(
-                data=formatted, format_type=self.format_name, metadata={"subject_length": len(formatted)},
+                data=formatted,
+                format_type=self.format_name,
+                metadata={"subject_length": len(formatted)},
             )
         except Exception as e:
             return FormatResult(data=data, format_type=self.format_name, success=False, errors=[str(e)])

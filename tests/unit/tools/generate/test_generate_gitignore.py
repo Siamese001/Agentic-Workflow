@@ -8,6 +8,7 @@ Tests cover:
 - Sync checking
 - Edge cases and error handling
 """
+
 from __future__ import annotations
 
 # Import the module under test
@@ -156,7 +157,13 @@ class TestGeneratePrecommitExclude:
 
         # Check that patterns appear in sorted order
         lines = content.split("\n")
-        pattern_lines = [line.strip() for line in lines if line.strip() and not line.strip().startswith("#") and line.strip() not in ("exclude: |", "(?x)^(", ")")]
+        pattern_lines = [
+            line.strip()
+            for line in lines
+            if line.strip()
+            and not line.strip().startswith("#")
+            and line.strip() not in ("exclude: |", "(?x)^(", ")")
+        ]
 
         # Find the indices of each pattern
         indices = {}
@@ -193,9 +200,13 @@ class TestCheckSync:
         gitignore_path.write_text(gitignore_content)
 
         # Mock the functions to return matching content
-        with patch.object(generate_gitignore, "load_exclusions", return_value=({"test_dir"}, {"*.pyc"}, set())):
+        with patch.object(
+            generate_gitignore, "load_exclusions", return_value=({"test_dir"}, {"*.pyc"}, set())
+        ):
             with patch.object(generate_gitignore, "read_current_gitignore", return_value=gitignore_content):
-                with patch.object(generate_gitignore, "generate_gitignore_content", return_value=gitignore_content):
+                with patch.object(
+                    generate_gitignore, "generate_gitignore_content", return_value=gitignore_content
+                ):
                     result = generate_gitignore.check_sync()
                     assert result is True
 
@@ -214,9 +225,13 @@ class TestCheckSync:
         # Mock to return different content
         different_content = gitignore_content + "*.log\n"
 
-        with patch.object(generate_gitignore, "load_exclusions", return_value=({"test_dir"}, {"*.pyc"}, set())):
+        with patch.object(
+            generate_gitignore, "load_exclusions", return_value=({"test_dir"}, {"*.pyc"}, set())
+        ):
             with patch.object(generate_gitignore, "read_current_gitignore", return_value=gitignore_content):
-                with patch.object(generate_gitignore, "generate_gitignore_content", return_value=different_content):
+                with patch.object(
+                    generate_gitignore, "generate_gitignore_content", return_value=different_content
+                ):
                     result = generate_gitignore.check_sync()
                     assert result is False
 
@@ -304,8 +319,12 @@ class TestMain:
 
     def test_main_write_precommit(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test main with --write-precommit."""
-        with patch.object(generate_gitignore, "load_exclusions", return_value=(set(), set(), {"test_pattern"})):
-            with patch.object(generate_gitignore, "generate_precommit_exclude", return_value="exclude: |\n  test"):
+        with patch.object(
+            generate_gitignore, "load_exclusions", return_value=(set(), set(), {"test_pattern"})
+        ):
+            with patch.object(
+                generate_gitignore, "generate_precommit_exclude", return_value="exclude: |\n  test"
+            ):
                 result = generate_gitignore.main(["--write-precommit"])
                 assert result == 0
                 captured = capsys.readouterr()

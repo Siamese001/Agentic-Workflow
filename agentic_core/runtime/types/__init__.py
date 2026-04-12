@@ -34,8 +34,16 @@ def __getattr__(name: str):
             create_semantic_cache,
             semantic_cache,
         )
+
         return locals()[name]
-    if name in ("Claim", "ClaimAnalysisResult", "ClaimConfidenceScorer", "ClaimType", "ConfidenceLevel", "create_claim_scorer"):
+    if name in (
+        "Claim",
+        "ClaimAnalysisResult",
+        "ClaimConfidenceScorer",
+        "ClaimType",
+        "ConfidenceLevel",
+        "create_claim_scorer",
+    ):
         from .claim_type_types import (
             Claim,
             ClaimAnalysisResult,
@@ -44,8 +52,16 @@ def __getattr__(name: str):
             ConfidenceLevel,
             create_claim_scorer,
         )
+
         return locals()[name]
-    if name in ("BudgetExceededError", "CostGovernor", "CostGovernorManager", "UsageRecord", "get_global_cost_governor", "track_api_call"):
+    if name in (
+        "BudgetExceededError",
+        "CostGovernor",
+        "CostGovernorManager",
+        "UsageRecord",
+        "get_global_cost_governor",
+        "track_api_call",
+    ):
         from .cost_governor_types import (
             BudgetExceededError,
             CostGovernor,
@@ -54,8 +70,10 @@ def __getattr__(name: str):
             get_global_cost_governor,
             track_api_call,
         )
+
         return locals()[name]
     if name in ("ExpansionStrategy", "HyDeDocument", "HyDeProcessor", "HyDeResult"):
         from .expansion_strategy_types import ExpansionStrategy, HyDeDocument, HyDeProcessor, HyDeResult
+
         return locals()[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

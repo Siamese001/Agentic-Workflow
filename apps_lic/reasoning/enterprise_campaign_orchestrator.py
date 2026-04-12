@@ -81,7 +81,9 @@ class EnterpriseLicOrchestrator:
         self._log_step(request.trace_id, "DECIDE", "start")
         result.risk_summary = self._build_risk_summary(result.repo_signals)
         result.confidence_summary = self._build_confidence_summary(result.repo_signals)
-        result.recommendations = self._build_recommendations(request, result.risk_summary, result.confidence_summary)
+        result.recommendations = self._build_recommendations(
+            request, result.risk_summary, result.confidence_summary
+        )
         result.provenance_block = {
             "captured_at": result.repo_signals.get("captured_at"),
             "files_used": result.repo_signals.get("provenance", {}),
@@ -132,7 +134,9 @@ class EnterpriseLicOrchestrator:
 
         checks = {
             "adg_available": bool(adg.get("available")),
-            "test_signals_available": bool(tests.get("inventory_available") or tests.get("surface_available")),
+            "test_signals_available": bool(
+                tests.get("inventory_available") or tests.get("surface_available")
+            ),
             "workflow_signals_available": ci.get("workflow_count", 0) > 0,
         }
         passed = sum(1 for value in checks.values() if value)

@@ -241,16 +241,26 @@ _emit_validated_by_safety_plane("p1", "execution_guardrail_chokepoint", "safety_
 _emit_invokes_eval("p1", "execution_guardrail_chokepoint", "eval_call")
 _emit_proposal_commits_routing("p1", "execution_guardrail_chokepoint", "routing_commit")
 
-emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_entry")
-emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_exit")
+emit_determinism_digest(
+    "trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_entry"
+)
+emit_determinism_digest(
+    "trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_dispatch_exit"
+)
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_tool_invoke")
-emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_tool_complete")
+emit_determinism_digest(
+    "trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_tool_complete"
+)
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_agent_entry")
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_agent_exit")
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_uwg_write")
 emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_trace_sign")
-emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_guardrail_check")
-emit_determinism_digest("trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_policy_verify")
+emit_determinism_digest(
+    "trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_guardrail_check"
+)
+emit_determinism_digest(
+    "trace_execution_guardrail_chokepoint", "execution_guardrail_chokepoint_policy_verify"
+)
 
 logger = logging.getLogger(__name__)
 
@@ -603,13 +613,15 @@ def authorize_and_execute(
             action_class=execution_context.action_class.value,
         )
         logger.debug(
-            "EXECUTION_GUARDRAIL_AUDIT audit_id=%s req=%s target=%s outcome=%s",    # guardian: SafetyAuditMissingError should be handled with specific context
+            "EXECUTION_GUARDRAIL_AUDIT audit_id=%s req=%s target=%s outcome=%s",  # guardian: SafetyAuditMissingError should be handled with specific context
             safety_audit.safety_audit_id,
             execution_context.execution_request_id,
             _tgt,
             outcome.value,
         )
-    except SafetyAuditMissingError as audit_exc:    # guardian: SafetyAuditMissingError should be handled with specific context
+    except (
+        SafetyAuditMissingError
+    ) as audit_exc:  # guardian: SafetyAuditMissingError should be handled with specific context
         logger.error(
             "EXECUTION_GUARDRAIL_AUDIT_FAILED: %s (req=%s target=%s)",
             audit_exc,
@@ -715,13 +727,17 @@ def authorize_and_execute(
             _effective_callable = target_callable
 
         _contract_result = invoke_typed_tool(
-            _tool_contract,    # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
+            _tool_contract,  # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
             _typed_input,
             registry=_registry,
             tool_callable=_effective_callable,
         )
         output = _contract_result.output_payload.get("result", _contract_result.output_payload)
-    except (ToolInputSchemaViolation, ToolOutputSchemaViolation, UnregisteredToolError) as exc:    # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
+    except (
+        ToolInputSchemaViolation,
+        ToolOutputSchemaViolation,
+        UnregisteredToolError,
+    ) as exc:  # guardian: Multiple exceptions (ToolInputSchemaViolation, ToolOutputSchemaViolation) need specific handling
         # P3/L2: Record execution observability for tool errors
         try:
             obs_context = ExecutionObservabilityContext.create(

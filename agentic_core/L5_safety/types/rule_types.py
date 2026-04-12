@@ -298,7 +298,9 @@ class ConstitutionalAISystem:
                 Logger.debug(f"Removed constitutional rule: {rule_id}")
 
     def review_content(
-        self, content: str, context: dict[str, any] | None = None,
+        self,
+        content: str,
+        context: dict[str, any] | None = None,
     ) -> ConstitutionalReviewResult:
         """Review content against constitutional rules.
 
@@ -362,7 +364,10 @@ class ConstitutionalAISystem:
         return violations
 
     def _check_rule(
-        self, content: str, rule: ConstitutionalRule, context: dict[str, any] | None = None,
+        self,
+        content: str,
+        rule: ConstitutionalRule,
+        context: dict[str, any] | None = None,
     ) -> list[ViolationReport]:
         """Check content against a specific rule.
 

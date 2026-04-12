@@ -55,7 +55,10 @@ class OtlpExporter(BaseExporter):
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
             logger.error(f"Export failed: {e}")
             return ExportResult(
-                success=False, items_exported=0, destination=self.destination, errors=[str(e)],
+                success=False,
+                items_exported=0,
+                destination=self.destination,
+                errors=[str(e)],
             )
 
 

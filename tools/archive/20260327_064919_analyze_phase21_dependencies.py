@@ -10,7 +10,7 @@ def analyze_phase21_dependencies():
     """Analyze dependency graph for Phase 2.1 scope."""
 
     # Connect to clean ADG
-    conn = sqlite3.connect('artifacts/adg_truly_clean/adg_truly_clean_03242026_1900.sqlite')
+    conn = sqlite3.connect("artifacts/adg_truly_clean/adg_truly_clean_03242026_1900.sqlite")
     cursor = conn.cursor()
 
     print("## DEPENDENCY_GRAPH")
@@ -21,7 +21,9 @@ def analyze_phase21_dependencies():
     print()
 
     # Get nodes for our target files
-    cursor.execute('SELECT id, resolved_path, layer, entity_type FROM nodes WHERE resolved_path LIKE "%fix_high_severity%" OR resolved_path LIKE "%silent_swallower%"')
+    cursor.execute(
+        'SELECT id, resolved_path, layer, entity_type FROM nodes WHERE resolved_path LIKE "%fix_high_severity%" OR resolved_path LIKE "%silent_swallower%"'
+    )
     nodes = cursor.fetchall()
 
     if nodes:
@@ -40,12 +42,15 @@ def analyze_phase21_dependencies():
         print()
 
         # Get upstream dependencies (imports)
-        cursor.execute('SELECT src_id, relation_type FROM edges WHERE dst_id = ? AND relation_type = "imports"', (target_id,))
+        cursor.execute(
+            'SELECT src_id, relation_type FROM edges WHERE dst_id = ? AND relation_type = "imports"',
+            (target_id,),
+        )
         upstream = cursor.fetchall()
         print("### Upstream Dependencies")
         if upstream:
             for edge in upstream:
-                cursor.execute('SELECT resolved_path FROM nodes WHERE id = ?', (edge[0],))
+                cursor.execute("SELECT resolved_path FROM nodes WHERE id = ?", (edge[0],))
                 src_label = cursor.fetchone()
                 if src_label:
                     print(f"  - {src_label[0]} (imports)")
@@ -54,12 +59,15 @@ def analyze_phase21_dependencies():
         print()
 
         # Get downstream dependents
-        cursor.execute('SELECT dst_id, relation_type FROM edges WHERE src_id = ? AND relation_type = "calls"', (target_id,))
+        cursor.execute(
+            'SELECT dst_id, relation_type FROM edges WHERE src_id = ? AND relation_type = "calls"',
+            (target_id,),
+        )
         downstream = cursor.fetchall()
         print("### Downstream Dependents")
         if downstream:
             for edge in downstream:
-                cursor.execute('SELECT resolved_path FROM nodes WHERE id = ?', (edge[0],))
+                cursor.execute("SELECT resolved_path FROM nodes WHERE id = ?", (edge[0],))
                 tgt_label = cursor.fetchone()
                 if tgt_label:
                     print(f"  - {tgt_label[0]} (called by)")
@@ -68,12 +76,15 @@ def analyze_phase21_dependencies():
         print()
 
         # Check for test coverage
-        cursor.execute('SELECT src_id, relation_type FROM edges WHERE dst_id = ? AND relation_type LIKE "%test%"', (target_id,))
+        cursor.execute(
+            'SELECT src_id, relation_type FROM edges WHERE dst_id = ? AND relation_type LIKE "%test%"',
+            (target_id,),
+        )
         test_edges = cursor.fetchall()
         print("### Test Surface Implications")
         if test_edges:
             for edge in test_edges:
-                cursor.execute('SELECT resolved_path FROM nodes WHERE id = ?', (edge[0],))
+                cursor.execute("SELECT resolved_path FROM nodes WHERE id = ?", (edge[0],))
                 test_label = cursor.fetchone()
                 if test_label:
                     print(f"  - {test_label[0]} (test coverage)")
@@ -103,6 +114,7 @@ def analyze_phase21_dependencies():
         print("Target nodes not found in ADG - will proceed with scope analysis based on file system")
 
     conn.close()
+
 
 if __name__ == "__main__":
     analyze_phase21_dependencies()

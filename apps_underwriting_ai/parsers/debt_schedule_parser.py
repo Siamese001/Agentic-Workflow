@@ -1,6 +1,7 @@
 """
 Debt Schedule Parser - Parses debt schedules from uploaded documents.
 """
+
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional
 @dataclass
 class DebtEntry:
     """Single debt entry from schedule."""
+
     lender: str
     facility_type: str
     original_balance: Optional[float] = None
@@ -24,6 +26,7 @@ class DebtEntry:
 @dataclass
 class ParsedDebtSchedule:
     """Result of parsing a debt schedule."""
+
     entries: List[DebtEntry] = field(default_factory=list)
     total_current_debt: Optional[float] = None
     total_monthly_debt_service: Optional[float] = None
@@ -52,12 +55,8 @@ class DebtScheduleParser:
 
         # Calculate totals
         if result.entries:
-            result.total_current_debt = sum(
-                e.current_balance or 0 for e in result.entries
-            )
-            result.total_monthly_debt_service = sum(
-                e.monthly_payment or 0 for e in result.entries
-            )
+            result.total_current_debt = sum(e.current_balance or 0 for e in result.entries)
+            result.total_monthly_debt_service = sum(e.monthly_payment or 0 for e in result.entries)
             result.annual_debt_service = (result.total_monthly_debt_service or 0) * 12
 
         # Calculate confidence
@@ -76,7 +75,7 @@ class DebtScheduleParser:
         # Look for debt facility patterns
         # This is a simplified extraction - production would use more sophisticated parsing
         patterns = [
-            r'([^\n]+?)\s+(Term Loan|Line of Credit|Revolver|Equipment Loan|Real Estate Loan)[\s\S]*?\$?([\d,\.]+)[\s\S]*?\$?([\d,\.]+)',
+            r"([^\n]+?)\s+(Term Loan|Line of Credit|Revolver|Equipment Loan|Real Estate Loan)[\s\S]*?\$?([\d,\.]+)[\s\S]*?\$?([\d,\.]+)",
         ]
 
         for pattern in patterns:
@@ -85,7 +84,9 @@ class DebtScheduleParser:
                     entry = DebtEntry(
                         lender=match.group(1).strip() if len(match.groups()) > 0 else "Unknown",
                         facility_type=match.group(2) if len(match.groups()) > 1 else "Unknown",
-                        current_balance=float(match.group(3).replace(',', '')) if len(match.groups()) > 2 else None,
+                        current_balance=float(match.group(3).replace(",", ""))
+                        if len(match.groups()) > 2
+                        else None,
                     )
                     entries.append(entry)
                 except (ValueError, IndexError):

@@ -13,6 +13,7 @@ def test_scan_performance():
     print("\n1. Testing file discovery...")
     start = time.time()
     from agentic_core.adg.extraction.static_scanner import _iter_python_files
+
     files = list(_iter_python_files(Path("C:/Git/Agentic-Workflow")))
     discovery_time = time.time() - start
     print(f"   Found {len(files)} files in {discovery_time:.2f}s")
@@ -23,7 +24,7 @@ def test_scan_performance():
 
     test_files = [
         files[0],  # First file
-        files[len(files)//2],  # Middle file
+        files[len(files) // 2],  # Middle file
         files[-1],  # Last file
     ]
 
@@ -31,7 +32,7 @@ def test_scan_performance():
         start = time.time()
         edges, had_error = _scan_file(test_file, Path("C:/Git/Agentic-Workflow"), True)
         scan_time = time.time() - start
-        print(f"   File {i+1}: {test_file.name}")
+        print(f"   File {i + 1}: {test_file.name}")
         print(f"     Edges: {len(edges)}, Error: {had_error}, Time: {scan_time:.3f}s")
 
     # Test cache operations
@@ -63,14 +64,15 @@ def test_scan_performance():
     estimated_full_time = avg_scan_time * len(files)
     print("\n4. Performance Estimates:")
     print(f"   Average per file: {avg_scan_time:.3f}s")
-    print(f"   Estimated full scan: {estimated_full_time/60:.1f} minutes")
+    print(f"   Estimated full scan: {estimated_full_time / 60:.1f} minutes")
     print(f"   Files to process: {len(files)}")
 
     # Check if cache would help
     print("\n5. Cache Impact Analysis:")
     print("   With 100% cache hit rate: ~30 seconds (cache loading)")
-    print(f"   With 0% cache hit rate: {estimated_full_time/60:.1f} minutes")
+    print(f"   With 0% cache hit rate: {estimated_full_time / 60:.1f} minutes")
     print(f"   Current cache file exists: {Path('artifacts/adg/scan_result_cache.json').exists()}")
+
 
 if __name__ == "__main__":
     test_scan_performance()

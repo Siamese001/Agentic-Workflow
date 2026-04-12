@@ -233,12 +233,12 @@ def run_daemon_mode():
             self.watchman.on_modified(event)
 
     adapter = WatchdogAdapter(handler)
-    observer = Observer()    # guardian: KeyboardInterrupt should be handled with specific context
+    observer = Observer()  # guardian: KeyboardInterrupt should be handled with specific context
     observer.schedule(adapter, path=".", recursive=True)
     observer.start()
     try:
         loop.run_forever()
-    except KeyboardInterrupt:    # guardian: KeyboardInterrupt should be handled with specific context
+    except KeyboardInterrupt:  # guardian: KeyboardInterrupt should be handled with specific context
         print("\n[WATCHMAN] 🛑 Shutting down gracefully...")
         observer.stop()
     finally:
@@ -338,7 +338,10 @@ def run_standard_mode():
         branch_name = f"healing/auto_{int(get_clock().now_epoch())}"
         try:
             safe_git_execute(
-                ["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=DEFAULT_TIMEOUT, check=False,
+                ["checkout", "-b", branch_name],
+                repo_root=Path.cwd(),
+                timeout=DEFAULT_TIMEOUT,
+                check=False,
             )
             print(f"   [GIT] GitOps: Created healing branch '{branch_name}'")
         # guardian: allow-silent-swallow
@@ -347,12 +350,14 @@ def run_standard_mode():
         _rsa = get_run_state_authority()
         try:
             enforce_policy_before_action(
-                action_name="run_mission",    # guardian: PolicyEnforcementError should be handled with specific context
+                action_name="run_mission",  # guardian: PolicyEnforcementError should be handled with specific context
                 action_class=ActionClass.REASONING,
                 actor_id="mission_runner",
                 run_id=str(id(ctx)),
             )
-        except PolicyEnforcementError as _pee:    # guardian: PolicyEnforcementError should be handled with specific context
+        except (
+            PolicyEnforcementError
+        ) as _pee:  # guardian: PolicyEnforcementError should be handled with specific context
             Logger.error("Policy blocked mission start: %s", _pee)
             return
         _rsa.observe_runtime_state("mission_start", stage="pre_cycle", actor_id="mission_runner")
@@ -373,19 +378,27 @@ def run_standard_mode():
             agenda = _build_agenda(cycle, ctx, agents, GitAgent, StrategicPlannerAgent, ReflectionAgent)
             final_agenda = _deduplicate_agenda(agenda)
             if await _check_intervention(
-                cycle, ctx, FASTAPI_AVAILABLE, start_intervention_server, approval_event,
+                cycle,
+                ctx,
+                FASTAPI_AVAILABLE,
+                start_intervention_server,
+                approval_event,
             ):
                 break
             for agent in final_agenda:
                 if agent.can_run():
                     try:
                         enforce_policy_before_action(
-                            action_name=getattr(agent, "name", type(agent).__name__),    # guardian: PolicyEnforcementError should be handled with specific context
+                            action_name=getattr(
+                                agent, "name", type(agent).__name__
+                            ),  # guardian: PolicyEnforcementError should be handled with specific context
                             action_class=ActionClass.TOOL_EXECUTION,
                             actor_id="mission_runner",
                             run_id=str(id(ctx)),
                         )
-                    except PolicyEnforcementError as _pee:    # guardian: PolicyEnforcementError should be handled with specific context
+                    except (
+                        PolicyEnforcementError
+                    ) as _pee:  # guardian: PolicyEnforcementError should be handled with specific context
                         Logger.error("Policy blocked agent execution: %s", _pee)
                         continue
                     emit_agent_executes_agent(
@@ -415,14 +428,20 @@ def run_standard_mode():
                             run_id=_mission_run_id,
                             owner_agent_id="mission_runner",
                             stage_transition={
-                                "new_stage": f"cycle_{cycle}",    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+                                "new_stage": f"cycle_{cycle}",  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
                                 "new_owner": getattr(agent, "name", type(agent).__name__),
                                 "handoff_reason": f"mission_runner->agent cycle_{cycle}",
                             },
                         )
-                    except (MissingCoordinationLedger, Exception):    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+                    except (
+                        MissingCoordinationLedger,
+                        Exception,
+                    ):  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+                        import logging
 
-                        import logging; logging.getLogger(__name__).debug("mission_runner: MissingCoordinationLedger swallowed at L423: %s", e)
+                        logging.getLogger(__name__).debug(
+                            "mission_runner: MissingCoordinationLedger swallowed at L423: %s", e
+                        )
                     await agent.execute()
             if "TEST_FAILURE" in ctx.signals and cycle > 1 and ctx.file_backups:
                 print("   [ALERT] Critical Regression Detected. Initiating Rollback Protocol.")
@@ -439,14 +458,22 @@ def run_standard_mode():
         _remote_sync(ctx, branch_name)
         print("\n[SAVE] SAVING BLACKBOARD STATE...")
         ctx._save_memory()
-        _rsa.observe_runtime_state("mission_complete", stage="run_complete", actor_id="mission_runner")    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+        _rsa.observe_runtime_state(
+            "mission_complete", stage="run_complete", actor_id="mission_runner"
+        )  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
         _rsa.snapshot_state("mission_complete")
         # P1/L3: mark CoordinationLedger complete on mission finish
         try:
             complete_coordination_ledger(str(id(ctx)), WorkflowStatus.COMPLETED)
-        except (MissingCoordinationLedger, Exception):    # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+        except (
+            MissingCoordinationLedger,
+            Exception,
+        ):  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("mission_runner: MissingCoordinationLedger swallowed at L446: %s", e)
+            logging.getLogger(__name__).debug(
+                "mission_runner: MissingCoordinationLedger swallowed at L446: %s", e
+            )
         print("\nMISSION COMPLETE")
 
     return run_mission
@@ -528,7 +555,11 @@ def _deduplicate_agenda(agenda: list) -> list:
 
 
 async def _check_intervention(
-    cycle: int, ctx, FASTAPI_AVAILABLE: bool, start_intervention_server, approval_event,
+    cycle: int,
+    ctx,
+    FASTAPI_AVAILABLE: bool,
+    start_intervention_server,
+    approval_event,
 ) -> bool:
     """Check if human intervention is required and handle it."""
     high_risk = (
@@ -546,8 +577,9 @@ async def _check_intervention(
         try:
             await asyncio.wait_for(approval_event.wait(), timeout=None)
         except asyncio.CancelledError as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("mission_runner: Exception swallowed at L546: %s", e)
+            logging.getLogger(__name__).debug("mission_runner: Exception swallowed at L546: %s", e)
         if "VETOED" in ctx.signals:
             print("   🛑 HUMAN VETO RECEIVED. Aborting mission.")
             ctx.signals.add("HUMAN_VETO")

@@ -5,6 +5,7 @@ This layer provides persistence, state management, and lifecycle governance.
 No orchestration, execution, or routing logic belongs in this layer.
 Only persistence contracts, state lifecycle, and governance are exported.
 """
+
 from enum import Enum
 
 from agentic_core.L4_state import cache as _cache  # noqa: F401  -- re-exports L4 cache sub-package

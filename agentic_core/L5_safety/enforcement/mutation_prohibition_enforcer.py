@@ -185,7 +185,10 @@ def _is_override_active() -> bool:
 
 
 def assert_no_persistent_write(
-    layer: str, op: str, path: str | None = None, trace_id: str | None = None,
+    layer: str,
+    op: str,
+    path: str | None = None,
+    trace_id: str | None = None,
 ) -> None:
     """Fail-closed guard: raises PermissionError if layer is forbidden.
 
@@ -228,7 +231,12 @@ def assert_no_persistent_write(
 
 
 def safe_write_text(
-    filepath: Path | str, content: str, *, layer: str, trace_id: str | None = None, encoding: str = "utf-8",
+    filepath: Path | str,
+    content: str,
+    *,
+    layer: str,
+    trace_id: str | None = None,
+    encoding: str = "utf-8",
 ) -> None:
     """Guarded Path.write_text replacement."""
     assert_no_persistent_write(layer, "write_text", str(filepath), trace_id)

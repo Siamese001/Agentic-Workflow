@@ -93,6 +93,7 @@ import pytest
 
 # Configuration constants
 
+
 class TestComplexityAnalyzerStrategy:
     """Tests for ComplexityAnalyzerStrategy."""
 
@@ -108,21 +109,29 @@ class TestComplexityAnalyzerStrategy:
     @pytest.fixture
     def strategy(self, config):
         """Create ComplexityAnalyzerStrategy instance."""
+
+
 class TestComplexityAnalyzerAgentFacade:
     """Tests for ComplexityAnalyzerAgent facade."""
 
     @pytest.fixture
     def agent(self):
         """Create ComplexityAnalyzerAgent instance."""
+
+
 class TestComplexityTypes:
     """Tests for complexity type dataclasses."""
 
     def test_complexity_violation_dataclass(self):
         """Test ComplexityViolation dataclass exists."""
+
+
 class TestLegacyCompatibility:
     """Tests ensuring 100% legacy compatibility."""
 
     def test_import_compatibility(self):
         """Test original import still works."""
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

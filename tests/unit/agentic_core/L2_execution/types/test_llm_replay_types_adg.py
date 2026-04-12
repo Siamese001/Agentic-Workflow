@@ -16,14 +16,17 @@ class TestLlmReplayTypesAdg:
     def test_llm_replay_types_adg_imports(self):
         """Test llm_replay_types_adg module imports."""
         from agentic_core import llm_replay_types_adg
+
         assert llm_replay_types_adg is not None
 
     def test_llm_replay_types_adg_class(self):
         """Test LlmReplayTypesAdg class exists."""
         from agentic_core import LlmReplayTypesAdg
+
         assert LlmReplayTypesAdg is not None
 
     def test_llm_replay_types_adg_callable(self):
         """Test llm_replay_types_adg functions are callable."""
         from agentic_core import validate_llm_replay_types_adg
+
         assert callable(validate_llm_replay_types_adg)

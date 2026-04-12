@@ -7,17 +7,21 @@ import pytest
 def test_data_path():
     """Fixture for test data path."""
     from pathlib import Path
+
     return Path(__file__).parent / "test_data"
+
 
 @pytest.fixture
 def temp_project_dir(tmp_path):
     """Fixture for temporary project directory."""
     return tmp_path / "project"
 
+
 # Test collection configuration
 def pytest_configure(config):
     """Configure pytest with custom settings."""
     config.addinivalue_line("markers", "data: marks tests as data-dependent")
+
 
 # Core pytest configuration
 import pytest
@@ -28,17 +32,21 @@ import pytest
 def test_data_path():
     """Fixture for test data path."""
     from pathlib import Path
+
     return Path(__file__).parent / "test_data"
+
 
 @pytest.fixture
 def temp_project_dir(tmp_path):
     """Fixture for temporary project directory."""
     return tmp_path / "project"
 
+
 # Test collection configuration
 def pytest_configure(config):
     """Configure pytest with custom settings."""
     config.addinivalue_line("markers", "data: marks tests as data-dependent")
+
 
 """Pytest configuration for sovereign hardening test suite."""
 

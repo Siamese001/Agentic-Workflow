@@ -64,19 +64,21 @@ def discover_capable_agents(
             return json.loads(cached)
 
     # Search registry for capable methods
-    results = registry.find_method(task, top_k=top_k) if hasattr(registry, 'find_method') else []
+    results = registry.find_method(task, top_k=top_k) if hasattr(registry, "find_method") else []
 
     capable = []
     for r in results:
         score = r.get("score", 0.0)
         if score >= min_confidence:
             meta = r.get("metadata", {})
-            capable.append({
-                "agent_class": meta.get("agent_class", "Unknown"),
-                "method": meta.get("method", "unknown"),
-                "confidence": score,
-                "docstring": meta.get("docstring", "")[:200],
-            })
+            capable.append(
+                {
+                    "agent_class": meta.get("agent_class", "Unknown"),
+                    "method": meta.get("method", "unknown"),
+                    "confidence": score,
+                    "docstring": meta.get("docstring", "")[:200],
+                }
+            )
 
     # Sort by confidence descending
     capable.sort(key=lambda x: x["confidence"], reverse=True)
@@ -86,8 +88,11 @@ def discover_capable_agents(
         try:
             redis_client.set(cache_key, json.dumps(capable), ex=3600)
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("orchestration_handshake_util: Exception swallowed at L88: %s", e)
+            logging.getLogger(__name__).debug(
+                "orchestration_handshake_util: Exception swallowed at L88: %s", e
+            )
 
     return capable
 

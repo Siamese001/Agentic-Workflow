@@ -182,7 +182,9 @@ class InMemoryVersionStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryVersionStore.commit_change_package",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "InMemoryVersionStore.commit_change_package",
         )
 
         if hasattr(pkg, "canonical_bytes"):
@@ -223,7 +225,7 @@ class FileBackedVersionStore:
         if self._index_path.exists():
             try:
                 return json.loads(self._index_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):    # guardian: Add error context logging
+            except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
                 return {}
         return {}
 
@@ -236,7 +238,9 @@ class FileBackedVersionStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedVersionStore.commit_change_package",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "FileBackedVersionStore.commit_change_package",
         )
 
         if hasattr(pkg, "canonical_bytes"):

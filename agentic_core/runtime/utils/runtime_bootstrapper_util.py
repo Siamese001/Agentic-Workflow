@@ -93,34 +93,84 @@ class TelemetryRecorder:
     def emit(self, signal, payload=None):
         """Emit a telemetry signal."""
         return f"emitted: {signal}"
+
+
 # Placeholder classes for missing dependencies
 class semantic_gatekeeper:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class StructuredEngineAgent:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class DockerSandbox:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class MCPConnectionManager:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class SupremeCourt:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class GenealogyRegistry:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class LocalDiskAdapter:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class AirlockProtocol:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class ConstitutionalOverseer:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class CostGovernor:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 class InputMembrane:
-    def __init__(self, config): self.config = config
+    def __init__(self, config):
+        self.config = config
+
+
 # Placeholder for SubatomicHop
 class SubatomicHop:
-    def __init__(self, role, config, telemetry, StructuredEngineAgent, gatekeeper, sandbox,
-                 mcp_manager=None, SupremeCourt=None, storage=None, genealogy=None,
-                 PiiVault=None, membrane=None, airlock=None, CostGovernor=None, overseer=None):
+    def __init__(
+        self,
+        role,
+        config,
+        telemetry,
+        StructuredEngineAgent,
+        gatekeeper,
+        sandbox,
+        mcp_manager=None,
+        SupremeCourt=None,
+        storage=None,
+        genealogy=None,
+        PiiVault=None,
+        membrane=None,
+        airlock=None,
+        CostGovernor=None,
+        overseer=None,
+    ):
         self.role = role
         self.config = config
         self.telemetry = telemetry
@@ -136,6 +186,7 @@ class SubatomicHop:
         self.airlock = airlock
         self.CostGovernor = CostGovernor
         self.overseer = overseer
+
 
 # from agentic_core.L5_safety.enforcement.pii_vault_enforcer import PIIVault
 # Use PiiVault instead (correct class name)
@@ -235,8 +286,11 @@ class runtime_bootstrapper:
     def assemble_hop(self, role: str) -> SubatomicHop:
         """Assembles a 100% Gravity-Compliant Hop with all 13 injected tools."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "runtime_bootstrapper.assemble_hop")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "runtime_bootstrapper.assemble_hop"
+        )
 
         LOGGER.info(f"Bootstrapper: Assembling Sovereign Hop for role -> {role}")
         return SubatomicHop(

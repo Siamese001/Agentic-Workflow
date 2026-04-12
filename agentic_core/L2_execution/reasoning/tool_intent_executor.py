@@ -185,6 +185,19 @@ def _invoke_authorize_and_execute(execution_context, target_callable, capability
     return authorize_and_execute(execution_context, target_callable, capability_token, payload, **kw)
 
 
+def _invoke_evidence_sidecar(evidence_bundle: Any, execution_context: Any, tool_name: str = "") -> Any:
+    """Pre-authorization evidence gate sidecar — delegates to evaluate_and_emit().
+
+    Called from l2_execute() when context.inputs["evidence_bundle"] is set.
+    Returns (gate_result, disposition) from the shared cross-lane adapter.
+    """
+    from agentic_core.L3_orchestration.reasoning.engines.evidence_eval_bridge import (  # noqa: PLC0415
+        evaluate_and_emit,
+    )
+
+    return evaluate_and_emit(evidence_bundle, execution_context, tool_name)
+
+
 def _make_execution_context(payload, target: str):
     from agentic_core.L4_state.utils.context.execution_context import (  # noqa: PLC0415
         ActionClass,
@@ -400,6 +413,10 @@ class ToolIntentExecutor(L2ExecutionAgent):
         try:
             # Authorize and execute
             _ectx = _make_execution_context(intent.args_hash, intent.tool_name)
+            # Pre-authorization evidence gate: runs only when evidence_bundle is present
+            _evidence_bundle = context.inputs.get("evidence_bundle")
+            if _evidence_bundle is not None:
+                _invoke_evidence_sidecar(_evidence_bundle, _ectx, intent.tool_name)
             _invoke_authorize_and_execute(
                 _ectx,
                 lambda p: p,
@@ -581,7 +598,12 @@ class ToolIntentExecutor(L2ExecutionAgent):
         """Context manager exit - preserves legacy usage."""
         pass
 
-    def execute(self, intent: ToolIntent, fn: Callable[[dict[str, Any]], dict[str, Any]]) -> ToolResult:
+    def execute(
+        self,
+        intent: ToolIntent,
+        fn: Callable[[dict[str, Any]], dict[str, Any]],
+        evidence_bundle: Any = None,
+    ) -> ToolResult:
         """
         Execute a ToolIntent (backward compatible API).
 
@@ -594,6 +616,11 @@ class ToolIntentExecutor(L2ExecutionAgent):
             Tool intent to execute
         fn : callable
             Tool function to invoke
+        evidence_bundle : EvidenceBundle | None
+            Optional evidence bundle from shape_search().  When provided, the
+            evidence quality gate and BUS T telemetry run as a pre-authorization
+            sidecar via evaluate_and_emit().  Legacy callers that omit this
+            argument are completely unaffected.
 
         Returns
         -------
@@ -601,7 +628,7 @@ class ToolIntentExecutor(L2ExecutionAgent):
             Execution result
         """
         result = self.run_l2_phases(
-            inputs={"intent": intent, "fn": fn},
+            inputs={"intent": intent, "fn": fn, "evidence_bundle": evidence_bundle},
             heal_enabled=False,  # Legacy mode: no healing
             trace_id=str(uuid.uuid4()),
         )

@@ -205,8 +205,11 @@ class HealingSuccessRateStore:
         are recorded (dampening to avoid over-weighting early noisy data).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingSuccessRateStore.get_prior")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingSuccessRateStore.get_prior"
+        )
 
         count = self._counts.get(error_signature, 0)
         if count < _MIN_SAMPLE_SIZE:
@@ -249,8 +252,11 @@ class HealingSuccessRateStore:
             get_sl_memory_bridge().persist_healing_success_rate(error_signature, rate, count)
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("healing_success_rate_store: Exception swallowed at L251: %s", e)
+            logging.getLogger(__name__).debug(
+                "healing_success_rate_store: Exception swallowed at L251: %s", e
+            )
 
     def _log_update(self, error_signature: str, success: bool, new_rate: float, new_count: int) -> None:
         """Structured telemetry for every update (never silent)."""

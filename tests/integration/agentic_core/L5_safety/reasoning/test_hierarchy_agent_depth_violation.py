@@ -17,6 +17,7 @@ class TestHierarchyAgentDepthViolation:
         """Test hierarchy_agent_depth_violation module imports."""
         try:
             from agentic_core import hierarchy_agent_depth_violation
+
             assert hierarchy_agent_depth_violation is not None
         except ImportError:
             pytest.skip("hierarchy_agent_depth_violation not available")
@@ -25,6 +26,7 @@ class TestHierarchyAgentDepthViolation:
         """Test HierarchyAgentDepthViolation class exists."""
         try:
             from agentic_core import HierarchyAgentDepthViolation
+
             assert HierarchyAgentDepthViolation is not None
         except ImportError:
             pytest.skip("HierarchyAgentDepthViolation not available")
@@ -33,6 +35,7 @@ class TestHierarchyAgentDepthViolation:
         """Test hierarchy_agent_depth_violation functions are callable."""
         try:
             from agentic_core import validate_hierarchy_agent_depth_violation
+
             assert callable(validate_hierarchy_agent_depth_violation)
         except ImportError:
             pytest.skip("validate_hierarchy_agent_depth_violation not available")

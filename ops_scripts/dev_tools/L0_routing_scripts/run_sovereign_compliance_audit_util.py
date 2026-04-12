@@ -200,7 +200,9 @@ def run_code_validator():
     print("=" * 80)
     policy_engine_dir = "agentic_core/L5_safety/policy_engine"
     result = invoke_code_validator(
-        action="validate_directory", project_root=project_root, directory=policy_engine_dir,
+        action="validate_directory",
+        project_root=project_root,
+        directory=policy_engine_dir,
     )
     if result.get("success"):
         print("\nResults:")

@@ -177,13 +177,13 @@ def _has_logging_call(handler: ast.ExceptHandler) -> bool:
         if isinstance(node, ast.Call):
             func = node.func
             if isinstance(func, ast.Attribute):
-                if func.attr in ('error', 'warning', 'exception', 'critical', 'info', 'debug'):
+                if func.attr in ("error", "warning", "exception", "critical", "info", "debug"):
                     return True
                 # print() as logging substitute
-                if func.attr == 'print':
+                if func.attr == "print":
                     return True
             elif isinstance(func, ast.Name):
-                if func.id in ('print', 'logger'):
+                if func.id in ("print", "logger"):
                     return True
     return False
 
@@ -199,7 +199,7 @@ def _has_return_or_value(handler: ast.ExceptHandler) -> bool:
 def fix_file(file_path: Path, dry_run: bool = True) -> dict:
     """Add whitelist comments to exception handlers with logging."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         lines = source.splitlines(keepends=True)
         tree = ast.parse(source, filename=str(file_path))
 
@@ -218,12 +218,12 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
             if node.type is None:
                 is_generic = True
             elif isinstance(node.type, ast.Name):
-                if node.type.id in ('Exception', 'BaseException'):
+                if node.type.id in ("Exception", "BaseException"):
                     is_generic = True
             elif isinstance(node.type, ast.Tuple):
                 # except (SomeError, Exception): pattern
                 for elt in node.type.elts:
-                    if isinstance(elt, ast.Name) and elt.id in ('Exception', 'BaseException'):
+                    if isinstance(elt, ast.Name) and elt.id in ("Exception", "BaseException"):
                         is_generic = True
                         break
 
@@ -240,59 +240,60 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
             target_lines.append(lineno)
 
         if not target_lines:
-            return {'status': 'skipped', 'reason': 'no_whitelistable_handlers'}
+            return {"status": "skipped", "reason": "no_whitelistable_handlers"}
 
         if not dry_run:
             # Insert from bottom to top to preserve line numbers
             for lineno in sorted(target_lines, reverse=True):
                 idx = lineno - 1
                 indent = len(lines[idx]) - len(lines[idx].lstrip())
-                comment_line = ' ' * indent + WHITELIST_COMMENT + '\n'
+                comment_line = " " * indent + WHITELIST_COMMENT + "\n"
                 lines.insert(idx, comment_line)
 
-            file_path.write_text(''.join(lines), encoding='utf-8')
+            file_path.write_text("".join(lines), encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'fixed_count': len(target_lines),
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "fixed_count": len(target_lines),
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': f'SyntaxError: {e}',
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": f"SyntaxError: {e}",
         }
     # guardian: allow-silent-swallow
     except Exception as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
         }
 
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--execute', action='store_true')
-    parser.add_argument('--limit', type=int, default=500)
+    parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--limit", type=int, default=500)
     args = parser.parse_args()
 
     project_root = get_validated_project_root()
     baseline_file = project_root / "ops_scripts/hooks/landmine_baseline.txt"
 
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if 'silent_swallower' in line:
-                file_path = line.split(':')[0]
+            if "silent_swallower" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
-    unique_files = sorted(set(violations))[:args.limit]
+    unique_files = sorted(set(violations))[: args.limit]
 
     print(f"[INFO] Processing {len(unique_files)} files")
     print(f"[MODE] {'EXECUTE' if args.execute else 'DRY RUN'}")
@@ -304,19 +305,19 @@ def main():
             continue
         result = fix_file(file_path, dry_run=not args.execute)
         results.append(result)
-        if result['status'] == 'success':
+        if result["status"] == "success":
             print(f"✓ {result['file']} ({result['fixed_count']} handlers)")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
 
-    success = len([r for r in results if r['status'] == 'success'])
-    errors = len([r for r in results if r['status'] == 'error'])
-    skipped = len([r for r in results if r['status'] == 'skipped'])
+    success = len([r for r in results if r["status"] == "success"])
+    errors = len([r for r in results if r["status"] == "error"])
+    skipped = len([r for r in results if r["status"] == "skipped"])
     print(f"\n[SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}")
     if not args.execute and success > 0:
         print("[NEXT] Run with --execute to apply")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

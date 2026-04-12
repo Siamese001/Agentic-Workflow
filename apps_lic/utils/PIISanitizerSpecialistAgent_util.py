@@ -199,8 +199,11 @@ class PII_SanitizerSpecialistAgent(LICAgentBase):
     @track_metrics("run_pii_sanitizer")
     def run(self, resume: dict[str, Any]) -> dict[str, Any]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PII_SanitizerSpecialistAgent.run")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PII_SanitizerSpecialistAgent.run"
+        )
 
         self.log_info("Sanitizing PII (local regex processing)...")
         sanitized_resume = json.loads(json.dumps(resume))
@@ -242,8 +245,11 @@ class BiasDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
     def _process(self, buffer: ImmutableStagingBuffer, registry: TraceRegistry) -> None:
         """Execute bias detection on buffer content."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BiasDetectorSpecialist._process")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "BiasDetectorSpecialist._process"
+        )
 
         registry.add_trace("PHASE_START", {"agent": self.__class__.__name__})
         mission_input = buffer.read("mission_input") or {}
@@ -294,8 +300,11 @@ class PromptInjectionDetectorSpecialist(LICAgentBase, SubatomicTestingMixin):
     @track_metrics("run_pi_detector")
     async def run_async(self, user_input: str, workflow_id: str) -> dict[str, Any]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptInjectionDetectorSpecialist.run_async")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptInjectionDetectorSpecialist.run_async"
+        )
 
         self.log_info("Detecting prompt injection...")
         if not self.config.agent_stacks.enable_prompt_injection_detection:
@@ -351,14 +360,19 @@ class ConstitutionalReviewerAgent(LICAgentBase, SubatomicTestingMixin):
     @track_metrics("run_constitutional_review")
     async def run_async(self, final_draft: str, workflow_id: str) -> ConstitutionalReviewResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConstitutionalReviewerAgent.run_async")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConstitutionalReviewerAgent.run_async"
+        )
 
         self.log_info("Running final constitutional review...")
         if not self.config.agent_stacks.enable_constitutional_review:
             self.log_warning("Constitutional review is disabled. Passing by default.")
             return ConstitutionalReviewResult(
-                review_passed=True, violations_found=[], feedback="Review disabled",
+                review_passed=True,
+                violations_found=[],
+                feedback="Review disabled",
             )
         client = self.get_model_client("constitutional_review_model")
         prompt_template = self.prompt_manager.get_template("constitutional_review")
@@ -382,7 +396,9 @@ class ConstitutionalReviewerAgent(LICAgentBase, SubatomicTestingMixin):
                 f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft).",
             )
             return ConstitutionalReviewResult(
-                review_passed=True, violations_found=["VALIDATION_ERROR"], feedback=error,
+                review_passed=True,
+                violations_found=["VALIDATION_ERROR"],
+                feedback=error,
             )
         if not validated_output.review_passed:
             self.log_warning(f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}")

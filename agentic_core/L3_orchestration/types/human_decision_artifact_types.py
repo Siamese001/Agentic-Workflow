@@ -253,7 +253,9 @@ class HumanDecisionArtifact:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "HumanDecisionArtifact.apply_modify_diff",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "HumanDecisionArtifact.apply_modify_diff",
         )
 
         import hashlib
@@ -335,7 +337,11 @@ def create_human_review_draft(
 
 
 def create_approval_artifact(
-    trace_id: str, policy_hash: str, plan_hash: str, reviewer_id: str, rationale: str | None = None,
+    trace_id: str,
+    policy_hash: str,
+    plan_hash: str,
+    reviewer_id: str,
+    rationale: str | None = None,
 ) -> HumanDecisionArtifact:
     """
     Create an approval artifact for Path D.
@@ -353,7 +359,10 @@ def create_approval_artifact(
     from datetime import datetime
 
     structured_schema = StructuredPatchSchema(
-        allowed_tools=(), patch_format="structured", max_patch_size=1024 * 1024, required_fields=(),
+        allowed_tools=(),
+        patch_format="structured",
+        max_patch_size=1024 * 1024,
+        required_fields=(),
     )
     artifact = HumanDecisionArtifact(
         trace_id=trace_id,
@@ -370,7 +379,11 @@ def create_approval_artifact(
 
 
 def create_rejection_artifact(
-    trace_id: str, policy_hash: str, plan_hash: str, reviewer_id: str, rationale: str,
+    trace_id: str,
+    policy_hash: str,
+    plan_hash: str,
+    reviewer_id: str,
+    rationale: str,
 ) -> HumanDecisionArtifact:
     """
     Create a rejection artifact for Path D.
@@ -388,7 +401,10 @@ def create_rejection_artifact(
     from datetime import datetime
 
     structured_schema = StructuredPatchSchema(
-        allowed_tools=(), patch_format="structured", max_patch_size=1024 * 1024, required_fields=(),
+        allowed_tools=(),
+        patch_format="structured",
+        max_patch_size=1024 * 1024,
+        required_fields=(),
     )
     artifact = HumanDecisionArtifact(
         trace_id=trace_id,

@@ -1,4 +1,5 @@
 """Placeholder test file - syntax fixed."""
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -16,24 +17,28 @@ class GeneratedTest(unittest.TestCase):
     def test_refine(self):
         """Test refine function."""
         from agentic_core.L2_execution.reasoning import refine
+
         result = refine()
         self.assertIsNotNone(result)
 
     def test_refine(self):
         """Test refine function."""
         from agentic_core.L2_execution.reasoning import refine
+
         result = refine()
         self.assertIsNotNone(result)
 
     def test_RollbackRefiner_init(self):
         """Test RollbackRefiner initialization."""
         from agentic_core.L2_execution.reasoning import RollbackRefiner
+
         instance = RollbackRefiner()
         self.assertIsNotNone(instance)
 
     def test_RollbackRefiner_refine(self):
         """Test RollbackRefiner.refine method."""
         from agentic_core.L2_execution.reasoning import RollbackRefiner
+
         instance = RollbackRefiner()
         result = instance.refine()
         self.assertIsNotNone(result)
@@ -41,14 +46,18 @@ class GeneratedTest(unittest.TestCase):
     def test_DefaultDeterministicRollbackRefiner_init(self):
         """Test DefaultDeterministicRollbackRefiner initialization."""
         from agentic_core.L2_execution.reasoning import DefaultDeterministicRollbackRefiner
+
         instance = DefaultDeterministicRollbackRefiner()
         self.assertIsNotNone(instance)
 
     def test_DefaultDeterministicRollbackRefiner_refine(self):
         """Test DefaultDeterministicRollbackRefiner.refine method."""
         from agentic_core.L2_execution.reasoning import DefaultDeterministicRollbackRefiner
+
         instance = DefaultDeterministicRollbackRefiner()
         result = instance.refine()
         self.assertIsNotNone(result)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main()

@@ -122,13 +122,21 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
         """Register L5-specific feature extraction functions."""
         self.register_extraction_function("policy_complexity_score", self._extract_policy_complexity_score)
         self.register_extraction_function("compliance_risk_level", self._extract_compliance_risk_level)
-        self.register_extraction_function("historical_false_positive_rate", self._extract_historical_false_positive_rate)
-        self.register_extraction_function("historical_false_negative_rate", self._extract_historical_false_negative_rate)
+        self.register_extraction_function(
+            "historical_false_positive_rate", self._extract_historical_false_positive_rate
+        )
+        self.register_extraction_function(
+            "historical_false_negative_rate", self._extract_historical_false_negative_rate
+        )
         self.register_extraction_function("business_impact_score", self._extract_business_impact_score)
         self.register_extraction_function("stakeholder_criticality", self._extract_stakeholder_criticality)
         self.register_extraction_function("audit_requirement_level", self._extract_audit_requirement_level)
-        self.register_extraction_function("risk_mitigation_effectiveness", self._extract_risk_mitigation_effectiveness)
-        self.register_extraction_function("regulatory_change_frequency", self._extract_regulatory_change_frequency)
+        self.register_extraction_function(
+            "risk_mitigation_effectiveness", self._extract_risk_mitigation_effectiveness
+        )
+        self.register_extraction_function(
+            "regulatory_change_frequency", self._extract_regulatory_change_frequency
+        )
         self.register_extraction_function("precedent_strength", self._extract_precedent_strength)
 
     def _extract_policy_complexity_score(self, context: dict[str, Any]) -> float:
@@ -232,7 +240,13 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
         # Audit frequency contribution
         audit_requirements = policy.get("audit_requirements", {})
         audit_frequency = audit_requirements.get("frequency", "annual")
-        frequency_scores = {"monthly": 1.0, "quarterly": 0.8, "semiannual": 0.6, "annual": 0.4, "biennial": 0.2}
+        frequency_scores = {
+            "monthly": 1.0,
+            "quarterly": 0.8,
+            "semiannual": 0.6,
+            "annual": 0.4,
+            "biennial": 0.2,
+        }
         audit_score = frequency_scores.get(audit_frequency, 0.4)
         score += risk_indicators["audit_frequency"] * audit_score
 
@@ -271,7 +285,9 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
                 decisions = similar_policy.get("decisions", [])
                 for decision in decisions:
                     total_decisions += 1
-                    if decision.get("predicted_violation", False) and not decision.get("actual_violation", False):
+                    if decision.get("predicted_violation", False) and not decision.get(
+                        "actual_violation", False
+                    ):
                         false_positives += 1
 
             if total_decisions > 0:
@@ -299,7 +315,9 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
                 decisions = similar_policy.get("decisions", [])
                 for decision in decisions:
                     total_decisions += 1
-                    if not decision.get("predicted_violation", False) and decision.get("actual_violation", False):
+                    if not decision.get("predicted_violation", False) and decision.get(
+                        "actual_violation", False
+                    ):
                         false_negatives += 1
 
             if total_decisions > 0:
@@ -423,7 +441,13 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         # Audit frequency contribution
         frequency = audit_requirements.get("frequency", "annual")
-        frequency_scores = {"monthly": 1.0, "quarterly": 0.8, "semiannual": 0.6, "annual": 0.4, "biennial": 0.2}
+        frequency_scores = {
+            "monthly": 1.0,
+            "quarterly": 0.8,
+            "semiannual": 0.6,
+            "annual": 0.4,
+            "biennial": 0.2,
+        }
         requirement_score += frequency_scores.get(frequency, 0.4) * 0.3
 
         # Audit scope contribution
@@ -499,10 +523,11 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
         twelve_months_ago = now - timedelta(days=365)
 
         recent_changes = [
-            change for change in regulatory_history
+            change
+            for change in regulatory_history
             if change.get("effective_date")
             and isinstance(change["effective_date"], str)
-            and datetime.fromisoformat(change["effective_date"].replace('Z', '+00:00')) > twelve_months_ago
+            and datetime.fromisoformat(change["effective_date"].replace("Z", "+00:00")) > twelve_months_ago
         ]
 
         change_count = len(recent_changes)
@@ -543,7 +568,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
             created_date = precedent.get("created_date")
             if created_date and isinstance(created_date, str):
                 try:
-                    creation_time = datetime.fromisoformat(created_date.replace('Z', '+00:00'))
+                    creation_time = datetime.fromisoformat(created_date.replace("Z", "+00:00"))
                     age_days = (now - creation_time).days
                     # Stronger if recent (within last 2 years)
                     age_score = max(0.1, 1.0 - (age_days / 730.0))

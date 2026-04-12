@@ -102,14 +102,14 @@ class AdvancedL0Router(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.pipeline = model_data.get('pipeline')
-            self.feature_names = model_data.get('feature_names', [])
-            self.network_config = model_data.get('network_config', self.network_config)
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.pipeline = model_data.get("pipeline")
+            self.feature_names = model_data.get("feature_names", [])
+            self.network_config = model_data.get("network_config", self.network_config)
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -119,23 +119,23 @@ class AdvancedL0Router(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         model_data = {
-            'pipeline': self.pipeline,
-            'feature_names': self.feature_names,
-            'network_config': self.network_config,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
+            "pipeline": self.pipeline,
+            "feature_names": self.feature_names,
+            "network_config": self.network_config,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -194,10 +194,7 @@ class AdvancedL0Router(BaseMLModel):
             predicted_routing = self.ROUTING_MAPPING.get(int(predicted_class), "Standard_Route")
 
             # Create probability distribution
-            prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            prob_distribution = {self.class_names[i]: float(prob) for i, prob in enumerate(probabilities)}
 
             # Calculate confidence (max probability)
             confidence = float(np.max(probabilities))
@@ -230,16 +227,18 @@ class AdvancedL0Router(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': predicted_class,
-                'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold,
-                'routing_strategy': predicted_routing,
-                'neural_network_config': self.network_config,
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": predicted_class,
+                    "class_probabilities": [float(p) for p in probabilities],
+                    "thresholds_passed": passes_threshold,
+                    "routing_strategy": predicted_routing,
+                    "neural_network_config": self.network_config,
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -286,10 +285,10 @@ class AdvancedL0Router(BaseMLModel):
 
         if not extraction_result.success:
             return {
-                'routing_strategy': 'Standard_Route',
-                'confidence': 0.0,
-                'reason': 'Feature extraction failed',
-                'recommendations': ['Check routing data availability'],
+                "routing_strategy": "Standard_Route",
+                "confidence": 0.0,
+                "reason": "Feature extraction failed",
+                "recommendations": ["Check routing data availability"],
             }
 
         # Validate input
@@ -325,15 +324,17 @@ class AdvancedL0Router(BaseMLModel):
         )
 
         return {
-            'routing_strategy': prediction.prediction,
-            'confidence': prediction.confidence,
-            'probability_distribution': prediction.probability_distribution,
-            'top_factors': prediction.top_features,
-            'recommendations': recommendations,
-            'routing_analysis': routing_analysis,
-            'performance_prediction': performance_prediction,
-            'alternative_strategies': self._get_alternative_strategies(prediction.probability_distribution),
-            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence),
+            "routing_strategy": prediction.prediction,
+            "confidence": prediction.confidence,
+            "probability_distribution": prediction.probability_distribution,
+            "top_factors": prediction.top_features,
+            "recommendations": recommendations,
+            "routing_analysis": routing_analysis,
+            "performance_prediction": performance_prediction,
+            "alternative_strategies": self._get_alternative_strategies(prediction.probability_distribution),
+            "implementation_priority": self._get_implementation_priority(
+                prediction.prediction, prediction.confidence
+            ),
         }
 
     def analyze_query_semantics(
@@ -357,42 +358,42 @@ class AdvancedL0Router(BaseMLModel):
         """
         # Extract semantic features
         semantic_features = {
-            'semantic_similarity_score': query_context.get('semantic_similarity', 0.5),
-            'intent_confidence': query_context.get('intent_confidence', 0.5),
-            'query_complexity': query_context.get('query_complexity', 0.5),
+            "semantic_similarity_score": query_context.get("semantic_similarity", 0.5),
+            "intent_confidence": query_context.get("intent_confidence", 0.5),
+            "query_complexity": query_context.get("query_complexity", 0.5),
         }
 
         # Analyze semantic patterns
         semantic_analysis = {
-            'query_intent': self._classify_query_intent(query_context),
-            'semantic_complexity': self._assess_semantic_complexity(query_context),
-            'context_relevance': self._evaluate_context_relevance(query_context),
-            'routing_implications': self._determine_semantic_routing_implications(query_context),
+            "query_intent": self._classify_query_intent(query_context),
+            "semantic_complexity": self._assess_semantic_complexity(query_context),
+            "context_relevance": self._evaluate_context_relevance(query_context),
+            "routing_implications": self._determine_semantic_routing_implications(query_context),
         }
 
         # Generate semantic-based routing suggestions
         routing_suggestions = []
 
-        intent = semantic_analysis['query_intent']
-        if intent == 'complex_analytical':
-            routing_suggestions.append('Consider Neural_Advanced routing for complex queries')
-        elif intent == 'simple_informational':
-            routing_suggestions.append('Standard_Route may be sufficient for simple queries')
-        elif intent == 'context_dependent':
-            routing_suggestions.append('Context_Aware routing recommended')
+        intent = semantic_analysis["query_intent"]
+        if intent == "complex_analytical":
+            routing_suggestions.append("Consider Neural_Advanced routing for complex queries")
+        elif intent == "simple_informational":
+            routing_suggestions.append("Standard_Route may be sufficient for simple queries")
+        elif intent == "context_dependent":
+            routing_suggestions.append("Context_Aware routing recommended")
 
-        complexity = semantic_analysis['semantic_complexity']
+        complexity = semantic_analysis["semantic_complexity"]
         if complexity > 0.7:
-            routing_suggestions.append('High complexity - use advanced routing strategies')
+            routing_suggestions.append("High complexity - use advanced routing strategies")
         elif complexity < 0.3:
-            routing_suggestions.append('Low complexity - standard routing appropriate')
+            routing_suggestions.append("Low complexity - standard routing appropriate")
 
         return {
-            'semantic_analysis': semantic_analysis,
-            'semantic_features': semantic_features,
-            'routing_suggestions': routing_suggestions,
-            'confidence_score': query_context.get('semantic_confidence', 0.5),
-            'recommended_strategy': self._recommend_semantic_strategy(semantic_analysis),
+            "semantic_analysis": semantic_analysis,
+            "semantic_features": semantic_features,
+            "routing_suggestions": routing_suggestions,
+            "confidence_score": query_context.get("semantic_confidence", 0.5),
+            "recommended_strategy": self._recommend_semantic_strategy(semantic_analysis),
         }
 
     def learn_user_preferences(
@@ -416,8 +417,8 @@ class AdvancedL0Router(BaseMLModel):
         """
         if not user_interactions:
             return {
-                'preference_analysis': 'No user interaction data available',
-                'adaptation_strategy': 'Use default routing preferences',
+                "preference_analysis": "No user interaction data available",
+                "adaptation_strategy": "Use default routing preferences",
             }
 
         # Analyze user interaction patterns
@@ -437,12 +438,12 @@ class AdvancedL0Router(BaseMLModel):
         )
 
         return {
-            'preference_analysis': preference_analysis,
-            'routing_preferences': routing_preferences,
-            'adaptation_factors': adaptation_factors,
-            'personalized_strategy': personalized_strategy,
-            'learning_confidence': self._calculate_learning_confidence(user_interactions),
-            'adaptation_recommendations': self._generate_adaptation_recommendations(preference_analysis),
+            "preference_analysis": preference_analysis,
+            "routing_preferences": routing_preferences,
+            "adaptation_factors": adaptation_factors,
+            "personalized_strategy": personalized_strategy,
+            "learning_confidence": self._calculate_learning_confidence(user_interactions),
+            "adaptation_recommendations": self._generate_adaptation_recommendations(preference_analysis),
         }
 
     def _generate_routing_recommendations(
@@ -455,68 +456,84 @@ class AdvancedL0Router(BaseMLModel):
         recommendations = []
 
         if strategy == "Neural_Advanced":
-            recommendations.extend([
-                "Use neural network-based routing for optimal performance",
-                "Leverage semantic understanding for intelligent decisions",
-                "Monitor routing performance and adapt accordingly",
-                "Consider user behavior patterns in routing",
-            ])
+            recommendations.extend(
+                [
+                    "Use neural network-based routing for optimal performance",
+                    "Leverage semantic understanding for intelligent decisions",
+                    "Monitor routing performance and adapt accordingly",
+                    "Consider user behavior patterns in routing",
+                ]
+            )
         elif strategy == "Semantic_Optimized":
-            recommendations.extend([
-                "Optimize routing based on semantic query analysis",
-                "Use intent classification for routing decisions",
-                "Leverage context relevance for better routing",
-                "Monitor semantic accuracy and adjust",
-            ])
+            recommendations.extend(
+                [
+                    "Optimize routing based on semantic query analysis",
+                    "Use intent classification for routing decisions",
+                    "Leverage context relevance for better routing",
+                    "Monitor semantic accuracy and adjust",
+                ]
+            )
         elif strategy == "Context_Aware":
-            recommendations.extend([
-                "Consider current context in routing decisions",
-                "Adapt routing based on environmental factors",
-                "Use session continuity for routing optimization",
-                "Monitor context relevance and update",
-            ])
+            recommendations.extend(
+                [
+                    "Consider current context in routing decisions",
+                    "Adapt routing based on environmental factors",
+                    "Use session continuity for routing optimization",
+                    "Monitor context relevance and update",
+                ]
+            )
         elif strategy == "User_Personalized":
-            recommendations.extend([
-                "Personalize routing based on user preferences",
-                "Learn from user interaction patterns",
-                "Adapt routing to user behavior",
-                "Monitor user satisfaction and adjust",
-            ])
+            recommendations.extend(
+                [
+                    "Personalize routing based on user preferences",
+                    "Learn from user interaction patterns",
+                    "Adapt routing to user behavior",
+                    "Monitor user satisfaction and adjust",
+                ]
+            )
         elif strategy == "Performance_Optimized":
-            recommendations.extend([
-                "Optimize routing for maximum performance",
-                "Consider system load and resource availability",
-                "Balance performance with cost efficiency",
-                "Monitor performance metrics continuously",
-            ])
+            recommendations.extend(
+                [
+                    "Optimize routing for maximum performance",
+                    "Consider system load and resource availability",
+                    "Balance performance with cost efficiency",
+                    "Monitor performance metrics continuously",
+                ]
+            )
         elif strategy == "Load_Balanced":
-            recommendations.extend([
-                "Use load balancing for optimal resource distribution",
-                "Consider current system load in routing",
-                "Balance across multiple routing options",
-                "Monitor load distribution and adjust",
-            ])
+            recommendations.extend(
+                [
+                    "Use load balancing for optimal resource distribution",
+                    "Consider current system load in routing",
+                    "Balance across multiple routing options",
+                    "Monitor load distribution and adjust",
+                ]
+            )
         elif strategy == "Cost_Efficient":
-            recommendations.extend([
-                "Optimize routing for cost efficiency",
-                "Consider resource costs in routing decisions",
-                "Balance cost with performance requirements",
-                "Monitor cost metrics and optimize",
-            ])
+            recommendations.extend(
+                [
+                    "Optimize routing for cost efficiency",
+                    "Consider resource costs in routing decisions",
+                    "Balance cost with performance requirements",
+                    "Monitor cost metrics and optimize",
+                ]
+            )
         else:  # Standard_Route
-            recommendations.extend([
-                "Use standard routing for basic requests",
-                "Monitor standard routing performance",
-                "Consider upgrading to advanced routing if needed",
-                "Maintain standard routing reliability",
-            ])
+            recommendations.extend(
+                [
+                    "Use standard routing for basic requests",
+                    "Monitor standard routing performance",
+                    "Consider upgrading to advanced routing if needed",
+                    "Maintain standard routing reliability",
+                ]
+            )
 
         # Add context-specific recommendations
-        semantic_similarity = features.get('semantic_similarity_score', 0)
+        semantic_similarity = features.get("semantic_similarity_score", 0)
         if semantic_similarity > 0.8:
             recommendations.append("High semantic similarity - consider semantic optimization")
 
-        user_preference = features.get('user_preference_score', 0)
+        user_preference = features.get("user_preference_score", 0)
         if user_preference > 0.7:
             recommendations.append("Strong user preference - consider personalized routing")
 
@@ -529,57 +546,67 @@ class AdvancedL0Router(BaseMLModel):
     ) -> dict[str, Any]:
         """Analyze routing factors and their impact."""
         factor_analysis = {
-            'primary_factors': [],
-            'secondary_factors': [],
-            'constraint_factors': [],
+            "primary_factors": [],
+            "secondary_factors": [],
+            "constraint_factors": [],
         }
 
         # Analyze semantic factors
-        semantic_score = features.get('semantic_similarity_score', 0)
+        semantic_score = features.get("semantic_similarity_score", 0)
         if semantic_score > 0.7:
-            factor_analysis['primary_factors'].append({
-                'factor': 'semantic_similarity',
-                'score': semantic_score,
-                'impact': 'high',
-                'description': 'Strong semantic similarity influences routing',
-            })
+            factor_analysis["primary_factors"].append(
+                {
+                    "factor": "semantic_similarity",
+                    "score": semantic_score,
+                    "impact": "high",
+                    "description": "Strong semantic similarity influences routing",
+                }
+            )
         elif semantic_score > 0.4:
-            factor_analysis['secondary_factors'].append({
-                'factor': 'semantic_similarity',
-                'score': semantic_score,
-                'impact': 'medium',
-                'description': 'Moderate semantic similarity affects routing',
-            })
+            factor_analysis["secondary_factors"].append(
+                {
+                    "factor": "semantic_similarity",
+                    "score": semantic_score,
+                    "impact": "medium",
+                    "description": "Moderate semantic similarity affects routing",
+                }
+            )
 
         # Analyze confidence factors
-        intent_confidence = features.get('intent_confidence', 0)
+        intent_confidence = features.get("intent_confidence", 0)
         if intent_confidence > 0.8:
-            factor_analysis['primary_factors'].append({
-                'factor': 'intent_confidence',
-                'score': intent_confidence,
-                'impact': 'high',
-                'description': 'High intent confidence enables advanced routing',
-            })
+            factor_analysis["primary_factors"].append(
+                {
+                    "factor": "intent_confidence",
+                    "score": intent_confidence,
+                    "impact": "high",
+                    "description": "High intent confidence enables advanced routing",
+                }
+            )
 
         # Analyze resource factors
-        resource_availability = features.get('resource_availability', 0)
+        resource_availability = features.get("resource_availability", 0)
         if resource_availability < 0.3:
-            factor_analysis['constraint_factors'].append({
-                'factor': 'resource_availability',
-                'score': resource_availability,
-                'impact': 'constraint',
-                'description': 'Low resource availability limits routing options',
-            })
+            factor_analysis["constraint_factors"].append(
+                {
+                    "factor": "resource_availability",
+                    "score": resource_availability,
+                    "impact": "constraint",
+                    "description": "Low resource availability limits routing options",
+                }
+            )
 
         # Analyze performance factors
-        routing_efficiency = features.get('routing_efficiency', 0)
+        routing_efficiency = features.get("routing_efficiency", 0)
         if routing_efficiency > 0.8:
-            factor_analysis['primary_factors'].append({
-                'factor': 'routing_efficiency',
-                'score': routing_efficiency,
-                'impact': 'high',
-                'description': 'High routing efficiency supports advanced strategies',
-            })
+            factor_analysis["primary_factors"].append(
+                {
+                    "factor": "routing_efficiency",
+                    "score": routing_efficiency,
+                    "impact": "high",
+                    "description": "High routing efficiency supports advanced strategies",
+                }
+            )
 
         return factor_analysis
 
@@ -645,8 +672,8 @@ class AdvancedL0Router(BaseMLModel):
         base_performance = performance_estimates.get(strategy, performance_estimates["Standard_Route"])
 
         # Adjust based on current conditions
-        resource_availability = features.get('resource_availability', 0.5)
-        system_load = features.get('system_load_factor', 0.5)
+        resource_availability = features.get("resource_availability", 0.5)
+        system_load = features.get("system_load_factor", 0.5)
 
         # Adjust performance based on resources
         resource_multiplier = 0.5 + (resource_availability * 0.5)
@@ -655,7 +682,9 @@ class AdvancedL0Router(BaseMLModel):
         adjusted_performance = {}
         for metric, base_score in base_performance.items():
             if metric == "resource_usage":
-                adjusted_performance[metric] = base_score * (2.0 - resource_multiplier)  # Inverse for resource usage
+                adjusted_performance[metric] = base_score * (
+                    2.0 - resource_multiplier
+                )  # Inverse for resource usage
             else:
                 adjusted_performance[metric] = base_score * resource_multiplier * load_multiplier
 
@@ -674,12 +703,14 @@ class AdvancedL0Router(BaseMLModel):
 
         for strategy, probability in sorted_strategies:
             if probability > 0.1:  # Only include if probability is significant
-                alternatives.append({
-                    'strategy': strategy,
-                    'probability': probability,
-                    'confidence': probability,
-                    'recommendation': f"Consider {strategy} as alternative",
-                })
+                alternatives.append(
+                    {
+                        "strategy": strategy,
+                        "probability": probability,
+                        "confidence": probability,
+                        "recommendation": f"Consider {strategy} as alternative",
+                    }
+                )
 
         return alternatives
 
@@ -701,51 +732,51 @@ class AdvancedL0Router(BaseMLModel):
     def _classify_query_intent(self, query_context: dict[str, Any]) -> str:
         """Classify query intent based on context."""
         # Simplified intent classification
-        complexity = query_context.get('query_complexity', 0.5)
-        context_relevance = query_context.get('context_relevance', 0.5)
+        complexity = query_context.get("query_complexity", 0.5)
+        context_relevance = query_context.get("context_relevance", 0.5)
 
         if complexity > 0.7:
-            return 'complex_analytical'
+            return "complex_analytical"
         elif context_relevance > 0.7:
-            return 'context_dependent'
+            return "context_dependent"
         elif complexity < 0.3:
-            return 'simple_informational'
+            return "simple_informational"
         else:
-            return 'moderate_complexity'
+            return "moderate_complexity"
 
     def _assess_semantic_complexity(self, query_context: dict[str, Any]) -> float:
         """Assess semantic complexity of the query."""
         # Use query complexity as proxy for semantic complexity
-        return query_context.get('query_complexity', 0.5)
+        return query_context.get("query_complexity", 0.5)
 
     def _evaluate_context_relevance(self, query_context: dict[str, Any]) -> float:
         """Evaluate context relevance for routing."""
-        return query_context.get('context_relevance', 0.5)
+        return query_context.get("context_relevance", 0.5)
 
     def _determine_semantic_routing_implications(self, query_context: dict[str, Any]) -> str:
         """Determine routing implications based on semantic analysis."""
-        semantic_similarity = query_context.get('semantic_similarity', 0.5)
+        semantic_similarity = query_context.get("semantic_similarity", 0.5)
 
         if semantic_similarity > 0.8:
-            return 'semantic_optimization_recommended'
+            return "semantic_optimization_recommended"
         elif semantic_similarity > 0.5:
-            return 'semantic_consideration_advised'
+            return "semantic_consideration_advised"
         else:
-            return 'standard_routing_sufficient'
+            return "standard_routing_sufficient"
 
     def _recommend_semantic_strategy(self, semantic_analysis: dict[str, Any]) -> str:
         """Recommend routing strategy based on semantic analysis."""
-        intent = semantic_analysis['query_intent']
-        complexity = semantic_analysis['semantic_complexity']
+        intent = semantic_analysis["query_intent"]
+        complexity = semantic_analysis["semantic_complexity"]
 
-        if intent == 'complex_analytical' and complexity > 0.7:
-            return 'Neural_Advanced'
-        elif intent == 'context_dependent':
-            return 'Context_Aware'
+        if intent == "complex_analytical" and complexity > 0.7:
+            return "Neural_Advanced"
+        elif intent == "context_dependent":
+            return "Context_Aware"
         elif complexity > 0.5:
-            return 'Semantic_Optimized'
+            return "Semantic_Optimized"
         else:
-            return 'Standard_Route'
+            return "Standard_Route"
 
     def _analyze_user_preferences(self, user_interactions: list[dict[str, Any]]) -> dict[str, Any]:
         """Analyze user preferences from interaction data."""
@@ -754,26 +785,28 @@ class AdvancedL0Router(BaseMLModel):
         total_interactions = len(user_interactions)
 
         for interaction in user_interactions:
-            strategy = interaction.get('routing_strategy', 'Standard_Route')
-            satisfaction = interaction.get('user_satisfaction', 0.5)
+            strategy = interaction.get("routing_strategy", "Standard_Route")
+            satisfaction = interaction.get("user_satisfaction", 0.5)
 
             if strategy not in preference_counts:
-                preference_counts[strategy] = {'count': 0, 'satisfaction_sum': 0.0}
+                preference_counts[strategy] = {"count": 0, "satisfaction_sum": 0.0}
 
-            preference_counts[strategy]['count'] += 1
-            preference_counts[strategy]['satisfaction_sum'] += satisfaction
+            preference_counts[strategy]["count"] += 1
+            preference_counts[strategy]["satisfaction_sum"] += satisfaction
 
         # Calculate preference scores
         preference_scores = {}
         for strategy, data in preference_counts.items():
-            avg_satisfaction = data['satisfaction_sum'] / data['count']
-            preference_weight = data['count'] / total_interactions
+            avg_satisfaction = data["satisfaction_sum"] / data["count"]
+            preference_weight = data["count"] / total_interactions
             preference_scores[strategy] = avg_satisfaction * preference_weight
 
         return {
-            'preference_scores': preference_scores,
-            'most_preferred': max(preference_scores.items(), key=lambda x: x[1])[0] if preference_scores else 'Standard_Route',
-            'total_interactions': total_interactions,
+            "preference_scores": preference_scores,
+            "most_preferred": max(preference_scores.items(), key=lambda x: x[1])[0]
+            if preference_scores
+            else "Standard_Route",
+            "total_interactions": total_interactions,
         }
 
     def _identify_routing_preferences(self, user_interactions: list[dict[str, Any]]) -> dict[str, float]:
@@ -781,8 +814,8 @@ class AdvancedL0Router(BaseMLModel):
         preferences = {}
 
         for interaction in user_interactions:
-            strategy = interaction.get('routing_strategy', 'Standard_Route')
-            satisfaction = interaction.get('user_satisfaction', 0.5)
+            strategy = interaction.get("routing_strategy", "Standard_Route")
+            satisfaction = interaction.get("user_satisfaction", 0.5)
 
             if strategy not in preferences:
                 preferences[strategy] = []
@@ -800,19 +833,18 @@ class AdvancedL0Router(BaseMLModel):
         # Simplified adaptation calculation
         recent_interactions = user_interactions[-10:]  # Last 10 interactions
         if not recent_interactions:
-            return {'adaptation_factor': 0.5}
+            return {"adaptation_factor": 0.5}
 
         avg_satisfaction = sum(
-            interaction.get('user_satisfaction', 0.5)
-            for interaction in recent_interactions
+            interaction.get("user_satisfaction", 0.5) for interaction in recent_interactions
         ) / len(recent_interactions)
 
         adaptation_factor = max(0.0, min(1.0, avg_satisfaction))
 
         return {
-            'adaptation_factor': adaptation_factor,
-            'interaction_count': len(recent_interactions),
-            'satisfaction_trend': 'improving' if avg_satisfaction > 0.7 else 'stable',
+            "adaptation_factor": adaptation_factor,
+            "interaction_count": len(recent_interactions),
+            "satisfaction_trend": "improving" if avg_satisfaction > 0.7 else "stable",
         }
 
     def _generate_personalized_strategy(
@@ -822,15 +854,15 @@ class AdvancedL0Router(BaseMLModel):
         adaptation_factors: dict[str, float],
     ) -> str:
         """Generate personalized routing strategy."""
-        most_preferred = preference_analysis.get('most_preferred', 'Standard_Route')
-        adaptation_factor = adaptation_factors.get('adaptation_factor', 0.5)
+        most_preferred = preference_analysis.get("most_preferred", "Standard_Route")
+        adaptation_factor = adaptation_factors.get("adaptation_factor", 0.5)
 
         if adaptation_factor > 0.8 and most_preferred in self.ROUTING_MAPPING.values():
             return most_preferred
         elif adaptation_factor > 0.6:
-            return 'User_Personalized'
+            return "User_Personalized"
         else:
-            return 'Standard_Route'
+            return "Standard_Route"
 
     def _calculate_learning_confidence(self, user_interactions: list[dict[str, Any]]) -> float:
         """Calculate confidence in learned preferences."""
@@ -838,7 +870,9 @@ class AdvancedL0Router(BaseMLModel):
             return 0.2  # Low confidence with few interactions
 
         # Calculate consistency of preferences
-        recent_strategies = [interaction.get('routing_strategy', 'Standard_Route') for interaction in user_interactions[-10:]]
+        recent_strategies = [
+            interaction.get("routing_strategy", "Standard_Route") for interaction in user_interactions[-10:]
+        ]
         unique_strategies = len(set(recent_strategies))
 
         # Higher confidence if preferences are consistent
@@ -853,14 +887,14 @@ class AdvancedL0Router(BaseMLModel):
         """Generate adaptation recommendations based on preference analysis."""
         recommendations = []
 
-        most_preferred = preference_analysis.get('most_preferred', 'Standard_Route')
-        preference_scores = preference_analysis.get('preference_scores', {})
+        most_preferred = preference_analysis.get("most_preferred", "Standard_Route")
+        preference_scores = preference_analysis.get("preference_scores", {})
 
-        if most_preferred != 'Standard_Route':
+        if most_preferred != "Standard_Route":
             recommendations.append(f"User prefers {most_preferred} - consider making it default")
 
         # Check for high satisfaction with advanced strategies
-        advanced_strategies = ['Neural_Advanced', 'Semantic_Optimized', 'Context_Aware']
+        advanced_strategies = ["Neural_Advanced", "Semantic_Optimized", "Context_Aware"]
         for strategy in advanced_strategies:
             if strategy in preference_scores and preference_scores[strategy] > 0.8:
                 recommendations.append(f"High satisfaction with {strategy} - promote usage")
@@ -878,34 +912,36 @@ class AdvancedL0Router(BaseMLModel):
 
             # Simplified importance based on feature names and expected impact
             importance_weights = {
-                'semantic_similarity_score': 0.15,
-                'intent_confidence': 0.12,
-                'context_relevance': 0.10,
-                'user_preference_score': 0.12,
-                'historical_success_rate': 0.10,
-                'resource_availability': 0.08,
-                'routing_efficiency': 0.08,
-                'system_load_factor': 0.08,
-                'query_complexity': 0.10,
-                'routing_confidence': 0.07,
+                "semantic_similarity_score": 0.15,
+                "intent_confidence": 0.12,
+                "context_relevance": 0.10,
+                "user_preference_score": 0.12,
+                "historical_success_rate": 0.10,
+                "resource_availability": 0.08,
+                "routing_efficiency": 0.08,
+                "system_load_factor": 0.08,
+                "query_complexity": 0.10,
+                "routing_confidence": 0.07,
             }
 
             feature_importance = []
             for i, feature_name in enumerate(feature_names):
                 importance = importance_weights.get(feature_name, 0.01)
-                feature_importance.append({
-                    'feature_name': feature_name,
-                    'importance_score': importance,
-                    'feature_value': model_input.features.get(feature_name),
-                    'rank': i + 1,
-                })
+                feature_importance.append(
+                    {
+                        "feature_name": feature_name,
+                        "importance_score": importance,
+                        "feature_value": model_input.features.get(feature_name),
+                        "rank": i + 1,
+                    }
+                )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             return feature_importance[:10]
 
@@ -968,8 +1004,8 @@ class AdvancedL0Router(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert routing type string to class index
             if isinstance(label, str):
@@ -989,17 +1025,22 @@ class AdvancedL0Router(BaseMLModel):
         y = np.array(y)
 
         # Create pipeline with scaling and Neural Network
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', MLPClassifier(
-                hidden_layer_sizes=self.network_config["hidden_layers"],
-                activation=self.network_config["activation"],
-                solver=self.network_config["solver"],
-                learning_rate=self.network_config["learning_rate"],
-                max_iter=self.network_config["max_iter"],
-                random_state=self.network_config["random_state"],
-            )),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    MLPClassifier(
+                        hidden_layer_sizes=self.network_config["hidden_layers"],
+                        activation=self.network_config["activation"],
+                        solver=self.network_config["solver"],
+                        learning_rate=self.network_config["learning_rate"],
+                        max_iter=self.network_config["max_iter"],
+                        random_state=self.network_config["random_state"],
+                    ),
+                ),
+            ]
+        )
 
         # Train model
         self.pipeline.fit(X, y)

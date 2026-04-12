@@ -14,6 +14,7 @@ import re
 @dataclass
 class Posting:
     """Posting list entry."""
+
     doc_id: str
     term_freq: int
     positions: list[int]
@@ -35,13 +36,13 @@ class SparseIndex:
     def _normalize(self, text: str) -> str:
         """Normalize text: lowercase, remove extra whitespace."""
         text = text.lower()
-        text = re.sub(r'\s+', ' ', text)
+        text = re.sub(r"\s+", " ", text)
         return text.strip()
 
     def _tokenize(self, text: str) -> list[str]:
         """Tokenize text into terms."""
         # Simple word tokenization
-        return re.findall(r'\b[a-z0-9]+\b', text)
+        return re.findall(r"\b[a-z0-9]+\b", text)
 
     def add_document(self, doc_id: str, text: str) -> None:
         """Add document to sparse index."""
@@ -112,6 +113,7 @@ class SparseIndex:
         if df == 0:
             return 0.0
         import math
+
         return math.log((self._doc_count + 1) / (df + 1)) + 1.0
 
     def get_stats(self) -> dict[str, Any]:

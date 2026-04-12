@@ -11,7 +11,8 @@ from pathlib import Path
 # Get list of error files from pytest
 result = subprocess.run(
     [sys.executable, "-m", "pytest", "tests/unit/agentic_core/", "-q", "--tb=no", "--no-header"],
-    capture_output=True, text=True,
+    capture_output=True,
+    text=True,
 )
 
 # Parse ERROR lines
@@ -84,7 +85,9 @@ for fp in error_files:
                         cat_samples.setdefault("ImportError_other", []).append((fp, str(e)[:80]))
                     except Exception as e:
                         categories["other_exception"] += 1
-                        cat_samples.setdefault("other_exception", []).append((fp, type(e).__name__, str(e)[:60]))
+                        cat_samples.setdefault("other_exception", []).append(
+                            (fp, type(e).__name__, str(e)[:60])
+                        )
                 else:
                     categories["no_MODULE_PATH"] += 1
                     cat_samples.setdefault("no_MODULE_PATH", []).append(fp)
@@ -100,9 +103,15 @@ print("\nERROR CATEGORIES:")
 for cat, count in categories.most_common():
     print(f"  {cat}: {count}")
 
-for cat in ["BATCH_SIZE_import", "IndentationError_in_module", "SyntaxError_in_module",
-            "FileNotFoundError_at_import", "ModuleNotFoundError", "no_MODULE_PATH",
-            "non_enhanced_unknown"]:
+for cat in [
+    "BATCH_SIZE_import",
+    "IndentationError_in_module",
+    "SyntaxError_in_module",
+    "FileNotFoundError_at_import",
+    "ModuleNotFoundError",
+    "no_MODULE_PATH",
+    "non_enhanced_unknown",
+]:
     samples = cat_samples.get(cat, [])
     if samples:
         print(f"\n--- {cat} (first 5) ---")

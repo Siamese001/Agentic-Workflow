@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.base_agents.LightweightBase."""
+
 from __future__ import annotations
 
 import importlib

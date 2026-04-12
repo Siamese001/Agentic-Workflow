@@ -33,10 +33,16 @@ _TS = 1_700_000_000
 
 def _policy_ref(ph: str = _FAKE_HASH):
     pass
+
+
 def _outcome(label="SUCCESS", replay_pass=True):
     pass
+
+
 def _adg_node(name="ADG::Module::foo", layer="L2", family="healing"):
     pass
+
+
 # ===========================================================================
 # 1. Frozen type invariants
 # ===========================================================================
@@ -45,18 +51,28 @@ def _adg_node(name="ADG::Module::foo", layer="L2", family="healing"):
 class TestCaseRecordInvariants:
     def _make(self, **overrides):
         pass
+
+
 class TestHealerBundleInvariants:
     def _make(self, **overrides):
         pass
+
+
 class TestGovernancePrecedentInvariants:
     def _make(self, **overrides):
         pass
+
+
 class TestPromptBundleInvariants:
     def _make(self, **overrides):
         pass
+
+
 class TestHITLPreferenceRecordInvariants:
     def _make(self, **overrides):
         pass
+
+
 # ===========================================================================
 # 2. CaseLibrary — bridge injection and entity/relation wiring
 # ===========================================================================
@@ -111,6 +127,7 @@ class TestCaseLibrary:
     def _lib(self):
         """Return CaseLibrary with fake bridge."""
         from agentic_core.case_memory import CaseLibrary
+
         bridge = _FakeBridge()
         return CaseLibrary(bridge=bridge), bridge
 
@@ -149,13 +166,6 @@ class TestCaseLibrary:
         return HITLRecord()
 
 
-
-
-
-
-
-
-
 # ===========================================================================
 # 3. GraphNeighborhoodMemory
 # ===========================================================================
@@ -165,6 +175,7 @@ class TestGraphNeighborhoodMemory:
     def _mem(self):
         """Return GraphNeighborhoodMemory with fake bridge."""
         from agentic_core.case_memory import GraphNeighborhoodMemory
+
         bridge = _FakeBridge()
         return GraphNeighborhoodMemory(bridge=bridge), bridge
 
@@ -180,14 +191,6 @@ class TestGraphNeighborhoodMemory:
         )
 
 
-
-
-
-
-
-
-
-
 # ===========================================================================
 # 4. RedisCoordinationFabric (fallback LRU — no real Redis needed)
 # ===========================================================================
@@ -199,20 +202,6 @@ class TestRedisCoordinationFabric:
         return RedisCoordinationFabric(redis_url="redis://localhost:19999")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # ===========================================================================
 # 5. CacheAdmissionGate
 # ===========================================================================
@@ -221,14 +210,24 @@ class TestRedisCoordinationFabric:
 class TestCacheAdmissionGate:
     def _gate(self, support=0.6, completeness=0.5):
         """Create a mock CacheAdmissionGate with configurable thresholds."""
+
         class MockGate:
             def __init__(self, support_threshold, completeness_threshold):
                 self.support_threshold = support_threshold
                 self.completeness_threshold = completeness_threshold
 
-            def evaluate(self, *, query_hash, policy_hash, embedder_version,
-                        support_score, completeness_score, policy_conflict,
-                        replay_contaminated, timestamp_utc):
+            def evaluate(
+                self,
+                *,
+                query_hash,
+                policy_hash,
+                embedder_version,
+                support_score,
+                completeness_score,
+                policy_conflict,
+                replay_contaminated,
+                timestamp_utc,
+            ):
                 """Evaluate cache admission criteria."""
                 deny_reasons = []
 
@@ -264,11 +263,6 @@ class TestCacheAdmissionGate:
             replay_contaminated=replay,
             timestamp_utc=_TS,
         )
-
-
-
-
-
 
 
 # ===========================================================================

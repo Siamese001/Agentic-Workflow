@@ -214,8 +214,11 @@ class GatewayFactory:
     def get_llm_gateway(cls) -> Any:
         """Get or create LLM gateway singleton."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GatewayFactory.get_llm_gateway")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GatewayFactory.get_llm_gateway"
+        )
 
         if cls._llm_gateway is None:
             try:

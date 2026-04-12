@@ -180,6 +180,7 @@ class MetricConfig:
     def record(self, name: str, value: float, labels: dict[str, str] | None = None) -> None:
         """Record a metric."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetricConfig.record")
 

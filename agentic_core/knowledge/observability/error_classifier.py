@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 class ErrorCategory(Enum):
     """Categories of errors."""
+
     RETRIEVAL_FAILURE = "retrieval_failure"
     GENERATION_FAILURE = "generation_failure"
     CACHE_FAILURE = "cache_failure"
@@ -32,6 +33,7 @@ class ErrorCategory(Enum):
 
 class ErrorSeverity(Enum):
     """Severity levels for errors."""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -41,6 +43,7 @@ class ErrorSeverity(Enum):
 @dataclass
 class ErrorClassification:
     """Classified error."""
+
     error_type: str
     category: ErrorCategory
     severity: ErrorSeverity
@@ -123,7 +126,9 @@ class ErrorClassifier:
         """
         trace_id = f"error_{hash(str(error)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ErrorClassifier.classify",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "ErrorClassifier.classify",
         )
 
         error_msg = str(error).lower()

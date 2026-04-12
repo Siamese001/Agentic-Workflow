@@ -2,6 +2,7 @@
 
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
+
 from __future__ import annotations
 
 import ast
@@ -13,7 +14,10 @@ pytestmark = pytest.mark.unit
 
 _SRC = (
     pathlib.Path(__file__).parents[5]
-    / "agentic_core" / "L5_safety" / "validators" / "HygieneGuardianAgent.py"
+    / "agentic_core"
+    / "L5_safety"
+    / "validators"
+    / "HygieneGuardianAgent.py"
 )
 
 
@@ -73,6 +77,7 @@ class TestHygieneGuardianAgentSource:
 
     def test_has_dry_run_field(self):
         pass
+
     """Test has_dry_run_field runtime behavior."""
     # Arrange
     input_data = {}  # Replace with actual test data
@@ -83,5 +88,6 @@ class TestHygieneGuardianAgentSource:
     # Assert
     assert result is not None, "Function should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+
     def test_heal_references_artifacts(self):
         assert "artifacts" in _src_text()

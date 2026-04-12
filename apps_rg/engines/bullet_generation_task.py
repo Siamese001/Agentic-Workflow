@@ -172,8 +172,11 @@ class BulletGenerationTask(BaseRGEngine):
         Generate achievement bullets for an experience section.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BulletGenerationTask.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "BulletGenerationTask.execute"
+        )
 
         self._mcp_audit("bullet_generation_start", {"target_count": target_count})
         prompt_template = self.get_frozen_prompt("bullet_generation") if self.knowledge else ""

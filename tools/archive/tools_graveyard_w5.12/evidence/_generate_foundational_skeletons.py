@@ -9,6 +9,7 @@ foundational test), this script generates a deeper behavioral test skeleton:
 
 Output: tests/unit/<module_path>/test_<stem>.py  (note: NO _adg suffix)
 """
+
 from __future__ import annotations
 
 import ast
@@ -243,6 +244,7 @@ TOP_N = 200  # generate for top-N by fan_in
 # AST inspection
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class MethodInfo:
     name: str
@@ -299,7 +301,7 @@ def inspect_source(src_path: Path) -> ModuleInfo:
         return info
     try:
         tree = ast.parse(src_path.read_text(encoding="utf-8", errors="replace"))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return info
 
     # __all__
@@ -317,14 +319,21 @@ def inspect_source(src_path: Path) -> ModuleInfo:
         if isinstance(node, ast.ClassDef) and not node.name.startswith("_"):
             is_enum = any(
                 (isinstance(b, ast.Name) and b.id in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"))
-                or (isinstance(b, ast.Attribute) and b.attr in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"))
+                or (
+                    isinstance(b, ast.Attribute)
+                    and b.attr in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag")
+                )
                 for b in node.bases
             )
             is_dc = any(
                 (isinstance(d, ast.Name) and d.id == "dataclass")
                 or (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == "dataclass")
                 or (isinstance(d, ast.Attribute) and d.attr == "dataclass")
-                or (isinstance(d, ast.Call) and isinstance(d.func, ast.Attribute) and d.func.attr == "dataclass")
+                or (
+                    isinstance(d, ast.Call)
+                    and isinstance(d.func, ast.Attribute)
+                    and d.func.attr == "dataclass"
+                )
                 for d in node.decorator_list
             )
             is_frozen = False
@@ -364,7 +373,12 @@ def inspect_source(src_path: Path) -> ModuleInfo:
                         if not fname.startswith("_"):
                             ci.dc_fields.append((fname, ftype))
                 elif isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    if not child.name.startswith("_") or child.name in ("__init__", "__call__", "__enter__", "__exit__"):
+                    if not child.name.startswith("_") or child.name in (
+                        "__init__",
+                        "__call__",
+                        "__enter__",
+                        "__exit__",
+                    ):
                         mi = MethodInfo(
                             name=child.name,
                             is_async=isinstance(child, ast.AsyncFunctionDef),
@@ -405,6 +419,7 @@ def inspect_source(src_path: Path) -> ModuleInfo:
 # Code generation
 # ---------------------------------------------------------------------------
 
+
 def _indent(lines: list[str], n: int = 1) -> list[str]:
     prefix = "    " * n
     return [prefix + l if l.strip() else l for l in lines]
@@ -417,10 +432,10 @@ def generate_foundational_test(module_path: str, info: ModuleInfo, fan_in: int) 
 
     lines: list[str] = []
     lines.append(f'"""Foundational behavioral tests for {module_path}.')
-    lines.append('')
-    lines.append(f'fan_in={fan_in} — this module is imported by {fan_in} other modules.')
-    lines.append(f'ADG contract: import-hygiene is covered by test_{stem}_adg.py.')
-    lines.append('This file covers behavioral invariants and public API contracts.')
+    lines.append("")
+    lines.append(f"fan_in={fan_in} — this module is imported by {fan_in} other modules.")
+    lines.append(f"ADG contract: import-hygiene is covered by test_{stem}_adg.py.")
+    lines.append("This file covers behavioral invariants and public API contracts.")
     lines.append('"""')
     lines.append("from __future__ import annotations")
     lines.append("")
@@ -576,6 +591,7 @@ def module_to_test_path(module_path: str) -> Path:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def is_prod(p: str) -> bool:
     p2 = p.replace("\\", "/")
     return (
@@ -590,7 +606,7 @@ def is_prod(p: str) -> bool:
 def adg_to_dotted(name: str) -> str:
     for pfx in ("ADG::Symbol::", "ADG::Module::", "Symbol::", "Module::"):
         if name.startswith(pfx):
-            name = name[len(pfx):]
+            name = name[len(pfx) :]
     return name.removesuffix(".py")
 
 
@@ -601,8 +617,7 @@ print(f"[GEN] Done: {len(result.modules)} modules, {len(result.edges)} edges")
 
 prod_set = {m for m in result.modules if is_prod(m)}
 prod_dotted_to_path: dict[str, str] = {
-    m.replace("\\", "/").removesuffix(".py").replace("/", "."): m
-    for m in prod_set
+    m.replace("\\", "/").removesuffix(".py").replace("/", "."): m for m in prod_set
 }
 
 # Build fan_in from imports edges
@@ -637,10 +652,9 @@ for e in result.edges:
 # ADG-only with high fan_in = candidates
 adg_only_high = sorted(
     [
-        p for p in prod_set
-        if covered_by_adg[p]
-        and not covered_by_foundational[p]
-        and fan_in.get(p, 0) >= FAN_IN_THRESHOLD
+        p
+        for p in prod_set
+        if covered_by_adg[p] and not covered_by_foundational[p] and fan_in.get(p, 0) >= FAN_IN_THRESHOLD
     ],
     key=lambda p: -fan_in.get(p, 0),
 )[:TOP_N]

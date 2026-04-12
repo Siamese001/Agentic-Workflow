@@ -286,7 +286,9 @@ class SymbolRenamer(ast.NodeTransformer):
         """Handle function definitions with scope tracking."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SymbolRenamer.visit_FunctionDef:{node.name}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"SymbolRenamer.visit_FunctionDef:{node.name}",
         )
         if node.name == self.old_name:
             self.changes.append(
@@ -393,14 +395,16 @@ class DecoratorModifier(ast.NodeTransformer):
 
         self.generic_visit(node)
         return node
+
     # guardian: Syntax errors should be caught at parser level, not runtime
+
 
 def _parse_code(code: str) -> tuple[ast.AST | None, str | None]:
     """Parse code into AST, returning tree and error if any."""
     try:
         tree = ast.parse(code)
         return tree, None
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         return None, f"Syntax error at line {e.lineno}: {e.msg}"
 
 

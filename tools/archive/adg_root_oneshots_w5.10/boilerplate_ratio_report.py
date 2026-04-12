@@ -25,6 +25,7 @@ from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
 @dataclass
 class LayerStats:
     """Statistics for a single layer."""
+
     files: int = 0
     hollow: int = 0
     boilerplate_heavy: int = 0
@@ -41,6 +42,7 @@ class LayerStats:
 @dataclass
 class RatioReport:
     """Complete boilerplate ratio report."""
+
     timestamp: str
     total_files: int
     layer_stats: dict[str, LayerStats] = field(default_factory=dict)
@@ -95,6 +97,7 @@ class BoilerplateRatioAnalyzer:
         # Parse AST
         try:
             import ast
+
             tree = ast.parse(content)
         except SyntaxError:
             return 1.0, {"error": "Syntax error"}
@@ -139,8 +142,9 @@ class BoilerplateRatioAnalyzer:
 
         # Exclude common non-source directories
         python_files = [
-            f for f in python_files
-            if not any(part.startswith(('.', '__')) for part in f.parts)
+            f
+            for f in python_files
+            if not any(part.startswith((".", "__")) for part in f.parts)
             and "site-packages" not in str(f)
             and ".git" not in str(f)
             and "node_modules" not in str(f)
@@ -166,15 +170,17 @@ class BoilerplateRatioAnalyzer:
             layer_data[layer].append((file_path, ratio, metadata))
 
             # Add file details
-            file_details.append({
-                "file": str(file_path.relative_to(self.repo_root)),
-                "layer": layer,
-                "ratio": ratio,
-                "classification": metadata.get("classification", "healthy"),
-                "behavioral_nodes": metadata.get("behavioral_nodes", 0),
-                "boilerplate_nodes": metadata.get("boilerplate_nodes", 0),
-                "lines": metadata.get("lines", 0),
-            })
+            file_details.append(
+                {
+                    "file": str(file_path.relative_to(self.repo_root)),
+                    "layer": layer,
+                    "ratio": ratio,
+                    "classification": metadata.get("classification", "healthy"),
+                    "behavioral_nodes": metadata.get("behavioral_nodes", 0),
+                    "boilerplate_nodes": metadata.get("boilerplate_nodes", 0),
+                    "lines": metadata.get("lines", 0),
+                }
+            )
 
         # Calculate layer statistics
         layer_stats = {}
@@ -191,7 +197,9 @@ class BoilerplateRatioAnalyzer:
 
             # Count categories
             hollow = sum(1 for _, r, m in data if r == 1.0 or m.get("classification") == "hollow")
-            boilerplate_heavy = sum(1 for _, r, m in data if r > 0.7 or m.get("classification") == "boilerplate_heavy")
+            boilerplate_heavy = sum(
+                1 for _, r, m in data if r > 0.7 or m.get("classification") == "boilerplate_heavy"
+            )
             healthy = sum(1 for _, r, m in data if r <= 0.7 and m.get("classification") == "healthy")
 
             # Calculate statistics
@@ -239,7 +247,9 @@ class BoilerplateRatioAnalyzer:
                 "total_boilerplate_heavy": total_boilerplate_heavy,
                 "total_healthy": total_healthy,
                 "overall_hollow_percentage": (total_hollow / total_files * 100) if total_files > 0 else 0,
-                "overall_boilerplate_heavy_percentage": (total_boilerplate_heavy / total_files * 100) if total_files > 0 else 0,
+                "overall_boilerplate_heavy_percentage": (total_boilerplate_heavy / total_files * 100)
+                if total_files > 0
+                else 0,
             },
         )
 
@@ -257,7 +267,9 @@ class BoilerplateRatioAnalyzer:
         summary = report.summary
         print("📈 Overall Summary:")
         print(f"  Hollow files: {summary['total_hollow']} ({summary['overall_hollow_percentage']:.1f}%)")
-        print(f"  Boilerplate-heavy: {summary['total_boilerplate_heavy']} ({summary['overall_boilerplate_heavy_percentage']:.1f}%)")
+        print(
+            f"  Boilerplate-heavy: {summary['total_boilerplate_heavy']} ({summary['overall_boilerplate_heavy_percentage']:.1f}%)"
+        )
         print(f"  Healthy: {summary['total_healthy']}")
         print()
 
@@ -282,16 +294,22 @@ class BoilerplateRatioAnalyzer:
         worst = sorted(report.file_details, key=lambda x: x["ratio"], reverse=True)[:10]
         for i, file_info in enumerate(worst, 1):
             print(f"  {i:2d}. {file_info['file']}")
-            print(f"      Ratio: {file_info['ratio']:.3f} | Layer: {file_info['layer']} | Class: {file_info['classification']}")
+            print(
+                f"      Ratio: {file_info['ratio']:.3f} | Layer: {file_info['layer']} | Class: {file_info['classification']}"
+            )
 
         print()
 
         # Healthiest files
         print("✅ Healthiest Files (Lowest Boilerplate Ratio):")
-        healthiest = sorted([f for f in report.file_details if f["behavioral_nodes"] > 0], key=lambda x: x["ratio"])[:10]
+        healthiest = sorted(
+            [f for f in report.file_details if f["behavioral_nodes"] > 0], key=lambda x: x["ratio"]
+        )[:10]
         for i, file_info in enumerate(healthiest, 1):
             print(f"  {i:2d}. {file_info['file']}")
-            print(f"      Ratio: {file_info['ratio']:.3f} | Layer: {file_info['layer']} | Behavioral: {file_info['behavioral_nodes']}")
+            print(
+                f"      Ratio: {file_info['ratio']:.3f} | Layer: {file_info['layer']} | Behavioral: {file_info['behavioral_nodes']}"
+            )
 
 
 def main():

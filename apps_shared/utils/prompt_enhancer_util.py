@@ -78,21 +78,27 @@ _emit_links_execution_to_snapshot("p4", "prompt_enhancer_util", "exec_snapshot_l
 # from .prompt_assembler import get_prompt_assembler
 # from .prompt_injection_loader import InjectionMatch, get_injection_loader
 
+
 # Stub implementations
 def enforce_cognitive_contract(prompt: str, **kwargs) -> str:
     return prompt
 
+
 def get_contract_manager():
     return None
+
 
 def get_few_shot_registry():
     return None
 
+
 def get_prompt_assembler():
     return None
 
+
 def get_injection_loader():
     return None
+
 
 class InjectionMatch:
     pass
@@ -240,8 +246,11 @@ class PromptEnhancer:
             Tuple of (enhanced_prompt, enhancement_metadata)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptEnhancer.enhance_prompt")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptEnhancer.enhance_prompt"
+        )
 
         metadata = {
             "strategies_applied": [],
@@ -252,7 +261,10 @@ class PromptEnhancer:
         }
         context = context or {}
         matches = self.injection_loader.find_matching_injections(
-            hop_type=hop_type, stage=stage, context=context, content=content,
+            hop_type=hop_type,
+            stage=stage,
+            context=context,
+            content=content,
         )
         metadata["injections_count"] = len(matches)
         if self.config.enable_semantic_fencing:
@@ -279,7 +291,9 @@ class PromptEnhancer:
             examples_text = ""
             for match in matches:
                 examples = self.few_shot_registry.get_examples(
-                    match.injection.id, context_str, max_examples=self.config.max_examples_per_injection,
+                    match.injection.id,
+                    context_str,
+                    max_examples=self.config.max_examples_per_injection,
                 )
                 if examples:
                     examples_text += f"\n\n{examples}"
@@ -359,7 +373,11 @@ class PromptEnhancer:
         return (response, result)
 
     def create_enhanced_template(
-        self, role: str, objective: str, hop_type: str, stages: list[str],
+        self,
+        role: str,
+        objective: str,
+        hop_type: str,
+        stages: list[str],
     ) -> dict[str, str]:
         """Create enhanced prompts for multiple stages.
 
@@ -448,7 +466,12 @@ def enhance_prompt(
     enhancer = get_prompt_enhancer()
     enhancer.config.legacy_mode = True
     enhanced, metadata = enhancer.enhance_prompt(
-        base_prompt=base_prompt, hop_type=hop_type, stage=stage, context=context, content=content, **kwargs,
+        base_prompt=base_prompt,
+        hop_type=hop_type,
+        stage=stage,
+        context=context,
+        content=content,
+        **kwargs,
     )
     return enhanced
 

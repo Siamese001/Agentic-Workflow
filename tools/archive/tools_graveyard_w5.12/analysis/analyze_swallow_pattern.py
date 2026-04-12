@@ -13,13 +13,15 @@ for p in sorted(Path("tests").rglob("*.py")):
             blocks = content.count("guardian: allow-silent-swallow")
             has_mod_none = "_mod = None" in content or "= None  # type: ignore" in content
             skip_count = len(re.findall(r"pytest\.skip\(", content))
-            pattern_files.append({
-                "file": str(p).replace("\\", "/"),
-                "swallow_blocks": blocks,
-                "has_mod_none": has_mod_none,
-                "skip_count": skip_count,
-                "lines": len(content.splitlines()),
-            })
+            pattern_files.append(
+                {
+                    "file": str(p).replace("\\", "/"),
+                    "swallow_blocks": blocks,
+                    "has_mod_none": has_mod_none,
+                    "skip_count": skip_count,
+                    "lines": len(content.splitlines()),
+                }
+            )
     except Exception:
         pass
 

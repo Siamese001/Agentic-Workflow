@@ -51,14 +51,14 @@ class PrecisionExtractor(ast.NodeVisitor):
 
     def _create_span(self, node: ast.AST) -> NodeSpan:
         """Create AST span information for node"""
-        if hasattr(node, 'lineno'):
+        if hasattr(node, "lineno"):
             return NodeSpan(
-                start=getattr(node, 'col_offset', 0),
-                end=getattr(node, 'end_col_offset', 0),
+                start=getattr(node, "col_offset", 0),
+                end=getattr(node, "end_col_offset", 0),
                 line=node.lineno,
-                column=getattr(node, 'col_offset', 0),
-                end_line=getattr(node, 'end_lineno', node.lineno),
-                end_column=getattr(node, 'end_col_offset', 0),
+                column=getattr(node, "col_offset", 0),
+                end_line=getattr(node, "end_lineno", node.lineno),
+                end_column=getattr(node, "end_col_offset", 0),
             )
         else:
             # Fallback for nodes without span info
@@ -77,11 +77,24 @@ class PrecisionExtractor(ast.NodeVisitor):
     def _is_side_effect_call(self, call_target: str) -> bool:
         """Check if call is a side effect"""
         side_effect_patterns = [
-            'open.', 'write.', 'read.', 'os.', 'sys.', 'subprocess.',
-            'requests.', 'urllib.', 'socket.', 'sqlite3.', 'mysql.',
-            'redis.', 'mongodb.', 'print(', 'logging.',
+            "open.",
+            "write.",
+            "read.",
+            "os.",
+            "sys.",
+            "subprocess.",
+            "requests.",
+            "urllib.",
+            "socket.",
+            "sqlite3.",
+            "mysql.",
+            "redis.",
+            "mongodb.",
+            "print(",
+            "logging.",
         ]
         return any(pattern in call_target for pattern in side_effect_patterns)
+
 
 @dataclass
 class PrecisionHardeningEngine:
@@ -98,7 +111,7 @@ class PrecisionHardeningEngine:
             raise FileNotFoundError(f"File not found: {file_path}")
 
         try:
-            with open(path, encoding='utf-8') as f:
+            with open(path, encoding="utf-8") as f:
                 source_code = f.read()
 
             extractor = PrecisionExtractor(str(path), source_code)
@@ -161,9 +174,11 @@ class PrecisionHardeningEngine:
             total_side_effects += max(graph_modeled_side_effects, 1)  # Avoid division by zero
 
             # Only count actual call edges for call resolution rate
-            graph_call_edges = sum(1 for attrs in graph.edges.values()
-                                if attrs.edge_type in [SemanticEdgeType.INVOKES_FUNCTION,
-                                                     SemanticEdgeType.AWAITS_COROUTINE])
+            graph_call_edges = sum(
+                1
+                for attrs in graph.edges.values()
+                if attrs.edge_type in [SemanticEdgeType.INVOKES_FUNCTION, SemanticEdgeType.AWAITS_COROUTINE]
+            )
             graph_resolved_calls = len(graph.calls_resolved)
             total_calls += max(graph_call_edges, 1)  # Avoid division by zero
             resolved_calls += graph_resolved_calls
@@ -199,6 +214,7 @@ class PrecisionHardeningEngine:
             hash_input += f"{file_path}:{file_hash}"
 
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
+
 
 __all__ = [
     "PrecisionExtractor",

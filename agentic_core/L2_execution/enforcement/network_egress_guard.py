@@ -230,7 +230,9 @@ def is_llm_endpoint(hostname: str, port: int | None = None) -> bool:
 
 
 def check_network_egress_allowed(
-    hostname: str, port: int | None = None, caller_module: str | None = None,
+    hostname: str,
+    port: int | None = None,
+    caller_module: str | None = None,
 ) -> bool:
     """Check if network egress to LLM endpoint is allowed (REQ-414).
 
@@ -343,7 +345,7 @@ def test_egress_guard() -> bool:
     try:
         simulate_direct_llm_request()
         return False
-    except NetworkEgressViolation:    # guardian: NetworkEgressViolation should be handled with specific context
+    except NetworkEgressViolation:  # guardian: NetworkEgressViolation should be handled with specific context
         return True
     except (ValueError, TypeError, RuntimeError) as e:
         return False

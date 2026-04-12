@@ -24,6 +24,7 @@ from agentic_core.L5_safety.validators.hollow_file_detector_validator import (
 @dataclass
 class CleanupManifest:
     """Manifest for hollow file cleanup operations."""
+
     tier1_safe_delete: list[str] = field(default_factory=list)  # No incoming edges
     tier2_boilerplate_only: list[str] = field(default_factory=list)  # Only boilerplate imports
     tier3_behavioral_imports: list[str] = field(default_factory=list)  # Has behavioral imports
@@ -33,6 +34,7 @@ class CleanupManifest:
 @dataclass
 class FileAnalysis:
     """Analysis result for a single file."""
+
     file_path: str
     is_hollow: bool
     classification: str
@@ -61,6 +63,7 @@ class HollowFileCleanupAnalyzer:
         # Parse AST
         try:
             import ast
+
             tree = ast.parse(content)
         except SyntaxError:
             tree = None
@@ -130,9 +133,9 @@ class HollowFileCleanupAnalyzer:
 
         # Exclude common non-source directories
         python_files = [
-            f for f in python_files
-            if not any(part.startswith(('.', '__')) for part in f.parts)
-            and "site-packages" not in str(f)
+            f
+            for f in python_files
+            if not any(part.startswith((".", "__")) for part in f.parts) and "site-packages" not in str(f)
         ]
 
         for file_path in python_files:

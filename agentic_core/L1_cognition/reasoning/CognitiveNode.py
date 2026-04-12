@@ -23,6 +23,7 @@ Integrates all L1 components:
 - Governance for policy enforcement
 """
 
+
 def _get_reason_and_record():
     import uuid as _uuid  # noqa: PLC0415
 
@@ -300,7 +301,9 @@ class CognitiveNode:
                 perceived,
                 perceived.get("memory", []),
                 lambda p, r: self.reasoning._generate_reasoning(
-                    p.get("query", ""), self.reasoning._biased_select(p.get("strategy_bias", {})), r,
+                    p.get("query", ""),
+                    self.reasoning._biased_select(p.get("strategy_bias", {})),
+                    r,
                 ),
             )
             reasoned = await self.reasoning.reason_async(perceived)
@@ -332,7 +335,10 @@ class CognitiveNode:
         except Exception as e:
             latency_ms = (get_clock().now_epoch() - start_time) * 1000
             return CognitiveResult(
-                output=f"Error: {str(e)}", thought_type="error", latency_ms=latency_ms, success=False,
+                output=f"Error: {str(e)}",
+                thought_type="error",
+                latency_ms=latency_ms,
+                success=False,
             )
 
     async def _query_semantic_memory(self, query: str) -> list[dict[str, Any]]:

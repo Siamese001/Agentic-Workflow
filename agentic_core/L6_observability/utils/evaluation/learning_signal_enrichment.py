@@ -310,7 +310,10 @@ class LearningSignalEnricher:
         )
 
     def _analyze_trend(
-        self, evaluation_type: str, current_score: float, timestamp_utc: float,
+        self,
+        evaluation_type: str,
+        current_score: float,
+        timestamp_utc: float,
     ) -> tuple[SignalTrend, float, list[float]]:
         """Analyze signal trend."""
         history = self._signal_history.get(evaluation_type, [])
@@ -352,7 +355,10 @@ class LearningSignalEnricher:
         return trend, trend_strength, recent_scores
 
     def _calculate_signal_quality(
-        self, score: float, trend_strength: float, temporal_features: TemporalFeatures,
+        self,
+        score: float,
+        trend_strength: float,
+        temporal_features: TemporalFeatures,
     ) -> float:
         """Calculate signal quality score."""
         # Base quality from score magnitude

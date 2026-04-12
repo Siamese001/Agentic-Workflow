@@ -4,6 +4,7 @@ For each file where emit calls ended up inside the opening docstring:
 1. Remove the spurious lines from inside the docstring
 2. Re-insert imports + calls properly after the full import block
 """
+
 import ast
 import csv
 import sys
@@ -62,8 +63,12 @@ DIM_CONFIG = {
 }
 
 SKIP_PATTERNS = {
-    "_constants.py", "conftest.py", "structure_blueprint_config.py",
-    "ssot_tier_constants.py", "path_constants.py", "lifecycle_trace_contract.py",
+    "_constants.py",
+    "conftest.py",
+    "structure_blueprint_config.py",
+    "ssot_tier_constants.py",
+    "path_constants.py",
+    "lifecycle_trace_contract.py",
 }
 
 

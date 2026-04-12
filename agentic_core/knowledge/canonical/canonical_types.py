@@ -11,6 +11,7 @@ from typing import Any
 
 class CanonicalUnitType(Enum):
     """Type of canonical unit."""
+
     DOCUMENT = "document"
     CHUNK = "chunk"
     SECTION = "section"
@@ -24,6 +25,7 @@ class CanonicalUnitType(Enum):
 
 class CanonicalUnitStatus(Enum):
     """Status of canonical unit."""
+
     ACTIVE = "active"
     TOMBSTONED = "tombstoned"
     SUPERSEDED = "superseded"
@@ -34,6 +36,7 @@ class CanonicalUnitStatus(Enum):
 @dataclass
 class CanonicalIdentifier:
     """Canonical identifier for units with version tracking."""
+
     unit_id: str
     version: int
     checksum: str
@@ -55,6 +58,7 @@ class CanonicalIdentifier:
 @dataclass
 class CanonicalLineage:
     """Lineage information for canonical units."""
+
     parent_id: str | None = None
     children_ids: list[str] = None
     source_file: str | None = None
@@ -81,6 +85,7 @@ class CanonicalLineage:
 @dataclass
 class CanonicalMetadata:
     """Metadata for canonical units."""
+
     content_type: str
     modality: str
     size_bytes: int
@@ -117,6 +122,7 @@ class CanonicalRawUnit:
     Represents the base immutable record for all content in the system.
     Maintains canonical truth while enabling version tracking and lineage.
     """
+
     identifier: CanonicalIdentifier
     unit_type: CanonicalUnitType
     status: CanonicalUnitStatus
@@ -196,6 +202,7 @@ class CanonicalRawUnit:
 @dataclass
 class CanonicalDiff:
     """Difference between two canonical units."""
+
     old_unit: CanonicalRawUnit | None
     new_unit: CanonicalRawUnit
     change_type: str  # "created", "updated", "deleted", "tombstoned"

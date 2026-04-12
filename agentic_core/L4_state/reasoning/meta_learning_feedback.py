@@ -35,6 +35,7 @@ Logger = logging.getLogger(__name__)
 
 class FeedbackTrigger(Enum):
     """Feedback triggers for N queries influencing N+1 configuration."""
+
     DEPTH_INCREMENT = "depth_increment"  # Increase expansion depth
     ENRICHMENT_BOOST = "enrichment_boost"  # Enhance L4D prompts
     HYBRID_MODE = "hybrid_mode"  # Enable parallel 4a+4b
@@ -45,6 +46,7 @@ class FeedbackTrigger(Enum):
 @dataclass
 class EvaluationMetrics:
     """Retrieval evaluation metrics."""
+
     precision_at_k: float = 0.0
     recall_at_k: float = 0.0
     mrr: float = 0.0  # Mean Reciprocal Rank
@@ -53,16 +55,19 @@ class EvaluationMetrics:
 
     def is_acceptable(self, threshold: float = 0.5) -> bool:
         """Check if metrics meet threshold."""
-        return all([
-            self.precision_at_k >= threshold,
-            self.recall_at_k >= threshold,
-            self.f1_groundedness >= threshold,
-        ])
+        return all(
+            [
+                self.precision_at_k >= threshold,
+                self.recall_at_k >= threshold,
+                self.f1_groundedness >= threshold,
+            ]
+        )
 
 
 @dataclass
 class CompletenessAnalysis:
     """Analysis of context completeness."""
+
     mean_completeness: float = 0.0
     missing_condition_rate: float = 0.0
     missing_exception_rate: float = 0.0
@@ -83,6 +88,7 @@ class CompletenessAnalysis:
 @dataclass
 class FeedbackProposal:
     """Proposed configuration change from feedback analysis."""
+
     trigger: FeedbackTrigger
     rationale: str
     current_value: Any
@@ -109,6 +115,7 @@ class FeedbackProposal:
 @dataclass
 class CompletenessChangePackage:
     """Complete change package for L5 Board review."""
+
     snapshot_id: str
     proposals: list[FeedbackProposal]
     aggregate_metrics: EvaluationMetrics
@@ -176,7 +183,9 @@ class EvaluationRunner:
         """
         _trace_id = f"eval_{self._eval_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "EvaluationRunner.evaluate",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "EvaluationRunner.evaluate",
         )
 
         metrics = EvaluationMetrics()
@@ -209,18 +218,29 @@ class EvaluationRunner:
         if groundedness_scores:
             avg_groundedness = sum(groundedness_scores) / len(groundedness_scores)
             # F1 between groundedness and precision
-            metrics.f1_groundedness = 2 * (avg_groundedness * metrics.precision_at_k) / max(
-                avg_groundedness + metrics.precision_at_k, 1e-10,
+            metrics.f1_groundedness = (
+                2
+                * (avg_groundedness * metrics.precision_at_k)
+                / max(
+                    avg_groundedness + metrics.precision_at_k,
+                    1e-10,
+                )
             )
 
         _emit_captures_evaluation_metric(
-            _trace_id, "precision_at_k", metrics.precision_at_k,
+            _trace_id,
+            "precision_at_k",
+            metrics.precision_at_k,
         )
         _emit_captures_evaluation_metric(
-            _trace_id, "recall_at_k", metrics.recall_at_k,
+            _trace_id,
+            "recall_at_k",
+            metrics.recall_at_k,
         )
         _emit_captures_evaluation_metric(
-            _trace_id, "mrr", metrics.mrr,
+            _trace_id,
+            "mrr",
+            metrics.mrr,
         )
 
         self._eval_count += 1
@@ -276,7 +296,9 @@ class CompletenessAnalyzer:
         """
         _trace_id = f"completeness_{self._analysis_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessAnalyzer.analyze",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "CompletenessAnalyzer.analyze",
         )
 
         analysis = CompletenessAnalysis()
@@ -343,9 +365,9 @@ class CompletenessAnalyzer:
         # High similarity wrong answer detection
         if answer_quality is not None and answer_quality < 0.3:
             # Check if contexts seem relevant but answer is poor
-            avg_chunk_relevance = sum(
-                ctx.get("score", 0) for ctx in retrieved_contexts
-            ) / max(len(retrieved_contexts), 1)
+            avg_chunk_relevance = sum(ctx.get("score", 0) for ctx in retrieved_contexts) / max(
+                len(retrieved_contexts), 1
+            )
 
             if avg_chunk_relevance > 0.7:
                 analysis.high_similarity_wrong_answer_rate = 1.0
@@ -404,7 +426,9 @@ class CompletenessRAGProposer:
         """
         _trace_id = f"propose_{len(query_batch)}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "CompletenessRAGProposer.analyze_and_propose",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "CompletenessRAGProposer.analyze_and_propose",
         )
         _emit_feeds_meta_learning(_trace_id, "proposer", f"batch:{len(query_batch)}")
 
@@ -471,7 +495,9 @@ class CompletenessRAGProposer:
         )
 
         _emit_records_learning_event(
-            _trace_id, "proposals_generated", f"count:{len(proposals)}",
+            _trace_id,
+            "proposals_generated",
+            f"count:{len(proposals)}",
         )
 
         return change_package
@@ -504,7 +530,9 @@ class CompletenessRAGProposer:
                 )
                 proposals.append(proposal)
                 _emit_updates_routing_strategy(
-                    "completeness_proposer", "depth_increment", str(current_depth + 1),
+                    "completeness_proposer",
+                    "depth_increment",
+                    str(current_depth + 1),
                 )
 
         return proposals
@@ -536,7 +564,9 @@ class CompletenessRAGProposer:
             )
             proposals.append(proposal)
             _emit_improves_agent_policy(
-                "completeness_proposer", "enrichment_boost", "fragmentation_fix",
+                "completeness_proposer",
+                "enrichment_boost",
+                "fragmentation_fix",
             )
 
         return proposals
@@ -569,7 +599,9 @@ class CompletenessRAGProposer:
                 )
                 proposals.append(proposal)
                 _emit_updates_routing_strategy(
-                    "completeness_proposer", "hybrid_mode", "enabled",
+                    "completeness_proposer",
+                    "hybrid_mode",
+                    "enabled",
                 )
 
         return proposals
@@ -586,10 +618,7 @@ class CompletenessRAGProposer:
         proposals = []
 
         # Check for lexical issues in batch
-        lexical_issues = sum(
-            1 for q in query_batch
-            if q.get("lexical_match_score", 1.0) < 0.5
-        )
+        lexical_issues = sum(1 for q in query_batch if q.get("lexical_match_score", 1.0) < 0.5)
 
         if lexical_issues > len(query_batch) * 0.3:  # >30% have issues
             current_weight = self._current_config["lexical_weight"]
@@ -610,7 +639,9 @@ class CompletenessRAGProposer:
                 )
                 proposals.append(proposal)
                 _emit_updates_routing_strategy(
-                    "completeness_proposer", "lexical_weight", str(new_weight),
+                    "completeness_proposer",
+                    "lexical_weight",
+                    str(new_weight),
                 )
 
         return proposals

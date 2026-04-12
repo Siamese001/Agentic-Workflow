@@ -89,7 +89,9 @@ class DefaultDeterministicDPOPairGenerator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DefaultDeterministicDPOPairGenerator.generate",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "DefaultDeterministicDPOPairGenerator.generate",
         )
 
         if human_decision not in {"APPROVE", "REJECT"}:

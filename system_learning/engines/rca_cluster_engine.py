@@ -321,9 +321,7 @@ def _build_cluster(
 ) -> RCACluster:
     """Build a single RCACluster from a group of records."""
     route_counter: Counter[str] = Counter(r.route for r in records)
-    guard_counter: Counter[str] = Counter(
-        g for r in records for g in r.guardrail_edges
-    )
+    guard_counter: Counter[str] = Counter(g for r in records for g in r.guardrail_edges)
     retrieval_counter: Counter[str] = Counter(r.retrieval_pattern for r in records)
 
     dominant_route = _dominant(route_counter)
@@ -338,12 +336,14 @@ def _build_cluster(
     agents = _affected_agents(records)
 
     # Content-addressed cluster_id
-    canonical = deterministic_json({
-        "failure_pattern": failure_pattern,
-        "member_trace_ids": list(member_trace_ids),
-        "sub_key": sub_key,
-        "timestamp_utc": timestamp_utc,
-    })
+    canonical = deterministic_json(
+        {
+            "failure_pattern": failure_pattern,
+            "member_trace_ids": list(member_trace_ids),
+            "sub_key": sub_key,
+            "timestamp_utc": timestamp_utc,
+        }
+    )
     cluster_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     cluster_id = cluster_hash
 
@@ -410,6 +410,7 @@ class RCAClusterEngine:
             Deterministically ordered list (sorted by cluster_id).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RCAClusterEngine.cluster")
 
@@ -443,7 +444,10 @@ class RCAClusterEngine:
         # Merge all singletons into one residual cluster
         if singletons:
             residual = _build_cluster(
-                _SINGLETON_RESIDUAL_PATTERN, "_merged", singletons, timestamp_utc,
+                _SINGLETON_RESIDUAL_PATTERN,
+                "_merged",
+                singletons,
+                timestamp_utc,
             )
             clusters.append(residual)
 
@@ -481,12 +485,14 @@ class RCAClusterEngine:
                 continue
             seen.add(key)
             pattern = f"{_NEGATIVE_SEED_PATTERN_PREFIX}_{seed.source_type}"
-            canonical = deterministic_json({
-                "evidence_hash": seed.evidence_hash,
-                "pattern": pattern,
-                "signature": seed.signature,
-                "timestamp_utc": timestamp_utc,
-            })
+            canonical = deterministic_json(
+                {
+                    "evidence_hash": seed.evidence_hash,
+                    "pattern": pattern,
+                    "signature": seed.signature,
+                    "timestamp_utc": timestamp_utc,
+                }
+            )
             cluster_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
             cluster_id = cluster_hash
             adg_node = _adg_cluster_node(pattern, seed.signature, cluster_hash)
@@ -525,7 +531,9 @@ def cluster_records(
 ) -> list[RCACluster]:
     """Module-level convenience wrapper for ``RCAClusterEngine.cluster``."""
     return RCAClusterEngine(config).cluster(
-        records, timestamp_utc, negative_seeds=negative_seeds,
+        records,
+        timestamp_utc,
+        negative_seeds=negative_seeds,
     )
 
 

@@ -16,6 +16,7 @@ Pattern:
 
 Fix: Direct import, remove all CAN_IMPORT checks.
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -36,36 +37,36 @@ def fix_file(filepath: pathlib.Path) -> str:
 
     # 1. Replace try/except ImportError block with direct import
     source = re.sub(
-        r'try:\n'
-        r'    from (\S+) import (\S+)\n'
-        r'    CAN_IMPORT = True\n'
-        r'except ImportError as e:\n'
+        r"try:\n"
+        r"    from (\S+) import (\S+)\n"
+        r"    CAN_IMPORT = True\n"
+        r"except ImportError as e:\n"
         r'    print\(f"[^"]*"\)\n'
-        r'    CAN_IMPORT = False\n',
-        r'from \1 import \2\n',
+        r"    CAN_IMPORT = False\n",
+        r"from \1 import \2\n",
         source,
     )
 
     # 2. Remove @pytest.mark.skipif(not CAN_IMPORT, ...) decorators
     source = re.sub(
         r'\s*@pytest\.mark\.skipif\(not CAN_IMPORT,\s*reason="[^"]*"\)\n',
-        '\n',
+        "\n",
         source,
     )
 
     # 3. Remove inline "if not CAN_IMPORT: pytest.skip(...)" blocks
     # Pattern: "        if not CAN_IMPORT:\n            pytest.skip(...)\n"
     source = re.sub(
-        r'\s+if not CAN_IMPORT:\n\s+pytest\.skip\([^\)]+\)\n',
-        '\n',
+        r"\s+if not CAN_IMPORT:\n\s+pytest\.skip\([^\)]+\)\n",
+        "\n",
         source,
     )
 
     # 4. Remove "if CAN_IMPORT: ... else: pytest.skip(...)" blocks
     # This is trickier - replace the if/else with just the if body
     source = re.sub(
-        r'(\s+)if CAN_IMPORT:\n((?:\1    [^\n]+\n)+)\1else:\n\1    pytest\.skip\([^\)]+\)\n',
-        r'\2',
+        r"(\s+)if CAN_IMPORT:\n((?:\1    [^\n]+\n)+)\1else:\n\1    pytest\.skip\([^\)]+\)\n",
+        r"\2",
         source,
     )
 
@@ -90,6 +91,7 @@ def main():
 
     # Verify syntax
     import ast
+
     for fp_str in FILES:
         fp = ROOT / fp_str
         if fp.exists():

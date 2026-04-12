@@ -1,4 +1,5 @@
 """Fix missing NameErrors in agentic_core source files by adding imports."""
+
 import ast
 import os
 import re
@@ -8,7 +9,11 @@ ROOT_DIR = r"C:\Git\Agentic-Workflow"
 # Map of missing name -> (import_module, import_name)
 FIXES = {
     "ROOT": ("pathlib", "Path", "ROOT = Path(__file__).resolve().parents[3]"),
-    "GLOBAL_EXCLUDED_DIRS": ("agentic_core.L0_routing.config.path_constants", "SOVEREIGN_EXCLUDED_FOLDERS as GLOBAL_EXCLUDED_DIRS", None),
+    "GLOBAL_EXCLUDED_DIRS": (
+        "agentic_core.L0_routing.config.path_constants",
+        "SOVEREIGN_EXCLUDED_FOLDERS as GLOBAL_EXCLUDED_DIRS",
+        None,
+    ),
 }
 
 # Files with specific NameErrors to fix

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Check L_UNKNOWN growth and analyze what's being classified as unknown."""
+
 import sqlite3
 from pathlib import Path
 
@@ -26,7 +27,7 @@ total_count = cur.fetchone()[0]
 cur.execute("SELECT layer, COUNT(*) FROM nodes GROUP BY layer ORDER BY COUNT(*) DESC")
 layers = cur.fetchall()
 
-print(f"L_UNKNOWN: {unknown_count}/{total_count} ({unknown_count/total_count*100:.1f}%)")
+print(f"L_UNKNOWN: {unknown_count}/{total_count} ({unknown_count / total_count * 100:.1f}%)")
 print("\nLayer distribution:")
 for layer, count in layers:
     pct = count / total_count * 100

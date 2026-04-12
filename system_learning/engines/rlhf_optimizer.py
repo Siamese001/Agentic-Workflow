@@ -223,12 +223,18 @@ class DefaultDeterministicRLHFOptimizer:
             ChangePackage with proposal-only adjustments.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultDeterministicRLHFOptimizer.propose_from_dpo")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultDeterministicRLHFOptimizer.propose_from_dpo"
+        )
 
         try:
             dpo_data = json.loads(dpo_batch_bytes.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):    # guardian: Encoding errors should specify fallback encoding strategy
+        except (
+            json.JSONDecodeError,
+            UnicodeDecodeError,
+        ):  # guardian: Encoding errors should specify fallback encoding strategy
             return ChangePackage(
                 source="rlhf_optimizer",
                 target="threshold_config",
@@ -242,7 +248,10 @@ class DefaultDeterministicRLHFOptimizer:
             )
         try:
             current_config = json.loads(current_threshold_config_bytes.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):    # guardian: Encoding errors should specify fallback encoding strategy
+        except (
+            json.JSONDecodeError,
+            UnicodeDecodeError,
+        ):  # guardian: Encoding errors should specify fallback encoding strategy
             return ChangePackage(
                 source="rlhf_optimizer",
                 target="threshold_config",

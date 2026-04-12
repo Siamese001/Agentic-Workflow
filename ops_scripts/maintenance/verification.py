@@ -253,7 +253,9 @@ def test_circuit_breaker():
     try:
         flaky()
         raise AssertionError("Should raise OpenError")
-    except CircuitBreakerOpenError:    # guardian: CircuitBreakerOpenError should be handled with specific context
+    except (
+        CircuitBreakerOpenError
+    ):  # guardian: CircuitBreakerOpenError should be handled with specific context
         print("   ✓ Decorator OpenError OK")
 
     # 1.5 Hung Query (Execution Timeout)
@@ -269,7 +271,9 @@ def test_circuit_breaker():
     try:
         hung_task()
         raise AssertionError("Should have timed out")
-    except CircuitBreakerTimeoutError:    # guardian: CircuitBreakerTimeoutError should be handled with specific context
+    except (
+        CircuitBreakerTimeoutError
+    ):  # guardian: CircuitBreakerTimeoutError should be handled with specific context
         print("   ✓ Hung query terminated via Timeout OK")
 
     # Reset circuit breaker registry to prevent deadlock
@@ -402,7 +406,9 @@ def test_atomic_execution():
         with agent.atomic_transaction("failing_op") as txn:
             agent.atomic_write(txn, test_file2, "modified")
             raise ValueError("Simulated failure")
-    except AtomicExecutionError as e:    # guardian: AtomicExecutionError should be handled with specific context
+    except (
+        AtomicExecutionError
+    ) as e:  # guardian: AtomicExecutionError should be handled with specific context
         assert e.rolled_back, "Should be rolled back"
 
     assert test_file2.read_text() == "original", "Should be rolled back to original"
@@ -420,7 +426,7 @@ def test_atomic_execution():
             agent.atomic_write(txn, file_a, "a_modified")
             agent.atomic_write(txn, file_b, "b_modified")
             raise RuntimeError("Failure after both writes")
-    except AtomicExecutionError:    # guardian: AtomicExecutionError should be handled with specific context
+    except AtomicExecutionError:  # guardian: AtomicExecutionError should be handled with specific context
         pass
 
     assert file_a.read_text() == "a_original", "File A should be rolled back"

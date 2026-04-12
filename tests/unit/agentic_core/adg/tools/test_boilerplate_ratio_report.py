@@ -24,6 +24,7 @@ def _get_analyzer_classes():
         LayerStats,
         RatioReport,
     )
+
     return BoilerplateRatioAnalyzer, LayerStats, RatioReport
 
 
@@ -46,7 +47,7 @@ def test_calculate_boilerplate_ratio_hollow():
     """Test ratio calculation for hollow file."""
     BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary hollow file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 import os
 import sys
@@ -72,7 +73,7 @@ def test_calculate_boilerplate_ratio_healthy():
     """Test ratio calculation for healthy file."""
     BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary healthy file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 import os
 
@@ -101,7 +102,7 @@ def test_calculate_boilerplate_ratio_syntax_error():
     """Test ratio calculation for file with syntax error."""
     BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary file with syntax error
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("def broken(\n")  # Missing closing parenthesis
         temp_path = Path(f.name)
 
@@ -119,7 +120,7 @@ def test_calculate_boilerplate_ratio_empty():
     """Test ratio calculation for empty file."""
     BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     # Create temporary empty file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("")
         temp_path = Path(f.name)
 
@@ -134,8 +135,8 @@ def test_calculate_boilerplate_ratio_empty():
         temp_path.unlink()
 
 
-@patch('boilerplate_ratio_report.BoilerplateRatioAnalyzer.calculate_boilerplate_ratio')
-@patch('boilerplate_ratio_report.BoilerplateRatioAnalyzer.scan_python_files')
+@patch("boilerplate_ratio_report.BoilerplateRatioAnalyzer.calculate_boilerplate_ratio")
+@patch("boilerplate_ratio_report.BoilerplateRatioAnalyzer.scan_python_files")
 def test_generate_ratio_report(mock_scan, mock_calculate):
     """Test complete report generation."""
     BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
@@ -143,14 +144,22 @@ def test_generate_ratio_report(mock_scan, mock_calculate):
     mock_scan.return_value = [
         Path("agentic_core/L0_routing/file1.py"),  # Will be L0
         Path("agentic_core/L0_routing/file2.py"),  # Will be L0
-        Path("agentic_core/L5_safety/file1.py"),    # Will be L5
+        Path("agentic_core/L5_safety/file1.py"),  # Will be L5
     ]
 
     # Mock ratio calculations
     mock_calculate.side_effect = [
         (1.0, {"classification": "hollow", "behavioral_nodes": 0, "boilerplate_nodes": 5, "lines": 10}),
         (0.5, {"classification": "healthy", "behavioral_nodes": 2, "boilerplate_nodes": 2, "lines": 20}),
-        (0.8, {"classification": "boilerplate_heavy", "behavioral_nodes": 1, "boilerplate_nodes": 4, "lines": 15}),
+        (
+            0.8,
+            {
+                "classification": "boilerplate_heavy",
+                "behavioral_nodes": 1,
+                "boilerplate_nodes": 4,
+                "lines": 15,
+            },
+        ),
     ]
 
     analyzer = BoilerplateRatioAnalyzer(Path("."))
@@ -185,7 +194,7 @@ def test_scan_python_files():
     BoilerplateRatioAnalyzer, LayerStats, RatioReport = _get_analyzer_classes()
     analyzer = BoilerplateRatioAnalyzer(Path("."))
 
-    with patch('pathlib.Path.rglob') as mock_rglob:
+    with patch("pathlib.Path.rglob") as mock_rglob:
         mock_rglob.return_value = [
             Path("test1.py"),
             Path("test2.py"),

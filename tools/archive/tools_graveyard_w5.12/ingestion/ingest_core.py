@@ -72,7 +72,7 @@ class CoreKnowledgeIngestion:
 
         for file_path in python_files:
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 # Split into chunks (simplified - could use AST for better chunking)
@@ -105,9 +105,9 @@ class CoreKnowledgeIngestion:
         if documents:
             batch_size = 1000
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 self.chroma.add_documents(
                     collection_name="repo_code_chunks",
@@ -115,7 +115,7 @@ class CoreKnowledgeIngestion:
                     metadatas=batch_metas,
                     ids=batch_ids,
                 )
-                logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} documents")
+                logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} documents")
 
             logger.info(f"Ingested {len(documents)} code chunks total")
 
@@ -176,9 +176,9 @@ class CoreKnowledgeIngestion:
             if documents:
                 batch_size = 1000
                 for i in range(0, len(documents), batch_size):
-                    batch_docs = documents[i:i+batch_size]
-                    batch_metas = metadatas[i:i+batch_size]
-                    batch_ids = ids[i:i+batch_size]
+                    batch_docs = documents[i : i + batch_size]
+                    batch_metas = metadatas[i : i + batch_size]
+                    batch_ids = ids[i : i + batch_size]
 
                     self.chroma.add_documents(
                         collection_name="repo_symbols",
@@ -186,7 +186,7 @@ class CoreKnowledgeIngestion:
                         metadatas=batch_metas,
                         ids=batch_ids,
                     )
-                    logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} symbols")
+                    logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} symbols")
 
                 logger.info(f"Ingested {len(documents)} symbols total")
 
@@ -215,11 +215,11 @@ class CoreKnowledgeIngestion:
 
         for pattern in doc_patterns:
             for file_path in self.repo_root.glob(pattern):
-                if file_path.name.startswith('.'):
+                if file_path.name.startswith("."):
                     continue
 
                 try:
-                    with open(file_path, encoding='utf-8') as f:
+                    with open(file_path, encoding="utf-8") as f:
                         content = f.read()
 
                     if not content.strip():
@@ -247,9 +247,9 @@ class CoreKnowledgeIngestion:
         if documents:
             batch_size = 1000
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 self.chroma.add_documents(
                     collection_name="repo_arch_docs",
@@ -257,7 +257,7 @@ class CoreKnowledgeIngestion:
                     metadatas=batch_metas,
                     ids=batch_ids,
                 )
-                logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} documents")
+                logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} documents")
 
             logger.info(f"Ingested {len(documents)} architectural documents total")
 
@@ -265,7 +265,7 @@ class CoreKnowledgeIngestion:
 
     def _chunk_code(self, content: str, chunk_size: int = 500) -> list[str]:
         """Split code content into chunks."""
-        lines = content.split('\n')
+        lines = content.split("\n")
         chunks = []
         current_chunk = []
         current_size = 0
@@ -273,7 +273,7 @@ class CoreKnowledgeIngestion:
         for line in lines:
             line_size = len(line)
             if current_size + line_size > chunk_size and current_chunk:
-                chunks.append('\n'.join(current_chunk))
+                chunks.append("\n".join(current_chunk))
                 current_chunk = [line]
                 current_size = line_size
             else:
@@ -281,7 +281,7 @@ class CoreKnowledgeIngestion:
                 current_size += line_size
 
         if current_chunk:
-            chunks.append('\n'.join(current_chunk))
+            chunks.append("\n".join(current_chunk))
 
         return chunks
 
@@ -364,7 +364,9 @@ def main():
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--adg-db", help="Path to ADG SQLite database")
     parser.add_argument("--chroma-dir", default="artifacts/chromadb", help="ChromaDB persistence directory")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be ingested without actually doing it")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
+    )
     args = parser.parse_args()
 
     # Find ADG database if not specified

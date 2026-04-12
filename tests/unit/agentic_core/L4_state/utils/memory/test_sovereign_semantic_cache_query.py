@@ -87,8 +87,10 @@ from unittest.mock import MagicMock, patch
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_sovereign_semantic_cache_query", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_sovereign_semantic_cache_query", "exec_snapshot_link")
 
+
 def _make_memory_item(key: str, vector: list[float], metadata: dict, namespace: str = ""):
     """Build a MemoryItem for injection into InMemoryVectorStore._storage."""
+
 
 class TestSovereignSemanticCacheQuery(unittest.TestCase):
     """Tests for the .query() method added in Phase 1."""
@@ -97,5 +99,7 @@ class TestSovereignSemanticCacheQuery(unittest.TestCase):
         """Build a SovereignSemanticCache with mocked Redis (no live connection)."""
         with patch("agentic_core.L4_state.memory.sovereign_semantic_cache.get_redis_client") as mock_redis:
             mock_redis.return_value = MagicMock()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -280,6 +280,7 @@ class MetricsCollector:
     def stop_timer(self, operation: str, metadata: dict[str, Any] | None = None) -> float:
         """Stop a timer and record the metric."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetricsCollector.stop_timer")
 
@@ -295,7 +296,10 @@ class MetricsCollector:
         return duration_ms
 
     def record_metric(
-        self, operation: str, duration_ms: float, metadata: dict[str, Any] | None = None,
+        self,
+        operation: str,
+        duration_ms: float,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Record a metric directly."""
         metric = TimingMetric(name=operation, duration_ms=duration_ms, metadata=metadata or {})
@@ -397,8 +401,11 @@ class PerformanceThresholds:
     def check_threshold(self, operation: str, duration_ms: float) -> bool:
         """Check if duration is within threshold."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PerformanceThresholds.check_threshold")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PerformanceThresholds.check_threshold"
+        )
 
         threshold = self.get_threshold(operation)
         return duration_ms <= threshold
@@ -437,8 +444,11 @@ class PerformanceMonitor:
     def get_report(self) -> dict[str, Any]:
         """Generate a performance report."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PerformanceMonitor.get_report")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PerformanceMonitor.get_report"
+        )
 
         summaries = self.collector.get_all_summaries()
         violations = self.thresholds.get_violations(self.collector)

@@ -187,7 +187,12 @@ class RetrievalProfileActivationGate:
         self.replay_engine = DeterministicReplayEngine()
 
     def activate_if_approved(
-        self, *, base_profile_id: str, proposal_digest: str, now_utc: int, l4_writer: L4StateWriter,
+        self,
+        *,
+        base_profile_id: str,
+        proposal_digest: str,
+        now_utc: int,
+        l4_writer: L4StateWriter,
     ) -> ActivationResult:
         """Activate proposal if approved and all checks pass.
 
@@ -201,8 +206,11 @@ class RetrievalProfileActivationGate:
             ActivationResult with deterministic digest
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileActivationGate.activate_if_approved")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileActivationGate.activate_if_approved"
+        )
 
         proposal = self._load_proposal_from_l4(proposal_digest)
         if proposal is None:
@@ -229,7 +237,8 @@ class RetrievalProfileActivationGate:
             )
         try:
             replay_result = self.replay_engine.replay(
-                base_profile=base_profile, candidate_profile=proposal.proposed_profile,
+                base_profile=base_profile,
+                candidate_profile=proposal.proposed_profile,
             )
         except ValueError as e:
             return self._create_failure_result(
@@ -248,7 +257,9 @@ class RetrievalProfileActivationGate:
                 now_utc=now_utc,
             )
         new_profile_id = self._write_new_profile_to_l4(
-            profile=proposal.proposed_profile, l4_writer=l4_writer, now_utc=now_utc,
+            profile=proposal.proposed_profile,
+            l4_writer=l4_writer,
+            now_utc=now_utc,
         )
         self._update_active_profile_id(new_profile_id=new_profile_id, l4_writer=l4_writer, now_utc=now_utc)
         activation_digest = self._compute_activation_digest(
@@ -271,7 +282,12 @@ class RetrievalProfileActivationGate:
         return result
 
     def _create_failure_result(
-        self, *, base_profile_id: str, proposal_digest: str, reason: str, now_utc: int,
+        self,
+        *,
+        base_profile_id: str,
+        proposal_digest: str,
+        reason: str,
+        now_utc: int,
     ) -> ActivationResult:
         """Create a failure activation result.
 
@@ -383,7 +399,11 @@ class RetrievalProfileActivationGate:
         return None
 
     def _write_new_profile_to_l4(
-        self, *, profile: RetrievalProfile, l4_writer: L4StateWriter, now_utc: int,
+        self,
+        *,
+        profile: RetrievalProfile,
+        l4_writer: L4StateWriter,
+        now_utc: int,
     ) -> str:
         """Write new profile to L4 state.
 
@@ -398,7 +418,9 @@ class RetrievalProfileActivationGate:
         try:
             profile_json = profile.to_canonical_json().encode("utf-8")
             version_id = l4_writer.write_l4a_detection_signal(
-                payload_bytes=profile_json, component_name="activation-gate", created_utc=now_utc,
+                payload_bytes=profile_json,
+                component_name="activation-gate",
+                created_utc=now_utc,
             )
             return profile.profile_id
         except (AttributeError, TypeError) as e:
@@ -406,7 +428,11 @@ class RetrievalProfileActivationGate:
             return profile.profile_id
 
     def _update_active_profile_id(
-        self, *, new_profile_id: str, l4_writer: L4StateWriter, now_utc: int,
+        self,
+        *,
+        new_profile_id: str,
+        l4_writer: L4StateWriter,
+        now_utc: int,
     ) -> None:
         """Update ACTIVE_RETRIEVAL_PROFILE_ID in L4 state.
 
@@ -422,7 +448,9 @@ class RetrievalProfileActivationGate:
                 separators=(",", ":"),
             ).encode("utf-8")
             l4_writer.write_l4a_detection_signal(
-                payload_bytes=active_profile_data, component_name="activation-gate", created_utc=now_utc,
+                payload_bytes=active_profile_data,
+                component_name="activation-gate",
+                created_utc=now_utc,
             )
         except (AttributeError, TypeError) as e:
             logger.debug(f"Failed to write activation event to L4 store: {e}")

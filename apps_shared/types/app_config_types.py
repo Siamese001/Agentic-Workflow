@@ -431,7 +431,9 @@ class PromptsConfig:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PromptConfig.get_prompt:{prompt_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PromptConfig.get_prompt:{prompt_name}"
+        )
         if prompt_name not in self.prompts:
             raise KeyError(f"Prompt '{prompt_name}' not found in prompts.json")
         prompt_data = self.prompts[prompt_name]
@@ -522,7 +524,9 @@ class RAGConfig:
         try:
             self.cache_dir.mkdir(parents=True, exist_ok=True)
             self.telemetry_log_dir.mkdir(parents=True, exist_ok=True)
-            self.chroma_persist_dir.mkdir(parents=True, exist_ok=True)    # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
+            self.chroma_persist_dir.mkdir(
+                parents=True, exist_ok=True
+            )  # guardian: Multiple exceptions (OSError, PermissionError) need specific handling
         except (OSError, PermissionError) as e:
             logging.warning(f"Could not create cache directories (read-only filesystem?): {e}")
             logging.warning("Caching features will be disabled")
@@ -688,7 +692,11 @@ class AppConfig:
 ReasoningConfig.DEFAULT = ReasoningConfig(self_consistency=3)
 # guardian: allow-magic-config
 ReasoningConfig.K0_HEADLINE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=True,
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
@@ -701,38 +709,74 @@ ReasoningConfig.K1_EXECUTIVE_SUMMARY_CONFIG = ReasoningConfig(
 )
 # guardian: allow-magic-config
 ReasoningConfig.K2_UNIFY_BULLETS_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=2, self_consistency=3, reflexion=True,
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K2_UNIFY_OVERVIEW_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=3, self_consistency=3, reflexion=True,
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=3,
+    self_consistency=3,
+    reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K3_IBM_BULLETS_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=2, self_consistency=3, reflexion=True,
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K3_IBM_OVERVIEW_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=3, min_tot_depth=3, self_consistency=3, reflexion=True,
+    cot_min_paths=3,
+    tot_branches=3,
+    min_tot_depth=3,
+    self_consistency=3,
+    reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K4_TRADERSENSE_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=False,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K5_EY_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=2, min_tot_depth=3, self_consistency=3, reflexion=True,
+    cot_min_paths=3,
+    tot_branches=2,
+    min_tot_depth=3,
+    self_consistency=3,
+    reflexion=True,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K6_EARLY_CAREER_NARRATIVE_CONFIG = ReasoningConfig(
-    cot_min_paths=2, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=False,
+    cot_min_paths=2,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=False,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K9_COMPETENCIES_CONFIG = ReasoningConfig(
-    cot_min_paths=3, tot_branches=2, min_tot_depth=2, self_consistency=3, reflexion=True,
+    cot_min_paths=3,
+    tot_branches=2,
+    min_tot_depth=2,
+    self_consistency=3,
+    reflexion=True,
 )
 ReasoningConfig.K10_SKILLS_CONFIG = ReasoningConfig(
-    cot_min_paths=1, tot_branches=2, min_tot_depth=1, self_consistency=1, reflexion=False,
+    cot_min_paths=1,
+    tot_branches=2,
+    min_tot_depth=1,
+    self_consistency=1,
+    reflexion=False,
 )
 # guardian: allow-magic-config
 ReasoningConfig.K11_COVER_LETTER_CONFIG = ReasoningConfig(

@@ -32,6 +32,7 @@ class PrecisionValidator:
         try:
             # Use engine to compute metrics for consistency
             from .precision_extractor import PrecisionHardeningEngine
+
             temp_engine = PrecisionHardeningEngine()
             temp_engine.precision_graphs = precision_graphs
             metrics = temp_engine.compute_global_metrics()
@@ -57,7 +58,10 @@ class PrecisionValidator:
 
             # 4. Validate non-regression (Section 14)
             non_regression_results = self._validate_non_regression(
-                precision_graphs, original_node_count, original_edge_count, original_violation_count,
+                precision_graphs,
+                original_node_count,
+                original_edge_count,
+                original_violation_count,
             )
             report.backward_compatibility_check = non_regression_results["backward_compatibility"]
             report.existing_queries_functional = non_regression_results["queries_functional"]
@@ -75,13 +79,19 @@ class PrecisionValidator:
         """Validate hard gate thresholds (Section 11)"""
 
         return {
-            "block_level_coverage": metrics.block_level_coverage_ratio >= self.config.BLOCK_LEVEL_COVERAGE_THRESHOLD,
-            "lineage_completeness": metrics.lineage_completeness_score >= self.config.LINEAGE_COMPLETENESS_THRESHOLD,
-            "control_path_coverage": metrics.control_path_coverage >= self.config.CONTROL_PATH_COVERAGE_THRESHOLD,
-            "side_effect_coverage": metrics.side_effect_coverage >= self.config.SIDE_EFFECT_COVERAGE_THRESHOLD,
-            "call_resolution_rate": metrics.call_resolution_rate >= self.config.CALL_RESOLUTION_RATE_THRESHOLD,
+            "block_level_coverage": metrics.block_level_coverage_ratio
+            >= self.config.BLOCK_LEVEL_COVERAGE_THRESHOLD,
+            "lineage_completeness": metrics.lineage_completeness_score
+            >= self.config.LINEAGE_COMPLETENESS_THRESHOLD,
+            "control_path_coverage": metrics.control_path_coverage
+            >= self.config.CONTROL_PATH_COVERAGE_THRESHOLD,
+            "side_effect_coverage": metrics.side_effect_coverage
+            >= self.config.SIDE_EFFECT_COVERAGE_THRESHOLD,
+            "call_resolution_rate": metrics.call_resolution_rate
+            >= self.config.CALL_RESOLUTION_RATE_THRESHOLD,
             "generic_edge_ratio": metrics.generic_edge_ratio <= self.config.GENERIC_EDGE_RATIO_TARGET,
-            "ordering_completeness": metrics.ordering_completeness >= self.config.ORDERING_COMPLETENESS_TARGET,
+            "ordering_completeness": metrics.ordering_completeness
+            >= self.config.ORDERING_COMPLETENESS_TARGET,
         }
 
     def _validate_determinism(self, metrics: PrecisionMetrics) -> bool:
@@ -109,8 +119,8 @@ class PrecisionValidator:
 
         return {
             "backward_compatibility": True,  # TODO: Implement actual check
-            "queries_functional": True,     # TODO: Implement actual check
-            "violations_preserved": True,   # TODO: Implement actual check
+            "queries_functional": True,  # TODO: Implement actual check
+            "violations_preserved": True,  # TODO: Implement actual check
         }
 
     def print_summary(self) -> None:
@@ -155,6 +165,7 @@ class PrecisionValidator:
         print(f"  Violation Count Preserved: {'✅' if report.violation_count_preserved else '❌'}")
 
         print("\n" + "=" * 60)
+
 
 __all__ = [
     "PrecisionValidator",

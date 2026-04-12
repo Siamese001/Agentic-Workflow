@@ -1,9 +1,10 @@
 """ADG Prompt Template E2E Verification Script"""
+
 import sqlite3
 
 
 def main():
-    conn = sqlite3.connect('artifacts/adg/adg_indexed_03272026_2037.sqlite')
+    conn = sqlite3.connect("artifacts/adg/adg_indexed_03272026_2037.sqlite")
     cursor = conn.cursor()
 
     print("=" * 70)
@@ -71,6 +72,7 @@ def main():
 
     conn.close()
     print("\n" + "=" * 70)
+
 
 if __name__ == "__main__":
     main()

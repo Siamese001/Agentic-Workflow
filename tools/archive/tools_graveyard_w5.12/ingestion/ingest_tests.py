@@ -77,11 +77,11 @@ class TestsIngestion:
         logger.info(f"Found {len(test_files)} test files")
 
         for file_path in test_files:
-            if file_path.name.startswith('.'):
+            if file_path.name.startswith("."):
                 continue
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 if not content.strip():
@@ -132,9 +132,9 @@ class TestsIngestion:
         if documents:
             batch_size = 1000
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 self.chroma.add_documents(
                     collection_name="repo_tests_guardrails",
@@ -142,7 +142,7 @@ class TestsIngestion:
                     metadatas=batch_metas,
                     ids=batch_ids,
                 )
-                logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} test files")
+                logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} test files")
 
             logger.info(f"Ingested {len(documents)} test files total")
 
@@ -180,11 +180,11 @@ class TestsIngestion:
         logger.info(f"Found {len(guardrail_files)} guardrail-related files")
 
         for file_path in guardrail_files:
-            if file_path.name.startswith('.'):
+            if file_path.name.startswith("."):
                 continue
 
             try:
-                with open(file_path, encoding='utf-8') as f:
+                with open(file_path, encoding="utf-8") as f:
                     content = f.read()
 
                 if not content.strip():
@@ -199,9 +199,9 @@ class TestsIngestion:
                 doc_content += f"Validation functions: {len(guardrail_info['validations'])}\n"
                 doc_content += f"Constraints: {len(guardrail_info['constraints'])}\n"
 
-                if guardrail_info['rules']:
+                if guardrail_info["rules"]:
                     doc_content += "\nRules:\n"
-                    for rule in guardrail_info['rules'][:5]:  # First 5 rules
+                    for rule in guardrail_info["rules"][:5]:  # First 5 rules
                         doc_content += f"  - {rule}\n"
 
                 doc_content += f"\nContent:\n{content[:1500]}..."  # First 1500 chars
@@ -239,9 +239,9 @@ class TestsIngestion:
         if documents:
             batch_size = 500
             for i in range(0, len(documents), batch_size):
-                batch_docs = documents[i:i+batch_size]
-                batch_metas = metadatas[i:i+batch_size]
-                batch_ids = ids[i:i+batch_size]
+                batch_docs = documents[i : i + batch_size]
+                batch_metas = metadatas[i : i + batch_size]
+                batch_ids = ids[i : i + batch_size]
 
                 self.chroma.add_documents(
                     collection_name="repo_tests_guardrails",
@@ -249,7 +249,7 @@ class TestsIngestion:
                     metadatas=batch_metas,
                     ids=batch_ids,
                 )
-                logger.info(f"Added guardrail batch {i//batch_size + 1}: {len(batch_docs)} files")
+                logger.info(f"Added guardrail batch {i // batch_size + 1}: {len(batch_docs)} files")
 
             logger.info(f"Ingested {len(documents)} guardrail files total")
 
@@ -269,20 +269,23 @@ class TestsIngestion:
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
-                if node.name.startswith('Test') or 'test' in node.name.lower():
+                if node.name.startswith("Test") or "test" in node.name.lower():
                     classes.append(node.name)
             elif isinstance(node, ast.FunctionDef):
-                if node.name.startswith('test_') or node.name.startswith('Test'):
+                if node.name.startswith("test_") or node.name.startswith("Test"):
                     functions.append(node.name)
-                elif 'fixture' in node.name.lower() or node.name.startswith('_'):
+                elif "fixture" in node.name.lower() or node.name.startswith("_"):
                     fixtures.append(node.name)
 
                 # Check for guardrail patterns in function names
-                if any(keyword in node.name.lower() for keyword in ['guard', 'validate', 'check', 'ensure', 'verify']):
+                if any(
+                    keyword in node.name.lower()
+                    for keyword in ["guard", "validate", "check", "ensure", "verify"]
+                ):
                     guardrails.append(node.name)
 
         # Also look for guardrail patterns in comments
-        guardrail_keywords = ['guardrail', 'validation', 'constraint', 'rule', 'policy']
+        guardrail_keywords = ["guardrail", "validation", "constraint", "rule", "policy"]
         for keyword in guardrail_keywords:
             if keyword.lower() in content.lower():
                 guardrails.append(keyword)
@@ -310,21 +313,23 @@ class TestsIngestion:
                 name = node.name.lower()
 
                 # Categorize by function name patterns
-                if any(keyword in name for keyword in ['rule', 'policy', 'standard']):
+                if any(keyword in name for keyword in ["rule", "policy", "standard"]):
                     rules.append(node.name)
-                elif any(keyword in name for keyword in ['validate', 'check', 'verify', 'ensure']):
+                elif any(keyword in name for keyword in ["validate", "check", "verify", "ensure"]):
                     validations.append(node.name)
-                elif any(keyword in name for keyword in ['constraint', 'limit', 'bound']):
+                elif any(keyword in name for keyword in ["constraint", "limit", "bound"]):
                     constraints.append(node.name)
 
         # Also look for specific patterns in string literals
-        for match in re.finditer(r'["\']([^"\']*(?:rule|policy|constraint|validation)[^"\']*)["\']', content, re.IGNORECASE):
+        for match in re.finditer(
+            r'["\']([^"\']*(?:rule|policy|constraint|validation)[^"\']*)["\']', content, re.IGNORECASE
+        ):
             pattern = match.group(1)
-            if 'rule' in pattern.lower():
+            if "rule" in pattern.lower():
                 rules.append(pattern)
-            elif 'validation' in pattern.lower():
+            elif "validation" in pattern.lower():
                 validations.append(pattern)
-            elif 'constraint' in pattern.lower():
+            elif "constraint" in pattern.lower():
                 constraints.append(pattern)
 
         return {
@@ -449,7 +454,9 @@ def main():
     parser = argparse.ArgumentParser(description="Wave 2: Tests Ingestion")
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--chroma-dir", default="artifacts/chromadb", help="ChromaDB persistence directory")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be ingested without actually doing it")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
+    )
     args = parser.parse_args()
 
     # Run ingestion

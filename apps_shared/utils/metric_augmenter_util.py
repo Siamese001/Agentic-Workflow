@@ -278,7 +278,9 @@ class MetricAugmenter:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MetricAugmenter.augment_bullet")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MetricAugmenter.augment_bullet"
+        )
         try:
             technical_metrics = self._detect_metrics(bullet_text)
             if not technical_metrics:
@@ -290,7 +292,9 @@ class MetricAugmenter:
                 )
             selected_metric = self._select_highest_impact_metric(technical_metrics)
             business_impact = self._estimate_impact(
-                selected_metric["type"], selected_metric["value"], bullet_text,
+                selected_metric["type"],
+                selected_metric["value"],
+                bullet_text,
             )
             if not business_impact:
                 return AugmentedBullet(

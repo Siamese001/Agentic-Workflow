@@ -219,8 +219,11 @@ class YamlInjectionLoader:
             FileNotFoundError: If yaml_root directory doesn't exist.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "YamlInjectionLoader.enumerate_yaml_files")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "YamlInjectionLoader.enumerate_yaml_files"
+        )
 
         if not self.yaml_root.exists():
             raise FileNotFoundError(f"YAML root directory not found: {self.yaml_root}")
@@ -252,7 +255,8 @@ class YamlInjectionLoader:
                 raise
             except Exception as e:
                 raise YamlValidationError(
-                    filename=str(yaml_file), parse_error=f"Unexpected error: {e}",
+                    filename=str(yaml_file),
+                    parse_error=f"Unexpected error: {e}",
                 ) from e
         for layer_patterns in patterns_by_layer.values():
             layer_patterns.sort(key=lambda p: p.id)
@@ -294,7 +298,8 @@ class YamlInjectionLoader:
             raise YamlValidationError(filename=str(yaml_file), parse_error=str(e)) from e
         if not isinstance(data, dict):
             raise YamlValidationError(
-                filename=str(yaml_file), parse_error="Root element must be a dictionary",
+                filename=str(yaml_file),
+                parse_error="Root element must be a dictionary",
             )
         patterns = []
         for root_key, root_value in data.items():
@@ -303,7 +308,10 @@ class YamlInjectionLoader:
         return patterns
 
     def _extract_patterns_from_dict(
-        self, root_key: str, pattern_dict: Dict[str, Any], yaml_file: Path,
+        self,
+        root_key: str,
+        pattern_dict: Dict[str, Any],
+        yaml_file: Path,
     ) -> List[InstructionalPattern]:
         """Extract patterns from a dictionary structure.
 

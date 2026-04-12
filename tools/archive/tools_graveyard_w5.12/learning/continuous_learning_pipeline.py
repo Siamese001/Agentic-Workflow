@@ -19,12 +19,14 @@ from watchdog.observers import Observer
 ROOT = Path(__file__).resolve().parents[1]
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
 
 @dataclass
 class LearningEvent:
     """Learning event data structure."""
+
     event_type: str
     source_component: str
     timestamp: datetime
@@ -33,14 +35,17 @@ class LearningEvent:
     session_id: str | None = None
     correlation_id: str | None = None
 
+
 @dataclass
 class LearningSignal:
     """Learning signal for real-time processing."""
+
     signal_type: str
     source: str
     payload: Any
     timestamp: datetime
     expires_at: datetime | None = None
+
 
 class LearningDataCollector:
     """Collects learning data from various sources in real-time."""
@@ -192,6 +197,7 @@ class LearningDataCollector:
         )
         logger.info(f"Stored learning signal: {signal.signal_type}")
 
+
 class FileSystemLearningMonitor(FileSystemEventHandler):
     """Monitors file system for learning data generation."""
 
@@ -201,12 +207,12 @@ class FileSystemLearningMonitor(FileSystemEventHandler):
         self.watch_directories = watch_directories
         self.observer = Observer()
         self.learning_patterns = {
-            '.py': 'code_change',
-            '.json': 'config_change',
-            '.log': 'log_event',
-            '.pkl': 'model_save',
-            '.ckpt': 'checkpoint_save',
-            '.model': 'model_update',
+            ".py": "code_change",
+            ".json": "config_change",
+            ".log": "log_event",
+            ".pkl": "model_save",
+            ".ckpt": "checkpoint_save",
+            ".model": "model_update",
         }
 
     def start_monitoring(self):
@@ -262,6 +268,7 @@ class FileSystemLearningMonitor(FileSystemEventHandler):
         except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error handling file change {file_path}: {e}")
 
+
 class ComponentLearningIntegrator:
     """Integrates learning collection into system components."""
 
@@ -281,8 +288,16 @@ class ComponentLearningIntegrator:
         """Wrap component methods with learning hooks."""
         # Get methods that should be monitored
         learning_methods = [
-            'train', 'predict', 'update', 'save', 'load',
-            'process', 'execute', 'run', 'analyze', 'evaluate',
+            "train",
+            "predict",
+            "update",
+            "save",
+            "load",
+            "process",
+            "execute",
+            "run",
+            "analyze",
+            "evaluate",
         ]
 
         for attr_name in dir(component_instance):
@@ -291,12 +306,15 @@ class ComponentLearningIntegrator:
                 if callable(attr):
                     # Wrap with learning hook
                     wrapped_method = self._create_learning_wrapper(
-                        component_name, attr_name, attr,
+                        component_name,
+                        attr_name,
+                        attr,
                     )
                     setattr(component_instance, attr_name, wrapped_method)
 
     def _create_learning_wrapper(self, component_name: str, method_name: str, method: Callable):
         """Create a learning wrapper for a component method."""
+
         def wrapper(*args, **kwargs):
             start_time = datetime.now()
 
@@ -362,6 +380,7 @@ class ComponentLearningIntegrator:
 
         return wrapper
 
+
 class AutomatedLearningPipeline:
     """Complete automated learning pipeline for continuous data flow."""
 
@@ -369,6 +388,7 @@ class AutomatedLearningPipeline:
         # Initialize memory manager if not provided
         if memory_manager is None:
             from implement_unified_memory import UnifiedMemoryManager
+
             self.memory_manager = UnifiedMemoryManager()
         else:
             self.memory_manager = memory_manager
@@ -440,7 +460,9 @@ class AutomatedLearningPipeline:
         if self.config["enable_component_integration"]:
             self.component_integrator.register_component(component_name, component_instance)
 
-    def emit_learning_event(self, event_type: str, source: str, data: dict[str, Any], priority: str = "MEDIUM"):
+    def emit_learning_event(
+        self, event_type: str, source: str, data: dict[str, Any], priority: str = "MEDIUM"
+    ):
         """Emit a learning event manually."""
         event = LearningEvent(
             event_type=event_type,
@@ -451,7 +473,9 @@ class AutomatedLearningPipeline:
         )
         self.data_collector.emit_learning_event(event)
 
-    def emit_learning_signal(self, signal_type: str, source: str, payload: Any, expires_in_seconds: int = None):
+    def emit_learning_signal(
+        self, signal_type: str, source: str, payload: Any, expires_in_seconds: int = None
+    ):
         """Emit a learning signal manually."""
         expires_at = None
         if expires_in_seconds:
@@ -481,6 +505,7 @@ class AutomatedLearningPipeline:
 
     def _start_periodic_collection(self):
         """Start periodic data collection."""
+
         def periodic_collection():
             while self.data_collector.is_running:
                 try:
@@ -560,6 +585,7 @@ class AutomatedLearningPipeline:
         try:
             # Memory usage
             import psutil
+
             memory_info = psutil.virtual_memory()
 
             self.emit_learning_event(
@@ -569,7 +595,7 @@ class AutomatedLearningPipeline:
                     "memory_percent": memory_info.percent,
                     "memory_available_gb": memory_info.available / (1024**3),
                     "cpu_percent": psutil.cpu_percent(),
-                    "disk_usage_percent": psutil.disk_usage('/').percent,
+                    "disk_usage_percent": psutil.disk_usage("/").percent,
                 },
                 priority="LOW",
             )
@@ -606,7 +632,11 @@ class AutomatedLearningPipeline:
             # Clean up expired application state
             # This would be implemented in the memory manager
             pass
-        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Error during cleanup: {e}")
         except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.error(f"Error during cleanup: {e}")
@@ -632,6 +662,7 @@ class AutomatedLearningPipeline:
 # Decorator for easy learning integration
 def learning_enabled(method_name: str = None, priority: str = "MEDIUM"):
     """Decorator to enable learning for a method."""
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             # Get the pipeline instance (would need to be global or passed)
@@ -656,16 +687,20 @@ def learning_enabled(method_name: str = None, priority: str = "MEDIUM"):
                 pass  # Pipeline not available
 
             return func(*args, **kwargs)
+
         return wrapper
+
     return decorator
 
 
 # Global pipeline instance (simplified approach)
 _global_pipeline = None
 
+
 def get_global_pipeline() -> AutomatedLearningPipeline | None:
     """Get the global pipeline instance."""
     return _global_pipeline
+
 
 def set_global_pipeline(pipeline: AutomatedLearningPipeline):
     """Set the global pipeline instance."""

@@ -16,14 +16,17 @@ class TestCanonicalTruthSeamAdg:
     def test_canonical_truth_seam_adg_imports(self):
         """Test canonical_truth_seam_adg module imports."""
         from agentic_core import canonical_truth_seam_adg
+
         assert canonical_truth_seam_adg is not None
 
     def test_canonical_truth_seam_adg_class(self):
         """Test CanonicalTruthSeamAdg class exists."""
         from agentic_core import CanonicalTruthSeamAdg
+
         assert CanonicalTruthSeamAdg is not None
 
     def test_canonical_truth_seam_adg_callable(self):
         """Test canonical_truth_seam_adg functions are callable."""
         from agentic_core import validate_canonical_truth_seam_adg
+
         assert callable(validate_canonical_truth_seam_adg)

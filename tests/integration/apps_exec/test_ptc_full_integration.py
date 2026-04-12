@@ -116,6 +116,7 @@ try:
         emit_determinism_digest,
         emit_replay_key,
     )
+
     PTC_AVAILABLE = True
 except ImportError:
     PTC_AVAILABLE = False
@@ -150,6 +151,7 @@ DEFAULT_TIMEOUT = 300
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture(autouse=True)
 def reset_all_global_state():
@@ -196,6 +198,7 @@ def ptc_safety_manager() -> PTCSafetyGateManager:
 def ptc_enforcer() -> PTCContractEnforcer:
     """Provide PTC contract enforcer with key source injected."""
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+
     inject_key_source(TestKeySource())
     return PTCContractEnforcer(secret=TestKeySource.TEST_SECRET)
 
@@ -219,6 +222,7 @@ def escalation_activator():
 # =============================================================================
 # Test Class: PTC End-to-End Integration
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCEndToEndIntegration:
@@ -464,9 +468,12 @@ print(json.dumps({"done": True}))
 
         # If gates pass, execute
         if ptc_safety_manager.check_all_passed(results):
-            result = ptc_orchestrator.execute_batch(plan, {
-                "safe_query": lambda _: {"status": "ok"},
-            })
+            result = ptc_orchestrator.execute_batch(
+                plan,
+                {
+                    "safe_query": lambda _: {"status": "ok"},
+                },
+            )
             assert result.success
 
         # Check statistics
@@ -573,6 +580,7 @@ print(json.dumps({"done": True}))
 # Test Class: PTC Contract Enforcement Integration
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCContractEnforcementIntegration:
     """Integration tests for PTC contract enforcement."""
@@ -603,7 +611,8 @@ class TestPTCContractEnforcementIntegration:
         assert "hello world" in safe_output
 
     def test_ptc_enforcer_byte_cap_fail_closed(
-        self, ptc_enforcer: PTCContractEnforcer,
+        self,
+        ptc_enforcer: PTCContractEnforcer,
     ) -> None:
         """Test PTC enforcer byte cap fail-closed."""
         envelope = SandboxEnvelope(
@@ -626,6 +635,7 @@ class TestPTCContractEnforcementIntegration:
 # Test Class: PTC Built-in Tools Integration
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCBuiltinToolsIntegration:
     """Integration tests for PTC built-in tools."""
@@ -637,10 +647,12 @@ class TestPTCBuiltinToolsIntegration:
         (temp_dir / "test2.py").write_text("def world(): pass")
 
         # Search using repo_rg
-        result = repo_rg_handler({
-            "pattern": r"def \w+",
-            "root": str(temp_dir),
-        })
+        result = repo_rg_handler(
+            {
+                "pattern": r"def \w+",
+                "root": str(temp_dir),
+            }
+        )
 
         data = json.loads(result)
         assert len(data["results"]) == 2
@@ -682,6 +694,7 @@ class TestPTCBuiltinToolsIntegration:
 # =============================================================================
 # Test Class: PTC Tool Registry Integration
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCToolRegistryIntegration:
@@ -747,6 +760,7 @@ class TestPTCToolRegistryIntegration:
 # =============================================================================
 # Test Class: PTC Performance Integration
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCPerformanceIntegration:

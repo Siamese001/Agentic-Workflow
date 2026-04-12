@@ -31,7 +31,9 @@ class IGraphStore(ABC):
 
     @abstractmethod
     def get_relationships(
-        self, entity_id: str, direction: str = "both",
+        self,
+        entity_id: str,
+        direction: str = "both",
     ) -> list[GraphRelationship]:
         """Get relationships for an entity.
 
@@ -142,6 +144,7 @@ class IGraphStore(ABC):
 @dataclass
 class GraphCommunity:
     """Represents a community in the knowledge graph."""
+
     id: str
     name: str
     description: str = ""
@@ -153,6 +156,7 @@ class GraphCommunity:
 @dataclass
 class GraphSubgraph:
     """Represents a subgraph extracted from the knowledge graph."""
+
     nodes: list[GraphEntity] = field(default_factory=list)
     relationships: list[GraphRelationship] = field(default_factory=list)
     center_id: str = ""
@@ -163,6 +167,7 @@ class GraphSubgraph:
 @dataclass
 class GraphPath:
     """Represents a path through the knowledge graph."""
+
     nodes: list[GraphEntity] = field(default_factory=list)
     relationships: list[GraphRelationship] = field(default_factory=list)
     cost: float = 0.0
@@ -172,6 +177,7 @@ class GraphPath:
 @dataclass
 class GraphRelationship:
     """Represents a relationship between entities in the knowledge graph."""
+
     source_id: str
     target_id: str
     relation_type: str
@@ -183,6 +189,7 @@ class GraphRelationship:
 @dataclass
 class GraphEntity:
     """Represents an entity in the knowledge graph."""
+
     id: str
     name: str
     entity_type: str

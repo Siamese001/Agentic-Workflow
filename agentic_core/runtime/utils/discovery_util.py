@@ -18,7 +18,9 @@ from typing import Any
 def get_python_files(path):
     """Placeholder function to get Python files."""
     from pathlib import Path
+
     return list(Path(path).glob("**/*.py"))
+
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
@@ -200,6 +202,7 @@ class AgentRegistry:
             List of discovered agents
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistry.discover_all")
 

@@ -24,6 +24,7 @@ from tools.validate_plan_format import validate_plan_format
 # Try to import token estimator - may not exist in all environments
 try:
     from tools.utils.planning.token_estimator import ContextWindowEstimator
+
     TOKEN_VALIDATOR_AVAILABLE = True
 except ImportError:
     TOKEN_VALIDATOR_AVAILABLE = False
@@ -145,7 +146,8 @@ class CIPlanValidator:
         # §10 TOKEN ESTIMATION VALIDATION — NOW MANDATORY
         if self.token_validator:
             token_result = self.token_validator.validate_plan_tokens(
-                Path(result.get("path", "unknown")), content,
+                Path(result.get("path", "unknown")),
+                content,
             )
         else:
             # Fallback if validator not available

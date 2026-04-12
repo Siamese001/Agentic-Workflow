@@ -260,7 +260,9 @@ class WorkflowCoordinator(ABC):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "WorkflowCoordinator.safe_coordinate",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "WorkflowCoordinator.safe_coordinate",
         )
 
         start_time = get_clock().now_epoch()
@@ -331,7 +333,9 @@ class CoordinatorRegistry:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "CoordinatorRegistry.get_for_workflow",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "CoordinatorRegistry.get_for_workflow",
         )
 
         for coordinator in self.coordinators.values():

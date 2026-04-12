@@ -19,12 +19,12 @@ class EmergencySyntaxFixer:
     def __init__(self, repo_root: pathlib.Path):
         self.repo_root = repo_root
         self.stats = {
-            'total_files': 0,
-            'syntax_errors_fixed': 0,
-            'legacy_comments_removed': 0,
-            'unmatched_parens_removed': 0,
-            'indentation_fixed': 0,
-            'files_with_errors': 0,
+            "total_files": 0,
+            "syntax_errors_fixed": 0,
+            "legacy_comments_removed": 0,
+            "unmatched_parens_removed": 0,
+            "indentation_fixed": 0,
+            "files_with_errors": 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 
@@ -35,16 +35,16 @@ class EmergencySyntaxFixer:
         print(f"Found {len(test_files)} test files to check...")
 
         for test_file in test_files:
-            self.stats['total_files'] += 1
+            self.stats["total_files"] += 1
             if self.fix_file(test_file):
-                self.stats['files_with_errors'] += 1
+                self.stats["files_with_errors"] += 1
 
         return self.stats
 
     def fix_file(self, file_path: pathlib.Path) -> bool:
         """Fix syntax errors in a single file."""
         try:
-            original_content = file_path.read_text(encoding='utf-8')
+            original_content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
@@ -63,19 +63,19 @@ class EmergencySyntaxFixer:
         if self._remove_legacy_comments(fixed_content):
             changes_made = True
             fixed_content = self._remove_legacy_comments(fixed_content)
-            self.stats['legacy_comments_removed'] += 1
+            self.stats["legacy_comments_removed"] += 1
 
         # Fix 2: Remove unmatched closing parentheses
         if self._remove_unmatched_parentheses(fixed_content):
             changes_made = True
             fixed_content = self._remove_unmatched_parentheses(fixed_content)
-            self.stats['unmatched_parens_removed'] += 1
+            self.stats["unmatched_parens_removed"] += 1
 
         # Fix 3: Fix indentation issues
         if self._fix_indentation_issues(fixed_content):
             changes_made = True
             fixed_content = self._fix_indentation_issues(fixed_content)
-            self.stats['indentation_fixed'] += 1
+            self.stats["indentation_fixed"] += 1
 
         # Fix 4: Remove empty lines at the beginning
         fixed_content = self._fix_leading_empty_lines(fixed_content)
@@ -84,8 +84,8 @@ class EmergencySyntaxFixer:
         try:
             ast.parse(fixed_content)
             # If successful, write back
-            file_path.write_text(fixed_content, encoding='utf-8')
-            self.stats['syntax_errors_fixed'] += 1
+            file_path.write_text(fixed_content, encoding="utf-8")
+            self.stats["syntax_errors_fixed"] += 1
             return True
         except SyntaxError as e:
             self.failed_files.append((str(file_path), f"Syntax error after fix: {e}"))
@@ -98,10 +98,10 @@ class EmergencySyntaxFixer:
 
         for line in lines:
             # Remove lines that are just legacy comments
-            if not re.match(r'^\s*#\s*#\s*MOVED:.*$', line):
+            if not re.match(r"^\s*#\s*#\s*MOVED:.*$", line):
                 cleaned_lines.append(line)
 
-        return '\n'.join(cleaned_lines)
+        return "\n".join(cleaned_lines)
 
     def _remove_unmatched_parentheses(self, content: str) -> str:
         """Remove unmatched closing parentheses."""
@@ -110,10 +110,10 @@ class EmergencySyntaxFixer:
 
         for line in lines:
             # Remove lines that are just closing parentheses
-            if not re.match(r'^\s*\)\s*$', line):
+            if not re.match(r"^\s*\)\s*$", line):
                 cleaned_lines.append(line)
 
-        return '\n'.join(cleaned_lines)
+        return "\n".join(cleaned_lines)
 
     def _fix_indentation_issues(self, content: str) -> str:
         """Fix common indentation issues."""
@@ -129,19 +129,19 @@ class EmergencySyntaxFixer:
                 continue
 
             # Check if this is an import statement at wrong indentation
-            if (stripped.startswith(('from ', 'import ')) and
-                any(prefix in stripped for prefix in ['agentic_core', 'apps_', 'system_learning'])):
-
+            if stripped.startswith(("from ", "import ")) and any(
+                prefix in stripped for prefix in ["agentic_core", "apps_", "system_learning"]
+            ):
                 # Check if it's at module level (no indentation)
-                if not line.startswith(' ') and not line.startswith('\t'):
+                if not line.startswith(" ") and not line.startswith("\t"):
                     # This is likely a misplaced import, add proper indentation
-                    fixed_lines.append('    ' + stripped)
+                    fixed_lines.append("    " + stripped)
                 else:
                     fixed_lines.append(line)
             else:
                 fixed_lines.append(line)
 
-        return '\n'.join(fixed_lines)
+        return "\n".join(fixed_lines)
 
     def _fix_leading_empty_lines(self, content: str) -> str:
         """Remove excessive empty lines at the beginning."""
@@ -156,15 +156,15 @@ class EmergencySyntaxFixer:
 
         # Keep at most 2 empty lines at the beginning
         if first_content_line > 2:
-            return '\n'.join(lines[first_content_line-2:])
+            return "\n".join(lines[first_content_line - 2 :])
 
         return content
 
     def print_summary(self):
         """Print fixing summary."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("EMERGENCY SYNTAX FIX SUMMARY")
-        print("="*60)
+        print("=" * 60)
         print(f"Total files checked: {self.stats['total_files']}")
         print(f"Files with errors fixed: {self.stats['files_with_errors']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
@@ -180,7 +180,7 @@ class EmergencySyntaxFixer:
             if len(self.failed_files) > 10:
                 print(f"  ... and {len(self.failed_files) - 10} more")
 
-        print("="*60)
+        print("=" * 60)
 
 
 def main():
@@ -201,7 +201,7 @@ def main():
 
     for test_file in test_files:
         try:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
             ast.parse(content)
         except SyntaxError:
             syntax_errors += 1

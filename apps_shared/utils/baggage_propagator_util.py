@@ -170,6 +170,7 @@ class BaggagePropagator:
     def inject(self, context: dict[str, object], carrier: dict[str, str]) -> None:
         """Inject context into carrier."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaggagePropagator.inject")
 

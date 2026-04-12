@@ -106,7 +106,9 @@ class TestStubGenerator:
                 method_name = class_info["methods"][0]
                 test_methods.append(
                     self.templates["method"].format(
-                        class_name=class_info["name"], method_name=method_name, module=analysis["module_name"],
+                        class_name=class_info["name"],
+                        method_name=method_name,
+                        module=analysis["module_name"],
                     ),
                 )
 

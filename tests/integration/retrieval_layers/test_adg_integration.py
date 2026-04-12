@@ -9,6 +9,7 @@ from dataclasses import dataclass
 @dataclass
 class ADGEdge:
     """ADG edge representation."""
+
     src: str
     dst: str
     relation_type: str
@@ -310,7 +311,9 @@ class TestADGIntegrationTelemetry:
     def test_telemetry_validated_by_safety_plane(self):
         """Critical paths: validated_by_safety_plane for safety."""
         critical_edges = [
-            ADGEdge("L4-ToolExec", "SafetyValidator", "validated_by_safety_plane", "safety_check", "tool.py", 45),
+            ADGEdge(
+                "L4-ToolExec", "SafetyValidator", "validated_by_safety_plane", "safety_check", "tool.py", 45
+            ),
             ADGEdge("L5-LLM", "SafetyValidator", "validated_by_safety_plane", "safety_check", "llm.py", 56),
         ]
 
@@ -326,7 +329,13 @@ class TestADGSemanticCoverage:
         layer_semantic_types = {
             "L1": {"cache_lookup", "validation", "telemetry"},
             "L2": {"embedding_generation", "vector_storage", "semantic_cache_lookup"},
-            "L3": {"vector_search", "graph_traversal", "chunk_expansion", "quality_scoring", "context_hydration"},
+            "L3": {
+                "vector_search",
+                "graph_traversal",
+                "chunk_expansion",
+                "quality_scoring",
+                "context_hydration",
+            },
             "L4": {"tool_audit", "plan_execution", "agent_execution", "provenance", "output_capture"},
             "L5": {"llm_generation", "pattern_learning"},
         }

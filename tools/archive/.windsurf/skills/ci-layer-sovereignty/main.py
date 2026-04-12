@@ -20,31 +20,35 @@ def validate_layer_sovereignty(file_path: str) -> tuple[bool, str, str]:
         path = Path.cwd() / path
 
     # Only check Python files in agentic_core/ or apps_*/ directories
-    if not (path.suffix == '.py' and
-            (str(path).startswith(str(Path.cwd() / "agentic_core")) or
-             any(str(path).startswith(str(Path.cwd() / d)) for d in Path.cwd().glob("apps_*")))):
+    if not (
+        path.suffix == ".py"
+        and (
+            str(path).startswith(str(Path.cwd() / "agentic_core"))
+            or any(str(path).startswith(str(Path.cwd() / d)) for d in Path.cwd().glob("apps_*"))
+        )
+    ):
         return True, "File not in layer sovereignty scope", ""
 
     try:
-        content = path.read_text(encoding='utf-8')
-        lines = content.split('\n')
+        content = path.read_text(encoding="utf-8")
+        lines = content.split("\n")
 
         # Determine source layer
         source_layer = None
         relative_path = path.relative_to(Path.cwd())
         path_parts = relative_path.parts
 
-        if 'agentic_core' in path_parts:
-            idx = path_parts.index('agentic_core')
+        if "agentic_core" in path_parts:
+            idx = path_parts.index("agentic_core")
             if idx + 1 < len(path_parts):
                 layer_part = path_parts[idx + 1]
                 # Extract L1 from L1_cognition, L2 from L2_execution, etc.
-                if '_' in layer_part:
-                    source_layer = layer_part.split('_')[0]
-                elif layer_part.startswith('L'):
+                if "_" in layer_part:
+                    source_layer = layer_part.split("_")[0]
+                elif layer_part.startswith("L"):
                     source_layer = layer_part
-        elif any(p.startswith('apps_') for p in path_parts):
-            source_layer = 'apps'
+        elif any(p.startswith("apps_") for p in path_parts):
+            source_layer = "apps"
 
         if not source_layer:
             return True, "Could not determine layer", ""
@@ -55,9 +59,9 @@ def validate_layer_sovereignty(file_path: str) -> tuple[bool, str, str]:
             line = line.strip()
 
             # Check import statements
-            if line.startswith('from ') or line.startswith('import '):
+            if line.startswith("from ") or line.startswith("import "):
                 # Extract the import path
-                if line.startswith('from '):
+                if line.startswith("from "):
                     parts = line.split()
                     if len(parts) >= 2:
                         import_path = parts[1]
@@ -71,23 +75,23 @@ def validate_layer_sovereignty(file_path: str) -> tuple[bool, str, str]:
                         continue
 
                 # Check for agentic_core imports
-                if 'agentic_core.L' in import_path:
+                if "agentic_core.L" in import_path:
                     # Extract target layer
                     try:
-                        agentic_idx = import_path.index('agentic_core.L')
-                        remaining = import_path[agentic_idx + len('agentic_core.L'):]
+                        agentic_idx = import_path.index("agentic_core.L")
+                        remaining = import_path[agentic_idx + len("agentic_core.L") :]
                         # Extract just the L2 from L2_execution
-                        layer_part = remaining.split('_')[0] if '_' in remaining else remaining.split('.')[0]
+                        layer_part = remaining.split("_")[0] if "_" in remaining else remaining.split(".")[0]
                         target_layer = f"L{layer_part}"
 
                         # Check violation rules
-                        if source_layer == 'L1' and target_layer in ['L2', 'L3', 'L4', 'L5', 'L6']:
+                        if source_layer == "L1" and target_layer in ["L2", "L3", "L4", "L5", "L6"]:
                             violations.append(f"Line {line_num}: L1 importing from {target_layer}")
-                        elif source_layer == 'L2' and target_layer in ['L5', 'L6']:
+                        elif source_layer == "L2" and target_layer in ["L5", "L6"]:
                             violations.append(f"Line {line_num}: L2 importing from {target_layer}")
-                        elif source_layer == 'L3' and target_layer in ['L5', 'L6']:
+                        elif source_layer == "L3" and target_layer in ["L5", "L6"]:
                             violations.append(f"Line {line_num}: L3 importing from {target_layer}")
-                        elif source_layer == 'apps' and target_layer.startswith('L'):
+                        elif source_layer == "apps" and target_layer.startswith("L"):
                             violations.append(f"Line {line_num}: apps importing from {target_layer}")
                     except (IndexError, ValueError):
                         continue

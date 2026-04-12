@@ -4,8 +4,10 @@ Source: agentic_core\L2_execution\UniversalWriteGateway.py
 Extracted: 2026-03-27T06:50:34.181500
 """
 
+
 class ToolNotAllowedError(PermissionError):
     """Raised when an instruction attempts to execute a tool not on the allowlist."""
+
 
 class MutationRecord:
     """Immutable record of a write operation for audit trails.
@@ -72,6 +74,7 @@ class MutationRecord:
             replay_mode=replay_mode,
         )
 
+
 class SimulationResult:
     """Result of a simulated write operation in replay mode."""
 
@@ -81,6 +84,7 @@ class SimulationResult:
     simulated_size: int
     simulated_hash: str
     replay_mode: bool = True
+
 
 class UniversalWriteGateway:
     """Single mutation authority for all FS/DB/vector writes.
@@ -376,7 +380,9 @@ class UniversalWriteGateway:
             )
             raise ToolNotAllowedError(f"Tool '{tool_name}' is not on the allowlist. Execution blocked.")
         self.record_mutation(
-            path=f"tool_execution/{tool_name}", operation="execute_instruction_allowed", permitted=True,
+            path=f"tool_execution/{tool_name}",
+            operation="execute_instruction_allowed",
+            permitted=True,
         )
 
     def write_file(self, path: str, data: str | bytes) -> SimulationResult | MutationRecord:
@@ -486,7 +492,13 @@ class UniversalWriteGateway:
         self._frozen = True
 
     def write(
-        self, payload: bytes, signature: str, store: Any, *, replay_key: str = "", plan_hash: str = "",
+        self,
+        payload: bytes,
+        signature: str,
+        store: Any,
+        *,
+        replay_key: str = "",
+        plan_hash: str = "",
     ) -> None:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
@@ -543,7 +555,11 @@ class UniversalWriteGateway:
         }
 
     def validate_promotion_pointer_update(
-        self, namespace: str, old_pointer: str, new_pointer: str, capability_token,
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token,
     ) -> bool:
         """Validate promotion pointer update with capability token."""
         if self.replay_mode:
@@ -572,7 +588,11 @@ class UniversalWriteGateway:
         return True
 
     def _simulate_promotion_validation(
-        self, namespace: str, old_pointer: str, new_pointer: str, capability_token,
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token,
     ) -> bool:
         """Simulate promotion validation in replay mode."""
         self.record_mutation(
@@ -590,6 +610,7 @@ class UniversalWriteGateway:
         Logger.info(f"Pointer updated in namespace {namespace}")
         return True
 
+
 def get_write_gateway() -> UniversalWriteGateway:
     """Get the global write gateway instance."""
     global _global_gateway
@@ -597,15 +618,18 @@ def get_write_gateway() -> UniversalWriteGateway:
         _global_gateway = UniversalWriteGateway()
     return _global_gateway
 
+
 def set_write_gateway(gateway: UniversalWriteGateway) -> None:
     """Set the global write gateway instance (for testing)."""
     global _global_gateway
     _global_gateway = gateway
 
+
 def reset_write_gateway() -> None:
     """Reset the global write gateway (for testing)."""
     global _global_gateway
     _global_gateway = None
+
 
 def write_json(path: str, data: dict, **kwargs) -> MutationRecord | SimulationResult:
     """Convenience method for JSON writes through UWG.
@@ -623,6 +647,7 @@ def write_json(path: str, data: dict, **kwargs) -> MutationRecord | SimulationRe
     json_content = json.dumps(data, indent=2, ensure_ascii=False)
     return get_write_gateway().write_through(path, json_content, **kwargs)
 
+
 def write_text(path: str, content: str, **kwargs) -> MutationRecord | SimulationResult:
     """Convenience method for text writes through UWG.
 
@@ -635,6 +660,7 @@ def write_text(path: str, content: str, **kwargs) -> MutationRecord | Simulation
         MutationRecord or SimulationResult from write_through
     """
     return get_write_gateway().write_through(path, content, **kwargs)
+
 
 def append_to_file(path: str, content: str, **kwargs) -> MutationRecord | SimulationResult:
     """Safe append operations through UWG.
@@ -671,6 +697,7 @@ def append_to_file(path: str, content: str, **kwargs) -> MutationRecord | Simula
     except (ValueError, TypeError, RuntimeError) as e:
         Logger.error(f"Append operation failed for {path}: {e}")
         raise
+
 
 def atomic_write(path: str, data: Any, **kwargs) -> MutationRecord | SimulationResult:
     """Atomic write with temp file + rename through UWG.
@@ -729,6 +756,7 @@ def atomic_write(path: str, data: Any, **kwargs) -> MutationRecord | SimulationR
         if temp_path.exists():
             temp_path.unlink()
         raise
+
 
 def write_pickle(path: str, obj: Any, **kwargs) -> MutationRecord | SimulationResult:
     """Pickle serialization with governance through UWG.
@@ -1030,7 +1058,9 @@ def write_pickle(path: str, obj: Any, **kwargs) -> MutationRecord | SimulationRe
             )
             raise ToolNotAllowedError(f"Tool '{tool_name}' is not on the allowlist. Execution blocked.")
         self.record_mutation(
-            path=f"tool_execution/{tool_name}", operation="execute_instruction_allowed", permitted=True,
+            path=f"tool_execution/{tool_name}",
+            operation="execute_instruction_allowed",
+            permitted=True,
         )
 
     def write_file(self, path: str, data: str | bytes) -> SimulationResult | MutationRecord:
@@ -1112,7 +1142,13 @@ def write_pickle(path: str, obj: Any, **kwargs) -> MutationRecord | SimulationRe
         self._frozen = True
 
     def write(
-        self, payload: bytes, signature: str, store: Any, *, replay_key: str = "", plan_hash: str = "",
+        self,
+        payload: bytes,
+        signature: str,
+        store: Any,
+        *,
+        replay_key: str = "",
+        plan_hash: str = "",
     ) -> None:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
@@ -1169,7 +1205,11 @@ def write_pickle(path: str, obj: Any, **kwargs) -> MutationRecord | SimulationRe
         }
 
     def validate_promotion_pointer_update(
-        self, namespace: str, old_pointer: str, new_pointer: str, capability_token,
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token,
     ) -> bool:
         """Validate promotion pointer update with capability token."""
         if self.replay_mode:

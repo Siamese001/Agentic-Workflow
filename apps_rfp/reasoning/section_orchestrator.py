@@ -105,7 +105,9 @@ class SectionGenerationAgent:
 
         try:
             # Select template
-            template = self._templates.get(request.section_type, self._templates[SectionType.SOLUTION_APPENDIX])
+            template = self._templates.get(
+                request.section_type, self._templates[SectionType.SOLUTION_APPENDIX]
+            )
 
             # Generate content (mock for now - would call LLM in production)
             content = self._render_template(template, request.context)
@@ -335,13 +337,15 @@ class SectionOrchestrator:
             # Determine dependencies
             dependencies = self._determine_dependencies(section_type, required_sections)
 
-            sections.append(SectionRequest(
-                section_type=section_type,
-                section_id=section_id,
-                dependencies=dependencies,
-                context=context,
-                max_words=self._get_section_word_limit(section_type),
-            ))
+            sections.append(
+                SectionRequest(
+                    section_type=section_type,
+                    section_id=section_id,
+                    dependencies=dependencies,
+                    context=context,
+                    max_words=self._get_section_word_limit(section_type),
+                )
+            )
 
         # Build execution order (dependency-aware batches)
         execution_order = self._compute_execution_order(sections)
@@ -389,14 +393,18 @@ class SectionOrchestrator:
                     self._results[result.section_id] = result
 
                     # Record lineage
-                    self._lineage.append({
-                        "section_id": result.section_id,
-                        "status": result.status.value,
-                        "quality_score": result.quality_score,
-                        "generation_time_ms": result.generation_time_ms,
-                    })
+                    self._lineage.append(
+                        {
+                            "section_id": result.section_id,
+                            "status": result.status.value,
+                            "quality_score": result.quality_score,
+                            "generation_time_ms": result.generation_time_ms,
+                        }
+                    )
 
-            _emit_records_workflow_lineage("enterprise", "SectionOrchestrator", f"completed_batch_{len(batch)}")
+            _emit_records_workflow_lineage(
+                "enterprise", "SectionOrchestrator", f"completed_batch_{len(batch)}"
+            )
 
         return results
 
@@ -412,7 +420,9 @@ class SectionOrchestrator:
         )
 
         total_words = sum(r.word_count for r in sorted_results)
-        avg_quality = sum(r.quality_score for r in sorted_results) / len(sorted_results) if sorted_results else 0
+        avg_quality = (
+            sum(r.quality_score for r in sorted_results) / len(sorted_results) if sorted_results else 0
+        )
 
         return {
             "sections": [
@@ -447,43 +457,51 @@ class SectionOrchestrator:
         }
 
         if section_type == SectionType.EXECUTIVE_SUMMARY:
-            base_context.update({
-                "outcome_1": "Reduced operational costs through automation",
-                "outcome_2": "Improved decision quality with AI augmentation",
-                "outcome_3": "Full auditability for compliance requirements",
-                "investment_range": "$250K - $500K",
-            })
+            base_context.update(
+                {
+                    "outcome_1": "Reduced operational costs through automation",
+                    "outcome_2": "Improved decision quality with AI augmentation",
+                    "outcome_3": "Full auditability for compliance requirements",
+                    "investment_range": "$250K - $500K",
+                }
+            )
 
         elif section_type == SectionType.TECHNICAL_APPROACH:
-            base_context.update({
-                "architecture_posture": parsed_rfp.get("architecture_posture", "cloud-first"),
-                "data_strategy": "Vector-native with structured fallbacks",
-                "integration_pattern": "API-first with event-driven extensions",
-            })
+            base_context.update(
+                {
+                    "architecture_posture": parsed_rfp.get("architecture_posture", "cloud-first"),
+                    "data_strategy": "Vector-native with structured fallbacks",
+                    "integration_pattern": "API-first with event-driven extensions",
+                }
+            )
 
         elif section_type == SectionType.IMPLEMENTATION_ROADMAP:
             phases = decompositions[0].get("sprint_breakdown", []) if decompositions else []
-            base_context["phases"] = [
-                f"Phase {i+1}: {len(p)} components" for i, p in enumerate(phases[:5])
-            ] if phases else [
-                "Discovery: Requirements validation",
-                "Foundation: Core platform deployment",
-                "Pilot: First production workload",
-                "Scale: Multi-use-case expansion",
-                "Govern: Continuous governance",
-            ]
+            base_context["phases"] = (
+                [f"Phase {i + 1}: {len(p)} components" for i, p in enumerate(phases[:5])]
+                if phases
+                else [
+                    "Discovery: Requirements validation",
+                    "Foundation: Core platform deployment",
+                    "Pilot: First production workload",
+                    "Scale: Multi-use-case expansion",
+                    "Govern: Continuous governance",
+                ]
+            )
 
         elif section_type == SectionType.VALUE_CASE:
-            base_context.update({
-                "value_drivers": [
-                    "40-60% reduction in manual processing time",
-                    "Audit-ready compliance posture from day one",
-                    "Scalable architecture for future AI evolution",
-                ],
-                "investment": base_context.get("investment_range", "$250K - $500K"),
-                "break_even_timeline": "12-18 months",
-                "npv_estimate": "$1.2M - $2.5M over 3 years",
-            })
+            base_context.update(
+                {
+                    "value_drivers": [
+                        "40-60% reduction in manual processing time",
+                        "Audit-ready compliance posture from day one",
+                        "Scalable architecture for future AI evolution",
+                    ],
+                    "investment": base_context.get("investment_range", "$250K - $500K"),
+                    "break_even_timeline": "12-18 months",
+                    "npv_estimate": "$1.2M - $2.5M over 3 years",
+                }
+            )
 
         return base_context
 
@@ -500,8 +518,11 @@ class SectionOrchestrator:
         }
 
         required_before = dependencies.get(section_type, [])
-        return [f"SEC-{all_sections.index(t)+1:02d}-{t.value[:8].upper()}"
-                for t in required_before if t in all_sections]
+        return [
+            f"SEC-{all_sections.index(t) + 1:02d}-{t.value[:8].upper()}"
+            for t in required_before
+            if t in all_sections
+        ]
 
     def _compute_execution_order(self, sections: list[SectionRequest]) -> list[list[str]]:
         """Compute parallelizable execution batches."""
@@ -599,8 +620,10 @@ class MultiAgentProposalOrchestrator:
             decompositions=decompositions,
         )
 
-        _log.info(f"[MultiAgentProposalOrchestrator] Plan: {len(plan.sections)} sections, "
-                  f"{len(plan.execution_order)} batches")
+        _log.info(
+            f"[MultiAgentProposalOrchestrator] Plan: {len(plan.sections)} sections, "
+            f"{len(plan.execution_order)} batches"
+        )
 
         # Execute plan
         results = await self.section_orchestrator.execute_plan(plan)

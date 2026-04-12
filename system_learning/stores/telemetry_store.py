@@ -194,7 +194,9 @@ class FileBackedTelemetryStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedTelemetryStore.read_events",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "FileBackedTelemetryStore.read_events",
         )
 
         if not self._path.exists():
@@ -211,12 +213,14 @@ class FileBackedTelemetryStore:
                     if window_start_utc <= ts <= window_end_utc:
                         event_type = str(obj.get("event_type", "unknown"))
                         payload = json.dumps(
-                            obj.get("payload", {}), separators=(",", ":"), sort_keys=True,
+                            obj.get("payload", {}),
+                            separators=(",", ":"),
+                            sort_keys=True,
                         ).encode("utf-8")
                         events.append((ts, event_type, payload))
                 except (json.JSONDecodeError, ValueError, TypeError):
                     continue
-        except OSError as exc:    # guardian: Add error context logging
+        except OSError as exc:  # guardian: Add error context logging
             logger.debug("Failed to read telemetry file %s: %s", self._path, exc)
         if events:
             try:

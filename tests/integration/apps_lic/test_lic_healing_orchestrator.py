@@ -86,6 +86,7 @@ from types import ModuleType
 
 # Configuration constants
 
+
 def _make_lic_agent_base_stub():
     """Inject a minimal LICAgentBase stub so LicHealingOrchestrator can be imported."""
     stub_mod = ModuleType("apps_lic.utils.LICAgentBase")
@@ -129,7 +130,9 @@ def _make_lic_agent_base_stub():
     sys.modules["apps_lic.utils.LICAgentBase"] = stub_mod
     return _LICAgentBase
 
+
 _LICAgentBase = _make_lic_agent_base_stub()
+
 
 class TestLicHealingOrchestratorExecuteHealing:
     def _get_orchestrator(self):

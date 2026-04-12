@@ -303,7 +303,9 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RecursiveOrchestrator.handle_task_status",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "RecursiveOrchestrator.handle_task_status",
         )
 
         if status == TaskStatus.SUCCESS:
@@ -369,7 +371,9 @@ class RecursiveOrchestrator(SovereignBaseAgent):
                 f"Cannot determine retry function for {failed_node_id}. Provide retry_function parameter.",
             )
         result = self._spawn_retry_successor(
-            failed_node_id=failed_node_id, retry_function=retry_function, retry_context=retry_ctx,
+            failed_node_id=failed_node_id,
+            retry_function=retry_function,
+            retry_context=retry_ctx,
         )
         if result.get("success"):
             new_node_id = result.get("new_node_id")
@@ -386,7 +390,10 @@ class RecursiveOrchestrator(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     def _spawn_retry_successor(
-        self, failed_node_id: str, retry_function: str, retry_context: RetryContext,
+        self,
+        failed_node_id: str,
+        retry_function: str,
+        retry_context: RetryContext,
     ) -> dict[str, Any]:
         """
         Spawn a successor node using DAGMutation.
@@ -404,7 +411,10 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         retry_params = retry_context.to_parameters()
         final_params = {**base_params, **retry_params}
         hop_spec = HopSpec(
-            hop_function=retry_function, parameters=final_params, priority=1, retry_policy={"max_attempts": 0},
+            hop_function=retry_function,
+            parameters=final_params,
+            priority=1,
+            retry_policy={"max_attempts": 0},
         )
         mutation = DAGMutation(
             action=MutationAction.SPAWN_SUCCESSOR,
@@ -497,7 +507,11 @@ class RecursiveOrchestrator(SovereignBaseAgent):
         - Retry limits respected
         """
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations_found": 0, "violations_fixed": 0, "errors": 0}

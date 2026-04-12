@@ -15,6 +15,7 @@ from typing import Any
 
 class FeatureType(Enum):
     """Supported feature types."""
+
     NUMERIC = "numeric"
     CATEGORICAL = "categorical"
     BOOLEAN = "boolean"
@@ -26,6 +27,7 @@ class FeatureType(Enum):
 
 class NullHandling(Enum):
     """How to handle null/missing values."""
+
     FAIL_CLOSED = "fail_closed"  # Return None/escalate
     DEFAULT_VALUE = "default_value"  # Use predefined default
     DROP_FEATURE = "drop_feature"  # Exclude from model input
@@ -36,6 +38,7 @@ class NullHandling(Enum):
 @dataclass
 class FeatureDefinition:
     """Definition for a single feature."""
+
     name: str
     feature_type: FeatureType
     description: str
@@ -53,12 +56,15 @@ class FeatureDefinition:
             raise ValueError("Feature name cannot be empty")
 
         if self.null_handling == NullHandling.DEFAULT_VALUE and self.default_value is None:
-            raise ValueError(f"Feature {self.name} must have default_value when using DEFAULT_VALUE null handling")
+            raise ValueError(
+                f"Feature {self.name} must have default_value when using DEFAULT_VALUE null handling"
+            )
 
 
 @dataclass
 class FeatureSchema:
     """Complete feature schema for a model."""
+
     schema_name: str
     schema_version: str
     description: str
@@ -74,19 +80,19 @@ class FeatureSchema:
     def _compute_digest(self) -> str:
         """Compute SHA-256 digest of schema."""
         schema_dict = {
-            'schema_name': self.schema_name,
-            'schema_version': self.schema_version,
-            'features': [
+            "schema_name": self.schema_name,
+            "schema_version": self.schema_version,
+            "features": [
                 {
-                    'name': f.name,
-                    'type': f.feature_type.value,
-                    'required': f.required,
-                    'null_handling': f.null_handling.value,
-                    'default_value': f.default_value,
-                    'validation_rules': f.validation_rules,
-                    'provenance': f.provenance,
-                    'extraction_function': f.extraction_function,
-                    'version': f.version,
+                    "name": f.name,
+                    "type": f.feature_type.value,
+                    "required": f.required,
+                    "null_handling": f.null_handling.value,
+                    "default_value": f.default_value,
+                    "validation_rules": f.validation_rules,
+                    "provenance": f.provenance,
+                    "extraction_function": f.extraction_function,
+                    "version": f.version,
                 }
                 for f in self.features
             ],
@@ -165,29 +171,29 @@ class FeatureSchema:
 
         # Numeric validations
         if feature_def.feature_type == FeatureType.NUMERIC:
-            if 'min_value' in feature_def.validation_rules:
-                if value < feature_def.validation_rules['min_value']:
+            if "min_value" in feature_def.validation_rules:
+                if value < feature_def.validation_rules["min_value"]:
                     return False
-            if 'max_value' in feature_def.validation_rules:
-                if value > feature_def.validation_rules['max_value']:
+            if "max_value" in feature_def.validation_rules:
+                if value > feature_def.validation_rules["max_value"]:
                     return False
-            if 'allowed_values' in feature_def.validation_rules:
-                if value not in feature_def.validation_rules['allowed_values']:
+            if "allowed_values" in feature_def.validation_rules:
+                if value not in feature_def.validation_rules["allowed_values"]:
                     return False
 
         # Categorical validations
         elif feature_def.feature_type == FeatureType.CATEGORICAL:
-            if 'allowed_values' in feature_def.validation_rules:
-                if value not in feature_def.validation_rules['allowed_values']:
+            if "allowed_values" in feature_def.validation_rules:
+                if value not in feature_def.validation_rules["allowed_values"]:
                     return False
 
         # Text validations
         elif feature_def.feature_type == FeatureType.TEXT:
-            if 'min_length' in feature_def.validation_rules:
-                if len(value) < feature_def.validation_rules['min_length']:
+            if "min_length" in feature_def.validation_rules:
+                if len(value) < feature_def.validation_rules["min_length"]:
                     return False
-            if 'max_length' in feature_def.validation_rules:
-                if len(value) > feature_def.validation_rules['max_length']:
+            if "max_length" in feature_def.validation_rules:
+                if len(value) > feature_def.validation_rules["max_length"]:
                     return False
 
         return True
@@ -451,8 +457,7 @@ class FeatureSchemas:
     def get_latest_schema(self, schema_name: str) -> FeatureSchema | None:
         """Get latest version of a schema."""
         matching_schemas = [
-            schema for key, schema in self._schemas.items()
-            if schema.schema_name == schema_name
+            schema for key, schema in self._schemas.items() if schema.schema_name == schema_name
         ]
 
         if not matching_schemas:

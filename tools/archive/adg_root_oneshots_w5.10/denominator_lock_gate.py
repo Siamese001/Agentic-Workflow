@@ -8,6 +8,7 @@ Usage:
 
 Defaults to: artifacts/governance/post_normalization_baseline.json
 """
+
 import argparse
 import glob
 import json
@@ -43,10 +44,12 @@ def main() -> int:
     db_path = files[-1]
 
     conn = sqlite3.connect(db_path)
-    current = dict(conn.execute(
-        "SELECT relation_type, COUNT(*) FROM edges WHERE relation_type IN (?, ?, ?, ?) GROUP BY relation_type",
-        DENOMINATOR_TYPES,
-    ).fetchall())
+    current = dict(
+        conn.execute(
+            "SELECT relation_type, COUNT(*) FROM edges WHERE relation_type IN (?, ?, ?, ?) GROUP BY relation_type",
+            DENOMINATOR_TYPES,
+        ).fetchall()
+    )
     conn.close()
 
     print(f"Baseline: {args.baseline}")

@@ -45,5 +45,6 @@ def debug_cache_behavior():
         if f.is_file():
             print(f"   {f.name:<40} {f.stat().st_size / 1024:>6.1f} KB")
 
+
 if __name__ == "__main__":
     debug_cache_behavior()

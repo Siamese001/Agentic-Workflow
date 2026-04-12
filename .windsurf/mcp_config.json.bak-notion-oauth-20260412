@@ -1,0 +1,127 @@
+{
+  "_note": "VERSION-CONTROLLED REFERENCE ONLY. The authoritative Windsurf MCP config read at startup is ~/.codeium/windsurf/mcp_config.json. Changes here are synced to global by .windsurf/scripts/post_write_mcp_config_sync.py. Edit this file; the hook propagates to global.",
+  "mcpServers": {
+    "GitKraken": {
+      "command": "C:/Users/amita/AppData/Local/GitKrakenCLI/gk.exe",
+      "args": [
+        "mcp",
+        "--host=windsurf",
+        "--source=gitlens",
+        "--scheme=windsurf"
+      ],
+      "cwd": "C:/Git/Agentic-Workflow",
+      "disabled": false
+    },
+    "adg_sqlite": {
+      "command": "python",
+      "args": ["-m", "tools.adg.mcp.server"],
+      "cwd": "C:/Git/Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "ADG_DIR": "C:/Git/Agentic-Workflow/artifacts/adg",
+        "ADG_MCP_PAGE_SIZE": "500",
+        "ADG_MCP_CACHE_META_TTL": "5",
+        "PYTHONPATH": "C:/Git/Agentic-Workflow"
+      }
+    },
+    "deepwiki": {
+      "url": "https://mcp.deepwiki.com/mcp",
+      "disabled": false
+    },
+    "enhanced_http": {
+      "command": "python",
+      "args": [
+        "-c",
+        "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/mcp/enhanced_http_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/mcp/enhanced_http_server.py', encoding='utf-8').read())"
+      ],
+      "disabled": false
+    },
+    "filesystem": {
+      "_comment": "Constitutional Rule #0: filesystem MCP scope is LOCKED to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Denominator-sensitive read paths: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. NEVER reference C:\\Users\\... or .windsurf\\plans\\ in args.",
+      "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime — no version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
+      "command": "node",
+      "args": [
+        "C:/Git/Agentic-Workflow/.windsurf/scripts/filesystem_mcp_launcher.js",
+        "C:/Git/Agentic-Workflow"
+      ],
+      "cwd": "C:/Git/Agentic-Workflow",
+      "disabled": false
+    },
+    "memory": {
+      "command": "python",
+      "args": [
+        "C:/Git/Agentic-Workflow/tools/memory/adg_memory_server.py"
+      ],
+      "cwd": "C:/Git/Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "MEMORY_DB": "C:/Git/Agentic-Workflow/artifacts/memory/knowledge_graph.sqlite",
+        "PYTHONPATH": "C:/Git/Agentic-Workflow"
+      }
+    },
+    "vector_db": {
+      "command": "python",
+      "args": [
+        "-c",
+        "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/mcp/vector_db_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/mcp/vector_db_server.py', encoding='utf-8').read())"
+      ],
+      "disabled": false,
+      "env": {
+        "VECTOR_DB_CHROMA_PATH": "C:/Git/Agentic-Workflow/artifacts/chroma",
+        "VECTOR_DB_EMBEDDING_MODEL": "all-MiniLM-L6-v2",
+        "VECTOR_DB_MAX_BATCH": "32",
+        "VECTOR_DB_MAX_QUERY_RESULTS": "100",
+        "VECTOR_DB_MAX_SEARCH_RESULTS": "20",
+        "VECTOR_DB_LOG_LEVEL": "INFO"
+      }
+    },
+    "otel_mcp": {
+      "command": "python",
+      "args": [
+        "-c",
+        "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/otel/otel_mcp_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/otel/otel_mcp_server.py', encoding='utf-8').read())"
+      ],
+      "cwd": "C:/Git/Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "PYTHONPATH": "C:/Git/Agentic-Workflow"
+      }
+    },
+    "task_manager": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@blizzy/mcp-task-manager",
+        "stdio"
+      ],
+      "disabled": false
+    },
+    "redis": {
+      "command": "python",
+      "args": [
+        "-c",
+        "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/mcp/redis_mcp_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/mcp/redis_mcp_server.py', encoding='utf-8').read())"
+      ],
+      "disabled": false,
+      "env": {
+        "REDIS_DB": "0",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6379",
+        "REDIS_TIMEOUT": "5"
+      }
+    },
+    "pytest_mcp": {
+      "command": "python",
+      "args": [
+        "-c",
+        "import sys; sys.path.insert(0, r'C:/Git/Agentic-Workflow'); __file__ = r'C:/Git/Agentic-Workflow/tools/mcp/pytest_server.py'; exec(open(r'C:/Git/Agentic-Workflow/tools/mcp/pytest_server.py', encoding='utf-8').read())"
+      ],
+      "disabled": false
+    },
+    "notion": {
+      "serverUrl": "https://mcp.notion.com/mcp",
+      "disabled": false
+    }
+  }
+}

@@ -16,14 +16,17 @@ class TestPascalSovereigntyAcronyms:
     def test_pascal_sovereignty_acronyms_imports(self):
         """Test pascal_sovereignty_acronyms module imports."""
         from agentic_core import pascal_sovereignty_acronyms
+
         assert pascal_sovereignty_acronyms is not None
 
     def test_pascal_sovereignty_acronyms_class(self):
         """Test PascalSovereigntyAcronyms class exists."""
         from agentic_core import PascalSovereigntyAcronyms
+
         assert PascalSovereigntyAcronyms is not None
 
     def test_pascal_sovereignty_acronyms_callable(self):
         """Test pascal_sovereignty_acronyms functions are callable."""
         from agentic_core import validate_pascal_sovereignty_acronyms
+
         assert callable(validate_pascal_sovereignty_acronyms)

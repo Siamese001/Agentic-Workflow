@@ -12,19 +12,20 @@ import sys
 
 # Target import patterns to migrate
 TARGET_IMPORT_RE = re.compile(
-    r'^\s*(?:from\s+(agentic_core|apps_|system_learning|infrastructure)\S*\s+import|import\s+(agentic_core|apps_|system_learning|infrastructure)\S*)',
+    r"^\s*(?:from\s+(agentic_core|apps_|system_learning|infrastructure)\S*\s+import|import\s+(agentic_core|apps_|system_learning|infrastructure)\S*)",
     re.MULTILINE,
 )
 
 # Imports that are safe at top level (bare module imports, no symbol resolution)
 SAFE_TOP_IMPORTS = {
-    'import agentic_core',
-    'import apps_lic',
-    'import apps_rg',
-    'import apps_shared',
-    'import system_learning',
-    'import infrastructure',
+    "import agentic_core",
+    "import apps_lic",
+    "import apps_rg",
+    "import apps_shared",
+    "import system_learning",
+    "import infrastructure",
 }
+
 
 class TestImportMigrator:
     def __init__(self, repo_root: pathlib.Path):
@@ -32,10 +33,10 @@ class TestImportMigrator:
         self.migrated_files = []
         self.failed_files = []
         self.stats = {
-            'total_files': 0,
-            'migrated': 0,
-            'failed': 0,
-            'imports_moved': 0,
+            "total_files": 0,
+            "migrated": 0,
+            "failed": 0,
+            "imports_moved": 0,
         }
 
     def migrate_directory(self, test_dir: str) -> dict:
@@ -49,18 +50,18 @@ class TestImportMigrator:
         print(f"Found {len(test_files)} test files in {test_dir}")
 
         for test_file in test_files:
-            self.stats['total_files'] += 1
+            self.stats["total_files"] += 1
             if self.migrate_file(test_file):
-                self.stats['migrated'] += 1
+                self.stats["migrated"] += 1
             else:
-                self.stats['failed'] += 1
+                self.stats["failed"] += 1
 
         return self.stats
 
     def migrate_file(self, file_path: pathlib.Path) -> bool:
         """Migrate a single test file."""
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
         except Exception as e:
             print(f"  ❌ Failed to parse {file_path}: {e}")
@@ -87,9 +88,9 @@ class TestImportMigrator:
         new_content = self._generate_migrated_content(content, top_imports, import_usage)
 
         # Write back
-        file_path.write_text(new_content, encoding='utf-8')
+        file_path.write_text(new_content, encoding="utf-8")
         self.migrated_files.append(str(file_path))
-        self.stats['imports_moved'] += len(top_imports)
+        self.stats["imports_moved"] += len(top_imports)
 
         return True
 
@@ -104,8 +105,10 @@ class TestImportMigrator:
                     if import_stmt not in SAFE_TOP_IMPORTS:
                         return True
         elif isinstance(node, ast.ImportFrom):
-            if node.module and any(node.module.startswith(prefix) for prefix in
-                                 ['agentic_core', 'apps_', 'system_learning', 'infrastructure']):
+            if node.module and any(
+                node.module.startswith(prefix)
+                for prefix in ["agentic_core", "apps_", "system_learning", "infrastructure"]
+            ):
                 line = content.splitlines()[node.lineno - 1]
                 return TARGET_IMPORT_RE.match(line) is not None
         return False
@@ -129,7 +132,7 @@ class TestImportMigrator:
         # Find usage in each test function/fixture
         for node in ast.walk(tree):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if node.name.startswith('test_') or node.name.startswith('fixture_'):
+                if node.name.startswith("test_") or node.name.startswith("fixture_"):
                     used_imports = set()
                     for subnode in ast.walk(node):
                         if isinstance(subnode, ast.Name) and subnode.id in import_map:
@@ -140,8 +143,9 @@ class TestImportMigrator:
 
         return usage
 
-    def _generate_migrated_content(self, content: str, imports: list[ast.AST],
-                                 usage: dict[str, list[str]]) -> str:
+    def _generate_migrated_content(
+        self, content: str, imports: list[ast.AST], usage: dict[str, list[str]]
+    ) -> str:
         """Generate new content with imports moved into functions."""
         lines = content.splitlines()
 
@@ -173,21 +177,25 @@ class TestImportMigrator:
                     for imp in imports:
                         if isinstance(imp, ast.Import):
                             for alias in imp.names:
-                                if (alias.asname and alias.asname == name) or \
-                                   (not alias.asname and alias.name == name):
+                                if (alias.asname and alias.asname == name) or (
+                                    not alias.asname and alias.name == name
+                                ):
                                     import_lines.append(f"{' ' * (func_indent + 4)}{ast.unparse(imp)}")
                                     break
                         elif isinstance(imp, ast.ImportFrom):
                             for alias in imp.names:
-                                if (alias.asname and alias.asname == name) or \
-                                   (not alias.asname and alias.name == name):
+                                if (alias.asname and alias.asname == name) or (
+                                    not alias.asname and alias.name == name
+                                ):
                                     import_lines.append(f"{' ' * (func_indent + 4)}{ast.unparse(imp)}")
                                     break
 
                 if import_lines:
                     # Insert imports after function docstring or first line
                     insert_pos = func_start + 1
-                    if insert_pos < len(new_lines) and new_lines[insert_pos].strip().startswith(('"""', "'''")):
+                    if insert_pos < len(new_lines) and new_lines[insert_pos].strip().startswith(
+                        ('"""', "'''")
+                    ):
                         # Skip docstring
                         for j in range(insert_pos + 1, len(new_lines)):
                             if new_lines[j].strip().endswith(('"""', "'''")):
@@ -197,7 +205,7 @@ class TestImportMigrator:
                     for import_line in reversed(import_lines):
                         new_lines.insert(insert_pos, import_line)
 
-        return '\n'.join(new_lines) + '\n'
+        return "\n".join(new_lines) + "\n"
 
     def print_summary(self):
         """Print migration summary."""
@@ -214,6 +222,7 @@ class TestImportMigrator:
             if len(self.failed_files) > 10:
                 print(f"  ... and {len(self.failed_files) - 10} more")
 
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python migrate_test_imports.py <test_directory>")
@@ -225,6 +234,7 @@ def main():
     migrator = TestImportMigrator(repo_root)
     migrator.migrate_directory(test_dir)
     migrator.print_summary()
+
 
 if __name__ == "__main__":
     main()

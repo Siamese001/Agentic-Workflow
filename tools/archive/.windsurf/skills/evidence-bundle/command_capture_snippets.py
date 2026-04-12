@@ -17,6 +17,7 @@ E = Path(".windsurf/plans/<evidence_file>.md")
 # Use this for every command executed during a work unit.
 # ============================================================
 
+
 def capture(args: list[str], evidence_path: Path, cwd: Path | None = None) -> int:
     """
     Run a command and append stdout+stderr to the evidence file.

@@ -1,6 +1,5 @@
 """Tests for apps_shared spine adapter components."""
 
-
 from apps_shared.spine.base_spine_adapter import (
     BaseSpineAdapter,
 )

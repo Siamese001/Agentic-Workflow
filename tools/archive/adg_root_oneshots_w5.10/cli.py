@@ -1,4 +1,5 @@
 """ADG CLI - Command line interface for ADG tools."""
+
 from __future__ import annotations
 
 from typing import Any

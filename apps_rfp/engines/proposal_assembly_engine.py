@@ -209,12 +209,42 @@ _ROADMAP_TEMPLATES: dict[str, dict] = {
 }
 
 _RISK_TEMPLATES: list[dict] = [
-    {"category": "technical_complexity", "description": "Integration with legacy systems may require custom adapters", "severity": "MEDIUM", "mitigation": "Phased integration approach with API abstraction layer"},
-    {"category": "data_quality", "description": "Inconsistent data quality may degrade retrieval accuracy", "severity": "HIGH", "mitigation": "Data quality gates enforced at ingestion; reject on schema mismatch"},
-    {"category": "regulatory_compliance", "description": "Regulatory requirements may constrain model selection or data residency", "severity": "HIGH", "mitigation": "Sovereign deployment mode; data residency controls in L0 routing"},
-    {"category": "change_management", "description": "Stakeholder adoption may lag technical delivery", "severity": "MEDIUM", "mitigation": "Dedicated change management workstream; champion network"},
-    {"category": "model_drift", "description": "Model behavior may shift over time without controlled retraining", "severity": "HIGH", "mitigation": "Drift detection engine; automatic human escalation on threshold breach"},
-    {"category": "integration_risk", "description": "Third-party API dependencies may introduce latency or availability risk", "severity": "MEDIUM", "mitigation": "Circuit breaker pattern; graceful degradation to cached responses"},
+    {
+        "category": "technical_complexity",
+        "description": "Integration with legacy systems may require custom adapters",
+        "severity": "MEDIUM",
+        "mitigation": "Phased integration approach with API abstraction layer",
+    },
+    {
+        "category": "data_quality",
+        "description": "Inconsistent data quality may degrade retrieval accuracy",
+        "severity": "HIGH",
+        "mitigation": "Data quality gates enforced at ingestion; reject on schema mismatch",
+    },
+    {
+        "category": "regulatory_compliance",
+        "description": "Regulatory requirements may constrain model selection or data residency",
+        "severity": "HIGH",
+        "mitigation": "Sovereign deployment mode; data residency controls in L0 routing",
+    },
+    {
+        "category": "change_management",
+        "description": "Stakeholder adoption may lag technical delivery",
+        "severity": "MEDIUM",
+        "mitigation": "Dedicated change management workstream; champion network",
+    },
+    {
+        "category": "model_drift",
+        "description": "Model behavior may shift over time without controlled retraining",
+        "severity": "HIGH",
+        "mitigation": "Drift detection engine; automatic human escalation on threshold breach",
+    },
+    {
+        "category": "integration_risk",
+        "description": "Third-party API dependencies may introduce latency or availability risk",
+        "severity": "MEDIUM",
+        "mitigation": "Circuit breaker pattern; graceful degradation to cached responses",
+    },
 ]
 
 
@@ -250,8 +280,11 @@ class ProposalAssemblyEngine:
             ProposalAssemblyResult with sections, roadmap, risks.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ProposalAssemblyEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ProposalAssemblyEngine.execute"
+        )
 
         assumptions: list[AssumptionItem] = self._build_assumptions(request)
         sections = self._build_sections(request, assumptions)
@@ -305,7 +338,9 @@ class ProposalAssemblyEngine:
         return assumptions
 
     def _build_sections(
-        self, request: RfpRequest, assumptions: list[AssumptionItem],
+        self,
+        request: RfpRequest,
+        assumptions: list[AssumptionItem],
     ) -> list[ProposalSection]:
         """Build all proposal sections."""
         industry_display = request.industry.replace("_", " ").title()

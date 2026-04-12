@@ -125,7 +125,9 @@ class _ImportBoundaryVisitor(ast.NodeVisitor):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "_ImportBoundaryVisitor.visit_Import",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "_ImportBoundaryVisitor.visit_Import",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -139,7 +141,7 @@ class _ImportBoundaryVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
-        if node.module:    # guardian: Syntax errors should be caught at parser level, not runtime
+        if node.module:  # guardian: Syntax errors should be caught at parser level, not runtime
             self._check(node.module, node.lineno)
         self.generic_visit(node)
 
@@ -148,7 +150,7 @@ def check_file_import_boundaries(file_path: Path) -> list[str]:
     """Return list of violation strings for a single file (empty = clean)."""
     try:
         tree = ast.parse(file_path.read_text(encoding="utf-8"))
-    except SyntaxError as exc:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError: {exc}"]
     visitor = _ImportBoundaryVisitor()
     visitor.visit(tree)

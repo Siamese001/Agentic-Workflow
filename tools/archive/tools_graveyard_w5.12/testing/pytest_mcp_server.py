@@ -223,23 +223,23 @@ def _parse_pytest_output(output: str) -> dict[str, Any]:
         "duration": 0.0,
     }
 
-    lines = output.split('\n')
+    lines = output.split("\n")
     for line in lines:
         if " passed" in line and " failed" in line:
             # Parse summary line like "5 passed, 2 failed, 1 skipped in 10.5s"
             parts = line.split()
             for i, part in enumerate(parts):
                 if part == "passed" and i > 0:
-                    results["passed"] = int(parts[i-1])
+                    results["passed"] = int(parts[i - 1])
                 elif part == "failed" and i > 0:
-                    results["failed"] = int(parts[i-1])
+                    results["failed"] = int(parts[i - 1])
                 elif part == "skipped" and i > 0:
-                    results["skipped"] = int(parts[i-1])
+                    results["skipped"] = int(parts[i - 1])
                 elif part == "errors" and i > 0:
-                    results["errors"] = int(parts[i-1])
-                elif part == "in" and i+1 < len(parts):
+                    results["errors"] = int(parts[i - 1])
+                elif part == "in" and i + 1 < len(parts):
                     try:
-                        results["duration"] = float(parts[i+1].rstrip('s'))
+                        results["duration"] = float(parts[i + 1].rstrip("s"))
                     except ValueError:
                         pass
 
@@ -326,8 +326,8 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
 
         # Parse impact output to get affected test files
         affected_modules = []
-        for line in impact_result.stdout.split('\n'):
-            if line.strip() and not line.startswith('#'):
+        for line in impact_result.stdout.split("\n"):
+            if line.strip() and not line.startswith("#"):
                 # Convert module paths to test file paths
                 module_path = line.strip()
                 test_path = TESTS_DIR / module_path.replace("agentic_core/", "").replace(".py", "_test.py")
@@ -364,11 +364,14 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
             "timestamp": int(time.time()),
         }
 
-        logger.info("pytest_adg_impact_executed", extra={
-            "file_count": len(file_list),
-            "affected_modules": len(affected_modules),
-            "success": result["success"],
-        })
+        logger.info(
+            "pytest_adg_impact_executed",
+            extra={
+                "file_count": len(file_list),
+                "affected_modules": len(affected_modules),
+                "success": result["success"],
+            },
+        )
 
         return result
 
@@ -379,10 +382,13 @@ def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str,
             "file_list": file_list,
         }
     except Exception as e:
-        logger.error("pytest_adg_impact_error", extra={
-            "file_count": len(file_list),
-            "error": str(e),
-        })
+        logger.error(
+            "pytest_adg_impact_error",
+            extra={
+                "file_count": len(file_list),
+                "error": str(e),
+            },
+        )
         return {
             "success": False,
             "error": str(e),
@@ -413,12 +419,15 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         }
 
     # Add governance-specific pytest options
-    governance_args.extend([
-        "-v",
-        "--tb=short",
-        "--strict-markers",
-        "-m", "governance or integration",
-    ])
+    governance_args.extend(
+        [
+            "-v",
+            "--tb=short",
+            "--strict-markers",
+            "-m",
+            "governance or integration",
+        ]
+    )
 
     test_result = _run_pytest(governance_args, timeout)
 
@@ -449,10 +458,13 @@ def pytest_run_guardians(timeout: int = 600) -> dict[str, Any]:
         "timestamp": int(time.time()),
     }
 
-    logger.info("pytest_guardians_executed", extra={
-        "success": result["success"],
-        "compliance": compliance_status,
-    })
+    logger.info(
+        "pytest_guardians_executed",
+        extra={
+            "success": result["success"],
+            "compliance": compliance_status,
+        },
+    )
 
     return result
 
@@ -480,12 +492,15 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
         }
 
     # Add smoke test specific options
-    smoke_args.extend([
-        "-v",
-        "--tb=short",
-        "-m", "smoke or unit",
-        "--maxfail=5",  # Stop after 5 failures for quick feedback
-    ])
+    smoke_args.extend(
+        [
+            "-v",
+            "--tb=short",
+            "-m",
+            "smoke or unit",
+            "--maxfail=5",  # Stop after 5 failures for quick feedback
+        ]
+    )
 
     test_result = _run_pytest(smoke_args, timeout)
 
@@ -507,10 +522,13 @@ def pytest_run_smoke(timeout: int = 180) -> dict[str, Any]:
         "timestamp": int(time.time()),
     }
 
-    logger.info("pytest_smoke_executed", extra={
-        "success": result["success"],
-        "critical_path": critical_path_status,
-    })
+    logger.info(
+        "pytest_smoke_executed",
+        extra={
+            "success": result["success"],
+            "critical_path": critical_path_status,
+        },
+    )
 
     return result
 
@@ -592,10 +610,13 @@ def pytest_coverage_analysis(layer_filter: str = "all") -> dict[str, Any]:
         "timestamp": int(time.time()),
     }
 
-    logger.info("pytest_coverage_analyzed", extra={
-        "layer_filter": layer_filter,
-        "overall_coverage": result["overall_coverage"],
-    })
+    logger.info(
+        "pytest_coverage_analyzed",
+        extra={
+            "layer_filter": layer_filter,
+            "overall_coverage": result["overall_coverage"],
+        },
+    )
 
     return result
 
@@ -627,26 +648,30 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
         for cache_file in cache_files[-10:]:  # Last 10 cache files
             try:
                 # Simple attempt to read cache file (actual parsing would be more complex)
-                with open(cache_file, 'rb') as f:
+                with open(cache_file, "rb") as f:
                     # This is a simplified approach - real cache parsing would require pytest cache format
                     content = f.read(1000)  # Read first 1KB
                     if b"FAILED" in content:
-                        failure_analysis["failures"].append({
-                            "cache_file": str(cache_file),
-                            "detected_failure": True,
-                            "analysis": "Failure detected in cache file",
-                        })
+                        failure_analysis["failures"].append(
+                            {
+                                "cache_file": str(cache_file),
+                                "detected_failure": True,
+                                "analysis": "Failure detected in cache file",
+                            }
+                        )
             except Exception:
                 continue
 
     # Add ADG context recommendations
     if failure_analysis["failures"]:
-        failure_analysis["recommendations"].extend([
-            "Check ADG impact analysis for affected modules",
-            "Run pytest_run_adg_impact for targeted testing",
-            "Verify layer boundary compliance if architecture tests failed",
-            "Check import discipline if dependency tests failed",
-        ])
+        failure_analysis["recommendations"].extend(
+            [
+                "Check ADG impact analysis for affected modules",
+                "Run pytest_run_adg_impact for targeted testing",
+                "Verify layer boundary compliance if architecture tests failed",
+                "Check import discipline if dependency tests failed",
+            ]
+        )
     else:
         failure_analysis["recommendations"].append(
             "No recent failures detected - run tests to generate failure data",
@@ -658,10 +683,13 @@ def pytest_failure_analysis(test_run_id: str = None) -> dict[str, Any]:
         "timestamp": int(time.time()),
     }
 
-    logger.info("pytest_failure_analyzed", extra={
-        "test_run_id": test_run_id or "latest",
-        "failures_found": len(failure_analysis["failures"]),
-    })
+    logger.info(
+        "pytest_failure_analyzed",
+        extra={
+            "test_run_id": test_run_id or "latest",
+            "failures_found": len(failure_analysis["failures"]),
+        },
+    )
 
     return result
 

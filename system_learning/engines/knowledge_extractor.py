@@ -15,6 +15,7 @@ import json
 @dataclass
 class RuleDelta:
     """Delta for rule update."""
+
     rule_id: str
     previous_version: str
     new_version: str
@@ -26,6 +27,7 @@ class RuleDelta:
 @dataclass
 class KnowledgePattern:
     """Extracted knowledge pattern."""
+
     pattern_id: str
     pattern_type: str
     description: str

@@ -195,8 +195,11 @@ class FileBackedAuditStore:
         """
         _emit_writes_through(str(uuid.uuid4()), "FileBackedAuditStore.read_audit_slice", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedAuditStore.read_audit_slice")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedAuditStore.read_audit_slice"
+        )
 
         if not self._reports_dir.exists():
             return b"[]"
@@ -211,7 +214,7 @@ class FileBackedAuditStore:
                     matched.append(data)
                 elif ts == 0:
                     matched.append(data)
-            except (json.JSONDecodeError, OSError) as exc:    # guardian: Add error context logging
+            except (json.JSONDecodeError, OSError) as exc:  # guardian: Add error context logging
                 logger.debug("Skipping unreadable report %s: %s", report_path.name, exc)
                 continue
         return json.dumps(matched, separators=(",", ":"), sort_keys=True).encode("utf-8")

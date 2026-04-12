@@ -361,7 +361,9 @@ class ObservabilityToolExecutor:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolRegistry.register_tool:{tool_def.tool_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolRegistry.register_tool:{tool_def.tool_id}"
+        )
         self._registered_tools[tool_def.tool_id] = tool_def
         self._tool_handlers[tool_def.tool_id] = handler
         self.logger.info(f"Registered tool: {tool_def.tool_id}")
@@ -381,7 +383,10 @@ class ObservabilityToolExecutor:
         try:
             if context.tool_id not in self._registered_tools:
                 return self._create_error_result(
-                    context.execution_id, context.tool_id, f"Tool not found: {context.tool_id}", start_time,
+                    context.execution_id,
+                    context.tool_id,
+                    f"Tool not found: {context.tool_id}",
+                    start_time,
                 )
             tool_def = self._registered_tools[context.tool_id]
             validation_errors = self._validate_parameters(parameters, tool_def)
@@ -404,7 +409,9 @@ class ObservabilityToolExecutor:
             return self._create_error_result(context.execution_id, context.tool_id, str(e), start_time)
 
     def execute_tool_stream(
-        self, context: ToolExecutionContext, parameters: dict[str, str],
+        self,
+        context: ToolExecutionContext,
+        parameters: dict[str, str],
     ) -> dict[str, object]:
         """Execute tool in streaming mode.
 
@@ -475,7 +482,10 @@ class ObservabilityToolExecutor:
         return self._active_executions.get(execution_id)
 
     def _execute_with_context(
-        self, handler: Callable, context: ToolExecutionContext, parameters: dict[str, str],
+        self,
+        handler: Callable,
+        context: ToolExecutionContext,
+        parameters: dict[str, str],
     ) -> ToolExecutionResult:
         """Execute tool with context."""
         exec_env = {
@@ -597,7 +607,11 @@ class ObservabilityToolExecutor:
             execution["execution_time"] = result.execution_time
 
     def _create_error_result(
-        self, execution_id: str, tool_id: str, error: str, start_time: float,
+        self,
+        execution_id: str,
+        tool_id: str,
+        error: str,
+        start_time: float,
     ) -> ToolExecutionResult:
         """Create error result."""
         return ToolExecutionResult(
@@ -655,8 +669,16 @@ class ObservabilityToolExecutor:
             return {
                 "output": {
                     "metrics": [
-                        {"name": "cpu_usage", "value": 45.2, "timestamp": datetime.now(timezone.utc).isoformat()},
-                        {"name": "memory_usage", "value": 67.8, "timestamp": datetime.now(timezone.utc).isoformat()},
+                        {
+                            "name": "cpu_usage",
+                            "value": 45.2,
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                        },
+                        {
+                            "name": "memory_usage",
+                            "value": 67.8,
+                            "timestamp": datetime.now(timezone.utc).isoformat(),
+                        },
                     ],
                 },
                 "metrics": {"metrics_collected": 2, "processing_time": 0.05},
@@ -704,11 +726,17 @@ class ObservabilityToolExecutor:
 
 # guardian: allow-magic-config
 def create_observability_tool_executor(
-    timeout: float = 30.0, retry_count: int = 3, enable_tracing: bool = True, **kwargs: object,
+    timeout: float = 30.0,
+    retry_count: int = 3,
+    enable_tracing: bool = True,
+    **kwargs: object,
 ) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
     config = ToolExecutionConfig(
-        timeout=timeout, retry_count=retry_count, enable_tracing=enable_tracing, **kwargs,
+        timeout=timeout,
+        retry_count=retry_count,
+        enable_tracing=enable_tracing,
+        **kwargs,
     )
     return ObservabilityToolExecutor(config)
 
@@ -734,7 +762,10 @@ def tool_execute_observability_execution(
     """
     executor = create_observability_tool_executor()
     context = ToolExecutionContext(
-        execution_id=execution_id, tool_id=tool_id, mode=ExecutionMode(mode), caller_id=caller_id,
+        execution_id=execution_id,
+        tool_id=tool_id,
+        mode=ExecutionMode(mode),
+        caller_id=caller_id,
     )
     result = executor.execute_tool(context, parameters)
     return {

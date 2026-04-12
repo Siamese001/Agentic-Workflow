@@ -223,7 +223,9 @@ class AgentHealAuditScanner:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "AgentHealAuditScanner._is_runtime_agent", "p0_governance",
+            str(_uuid.uuid4()),
+            "AgentHealAuditScanner._is_runtime_agent",
+            "p0_governance",
         )
         # Rule 1: Inherits from known agent base
         for base_name in base_names:
@@ -252,7 +254,9 @@ class AgentHealAuditScanner:
         """Scan a single Python file for Agent classes and their healing methods."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"AgentHealAudit.scan_agent_file:{file_path.name}",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"AgentHealAudit.scan_agent_file:{file_path.name}",
         )
         try:
             with open(file_path, encoding="utf-8") as f:
@@ -303,7 +307,11 @@ class AgentHealAuditScanner:
 
             return sorted(agents, key=lambda x: (x["repo_relative_path"], x["class_name"]))
 
-        except (SyntaxError, UnicodeDecodeError, OSError):    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+            OSError,
+        ):  # guardian: Parsing and encoding errors need separate handling strategies
             # Skip files that can't be parsed
             return []
 

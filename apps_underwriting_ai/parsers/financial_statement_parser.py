@@ -1,6 +1,7 @@
 """
 Financial Statement Parser - Parses PDF financial statements.
 """
+
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import Dict, List, Optional
 @dataclass
 class ParsedFinancialStatement:
     """Result of parsing a financial statement."""
+
     period_end: Optional[str] = None
     revenue: Optional[float] = None
     cogs: Optional[float] = None
@@ -37,40 +39,40 @@ class FinancialStatementParser:
 
     # Common financial statement patterns
     PATTERNS = {
-        'revenue': [
-            r'(?:Revenue|Sales|Total Revenue)[\s:]*[$]?([\d,\.]+)',
-            r'(?:Revenue|Sales)[^\n]*?([\d,\.]{5,})',
+        "revenue": [
+            r"(?:Revenue|Sales|Total Revenue)[\s:]*[$]?([\d,\.]+)",
+            r"(?:Revenue|Sales)[^\n]*?([\d,\.]{5,})",
         ],
-        'cogs': [
-            r'(?:Cost of Goods Sold|COGS)[\s:]*[$]?([\d,\.]+)',
+        "cogs": [
+            r"(?:Cost of Goods Sold|COGS)[\s:]*[$]?([\d,\.]+)",
         ],
-        'gross_profit': [
-            r'(?:Gross Profit|Gross Margin)[\s:]*[$]?([\d,\.]+)',
+        "gross_profit": [
+            r"(?:Gross Profit|Gross Margin)[\s:]*[$]?([\d,\.]+)",
         ],
-        'ebitda': [
-            r'(?:EBITDA|Adjusted EBITDA)[\s:]*[$]?([\d,\.]+)',
-            r'(?:EBITDA)[^\n]*?([\d,\.]{5,})',
+        "ebitda": [
+            r"(?:EBITDA|Adjusted EBITDA)[\s:]*[$]?([\d,\.]+)",
+            r"(?:EBITDA)[^\n]*?([\d,\.]{5,})",
         ],
-        'net_income': [
-            r'(?:Net Income|Net Profit|Bottom Line)[\s:]*[$]?([\d,\.]+)',
+        "net_income": [
+            r"(?:Net Income|Net Profit|Bottom Line)[\s:]*[$]?([\d,\.]+)",
         ],
-        'cash': [
-            r'(?:Cash and Equivalents|Cash)[\s:]*[$]?([\d,\.]+)',
+        "cash": [
+            r"(?:Cash and Equivalents|Cash)[\s:]*[$]?([\d,\.]+)",
         ],
-        'ar': [
-            r'(?:Accounts Receivable|A\/R)[\s:]*[$]?([\d,\.]+)',
+        "ar": [
+            r"(?:Accounts Receivable|A\/R)[\s:]*[$]?([\d,\.]+)",
         ],
-        'inventory': [
-            r'(?:Inventory)[\s:]*[$]?([\d,\.]+)',
+        "inventory": [
+            r"(?:Inventory)[\s:]*[$]?([\d,\.]+)",
         ],
-        'ap': [
-            r'(?:Accounts Payable|A\/P)[\s:]*[$]?([\d,\.]+)',
+        "ap": [
+            r"(?:Accounts Payable|A\/P)[\s:]*[$]?([\d,\.]+)",
         ],
-        'total_assets': [
-            r'(?:Total Assets)[\s:]*[$]?([\d,\.]+)',
+        "total_assets": [
+            r"(?:Total Assets)[\s:]*[$]?([\d,\.]+)",
         ],
-        'total_debt': [
-            r'(?:Total Debt|Total Liabilities)[\s:]*[$]?([\d,\.]+)',
+        "total_debt": [
+            r"(?:Total Debt|Total Liabilities)[\s:]*[$]?([\d,\.]+)",
         ],
     }
 
@@ -125,7 +127,7 @@ class FinancialStatementParser:
             if match:
                 try:
                     # Clean and parse the number
-                    number_str = match.group(1).replace(',', '').replace('$', '')
+                    number_str = match.group(1).replace(",", "").replace("$", "")
                     return float(number_str)
                 except (ValueError, IndexError):
                     continue
@@ -135,10 +137,10 @@ class FinancialStatementParser:
         """Extract period end date from statement."""
         # Common patterns for period dates
         date_patterns = [
-            r'(?:For the Period|Period End|Fiscal Year|Year) Ended?[:\s]+([A-Z][a-z]+ \d{1,2},? \d{4})',
-            r'(?:As of|Balance Sheet)[:\s]+([A-Z][a-z]+ \d{1,2},? \d{4})',
-            r'(\d{4}-\d{2}-\d{2})',
-            r'(\d{1,2}/\d{1,2}/\d{4})',
+            r"(?:For the Period|Period End|Fiscal Year|Year) Ended?[:\s]+([A-Z][a-z]+ \d{1,2},? \d{4})",
+            r"(?:As of|Balance Sheet)[:\s]+([A-Z][a-z]+ \d{1,2},? \d{4})",
+            r"(\d{4}-\d{2}-\d{2})",
+            r"(\d{1,2}/\d{1,2}/\d{4})",
         ]
 
         for pattern in date_patterns:
@@ -148,10 +150,11 @@ class FinancialStatementParser:
                 # Normalize to YYYY-MM-DD
                 try:
                     from datetime import datetime
-                    for fmt in ['%B %d, %Y', '%B %d %Y', '%Y-%m-%d', '%m/%d/%Y']:
+
+                    for fmt in ["%B %d, %Y", "%B %d %Y", "%Y-%m-%d", "%m/%d/%Y"]:
                         try:
                             dt = datetime.strptime(date_str, fmt)
-                            return dt.strftime('%Y-%m-%d')
+                            return dt.strftime("%Y-%m-%d")
                         except ValueError:
                             continue
                 except Exception:

@@ -204,8 +204,11 @@ class DeterministicHashEmbedder:
             List of deterministic embedding vectors.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterministicHashEmbedder.embed_batch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DeterministicHashEmbedder.embed_batch"
+        )
 
         vectors = []
         for text in texts:
@@ -407,7 +410,9 @@ def build_seed_embedding_pack(
 
         # Step 10: Compute seed_index_version_hash
         seed_index_version_hash = _compute_seed_index_version_hash(
-            row_index_hash, matrix_hash, canonical_manifest,
+            row_index_hash,
+            matrix_hash,
+            canonical_manifest,
         )
 
         # Step 11: Write final manifest

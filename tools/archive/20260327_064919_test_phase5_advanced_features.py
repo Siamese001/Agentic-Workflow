@@ -40,7 +40,7 @@ from agentic_core.gateway.api_gateway_integration import (
 )
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 Logger = logging.getLogger(__name__)
 
 
@@ -57,10 +57,12 @@ class TestPhase5MLIntegration(unittest.TestCase):
         # Create test data
         np.random.seed(42)
         self.normal_data = np.random.normal(0, 1, 1000)
-        self.anomaly_data = np.concatenate([
-            np.random.normal(0, 1, 950),
-            np.random.normal(5, 1, 50),  # Anomalies
-        ])
+        self.anomaly_data = np.concatenate(
+            [
+                np.random.normal(0, 1, 950),
+                np.random.normal(5, 1, 50),  # Anomalies
+            ]
+        )
 
     def test_ml_detector_initialization(self):
         """Test ML detector initialization."""
@@ -142,7 +144,9 @@ class TestPhase5MLIntegration(unittest.TestCase):
         self.assertGreaterEqual(prediction.confidence_score, 0.0)
         self.assertLessEqual(prediction.confidence_score, 1.0)
 
-        Logger.info(f"✅ Performance prediction: {prediction.predicted_value:.2f} (confidence: {prediction.confidence_score:.2f})")
+        Logger.info(
+            f"✅ Performance prediction: {prediction.predicted_value:.2f} (confidence: {prediction.confidence_score:.2f})"
+        )
 
     def test_anomaly_statistics(self):
         """Test anomaly detection statistics."""
@@ -242,8 +246,7 @@ class TestPhase5Visualization(unittest.TestCase):
         final_positions = {node_id: node.position for node_id, node in graph.nodes.items()}
 
         positions_changed = any(
-            initial_positions[node_id] != final_positions[node_id]
-            for node_id in initial_positions
+            initial_positions[node_id] != final_positions[node_id] for node_id in initial_positions
         )
 
         self.assertTrue(positions_changed)
@@ -401,7 +404,9 @@ class TestPhase5APIGateway(unittest.TestCase):
         self.assertGreaterEqual(metrics.failed_requests, 0)
         self.assertGreaterEqual(metrics.avg_response_time, 0)
 
-        Logger.info(f"✅ Gateway metrics: {metrics.total_requests} requests, {metrics.avg_response_time:.2f} avg response time")
+        Logger.info(
+            f"✅ Gateway metrics: {metrics.total_requests} requests, {metrics.avg_response_time:.2f} avg response time"
+        )
 
     def test_integration_status(self):
         """Test integration status."""
@@ -518,8 +523,11 @@ class TestPhase5Kubernetes(unittest.TestCase):
         app_manifest = self._load_yaml_manifest("agentic-workflow-deployment.yaml")
 
         # Find service definitions in the same file
-        services = [item for item in self._load_all_yaml_manifests("agentic-workflow-deployment.yaml")
-                   if item.get("kind") == "Service"]
+        services = [
+            item
+            for item in self._load_all_yaml_manifests("agentic-workflow-deployment.yaml")
+            if item.get("kind") == "Service"
+        ]
 
         self.assertGreater(len(services), 0)
 
@@ -540,8 +548,9 @@ class TestPhase5Kubernetes(unittest.TestCase):
         manifest = self._load_yaml_manifest("ingress.yaml")
 
         # Find ingress resources
-        ingresses = [item for item in self._load_all_yaml_manifests("ingress.yaml")
-                   if item.get("kind") == "Ingress"]
+        ingresses = [
+            item for item in self._load_all_yaml_manifests("ingress.yaml") if item.get("kind") == "Ingress"
+        ]
 
         self.assertGreater(len(ingresses), 0)
 
@@ -583,6 +592,7 @@ class TestPhase5Kubernetes(unittest.TestCase):
         """Load the first YAML document from a (possibly multi-doc) manifest file."""
         try:
             import yaml
+
             with open(f"{self.k8s_dir}/{filename}") as f:
                 docs = [d for d in yaml.safe_load_all(f) if d is not None]
             if not docs:
@@ -595,6 +605,7 @@ class TestPhase5Kubernetes(unittest.TestCase):
         """Load all YAML documents from a file."""
         try:
             import yaml
+
             with open(f"{self.k8s_dir}/{filename}") as f:
                 return list(yaml.safe_load_all(f))
         except Exception as e:
@@ -678,7 +689,9 @@ class TestPhase5CloudNative(unittest.TestCase):
         self.assertGreaterEqual(health["health_score"], 0)
         self.assertLessEqual(health["health_score"], 100)
 
-        Logger.info(f"✅ Cluster health assessment: {health['overall_status']} ({health['health_score']:.1f})")
+        Logger.info(
+            f"✅ Cluster health assessment: {health['overall_status']} ({health['health_score']:.1f})"
+        )
 
     def test_auto_scaling_status(self):
         """Test auto-scaling status."""
@@ -708,13 +721,15 @@ class TestPhase5MLTraining(unittest.TestCase):
         np.random.seed(42)
         n_samples = 1000
 
-        self.training_data = pd.DataFrame({
-            "cpu_usage": np.random.normal(50, 15, n_samples),
-            "memory_usage": np.random.normal(60, 10, n_samples),
-            "response_time": np.random.normal(200, 50, n_samples),
-            "error_rate": np.random.exponential(0.05, n_samples),
-            "anomaly": np.random.choice([0, 1], n_samples, p=[0.9, 0.1]),
-        })
+        self.training_data = pd.DataFrame(
+            {
+                "cpu_usage": np.random.normal(50, 15, n_samples),
+                "memory_usage": np.random.normal(60, 10, n_samples),
+                "response_time": np.random.normal(200, 50, n_samples),
+                "error_rate": np.random.exponential(0.05, n_samples),
+                "anomaly": np.random.choice([0, 1], n_samples, p=[0.9, 0.1]),
+            }
+        )
 
     def test_pipeline_initialization(self):
         """Test ML pipeline initialization."""
@@ -769,13 +784,15 @@ class TestPhase5MLTraining(unittest.TestCase):
         model_id = self.pipeline.train_anomaly_detection_model("eval_dataset", "random_forest")
 
         # Create test data
-        test_data = pd.DataFrame({
-            "cpu_usage": np.random.normal(50, 15, 200),
-            "memory_usage": np.random.normal(60, 10, 200),
-            "response_time": np.random.normal(200, 50, 200),
-            "error_rate": np.random.exponential(0.05, 200),
-            "anomaly": np.random.choice([0, 1], 200, p=[0.9, 0.1]),
-        })
+        test_data = pd.DataFrame(
+            {
+                "cpu_usage": np.random.normal(50, 15, 200),
+                "memory_usage": np.random.normal(60, 10, 200),
+                "response_time": np.random.normal(200, 50, 200),
+                "error_rate": np.random.exponential(0.05, 200),
+                "anomaly": np.random.choice([0, 1], 200, p=[0.9, 0.1]),
+            }
+        )
 
         # Evaluate model
         test_metrics = self.pipeline.evaluate_model(model_id, test_data)
@@ -817,12 +834,14 @@ class TestPhase5MLTraining(unittest.TestCase):
         model_id = self.pipeline.train_anomaly_detection_model("predict_dataset", "random_forest")
 
         # Create prediction data
-        predict_data = pd.DataFrame({
-            "cpu_usage": [55.0, 80.0, 120.0],
-            "memory_usage": [65.0, 85.0, 150.0],
-            "response_time": [220.0, 350.0, 600.0],
-            "error_rate": [0.02, 0.08, 0.15],
-        })
+        predict_data = pd.DataFrame(
+            {
+                "cpu_usage": [55.0, 80.0, 120.0],
+                "memory_usage": [65.0, 85.0, 150.0],
+                "response_time": [220.0, 350.0, 600.0],
+                "error_rate": [0.02, 0.08, 0.15],
+            }
+        )
 
         # Make predictions
         predictions = self.pipeline.get_model_predictions(model_id, predict_data)
@@ -851,7 +870,9 @@ class TestPhase5MLTraining(unittest.TestCase):
         self.assertTrue(status["initialized"])
         self.assertGreaterEqual(status["total_models"], 0)
 
-        Logger.info(f"✅ Training pipeline status: {status['total_models']} models, {status['total_deployments']} deployments")
+        Logger.info(
+            f"✅ Training pipeline status: {status['total_models']} models, {status['total_deployments']} deployments"
+        )
 
 
 class TestPhase5Integration(unittest.TestCase):
@@ -886,6 +907,7 @@ class TestPhase5Integration(unittest.TestCase):
 
         # Gateway
         from agentic_core.gateway.api_gateway_integration import GatewayConfig, GatewayType
+
         config = GatewayConfig(gateway_type=GatewayType.CUSTOM)
         self.assertTrue(self.gateway.initialize(config))
 
@@ -937,7 +959,9 @@ class TestPhase5Integration(unittest.TestCase):
         # 6. Inject tracing headers through gateway
         headers = {"Content-Type": "application/json"}
         traced_headers = self.gateway.inject_tracing_headers(
-            headers, "integration-trace", "integration-span",
+            headers,
+            "integration-trace",
+            "integration-span",
         )
 
         self.assertIn("x-trace-id", traced_headers)
@@ -998,7 +1022,8 @@ class TestPhase5Integration(unittest.TestCase):
             "total_duration": sum(node["duration_ms"] for node in trace_data["nodes"]),
             "node_count": len(trace_data["nodes"]),
             "edge_count": len(trace_data["edges"]),
-            "avg_node_duration": sum(node["duration_ms"] for node in trace_data["nodes"]) / len(trace_data["nodes"]),
+            "avg_node_duration": sum(node["duration_ms"] for node in trace_data["nodes"])
+            / len(trace_data["nodes"]),
         }
 
         # 4. Add to ML monitoring
@@ -1013,13 +1038,15 @@ class TestPhase5Integration(unittest.TestCase):
         )
 
         # 6. Create training data for ML pipeline
-        training_data = pd.DataFrame({
-            "total_duration": [performance_metrics["total_duration"]],
-            "node_count": [performance_metrics["node_count"]],
-            "edge_count": [performance_metrics["edge_count"]],
-            "avg_duration": [performance_metrics["avg_node_duration"]],
-            "anomaly": [1 if anomalies else 0],
-        })
+        training_data = pd.DataFrame(
+            {
+                "total_duration": [performance_metrics["total_duration"]],
+                "node_count": [performance_metrics["node_count"]],
+                "edge_count": [performance_metrics["edge_count"]],
+                "avg_duration": [performance_metrics["avg_node_duration"]],
+                "anomaly": [1 if anomalies else 0],
+            }
+        )
 
         self.ml_pipeline.add_training_data("e2e_training", training_data)
 
@@ -1077,7 +1104,7 @@ def run_phase5_tests():
     Logger.info(f"   Passed: {passed}")
     Logger.info(f"   Failed: {failures}")
     Logger.info(f"   Errors: {errors}")
-    Logger.info(f"   Success rate: {(passed/total_tests)*100:.1f}%")
+    Logger.info(f"   Success rate: {(passed / total_tests) * 100:.1f}%")
 
     if failures == 0 and errors == 0:
         Logger.info("🎉 All Phase 5 tests passed!")

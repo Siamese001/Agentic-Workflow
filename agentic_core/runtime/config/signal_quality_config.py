@@ -287,7 +287,9 @@ class SignalAssessment:
             True if acceptable
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SignalQualityResult.is_acceptable")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SignalQualityResult.is_acceptable"
+        )
         quality_hierarchy = {
             SignalQuality.POOR: 0,
             SignalQuality.MARGINAL: 1,
@@ -991,6 +993,7 @@ def get_signal_enhancer(
     if name not in _enhancers:
         _enhancers[name] = signal_enhancer(name, thresholds)
     return _enhancers[name]
+
 
 _emit_reads_through("l4", "signal_quality_config", "urg_read_1")
 _emit_reads_through("l4", "signal_quality_config", "urg_read_2")

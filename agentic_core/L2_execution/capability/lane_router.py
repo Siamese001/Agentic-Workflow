@@ -14,6 +14,7 @@ from .access_classifier import AccessType
 
 class Lane(Enum):
     """Execution lanes."""
+
     LOCAL_TOOL = auto()
     EXTERNAL_MODEL = auto()
     MEMORY_STORE = auto()
@@ -25,6 +26,7 @@ class Lane(Enum):
 @dataclass
 class LaneSelection:
     """Result of lane selection."""
+
     lane: Lane
     target: str
     requires_sandbox: bool

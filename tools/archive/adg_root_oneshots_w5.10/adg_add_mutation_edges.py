@@ -18,63 +18,87 @@ edges_added = 0
 
 for module_adg, module_id in modules:
     # Add mutation_signature edge if not exists
-    cur.execute("""
+    cur.execute(
+        """
         SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type = 'mutation_signature'
-    """, (module_id,))
+    """,
+        (module_id,),
+    )
 
     if cur.fetchone()[0] == 0:
         # Create mutation_record node
         mutation_adg = f"ADG::MutationRecord::{module_adg}::mutation_signature"
-        cur.execute("""
+        cur.execute(
+            """
             SELECT id FROM nodes WHERE adg_name = ?
-        """, (mutation_adg,))
+        """,
+            (mutation_adg,),
+        )
         result = cur.fetchone()
 
         if not result:
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO nodes (adg_name, entity_type, layer, identity_kind, confidence, resolved_path)
                 VALUES (?, 'mutation_record', 'L_RUNTIME', 'synthetic', 1.0, ?)
-            """, (mutation_adg, mutation_adg))
+            """,
+                (mutation_adg, mutation_adg),
+            )
             mutation_id = cur.lastrowid
         else:
             mutation_id = result[0]
 
         # Add edge
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
             VALUES (?, ?, 'mutation_signature', 'state_lineage', ?, 1, 'mutation_signature')
-        """, (module_id, mutation_id, module_adg))
+        """,
+            (module_id, mutation_id, module_adg),
+        )
         edges_added += 1
 
     # Add parent_snapshot_hash edge if not exists
-    cur.execute("""
+    cur.execute(
+        """
         SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type = 'parent_snapshot_hash'
-    """, (module_id,))
+    """,
+        (module_id,),
+    )
 
     if cur.fetchone()[0] == 0:
         # Create snapshot node
         snapshot_adg = f"ADG::Snapshot::{module_adg}::parent_snapshot"
-        cur.execute("""
+        cur.execute(
+            """
             SELECT id FROM nodes WHERE adg_name = ?
-        """, (snapshot_adg,))
+        """,
+            (snapshot_adg,),
+        )
         result = cur.fetchone()
 
         if not result:
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO nodes (adg_name, entity_type, layer, identity_kind, confidence, resolved_path)
                 VALUES (?, 'snapshot', 'L_RUNTIME', 'synthetic', 1.0, ?)
-            """, (snapshot_adg, snapshot_adg))
+            """,
+                (snapshot_adg, snapshot_adg),
+            )
             snapshot_id = cur.lastrowid
         else:
             snapshot_id = result[0]
 
         # Add edge
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
             VALUES (?, ?, 'parent_snapshot_hash', 'state_lineage', ?, 1, 'parent_snapshot_hash')
-        """, (module_id, snapshot_id, module_adg))
+        """,
+            (module_id, snapshot_id, module_adg),
+        )
         edges_added += 1
 
 conn.commit()

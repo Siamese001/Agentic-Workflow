@@ -373,7 +373,11 @@ class ObservabilityToolExecutor:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ExecutionToolRegistry.register_tool:{tool_def.tool_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ExecutionToolRegistry.register_tool:{tool_def.tool_id}",
+        )
         self._registered_tools[tool_def.tool_id] = tool_def
         self._tool_implementations[tool_def.tool_id] = implementation
         self._tool_status[tool_def.tool_id] = ToolStatus.ACTIVE
@@ -425,7 +429,11 @@ class ObservabilityToolExecutor:
         except Exception as e:
             self.logger.error(f"Tool execution failed: {str(e)}")
             return self._create_error_result(
-                request.execution_id, request.tool_id, request.command, str(e), start_time,
+                request.execution_id,
+                request.tool_id,
+                request.command,
+                str(e),
+                start_time,
             )
 
     def execute_tool_stream(self, request: ToolExecutionRequest) -> object:
@@ -621,7 +629,12 @@ class ObservabilityToolExecutor:
             execution["execution_time"] = result.execution_time
 
     def _create_error_result(
-        self, execution_id: str, tool_id: str, command: str, error: str, start_time: float,
+        self,
+        execution_id: str,
+        tool_id: str,
+        command: str,
+        error: str,
+        start_time: float,
     ) -> ToolExecutionResult:
         """Create error result."""
         return ToolExecutionResult(
@@ -651,7 +664,11 @@ class ObservabilityToolExecutor:
                     "stdout": "Collected 100 log entries",
                     "exit_code": 0,
                     "logs": [
-                        {"timestamp": datetime.utcnow().isoformat(), "level": "info", "message": "Sample log"},
+                        {
+                            "timestamp": datetime.utcnow().isoformat(),
+                            "level": "info",
+                            "message": "Sample log",
+                        },
                     ],
                 }
             elif command == "filter":
@@ -709,7 +726,10 @@ class ObservabilityToolExecutor:
 
 # guardian: allow-magic-config
 def create_observability_tool_executor(
-    default_timeout: float = 30.0, max_retries: int = 3, enable_health_checks: bool = True, **kwargs: object,
+    default_timeout: float = 30.0,
+    max_retries: int = 3,
+    enable_health_checks: bool = True,
+    **kwargs: object,
 ) -> ObservabilityToolExecutor:
     """Create a configured observability tool executor."""
     config = ToolExecutionConfig(

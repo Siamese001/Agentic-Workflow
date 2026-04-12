@@ -16,14 +16,17 @@ class TestJitContextAdg:
     def test_jit_context_adg_imports(self):
         """Test jit_context_adg module imports."""
         from agentic_core import jit_context_adg
+
         assert jit_context_adg is not None
 
     def test_jit_context_adg_class(self):
         """Test JitContextAdg class exists."""
         from agentic_core import JitContextAdg
+
         assert JitContextAdg is not None
 
     def test_jit_context_adg_callable(self):
         """Test jit_context_adg functions are callable."""
         from agentic_core import validate_jit_context_adg
+
         assert callable(validate_jit_context_adg)

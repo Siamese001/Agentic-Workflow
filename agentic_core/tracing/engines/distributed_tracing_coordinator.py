@@ -44,6 +44,7 @@ Logger = logging.getLogger(__name__)
 
 class TracePropagationFormat(Enum):
     """Trace propagation formats."""
+
     BAGGAGE = "baggage"
     HEADER = "header"
     METADATA = "metadata"
@@ -52,6 +53,7 @@ class TracePropagationFormat(Enum):
 
 class SamplingStrategy(Enum):
     """Trace sampling strategies."""
+
     ALWAYS = "always"
     NEVER = "never"
     PROBABILITY = "probability"
@@ -186,11 +188,13 @@ class DistributedTracingCoordinator:
 
         # Load balancing
         self._load_balancer_index = 0
-        self._service_load_stats: dict[str, dict[str, float]] = defaultdict(lambda: {
-            "request_count": 0,
-            "error_rate": 0.0,
-            "avg_response_time": 0.0,
-        })
+        self._service_load_stats: dict[str, dict[str, float]] = defaultdict(
+            lambda: {
+                "request_count": 0,
+                "error_rate": 0.0,
+                "avg_response_time": 0.0,
+            }
+        )
 
     def start_coordination(self) -> None:
         """Start distributed tracing coordination."""
@@ -287,6 +291,7 @@ class DistributedTracingCoordinator:
             return False
         elif self._sampling_strategy == SamplingStrategy.PROBABILITY:
             import random
+
             return random.random() < self._sampling_rate
         elif self._sampling_strategy == SamplingStrategy.RATE_LIMITING:
             # Simple rate limiting based on traces per second
@@ -329,7 +334,8 @@ class DistributedTracingCoordinator:
     def _find_service_node(self, service_name: str) -> ServiceNode | None:
         """Find a service node by name using load balancing."""
         matching_nodes = [
-            node for node in self._registered_services.values()
+            node
+            for node in self._registered_services.values()
             if node.service_name == service_name and node.health_status == "healthy"
         ]
 
@@ -368,7 +374,9 @@ class DistributedTracingCoordinator:
         # For now, we simulate successful propagation
         return True
 
-    def receive_propagated_context(self, propagation_data: dict[str, Any], format_type: TracePropagationFormat) -> TraceContext | None:
+    def receive_propagated_context(
+        self, propagation_data: dict[str, Any], format_type: TracePropagationFormat
+    ) -> TraceContext | None:
         """Receive propagated trace context."""
         try:
             if format_type == TracePropagationFormat.HEADER:
@@ -528,8 +536,7 @@ class DistributedTracingCoordinator:
 
         # Clean up active traces
         old_traces = [
-            trace_id for trace_id, context in self._active_traces.items()
-            if context.timestamp < cutoff_time
+            trace_id for trace_id, context in self._active_traces.items() if context.timestamp < cutoff_time
         ]
 
         for trace_id in old_traces:
@@ -546,10 +553,9 @@ class DistributedTracingCoordinator:
                 del self._span_buffer[trace_id]
 
         # Store in history
-        self._trace_history.extend([
-            {"trace_id": trace_id, "timestamp": current_time}
-            for trace_id in old_traces
-        ])
+        self._trace_history.extend(
+            [{"trace_id": trace_id, "timestamp": current_time} for trace_id in old_traces]
+        )
 
     def _aggregate_trace_statistics(self) -> None:
         """Aggregate trace statistics."""
@@ -559,7 +565,9 @@ class DistributedTracingCoordinator:
         # Calculate average spans per trace
         avg_spans_per_trace = total_spans / total_traces if total_traces > 0 else 0
 
-        Logger.debug(f"[DISTRIBUTED_TRACING] Active traces: {total_traces}, Total spans: {total_spans}, Avg spans/trace: {avg_spans_per_trace:.1f}")
+        Logger.debug(
+            f"[DISTRIBUTED_TRACING] Active traces: {total_traces}, Total spans: {total_spans}, Avg spans/trace: {avg_spans_per_trace:.1f}"
+        )
 
     def get_coordination_stats(self) -> dict[str, Any]:
         """Get coordination statistics."""

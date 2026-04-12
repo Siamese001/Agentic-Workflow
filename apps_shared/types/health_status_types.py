@@ -258,7 +258,9 @@ class BulkheadHealthChecker(HealthChecker):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "BulkheadHealthChecker.check_health")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "BulkheadHealthChecker.check_health"
+        )
         try:
             metrics = self.bulkhead_manager.get_all_metrics()
             issues = []
@@ -671,7 +673,10 @@ async def get_health_registry() -> HealthCheckRegistry:
 
 
 async def initialize_system_health_checks(
-    bulkhead_manager=None, circuit_breaker_registry=None, dead_letter_queue=None, checkpoint_manager=None,
+    bulkhead_manager=None,
+    circuit_breaker_registry=None,
+    dead_letter_queue=None,
+    checkpoint_manager=None,
 ) -> None:
     """Initialize health checks for all system components.
 

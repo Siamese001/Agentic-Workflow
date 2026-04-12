@@ -19,6 +19,7 @@ class ReplayEnvelope:
     10C-REQ-117: Contains replay_key, policy_hash, capability_token, run_id,
     run_clock, entropy_seed, stable_id_scope.
     """
+
     replay_key: str
     policy_hash: str
     capability_token: str
@@ -27,9 +28,14 @@ class ReplayEnvelope:
     entropy_seed: int  # Seeded random source
     stable_id_scope: str  # Namespace for stable IDs
     frozen_state_hash: str = ""  # Hash of frozen state
+    ml_model_hashes: dict[str, str] = field(default_factory=dict)
 
     def envelope_hash(self) -> str:
-        """Deterministic hash of envelope contents."""
+        """Deterministic hash of envelope contents.
+
+        ml_model_hashes is included so that runs with different model artifacts
+        produce distinct digests, satisfying the C1 determinism invariant.
+        """
         data = {
             "replay_key": self.replay_key,
             "policy_hash": self.policy_hash,
@@ -38,6 +44,7 @@ class ReplayEnvelope:
             "run_clock": self.run_clock,
             "entropy_seed": self.entropy_seed,
             "stable_id_scope": self.stable_id_scope,
+            "ml_model_hashes": self.ml_model_hashes,
         }
         raw = json.dumps(data, sort_keys=True)
         return hashlib.sha256(raw.encode()).hexdigest()
@@ -56,6 +63,7 @@ class EnvelopeBuilder:
         self._run_id: str = ""
         self._entropy_seed: int = 42  # Default seed
         self._stable_id_scope: str = "default"
+        self._ml_model_hashes: dict[str, str] = {}
 
     def with_replay_key(self, key: str) -> EnvelopeBuilder:
         """Set replay key."""
@@ -87,6 +95,15 @@ class EnvelopeBuilder:
         self._stable_id_scope = scope
         return self
 
+    def with_ml_model_hash(self, role: str, hash_value: str) -> EnvelopeBuilder:
+        """Bind a model artifact hash by role (e.g. 'heal_classifier').
+
+        Must be called at E1 before any ML inference so the replay digest
+        covers the exact artifact used during this run.
+        """
+        self._ml_model_hashes[role] = hash_value
+        return self
+
     def build(self) -> ReplayEnvelope:
         """Build the replay envelope."""
         if not all([self._replay_key, self._policy_hash, self._run_id]):
@@ -100,4 +117,5 @@ class EnvelopeBuilder:
             run_clock=time.time(),  # Snapshot at build time
             entropy_seed=self._entropy_seed,
             stable_id_scope=self._stable_id_scope,
+            ml_model_hashes=dict(self._ml_model_hashes),
         )

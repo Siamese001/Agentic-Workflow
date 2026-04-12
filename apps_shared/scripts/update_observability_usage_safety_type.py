@@ -86,7 +86,9 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-record_execution_trace("update_observability_usage_safety_type", "update_observability_usage_safety_type_trace")
+record_execution_trace(
+    "update_observability_usage_safety_type", "update_observability_usage_safety_type_trace"
+)
 
 
 _emit_emits_metric_event("update_observability_usage_safety_type", "p4obs", "metric_1")
@@ -292,8 +294,11 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
     def apply_safety(self, data: dict[str, object]) -> UpdateObservabilityUsageSafetyResult:
         """Apply safety checks following L5 architecture principles"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UpdateObservabilityUsageSafetyImpl.apply_safety")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "UpdateObservabilityUsageSafetyImpl.apply_safety"
+        )
 
         self.logger.info("Applying safety checks to data")
         self._validate_input(data)
@@ -426,11 +431,13 @@ class UpdateObservabilityUsageSafetyImpl(UpdateObservabilityUsageSafetySafety):
         """Calculate nesting depth"""
         if isinstance(obj, dict):
             return max(
-                [self._calculate_depth(v, current_depth + 1) for v in obj.values()], default=current_depth,
+                [self._calculate_depth(v, current_depth + 1) for v in obj.values()],
+                default=current_depth,
             )
         elif isinstance(obj, list):
             return max(
-                [self._calculate_depth(item, current_depth + 1) for item in obj], default=current_depth,
+                [self._calculate_depth(item, current_depth + 1) for item in obj],
+                default=current_depth,
             )
         else:
             return current_depth
@@ -490,8 +497,11 @@ class UpdateObservabilityUsageSafetyFactory:
     def create_safety(safety_level: str = "strict") -> UpdateObservabilityUsageSafetyInterface:
         """Create configured safety executor"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UpdateObservabilityUsageSafetyFactory.create_safety")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "UpdateObservabilityUsageSafetyFactory.create_safety"
+        )
 
         constraints = UpdateObservabilityUsageSafetyConstraints(safety_level=safety_level)
         safety = UpdateObservabilityUsageSafetyImpl(constraints)
@@ -521,7 +531,7 @@ if __name__ == "__main__":
         test_data = {"test": "safe_data"}
         result = update_observability_usage(test_data)
         logger.info(f"L5 Safety check successful: {result}")
-    except SecurityError as e:    # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

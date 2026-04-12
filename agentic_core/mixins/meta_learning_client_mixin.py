@@ -319,7 +319,11 @@ class MetaLearningClientMixin:
             Healing pattern if found above similarity threshold, None otherwise
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MetaLearningClientMixin.ml_recall_healing_pattern")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "MetaLearningClientMixin.ml_recall_healing_pattern",
+        )
         self._ensure_ml_client()
         self._ensure_ml_guardrails()
 

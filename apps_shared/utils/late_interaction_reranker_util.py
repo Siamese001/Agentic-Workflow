@@ -181,8 +181,11 @@ class LateInteractionReranker:
     def is_available(self) -> bool:
         """Check if the reranker is available (model loaded or can be loaded)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LateInteractionReranker.is_available")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LateInteractionReranker.is_available"
+        )
 
         if self._model_loaded:
             return not self._fallback_mode
@@ -232,7 +235,11 @@ class LateInteractionReranker:
             return False
 
     def rerank(
-        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32,
+        self,
+        query: str,
+        documents: list[str],
+        top_k: int | None = None,
+        batch_size: int = 32,
     ) -> list[str]:
         """Rerank documents based on query relevance.
 
@@ -286,7 +293,11 @@ class LateInteractionReranker:
             return documents[:top_k]
 
     def rerank_with_scores(
-        self, query: str, documents: list[str], top_k: int | None = None, batch_size: int = 32,
+        self,
+        query: str,
+        documents: list[str],
+        top_k: int | None = None,
+        batch_size: int = 32,
     ) -> list[tuple[str, float]]:
         """Rerank documents and return with scores.
 
@@ -339,7 +350,9 @@ class LateInteractionReranker:
                     info.update(
                         {
                             "max_seq_length": getattr(
-                                self._model.config, "max_position_embeddings", "unknown",
+                                self._model.config,
+                                "max_position_embeddings",
+                                "unknown",
                             ),
                             "num_labels": getattr(self._model.config, "num_labels", "unknown"),
                         },
@@ -351,7 +364,10 @@ class LateInteractionReranker:
 
 
 def rerank_documents(
-    query: str, documents: list[str], model_name: str = "BAAI/bge-reranker-v2-m3", top_k: int = 5,
+    query: str,
+    documents: list[str],
+    model_name: str = "BAAI/bge-reranker-v2-m3",
+    top_k: int = 5,
 ) -> list[str]:
     """Rerank documents using default settings.
 
@@ -380,7 +396,10 @@ class PassThroughReranker:
         return documents[:top_k] if top_k else documents
 
     def rerank_with_scores(
-        self, query: str, documents: list[str], top_k: int | None = None,
+        self,
+        query: str,
+        documents: list[str],
+        top_k: int | None = None,
     ) -> list[tuple[str, float]]:
         """Return documents with dummy scores."""
         return [(doc, 0.0) for doc in (documents[:top_k] if top_k else documents)]

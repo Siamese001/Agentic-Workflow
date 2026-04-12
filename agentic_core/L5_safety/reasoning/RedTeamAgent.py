@@ -317,7 +317,10 @@ class RedTeamAgent(SovereignBaseAgent):
         bypassed_count: Any = sum(1 for r in results if r.get("bypassed"))
         print(f"\n[RED-TEAM COMPLETE] {len(results)} tests | {bypassed_count} bypass(es) detected")
         ctx.report(
-            self.__class__.__name__, 16, bypassed_count == 0, f"Red-team results: {bypassed_count} bypasses",
+            self.__class__.__name__,
+            16,
+            bypassed_count == 0,
+            f"Red-team results: {bypassed_count} bypasses",
         )
 
     def _detect_bypass(self, response: str) -> bool:

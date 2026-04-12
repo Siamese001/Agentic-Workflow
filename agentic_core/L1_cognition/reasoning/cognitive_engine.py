@@ -4,7 +4,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_transcripts_response,
     emit_determinism_digest,  # noqa: E402
-    )
+)
 
 "\nRefactored Cognitive Node - Coordinator Pattern\n\nOrchestrates PerceptionNode, ReasoningNode, and ActionNode with:\n- Parallel/async execution\n- Lazy evaluation for simple intents\n- Output caching\n- Per-node performance monitoring\n"
 import asyncio
@@ -18,7 +18,9 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
 # Lazy import to avoid L1->L2 gravity violation
 def _get_proof_emitter():
     from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
+
     return ExecutionProofEmitter("L1.cognitive_engine")
+
 
 _proof_emitter = _get_proof_emitter()
 

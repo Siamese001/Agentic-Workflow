@@ -171,7 +171,10 @@ class BackupManager:
 
     @classmethod
     def get_backup_dir(
-        cls, category: str, project_root: str | Path | None = None, timestamped: bool = True,
+        cls,
+        category: str,
+        project_root: str | Path | None = None,
+        timestamped: bool = True,
     ) -> Path:
         """
         Get a standardized backup directory path.
@@ -185,8 +188,11 @@ class BackupManager:
             Path: The fully resolved, created directory path
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BackupManager.get_backup_dir")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "BackupManager.get_backup_dir"
+        )
 
         root = Path(project_root) if project_root else Path.cwd()
         base_path = root / cls.BACKUP_ROOT / category
@@ -200,7 +206,10 @@ class BackupManager:
 
     @classmethod
     def cleanup_old_backups(
-        cls, category: str, keep_last_n: int = 10, project_root: str | Path | None = None,
+        cls,
+        category: str,
+        keep_last_n: int = 10,
+        project_root: str | Path | None = None,
     ) -> int:
         """
         Remove old backups for a specific category, keeping only the N most recent.
@@ -213,7 +222,9 @@ class BackupManager:
         if not category_dir.exists():
             return 0
         backups = sorted(
-            [d for d in category_dir.iterdir() if d.is_dir()], key=lambda x: x.name, reverse=True,
+            [d for d in category_dir.iterdir() if d.is_dir()],
+            key=lambda x: x.name,
+            reverse=True,
         )
         removed_count = 0
         if len(backups) > keep_last_n:
@@ -222,13 +233,16 @@ class BackupManager:
                 try:
                     shutil.rmtree(backup)
                     removed_count += 1
-                except OSError as e:    # guardian: Add error context logging
+                except OSError as e:  # guardian: Add error context logging
                     print(f"Error cleaning up backup {backup}: {e}")
         return removed_count
 
     @classmethod
     def backup_file(
-        cls, target_file: str | Path, category: str = "misc", project_root: str | Path | None = None,
+        cls,
+        target_file: str | Path,
+        category: str = "misc",
+        project_root: str | Path | None = None,
     ) -> Path | None:
         """
         Quickly backup a single file to a timestamped location.
@@ -269,7 +283,10 @@ class BackupManager:
 
     @classmethod
     def restore_backup(
-        cls, backup_path: str | Path, target_path: str | Path, overwrite: bool = False,
+        cls,
+        backup_path: str | Path,
+        target_path: str | Path,
+        overwrite: bool = False,
     ) -> bool:
         """
         Restore files from a backup directory to a target location.
@@ -332,7 +349,7 @@ class BackupManager:
                     shutil.rmtree(legacy_path)
                     removed_count += 1
                     print(f"Removed legacy backup directory: {legacy_path}")
-                except OSError as e:    # guardian: Add error context logging
+                except OSError as e:  # guardian: Add error context logging
                     print(f"Error removing legacy backup {legacy_path}: {e}")
         return removed_count
 

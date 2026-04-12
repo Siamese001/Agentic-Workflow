@@ -5,6 +5,7 @@ Usage:
     python tools/evidence/_generate_wave_manifest.py W5c.1 tools/
     python tools/evidence/_generate_wave_manifest.py W5c.2 ops_scripts/
 """
+
 from __future__ import annotations
 
 import json

@@ -11,19 +11,19 @@ class EvaluationMetric(ABC):
 
     @property
     @abstractmethod
-    def name(self) -> str:
-        ...
+    def name(self) -> str: ...
 
     @abstractmethod
-    def compute(self, **kwargs: Any) -> float:
-        ...
+    def compute(self, **kwargs: Any) -> float: ...
 
 
 class GenerationMetric(EvaluationMetric):
     """Base class for generation quality metrics (answer correctness, groundedness)."""
+
     pass
 
 
 class RetrievalMetric(EvaluationMetric):
     """Base class for retrieval quality metrics (precision, recall, MRR, NDCG)."""
+
     pass

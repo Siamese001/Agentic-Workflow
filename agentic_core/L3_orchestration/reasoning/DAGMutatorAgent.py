@@ -392,7 +392,9 @@ class DAGMutatorAgent(SovereignBaseAgent):
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
             error_result = MutationResult(
-                mutation_id=mutation.mutation_id, success=False, message=f"Mutation failed: {str(e)}",
+                mutation_id=mutation.mutation_id,
+                success=False,
+                message=f"Mutation failed: {str(e)}",
             )
             self._store_mutation_result(error_result)
             return error_result
@@ -426,7 +428,10 @@ class DAGMutatorAgent(SovereignBaseAgent):
             created_at=mutation.timestamp,
         )
         graph.add_edge(
-            new_node, target_node, created_by=mutation.requester_hop_id, created_at=mutation.timestamp,
+            new_node,
+            target_node,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
         )
         self._update_depths(graph)
         if not nx.is_directed_acyclic_graph(graph):
@@ -456,7 +461,10 @@ class DAGMutatorAgent(SovereignBaseAgent):
             graph.remove_edge(target_node, successor)
             graph.add_edge(new_node, successor, moved_from=target_node, created_by=mutation.requester_hop_id)
         graph.add_edge(
-            target_node, new_node, created_by=mutation.requester_hop_id, created_at=mutation.timestamp,
+            target_node,
+            new_node,
+            created_by=mutation.requester_hop_id,
+            created_at=mutation.timestamp,
         )
         self._update_depths(graph)
         if not nx.is_directed_acyclic_graph(graph):
@@ -482,7 +490,10 @@ class DAGMutatorAgent(SovereignBaseAgent):
         skip_successors = list(graph.successors(skip_node))
         for skip_successor in skip_successors:
             graph.add_edge(
-                target_node, skip_successor, bridge_created=True, created_by=mutation.requester_hop_id,
+                target_node,
+                skip_successor,
+                bridge_created=True,
+                created_by=mutation.requester_hop_id,
             )
         graph.nodes[skip_node]["skipped"] = True
         graph.nodes[skip_node]["skipped_by"] = mutation.requester_hop_id
@@ -570,7 +581,11 @@ class DAGMutatorAgent(SovereignBaseAgent):
         - _validate_mutation(): Self-diagnostic on graph mutation rules.
         """
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}

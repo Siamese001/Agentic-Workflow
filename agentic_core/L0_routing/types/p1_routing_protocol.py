@@ -1,4 +1,5 @@
 """P1 routing protocols and core types."""
+
 from __future__ import annotations
 
 from typing import Any, Protocol

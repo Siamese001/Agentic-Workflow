@@ -208,8 +208,11 @@ class DeterminismDigest:
 
     def compute_hash(self, events: list[str]) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismDigest.compute_hash")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismDigest.compute_hash"
+        )
 
         payload = f"{self.run_id}:{self.rng_seed}:{self.clock_start}:{':'.join(events)}"
         self.digest_hash = hashlib.sha256(payload.encode()).hexdigest()
@@ -289,8 +292,11 @@ class DeterminismControlReport:
 
     def violations_by_type(self) -> dict[str, int]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismControlReport.violations_by_type")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismControlReport.violations_by_type"
+        )
 
         counts: dict[str, int] = {}
         for v in self.violations:
@@ -328,6 +334,7 @@ class SemanticClock:
 
     def now(self) -> SemanticClockReading:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticClock.now")
 
@@ -356,8 +363,11 @@ class ReplayGuard:
 
     def install_replay_patches(self, symbols: list[str] | None = None) -> list[ReplayPatchRecord]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayGuard.install_replay_patches")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayGuard.install_replay_patches"
+        )
 
         targets = symbols or list(self._PATCHABLE)
         new_patches = []
@@ -396,8 +406,11 @@ class DeterminismController:
 
     def seed_rng(self, seed: int) -> None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismController.seed_rng")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DeterminismController.seed_rng"
+        )
 
         self.report.rng_seed = seed
         self.guard.seed_rng(seed)
@@ -450,6 +463,7 @@ class DeterminismController:
         digest.compute_hash(events or [])
         self.report.digest = digest
         return digest
+
 
 _emit_reads_through("l4", "determinism_control", "urg_read_1")
 _emit_reads_through("l4", "determinism_control", "urg_read_2")

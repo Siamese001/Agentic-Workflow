@@ -12,6 +12,7 @@ from typing import Any
 
 class EgressStatus(Enum):
     """Egress status enumeration."""
+
     ALLOWED = auto()
     BLOCKED = auto()
     FALLBACK_TRIGGERED = auto()
@@ -21,6 +22,7 @@ class EgressStatus(Enum):
 @dataclass
 class EgressResult:
     """Result of sovereign egress."""
+
     status: EgressStatus
     symbolic_request: str
     resolved_provider: str

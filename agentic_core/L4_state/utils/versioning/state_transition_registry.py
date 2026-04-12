@@ -369,7 +369,9 @@ class StateVersionedRead:
         trace_id: str,
     ) -> StateVersionedRead:
         payload = json.dumps(
-            {"value": value, "version": state_version, "namespace": namespace}, sort_keys=True, default=str,
+            {"value": value, "version": state_version, "namespace": namespace},
+            sort_keys=True,
+            default=str,
         )
         source_hash = hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
         return cls(

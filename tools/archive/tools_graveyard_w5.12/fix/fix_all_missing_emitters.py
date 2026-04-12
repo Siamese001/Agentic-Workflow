@@ -22,10 +22,10 @@ ALL_EMITTERS = set()
 ltc_path = os.path.join(ROOT, "agentic_core", "runtime", "lifecycle_trace_contract.py")
 with open(ltc_path, encoding="utf-8") as f:
     for line in f:
-        m = re.match(r'^def (_emit_\w+)\(', line.strip())
+        m = re.match(r"^def (_emit_\w+)\(", line.strip())
         if m:
             ALL_EMITTERS.add(m.group(1))
-        m2 = re.match(r'^def (emit_\w+)\(', line.strip())
+        m2 = re.match(r"^def (emit_\w+)\(", line.strip())
         if m2:
             ALL_EMITTERS.add(m2.group(1))
 
@@ -52,7 +52,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
             # Find all emitter calls in the file
             used = set()
             for emitter in ALL_EMITTERS:
-                if re.search(r'\b' + re.escape(emitter) + r'\s*\(', content):
+                if re.search(r"\b" + re.escape(emitter) + r"\s*\(", content):
                     used.add(emitter)
 
             if not used:
@@ -66,10 +66,10 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                 s = line.strip()
                 if s.startswith("#"):
                     continue
-                if re.match(r'^from\s+\S+\s+import\s+\(', s):
+                if re.match(r"^from\s+\S+\s+import\s+\(", s):
                     in_block = True
                     for e in ALL_EMITTERS:
-                        if re.search(r'\b' + re.escape(e) + r'\b', s):
+                        if re.search(r"\b" + re.escape(e) + r"\b", s):
                             imported.add(e)
                     continue
                 if in_block:
@@ -77,12 +77,12 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                         in_block = False
                         continue
                     for e in ALL_EMITTERS:
-                        if re.search(r'\b' + re.escape(e) + r'\b', s):
+                        if re.search(r"\b" + re.escape(e) + r"\b", s):
                             imported.add(e)
                     continue
-                if re.match(r'^from\s+\S+\s+import\s+', s):
+                if re.match(r"^from\s+\S+\s+import\s+", s):
                     for e in ALL_EMITTERS:
-                        if re.search(r'\b' + re.escape(e) + r'\b', s):
+                        if re.search(r"\b" + re.escape(e) + r"\b", s):
                             imported.add(e)
                 # Check for local definitions too
                 for e in ALL_EMITTERS:

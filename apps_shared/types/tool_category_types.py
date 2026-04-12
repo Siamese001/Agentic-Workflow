@@ -372,7 +372,11 @@ class ObservabilityToolInvoker:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ObservabilityToolRegistry.register_tool:{tool_spec.tool_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ObservabilityToolRegistry.register_tool:{tool_spec.tool_id}",
+        )
         self._registered_tools[tool_spec.tool_id] = tool_spec
         if client:
             self._tool_clients[tool_spec.tool_id] = client
@@ -432,11 +436,17 @@ class ObservabilityToolInvoker:
             self.logger.error(f"Tool invocation failed: {str(e)}")
             self._record_failure(context.tool_id)
             return self._create_error_result(
-                context.invocation_id, context.tool_id, context.method, str(e), start_time,
+                context.invocation_id,
+                context.tool_id,
+                context.method,
+                str(e),
+                start_time,
             )
 
     def invoke_tool_batch(
-        self, contexts: list[ToolInvocationContext], parameters_list: list[dict[str, Any]],
+        self,
+        contexts: list[ToolInvocationContext],
+        parameters_list: list[dict[str, Any]],
     ) -> list[ToolInvocationResult]:
         """Invoke multiple tools.
 
@@ -456,7 +466,9 @@ class ObservabilityToolInvoker:
         return results
 
     def invoke_tool_stream(
-        self, context: ToolInvocationContext, parameters: dict[str, Any],
+        self,
+        context: ToolInvocationContext,
+        parameters: dict[str, Any],
     ) -> dict[str, object]:
         """Invoke tool with streaming response.
 
@@ -508,7 +520,9 @@ class ObservabilityToolInvoker:
             self.logger.info(f"Reset circuit breaker for tool: {tool_id}")
 
     def _execute_with_retry(
-        self, context: ToolInvocationContext, parameters: dict[str, Any],
+        self,
+        context: ToolInvocationContext,
+        parameters: dict[str, Any],
     ) -> ToolInvocationResult:
         """Execute tool invocation with retry logic."""
         last_error = None
@@ -542,11 +556,17 @@ class ObservabilityToolInvoker:
                 else:
                     self.logger.error(f"Invocation failed after {attempt + 1} attempts: {last_error}")
         return self._create_error_result(
-            context.invocation_id, context.tool_id, context.method, last_error, time.time(),
+            context.invocation_id,
+            context.tool_id,
+            context.method,
+            last_error,
+            time.time(),
         )
 
     def _simulate_invocation(
-        self, context: ToolInvocationContext, parameters: dict[str, Any],
+        self,
+        context: ToolInvocationContext,
+        parameters: dict[str, Any],
     ) -> ToolInvocationResult:
         """Simulate tool invocation."""
         tool_spec = self._registered_tools[context.tool_id]
@@ -589,7 +609,10 @@ class ObservabilityToolInvoker:
         )
 
     def _validate_parameters(
-        self, parameters: dict[str, Any], tool_spec: ToolSpecification, method: str,
+        self,
+        parameters: dict[str, Any],
+        tool_spec: ToolSpecification,
+        method: str,
     ) -> list[str]:
         """Validate tool parameters."""
         errors = []
@@ -653,7 +676,12 @@ class ObservabilityToolInvoker:
         pass
 
     def _create_error_result(
-        self, invocation_id: str, tool_id: str, method: str, error: str, start_time: float,
+        self,
+        invocation_id: str,
+        tool_id: str,
+        method: str,
+        error: str,
+        start_time: float,
     ) -> ToolInvocationResult:
         """Create error result."""
         return ToolInvocationResult(
@@ -725,7 +753,10 @@ class ObservabilityToolInvoker:
 
 # guardian: allow-magic-config
 def create_observability_tool_invoker(
-    default_timeout: float = 30.0, max_retries: int = 3, enable_circuit_breaker: bool = True, **kwargs: object,
+    default_timeout: float = 30.0,
+    max_retries: int = 3,
+    enable_circuit_breaker: bool = True,
+    **kwargs: object,
 ) -> ObservabilityToolInvoker:
     """Create a configured observability tool invoker."""
     config = ToolInvocationConfig(

@@ -170,6 +170,7 @@ _emit_invokes_evaluation("p1", "ptc_safety_gates", "eval_call")
 
 class PTCSafetyGateType(Enum):
     """Types of PTC safety gates."""
+
     CONFIDENCE = "confidence"
     ROUTING = "routing"
     EXECUTION = "execution"
@@ -178,6 +179,7 @@ class PTCSafetyGateType(Enum):
 
 class PTCSafetyGateStatus(Enum):
     """Status of safety gate evaluation."""
+
     PASSED = "passed"
     REVIEW_REQUIRED = "review_required"
     REJECTED = "rejected"
@@ -196,6 +198,7 @@ class PTCSafetyGateResult:
         reason: Explanation for status
         trace_id: Trace ID
     """
+
     gate_type: PTCSafetyGateType
     status: PTCSafetyGateStatus
     passed: bool
@@ -206,6 +209,7 @@ class PTCSafetyGateResult:
 
 class PTCSafetyGateViolation(Exception):
     """Raised when a PTC safety gate is violated."""
+
     pass
 
 
@@ -644,18 +648,25 @@ class PTCSafetyGateManager:
 
         # Confidence gate
         results["confidence"] = self.confidence_gate.evaluate(
-            script_id, confidence_score, risk_level,
+            script_id,
+            confidence_score,
+            risk_level,
         )
 
         # Routing gate
         results["routing"] = self.routing_gate.evaluate(
-            script_id, policy_compliant, detected_patterns, "L2_SANDBOX",
+            script_id,
+            policy_compliant,
+            detected_patterns,
+            "L2_SANDBOX",
         )
 
         # Execution gate (pre-execution check)
         try:
             results["execution"] = self.execution_gate.evaluate_pre_execution(
-                script_id, envelope_signed, envelope_valid,
+                script_id,
+                envelope_signed,
+                envelope_valid,
             )
         except PTCSafetyGateViolation as e:
             # Create a failed result for execution gate
@@ -670,7 +681,10 @@ class PTCSafetyGateManager:
 
         # Validation gate
         results["validation"] = self.validation_gate.evaluate(
-            script_id, code, modified_by_human=False, l5_reclear_passed=None,
+            script_id,
+            code,
+            modified_by_human=False,
+            l5_reclear_passed=None,
         )
 
         # Store results
@@ -703,7 +717,9 @@ class PTCSafetyGateManager:
 
         total = len(self._gate_history)
         passed = sum(1 for r in self._gate_history if r.status == PTCSafetyGateStatus.PASSED)
-        review_required = sum(1 for r in self._gate_history if r.status == PTCSafetyGateStatus.REVIEW_REQUIRED)
+        review_required = sum(
+            1 for r in self._gate_history if r.status == PTCSafetyGateStatus.REVIEW_REQUIRED
+        )
         rejected = sum(1 for r in self._gate_history if r.status == PTCSafetyGateStatus.REJECTED)
 
         return {
@@ -740,6 +756,7 @@ def reset_ptc_safety_gate_manager() -> None:
 # Convenience Functions
 # =============================================================================
 
+
 def evaluate_ptc_safety_gates(
     script_id: str,
     confidence_score: float,
@@ -753,8 +770,14 @@ def evaluate_ptc_safety_gates(
     """Evaluate all PTC safety gates."""
     manager = get_ptc_safety_gate_manager()
     return manager.evaluate_all_gates(
-        script_id, confidence_score, risk_level, policy_compliant,
-        detected_patterns, code, envelope_signed, envelope_valid,
+        script_id,
+        confidence_score,
+        risk_level,
+        policy_compliant,
+        detected_patterns,
+        code,
+        envelope_signed,
+        envelope_valid,
     )
 
 

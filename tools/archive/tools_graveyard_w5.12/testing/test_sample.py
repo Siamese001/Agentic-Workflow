@@ -1,4 +1,3 @@
-
 def test_example():
     try:
         risky_operation()

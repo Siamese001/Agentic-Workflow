@@ -16,14 +16,17 @@ class TestSovereignPrecommitNoHardcodedUtilAdg:
     def test_sovereign_precommit_no_hardcoded_util_adg_imports(self):
         """Test sovereign_precommit_no_hardcoded_util_adg module imports."""
         from agentic_core import sovereign_precommit_no_hardcoded_util_adg
+
         assert sovereign_precommit_no_hardcoded_util_adg is not None
 
     def test_sovereign_precommit_no_hardcoded_util_adg_class(self):
         """Test SovereignPrecommitNoHardcodedUtilAdg class exists."""
         from agentic_core import SovereignPrecommitNoHardcodedUtilAdg
+
         assert SovereignPrecommitNoHardcodedUtilAdg is not None
 
     def test_sovereign_precommit_no_hardcoded_util_adg_callable(self):
         """Test sovereign_precommit_no_hardcoded_util_adg functions are callable."""
         from agentic_core import validate_sovereign_precommit_no_hardcoded_util_adg
+
         assert callable(validate_sovereign_precommit_no_hardcoded_util_adg)

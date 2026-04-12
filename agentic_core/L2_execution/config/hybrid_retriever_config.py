@@ -154,17 +154,18 @@ class ASTAwareTokenizer:
                     )
                 elif isinstance(node, ast.Constant) and isinstance(node.value, str):
                     # Docstrings and string literals
-                    doc_tokens = [    # guardian: Syntax errors should be caught at parser level, not runtime
+                    doc_tokens = [  # guardian: Syntax errors should be caught at parser level, not runtime
                         t.lower()
                         for t in node.value.split()
                         if t.lower() not in cls.STOP_WORDS and len(t) > 2
                     ]
                     tokens.extend(doc_tokens)
 
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
-
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             # Fallback to regex-based tokenization
-            import logging; logging.getLogger(__name__).debug("hybrid_retriever_config: SyntaxError swallowed at L164: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("hybrid_retriever_config: SyntaxError swallowed at L164: %s", e)
 
         # Common fallback/additional regex for identifiers (runs always for robustness)
         words = re.findall(r"\b[a-zA-Z_][a-zA-Z0-9_]*\b", text.lower())
@@ -231,7 +232,9 @@ class HybridRetriever:
         """Rebuild local index from latest ingestion artifacts"""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HybridRetrieverConfig.rebuild_from_ingestion",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "HybridRetrieverConfig.rebuild_from_ingestion",
         )
         try:
             from ops_scripts.dev_tools.L0_routing_scripts.sovereign_ingestion_mission import (
@@ -388,6 +391,7 @@ class HybridRetriever:
         except Exception as e:
             # Non-blocking: log warning but don't fail the search
             import logging
+
             logging.getLogger(__name__).warning(f"Shadow eval failed: {e}")
 
         return results

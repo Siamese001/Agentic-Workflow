@@ -213,13 +213,17 @@ class HOP1ProfileDeterministic:
         Moved to Deterministic: Pure rule-based classification
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "HOP1ProfileDeterministic.classify_profile_heuristic", "L5_POLICY",
+            str(uuid.uuid4()),
+            "HOP1ProfileDeterministic.classify_profile_heuristic",
+            "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP1ProfileDeterministic.classify_profile_heuristic",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HOP1ProfileDeterministic.classify_profile_heuristic",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -295,7 +299,9 @@ class HOP3DataExtractionDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP3DataExtractionDeterministic.extract_grounded_entities",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HOP3DataExtractionDeterministic.extract_grounded_entities",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -309,7 +315,9 @@ class HOP3DataExtractionDeterministic:
         if not isinstance(json_data, dict):
             issues.append("Invalid JSON structure - expected dictionary")
             return HOPValidationResult(
-                passed=False, issues=issues, metadata={"hop": "HOP3", "validation_type": "deterministic"},
+                passed=False,
+                issues=issues,
+                metadata={"hop": "HOP3", "validation_type": "deterministic"},
             )
         for entity in self.required_entities:
             if entity in json_data:
@@ -354,7 +362,9 @@ class HOP4ConditionDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP4ConditionDeterministic.check_conditions",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HOP4ConditionDeterministic.check_conditions",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -410,7 +420,8 @@ class HOP6PlaceholderDeterministic:
     def __init__(self, config: dict[str, Any]) -> None:
         """Initialize with HOP6 placeholder patterns."""
         self.placeholder_patterns = config.get(
-            "placeholder_patterns", ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$\\{.*?\\}"],
+            "placeholder_patterns",
+            ["\\[.*?\\]", "\\{.*?\\}", "<.*?>", "\\$\\{.*?\\}"],
         )
 
     def validate_placeholders(self, content: str) -> HOPValidationResult:
@@ -423,7 +434,9 @@ class HOP6PlaceholderDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP6PlaceholderDeterministic.validate_placeholders",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HOP6PlaceholderDeterministic.validate_placeholders",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -466,7 +479,9 @@ class HOP7GateDecisionDeterministic:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "HOP7GateDecisionDeterministic.classify_gate_decision",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "HOP7GateDecisionDeterministic.classify_gate_decision",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

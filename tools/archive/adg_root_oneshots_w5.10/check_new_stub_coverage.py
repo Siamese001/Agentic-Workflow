@@ -27,7 +27,8 @@ for stub in sample_stubs:
     if row:
         # Check if it has imports edges
         edges = conn.execute(
-            "SELECT COUNT(*) as cnt FROM edges e WHERE e.src_id=? AND e.relation_type='imports'", (row["id"],),
+            "SELECT COUNT(*) as cnt FROM edges e WHERE e.src_id=? AND e.relation_type='imports'",
+            (row["id"],),
         ).fetchone()
         print(f"  FOUND: {stub} -> {edges['cnt']} imports edges")
     else:
@@ -65,5 +66,7 @@ cov = covered["cnt"]
 print(f"\nCoverage: {cov}/{total} = {100 * cov / total:.1f}%")
 
 conn.close()
+
+
 def check_coverage():
     return {}

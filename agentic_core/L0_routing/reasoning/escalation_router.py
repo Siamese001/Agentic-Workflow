@@ -48,7 +48,9 @@ def _get_violation_event_store_class():
 
 
 def decide_mode_from_prior_violations(
-    execution_start_tick: int, routing_config: object, violation_store: object,
+    execution_start_tick: int,
+    routing_config: object,
+    violation_store: object,
 ) -> str:
     """
     Determine L0 routing mode based solely on prior violations.
@@ -78,7 +80,8 @@ def decide_mode_from_prior_violations(
         Routing mode string ("normal" or routing_config.escalation_mode).
     """
     prior_events = violation_store.fetch_window(
-        before_tick=execution_start_tick, window_ticks=routing_config.escalation_window_ticks,
+        before_tick=execution_start_tick,
+        window_ticks=routing_config.escalation_window_ticks,
     )
     denylist = set(routing_config.escalation_violation_code_denylist)
     for event in prior_events:

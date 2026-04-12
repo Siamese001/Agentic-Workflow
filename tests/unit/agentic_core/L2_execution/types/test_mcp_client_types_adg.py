@@ -16,14 +16,17 @@ class TestMcpClientTypesAdg:
     def test_mcp_client_types_adg_imports(self):
         """Test mcp_client_types_adg module imports."""
         from agentic_core import mcp_client_types_adg
+
         assert mcp_client_types_adg is not None
 
     def test_mcp_client_types_adg_class(self):
         """Test McpClientTypesAdg class exists."""
         from agentic_core import McpClientTypesAdg
+
         assert McpClientTypesAdg is not None
 
     def test_mcp_client_types_adg_callable(self):
         """Test mcp_client_types_adg functions are callable."""
         from agentic_core import validate_mcp_client_types_adg
+
         assert callable(validate_mcp_client_types_adg)

@@ -100,12 +100,14 @@ try:
     # Phase 1: OTLP exporter support for external telemetry backends
     try:
         from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter as OTLPGrpcExporter
+
         OTEL_GRPC_EXPORTER_AVAILABLE = True
     except ImportError:
         OTEL_GRPC_EXPORTER_AVAILABLE = False
 
     try:
         from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter as OTLPHttpExporter
+
         OTEL_HTTP_EXPORTER_AVAILABLE = True
     except ImportError:
         OTEL_HTTP_EXPORTER_AVAILABLE = False
@@ -329,7 +331,10 @@ class OpenTelemetryTracingAdapter:
             if enable_otlp_grpc and OTEL_GRPC_EXPORTER_AVAILABLE:
                 try:
                     import os
-                    endpoint = otlp_grpc_endpoint or os.getenv("OTEL_EXPORTER_OTLP_GRPC_ENDPOINT", "http://localhost:4317")
+
+                    endpoint = otlp_grpc_endpoint or os.getenv(
+                        "OTEL_EXPORTER_OTLP_GRPC_ENDPOINT", "http://localhost:4317"
+                    )
                     otlp_exporter = OTLPGrpcExporter(endpoint=endpoint)
                     otlp_processor = BatchSpanProcessor(
                         otlp_exporter,
@@ -348,7 +353,10 @@ class OpenTelemetryTracingAdapter:
             if enable_otlp_http and OTEL_HTTP_EXPORTER_AVAILABLE:
                 try:
                     import os
-                    endpoint = otlp_http_endpoint or os.getenv("OTEL_EXPORTER_OTLP_HTTP_ENDPOINT", "http://localhost:4318")
+
+                    endpoint = otlp_http_endpoint or os.getenv(
+                        "OTEL_EXPORTER_OTLP_HTTP_ENDPOINT", "http://localhost:4318"
+                    )
                     otlp_exporter = OTLPHttpExporter(endpoint=endpoint)
                     otlp_processor = BatchSpanProcessor(
                         otlp_exporter,
@@ -367,11 +375,14 @@ class OpenTelemetryTracingAdapter:
             self.tracer = trace.get_tracer(__name__)
             self._enabled = True
             if self.enable_logging:
-                logger.info("opentelemetry_initialized", extra={
-                    "service_name": service_name,
-                    "grpc_available": OTEL_GRPC_EXPORTER_AVAILABLE,
-                    "http_available": OTEL_HTTP_EXPORTER_AVAILABLE,
-                })
+                logger.info(
+                    "opentelemetry_initialized",
+                    extra={
+                        "service_name": service_name,
+                        "grpc_available": OTEL_GRPC_EXPORTER_AVAILABLE,
+                        "http_available": OTEL_HTTP_EXPORTER_AVAILABLE,
+                    },
+                )
         else:
             self.tracer = None
             self._enabled = False
@@ -396,7 +407,9 @@ class OpenTelemetryTracingAdapter:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "OpenTelemetryTracingAdapter.trace_orchestrator",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "OpenTelemetryTracingAdapter.trace_orchestrator",
         )
 
         span_metadata = SpanMetadata(
@@ -460,7 +473,10 @@ class OpenTelemetryTracingAdapter:
         if resilience_metrics:
             attributes.update(resilience_metrics.to_dict())
         span_metadata = SpanMetadata(
-            span_type=SpanType.ACTION, component="ActionPlane", layer="L2_Execution", attributes=attributes,
+            span_type=SpanType.ACTION,
+            component="ActionPlane",
+            layer="L2_Execution",
+            attributes=attributes,
         )
         with self._create_span(name="action.execute", metadata=span_metadata) as span:
             yield span
@@ -681,20 +697,20 @@ class OpenTelemetryTracingAdapter:
         Returns:
             List of active span data
         """
-        if not self._enabled or not hasattr(self, '_active_spans'):
+        if not self._enabled or not hasattr(self, "_active_spans"):
             return []
 
         spans_data = []
         for span_id, span in self._active_spans.items():
             span_data = {
                 "span_id": span_id,
-                "trace_id": getattr(span, 'trace_id', 'unknown'),
-                "name": getattr(span, 'name', 'unknown'),
-                "start_time": getattr(span, 'start_time', 0),
-                "end_time": getattr(span, 'end_time', None),
-                "status": getattr(span, 'status', 'RUNNING'),
-                "attributes": getattr(span, 'attributes', {}),
-                "events": getattr(span, 'events', []),
+                "trace_id": getattr(span, "trace_id", "unknown"),
+                "name": getattr(span, "name", "unknown"),
+                "start_time": getattr(span, "start_time", 0),
+                "end_time": getattr(span, "end_time", None),
+                "status": getattr(span, "status", "RUNNING"),
+                "attributes": getattr(span, "attributes", {}),
+                "events": getattr(span, "events", []),
             }
             spans_data.append(span_data)
 
@@ -706,7 +722,7 @@ class OpenTelemetryTracingAdapter:
         Returns:
             Span metrics summary
         """
-        if not self._enabled or not hasattr(self, '_active_spans'):
+        if not self._enabled or not hasattr(self, "_active_spans"):
             return {
                 "total_spans": 0,
                 "running_spans": 0,
@@ -718,19 +734,19 @@ class OpenTelemetryTracingAdapter:
         spans = list(self._active_spans.values())
         total_spans = len(spans)
 
-        running_spans = sum(1 for span in spans
-                          if getattr(span, 'status', 'RUNNING') == 'RUNNING')
-        completed_spans = sum(1 for span in spans
-                            if getattr(span, 'status', 'RUNNING') == 'COMPLETED')
-        error_spans = sum(1 for span in spans
-                        if getattr(span, 'status', 'RUNNING') == 'ERROR')
+        running_spans = sum(1 for span in spans if getattr(span, "status", "RUNNING") == "RUNNING")
+        completed_spans = sum(1 for span in spans if getattr(span, "status", "RUNNING") == "COMPLETED")
+        error_spans = sum(1 for span in spans if getattr(span, "status", "RUNNING") == "ERROR")
 
         # Calculate average duration for completed spans
-        completed_span_data = [span for span in spans
-                              if getattr(span, 'status', 'RUNNING') == 'COMPLETED'
-                              and hasattr(span, 'start_time')
-                              and hasattr(span, 'end_time')
-                              and span.end_time is not None]
+        completed_span_data = [
+            span
+            for span in spans
+            if getattr(span, "status", "RUNNING") == "COMPLETED"
+            and hasattr(span, "start_time")
+            and hasattr(span, "end_time")
+            and span.end_time is not None
+        ]
 
         if completed_span_data:
             durations = [(span.end_time - span.start_time) for span in completed_span_data]

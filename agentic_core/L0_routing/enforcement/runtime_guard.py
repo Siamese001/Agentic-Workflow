@@ -32,7 +32,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_hard_fails_untranscripted,
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "runtime_guard")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (

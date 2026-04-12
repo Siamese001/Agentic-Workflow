@@ -80,8 +80,7 @@ def use_a():
         fan_in_after = len([e for e in edges_after if e[1] == "module_a"])
 
         # EFFICACY PROOF: __all__ does NOT change graph topology
-        assert fan_in_before == fan_in_after, \
-            "__all__ should not change inbound edge count"
+        assert fan_in_before == fan_in_after, "__all__ should not change inbound edge count"
         assert fan_in_before == 2, "Module A should have 2 inbound edges"
 
     def test_bridge_score_unchanged_by_all(self, tmp_path):
@@ -92,7 +91,7 @@ def use_a():
         # Simulate a bridge module
         bridge_module = {
             "name": "bridge_module",
-            "fan_in": 5,   # 5 modules import this
+            "fan_in": 5,  # 5 modules import this
             "fan_out": 4,  # This module imports 4 others
         }
 
@@ -104,8 +103,7 @@ def use_a():
         bridge_score_after = bridge_module["fan_in"] * bridge_module["fan_out"]
 
         # EFFICACY PROOF: __all__ does NOT change bridge score
-        assert bridge_score_before == bridge_score_after, \
-            "__all__ should not change bridge score"
+        assert bridge_score_before == bridge_score_after, "__all__ should not change bridge score"
         assert bridge_score_before == 20, "Bridge score should be 5 * 4 = 20"
 
     def test_reverse_dependency_unchanged_by_all(self, tmp_path):
@@ -123,8 +121,9 @@ def use_a():
         reverse_dep_score_after = len(reverse_dep["inbound_modules"])
 
         # EFFICACY PROOF: __all__ does NOT change reverse dependency
-        assert reverse_dep_score_before == reverse_dep_score_after, \
+        assert reverse_dep_score_before == reverse_dep_score_after, (
             "__all__ should not change reverse dependency count"
+        )
         assert reverse_dep_score_before == 5, "Should have 5 inbound modules"
 
     def test_blast_radius_unchanged_by_all(self, tmp_path):
@@ -142,8 +141,7 @@ def use_a():
         blast_after = len(blast_radius["transitive_dependents"])
 
         # EFFICACY PROOF: __all__ does NOT change blast radius
-        assert blast_before == blast_after, \
-            "__all__ should not change blast radius"
+        assert blast_before == blast_after, "__all__ should not change blast radius"
         assert blast_before == 5, "Should have 5 transitive dependents"
 
     def test_all_is_ux_guidance_not_graph_remediation(self):
@@ -169,26 +167,24 @@ def use_a():
         efficacy_classification = "graph_neutral"
         # Other options: "graph_effective", "graph_irrelevant"
 
-        assert efficacy_classification == "graph_neutral", \
-            "__all__ is UX guidance, not graph topology change"
+        assert efficacy_classification == "graph_neutral", "__all__ is UX guidance, not graph topology change"
 
     def test_valid_remediation_must_change_edges(self):
         """Define what effective graph remediation requires."""
         # Effective graph remediation MUST change one of:
         effective_changes = [
-            "remove_import_edge",      # Actually remove an import
-            "split_module",            # Divide one module into many
-            "extract_interface",       # Create abstraction layer
-            "move_code_to_new_module", # Relocate functionality
-            "invert_dependency",       # Flip dependency direction
+            "remove_import_edge",  # Actually remove an import
+            "split_module",  # Divide one module into many
+            "extract_interface",  # Create abstraction layer
+            "move_code_to_new_module",  # Relocate functionality
+            "invert_dependency",  # Flip dependency direction
         ]
 
         # __all__ does NONE of these
         # It only changes export declarations
 
         # Therefore it's not a structural remediation
-        assert "__all__ export" not in effective_changes, \
-            "__all__ is not structural graph remediation"
+        assert "__all__ export" not in effective_changes, "__all__ is not structural graph remediation"
 
 
 class TestRemediationEfficacyConclusion:
@@ -207,9 +203,8 @@ class TestRemediationEfficacyConclusion:
             "code_quality_benefit": True,  # Still useful for cleanliness
         }
 
-        assert policy_decision["graph_effective"] is False, \
-            "__all__ does not remediate graph topology"
-        assert policy_decision["relabel_as"] == "UX guidance only", \
+        assert policy_decision["graph_effective"] is False, "__all__ does not remediate graph topology"
+        assert policy_decision["relabel_as"] == "UX guidance only", (
             "Should be classified as UX guidance, not remediation"
-        assert policy_decision["auto_apply"] is False, \
-            "Should not auto-apply (no graph benefit)"
+        )
+        assert policy_decision["auto_apply"] is False, "Should not auto-apply (no graph benefit)"

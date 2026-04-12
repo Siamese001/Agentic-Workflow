@@ -16,14 +16,17 @@ class TestGuardianRegistryTypesAdg:
     def test_guardian_registry_types_adg_imports(self):
         """Test guardian_registry_types_adg module imports."""
         from agentic_core import guardian_registry_types_adg
+
         assert guardian_registry_types_adg is not None
 
     def test_guardian_registry_types_adg_class(self):
         """Test GuardianRegistryTypesAdg class exists."""
         from agentic_core import GuardianRegistryTypesAdg
+
         assert GuardianRegistryTypesAdg is not None
 
     def test_guardian_registry_types_adg_callable(self):
         """Test guardian_registry_types_adg functions are callable."""
         from agentic_core import validate_guardian_registry_types_adg
+
         assert callable(validate_guardian_registry_types_adg)

@@ -74,14 +74,14 @@ class C0RetrievalReranker(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.model = model_data.get('model')
-            self.feature_names = model_data.get('feature_names', [])
-            self.feature_importances = model_data.get('feature_importances', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.model = model_data.get("model")
+            self.feature_names = model_data.get("feature_names", [])
+            self.feature_importances = model_data.get("feature_importances", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             if self.model is None:
                 raise ValueError("No model found in saved file")
@@ -97,23 +97,23 @@ class C0RetrievalReranker(BaseMLModel):
             raise RuntimeError("No model to save")
 
         model_data = {
-            'model': self.model,
-            'feature_names': self.feature_names,
-            'feature_importances': self.feature_importances,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
-                'lightgbm_params': getattr(self.model, 'params', {}),
+            "model": self.model,
+            "feature_names": self.feature_names,
+            "feature_importances": self.feature_importances,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
+                "lightgbm_params": getattr(self.model, "params", {}),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -204,14 +204,16 @@ class C0RetrievalReranker(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'relevance_score': relevance_score,
-                'is_above_threshold': passes_threshold,
-                'ranking_position': None,  # Will be set during batch ranking
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "relevance_score": relevance_score,
+                    "is_above_threshold": passes_threshold,
+                    "ranking_position": None,  # Will be set during batch ranking
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -292,33 +294,37 @@ class C0RetrievalReranker(BaseMLModel):
                     policy_hash=policy_hash,
                 )
 
-                document_scores.append({
-                    'document': document,
-                    'original_index': i,
-                    'relevance_score': prediction.prediction,
-                    'confidence': prediction.confidence,
-                    'top_features': prediction.top_features,
-                    'decision_mode': prediction.decision_mode,
-                    'prediction_metadata': prediction.model_metadata,
-                })
+                document_scores.append(
+                    {
+                        "document": document,
+                        "original_index": i,
+                        "relevance_score": prediction.prediction,
+                        "confidence": prediction.confidence,
+                        "top_features": prediction.top_features,
+                        "decision_mode": prediction.decision_mode,
+                        "prediction_metadata": prediction.model_metadata,
+                    }
+                )
             else:
                 # Feature extraction failed - give low score
-                document_scores.append({
-                    'document': document,
-                    'original_index': i,
-                    'relevance_score': 0.1,
-                    'confidence': 0.0,
-                    'top_features': [],
-                    'decision_mode': DecisionMode.BLOCKED,
-                    'prediction_metadata': {'error': 'Feature extraction failed'},
-                })
+                document_scores.append(
+                    {
+                        "document": document,
+                        "original_index": i,
+                        "relevance_score": 0.1,
+                        "confidence": 0.0,
+                        "top_features": [],
+                        "decision_mode": DecisionMode.BLOCKED,
+                        "prediction_metadata": {"error": "Feature extraction failed"},
+                    }
+                )
 
         # Sort by relevance score (descending)
-        document_scores.sort(key=lambda x: x['relevance_score'], reverse=True)
+        document_scores.sort(key=lambda x: x["relevance_score"], reverse=True)
 
         # Update ranking positions
         for rank, doc_score in enumerate(document_scores[:max_docs]):
-            doc_score['ranking_position'] = rank + 1
+            doc_score["ranking_position"] = rank + 1
 
         # Return top documents
         return document_scores[:max_docs]
@@ -335,20 +341,24 @@ class C0RetrievalReranker(BaseMLModel):
             # Create feature importance list
             feature_importance = []
             for i, (name, importance) in enumerate(zip(feature_names, self.feature_importances)):
-                feature_importance.append({
-                    'feature_name': name,
-                    'importance_score': float(importance),
-                    'feature_value': model_input.features.get(name),
-                    'rank': i + 1,
-                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0,
-                })
+                feature_importance.append(
+                    {
+                        "feature_name": name,
+                        "importance_score": float(importance),
+                        "feature_value": model_input.features.get(name),
+                        "rank": i + 1,
+                        "relative_importance": float(importance / max(self.feature_importances))
+                        if max(self.feature_importances) > 0
+                        else 0.0,
+                    }
+                )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -446,8 +456,8 @@ class C0RetrievalReranker(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']  # Relevance score (0-1)
+            features = example["features"]
+            label = example["label"]  # Relevance score (0-1)
 
             feature_vector = []
             for feature_name in feature_names:
@@ -462,16 +472,16 @@ class C0RetrievalReranker(BaseMLModel):
 
         # Default LightGBM parameters
         default_params = {
-            'objective': 'regression',
-            'metric': 'rmse',
-            'boosting_type': 'gbdt',
-            'num_leaves': 31,
-            'learning_rate': 0.05,
-            'feature_fraction': 0.9,
-            'bagging_fraction': 0.8,
-            'bagging_freq': 5,
-            'verbose': -1,
-            'random_state': 42,
+            "objective": "regression",
+            "metric": "rmse",
+            "boosting_type": "gbdt",
+            "num_leaves": 31,
+            "learning_rate": 0.05,
+            "feature_fraction": 0.9,
+            "bagging_fraction": 0.8,
+            "bagging_freq": 5,
+            "verbose": -1,
+            "random_state": 42,
         }
 
         # Merge with provided parameters

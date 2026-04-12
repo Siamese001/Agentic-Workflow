@@ -68,7 +68,9 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
     def test_validate_ssot_localhost_value_not_flagged(self):
         """Edge case: env value containing 'localhost' is NOT flagged as a hardcoded secret."""
         valid_config = {
-            "mcpServers": {"local-server": {"command": "python", "env": {"API_KEY": "http://localhost:8080/key"}}}
+            "mcpServers": {
+                "local-server": {"command": "python", "env": {"API_KEY": "http://localhost:8080/key"}}
+            }
         }
         self.ssot.write_text(json.dumps(valid_config), encoding="utf-8")
         issues = _validate_ssot(self.ssot)
@@ -107,7 +109,6 @@ class TestPostWriteMcpConfigSync(unittest.TestCase):
 
         result = main()
         self.assertEqual(0, result)  # advisory only, never blocks
-
 
     def test_main_argv_non_mcp_path_skips(self):
         """Filter: non-mcp_config.json argv path causes immediate 0 return without touching SSOT."""

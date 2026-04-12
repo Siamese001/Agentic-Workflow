@@ -58,7 +58,9 @@ class QualityGateAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "QualityGateAgent.evaluate_quality_gate",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "QualityGateAgent.evaluate_quality_gate",
         )
         _emit_orchestrates_workflow("p3", "quality_gate_agent", "gate_workflow")
         _emit_dispatches_agent("p3", "quality_gate_agent", "gate_dispatch")
@@ -80,7 +82,9 @@ class QualityGateAgent:
             threshold,
         )
         _emit_records_telemetry_event(
-            "p4", "quality_gate_agent", f"gate_complete:{'passed' if passed else 'failed'}",
+            "p4",
+            "quality_gate_agent",
+            f"gate_complete:{'passed' if passed else 'failed'}",
         )
 
         return {

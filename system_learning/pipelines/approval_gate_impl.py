@@ -183,7 +183,9 @@ class AutoApprovalGate:
 
     # guardian: allow-magic-config
     def __init__(
-        self, max_auto_approve_delta: float = 0.03, auto_approve_surfaces: frozenset[str] | None = None,
+        self,
+        max_auto_approve_delta: float = 0.03,
+        auto_approve_surfaces: frozenset[str] | None = None,
     ) -> None:
         self._max_delta = max_auto_approve_delta
         self._auto_surfaces = auto_approve_surfaces or frozenset({"escalation_threshold"})
@@ -198,6 +200,7 @@ class AutoApprovalGate:
         Otherwise flags for manual review.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AutoApprovalGate.decide")
 
@@ -233,7 +236,9 @@ class NeverApproveGate:
 
     def decide(self, pkg: Any, rca: Any, snapshot: Any) -> ApprovalDecision:
         return ApprovalDecision(
-            approved=False, reason="Never-approve gate (proposal-only mode)", requires_manual_review=True,
+            approved=False,
+            reason="Never-approve gate (proposal-only mode)",
+            requires_manual_review=True,
         )
 
 

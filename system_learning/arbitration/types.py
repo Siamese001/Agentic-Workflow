@@ -169,8 +169,11 @@ class ArbitrationCandidate:
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationCandidate.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationCandidate.canonical_bytes"
+        )
 
         data = {
             "id": self.id,
@@ -195,8 +198,11 @@ class ArbitrationPolicy:
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationPolicy.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationPolicy.canonical_bytes"
+        )
 
         data = {
             "weights": self.weights,
@@ -219,8 +225,11 @@ class ArbitrationDecision:
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationDecision.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationDecision.canonical_bytes"
+        )
 
         data = {
             "winner_ids": self.winner_ids,

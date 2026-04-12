@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 import sys
+
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
@@ -18,10 +19,12 @@ from ops_scripts.ci.validate_hitl_format import validate_file
 @pytest.fixture()
 def tmp_md(tmp_path):
     """Return a factory that writes content to a .md file and returns its Path."""
+
     def _make(content: str, name: str = "test.md") -> Path:
         p = tmp_path / name
         p.write_text(textwrap.dedent(content), encoding="utf-8")
         return p
+
     return _make
 
 

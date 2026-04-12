@@ -27,6 +27,7 @@ accelerator transitive analysis.  We generate minimal _adg.py stubs so:
 Source of truth: docs/reports/plans/phase0_deep_analysis.json
   + all category sample lists fully enumerated via filesystem scan.
 """
+
 from __future__ import annotations
 
 import ast
@@ -47,16 +48,22 @@ deep = json.loads((ROOT / "docs/reports/plans/phase0_deep_analysis.json").read_t
 # We also do a full scan to get ALL modules per category (not just the 8-item samples).
 
 _INTERNAL_PREFIXES = (
-    "agentic_core", "apps_rg", "apps_lic", "apps_shared",
-    "system_learning", "ops_scripts",
+    "agentic_core",
+    "apps_rg",
+    "apps_lic",
+    "apps_shared",
+    "system_learning",
+    "ops_scripts",
 )
 
 
 def _is_prod(p: str) -> bool:
     p2 = p.replace("\\", "/")
     return (
-        not p2.startswith("tests/") and not p2.startswith("tools/")
-        and "ops_scripts" not in p2 and "__pycache__" not in p2
+        not p2.startswith("tests/")
+        and not p2.startswith("tools/")
+        and "ops_scripts" not in p2
+        and "__pycache__" not in p2
         and p2.endswith(".py")
     )
 
@@ -82,8 +89,7 @@ def _has_any_test(module_path: str) -> bool:
     stem = Path(parts[-1]).stem
     test_dir = ROOT / "tests" / "unit" / Path(*parts[:-1])
     if test_dir.exists():
-        matches = [f for f in test_dir.iterdir()
-                   if f.name.startswith(f"test_{stem}") and f.suffix == ".py"]
+        matches = [f for f in test_dir.iterdir() if f.name.startswith(f"test_{stem}") and f.suffix == ".py"]
         if matches:
             return True
     for f in (ROOT / "tests" / "unit_min_deps").glob(f"test_{stem}*.py"):
@@ -123,6 +129,7 @@ print(f"[SCAN] Generating stubs for: {len(true_gaps)} modules")
 
 # ── AST inspection ─────────────────────────────────────────────────────────────
 
+
 def _extract_public_symbols(src: Path) -> dict:
     """Return dict with classes, functions, constants lists."""
     result = {"classes": [], "functions": [], "constants": [], "has_init_only": False}
@@ -130,7 +137,7 @@ def _extract_public_symbols(src: Path) -> dict:
         return result
     try:
         tree = ast.parse(src.read_text(encoding="utf-8", errors="replace"))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return result
 
     for node in ast.iter_child_nodes(tree):
@@ -152,6 +159,7 @@ def _extract_public_symbols(src: Path) -> dict:
 
 # ── Stub generation ────────────────────────────────────────────────────────────
 
+
 def generate_adg_stub(mod_path: str, symbols: dict) -> str:
     dotted = mod_path.replace("\\", "/").removesuffix(".py").replace("/", ".")
     stem = Path(mod_path).stem
@@ -164,9 +172,9 @@ def generate_adg_stub(mod_path: str, symbols: dict) -> str:
 
     lines = [
         f'"""ADG importability contract for {mod_path}.',
-        '',
-        'Auto-generated stub — covers GT_covers edge for ADG reachability.',
-        f'Behavioral tests belong in test_{stem}.py (no _adg suffix).',
+        "",
+        "Auto-generated stub — covers GT_covers edge for ADG reachability.",
+        f"Behavioral tests belong in test_{stem}.py (no _adg suffix).",
         '"""',
         "from __future__ import annotations",
         "",

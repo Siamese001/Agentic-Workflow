@@ -1,4 +1,5 @@
 """Event Bus Core - Stub implementation for test compatibility."""
+
 import time
 from dataclasses import dataclass, field
 from enum import Enum
@@ -7,6 +8,7 @@ from typing import Any, Awaitable, Callable
 
 class EventType(Enum):
     """Types of system events."""
+
     AGENT_THINKING = "agent_thinking"
     AGENT_COMPLETED = "agent_completed"
     ERROR_OCCURRED = "error_occurred"
@@ -16,6 +18,7 @@ class EventType(Enum):
 @dataclass
 class SystemEvent:
     """System event."""
+
     type: EventType
     source_component: str
     payload: dict[str, Any]

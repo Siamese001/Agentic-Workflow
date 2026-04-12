@@ -183,15 +183,20 @@ class GoldenContextMixin:
             The SSOT law summary string.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GoldenContextMixin.get_golden_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GoldenContextMixin.get_golden_context"
+        )
 
         if self._golden_context_cache is None:
             self._golden_context_cache = GOLDEN_CONTEXT_SUMMARY.strip()
         return self._golden_context_cache
 
     def inject_golden_context(
-        self, current_messages: list[dict[str, Any]], role: str = "system",
+        self,
+        current_messages: list[dict[str, Any]],
+        role: str = "system",
     ) -> list[dict[str, Any]]:
         """
         Inject the golden context into the message list.
@@ -217,7 +222,9 @@ class GoldenContextMixin:
 
     # guardian: allow-magic-config
     def should_inject_golden_context(
-        self, current_messages: list[dict[str, Any]], threshold: int = 10,
+        self,
+        current_messages: list[dict[str, Any]],
+        threshold: int = 10,
     ) -> bool:
         """
         Determine if golden context should be injected.

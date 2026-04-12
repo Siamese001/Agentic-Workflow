@@ -206,8 +206,11 @@ class StyleGateResult:
 
     def first_failure(self) -> StyleViolation | None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StyleGateResult.first_failure")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "StyleGateResult.first_failure"
+        )
 
         for v in self.violations:
             if v.severity == "BLOCK":
@@ -239,8 +242,11 @@ class StyleGateValidator:
             StyleGateResult with all violations.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StyleGateValidator.validate_sections")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "StyleGateValidator.validate_sections"
+        )
 
         violations: list[StyleViolation] = []
 

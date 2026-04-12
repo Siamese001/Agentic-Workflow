@@ -149,7 +149,7 @@ class GitHealthSensor:
         try:
             # guardian: allow-magic-config (pre-existing, moved from L0)
             result = subprocess.run(
-                ["git"] + args,    # guardian: File operations should check existence before access
+                ["git"] + args,  # guardian: File operations should check existence before access
                 cwd=self.repo_root,
                 capture_output=True,
                 text=True,
@@ -158,7 +158,7 @@ class GitHealthSensor:
             return result.returncode, result.stdout, result.stderr
         except subprocess.TimeoutExpired:
             return -1, "", "Git command timed out"
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             return -1, "", "Git not found in PATH"
         # guardian: allow-silent-swallow (pre-existing, moved from L0)
         except (ValueError, TypeError) as e:
@@ -310,7 +310,9 @@ class GitHealthSensor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "GitHealthSensor.check_repository_health",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "GitHealthSensor.check_repository_health",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

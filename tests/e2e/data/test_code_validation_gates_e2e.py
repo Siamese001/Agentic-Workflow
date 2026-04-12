@@ -24,6 +24,7 @@ import pytest
 # Check if ssot is available
 try:
     from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+
     SSOT_AVAILABLE = True
 except ImportError:
     SSOT_AVAILABLE = False
@@ -32,6 +33,7 @@ except ImportError:
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def sample_python_code() -> dict[str, str]:
@@ -72,6 +74,7 @@ BATCH_SIZE = 1000
 # =============================================================================
 # Test Class: Import Hygiene Gates
 # =============================================================================
+
 
 class TestImportHygieneGate:
     """Test import hygiene validation at runtime."""
@@ -140,6 +143,7 @@ class TestImportHygieneGate:
 # =============================================================================
 # Test Class: Syntax and Schema Validation
 # =============================================================================
+
 
 @pytest.mark.skipif(not SSOT_AVAILABLE, reason="SSOT module not available")
 class TestSyntaxValidationGate:
@@ -227,6 +231,7 @@ class TestSyntaxValidationGate:
 # Test Class: Runtime Validation Gates
 # =============================================================================
 
+
 class TestRuntimeValidationGate:
     """Test runtime validation and enforcement gates."""
 
@@ -274,12 +279,15 @@ class TestRuntimeValidationGate:
         # Check that we have common L4 patterns (using os.path.sep for platform independence)
         # Just verify the list contains strings with path separators
         assert all(isinstance(folder, str) for folder in L4_APPROVED_FOLDERS)
-        assert any("L4" in folder or "memory" in folder or "state" in folder for folder in L4_APPROVED_FOLDERS)
+        assert any(
+            "L4" in folder or "memory" in folder or "state" in folder for folder in L4_APPROVED_FOLDERS
+        )
 
 
 # =============================================================================
 # Test Class: Determinism Validation
 # =============================================================================
+
 
 class TestDeterminismValidationGate:
     """Test determinism and consistency validation."""

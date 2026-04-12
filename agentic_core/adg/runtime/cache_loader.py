@@ -171,7 +171,10 @@ def _get_commit_sha() -> str:
         import subprocess
 
         r = subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT,
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=DEFAULT_TIMEOUT,
         )
         return r.stdout.strip() if r.returncode == 0 else ""
     # guardian: allow-silent-swallow
@@ -221,7 +224,9 @@ def _is_cache_valid(cached: dict) -> bool:
 
 
 def load_or_scan(
-    repo_root: str | None = None, cache_path: Path | None = None, force_cache: bool = False,
+    repo_root: str | None = None,
+    cache_path: Path | None = None,
+    force_cache: bool = False,
 ) -> ScanResult:
     """R2: Load ADG ScanResult from cache if valid, otherwise run fresh scan.
 

@@ -1,11 +1,15 @@
 """Get detailed breakdown of all collection errors grouped by root cause."""
+
 import re
 import subprocess
 from collections import Counter
 
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/", "--co", "-q", "--tb=short"],
-    capture_output=True, text=True, encoding="utf-8", errors="replace",
+    capture_output=True,
+    text=True,
+    encoding="utf-8",
+    errors="replace",
     timeout=60,
 )
 out = r.stdout + "\n" + r.stderr
@@ -24,16 +28,25 @@ while i < len(lines):
         test_file = re.search(r"(tests/\S+)", line)
         # Collect the error cause from subsequent lines
         cause_lines = []
-        for j in range(i+1, min(i+20, len(lines))):
+        for j in range(i + 1, min(i + 20, len(lines))):
             l = lines[j].strip()
             if l.startswith("ERROR") or l.startswith("="):
                 break
-            if "Error" in l or "error" in l.lower() or "NameError" in l or "FileNotFoundError" in l or "ModuleNotFoundError" in l or "ImportError" in l:
+            if (
+                "Error" in l
+                or "error" in l.lower()
+                or "NameError" in l
+                or "FileNotFoundError" in l
+                or "ModuleNotFoundError" in l
+                or "ImportError" in l
+            ):
                 cause_lines.append(l)
-        errors.append({
-            "test": test_file.group(1) if test_file else "unknown",
-            "cause": cause_lines[-1] if cause_lines else "unknown",
-        })
+        errors.append(
+            {
+                "test": test_file.group(1) if test_file else "unknown",
+                "cause": cause_lines[-1] if cause_lines else "unknown",
+            }
+        )
     i += 1
 
 # Group by cause

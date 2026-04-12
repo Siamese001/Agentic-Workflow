@@ -1,4 +1,5 @@
 """Placeholder test file - syntax fixed."""
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -16,13 +17,17 @@ class GeneratedTest(unittest.TestCase):
     def test_has_dataclass_decorator(self):
         """Test has_dataclass_decorator function."""
         from agentic_core.L0_routing.scripts import has_dataclass_decorator
+
         result = has_dataclass_decorator()
         self.assertIsNotNone(result)
 
     def test_has_dataclass_import(self):
         """Test has_dataclass_import function."""
         from agentic_core.L0_routing.scripts import has_dataclass_import
+
         result = has_dataclass_import()
         self.assertIsNotNone(result)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main()

@@ -102,14 +102,14 @@ class AdvancedC0Reranker(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.pipeline = model_data.get('pipeline')
-            self.feature_names = model_data.get('feature_names', [])
-            self.transformer_config = model_data.get('transformer_config', self.transformer_config)
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.pipeline = model_data.get("pipeline")
+            self.feature_names = model_data.get("feature_names", [])
+            self.transformer_config = model_data.get("transformer_config", self.transformer_config)
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -119,23 +119,23 @@ class AdvancedC0Reranker(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         model_data = {
-            'pipeline': self.pipeline,
-            'feature_names': self.feature_names,
-            'transformer_config': self.transformer_config,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
+            "pipeline": self.pipeline,
+            "feature_names": self.feature_names,
+            "transformer_config": self.transformer_config,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -194,10 +194,7 @@ class AdvancedC0Reranker(BaseMLModel):
             predicted_reranking = self.RERANKING_MAPPING.get(int(predicted_class), "Standard_Rerank")
 
             # Create probability distribution
-            prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            prob_distribution = {self.class_names[i]: float(prob) for i, prob in enumerate(probabilities)}
 
             # Calculate confidence (max probability)
             confidence = float(np.max(probabilities))
@@ -230,16 +227,18 @@ class AdvancedC0Reranker(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': predicted_class,
-                'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold,
-                'reranking_strategy': predicted_reranking,
-                'transformer_config': self.transformer_config,
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": predicted_class,
+                    "class_probabilities": [float(p) for p in probabilities],
+                    "thresholds_passed": passes_threshold,
+                    "reranking_strategy": predicted_reranking,
+                    "transformer_config": self.transformer_config,
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -286,10 +285,10 @@ class AdvancedC0Reranker(BaseMLModel):
 
         if not extraction_result.success:
             return {
-                'reranking_strategy': 'Standard_Rerank',
-                'confidence': 0.0,
-                'reason': 'Feature extraction failed',
-                'recommendations': ['Check reranking data availability'],
+                "reranking_strategy": "Standard_Rerank",
+                "confidence": 0.0,
+                "reason": "Feature extraction failed",
+                "recommendations": ["Check reranking data availability"],
             }
 
         # Validate input
@@ -325,15 +324,17 @@ class AdvancedC0Reranker(BaseMLModel):
         )
 
         return {
-            'reranking_strategy': prediction.prediction,
-            'confidence': prediction.confidence,
-            'probability_distribution': prediction.probability_distribution,
-            'top_factors': prediction.top_features,
-            'recommendations': recommendations,
-            'reranking_analysis': reranking_analysis,
-            'relevance_prediction': relevance_prediction,
-            'alternative_strategies': self._get_alternative_strategies(prediction.probability_distribution),
-            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence),
+            "reranking_strategy": prediction.prediction,
+            "confidence": prediction.confidence,
+            "probability_distribution": prediction.probability_distribution,
+            "top_factors": prediction.top_features,
+            "recommendations": recommendations,
+            "reranking_analysis": reranking_analysis,
+            "relevance_prediction": relevance_prediction,
+            "alternative_strategies": self._get_alternative_strategies(prediction.probability_distribution),
+            "implementation_priority": self._get_implementation_priority(
+                prediction.prediction, prediction.confidence
+            ),
         }
 
     def analyze_semantic_relevance(
@@ -357,42 +358,42 @@ class AdvancedC0Reranker(BaseMLModel):
         """
         # Extract semantic features
         semantic_features = {
-            'embedding_similarity': semantic_context.get('embedding_similarity', 0.5),
-            'attention_score': semantic_context.get('attention_score', 0.5),
-            'semantic_density': semantic_context.get('semantic_density', 0.5),
+            "embedding_similarity": semantic_context.get("embedding_similarity", 0.5),
+            "attention_score": semantic_context.get("attention_score", 0.5),
+            "semantic_density": semantic_context.get("semantic_density", 0.5),
         }
 
         # Analyze semantic patterns
         semantic_analysis = {
-            'query_document_alignment': self._assess_query_document_alignment(semantic_context),
-            'semantic_coherence': self._evaluate_semantic_coherence(semantic_context),
-            'topic_relevance': self._determine_topic_relevance(semantic_context),
-            'concept_coverage': self._calculate_concept_coverage(semantic_context),
+            "query_document_alignment": self._assess_query_document_alignment(semantic_context),
+            "semantic_coherence": self._evaluate_semantic_coherence(semantic_context),
+            "topic_relevance": self._determine_topic_relevance(semantic_context),
+            "concept_coverage": self._calculate_concept_coverage(semantic_context),
         }
 
         # Generate semantic-based reranking suggestions
         reranking_suggestions = []
 
-        alignment = semantic_analysis['query_document_alignment']
+        alignment = semantic_analysis["query_document_alignment"]
         if alignment > 0.8:
-            reranking_suggestions.append('High alignment - consider Transformer_Top reranking')
+            reranking_suggestions.append("High alignment - consider Transformer_Top reranking")
         elif alignment > 0.5:
-            reranking_suggestions.append('Moderate alignment - Semantic_Prime reranking recommended')
+            reranking_suggestions.append("Moderate alignment - Semantic_Prime reranking recommended")
         else:
-            reranking_suggestions.append('Low alignment - Standard_Rerank may be sufficient')
+            reranking_suggestions.append("Low alignment - Standard_Rerank may be sufficient")
 
-        coherence = semantic_analysis['semantic_coherence']
+        coherence = semantic_analysis["semantic_coherence"]
         if coherence > 0.7:
-            reranking_suggestions.append('High semantic coherence - prioritize in reranking')
+            reranking_suggestions.append("High semantic coherence - prioritize in reranking")
         elif coherence < 0.3:
-            reranking_suggestions.append('Low semantic coherence - consider document quality factors')
+            reranking_suggestions.append("Low semantic coherence - consider document quality factors")
 
         return {
-            'semantic_analysis': semantic_analysis,
-            'semantic_features': semantic_features,
-            'reranking_suggestions': reranking_suggestions,
-            'confidence_score': semantic_context.get('semantic_confidence', 0.5),
-            'recommended_strategy': self._recommend_semantic_strategy(semantic_analysis),
+            "semantic_analysis": semantic_analysis,
+            "semantic_features": semantic_features,
+            "reranking_suggestions": reranking_suggestions,
+            "confidence_score": semantic_context.get("semantic_confidence", 0.5),
+            "recommended_strategy": self._recommend_semantic_strategy(semantic_analysis),
         }
 
     def apply_attention_mechanism(
@@ -416,42 +417,42 @@ class AdvancedC0Reranker(BaseMLModel):
         """
         # Extract attention features
         attention_features = {
-            'attention_score': attention_context.get('attention_score', 0.5),
-            'attention_weights': attention_context.get('attention_weights', []),
-            'attention_patterns': attention_context.get('attention_patterns', {}),
+            "attention_score": attention_context.get("attention_score", 0.5),
+            "attention_weights": attention_context.get("attention_weights", []),
+            "attention_patterns": attention_context.get("attention_patterns", {}),
         }
 
         # Analyze attention patterns
         attention_analysis = {
-            'attention_distribution': self._analyze_attention_distribution(attention_context),
-            'key_terms_attention': self._identify_key_terms_attention(attention_context),
-            'attention_consistency': self._evaluate_attention_consistency(attention_context),
-            'attention_relevance': self._assess_attention_relevance(attention_context),
+            "attention_distribution": self._analyze_attention_distribution(attention_context),
+            "key_terms_attention": self._identify_key_terms_attention(attention_context),
+            "attention_consistency": self._evaluate_attention_consistency(attention_context),
+            "attention_relevance": self._assess_attention_relevance(attention_context),
         }
 
         # Generate attention-based reranking suggestions
         reranking_suggestions = []
 
-        distribution = attention_analysis['attention_distribution']
-        if distribution == 'focused':
-            reranking_suggestions.append('Focused attention - high relevance confidence')
-        elif distribution == 'distributed':
-            reranking_suggestions.append('Distributed attention - consider multiple relevance factors')
+        distribution = attention_analysis["attention_distribution"]
+        if distribution == "focused":
+            reranking_suggestions.append("Focused attention - high relevance confidence")
+        elif distribution == "distributed":
+            reranking_suggestions.append("Distributed attention - consider multiple relevance factors")
         else:
-            reranking_suggestions.append('Unclear attention pattern - use caution in reranking')
+            reranking_suggestions.append("Unclear attention pattern - use caution in reranking")
 
-        consistency = attention_analysis['attention_consistency']
+        consistency = attention_analysis["attention_consistency"]
         if consistency > 0.8:
-            reranking_suggestions.append('High attention consistency - reliable reranking signal')
+            reranking_suggestions.append("High attention consistency - reliable reranking signal")
         elif consistency < 0.4:
-            reranking_suggestions.append('Low attention consistency - verify with other signals')
+            reranking_suggestions.append("Low attention consistency - verify with other signals")
 
         return {
-            'attention_analysis': attention_analysis,
-            'attention_features': attention_features,
-            'reranking_suggestions': reranking_suggestions,
-            'attention_confidence': attention_context.get('attention_confidence', 0.5),
-            'recommended_strategy': self._recommend_attention_strategy(attention_analysis),
+            "attention_analysis": attention_analysis,
+            "attention_features": attention_features,
+            "reranking_suggestions": reranking_suggestions,
+            "attention_confidence": attention_context.get("attention_confidence", 0.5),
+            "recommended_strategy": self._recommend_attention_strategy(attention_analysis),
         }
 
     def evaluate_document_quality(
@@ -475,42 +476,42 @@ class AdvancedC0Reranker(BaseMLModel):
         """
         # Extract quality features
         quality_features = {
-            'document_authority': quality_context.get('document_authority', 0.5),
-            'relevance_confidence': quality_context.get('relevance_confidence', 0.5),
-            'retrieval_precision': quality_context.get('retrieval_precision', 0.5),
+            "document_authority": quality_context.get("document_authority", 0.5),
+            "relevance_confidence": quality_context.get("relevance_confidence", 0.5),
+            "retrieval_precision": quality_context.get("retrieval_precision", 0.5),
         }
 
         # Analyze quality factors
         quality_analysis = {
-            'source_credibility': self._assess_source_credibility(quality_context),
-            'content_quality': self._evaluate_content_quality(quality_context),
-            'information_completeness': self._check_information_completeness(quality_context),
-            'freshness_relevance': self._evaluate_freshness_relevance(quality_context),
+            "source_credibility": self._assess_source_credibility(quality_context),
+            "content_quality": self._evaluate_content_quality(quality_context),
+            "information_completeness": self._check_information_completeness(quality_context),
+            "freshness_relevance": self._evaluate_freshness_relevance(quality_context),
         }
 
         # Generate quality-based reranking suggestions
         reranking_suggestions = []
 
-        credibility = quality_analysis['source_credibility']
+        credibility = quality_analysis["source_credibility"]
         if credibility > 0.8:
-            reranking_suggestions.append('High credibility - Authority_Boost reranking recommended')
+            reranking_suggestions.append("High credibility - Authority_Boost reranking recommended")
         elif credibility > 0.5:
-            reranking_suggestions.append('Moderate credibility - consider quality factors')
+            reranking_suggestions.append("Moderate credibility - consider quality factors")
         else:
-            reranking_suggestions.append('Low credibility - verify with other signals')
+            reranking_suggestions.append("Low credibility - verify with other signals")
 
-        content_quality = quality_analysis['content_quality']
+        content_quality = quality_analysis["content_quality"]
         if content_quality > 0.7:
-            reranking_suggestions.append('High content quality - Quality_Enhanced reranking')
+            reranking_suggestions.append("High content quality - Quality_Enhanced reranking")
         elif content_quality < 0.4:
-            reranking_suggestions.append('Low content quality - may need quality boost')
+            reranking_suggestions.append("Low content quality - may need quality boost")
 
         return {
-            'quality_analysis': quality_analysis,
-            'quality_features': quality_features,
-            'reranking_suggestions': reranking_suggestions,
-            'quality_confidence': quality_context.get('quality_confidence', 0.5),
-            'recommended_strategy': self._recommend_quality_strategy(quality_analysis),
+            "quality_analysis": quality_analysis,
+            "quality_features": quality_features,
+            "reranking_suggestions": reranking_suggestions,
+            "quality_confidence": quality_context.get("quality_confidence", 0.5),
+            "recommended_strategy": self._recommend_quality_strategy(quality_analysis),
         }
 
     def _generate_reranking_recommendations(
@@ -523,68 +524,84 @@ class AdvancedC0Reranker(BaseMLModel):
         recommendations = []
 
         if strategy == "Transformer_Top":
-            recommendations.extend([
-                "Use transformer-based reranking for optimal relevance",
-                "Leverage attention mechanisms for precise scoring",
-                "Apply cross-encoder architecture for query-document matching",
-                "Monitor transformer performance and adapt",
-            ])
+            recommendations.extend(
+                [
+                    "Use transformer-based reranking for optimal relevance",
+                    "Leverage attention mechanisms for precise scoring",
+                    "Apply cross-encoder architecture for query-document matching",
+                    "Monitor transformer performance and adapt",
+                ]
+            )
         elif strategy == "Semantic_Prime":
-            recommendations.extend([
-                "Prioritize semantic similarity in reranking",
-                "Use embedding-based relevance scoring",
-                "Consider semantic density and coherence",
-                "Monitor semantic accuracy and adjust",
-            ])
+            recommendations.extend(
+                [
+                    "Prioritize semantic similarity in reranking",
+                    "Use embedding-based relevance scoring",
+                    "Consider semantic density and coherence",
+                    "Monitor semantic accuracy and adjust",
+                ]
+            )
         elif strategy == "Authority_Boost":
-            recommendations.extend([
-                "Boost authoritative sources in reranking",
-                "Consider document credibility and quality",
-                "Weight source reliability heavily",
-                "Monitor authority signals and update",
-            ])
+            recommendations.extend(
+                [
+                    "Boost authoritative sources in reranking",
+                    "Consider document credibility and quality",
+                    "Weight source reliability heavily",
+                    "Monitor authority signals and update",
+                ]
+            )
         elif strategy == "Engagement_Prioritized":
-            recommendations.extend([
-                "Prioritize documents with high user engagement",
-                "Consider historical user interaction patterns",
-                "Weight engagement metrics appropriately",
-                "Monitor engagement trends and adapt",
-            ])
+            recommendations.extend(
+                [
+                    "Prioritize documents with high user engagement",
+                    "Consider historical user interaction patterns",
+                    "Weight engagement metrics appropriately",
+                    "Monitor engagement trends and adapt",
+                ]
+            )
         elif strategy == "Context_Optimized":
-            recommendations.extend([
-                "Optimize reranking based on current context",
-                "Consider session and user context factors",
-                "Adapt to environmental conditions",
-                "Monitor context relevance and update",
-            ])
+            recommendations.extend(
+                [
+                    "Optimize reranking based on current context",
+                    "Consider session and user context factors",
+                    "Adapt to environmental conditions",
+                    "Monitor context relevance and update",
+                ]
+            )
         elif strategy == "Temporal_Relevant":
-            recommendations.extend([
-                "Prioritize temporally relevant documents",
-                "Consider recency and temporal patterns",
-                "Weight temporal factors appropriately",
-                "Monitor temporal trends and adjust",
-            ])
+            recommendations.extend(
+                [
+                    "Prioritize temporally relevant documents",
+                    "Consider recency and temporal patterns",
+                    "Weight temporal factors appropriately",
+                    "Monitor temporal trends and adjust",
+                ]
+            )
         elif strategy == "Quality_Enhanced":
-            recommendations.extend([
-                "Enhance reranking with quality factors",
-                "Consider content quality and completeness",
-                "Weight information quality heavily",
-                "Monitor quality signals and update",
-            ])
+            recommendations.extend(
+                [
+                    "Enhance reranking with quality factors",
+                    "Consider content quality and completeness",
+                    "Weight information quality heavily",
+                    "Monitor quality signals and update",
+                ]
+            )
         else:  # Standard_Rerank
-            recommendations.extend([
-                "Use standard reranking for basic relevance",
-                "Monitor standard reranking performance",
-                "Consider upgrading to advanced reranking if needed",
-                "Maintain standard reranking reliability",
-            ])
+            recommendations.extend(
+                [
+                    "Use standard reranking for basic relevance",
+                    "Monitor standard reranking performance",
+                    "Consider upgrading to advanced reranking if needed",
+                    "Maintain standard reranking reliability",
+                ]
+            )
 
         # Add context-specific recommendations
-        embedding_similarity = features.get('embedding_similarity', 0)
+        embedding_similarity = features.get("embedding_similarity", 0)
         if embedding_similarity > 0.8:
             recommendations.append("High embedding similarity - consider semantic optimization")
 
-        document_authority = features.get('document_authority', 0)
+        document_authority = features.get("document_authority", 0)
         if document_authority > 0.7:
             recommendations.append("High document authority - consider authority boost")
 
@@ -597,57 +614,67 @@ class AdvancedC0Reranker(BaseMLModel):
     ) -> dict[str, Any]:
         """Analyze reranking factors and their impact."""
         factor_analysis = {
-            'primary_factors': [],
-            'secondary_factors': [],
-            'constraint_factors': [],
+            "primary_factors": [],
+            "secondary_factors": [],
+            "constraint_factors": [],
         }
 
         # Analyze semantic factors
-        embedding_similarity = features.get('embedding_similarity', 0)
+        embedding_similarity = features.get("embedding_similarity", 0)
         if embedding_similarity > 0.7:
-            factor_analysis['primary_factors'].append({
-                'factor': 'embedding_similarity',
-                'score': embedding_similarity,
-                'impact': 'high',
-                'description': 'Strong embedding similarity drives reranking',
-            })
+            factor_analysis["primary_factors"].append(
+                {
+                    "factor": "embedding_similarity",
+                    "score": embedding_similarity,
+                    "impact": "high",
+                    "description": "Strong embedding similarity drives reranking",
+                }
+            )
         elif embedding_similarity > 0.4:
-            factor_analysis['secondary_factors'].append({
-                'factor': 'embedding_similarity',
-                'score': embedding_similarity,
-                'impact': 'medium',
-                'description': 'Moderate embedding similarity affects reranking',
-            })
+            factor_analysis["secondary_factors"].append(
+                {
+                    "factor": "embedding_similarity",
+                    "score": embedding_similarity,
+                    "impact": "medium",
+                    "description": "Moderate embedding similarity affects reranking",
+                }
+            )
 
         # Analyze attention factors
-        attention_score = features.get('attention_score', 0)
+        attention_score = features.get("attention_score", 0)
         if attention_score > 0.8:
-            factor_analysis['primary_factors'].append({
-                'factor': 'attention_score',
-                'score': attention_score,
-                'impact': 'high',
-                'description': 'High attention score indicates strong relevance',
-            })
+            factor_analysis["primary_factors"].append(
+                {
+                    "factor": "attention_score",
+                    "score": attention_score,
+                    "impact": "high",
+                    "description": "High attention score indicates strong relevance",
+                }
+            )
 
         # Analyze authority factors
-        document_authority = features.get('document_authority', 0)
+        document_authority = features.get("document_authority", 0)
         if document_authority > 0.8:
-            factor_analysis['primary_factors'].append({
-                'factor': 'document_authority',
-                'score': document_authority,
-                'impact': 'high',
-                'description': 'High document authority boosts reranking',
-            })
+            factor_analysis["primary_factors"].append(
+                {
+                    "factor": "document_authority",
+                    "score": document_authority,
+                    "impact": "high",
+                    "description": "High document authority boosts reranking",
+                }
+            )
 
         # Analyze engagement factors
-        user_engagement = features.get('user_engagement', 0)
+        user_engagement = features.get("user_engagement", 0)
         if user_engagement < 0.2:
-            factor_analysis['constraint_factors'].append({
-                'factor': 'user_engagement',
-                'score': user_engagement,
-                'impact': 'constraint',
-                'description': 'Low user engagement limits reranking boost',
-            })
+            factor_analysis["constraint_factors"].append(
+                {
+                    "factor": "user_engagement",
+                    "score": user_engagement,
+                    "impact": "constraint",
+                    "description": "Low user engagement limits reranking boost",
+                }
+            )
 
         return factor_analysis
 
@@ -713,8 +740,8 @@ class AdvancedC0Reranker(BaseMLModel):
         base_improvement = improvement_estimates.get(strategy, improvement_estimates["Standard_Rerank"])
 
         # Adjust based on current conditions
-        embedding_similarity = features.get('embedding_similarity', 0.5)
-        document_authority = features.get('document_authority', 0.5)
+        embedding_similarity = features.get("embedding_similarity", 0.5)
+        document_authority = features.get("document_authority", 0.5)
 
         # Adjust improvement based on semantic factors
         semantic_multiplier = 0.5 + (embedding_similarity * 0.5)
@@ -744,12 +771,14 @@ class AdvancedC0Reranker(BaseMLModel):
 
         for strategy, probability in sorted_strategies:
             if probability > 0.1:  # Only include if probability is significant
-                alternatives.append({
-                    'strategy': strategy,
-                    'probability': probability,
-                    'confidence': probability,
-                    'recommendation': f"Consider {strategy} as alternative",
-                })
+                alternatives.append(
+                    {
+                        "strategy": strategy,
+                        "probability": probability,
+                        "confidence": probability,
+                        "recommendation": f"Consider {strategy} as alternative",
+                    }
+                )
 
         return alternatives
 
@@ -770,55 +799,55 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def _assess_query_document_alignment(self, semantic_context: dict[str, Any]) -> float:
         """Assess alignment between query and document."""
-        return semantic_context.get('query_document_alignment', 0.5)
+        return semantic_context.get("query_document_alignment", 0.5)
 
     def _evaluate_semantic_coherence(self, semantic_context: dict[str, Any]) -> float:
         """Evaluate semantic coherence of the document."""
-        return semantic_context.get('semantic_coherence', 0.5)
+        return semantic_context.get("semantic_coherence", 0.5)
 
     def _determine_topic_relevance(self, semantic_context: dict[str, Any]) -> float:
         """Determine topic relevance to the query."""
-        return semantic_context.get('topic_relevance', 0.5)
+        return semantic_context.get("topic_relevance", 0.5)
 
     def _calculate_concept_coverage(self, semantic_context: dict[str, Any]) -> float:
         """Calculate concept coverage of the document."""
-        return semantic_context.get('concept_coverage', 0.5)
+        return semantic_context.get("concept_coverage", 0.5)
 
     def _recommend_semantic_strategy(self, semantic_analysis: dict[str, Any]) -> str:
         """Recommend reranking strategy based on semantic analysis."""
-        alignment = semantic_analysis['query_document_alignment']
-        coherence = semantic_analysis['semantic_coherence']
+        alignment = semantic_analysis["query_document_alignment"]
+        coherence = semantic_analysis["semantic_coherence"]
 
         if alignment > 0.8 and coherence > 0.7:
-            return 'Transformer_Top'
+            return "Transformer_Top"
         elif alignment > 0.6:
-            return 'Semantic_Prime'
+            return "Semantic_Prime"
         elif coherence > 0.6:
-            return 'Quality_Enhanced'
+            return "Quality_Enhanced"
         else:
-            return 'Standard_Rerank'
+            return "Standard_Rerank"
 
     def _analyze_attention_distribution(self, attention_context: dict[str, Any]) -> str:
         """Analyze attention distribution pattern."""
-        attention_weights = attention_context.get('attention_weights', [])
+        attention_weights = attention_context.get("attention_weights", [])
 
         if not attention_weights:
-            return 'unknown'
+            return "unknown"
 
         # Calculate distribution characteristics
         max_weight = max(attention_weights)
         avg_weight = sum(attention_weights) / len(attention_weights)
 
         if max_weight > 0.8:
-            return 'focused'
+            return "focused"
         elif max_weight > 0.5:
-            return 'moderate'
+            return "moderate"
         else:
-            return 'distributed'
+            return "distributed"
 
     def _identify_key_terms_attention(self, attention_context: dict[str, Any]) -> list[str]:
         """Identify key terms with high attention."""
-        attention_patterns = attention_context.get('attention_patterns', {})
+        attention_patterns = attention_context.get("attention_patterns", {})
         key_terms = []
 
         for term, attention_score in attention_patterns.items():
@@ -829,51 +858,51 @@ class AdvancedC0Reranker(BaseMLModel):
 
     def _evaluate_attention_consistency(self, attention_context: dict[str, Any]) -> float:
         """Evaluate consistency of attention patterns."""
-        return attention_context.get('attention_consistency', 0.5)
+        return attention_context.get("attention_consistency", 0.5)
 
     def _assess_attention_relevance(self, attention_context: dict[str, Any]) -> float:
         """Assess relevance of attention patterns."""
-        return attention_context.get('attention_relevance', 0.5)
+        return attention_context.get("attention_relevance", 0.5)
 
     def _recommend_attention_strategy(self, attention_analysis: dict[str, Any]) -> str:
         """Recommend reranking strategy based on attention analysis."""
-        distribution = attention_analysis['attention_distribution']
-        consistency = attention_analysis['attention_consistency']
+        distribution = attention_analysis["attention_distribution"]
+        consistency = attention_analysis["attention_consistency"]
 
-        if distribution == 'focused' and consistency > 0.7:
-            return 'Transformer_Top'
+        if distribution == "focused" and consistency > 0.7:
+            return "Transformer_Top"
         elif consistency > 0.6:
-            return 'Semantic_Prime'
+            return "Semantic_Prime"
         else:
-            return 'Standard_Rerank'
+            return "Standard_Rerank"
 
     def _assess_source_credibility(self, quality_context: dict[str, Any]) -> float:
         """Assess credibility of the document source."""
-        return quality_context.get('source_credibility', 0.5)
+        return quality_context.get("source_credibility", 0.5)
 
     def _evaluate_content_quality(self, quality_context: dict[str, Any]) -> float:
         """Evaluate quality of the document content."""
-        return quality_context.get('content_quality', 0.5)
+        return quality_context.get("content_quality", 0.5)
 
     def _check_information_completeness(self, quality_context: dict[str, Any]) -> float:
         """Check completeness of information in the document."""
-        return quality_context.get('information_completeness', 0.5)
+        return quality_context.get("information_completeness", 0.5)
 
     def _evaluate_freshness_relevance(self, quality_context: dict[str, Any]) -> float:
         """Evaluate relevance of document freshness."""
-        return quality_context.get('freshness_relevance', 0.5)
+        return quality_context.get("freshness_relevance", 0.5)
 
     def _recommend_quality_strategy(self, quality_analysis: dict[str, Any]) -> str:
         """Recommend reranking strategy based on quality analysis."""
-        credibility = quality_analysis['source_credibility']
-        content_quality = quality_analysis['content_quality']
+        credibility = quality_analysis["source_credibility"]
+        content_quality = quality_analysis["content_quality"]
 
         if credibility > 0.8:
-            return 'Authority_Boost'
+            return "Authority_Boost"
         elif content_quality > 0.7:
-            return 'Quality_Enhanced'
+            return "Quality_Enhanced"
         else:
-            return 'Standard_Rerank'
+            return "Standard_Rerank"
 
     def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
         """Get feature importance for explainability."""
@@ -882,7 +911,7 @@ class AdvancedC0Reranker(BaseMLModel):
 
         try:
             # Get feature importances from Gradient Boosting
-            gb_model = self.pipeline.named_steps['classifier']
+            gb_model = self.pipeline.named_steps["classifier"]
             importances = gb_model.feature_importances_
 
             # Get feature names
@@ -891,20 +920,24 @@ class AdvancedC0Reranker(BaseMLModel):
             # Create feature importance list
             feature_importance = []
             for i, (name, importance) in enumerate(zip(feature_names, importances)):
-                feature_importance.append({
-                    'feature_name': name,
-                    'importance_score': float(importance),
-                    'feature_value': model_input.features.get(name),
-                    'rank': i + 1,
-                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0,
-                })
+                feature_importance.append(
+                    {
+                        "feature_name": name,
+                        "importance_score": float(importance),
+                        "feature_value": model_input.features.get(name),
+                        "rank": i + 1,
+                        "relative_importance": float(importance / max(importances))
+                        if max(importances) > 0
+                        else 0.0,
+                    }
+                )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -968,8 +1001,8 @@ class AdvancedC0Reranker(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert reranking type string to class index
             if isinstance(label, str):
@@ -989,17 +1022,22 @@ class AdvancedC0Reranker(BaseMLModel):
         y = np.array(y)
 
         # Create pipeline with scaling and Gradient Boosting (as transformer proxy)
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', GradientBoostingClassifier(
-                n_estimators=100,
-                learning_rate=0.1,
-                max_depth=6,
-                min_samples_split=5,
-                min_samples_leaf=2,
-                random_state=42,
-            )),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    GradientBoostingClassifier(
+                        n_estimators=100,
+                        learning_rate=0.1,
+                        max_depth=6,
+                        min_samples_split=5,
+                        min_samples_leaf=2,
+                        random_state=42,
+                    ),
+                ),
+            ]
+        )
 
         # Train model
         self.pipeline.fit(X, y)

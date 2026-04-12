@@ -82,7 +82,10 @@ class KnowledgeIntegrityGuard:
         content_str = json.dumps(content, sort_keys=True).encode("utf-8")
         content_hash = hashlib.sha256(content_str).hexdigest()
         new_node = KnowledgeNode(
-            content_hash=content_hash, prev_hash=self._head_hash, node_id=node_id, content=content,
+            content_hash=content_hash,
+            prev_hash=self._head_hash,
+            node_id=node_id,
+            content=content,
         )
         self._ledger[new_node.signature] = new_node
         self._head_hash = new_node.signature

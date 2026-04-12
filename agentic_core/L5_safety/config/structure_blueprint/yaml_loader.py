@@ -3,6 +3,7 @@
 Loads territory and layer definitions from hardcoded constants.
 Maintains backward compatibility with existing Python imports.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -35,15 +36,15 @@ def load_territories() -> dict[str, Any]:
                         ".gitattributes",
                         ".gitignore",
                         ".pre-commit-config.yaml",
-                        ".pylintrc"
+                        ".pylintrc",
                     ],
                     "allowed_patterns": [
                         "trace_*.jsonl",
                         "mission_*.log",
                         "*.bat",
                         "*.sh",
-                        "root_drift_*.py"
-                    ]
+                        "root_drift_*.py",
+                    ],
                 },
                 "config": {
                     "depth": 2,
@@ -54,17 +55,17 @@ def load_territories() -> dict[str, Any]:
                             "depth": 2,
                             "purpose": "SSOT territory and layer definitions",
                             "allowed_suffixes": [".yaml"],
-                            "forbidden_suffixes": [".py"]
+                            "forbidden_suffixes": [".py"],
                         },
                         "schemas": {
                             "depth": 2,
                             "purpose": "JSON schema definitions",
                             "allowed_suffixes": [".json"],
-                            "forbidden_suffixes": [".yaml", ".py"]
-                        }
-                    }
-                }
-            }
+                            "forbidden_suffixes": [".yaml", ".py"],
+                        },
+                    },
+                },
+            },
         }
     return _loaded_data["territories"]
 
@@ -82,7 +83,7 @@ def load_layer_overrides() -> dict[str, Any]:
                         "debate",
                         "synthesis",
                         "complex_reasoning",
-                        "multi_agent_coordination"
+                        "multi_agent_coordination",
                     ],
                     "routing_rules": {
                         "*_guardian.py": "enforcement",
@@ -91,7 +92,7 @@ def load_layer_overrides() -> dict[str, Any]:
                         "*_dispatch*.py": "enforcement",
                         "*_config.py": "config",
                         "*_types.py": "types",
-                        "*Agent.py": "reasoning"
+                        "*Agent.py": "reasoning",
                     },
                     "extra_subfolders": {
                         "scripts": {
@@ -101,12 +102,12 @@ def load_layer_overrides() -> dict[str, Any]:
                                 "ci": {"purpose": "CI/CD pipeline scripts"},
                                 "config": {"purpose": "Configuration scripts"},
                                 "installation": {"purpose": "Installation and setup scripts"},
-                                "general_scripts": {"purpose": "General maintenance scripts"}
-                            }
+                                "general_scripts": {"purpose": "General maintenance scripts"},
+                            },
                         }
-                    }
+                    },
                 }
-            }
+            },
         }
     return _loaded_data["layers"]
 
@@ -114,11 +115,7 @@ def load_layer_overrides() -> dict[str, Any]:
 def load_ast_signals() -> dict[str, Any]:
     """Load AST signal definitions from hardcoded constants."""
     if "ast_signals" not in _loaded_data:
-        _loaded_data["ast_signals"] = {
-            "schema_version": "1.0.0",
-            "last_updated": "2026-04-05",
-            "signals": {}
-        }
+        _loaded_data["ast_signals"] = {"schema_version": "1.0.0", "last_updated": "2026-04-05", "signals": {}}
     return _loaded_data["ast_signals"]
 
 
@@ -140,6 +137,7 @@ def match_wildcard_territory(name: str) -> dict[str, Any] | None:
     wildcards = data.get("wildcards", {})
 
     import re
+
     for pattern_name, definition in wildcards.items():
         pattern = definition.get("pattern", "")
         if re.match(pattern, name):

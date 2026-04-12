@@ -391,8 +391,11 @@ class OptimizationProposalEngine:
             Sorted by proposal_id for determinism.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizationProposalEngine.generate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizationProposalEngine.generate"
+        )
 
         proposals: list[OptimizationProposal] = []
         for cluster in clusters:
@@ -478,6 +481,7 @@ class RepairRouteCluster:
     timestamp_utc : int
         Cluster creation timestamp
     """
+
     cluster_id: str
     repair_routes: list[dict[str, Any]]
     failure_pattern: str
@@ -523,8 +527,11 @@ class RepairRouteOptimizationEngine:
             List of optimization proposals sorted by proposal_id
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RepairRouteOptimizationEngine.generate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RepairRouteOptimizationEngine.generate"
+        )
 
         proposals: list[OptimizationProposal] = []
         for cluster in repair_clusters:

@@ -17,6 +17,7 @@ class TestReplayKeyDeterminism:
         """Test replay_key_determinism module imports."""
         try:
             from agentic_core import replay_key_determinism
+
             assert replay_key_determinism is not None
         except ImportError:
             pytest.skip("replay_key_determinism not available")
@@ -25,6 +26,7 @@ class TestReplayKeyDeterminism:
         """Test ReplayKeyDeterminism class exists."""
         try:
             from agentic_core import ReplayKeyDeterminism
+
             assert ReplayKeyDeterminism is not None
         except ImportError:
             pytest.skip("ReplayKeyDeterminism not available")
@@ -33,6 +35,7 @@ class TestReplayKeyDeterminism:
         """Test replay_key_determinism functions are callable."""
         try:
             from agentic_core import validate_replay_key_determinism
+
             assert callable(validate_replay_key_determinism)
         except ImportError:
             pytest.skip("validate_replay_key_determinism not available")

@@ -358,8 +358,11 @@ class ConfigPlanningOrchestrator:
             ConfigPlanningResult: Complete planning result with validated configs and deployment plan
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigPlanningOrchestrator.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigPlanningOrchestrator.execute"
+        )
 
         self.logger.info(
             f"Starting config planning for: {config_request.get('service', 'unknown')}",

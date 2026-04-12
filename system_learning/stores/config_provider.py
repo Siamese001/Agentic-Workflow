@@ -195,7 +195,7 @@ class FileBackedConfigProvider:
             return {}
         try:
             return json.loads(self._runtime_state_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):    # guardian: Add error context logging
+        except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
             return {}
 
     def get_current_configs(self) -> dict[str, bytes]:
@@ -209,7 +209,9 @@ class FileBackedConfigProvider:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedConfigProvider.get_current_configs",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "FileBackedConfigProvider.get_current_configs",
         )
 
         configs: dict[str, bytes] = {}
@@ -221,7 +223,7 @@ class FileBackedConfigProvider:
                 try:
                     raw = cfg_path.read_bytes()
                     configs[surface] = raw
-                except OSError:    # guardian: Add error context logging
+                except OSError:  # guardian: Add error context logging
                     continue
 
         # Fall back to runtime_state sections
@@ -304,7 +306,9 @@ class InMemoryConfigProvider:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryConfigProvider.get_param_history",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "InMemoryConfigProvider.get_param_history",
         )
 
         history = self._histories.get(surface_name, [])

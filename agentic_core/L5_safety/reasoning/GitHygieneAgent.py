@@ -95,9 +95,11 @@ try:
     from agentic_core.utils.security_util import safe_git_execute
 except ModuleNotFoundError:
     import subprocess
+
     def safe_git_execute(cmd, **kwargs):
         """Stub safe_git_execute when security_util is not available."""
         return subprocess.run(cmd, capture_output=True, text=True, **kwargs)
+
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -222,17 +224,17 @@ class GitHygieneAgent(SovereignBaseAgent):
     def _run_git(self, cmd: list[str], **kwargs: Any) -> str:
         """Run a git command and return stdout.
 
-        Args:
-            cmd: Git command arguments (without 'git' prefix).
-            **kwargs: Additional arguments passed to safe_git_execute.
-    # guardian: File operations should check existence before access
-        Returns:
-            Command stdout if successful, empty string otherwise.
+            Args:
+                cmd: Git command arguments (without 'git' prefix).
+                **kwargs: Additional arguments passed to safe_git_execute.
+        # guardian: File operations should check existence before access
+            Returns:
+                Command stdout if successful, empty string otherwise.
         """
         try:
             result = safe_git_execute(cmd, repo_root=self.project_root, timeout=kwargs.get("timeout", 30))
             return result.stdout.strip() if result.returncode == 0 else ""
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             if hasattr(self.ctx, "report"):
                 self.ctx.report("GitHygieneAgent", 0, False, "git not installed")
             return ""
@@ -314,7 +316,10 @@ class GitHygieneAgent(SovereignBaseAgent):
         if stale_branches or status["uncommitted"] or status["unpushed"]:
             if hasattr(self.ctx, "report"):
                 self.ctx.report(
-                    "GitHygieneAgent", 48, True, f"Stale: {len(stale_branches)}, Actions: {len(actions)}",
+                    "GitHygieneAgent",
+                    48,
+                    True,
+                    f"Stale: {len(stale_branches)}, Actions: {len(actions)}",
                 )
         return {
             "stale_branches": len(stale_branches),

@@ -352,7 +352,9 @@ class SecurityHardener:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SecurityScanner.scan_content:{file_path}",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"SecurityScanner.scan_content:{file_path}",
         )
         issues = []
         self._scans_performed += 1

@@ -179,6 +179,7 @@ class PTCScriptPlan:
         estimated_tokens: Estimated token count
         can_batch: Whether all tools can be executed in single inference pass
     """
+
     script_id: str
     tools: list[str]
     dependencies: dict[str, list[str]]
@@ -199,6 +200,7 @@ class PTCExecutionResult:
         tokens_saved: Estimated tokens saved vs traditional approach
         trace_id: Execution trace ID
     """
+
     script_id: str
     success: bool
     summary: str
@@ -211,27 +213,27 @@ class PTCExecutionResult:
 class PTCOrchestrator:
     """Orchestrates PTC script execution with inference batching.
 
-    Key Features:
-    1. Script parsing and tool extraction
-    2. Dependency analysis for optimal batching
-    3. Sandbox execution with context isolation
-    4. Result aggregation and summary generation
-    5. Token savings tracking
+        Key Features:
+        1. Script parsing and tool extraction
+        2. Dependency analysis for optimal batching
+        3. Sandbox execution with context isolation
+        4. Result aggregation and summary generation
+        5. Token savings tracking
 
-    Usage:
-        orchestrator = PTCOrchestrator()
+        Usage:
+            orchestrator = PTCOrchestrator()
 
-        # Parse and plan
-        code = '''
-users = query_database("SELECT * FROM users")
-orders = query_database("SELECT * FROM orders WHERE user_id IN (%s)" % users)
-summary = {"users": len(users), "orders": len(orders)}
-print(json.dumps(summary))
-'''
-        plan = orchestrator.parse_script("script-001", code)
+            # Parse and plan
+            code = '''
+    users = query_database("SELECT * FROM users")
+    orders = query_database("SELECT * FROM orders WHERE user_id IN (%s)" % users)
+    summary = {"users": len(users), "orders": len(orders)}
+    print(json.dumps(summary))
+    '''
+            plan = orchestrator.parse_script("script-001", code)
 
-        # Execute with batching
-        result = orchestrator.execute_batch(plan)
+            # Execute with batching
+            result = orchestrator.execute_batch(plan)
     """
 
     # Token estimation constants
@@ -313,7 +315,32 @@ print(json.dumps(summary))
         matches2 = re.findall(pattern2, code)
 
         # Combine and filter common non-tool names
-        non_tool_names = {"print", "len", "range", "enumerate", "zip", "map", "filter", "json", "str", "int", "float", "bool", "list", "dict", "tuple", "set", "sum", "min", "max", "any", "all", "sorted", "dumps", "loads"}
+        non_tool_names = {
+            "print",
+            "len",
+            "range",
+            "enumerate",
+            "zip",
+            "map",
+            "filter",
+            "json",
+            "str",
+            "int",
+            "float",
+            "bool",
+            "list",
+            "dict",
+            "tuple",
+            "set",
+            "sum",
+            "min",
+            "max",
+            "any",
+            "all",
+            "sorted",
+            "dumps",
+            "loads",
+        }
 
         for match in matches1 + matches2:
             if match not in non_tool_names and match not in tools:
@@ -393,7 +420,9 @@ print(json.dumps(summary))
         import uuid as _uuid
 
         trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "PTCOrchestrator.execute_batch")
+        _emit_records_execution_trace(
+            trace_id, LayerSegment.L3_ORCHESTRATION, "PTCOrchestrator.execute_batch"
+        )
         _emit_orchestrates_workflow(trace_id, plan.script_id, "ptc_batch_execution")
 
         start_time = _time.time()
@@ -482,12 +511,17 @@ print(json.dumps(summary))
             else:
                 summary_parts.append(f"{tool_id}: failed")
 
-        return json.dumps({
-            "status": "success" if all(r.get("success") for r in raw_results.values()) else "partial_failure",
-            "tools_executed": len(raw_results),
-            "tools_successful": sum(1 for r in raw_results.values() if r.get("success")),
-            "summary": summary_parts,
-        }, separators=(",", ":"))
+        return json.dumps(
+            {
+                "status": "success"
+                if all(r.get("success") for r in raw_results.values())
+                else "partial_failure",
+                "tools_executed": len(raw_results),
+                "tools_successful": sum(1 for r in raw_results.values() if r.get("success")),
+                "summary": summary_parts,
+            },
+            separators=(",", ":"),
+        )
 
     def _calculate_token_savings(self, plan: PTCScriptPlan) -> int:
         """Calculate estimated token savings vs traditional approach."""
@@ -535,6 +569,7 @@ print(json.dumps(summary))
 # Sandbox Execution Context
 # =============================================================================
 
+
 @dataclass
 class PTCSandboxContext:
     """Sandbox execution context for PTC scripts.
@@ -542,6 +577,7 @@ class PTCSandboxContext:
     Provides isolated execution environment where raw tool results
     are trapped and only summaries escape.
     """
+
     context_id: str
     isolated: bool = True
     raw_results: dict[str, Any] = field(default_factory=dict)
@@ -551,7 +587,9 @@ class PTCSandboxContext:
     def trap_result(self, tool_id: str, result: Any) -> None:
         """Trap a tool result in the sandbox."""
         self.raw_results[tool_id] = result
-        _emit_records_execution_trace(self.context_id, LayerSegment.L2_EXECUTION, f"PTCSandbox.trap:{tool_id}")
+        _emit_records_execution_trace(
+            self.context_id, LayerSegment.L2_EXECUTION, f"PTCSandbox.trap:{tool_id}"
+        )
 
     def release_summary(self, summary: str) -> str:
         """Release summary output from sandbox (only L1-visible output)."""
@@ -651,10 +689,13 @@ class PTCSandboxExecutor:
             else:
                 summaries.append(f"{tool_id}: completed")
 
-        return json.dumps({
-            "executed": len(raw_results),
-            "summary": summaries,
-        }, separators=(",", ":"))
+        return json.dumps(
+            {
+                "executed": len(raw_results),
+                "summary": summaries,
+            },
+            separators=(",", ":"),
+        )
 
 
 # =============================================================================
@@ -696,6 +737,7 @@ def reset_ptc_sandbox() -> None:
 # =============================================================================
 # Convenience Functions
 # =============================================================================
+
 
 def parse_ptc_script(script_id: str, code: str) -> PTCScriptPlan:
     """Parse a PTC script and return execution plan."""

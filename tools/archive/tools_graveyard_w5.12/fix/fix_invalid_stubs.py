@@ -11,6 +11,7 @@ Options:
     --dry-run: Show what would be fixed without making changes
     --apply: Apply the fixes to files
 """
+
 import argparse
 import ast
 import sys

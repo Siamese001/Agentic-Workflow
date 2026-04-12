@@ -118,8 +118,9 @@ _proof_emitter = ExecutionProofEmitter("L5.GovernanceAgent")
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
 except ImportError as e:
-
-    raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-degradation - Optional MCP hardened mixin
+    raise ImportError(
+        f"Required dependency missing: {e}"
+    )  # guardian: allow-silent-degradation - Optional MCP hardened mixin
 
     class MCPHardenedMixin:
         pass
@@ -339,7 +340,7 @@ class DependencyGraph:
                         self.graph[file_path]["functions"].append(node.name)
                 module_name: Any = str(Path(file_path).as_posix()).replace("/", ".").replace(".py", "")
                 self.module_map[module_name] = file_path
-            except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
                 LOGGER.warning(f"Syntax error in {file_path}: {e}")
             except Exception as e:  # guardian: allow-silent-swallow
                 raise
@@ -514,7 +515,6 @@ class GovernanceAgent(SovereignBaseAgent):
             )
         # guardian: allow-silent-degradation - Optional structure blueprint
         except ImportError as e:
-
             raise ImportError(f"Required dependency missing: {e}")
             from agentic_core.config.registry_config import SOVEREIGN_REGISTRY
 
@@ -628,7 +628,11 @@ class GovernanceAgent(SovereignBaseAgent):
         return violations
 
     def _check_root_file(
-        self, file_path: Path, violations: list[str], sanitized: list[str], auto_sanitize: bool,
+        self,
+        file_path: Path,
+        violations: list[str],
+        sanitized: list[str],
+        auto_sanitize: bool,
     ) -> None:
         if file_path.name not in self.ALLOWED_ROOT_FILES:
             violations.append(f"Unauthorized file at root: {file_path.name}")
@@ -684,7 +688,10 @@ class GovernanceAgent(SovereignBaseAgent):
                     target = scripts_dir / f"{stem}_{counter}{suffix}"
                     counter += 1
                 result = self.gatekeeper.safe_move(
-                    file_path, target, "GovernanceAgent", "Move root script to scripts/",
+                    file_path,
+                    target,
+                    "GovernanceAgent",
+                    "Move root script to scripts/",
                 )
                 if result.success:
                     return f"MOVED to scripts/{target.name}"
@@ -866,7 +873,7 @@ class GovernanceAgent(SovereignBaseAgent):
                                 "message": f"Function '{node.name}' at line {node.lineno}: {func_lines} lines > {self.MAX_FUNC_LINES}",
                             },
                         )
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
         except Exception as e:  # guardian: allow-silent-swallow
             raise
@@ -1095,7 +1102,7 @@ class GovernanceAgent(SovereignBaseAgent):
         except PolicyEnforcementError as _pee:
             LOGGER.error("Policy blocked governance cleanup: %s", _pee)
             return {"status": "POLICY_BLOCKED", "error": str(_pee)}
-        if file_paths is None:    # guardian: PolicyEnforcementError should be handled with specific context
+        if file_paths is None:  # guardian: PolicyEnforcementError should be handled with specific context
             file_paths = [str(p) for p in get_python_files(self.root_dir)]
         cleanup_results = self.cleanup_violations(file_paths, dry_run=dry_run)
         batch_summary = cleanup_results[0].get("batch_post_heal", {}) if cleanup_results else {}

@@ -14,6 +14,7 @@ Edge cases covered:
 - Mixed valid/invalid → reports only invalid
 - check_npx_commands() return value: 0=pass, 1=fail
 """
+
 from __future__ import annotations
 
 import sys
@@ -28,6 +29,7 @@ from ops_scripts.ci.check_mcp_npx_windows import check_npx_commands
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _run_with_content(tmp_path, content: str) -> int:
     yaml_file = tmp_path / "mcp_servers.yaml"
     yaml_file.write_text(content, encoding="utf-8")
@@ -38,6 +40,7 @@ def _run_with_content(tmp_path, content: str) -> int:
 # ===========================================================================
 # Violation detection
 # ===========================================================================
+
 
 class TestNpxViolationDetection:
     def test_double_quoted_npx_is_violation(self, tmp_path):
@@ -60,14 +63,14 @@ class TestNpxViolationDetection:
         """'npx' appearing in args (package names) must not trigger."""
         content = (
             '    command: "npx.cmd"\n'
-            '    args:\n'
+            "    args:\n"
             '      - "-y"\n'
             '      - "@modelcontextprotocol/server-npx-example"\n'
         )
         assert _run_with_content(tmp_path, content) == 0
 
     def test_npx_in_comment_not_violation(self, tmp_path):
-        content = "# command: npx  (old form, do not use)\n    command: \"npx.cmd\"\n"
+        content = '# command: npx  (old form, do not use)\n    command: "npx.cmd"\n'
         assert _run_with_content(tmp_path, content) == 0
 
     def test_multiple_violations_all_reported(self, tmp_path, capsys):
@@ -102,6 +105,7 @@ class TestNpxViolationDetection:
 # ===========================================================================
 # File-level edge cases
 # ===========================================================================
+
 
 class TestFileEdgeCases:
     def test_missing_yaml_returns_0(self, tmp_path):
@@ -144,11 +148,11 @@ servers:
     def test_mixed_valid_invalid_only_flags_invalid(self, tmp_path, capsys):
         content = (
             "  memory:\n"
-            '    command: "npx.cmd"\n'   # valid
+            '    command: "npx.cmd"\n'  # valid
             "  sequential_thinking:\n"
-            '    command: "npx"\n'       # invalid — line 4
+            '    command: "npx"\n'  # invalid — line 4
             "  filesystem:\n"
-            '    command: "npx.cmd"\n'   # valid
+            '    command: "npx.cmd"\n'  # valid
         )
         result = _run_with_content(tmp_path, content)
         assert result == 1
@@ -162,6 +166,7 @@ servers:
 # ===========================================================================
 # Output format
 # ===========================================================================
+
 
 class TestOutputFormat:
     def test_ok_message_on_pass(self, tmp_path, capsys):
@@ -206,6 +211,7 @@ class TestMcpSsotHardcodedPaths:
     def test_no_hardcoded_windows_paths_in_server_fields(self):
         """No server arg/env/cwd should contain a raw Windows absolute path."""
         import re
+
         values = self._server_fields()
         hardcoded = [v for v in values if re.search(r"(?<![a-zA-Z])[A-Za-z]:[/\\\\]", v) and "${" not in v]
         assert not hardcoded, (
@@ -216,6 +222,7 @@ class TestMcpSsotHardcodedPaths:
     def test_repo_root_placeholder_used_where_needed(self):
         """Every server field containing a file path uses the ${REPO_ROOT} placeholder."""
         import re
+
         values = self._server_fields()
         for v in values:
             if re.search(r"[/\\\\]", v) and not v.startswith("-") and len(v) > 5:
@@ -226,6 +233,7 @@ class TestMcpSsotHardcodedPaths:
     def test_ssot_yaml_is_parseable(self):
         """config/mcp_servers.yaml must be valid YAML."""
         import yaml  # type: ignore[import-untyped]
+
         assert self._SSOT_PATH.exists(), "config/mcp_servers.yaml not found"
         with open(self._SSOT_PATH, encoding="utf-8") as f:
             data = yaml.safe_load(f)

@@ -16,14 +16,17 @@ class TestSecurityManagerAgentAdg:
     def test_security_manager_agent_adg_imports(self):
         """Test security_manager_agent_adg module imports."""
         from agentic_core import security_manager_agent_adg
+
         assert security_manager_agent_adg is not None
 
     def test_security_manager_agent_adg_class(self):
         """Test SecurityManagerAgentAdg class exists."""
         from agentic_core import SecurityManagerAgentAdg
+
         assert SecurityManagerAgentAdg is not None
 
     def test_security_manager_agent_adg_callable(self):
         """Test security_manager_agent_adg functions are callable."""
         from agentic_core import validate_security_manager_agent_adg
+
         assert callable(validate_security_manager_agent_adg)

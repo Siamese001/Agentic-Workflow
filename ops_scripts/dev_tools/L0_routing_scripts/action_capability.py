@@ -272,7 +272,9 @@ class IActionPlane(ABC):
 
     @abstractmethod
     async def execute_batch(
-        self, requests: list[ActionRequest], parallel: bool = False,
+        self,
+        requests: list[ActionRequest],
+        parallel: bool = False,
     ) -> list[ActionResult]:
         """Execute multiple actions.
 

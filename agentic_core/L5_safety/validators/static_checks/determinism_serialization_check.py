@@ -189,7 +189,9 @@ class DeterminismVisitor(ast.NodeVisitor):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "DeterminismVisitor.visit_FunctionDef",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "DeterminismVisitor.visit_FunctionDef",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -280,7 +282,7 @@ def scan_file_for_determinism(file_path: Path) -> list[tuple[int, str, str]]:
         visitor = DeterminismVisitor(file_path)
         visitor.visit(tree)
         violations.extend(visitor.violations)
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         violations.append((e.lineno or 0, "DET_SYNTAX_ERROR", f"Syntax error: {e.msg}"))
     # guardian: allow-silent-swallower
     except (ValueError, TypeError) as e:
@@ -369,7 +371,9 @@ class ExecutionScopeNondeterminismVisitor(ast.NodeVisitor):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ExecutionScopeNondeterminismVisitor.visit_Call",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "ExecutionScopeNondeterminismVisitor.visit_Call",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -431,7 +435,7 @@ def scan_file_for_execution_nondeterminism(file_path: Path) -> list[tuple[int, s
         visitor = ExecutionScopeNondeterminismVisitor(source_lines)
         visitor.visit(tree)
         violations.extend(visitor.violations)
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         violations.append((e.lineno or 0, "EXEC_SYNTAX_ERROR", f"Syntax error: {e.msg}"))
     # guardian: allow-silent-swallower
     except (ValueError, TypeError) as e:

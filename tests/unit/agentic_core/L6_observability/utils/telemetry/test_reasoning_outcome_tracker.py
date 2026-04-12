@@ -3,6 +3,7 @@
 G1 Fix: Provides comprehensive test coverage for the ReasoningOutcomeTracker
 which was previously completely untested.
 """
+
 from __future__ import annotations
 
 import json

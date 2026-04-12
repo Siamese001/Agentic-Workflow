@@ -84,7 +84,10 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-record_execution_trace("coordinate_observability_operations_orchestrator_type", "coordinate_observability_operations_orchestrator_type_trace")
+record_execution_trace(
+    "coordinate_observability_operations_orchestrator_type",
+    "coordinate_observability_operations_orchestrator_type_trace",
+)
 
 
 _emit_emits_metric_event("coordinate_observability_operations_orchestrator_type", "p4obs", "metric_1")
@@ -100,17 +103,29 @@ _emit_updates_monitoring_state("coordinate_observability_operations_orchestrator
 _emit_triggers_alert("coordinate_observability_operations_orchestrator_type", "p4obs", "alert")
 _emit_links_incident_trace("coordinate_observability_operations_orchestrator_type", "p4obs", "trace_link")
 _emit_captures_pattern("coordinate_observability_operations_orchestrator_type", "p3lm", "pattern")
-_emit_records_learning_event("coordinate_observability_operations_orchestrator_type", "p3lm", "learning_event")
+_emit_records_learning_event(
+    "coordinate_observability_operations_orchestrator_type", "p3lm", "learning_event"
+)
 _emit_writes_learning_snapshot("coordinate_observability_operations_orchestrator_type", "p3lm", "snapshot")
 _emit_feeds_meta_learning("coordinate_observability_operations_orchestrator_type", "p3lm", "meta_feed")
 _emit_updates_routing_strategy("coordinate_observability_operations_orchestrator_type", "p3lm", "routing")
 _emit_improves_agent_policy("coordinate_observability_operations_orchestrator_type", "p3lm", "policy")
 _emit_stores_learning_state("coordinate_observability_operations_orchestrator_type", "p3lm", "state")
-_emit_records_execution_trace("coordinate_observability_operations_orchestrator_type", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("coordinate_observability_operations_orchestrator_type", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("coordinate_observability_operations_orchestrator_type", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("coordinate_observability_operations_orchestrator_type", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("coordinate_observability_operations_orchestrator_type", "L4_STATE", "p2_trace_5")
+_emit_records_execution_trace(
+    "coordinate_observability_operations_orchestrator_type", "L0_ROUTING", "p2_trace_1"
+)
+_emit_records_execution_trace(
+    "coordinate_observability_operations_orchestrator_type", "L1_REASONING", "p2_trace_2"
+)
+_emit_records_execution_trace(
+    "coordinate_observability_operations_orchestrator_type", "L2_EXECUTION", "p2_trace_3"
+)
+_emit_records_execution_trace(
+    "coordinate_observability_operations_orchestrator_type", "L3_ORCHESTRATION", "p2_trace_4"
+)
+_emit_records_execution_trace(
+    "coordinate_observability_operations_orchestrator_type", "L4_STATE", "p2_trace_5"
+)
 _emit_reads_environ("coordinate_observability_operations_orchestrator_type", "env_read", "p2_env_1")
 _emit_reads_environ("coordinate_observability_operations_orchestrator_type", "env_read", "p2_env_2")
 _emit_reads_runtime_state("coordinate_observability_operations_orchestrator_type", "runtime_state", "p2_rt_1")
@@ -121,9 +136,13 @@ _emit_execution_terminates_at_uwg("p1", "coordinate_observability_operations_orc
 _emit_execution_terminates_at_uwg("p1", "coordinate_observability_operations_orchestrator_type", "uwg_term_2")
 _emit_writes_through("p1", "coordinate_observability_operations_orchestrator_type", "write_through")
 _emit_writes_through("p1", "coordinate_observability_operations_orchestrator_type", "write_through_2")
-_emit_validated_by_safety_plane("p1", "coordinate_observability_operations_orchestrator_type", "safety_validation")
+_emit_validated_by_safety_plane(
+    "p1", "coordinate_observability_operations_orchestrator_type", "safety_validation"
+)
 _emit_invokes_eval("p1", "coordinate_observability_operations_orchestrator_type", "eval_call")
-_emit_proposal_commits_routing("p1", "coordinate_observability_operations_orchestrator_type", "routing_commit")
+_emit_proposal_commits_routing(
+    "p1", "coordinate_observability_operations_orchestrator_type", "routing_commit"
+)
 _emit_escalates_to_human("p1", "coordinate_observability_operations_orchestrator_type", "human_escalation")
 _emit_routes_through("p1", "coordinate_observability_operations_orchestrator_type", "route_through")
 _emit_checks_agent_registry("p1", "coordinate_observability_operations_orchestrator_type", "agent_registry")
@@ -145,21 +164,37 @@ _emit_validates_capability("p2", "coordinate_observability_operations_orchestrat
 _emit_routes_to_capability("p2", "coordinate_observability_operations_orchestrator_type", "capability_route")
 _emit_writes_via_uwg("p2", "coordinate_observability_operations_orchestrator_type", "uwg_write")
 _emit_blocks_direct_write("p2", "coordinate_observability_operations_orchestrator_type", "direct_write_block")
-_emit_records_tool_invocation("p2", "coordinate_observability_operations_orchestrator_type", "tool_invocation")
+_emit_records_tool_invocation(
+    "p2", "coordinate_observability_operations_orchestrator_type", "tool_invocation"
+)
 _emit_captures_execution_output("p2", "coordinate_observability_operations_orchestrator_type", "exec_output")
 _emit_dispatches_agent("p3", "coordinate_observability_operations_orchestrator_type", "agent_dispatch")
 _emit_coordinates_agents("p3", "coordinate_observability_operations_orchestrator_type", "agent_coordination")
-_emit_records_workflow_lineage("p3", "coordinate_observability_operations_orchestrator_type", "workflow_lineage")
-_emit_records_healing_outcome("p3", "coordinate_observability_operations_orchestrator_type", "healing_outcome")
+_emit_records_workflow_lineage(
+    "p3", "coordinate_observability_operations_orchestrator_type", "workflow_lineage"
+)
+_emit_records_healing_outcome(
+    "p3", "coordinate_observability_operations_orchestrator_type", "healing_outcome"
+)
 _emit_escalates_failure("p3", "coordinate_observability_operations_orchestrator_type", "failure_escalation")
-_emit_orchestrates_workflow("p3", "coordinate_observability_operations_orchestrator_type", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "coordinate_observability_operations_orchestrator_type", "healing_dispatch")
+_emit_orchestrates_workflow(
+    "p3", "coordinate_observability_operations_orchestrator_type", "workflow_orchestration"
+)
+_emit_dispatches_healing_run(
+    "p3", "coordinate_observability_operations_orchestrator_type", "healing_dispatch"
+)
 _emit_invokes_evaluation("p3", "coordinate_observability_operations_orchestrator_type", "evaluation_signal")
-_emit_records_telemetry_event("p4", "coordinate_observability_operations_orchestrator_type", "telemetry_event")
+_emit_records_telemetry_event(
+    "p4", "coordinate_observability_operations_orchestrator_type", "telemetry_event"
+)
 _emit_captures_evaluation_metric("p4", "coordinate_observability_operations_orchestrator_type", "eval_metric")
 _emit_stores_embedding("p4", "coordinate_observability_operations_orchestrator_type", "embedding_store")
-_emit_updates_meta_learning_state("p4", "coordinate_observability_operations_orchestrator_type", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "coordinate_observability_operations_orchestrator_type", "exec_snapshot_link")
+_emit_updates_meta_learning_state(
+    "p4", "coordinate_observability_operations_orchestrator_type", "meta_learning"
+)
+_emit_links_execution_to_snapshot(
+    "p4", "coordinate_observability_operations_orchestrator_type", "exec_snapshot_link"
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -221,8 +256,13 @@ class CoordinateObservabilityOperationsOrchestratorImpl(
     def process(self, input_data: dict[str, object]) -> CoordinateObservabilityOperationsOrchestratorResult:
         """Process input following L5 architecture principles"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CoordinateObservabilityOperationsOrchestratorImpl.process")
+        _emit_records_execution_trace(
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "CoordinateObservabilityOperationsOrchestratorImpl.process",
+        )
 
         self.logger.info(f"Processing {input_data}")
         self._validate_input(input_data)
@@ -311,8 +351,13 @@ class CoordinateObservabilityOperationsOrchestratorFactory:
     ) -> CoordinateObservabilityOperationsOrchestratorInterface:
         """Create configured engine"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CoordinateObservabilityOperationsOrchestratorFactory.create_processor")
+        _emit_records_execution_trace(
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "CoordinateObservabilityOperationsOrchestratorFactory.create_processor",
+        )
 
         constraints = CoordinateObservabilityOperationsOrchestratorConstraints(safety_level=safety_level)
         engine = CoordinateObservabilityOperationsOrchestratorImpl(constraints)
@@ -342,7 +387,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = coordinate_observability_operations(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:    # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

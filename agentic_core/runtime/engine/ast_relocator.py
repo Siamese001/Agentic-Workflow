@@ -175,6 +175,7 @@ class AstRelocator(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         """Capture top-level classes."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AstRelocator.visit_ClassDef")
 
@@ -240,7 +241,9 @@ class AstRelocator(ast.NodeVisitor):
                 if entity_type == "Class" and hasattr(node, "bases"):
                     for base in node.bases:
                         base_name = getattr(base, "id", "") or getattr(
-                            getattr(base, "attr", None), "value", "",
+                            getattr(base, "attr", None),
+                            "value",
+                            "",
                         )
                         if base_name and any(base_name in b for b in meta.get("bases", [])):
                             score += 4.0

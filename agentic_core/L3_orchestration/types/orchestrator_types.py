@@ -272,7 +272,9 @@ class ExecutionContext:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ExecutionContext.with_accumulated_context",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ExecutionContext.with_accumulated_context",
         )
 
         merged = self.accumulated_context.copy()
@@ -412,7 +414,10 @@ class IOrchestratorAgent(Protocol):
         ...
 
     def run_agent(
-        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None,
+        self,
+        agent_name: str,
+        dry_run: bool = True,
+        context: ExecutionContext | None = None,
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -465,7 +470,12 @@ class IHealable(Protocol):
 
     # guardian: allow-magic-config
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, **kwargs,
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        **kwargs,
     ) -> dict[str, Any]:
         """
         Repository-level healing method.

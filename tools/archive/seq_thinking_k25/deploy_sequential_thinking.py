@@ -79,9 +79,15 @@ class SequentialThinkingDeployer:
                 return False
 
             # Run environment setup and capture output to set in current process
-            result = subprocess.run([
-                sys.executable, str(env_script),
-            ], capture_output=True, text=True, cwd=self.repo_root)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(env_script),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=self.repo_root,
+            )
 
             if result.returncode == 0:
                 print("✅ Environment variables configured successfully")
@@ -200,13 +206,20 @@ class SequentialThinkingDeployer:
             ]
 
             test_file = self.repo_root / "test_tools.json"
-            with open(test_file, 'w') as f:
+            with open(test_file, "w") as f:
                 json.dump({"tools": test_tools}, f)
 
             # Run booster
-            result = subprocess.run([
-                sys.executable, str(booster_script), str(test_file),
-            ], capture_output=True, text=True, cwd=self.repo_root)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(booster_script),
+                    str(test_file),
+                ],
+                capture_output=True,
+                text=True,
+                cwd=self.repo_root,
+            )
 
             # Clean up
             test_file.unlink()
@@ -245,12 +258,12 @@ class SequentialThinkingDeployer:
 
         report = f"""
 # Sequential Thinking Deployment Report
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 
 ## Deployment Status
-- MCP Configuration: {'PASS' if validation_results.get('mcp_config') else 'FAIL'}
-- Environment Variables: {'PASS' if validation_results.get('environment') else 'FAIL'}
-- Tool Installation: {'PASS' if validation_results.get('tools') else 'FAIL'}
+- MCP Configuration: {"PASS" if validation_results.get("mcp_config") else "FAIL"}
+- Environment Variables: {"PASS" if validation_results.get("environment") else "FAIL"}
+- Tool Installation: {"PASS" if validation_results.get("tools") else "FAIL"}
 
 ## Configuration Summary
 ### MCP Configuration
@@ -288,7 +301,7 @@ cp .backup/sequential_thinking/user_mcp_config_backup.json C:\\Users\\amita\\.co
         report_file = self.repo_root / "docs" / "reports" / "sequential_thinking_deployment_report.md"
         report_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(report_file, 'w', encoding='utf-8') as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             f.write(report)
 
         print(f"✅ Deployment report saved to: {report_file}")
@@ -345,6 +358,7 @@ cp .backup/sequential_thinking/user_mcp_config_backup.json C:\\Users\\amita\\.co
 
         return all_passed
 
+
 def main():
     """Main deployment function."""
     if len(sys.argv) > 1:
@@ -356,6 +370,7 @@ def main():
     success = deployer.deploy()
 
     sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     main()

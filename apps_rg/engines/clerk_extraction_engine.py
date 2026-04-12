@@ -180,8 +180,11 @@ class ClerkExtractionEngine(BaseRGEngine):
         Execute HOP-1 extraction using Immutable Buffer data.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ClerkExtractionEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ClerkExtractionEngine.execute"
+        )
 
         mission_input = self.ctx.buffer.read("mission_input")
         if not mission_input or "master_resume" not in mission_input:

@@ -106,12 +106,15 @@ except ImportError as _exc:
     import logging as _logging
 
     _logging.getLogger(__name__).critical(
-        "rag_orchestrator: BGE embedder unavailable — embedding cache disabled: %s", _exc,
+        "rag_orchestrator: BGE embedder unavailable — embedding cache disabled: %s",
+        _exc,
     )
     _embedding_cache = {}
 
     def clear_embedding_cache() -> None:
         pass
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -238,8 +241,11 @@ class SovereignRagOrchestrator:
                 # guardian: allow-magic-config
                 def query(self, query_emb, top_k=5):
                     import uuid as _uuid  # noqa: PLC0415
+
                     _trace_id = str(_uuid.uuid4())
-                    _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemVectorStore.query")
+                    _emit_records_execution_trace(
+                        _trace_id, LayerSegment.L3_ORCHESTRATION, "_InMemVectorStore.query"
+                    )
 
                     import numpy as np
 
@@ -277,8 +283,11 @@ class SovereignRagOrchestrator:
     def ingest(self, file_path: Path):
         """Routes ingestion to the appropriate loader based on suffix."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRagOrchestrator.ingest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRagOrchestrator.ingest"
+        )
 
         # Validate input type
         if not isinstance(file_path, Path):
@@ -330,7 +339,11 @@ class SovereignRagOrchestrator:
 
     # guardian: allow-magic-config
     async def retrieve(
-        self, query: str, domain: str = "general", top_k: int = 5, use_cache: bool = True,
+        self,
+        query: str,
+        domain: str = "general",
+        top_k: int = 5,
+        use_cache: bool = True,
     ) -> list[dict]:
         """
         Ultra-hardened hybrid retrieval with RRF fusion and LLM reranking.
@@ -342,8 +355,9 @@ class SovereignRagOrchestrator:
             _adg_confidence = _gbp(Path(__file__).resolve(), self.project_root).behavioral_score
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("rag_orchestrator: Exception swallowed at L344: %s", e)
+            logging.getLogger(__name__).debug("rag_orchestrator: Exception swallowed at L344: %s", e)
         vector_candidates = []
         bm25_candidates = []
         if hasattr(self, "vector_store") and self.vector_store:

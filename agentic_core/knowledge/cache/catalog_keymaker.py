@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class CacheKey:
     """Multi-factor cache key."""
+
     key_hash: str
     factors: dict[str, Any] = field(default_factory=dict)
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -60,7 +61,9 @@ class CatalogKeymaker:
         trace_id = f"key_{self._key_counter}"
         self._key_counter += 1
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "CatalogKeymaker.make_key",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "CatalogKeymaker.make_key",
         )
 
         # Build factor components
@@ -89,7 +92,7 @@ class CatalogKeymaker:
             key_hash=key_hash,
             factors=factors,
             metadata={
-                "created_at": __import__('time').time(),
+                "created_at": __import__("time").time(),
                 "factor_count": len(factors),
             },
         )
@@ -132,10 +135,7 @@ class CatalogKeymaker:
         if not common_factors:
             return 0.0
 
-        matches = sum(
-            1 for f in common_factors
-            if key1.factors[f] == key2.factors[f]
-        )
+        matches = sum(1 for f in common_factors if key1.factors[f] == key2.factors[f])
 
         return matches / len(common_factors)
 

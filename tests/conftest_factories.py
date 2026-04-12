@@ -114,7 +114,9 @@ def assert_file_content(path: Path, expected_content: str, message: str = None):
 
 def assert_mock_called(mock: Mock, call_count: int = 1, message: str = None):
     """Assert that a mock was called expected number of times."""
-    assert mock.call_count == call_count, message or f"Mock called {mock.call_count} times, expected {call_count}"
+    assert mock.call_count == call_count, (
+        message or f"Mock called {mock.call_count} times, expected {call_count}"
+    )
 
 
 # Common test scenarios

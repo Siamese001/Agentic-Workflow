@@ -16,14 +16,17 @@ class TestSsotScannerEnforcerAdg:
     def test_ssot_scanner_enforcer_adg_imports(self):
         """Test ssot_scanner_enforcer_adg module imports."""
         from agentic_core import ssot_scanner_enforcer_adg
+
         assert ssot_scanner_enforcer_adg is not None
 
     def test_ssot_scanner_enforcer_adg_class(self):
         """Test SsotScannerEnforcerAdg class exists."""
         from agentic_core import SsotScannerEnforcerAdg
+
         assert SsotScannerEnforcerAdg is not None
 
     def test_ssot_scanner_enforcer_adg_callable(self):
         """Test ssot_scanner_enforcer_adg functions are callable."""
         from agentic_core import validate_ssot_scanner_enforcer_adg
+
         assert callable(validate_ssot_scanner_enforcer_adg)

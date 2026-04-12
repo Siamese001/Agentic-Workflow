@@ -1,4 +1,5 @@
 """Probe which modules the stub test files are supposed to test."""
+
 import importlib
 
 CANDIDATES = [

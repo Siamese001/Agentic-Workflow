@@ -85,15 +85,16 @@ except ImportError as _err:
     raise ImportError("numpy is required for this module. Install with: pip install -e '.[infra]'") from _err
 try:
     from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
-# guardian: allow-silent-swallow - optional dependency
-except ImportError:
+except ImportError as _get_embedding_import_err:
 
-    def get_embedding(text: str, model: str = None, dimensions: int = None):
-        """Stub embedding function - returns zero vector if real embedder unavailable."""
-        import warnings
+    def get_embedding(text: str, model: str = None, dimensions: int = None):  # type: ignore[misc]
+        """Fail-fast: real embedder unavailable — do not silently disable semantic matching."""
+        raise ImportError(
+            "agentic_core.semantic_memory.embeddings.core_embedder is unavailable; "
+            "cannot compute embeddings (install the semantic_memory extras)"
+        ) from _get_embedding_import_err
 
-        warnings.warn("get_embedding not available, semantic matching disabled", stacklevel=2)
-        return [0.0] * 1536
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -190,6 +191,13 @@ class CacheEntry:
     hit_count: int = 0
     metadata: dict[str, Any] = field(default_factory=dict)
     embedding: np.ndarray | None = None
+    evidence_ids: list[str] = field(default_factory=list)
+    corpus_version: str = ""
+    embedding_model_id: str = ""
+    tenant_id: str = ""
+    ttl_seconds: int = 86400
+    grounding_complete: bool = False
+    policy_version: str = ""
 
     def is_expired(self, ttl: int) -> bool:
         """Check if entry is expired.
@@ -212,6 +220,13 @@ class SemanticCacheHit:
     age_seconds: float
     similarity_score: float = 1.0
     match_type: str = "exact"
+    evidence_ids: list[str] = field(default_factory=list)
+    corpus_version: str = ""
+    embedding_model_id: str = ""
+    tenant_id: str = ""
+    ttl_seconds: int = 86400
+    grounding_complete: bool = False
+    policy_version: str = ""
 
 
 @dataclass
@@ -261,11 +276,21 @@ class semantic_cache:
         """Compute normalized embedding vector."""
         embedding = get_embedding(text[:8192], model=self.embedding_model)
         vec = np.array(embedding)
-        norm = np.linalg.norm(vec)
-        return vec / norm if norm != 0 else vec
+        norm = float(np.linalg.norm(vec))
+        if norm == 0.0:
+            raise ValueError(
+                "_compute_embedding produced a zero-norm vector; "
+                "the embedder may be unavailable or returning invalid output"
+            )
+        return vec / norm
 
     def _find_semantic_match(self, query_embedding: np.ndarray) -> tuple[str, float] | None:
         """Linear search for best semantic match above threshold."""
+        if float(np.linalg.norm(query_embedding)) == 0.0:
+            raise ValueError(
+                "_find_semantic_match received a zero-norm embedding; "
+                "invalid embedding cannot be used for semantic comparison"
+            )
         best_key = None
         best_score = 0.0
         for key, cached_emb in self._embedding_index.items():
@@ -286,6 +311,7 @@ class semantic_cache:
     def get(self, prompt: str, context: dict[str, Any] | None = None) -> SemanticCacheHit | CacheMiss:
         """Get cached response, falling back to semantic similarity if enabled."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "semantic_cache.get")
 
@@ -440,6 +466,7 @@ def create_semantic_cache(
         enable_semantic_matching=enable_semantic_matching,
         similarity_threshold=similarity_threshold,
     )
+
 
 _emit_reads_through("l4", "cache_entry_types", "urg_read_1")
 _emit_reads_through("l4", "cache_entry_types", "urg_read_2")

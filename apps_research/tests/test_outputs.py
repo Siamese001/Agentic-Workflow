@@ -1,6 +1,7 @@
 """
 Test Research Outputs.
 """
+
 import unittest
 
 from apps_research.outputs import ResearchRenderer, ResearchSummaryRenderer, SectionRenderer

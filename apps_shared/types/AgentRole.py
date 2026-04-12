@@ -201,7 +201,11 @@ class AgentSpec:
     """Specification for creating an agent instance."""
 
     def __init__(
-        self, role: AgentRole, hop_function: Callable, config: SubatomicHopConfig | None = None, **kwargs,
+        self,
+        role: AgentRole,
+        hop_function: Callable,
+        config: SubatomicHopConfig | None = None,
+        **kwargs,
     ):
         """Initialize agent specification.
 
@@ -375,8 +379,11 @@ class AgentRegistry:
             spec: Agent specification to register
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistry.register_agent")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AgentRegistry.register_agent"
+        )
 
         self._specs[spec.role] = spec
         logger.info(f"Registered agent for role: {spec.role.value}")

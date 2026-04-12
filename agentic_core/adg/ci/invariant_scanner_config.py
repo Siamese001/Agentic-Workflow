@@ -241,7 +241,9 @@ class ScanReport:
 
     def print_summary(self) -> None:
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "InvariantScanResult.print_summary",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "InvariantScanResult.print_summary",
         )
         if self.passed:
             print(f"ADG-INVARIANT-SCAN: PASSED (new_edges={self.new_edges_count}, digest={self.digest})")

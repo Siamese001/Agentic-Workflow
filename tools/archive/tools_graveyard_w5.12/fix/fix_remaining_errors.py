@@ -1,4 +1,5 @@
 """Fix all remaining NameErrors and ImportErrors in agentic_core source files."""
+
 import os
 import re
 import subprocess
@@ -16,10 +17,24 @@ def get_errors():
         if not os.path.isdir(sdp) or sd.startswith("_"):
             continue
         r = subprocess.run(
-            [sys.executable, "-m", "pytest", f"tests/unit/agentic_core/{sd}",
-             "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
-            capture_output=True, text=True, encoding="utf-8", errors="replace",
-            cwd=ROOT, timeout=60,
+            [
+                sys.executable,
+                "-m",
+                "pytest",
+                f"tests/unit/agentic_core/{sd}",
+                "-c",
+                "tools/pytest_minimal.ini",
+                "--co",
+                "--tb=short",
+                "-p",
+                "no:warnings",
+            ],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            cwd=ROOT,
+            timeout=60,
         )
         lines = (r.stdout + r.stderr).splitlines()
         for i, line in enumerate(lines):
@@ -29,7 +44,7 @@ def get_errors():
             err = l[4:]
             # Find source file
             src = ""
-            for j in range(max(0, i-10), i):
+            for j in range(max(0, i - 10), i):
                 prev = lines[j].strip()
                 if ".py:" in prev and "in <module>" in prev:
                     candidate = prev.split(":")[0].strip()
@@ -46,6 +61,7 @@ def get_errors():
 def categorize(errors):
     """Categorize errors."""
     from collections import Counter
+
     cats = Counter()
     for src, err, sd in errors:
         if "NameError" in err:

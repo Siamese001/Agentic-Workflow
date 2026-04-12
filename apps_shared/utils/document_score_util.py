@@ -187,7 +187,8 @@ class RAGScorer:
         """
         self.config = config or {}
         self.weights = self.config.get(
-            "weights", {"relevance": 0.4, "semantic": 0.3, "keyword": 0.2, "freshness": 0.1},
+            "weights",
+            {"relevance": 0.4, "semantic": 0.3, "keyword": 0.2, "freshness": 0.1},
         )
 
     def score_documents(
@@ -209,6 +210,7 @@ class RAGScorer:
             List of DocumentScore objects
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGScorer.score_documents")
 
@@ -216,7 +218,10 @@ class RAGScorer:
         for i, doc in enumerate(documents):
             relevance = self._calculate_relevance(doc["content"], query)
             semantic = self._calculate_semantic_score(
-                doc, query, query_embedding, document_embeddings[i] if document_embeddings else None,
+                doc,
+                query,
+                query_embedding,
+                document_embeddings[i] if document_embeddings else None,
             )
             keyword = self._calculate_keyword_score(doc["content"], query)
             freshness = self._calculate_freshness_score(doc)

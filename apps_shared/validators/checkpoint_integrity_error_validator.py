@@ -286,8 +286,11 @@ class SecureCheckpointManager:
             CheckpointIntegrityError: If checkpoint integrity validation fails
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecureCheckpointManager.load_latest_checkpoint")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SecureCheckpointManager.load_latest_checkpoint"
+        )
 
         latest_checkpoint = None
         latest_time = 0
@@ -297,7 +300,9 @@ class SecureCheckpointManager:
                 if checkpoint and checkpoint.timestamp > latest_time:
                     latest_time = checkpoint.timestamp
                     latest_checkpoint = checkpoint
-            except CheckpointIntegrityError as e:    # guardian: CheckpointIntegrityError should be handled with specific context
+            except (
+                CheckpointIntegrityError
+            ) as e:  # guardian: CheckpointIntegrityError should be handled with specific context
                 logger.warning(f"Checkpoint integrity check failed for {checkpoint_file}: {e}")
                 quarantine_file = checkpoint_file.with_suffix(".corrupt")
                 checkpoint_file.replace(quarantine_file)
@@ -372,7 +377,10 @@ class CheckpointManagerFactory:
 
     @classmethod
     def get_manager(
-        cls, hop_id: str, checkpoint_dir: Path, use_global_key: bool = True,
+        cls,
+        hop_id: str,
+        checkpoint_dir: Path,
+        use_global_key: bool = True,
     ) -> SecureCheckpointManager:
         """Get or create a checkpoint manager.
 
@@ -385,8 +393,11 @@ class CheckpointManagerFactory:
             SecureCheckpointManager instance
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CheckpointManagerFactory.get_manager")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CheckpointManagerFactory.get_manager"
+        )
 
         if hop_id not in cls._managers:
             if use_global_key:

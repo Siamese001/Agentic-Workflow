@@ -10,6 +10,7 @@ PYTHONHASHSEED values.
 This is the key guarantee that E2 (fused normalize_with_planes) did not
 introduce any hash-seed-sensitive iteration order.
 """
+
 from __future__ import annotations
 
 import os
@@ -84,8 +85,7 @@ class TestPipelineDeterminism:
             cwd=str(REPO_ROOT),
         )
         assert proc.returncode == 0, (
-            f"Probe failed (seed={seed}):\nSTDOUT:\n{proc.stdout[-2000:]}\n"
-            f"STDERR:\n{proc.stderr[-2000:]}"
+            f"Probe failed (seed={seed}):\nSTDOUT:\n{proc.stdout[-2000:]}\nSTDERR:\n{proc.stderr[-2000:]}"
         )
         result: dict[str, str] = {}
         for line in proc.stdout.splitlines():
@@ -93,14 +93,19 @@ class TestPipelineDeterminism:
                 k, v = line.split("=", 1)
                 result[k.strip()] = v.strip()
         expected_keys = {
-            "SCAN_DIGEST", "ARTIFACT_DIGEST", "NG_FULL_DIGEST",
-            "NG_FILE_DIGEST", "NG_SYM_DIGEST", "NG_GOV_DIGEST",
-            "EDGES", "ENTITIES", "RELATIONS",
+            "SCAN_DIGEST",
+            "ARTIFACT_DIGEST",
+            "NG_FULL_DIGEST",
+            "NG_FILE_DIGEST",
+            "NG_SYM_DIGEST",
+            "NG_GOV_DIGEST",
+            "EDGES",
+            "ENTITIES",
+            "RELATIONS",
         }
         missing = expected_keys - set(result)
         assert not missing, (
-            f"Probe missing output keys {missing} (seed={seed}).\n"
-            f"stdout: {proc.stdout[-1000:]}"
+            f"Probe missing output keys {missing} (seed={seed}).\nstdout: {proc.stdout[-1000:]}"
         )
         return result
 

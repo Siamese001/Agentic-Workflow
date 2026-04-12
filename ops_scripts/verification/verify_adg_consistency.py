@@ -40,9 +40,12 @@ from typing import Any
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+
 class ConsistencyVerificationError(Exception):
     """Raised when consistency verification fails."""
+
     pass
+
 
 class ADGConsistencyVerifier:
     """Verifies ADG metric consistency across sources."""
@@ -101,7 +104,7 @@ class ADGConsistencyVerifier:
     def _load_snapshot(self) -> dict[str, Any]:
         """Load snapshot data."""
         try:
-            with open(self.snapshot_path, encoding='utf-8') as f:
+            with open(self.snapshot_path, encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
             raise ConsistencyVerificationError(f"Failed to load snapshot: {e}")
@@ -139,7 +142,9 @@ class ADGConsistencyVerifier:
 
         return None
 
-    def _verify_metric_consistency(self, metric_name: str, sql_value: int, snapshot_value: int | None) -> None:
+    def _verify_metric_consistency(
+        self, metric_name: str, sql_value: int, snapshot_value: int | None
+    ) -> None:
         """Verify consistency between SQL and snapshot values."""
         if snapshot_value is None:
             self.warnings.append(f"Metric {metric_name} not found in snapshot")
@@ -251,7 +256,9 @@ class ADGConsistencyVerifier:
                 cursor = conn.cursor()
 
                 # Layer distribution
-                cursor.execute("SELECT layer, COUNT(*) FROM nodes WHERE entity_type = 'module' GROUP BY layer")
+                cursor.execute(
+                    "SELECT layer, COUNT(*) FROM nodes WHERE entity_type = 'module' GROUP BY layer"
+                )
                 derived["layer_distribution"] = dict(cursor.fetchall())
 
                 # Confidence distribution
@@ -347,9 +354,15 @@ class ADGConsistencyVerifier:
             "warnings": self.warnings,
             "summary": {
                 "total_metrics_checked": len(self.REQUIRED_METRICS),
-                "consistent_metrics": sum(1 for r in consistency_results.values() if r.get("consistent") is True),
-                "inconsistent_metrics": sum(1 for r in consistency_results.values() if r.get("consistent") is False),
-                "missing_in_snapshot": sum(1 for r in consistency_results.values() if r.get("consistent") is None),
+                "consistent_metrics": sum(
+                    1 for r in consistency_results.values() if r.get("consistent") is True
+                ),
+                "inconsistent_metrics": sum(
+                    1 for r in consistency_results.values() if r.get("consistent") is False
+                ),
+                "missing_in_snapshot": sum(
+                    1 for r in consistency_results.values() if r.get("consistent") is None
+                ),
             },
         }
 
@@ -366,9 +379,12 @@ class ADGConsistencyVerifier:
 
         if not self.errors:
             print("\n✅ CONSISTENCY VERIFICATION PASSED")
-            print(f"📊 Summary: {result['summary']['consistent_metrics']}/{result['summary']['total_metrics_checked']} metrics consistent")
+            print(
+                f"📊 Summary: {result['summary']['consistent_metrics']}/{result['summary']['total_metrics_checked']} metrics consistent"
+            )
 
         return result
+
 
 def main():
     """CLI entry point."""
@@ -423,18 +439,21 @@ def main():
             result = verifier.verify()
 
             if args.output:
-                with open(args.output, 'w') as f:
+                with open(args.output, "w") as f:
                     json.dump(result, f, indent=2, default=str)
                 print(f"📄 Report saved to: {args.output}")
 
             return 0 if result["status"] == "PASS" else 1
 
-    except ConsistencyVerificationError as e:    # guardian: ConsistencyVerificationError should be handled with specific context
+    except (
+        ConsistencyVerificationError
+    ) as e:  # guardian: ConsistencyVerificationError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:
         print(f"💥 Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

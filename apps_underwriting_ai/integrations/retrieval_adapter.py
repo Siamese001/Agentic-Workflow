@@ -1,6 +1,7 @@
 """
 Retrieval Adapter - Prepares evidence requests for existing retrieval stack.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -12,6 +13,7 @@ from ..types import UnderwritingRequest
 @dataclass
 class EvidenceRequest:
     """Request for evidence retrieval."""
+
     claim_id: str
     claim_text: str
     evidence_type: str
@@ -23,6 +25,7 @@ class EvidenceRequest:
 @dataclass
 class RetrievalQuery:
     """Query for retrieval system."""
+
     query_type: str
     document_types: List[str]
     keywords: List[str]
@@ -58,62 +61,72 @@ class RetrievalAdapter:
         # Financial statement evidence
         if request.financials.periods:
             latest = request.financials.periods[-1]
-            requests.append(EvidenceRequest(
-                claim_id="fin_revenue",
-                claim_text=f"Revenue of ${latest.revenue:,.0f} in latest period",
-                evidence_type="document",
-                document_class="financial_statement",
-                keyword_anchors=["revenue", "sales", "income statement"],
-                field_requirements=["revenue", "period_end"],
-            ))
+            requests.append(
+                EvidenceRequest(
+                    claim_id="fin_revenue",
+                    claim_text=f"Revenue of ${latest.revenue:,.0f} in latest period",
+                    evidence_type="document",
+                    document_class="financial_statement",
+                    keyword_anchors=["revenue", "sales", "income statement"],
+                    field_requirements=["revenue", "period_end"],
+                )
+            )
 
         # Debt schedule evidence
         if request.financials.periods:
             latest = request.financials.periods[-1]
             if latest.total_debt:
-                requests.append(EvidenceRequest(
-                    claim_id="debt_balance",
-                    claim_text=f"Total debt of ${latest.total_debt:,.0f}",
-                    evidence_type="document",
-                    document_class="debt_schedule",
-                    keyword_anchors=["debt", "liabilities", "loan"],
-                    field_requirements=["lender", "balance", "maturity"],
-                ))
+                requests.append(
+                    EvidenceRequest(
+                        claim_id="debt_balance",
+                        claim_text=f"Total debt of ${latest.total_debt:,.0f}",
+                        evidence_type="document",
+                        document_class="debt_schedule",
+                        keyword_anchors=["debt", "liabilities", "loan"],
+                        field_requirements=["lender", "balance", "maturity"],
+                    )
+                )
 
         # Collateral evidence
         if request.collateral.estimated_value:
-            requests.append(EvidenceRequest(
-                claim_id="collateral_value",
-                claim_text=f"Collateral value of ${request.collateral.estimated_value:,.0f}",
-                evidence_type="document",
-                document_class="appraisal",
-                keyword_anchors=["appraised value", "fair market value", "collateral"],
-                field_requirements=["value", "date", "appraiser"],
-            ))
+            requests.append(
+                EvidenceRequest(
+                    claim_id="collateral_value",
+                    claim_text=f"Collateral value of ${request.collateral.estimated_value:,.0f}",
+                    evidence_type="document",
+                    document_class="appraisal",
+                    keyword_anchors=["appraised value", "fair market value", "collateral"],
+                    field_requirements=["value", "date", "appraiser"],
+                )
+            )
 
         # AR aging evidence
         if request.collateral.collateral_type in ["ar", "mixed"]:
-            requests.append(EvidenceRequest(
-                claim_id="ar_aging",
-                claim_text="Accounts receivable aging schedule",
-                evidence_type="document",
-                document_class="ar_aging",
-                keyword_anchors=["accounts receivable", "aging", "AR"],
-                field_requirements=["customer", "amount", "days_outstanding"],
-            ))
+            requests.append(
+                EvidenceRequest(
+                    claim_id="ar_aging",
+                    claim_text="Accounts receivable aging schedule",
+                    evidence_type="document",
+                    document_class="ar_aging",
+                    keyword_anchors=["accounts receivable", "aging", "AR"],
+                    field_requirements=["customer", "amount", "days_outstanding"],
+                )
+            )
 
         # Guarantor credit evidence
         if request.requested_structure.guarantor_required:
             for owner in request.borrower.ownership:
                 if owner.guarantor:
-                    requests.append(EvidenceRequest(
-                        claim_id=f"guarantor_fico_{owner.owner_name}",
-                        claim_text=f"Personal credit for guarantor {owner.owner_name}",
-                        evidence_type="structured_metric",
-                        document_class="credit_report",
-                        keyword_anchors=["FICO", "credit score", "credit report"],
-                        field_requirements=["fico_score", "delinquencies", "bankruptcies"],
-                    ))
+                    requests.append(
+                        EvidenceRequest(
+                            claim_id=f"guarantor_fico_{owner.owner_name}",
+                            claim_text=f"Personal credit for guarantor {owner.owner_name}",
+                            evidence_type="structured_metric",
+                            document_class="credit_report",
+                            keyword_anchors=["FICO", "credit score", "credit report"],
+                            field_requirements=["fico_score", "delinquencies", "bankruptcies"],
+                        )
+                    )
 
         return requests
 
@@ -126,22 +139,26 @@ class RetrievalAdapter:
 
         # Query for financial documents
         if request.documents.financial_statements:
-            queries.append(RetrievalQuery(
-                query_type="document_lookup",
-                document_types=["financial_statement"],
-                keywords=["balance sheet", "income statement", "cash flow"],
-                entity_filter=request.borrower.legal_name,
-            ))
+            queries.append(
+                RetrievalQuery(
+                    query_type="document_lookup",
+                    document_types=["financial_statement"],
+                    keywords=["balance sheet", "income statement", "cash flow"],
+                    entity_filter=request.borrower.legal_name,
+                )
+            )
 
         # Query for bank statements
         if request.documents.bank_statements:
-            queries.append(RetrievalQuery(
-                query_type="document_lookup",
-                document_types=["bank_statement"],
-                keywords=["deposit", "balance", "NSF"],
-                entity_filter=request.borrower.legal_name,
-                time_range="last_12_months",
-            ))
+            queries.append(
+                RetrievalQuery(
+                    query_type="document_lookup",
+                    document_types=["bank_statement"],
+                    keywords=["deposit", "balance", "NSF"],
+                    entity_filter=request.borrower.legal_name,
+                    time_range="last_12_months",
+                )
+            )
 
         return queries
 

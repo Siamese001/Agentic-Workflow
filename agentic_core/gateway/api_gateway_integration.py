@@ -41,6 +41,7 @@ Logger = logging.getLogger(__name__)
 
 class GatewayType(Enum):
     """Supported API gateway types."""
+
     KONG = "kong"
     AMBASSADOR = "ambassador"
     ENVOY = "envoy"
@@ -52,6 +53,7 @@ class GatewayType(Enum):
 
 class SecurityPolicy(Enum):
     """Security policy types."""
+
     AUTHENTICATION = "authentication"
     AUTHORIZATION = "authorization"
     RATE_LIMITING = "rate_limiting"
@@ -130,7 +132,9 @@ class GatewayClient(ABC):
         pass
 
     @abstractmethod
-    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
+    def inject_tracing_headers(
+        self, headers: dict[str, str], tracing_headers: TracingHeaders
+    ) -> dict[str, str]:
         """Inject tracing headers into request."""
         pass
 
@@ -184,7 +188,9 @@ class KongGatewayClient(GatewayClient):
             Logger.error(f"[GATEWAY] Kong initialization failed: {e}")
             return False
 
-    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
+    def inject_tracing_headers(
+        self, headers: dict[str, str], tracing_headers: TracingHeaders
+    ) -> dict[str, str]:
         """Inject tracing headers for Kong."""
         injected_headers = headers.copy()
         injected_headers.update(tracing_headers.to_dict())
@@ -211,8 +217,11 @@ class KongGatewayClient(GatewayClient):
                 try:
                     baggage = json.loads(baggage_str)
                 except json.JSONDecodeError as e:
+                    import logging
 
-                    import logging; logging.getLogger(__name__).debug("api_gateway_integration: Exception swallowed at L213: %s", e)
+                    logging.getLogger(__name__).debug(
+                        "api_gateway_integration: Exception swallowed at L213: %s", e
+                    )
 
             sampled = headers.get("x-sampled") == "1"
 
@@ -338,7 +347,9 @@ class EnvoyGatewayClient(GatewayClient):
             Logger.error(f"[GATEWAY] Envoy initialization failed: {e}")
             return False
 
-    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
+    def inject_tracing_headers(
+        self, headers: dict[str, str], tracing_headers: TracingHeaders
+    ) -> dict[str, str]:
         """Inject tracing headers for Envoy."""
         injected_headers = headers.copy()
         injected_headers.update(tracing_headers.to_dict())
@@ -360,8 +371,11 @@ class EnvoyGatewayClient(GatewayClient):
                 try:
                     baggage = json.loads(baggage_str)
                 except json.JSONDecodeError as e:
+                    import logging
 
-                    import logging; logging.getLogger(__name__).debug("api_gateway_integration: Exception swallowed at L361: %s", e)
+                    logging.getLogger(__name__).debug(
+                        "api_gateway_integration: Exception swallowed at L361: %s", e
+                    )
 
             sampled = headers.get("x-sampled") == "1"
 
@@ -407,6 +421,7 @@ class EnvoyGatewayClient(GatewayClient):
         """Check Envoy gateway health."""
         try:
             import requests
+
             response = requests.get(f"{self._admin_url}/ready", timeout=5.0)
             return response.status_code == 200
         except (ConnectionError, OSError, TimeoutError):
@@ -432,7 +447,9 @@ class CustomGatewayClient(GatewayClient):
         Logger.info(f"[GATEWAY] Custom gateway initialized at {config.host}:{config.port}")
         return True
 
-    def inject_tracing_headers(self, headers: dict[str, str], tracing_headers: TracingHeaders) -> dict[str, str]:
+    def inject_tracing_headers(
+        self, headers: dict[str, str], tracing_headers: TracingHeaders
+    ) -> dict[str, str]:
         """Inject tracing headers."""
         injected_headers = headers.copy()
         injected_headers.update(tracing_headers.to_dict())
@@ -454,8 +471,11 @@ class CustomGatewayClient(GatewayClient):
                 try:
                     baggage = json.loads(baggage_str)
                 except json.JSONDecodeError as e:
+                    import logging
 
-                    import logging; logging.getLogger(__name__).debug("api_gateway_integration: Exception swallowed at L454: %s", e)
+                    logging.getLogger(__name__).debug(
+                        "api_gateway_integration: Exception swallowed at L454: %s", e
+                    )
 
             sampled = headers.get("x-sampled") == "1"
 
@@ -481,7 +501,9 @@ class CustomGatewayClient(GatewayClient):
 
     def apply_security_policy(self, policy: SecurityPolicy, config: dict[str, Any]) -> bool:
         """Apply security policy to custom gateway."""
-        Logger.warning(f"[GATEWAY] Security policy application not implemented for custom gateway: {policy.value}")
+        Logger.warning(
+            f"[GATEWAY] Security policy application not implemented for custom gateway: {policy.value}"
+        )
         return False
 
 
@@ -544,8 +566,14 @@ class APIGatewayIntegration:
             self._health_status = "error"
             return False
 
-    def inject_tracing_headers(self, request_headers: dict[str, str], trace_id: str, span_id: str,
-                             parent_span_id: str | None = None, baggage: dict[str, str] | None = None) -> dict[str, str]:
+    def inject_tracing_headers(
+        self,
+        request_headers: dict[str, str],
+        trace_id: str,
+        span_id: str,
+        parent_span_id: str | None = None,
+        baggage: dict[str, str] | None = None,
+    ) -> dict[str, str]:
         """
         Inject tracing headers into request.
 
@@ -701,7 +729,9 @@ class APIGatewayIntegration:
             "active_policies": len(self._active_policies),
             "current_metrics": {
                 "total_requests": metrics.total_requests,
-                "success_rate": (metrics.successful_requests / metrics.total_requests) if metrics.total_requests > 0 else 0,
+                "success_rate": (metrics.successful_requests / metrics.total_requests)
+                if metrics.total_requests > 0
+                else 0,
                 "avg_response_time": metrics.avg_response_time,
                 "error_rate": metrics.error_rate,
                 "throughput": metrics.throughput,
@@ -712,7 +742,9 @@ class APIGatewayIntegration:
                 "port": self._config.port if self._config else None,
                 "tracing_enabled": self._config.tracing_enabled if self._config else False,
                 "metrics_enabled": self._config.metrics_enabled if self._config else False,
-            } if self._config else {},
+            }
+            if self._config
+            else {},
         }
 
 
@@ -728,7 +760,9 @@ def get_global_gateway() -> APIGatewayIntegration:
     return _global_gateway
 
 
-def initialize_gateway_integration(gateway_type: GatewayType = GatewayType.CUSTOM, config: GatewayConfig | None = None) -> bool:
+def initialize_gateway_integration(
+    gateway_type: GatewayType = GatewayType.CUSTOM, config: GatewayConfig | None = None
+) -> bool:
     """
     Initialize global API gateway integration.
 
@@ -743,8 +777,13 @@ def initialize_gateway_integration(gateway_type: GatewayType = GatewayType.CUSTO
     return gateway.initialize(config)
 
 
-def inject_gateway_tracing_headers(headers: dict[str, str], trace_id: str, span_id: str,
-                                   parent_span_id: str | None = None, baggage: dict[str, str] | None = None) -> dict[str, str]:
+def inject_gateway_tracing_headers(
+    headers: dict[str, str],
+    trace_id: str,
+    span_id: str,
+    parent_span_id: str | None = None,
+    baggage: dict[str, str] | None = None,
+) -> dict[str, str]:
     """
     Inject tracing headers using global gateway integration.
 

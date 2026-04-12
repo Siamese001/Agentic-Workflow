@@ -1,6 +1,7 @@
 """
 Test LIC Integrations.
 """
+
 import unittest
 
 from apps_lic.integrations import ExecutionAdapter, ObservabilityAdapter

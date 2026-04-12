@@ -25,6 +25,7 @@ Logger = logging.getLogger(__name__)
 
 class SovereignDependencyError(Exception):
     """Raised when a required dependency is not injected."""
+
     pass
 
 

@@ -18,29 +18,36 @@ class GeneratedTest(unittest.TestCase):
     def test_get_python_files(self):
         """Test get_python_files function."""
         from agentic_core.runtime.utils import get_python_files
+
         # TODO: Implement actual test
         result = get_python_files()
         self.assertIsNotNone(result)
+
     def test_get_all_files(self):
         """Test get_all_files function."""
         from agentic_core.runtime.utils import get_all_files
+
         # TODO: Implement actual test
         result = get_all_files()
         self.assertIsNotNone(result)
+
     def test_FileCache_init(self):
         """Test FileCache initialization."""
         from agentic_core.runtime.utils import FileCache
+
         # TODO: Implement actual test
         instance = FileCache()
         self.assertIsNotNone(instance)
+
     def test_FileCache_get_instance(self):
         """Test FileCache.get_instance method."""
         from agentic_core.runtime.utils import FileCache
+
         # TODO: Implement actual test
         instance = FileCache()
         result = instance.get_instance()
         self.assertIsNotNone(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

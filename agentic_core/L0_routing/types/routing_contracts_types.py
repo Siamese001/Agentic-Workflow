@@ -78,7 +78,9 @@ class LawSlotHandler:
         """Register a read-only twin for a tool. Live instances are rejected."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LawSlotHandler.register_twin:{tool_name}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"LawSlotHandler.register_twin:{tool_name}",
         )
         if self._frozen:
             raise RuntimeError("LawSlotHandler: Cannot register after freeze")

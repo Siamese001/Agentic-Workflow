@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 
 class RetryStrategy(Enum):
     """Retry strategies."""
+
     FIXED = "fixed"
     EXPONENTIAL = "exponential"
     LINEAR = "linear"
@@ -29,6 +30,7 @@ class RetryStrategy(Enum):
 @dataclass
 class RetryConfig:
     """Configuration for retries."""
+
     max_retries: int = 3
     base_delay: float = 1.0
     max_delay: float = 60.0
@@ -76,7 +78,9 @@ class FailureHandler:
         """
         trace_id = f"retry_{hash(str(fn)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "FailureHandler.execute_with_retry",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "FailureHandler.execute_with_retry",
         )
 
         last_exception = None
@@ -136,7 +140,7 @@ class FailureHandler:
             return self.config.base_delay * (attempt + 1)
 
         elif self.config.strategy == RetryStrategy.EXPONENTIAL:
-            delay = self.config.base_delay * (2 ** attempt)
+            delay = self.config.base_delay * (2**attempt)
             # Add jitter
             jitter = random.uniform(0, delay * 0.1)
             return min(delay + jitter, self.config.max_delay)

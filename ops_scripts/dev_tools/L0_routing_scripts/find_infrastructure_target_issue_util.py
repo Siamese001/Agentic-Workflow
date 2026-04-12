@@ -158,7 +158,9 @@ try:
     rows = json.loads(data_match.group(1))
     non_total = [r for r in rows if r.get("Territory") != "TOTAL"]
     infra_rows = [
-        r for r in non_total if "Infrastructure" in r.get("Territory", "") or "Infrast" in r.get("Territory", "")
+        r
+        for r in non_total
+        if "Infrastructure" in r.get("Territory", "") or "Infrast" in r.get("Territory", "")
     ]
     print(f"Found {len(infra_rows)} Infrastructure territories:\n")
     for row in infra_rows:

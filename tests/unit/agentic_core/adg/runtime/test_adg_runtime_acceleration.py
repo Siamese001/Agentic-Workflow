@@ -16,14 +16,17 @@ class TestAdgRuntimeAcceleration:
     def test_runtime_acceleration_imports(self):
         """Test runtime acceleration module imports."""
         from tools.adg import runtime_acceleration
+
         assert runtime_acceleration is not None
 
     def test_runtime_accelerator_class(self):
         """Test runtime accelerator class exists."""
         from tools.adg.runtime_acceleration import RuntimeAccelerator
+
         assert RuntimeAccelerator is not None
 
     def test_accelerate_runtime(self):
         """Test accelerate runtime function."""
         from tools.adg.runtime_acceleration import accelerate_runtime
+
         assert callable(accelerate_runtime)

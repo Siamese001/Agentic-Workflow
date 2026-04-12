@@ -205,8 +205,11 @@ class InjectionPattern(BaseModel):
     def validate_variables(cls, value: list[str]) -> list[str]:
         """[HARDENED] Ensure variables list has no empty entries."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionPattern.validate_variables")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionPattern.validate_variables"
+        )
 
         for variable in value:
             if not variable.strip():

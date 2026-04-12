@@ -173,7 +173,9 @@ class SurfaceIsolationValidator:
         self._last_cleanup = time.time()
 
     def can_mutate_surface(
-        self, target_surface: str, authority_sensitivity: str = "MEDIUM",
+        self,
+        target_surface: str,
+        authority_sensitivity: str = "MEDIUM",
     ) -> tuple[bool, str]:
         """Check if a surface can be mutated.
 
@@ -185,8 +187,11 @@ class SurfaceIsolationValidator:
             (can_mutate, reason) tuple
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SurfaceIsolationValidator.can_mutate_surface")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SurfaceIsolationValidator.can_mutate_surface"
+        )
 
         current_time = time.time()
         self._cleanup_expired_windows(current_time)

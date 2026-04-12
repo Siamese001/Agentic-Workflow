@@ -85,14 +85,14 @@ class L5RiskCalibrator(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.model = model_data.get('model')
-            self.feature_names = model_data.get('feature_names', [])
-            self.feature_importances = model_data.get('feature_importances', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.model = model_data.get("model")
+            self.feature_names = model_data.get("feature_names", [])
+            self.feature_importances = model_data.get("feature_importances", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             if self.model is None:
                 raise ValueError("No model found in saved file")
@@ -108,24 +108,24 @@ class L5RiskCalibrator(BaseMLModel):
             raise RuntimeError("No model to save")
 
         model_data = {
-            'model': self.model,
-            'feature_names': self.feature_names,
-            'feature_importances': self.feature_importances,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
-                'xgboost_params': getattr(self.model, 'params', {}),
+            "model": self.model,
+            "feature_names": self.feature_names,
+            "feature_importances": self.feature_importances,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
+                "xgboost_params": getattr(self.model, "params", {}),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -184,10 +184,7 @@ class L5RiskCalibrator(BaseMLModel):
             predicted_risk = self.RISK_MAPPING.get(int(predicted_class), "Medium")
 
             # Create probability distribution
-            prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            prob_distribution = {self.class_names[i]: float(prob) for i, prob in enumerate(probabilities)}
 
             # Calculate confidence (max probability)
             confidence = float(np.max(probabilities))
@@ -227,16 +224,18 @@ class L5RiskCalibrator(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': int(predicted_class),
-                'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold,
-                'risk_level': predicted_risk,
-                'requires_escalation': predicted_risk in ["High", "Critical"],
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": int(predicted_class),
+                    "class_probabilities": [float(p) for p in probabilities],
+                    "thresholds_passed": passes_threshold,
+                    "risk_level": predicted_risk,
+                    "requires_escalation": predicted_risk in ["High", "Critical"],
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -369,14 +368,14 @@ class L5RiskCalibrator(BaseMLModel):
         )
 
         return {
-            'risk_level': prediction.prediction,
-            'confidence': prediction.confidence,
-            'probability_distribution': prediction.probability_distribution,
-            'top_risk_factors': prediction.top_features,
-            'recommendations': recommendations,
-            'requires_additional_review': prediction.prediction in ["High", "Critical"],
-            'escalation_required': prediction.decision_mode == DecisionMode.ESCALATED,
-            'prediction_metadata': prediction.model_metadata,
+            "risk_level": prediction.prediction,
+            "confidence": prediction.confidence,
+            "probability_distribution": prediction.probability_distribution,
+            "top_risk_factors": prediction.top_features,
+            "recommendations": recommendations,
+            "requires_additional_review": prediction.prediction in ["High", "Critical"],
+            "escalation_required": prediction.decision_mode == DecisionMode.ESCALATED,
+            "prediction_metadata": prediction.model_metadata,
         }
 
     def get_feature_importance(self, model_input: ModelInput) -> list[dict[str, Any]]:
@@ -391,20 +390,24 @@ class L5RiskCalibrator(BaseMLModel):
             # Create feature importance list
             feature_importance = []
             for i, (name, importance) in enumerate(zip(feature_names, self.feature_importances)):
-                feature_importance.append({
-                    'feature_name': name,
-                    'importance_score': float(importance),
-                    'feature_value': model_input.features.get(name),
-                    'rank': i + 1,
-                    'relative_importance': float(importance / max(self.feature_importances)) if max(self.feature_importances) > 0 else 0.0,
-                })
+                feature_importance.append(
+                    {
+                        "feature_name": name,
+                        "importance_score": float(importance),
+                        "feature_value": model_input.features.get(name),
+                        "rank": i + 1,
+                        "relative_importance": float(importance / max(self.feature_importances))
+                        if max(self.feature_importances) > 0
+                        else 0.0,
+                    }
+                )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -425,31 +428,39 @@ class L5RiskCalibrator(BaseMLModel):
 
         # Base recommendations by risk level
         if risk_level == "Critical":
-            recommendations.extend([
-                "Immediate executive review required",
-                "Implement additional risk mitigations before approval",
-                "Consider policy redesign to reduce risk exposure",
-                "Document comprehensive risk assessment and mitigation plan",
-            ])
+            recommendations.extend(
+                [
+                    "Immediate executive review required",
+                    "Implement additional risk mitigations before approval",
+                    "Consider policy redesign to reduce risk exposure",
+                    "Document comprehensive risk assessment and mitigation plan",
+                ]
+            )
         elif risk_level == "High":
-            recommendations.extend([
-                "Senior management review required",
-                "Additional compliance checks needed",
-                "Implement monitoring and reporting requirements",
-                "Consider phased implementation approach",
-            ])
+            recommendations.extend(
+                [
+                    "Senior management review required",
+                    "Additional compliance checks needed",
+                    "Implement monitoring and reporting requirements",
+                    "Consider phased implementation approach",
+                ]
+            )
         elif risk_level == "Medium":
-            recommendations.extend([
-                "Standard review process sufficient",
-                "Implement basic monitoring requirements",
-                "Document risk assessment findings",
-            ])
+            recommendations.extend(
+                [
+                    "Standard review process sufficient",
+                    "Implement basic monitoring requirements",
+                    "Document risk assessment findings",
+                ]
+            )
         else:  # Low
-            recommendations.extend([
-                "Standard approval process appropriate",
-                "Minimal additional controls required",
-                "Proceed with normal implementation",
-            ])
+            recommendations.extend(
+                [
+                    "Standard approval process appropriate",
+                    "Minimal additional controls required",
+                    "Proceed with normal implementation",
+                ]
+            )
 
         # Feature-specific recommendations
         if features.get("policy_complexity_score", 0) > 0.7:
@@ -537,8 +548,8 @@ class L5RiskCalibrator(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert risk level string to class index
             if isinstance(label, str):
@@ -559,17 +570,17 @@ class L5RiskCalibrator(BaseMLModel):
 
         # Default XGBoost parameters
         default_params = {
-            'objective': 'multi:softprob',
-            'num_class': 4,  # Low, Medium, High, Critical
-            'eval_metric': 'mlogloss',
-            'max_depth': 6,
-            'learning_rate': 0.1,
-            'n_estimators': 100,
-            'subsample': 0.8,
-            'colsample_bytree': 0.8,
-            'random_state': 42,
-            'reg_alpha': 0.1,
-            'reg_lambda': 1.0,
+            "objective": "multi:softprob",
+            "num_class": 4,  # Low, Medium, High, Critical
+            "eval_metric": "mlogloss",
+            "max_depth": 6,
+            "learning_rate": 0.1,
+            "n_estimators": 100,
+            "subsample": 0.8,
+            "colsample_bytree": 0.8,
+            "random_state": 42,
+            "reg_alpha": 0.1,
+            "reg_lambda": 1.0,
         }
 
         # Merge with provided parameters

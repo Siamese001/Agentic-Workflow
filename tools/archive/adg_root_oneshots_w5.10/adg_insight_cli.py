@@ -245,7 +245,7 @@ def cmd_who_uses(module_path: str, result: ScanResult) -> dict:
     for edge in result.edges:
         if edge.relation_type == "imports" and edge.to_name == target_adg:
             if edge.from_name.startswith(_MODULE_PREFIX):
-                from_path = edge.from_name[len(_MODULE_PREFIX):]
+                from_path = edge.from_name[len(_MODULE_PREFIX) :]
                 direct_importers.append(from_path)
 
     tests = [p for p in sorted(set(direct_importers)) if p.startswith("tests/")]
@@ -270,9 +270,9 @@ def cmd_depends_on(module_path: str, result: ScanResult, transitive: bool = Fals
         if edge.relation_type == "imports" and edge.from_name == source_adg:
             to_path = ""
             if edge.to_name.startswith(_MODULE_PREFIX):
-                to_path = edge.to_name[len(_MODULE_PREFIX):]
+                to_path = edge.to_name[len(_MODULE_PREFIX) :]
             elif edge.to_name.startswith(_SYMBOL_PREFIX):
-                to_path = edge.to_name[len(_SYMBOL_PREFIX):]
+                to_path = edge.to_name[len(_SYMBOL_PREFIX) :]
             if to_path:
                 direct.add(to_path)
 
@@ -287,8 +287,8 @@ def cmd_depends_on(module_path: str, result: ScanResult, transitive: bool = Fals
         forward: dict[str, set[str]] = {}
         for edge in result.edges:
             if edge.relation_type == "imports" and edge.from_name.startswith(_MODULE_PREFIX):
-                from_p = edge.from_name[len(_MODULE_PREFIX):]
-                to_p = edge.to_name[len(_MODULE_PREFIX):] if edge.to_name.startswith(_MODULE_PREFIX) else ""
+                from_p = edge.from_name[len(_MODULE_PREFIX) :]
+                to_p = edge.to_name[len(_MODULE_PREFIX) :] if edge.to_name.startswith(_MODULE_PREFIX) else ""
                 if to_p:
                     if from_p not in forward:
                         forward[from_p] = set()
@@ -443,7 +443,9 @@ Commands:
     )
     parser.add_argument("command", help="Command to run")
     parser.add_argument("target", nargs="?", default=None, help="Target module/file/class")
-    parser.add_argument("--transitive", action="store_true", help="For depends-on: include transitive imports")
+    parser.add_argument(
+        "--transitive", action="store_true", help="For depends-on: include transitive imports"
+    )
     parser.add_argument("--repo-root", default=None, help="Repo root directory (default: cwd)")
     parser.add_argument("--compact", action="store_true", help="Compact JSON output")
     args = parser.parse_args(argv)

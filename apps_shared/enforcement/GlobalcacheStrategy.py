@@ -378,7 +378,10 @@ class L2VectorStore:
 
     # guardian: allow-magic-config
     def search(
-        self, query_embedding: list[float], threshold: float = 0.92, max_results: int = 5,
+        self,
+        query_embedding: list[float],
+        threshold: float = 0.92,
+        max_results: int = 5,
     ) -> list[tuple[CacheEntry, float]]:
         """Search for semantically similar entries.
 
@@ -392,7 +395,9 @@ class L2VectorStore:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SemanticVectorStore.search")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SemanticVectorStore.search"
+        )
         if self.embeddings.shape[0] == 0:
             self._misses += 1
             return []
@@ -555,7 +560,10 @@ class GlobalCache:
         return None
 
     def get_semantic(
-        self, query_text: str, threshold: float | None = None, max_results: int = 1,
+        self,
+        query_text: str,
+        threshold: float | None = None,
+        max_results: int = 1,
     ) -> list[Any]:
         """Get values by semantic similarity.
 
@@ -620,7 +628,11 @@ class GlobalCache:
         if text_for_embedding:
             embedding = self.embedder.embed(text_for_embedding)
         entry = CacheEntry(
-            key_hash=key_hash, value=value, embedding=embedding, ttl=ttl, source_engine=source_engine,
+            key_hash=key_hash,
+            value=value,
+            embedding=embedding,
+            ttl=ttl,
+            source_engine=source_engine,
         )
         self.l1.put(key_hash, entry)
         if embedding:

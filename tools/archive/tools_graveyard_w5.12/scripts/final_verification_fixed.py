@@ -11,16 +11,16 @@ def final_verification():
     """Verify all test files are now syntactically correct."""
     broken_files = []
     total_files = []
-    tests_dir = pathlib.Path('tests')
+    tests_dir = pathlib.Path("tests")
 
-    for f in sorted(tests_dir.rglob('test_*.py')):
-        if 'archive' in str(f).lower():
+    for f in sorted(tests_dir.rglob("test_*.py")):
+        if "archive" in str(f).lower():
             continue
 
         total_files.append(f)
 
         try:
-            content = f.read_text(encoding='utf-8', errors='replace')
+            content = f.read_text(encoding="utf-8", errors="replace")
             ast.parse(content)
         except SyntaxError:
             broken_files.append(f)
@@ -41,5 +41,6 @@ def final_verification():
 
     return broken_files
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     final_verification()

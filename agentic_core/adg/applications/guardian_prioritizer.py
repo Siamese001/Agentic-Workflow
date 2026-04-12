@@ -317,8 +317,8 @@ class GuardianPrioritizer:
 
             # Cross-layer violations (import only)
             if edge.relation_type == "imports":
-                from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
-                to_path = to_sym[len(_MODULE_PREFIX):] if to_sym.startswith(_MODULE_PREFIX) else ""
+                from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
+                to_path = to_sym[len(_MODULE_PREFIX) :] if to_sym.startswith(_MODULE_PREFIX) else ""
                 if from_path and to_path:
                     fl = module_path_to_layer(from_path)
                     tl = module_path_to_layer(to_path)
@@ -333,25 +333,25 @@ class GuardianPrioritizer:
                 if sym in PROVIDER_SDK_SYMBOLS or any(
                     sym.startswith(pkg) for pkg in ("openai.", "anthropic.", "google.generativeai.")
                 ):
-                    from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
+                    from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
                     llm_violations.append({"file": from_path, "symbol": sym, "line": edge.line_no})
 
             # Embedding violations (RULE_B)
             if edge.relation_type == "instantiates" and edge.edge_kind == "embedding":
                 sym = edge.symbol or ""
                 if sym in EMBEDDING_SYMBOLS or not sym:
-                    from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
+                    from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
                     embedding_violations.append({"file": from_path, "symbol": sym, "line": edge.line_no})
 
             # Dynamic exec violations (RULE_F)
             if edge.edge_kind == "exec":
-                from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
+                from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
                 dynamic_exec.append({"file": from_path, "line": edge.line_no})
 
             # Upward mutations (write to higher-rank layer)
             if edge.relation_type == "writes_to" and edge.edge_kind in ("write", "network"):
-                from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
-                to_path = to_sym[len(_MODULE_PREFIX):] if to_sym.startswith(_MODULE_PREFIX) else ""
+                from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
+                to_path = to_sym[len(_MODULE_PREFIX) :] if to_sym.startswith(_MODULE_PREFIX) else ""
                 if from_path and to_path:
                     fl = module_path_to_layer(from_path)
                     tl = module_path_to_layer(to_path)
@@ -391,7 +391,9 @@ class GuardianPrioritizer:
             "upward_mutations": upward_mutations,
             "fan_in_hotspots": fan_in_hotspots,
             "config_hotspots": config_hotspots,
-            "layer_hotspots": [{"key": k, "count": v} for k, v in sorted(layer_traffic.items(), key=lambda x: -x[1])],
+            "layer_hotspots": [
+                {"key": k, "count": v} for k, v in sorted(layer_traffic.items(), key=lambda x: -x[1])
+            ],
             "orphan_modules": orphan_modules,
         }
         self._signals_built = True
@@ -406,8 +408,11 @@ class GuardianPrioritizer:
             guardians in _GUARDIAN_ADG_SIGNALS are scored.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GuardianPrioritizer.prioritize")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GuardianPrioritizer.prioritize"
+        )
 
         import hashlib
 
@@ -417,7 +422,7 @@ class GuardianPrioritizer:
 
         # Add any unknown guardian IDs with score=0
         all_known = set(_GUARDIAN_ADG_SIGNALS.keys())
-        for gid in (guardian_ids or []):
+        for gid in guardian_ids or []:
             if gid not in all_known:
                 ids_to_score = list(ids_to_score) + [gid]
 

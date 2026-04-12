@@ -269,7 +269,9 @@ class TrajectoryEvaluationResult:
 
     def __post_init__(self) -> None:
         if self.artifact_type != "TRAJECTORY_EVALUATION_RESULT":
-            raise ValueError(f"artifact_type must be 'TRAJECTORY_EVALUATION_RESULT', got {self.artifact_type!r}")
+            raise ValueError(
+                f"artifact_type must be 'TRAJECTORY_EVALUATION_RESULT', got {self.artifact_type!r}"
+            )
         if not self.result_id:
             raise ValueError("result_id must not be empty")
         if not self.trace_id:

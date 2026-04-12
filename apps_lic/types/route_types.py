@@ -201,8 +201,11 @@ class CharLimitConstraint:
     def validate(self, count: int) -> bool:
         """Validate character count against constraints."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CharLimitConstraint.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CharLimitConstraint.validate"
+        )
 
         if self.min is not None and count < self.min:
             return False
@@ -221,8 +224,11 @@ class WordLimitConstraint:
     def validate(self, count: int) -> bool:
         """Validate word count against constraints."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WordLimitConstraint.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "WordLimitConstraint.validate"
+        )
 
         if self.min is not None and count < self.min:
             return False

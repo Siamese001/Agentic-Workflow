@@ -55,7 +55,9 @@ class ReplayVerificationResult:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "ReplayVerificationResult.mismatch_summary",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "ReplayVerificationResult.mismatch_summary",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -102,14 +104,17 @@ class DeterministicReplayGuard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "DeterministicReplayGuard.verify_routing_replay",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "DeterministicReplayGuard.verify_routing_replay",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
         gw: DeterministicRoutingGateway = get_routing_gateway(artifact.policy_config_hash)
         gw.stamp_decision(
-            str(artifact.route_path), metadata={"guard": "replay_verify", "trace_id": artifact.trace_id},
+            str(artifact.route_path),
+            metadata={"guard": "replay_verify", "trace_id": artifact.trace_id},
         )
         passed = gw.verify_replay(artifact)
 

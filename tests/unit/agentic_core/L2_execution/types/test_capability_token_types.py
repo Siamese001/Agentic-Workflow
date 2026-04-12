@@ -16,14 +16,17 @@ class TestCapabilityTokenTypes:
     def test_capability_token_types_imports(self):
         """Test capability_token_types module imports."""
         from agentic_core import capability_token_types
+
         assert capability_token_types is not None
 
     def test_capability_token_types_class(self):
         """Test CapabilityTokenTypes class exists."""
         from agentic_core import CapabilityTokenTypes
+
         assert CapabilityTokenTypes is not None
 
     def test_capability_token_types_callable(self):
         """Test capability_token_types functions are callable."""
         from agentic_core import validate_capability_token_types
+
         assert callable(validate_capability_token_types)

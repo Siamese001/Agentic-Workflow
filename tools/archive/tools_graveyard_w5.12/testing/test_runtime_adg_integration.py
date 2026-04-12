@@ -35,6 +35,7 @@ async def test_runtime_adg_integration():
 
             # Simulate some work
             import time
+
             time.sleep(0.1)  # Small delay to create trace data
 
             return {
@@ -105,6 +106,7 @@ async def test_runtime_adg_integration():
 
             # Create minimal runtime ADG directory and test snapshot
             import time
+
             runtime_adg_dir.mkdir(parents=True, exist_ok=True)
             test_snapshot = {
                 "trace_id": "test-runtime-adg-mock",
@@ -127,7 +129,7 @@ async def test_runtime_adg_integration():
             }
 
             snapshot_file = runtime_adg_dir / f"runtime_adg_{int(time.time() * 1000)}.json"
-            with open(snapshot_file, 'w') as f:
+            with open(snapshot_file, "w") as f:
                 json.dump(test_snapshot, f, indent=2)
 
             try:
@@ -141,6 +143,7 @@ async def test_runtime_adg_integration():
     except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
         print(f"[TEST ERROR] {e}")
         raise
+
 
 if __name__ == "__main__":
     asyncio.run(test_runtime_adg_integration())

@@ -12,6 +12,7 @@ to keep setup deterministic and avoid argparse coupling.
 Each subprocess writes its artifact_digest to stdout so the parent can compare
 without touching the shared artifacts/adg directory.
 """
+
 from __future__ import annotations
 
 import os
@@ -121,7 +122,9 @@ with tempfile.TemporaryDirectory() as td:
 """).strip()
 
 
-def _run_probe(enable_zip: bool, enable_reports: bool, enable_analysis: bool, tmp_path: Path) -> dict[str, str]:
+def _run_probe(
+    enable_zip: bool, enable_reports: bool, enable_analysis: bool, tmp_path: Path
+) -> dict[str, str]:
     script = _PROBE.format(
         repo_root=repr(str(REPO_ROOT)),
         enable_zip=str(enable_zip),
@@ -140,8 +143,11 @@ def _run_probe(enable_zip: bool, enable_reports: bool, enable_analysis: bool, tm
     env["PYTHONPATH"] = str(REPO_ROOT) + (os.pathsep + existing if existing else "")
     proc = subprocess.run(
         [sys.executable, str(script_path)],
-        capture_output=True, text=True,
-        timeout=TIMEOUT_S, env=env, cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+        timeout=TIMEOUT_S,
+        env=env,
+        cwd=str(REPO_ROOT),
     )
     assert proc.returncode == 0, (
         f"Probe failed:\nSTDOUT:\n{proc.stdout[-3000:]}\nSTDERR:\n{proc.stderr[-2000:]}"
@@ -172,8 +178,11 @@ def _run_banner_probe(enable_zip: bool, enable_reports: bool, enable_analysis: b
     env["PYTHONPATH"] = str(REPO_ROOT) + (os.pathsep + existing if existing else "")
     proc = subprocess.run(
         [sys.executable, str(script_path)],
-        capture_output=True, text=True,
-        timeout=TIMEOUT_S, env=env, cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+        timeout=TIMEOUT_S,
+        env=env,
+        cwd=str(REPO_ROOT),
     )
     assert proc.returncode == 0, (
         f"Banner probe failed:\nSTDOUT:\n{proc.stdout[-3000:]}\nSTDERR:\n{proc.stderr[-2000:]}"
@@ -209,21 +218,15 @@ class TestModeSmoke:
 
     def test_local_has_snapshot(self, local_result) -> None:
         """Local mode must produce the adg_snapshot JSON."""
-        assert int(local_result["SNAPSHOT_COUNT"]) >= 1, (
-            f"No snapshot in local mode. Got: {local_result}"
-        )
+        assert int(local_result["SNAPSHOT_COUNT"]) >= 1, f"No snapshot in local mode. Got: {local_result}"
 
     def test_local_has_sqlite(self, local_result) -> None:
         """Local mode must produce the SQLite index."""
-        assert int(local_result["SQLITE_COUNT"]) >= 1, (
-            f"No sqlite in local mode. Got: {local_result}"
-        )
+        assert int(local_result["SQLITE_COUNT"]) >= 1, f"No sqlite in local mode. Got: {local_result}"
 
     def test_local_omits_zip(self, local_result) -> None:
         """Local mode must NOT produce a zip archive."""
-        assert int(local_result["ZIP_COUNT"]) == 0, (
-            f"Unexpected zip in local mode. Got: {local_result}"
-        )
+        assert int(local_result["ZIP_COUNT"]) == 0, f"Unexpected zip in local mode. Got: {local_result}"
 
     def test_local_omits_reports(self, local_result) -> None:
         """Local mode must NOT produce standardized report JSON files."""
@@ -235,22 +238,16 @@ class TestModeSmoke:
 
     def test_full_has_zip(self, full_result) -> None:
         """Full mode must produce a zip archive."""
-        assert int(full_result["ZIP_COUNT"]) >= 1, (
-            f"No zip in full mode. Got: {full_result}"
-        )
+        assert int(full_result["ZIP_COUNT"]) >= 1, f"No zip in full mode. Got: {full_result}"
 
     def test_full_has_reports(self, full_result) -> None:
         """Full mode must produce report JSON files (expected 8)."""
         count = int(full_result["REPORT_COUNT"])
-        assert count >= 6, (
-            f"Full mode reports count too low: {count}. Got: {full_result}"
-        )
+        assert count >= 6, f"Full mode reports count too low: {count}. Got: {full_result}"
 
     def test_full_has_snapshot(self, full_result) -> None:
         """Full mode must also produce snapshot."""
-        assert int(full_result["SNAPSHOT_COUNT"]) >= 1, (
-            f"No snapshot in full mode. Got: {full_result}"
-        )
+        assert int(full_result["SNAPSHOT_COUNT"]) >= 1, f"No snapshot in full mode. Got: {full_result}"
 
     # --- Banner / manifest checks ---
 

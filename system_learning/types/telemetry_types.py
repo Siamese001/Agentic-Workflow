@@ -186,7 +186,9 @@ def compute_slice_hash(slice_obj: TelemetrySlice) -> str:
 
 
 def create_telemetry_slice(
-    window_start_utc: int, window_end_utc: int, events: tuple[TelemetryEvent, ...],
+    window_start_utc: int,
+    window_end_utc: int,
+    events: tuple[TelemetryEvent, ...],
 ) -> TelemetrySlice:
     """Create a telemetry slice with content-addressed ID.
 

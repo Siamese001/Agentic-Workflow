@@ -283,7 +283,7 @@ def parse_ast(path: Path) -> ast.Module | None:
     try:
         src = path.read_text(encoding="utf-8", errors="replace")
         return ast.parse(src, filename=str(path))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return None
 
 
@@ -295,13 +295,18 @@ def grep_file(path: Path, pattern: str) -> list[tuple[int, str]]:
         for i, line in enumerate(lines, 1):
             if rx.search(line):
                 hits.append((i, line.rstrip()))
-    except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+    except (
+        OSError,
+        UnicodeDecodeError,
+    ):  # guardian: File operations with encoding need error-specific handling
         pass
     return hits
 
 
 def find_call_sites_ast(
-    files: list[Path], func_names: set[str], attr_names: set[str] | None = None,
+    files: list[Path],
+    func_names: set[str],
+    attr_names: set[str] | None = None,
 ) -> list[dict]:
     """Find call sites of functions/methods by AST traversal."""
     results = []
@@ -413,7 +418,8 @@ def main() -> None:
     # ─── S2: EmbeddingFactory call sites ──────────────────────────────────────
     print("=== S2: EmbeddingFactory / create_embedding_client CALL SITES (AST) ===")
     emb_calls = find_call_sites_ast(
-        files, {"create_embedding_client", "get_embedding_client", "register_embedding_client"},
+        files,
+        {"create_embedding_client", "get_embedding_client", "register_embedding_client"},
     )
     print(f"CALL_COUNT: {len(emb_calls)}")
     print(format_hits(emb_calls, ["file", "line", "call"]))
@@ -430,7 +436,9 @@ def main() -> None:
     # ─── S3: UniversalWriteGateway call sites ─────────────────────────────────
     print("=== S3: UniversalWriteGateway CALL SITES (AST) ===")
     uwg_calls = find_call_sites_ast(
-        files, {"write", "execute_write", "get_instance"}, attr_names={"write", "execute_write"},
+        files,
+        {"write", "execute_write", "get_instance"},
+        attr_names={"write", "execute_write"},
     )
     uwg_refs = []
     for f in files:
@@ -609,7 +617,8 @@ def main() -> None:
     apps_writes = []
     for f in apps_files:
         hits = grep_file(
-            f, r"L4|L5|L0|SovereignLLMGateway|UniversalWriteGateway|route_generation|execute_write",
+            f,
+            r"L4|L5|L0|SovereignLLMGateway|UniversalWriteGateway|route_generation|execute_write",
         )
         for ln, text in hits:
             apps_writes.append({"file": rel(f), "line": ln, "text": text.strip()[:80]})

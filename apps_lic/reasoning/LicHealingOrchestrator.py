@@ -204,7 +204,9 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
         """
         Evaluate LIC domain health status.
         """
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "LicHealingOrchestrator.assess_system_health")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "LicHealingOrchestrator.assess_system_health"
+        )
         status = "healthy"
         if telemetry.get("error_rate", 0) > 0.05:
             status = "degraded"
@@ -330,7 +332,10 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
             gateway = SovereignLLMGateway()
             prompt = incident.get("prompt", incident.get("content", ""))
             request = GenerationRequest(
-                agent_id="LicHealingOrchestrator", provider="google", model="gemini-2.5-pro", prompt=prompt,
+                agent_id="LicHealingOrchestrator",
+                provider="google",
+                model="gemini-2.5-pro",
+                prompt=prompt,
             )
             _clk = get_clock()
             _clk.emit_replay_key(context=f"lic:heal:{request.agent_id}:{request.provider}")
@@ -396,7 +401,10 @@ class LicHealingOrchestrator(BaseHealingOrchestrator):
         return self.recovery_playbooks.get(incident_type, "default_recovery")
 
     def ml_record_playbook_success(
-        self, incident_type: str, playbook: str, success_metrics: dict[str, Any],
+        self,
+        incident_type: str,
+        playbook: str,
+        success_metrics: dict[str, Any],
     ) -> bool:
         """
         Record a successful playbook execution for future optimization.

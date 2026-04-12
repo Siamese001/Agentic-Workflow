@@ -311,7 +311,9 @@ class ForwardRollingFacade:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ForwardRollingFacade.execute:{agent_name}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ForwardRollingFacade.execute:{agent_name}",
         )
         start_time = get_clock().now_epoch()
         self._metrics.total_executions += 1

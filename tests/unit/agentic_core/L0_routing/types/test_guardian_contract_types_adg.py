@@ -3,6 +3,7 @@ and v15_exceptions.py.
 
 Uses AST-based source inspection — immune to broken transitive deps.
 """
+
 from __future__ import annotations
 
 import ast
@@ -12,7 +13,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-_SRC = pathlib.Path(__file__).parents[5] / "agentic_core" / "L0_routing" / "types" / "guardian_contract_types.py"
+_SRC = (
+    pathlib.Path(__file__).parents[5] / "agentic_core" / "L0_routing" / "types" / "guardian_contract_types.py"
+)
 _SRC_V15 = pathlib.Path(__file__).parents[5] / "agentic_core" / "L0_routing" / "types" / "v15_exceptions.py"
 
 

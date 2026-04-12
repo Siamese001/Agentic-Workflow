@@ -62,7 +62,7 @@ def main():
                     for offset in range(-5, 6):
                         check_ln = ln - 1 + offset
                         if 0 <= check_ln < len(lines) and "import" in lines[check_ln]:
-                            nearby = f" (found import at line {check_ln+1})"
+                            nearby = f" (found import at line {check_ln + 1})"
                             break
                     print(f"    edge {eid}: {status} {sf}:{ln} sym={sym_short}")
                     print(f"      line: '{line.strip()[:80]}'{nearby}")

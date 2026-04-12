@@ -16,14 +16,17 @@ class TestCodeValidatorFacade:
     def test_code_validator_facade_imports(self):
         """Test code_validator_facade module imports."""
         from agentic_core import code_validator_facade
+
         assert code_validator_facade is not None
 
     def test_code_validator_facade_class(self):
         """Test CodeValidatorFacade class exists."""
         from agentic_core import CodeValidatorFacade
+
         assert CodeValidatorFacade is not None
 
     def test_code_validator_facade_callable(self):
         """Test code_validator_facade functions are callable."""
         from agentic_core import validate_code_validator_facade
+
         assert callable(validate_code_validator_facade)

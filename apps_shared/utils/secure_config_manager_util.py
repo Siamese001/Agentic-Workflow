@@ -166,7 +166,10 @@ class SecureConfigManager:
     """Manages secure configuration with encrypted storage."""
 
     def __init__(
-        self, config_dir: Path | None = None, master_password: str | None = None, env_prefix: str = "AGENTIC_",
+        self,
+        config_dir: Path | None = None,
+        master_password: str | None = None,
+        env_prefix: str = "AGENTIC_",
     ):
         """Initialize the secure config manager.
 
@@ -420,8 +423,11 @@ class SecureConfigManager:
             List of validation errors
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecureConfigManager.validate_config")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SecureConfigManager.validate_config"
+        )
 
         errors = []
         for key, spec in schema.items():

@@ -188,7 +188,10 @@ class RegressionConfig(BaseModel):
 
     baseline_dir: str = Field(default="eval_baselines")
     tolerance_delta: float = Field(
-        default=0.05, ge=0.0, le=1.0, description="Max allowed score drop before REGRESSION flag",
+        default=0.05,
+        ge=0.0,
+        le=1.0,
+        description="Max allowed score drop before REGRESSION flag",
     )
     auto_update_baseline: bool = False
 
@@ -278,7 +281,10 @@ class EvalAgentSpecs(BaseModel):
     scorecard_dimensions: list[ScorecardDimensionConfig] = Field(
         default_factory=lambda: [
             ScorecardDimensionConfig(
-                dimension_id="correctness", display_name="Correctness", weight=3.0, threshold_pass=0.80,
+                dimension_id="correctness",
+                display_name="Correctness",
+                weight=3.0,
+                threshold_pass=0.80,
             ),
             ScorecardDimensionConfig(
                 dimension_id="determinism",
@@ -293,7 +299,10 @@ class EvalAgentSpecs(BaseModel):
                 threshold_pass=0.75,
             ),
             ScorecardDimensionConfig(
-                dimension_id="latency", display_name="Latency SLA", weight=1.5, threshold_pass=0.70,
+                dimension_id="latency",
+                display_name="Latency SLA",
+                weight=1.5,
+                threshold_pass=0.70,
             ),
             ScorecardDimensionConfig(
                 dimension_id="output_richness",
@@ -320,8 +329,11 @@ class EvalAgentSpecs(BaseModel):
     @model_validator(mode="after")
     def validate_weights_sum(self) -> EvalAgentSpecs:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvalAgentSpecs.validate_weights_sum")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvalAgentSpecs.validate_weights_sum"
+        )
 
         total = sum(d.weight for d in self.scorecard_dimensions)
         if total <= 0:

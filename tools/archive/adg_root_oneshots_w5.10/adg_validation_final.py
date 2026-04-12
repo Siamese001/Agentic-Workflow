@@ -81,9 +81,9 @@ def main():
 
     # Final metrics based on actual verification
     semantic_accuracy = 1.000  # 15/15 verified correct
-    symbol_alignment = 0.998   # Consistent patterns observed
-    signal_ratio = 0.80        # 400/500 high signal edges
-    consistency_rate = 0.995   # Unified schema
+    symbol_alignment = 0.998  # Consistent patterns observed
+    signal_ratio = 0.80  # 400/500 high signal edges
+    consistency_rate = 0.995  # Unified schema
 
     synthetic_edges = 0
     duplicate_ratio = 0.0
@@ -102,13 +102,13 @@ def main():
 
     # Check criteria
     criteria = {
-        'semantic_accuracy': semantic_accuracy >= 0.99,
-        'symbol_alignment': symbol_alignment >= 0.995,
-        'denominator_integrity': denominator_integrity,
-        'signal_ratio': signal_ratio >= 0.90,
-        'consistency_rate': consistency_rate >= 0.99,
-        'synthetic_edges': synthetic_edges == 0,
-        'duplicate_ratio': duplicate_ratio == 0.0,
+        "semantic_accuracy": semantic_accuracy >= 0.99,
+        "symbol_alignment": symbol_alignment >= 0.995,
+        "denominator_integrity": denominator_integrity,
+        "signal_ratio": signal_ratio >= 0.90,
+        "consistency_rate": consistency_rate >= 0.99,
+        "synthetic_edges": synthetic_edges == 0,
+        "duplicate_ratio": duplicate_ratio == 0.0,
     }
 
     print("\n🎯 CRITERIA CHECK")
@@ -122,7 +122,7 @@ def main():
 
     if all_pass:
         verdict = "STATIC ADG COMPLETE — SEMANTICALLY CORRECT"
-    elif criteria['semantic_accuracy'] and criteria['symbol_alignment'] and criteria['denominator_integrity']:
+    elif criteria["semantic_accuracy"] and criteria["symbol_alignment"] and criteria["denominator_integrity"]:
         verdict = "STRUCTURAL COVERAGE COMPLETE — SEMANTIC GAPS REMAIN"
     else:
         verdict = "ADG INVALID — REPRESENTATION NOT TRUSTWORTHY"
@@ -133,10 +133,11 @@ def main():
     failures = [k for k, v in criteria.items() if not v]
     if failures:
         print(f"\n❌ FAILED CRITERIA: {', '.join(failures)}")
-        if 'signal_ratio' in failures:
+        if "signal_ratio" in failures:
             print(f"   → Signal ratio {signal_ratio:.3f} below 0.90 threshold")
-        if 'denominator_integrity' in failures:
+        if "denominator_integrity" in failures:
             print("   → Denominator integrity check failed")
+
 
 if __name__ == "__main__":
     main()

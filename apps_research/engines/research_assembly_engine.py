@@ -246,8 +246,11 @@ class ResearchAssemblyEngine:
             ResearchAssemblyResult with sections, matrix, source register.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchAssemblyEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchAssemblyEngine.execute"
+        )
 
         mode = request.mode if isinstance(request.mode, ArtifactMode) else ArtifactMode(request.mode)
         sources = self._build_source_register(request)
@@ -255,7 +258,10 @@ class ResearchAssemblyEngine:
         matrix = self._build_comparison_matrix(request) if mode == ArtifactMode.COMPARISON else []
 
         _log.info(
-            "[ResearchAssemblyEngine] mode=%s sections=%d sources=%d", mode.value, len(sections), len(sources),
+            "[ResearchAssemblyEngine] mode=%s sections=%d sources=%d",
+            mode.value,
+            len(sections),
+            len(sources),
         )
         return ResearchAssemblyResult(
             sections=sections,

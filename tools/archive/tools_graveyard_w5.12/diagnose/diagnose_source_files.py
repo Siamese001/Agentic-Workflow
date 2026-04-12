@@ -21,7 +21,10 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
         continue
     r = subprocess.run(
         ["python", "-m", "pytest", path, "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")
@@ -35,10 +38,12 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
         # Scan the traceback block for source file and error
         src_file = None
         err_msg = None
-        for j in range(i+1, min(i+30, len(lines))):
+        for j in range(i + 1, min(i + 30, len(lines))):
             s = lines[j].strip()
             # Look for source file in traceback (non-test, non-pytest files)
-            m = re.match(r'^(agentic_core[\\/]\S+\.py|apps_\w+[\\/]\S+\.py|system_learning[\\/]\S+\.py):(\d+):', s)
+            m = re.match(
+                r"^(agentic_core[\\/]\S+\.py|apps_\w+[\\/]\S+\.py|system_learning[\\/]\S+\.py):(\d+):", s
+            )
             if m:
                 src_file = m.group(1).replace("\\", "/")
             if s.startswith("E   ") and ("Error" in s or "cannot import" in s or "No module" in s):

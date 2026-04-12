@@ -224,7 +224,9 @@ class TestGeneratorAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "TestGeneratorAgent.generate_tests_for_agent",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "TestGeneratorAgent.generate_tests_for_agent",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -235,14 +237,17 @@ class TestGeneratorAgent(SovereignBaseAgent):
 
         path = Path(agent_path)
         if not path.exists():
-            return {"success": False, "error": f"File not found: {agent_path}"}    # guardian: Syntax errors should be caught at parser level, not runtime
+            return {
+                "success": False,
+                "error": f"File not found: {agent_path}",
+            }  # guardian: Syntax errors should be caught at parser level, not runtime
         if not path.suffix == ".py":
             return {"success": False, "error": "Not a Python file"}
         log.info(f"[L0 TESTING] Generating tests for: {agent_path}")
         try:
             source = path.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             return {"success": False, "error": f"Syntax error: {e}"}
         except (ValueError, TypeError) as e:
             return {"success": False, "error": str(e)}

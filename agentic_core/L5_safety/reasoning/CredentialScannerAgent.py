@@ -81,16 +81,19 @@ class CredentialScannerAgent(SovereignBaseAgent):
     def _is_false_positive(self, line: str, pattern_name: str) -> bool:
         """Check if match is false positive."""
         from agentic_core.L5_safety.utils.credential_scanner_util import _is_false_positive
+
         return _is_false_positive(line, pattern_name)
 
     def _generate_summary(self) -> dict[str, Any]:
         """Generate summary statistics."""
         from agentic_core.L5_safety.utils.credential_scanner_util import _generate_summary
+
         return _generate_summary(self.matches)
 
     def _generate_recommendations(self) -> list[str]:
         """Generate security recommendations."""
         from agentic_core.L5_safety.utils.credential_scanner_util import _generate_recommendations
+
         return _generate_recommendations(self.matches)
 
     def _match_to_dict(self, match: CredentialMatch) -> dict[str, Any]:

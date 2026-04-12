@@ -11,6 +11,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
+
 @pytest.mark.unit
 class TestAdgFoundationalCoverageContract:
     """Test AdgFoundationalCoverageContract functionality."""

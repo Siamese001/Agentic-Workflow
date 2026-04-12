@@ -29,10 +29,13 @@ from agentic_core.L5_safety.enforcement.hitl.hitl_graph import (
 
 # Lazy import to avoid L5->L_TOOLS gravity violation
 _runtime_graph = None
+
+
 def _get_runtime_graph():
     global _runtime_graph
     if _runtime_graph is None:
         from agentic_core.adg.runtime.event_graph import RuntimeGraph
+
         _runtime_graph = RuntimeGraph()
     return _runtime_graph
 
@@ -46,6 +49,7 @@ _hitl_graph = HITLGraph()
 
 # Runtime graph is lazy-initialized on first use
 _rt_graph = None
+
 
 def _ensure_rt_graph():
     global _rt_graph
@@ -83,11 +87,13 @@ def _serialize_decision(d: Any) -> dict[str, Any]:
 @app.route("/api/v1/hitl/health", methods=["GET"])
 def health_check() -> tuple[Any, int]:
     """Health check endpoint."""
-    return jsonify({
-        "status": "healthy",
-        "service": "hitl-review-queue",
-        "version": "1.0.0",
-    }), 200
+    return jsonify(
+        {
+            "status": "healthy",
+            "service": "hitl-review-queue",
+            "version": "1.0.0",
+        }
+    ), 200
 
 
 @app.route("/api/v1/hitl/checkpoints", methods=["GET"])
@@ -115,12 +121,14 @@ def list_checkpoints() -> tuple[Any, int]:
 
     checkpoints = checkpoints[-limit:]
 
-    return jsonify({
-        "checkpoints": [_serialize_checkpoint(cp) for cp in checkpoints],
-        "total": len(_hitl_graph.checkpoints),
-        "pending": _hitl_graph.pending_count,
-        "resolved": _hitl_graph.resolved_count,
-    }), 200
+    return jsonify(
+        {
+            "checkpoints": [_serialize_checkpoint(cp) for cp in checkpoints],
+            "total": len(_hitl_graph.checkpoints),
+            "pending": _hitl_graph.pending_count,
+            "resolved": _hitl_graph.resolved_count,
+        }
+    ), 200
 
 
 @app.route("/api/v1/hitl/checkpoints/<checkpoint_id>", methods=["GET"])
@@ -133,10 +141,12 @@ def get_checkpoint(checkpoint_id: str) -> tuple[Any, int]:
 
     decisions = _hitl_graph.decisions_for(checkpoint_id)
 
-    return jsonify({
-        "checkpoint": _serialize_checkpoint(checkpoint),
-        "decisions": [_serialize_decision(d) for d in decisions],
-    }), 200
+    return jsonify(
+        {
+            "checkpoint": _serialize_checkpoint(checkpoint),
+            "decisions": [_serialize_decision(d) for d in decisions],
+        }
+    ), 200
 
 
 @app.route("/api/v1/hitl/checkpoints/<checkpoint_id>/decision", methods=["POST"])
@@ -167,9 +177,11 @@ def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
     try:
         decision_type = HITLDecisionType(decision_str)
     except ValueError:
-        return jsonify({
-            "error": f"Invalid decision: {decision_str}. Must be one of: approve, reject, override, defer",
-        }), 400
+        return jsonify(
+            {
+                "error": f"Invalid decision: {decision_str}. Must be one of: approve, reject, override, defer",
+            }
+        ), 400
 
     checkpoint = _hitl_graph.checkpoint_by_id(checkpoint_id)
     if checkpoint is None:
@@ -195,12 +207,14 @@ def submit_decision(checkpoint_id: str) -> tuple[Any, int]:
         reviewer,
     )
 
-    return jsonify({
-        "success": True,
-        "checkpoint_id": checkpoint_id,
-        "decision": decision_str,
-        "reviewer": reviewer,
-    }), 200
+    return jsonify(
+        {
+            "success": True,
+            "checkpoint_id": checkpoint_id,
+            "decision": decision_str,
+            "reviewer": reviewer,
+        }
+    ), 200
 
 
 @app.route("/api/v1/hitl/metrics", methods=["GET"])
@@ -208,12 +222,14 @@ def get_metrics() -> tuple[Any, int]:
     """Get HITL system metrics."""
     dist = _hitl_graph.decision_distribution()
 
-    return jsonify({
-        "total_checkpoints": len(_hitl_graph.checkpoints),
-        "pending": _hitl_graph.pending_count,
-        "resolved": _hitl_graph.resolved_count,
-        "decision_distribution": dist,
-    }), 200
+    return jsonify(
+        {
+            "total_checkpoints": len(_hitl_graph.checkpoints),
+            "pending": _hitl_graph.pending_count,
+            "resolved": _hitl_graph.resolved_count,
+            "decision_distribution": dist,
+        }
+    ), 200
 
 
 @app.route("/api/v1/hitl/batch/decide", methods=["POST"])
@@ -249,38 +265,46 @@ def batch_decide() -> tuple[Any, int]:
         override_value = dec_data.get("override_value")
 
         if not checkpoint_id or not decision_str or not reviewer:
-            results.append({
-                "checkpoint_id": checkpoint_id,
-                "success": False,
-                "error": "Missing required fields",
-            })
+            results.append(
+                {
+                    "checkpoint_id": checkpoint_id,
+                    "success": False,
+                    "error": "Missing required fields",
+                }
+            )
             continue
 
         checkpoint = _hitl_graph.checkpoint_by_id(checkpoint_id)
         if checkpoint is None:
-            results.append({
-                "checkpoint_id": checkpoint_id,
-                "success": False,
-                "error": "Checkpoint not found",
-            })
+            results.append(
+                {
+                    "checkpoint_id": checkpoint_id,
+                    "success": False,
+                    "error": "Checkpoint not found",
+                }
+            )
             continue
 
         if checkpoint.resolved:
-            results.append({
-                "checkpoint_id": checkpoint_id,
-                "success": False,
-                "error": "Checkpoint already resolved",
-            })
+            results.append(
+                {
+                    "checkpoint_id": checkpoint_id,
+                    "success": False,
+                    "error": "Checkpoint already resolved",
+                }
+            )
             continue
 
         try:
             decision_type = HITLDecisionType(decision_str)
         except ValueError:
-            results.append({
-                "checkpoint_id": checkpoint_id,
-                "success": False,
-                "error": f"Invalid decision: {decision_str}",
-            })
+            results.append(
+                {
+                    "checkpoint_id": checkpoint_id,
+                    "success": False,
+                    "error": f"Invalid decision: {decision_str}",
+                }
+            )
             continue
 
         # Record the decision
@@ -293,18 +317,22 @@ def batch_decide() -> tuple[Any, int]:
             override_value=override_value,
         )
 
-        results.append({
-            "checkpoint_id": checkpoint_id,
-            "success": True,
-            "decision": decision_str,
-        })
+        results.append(
+            {
+                "checkpoint_id": checkpoint_id,
+                "success": True,
+                "decision": decision_str,
+            }
+        )
 
-    return jsonify({
-        "processed": len(results),
-        "successful": sum(1 for r in results if r["success"]),
-        "failed": sum(1 for r in results if not r["success"]),
-        "results": results,
-    }), 200
+    return jsonify(
+        {
+            "processed": len(results),
+            "successful": sum(1 for r in results if r["success"]),
+            "failed": sum(1 for r in results if not r["success"]),
+            "results": results,
+        }
+    ), 200
 
 
 @app.route("/api/v1/hitl/escalations", methods=["GET"])
@@ -328,12 +356,14 @@ def list_escalations() -> tuple[Any, int]:
             "resolution": req.resolution,
         }
 
-    return jsonify({
-        "pending": [serialize_escalation(r) for r in pending],
-        "resolved": [serialize_escalation(r) for r in resolved],
-        "pending_count": len(pending),
-        "resolved_count": len(resolved),
-    }), 200
+    return jsonify(
+        {
+            "pending": [serialize_escalation(r) for r in pending],
+            "resolved": [serialize_escalation(r) for r in resolved],
+            "pending_count": len(pending),
+            "resolved_count": len(resolved),
+        }
+    ), 200
 
 
 def create_app() -> Flask:

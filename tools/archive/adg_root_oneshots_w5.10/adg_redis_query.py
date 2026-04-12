@@ -399,15 +399,22 @@ def _cli() -> None:
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     p_sf = sub.add_parser(
-        "search-files", aliases=["--search-files"], help="Find files whose path contains TERM",
+        "search-files",
+        aliases=["--search-files"],
+        help="Find files whose path contains TERM",
     )
     p_sf.add_argument("term", help="Substring to search for in file paths")
 
     p_sn = sub.add_parser(
-        "search-nodes", aliases=["--search-nodes"], help="Find nodes whose adg_name contains TERM",
+        "search-nodes",
+        aliases=["--search-nodes"],
+        help="Find nodes whose adg_name contains TERM",
     )
     p_sn.add_argument(
-        "term", nargs="?", default="", help="Substring to search for in node names (default: all)",
+        "term",
+        nargs="?",
+        default="",
+        help="Substring to search for in node names (default: all)",
     )
     p_sn.add_argument("--field", default="adg_name", help="Node hash field to search (default: adg_name)")
     p_sn.add_argument("--layer", default=None, help="Filter by layer e.g. L0, L2, L5")
@@ -506,9 +513,11 @@ def project_to_redis(data: dict) -> bool:
     """Project data to Redis."""
     return True
 
+
 def project_to_sqlite(data: dict, db_path: str) -> bool:
     """Project data to SQLite."""
     return True
+
 
 def search_nodes(query: str, limit: int = 10) -> list[dict]:
     """Search ADG nodes."""

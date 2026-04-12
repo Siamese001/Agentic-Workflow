@@ -115,6 +115,7 @@ try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         ARCHIVES_DIR as _acquired_archives_dir,
     )
+
     # Update if import succeeds
     AGENTIC_CORE_DIR = _acquired_core_dir
     ARCHIVES_DIR = _acquired_archives_dir
@@ -235,7 +236,9 @@ class NonConformingAgentFinder(ast.NodeVisitor):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "NonConformingAgentFinder.visit_ClassDef",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "NonConformingAgentFinder.visit_ClassDef",
         )
 
         class_name = node.name

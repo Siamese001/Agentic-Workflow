@@ -60,20 +60,24 @@ class ResearchValidator:
     """L5 validator for research artifacts."""
 
     # Required claim type labels
-    CLAIM_TYPE_LABELS: frozenset[str] = frozenset({
-        "[DIRECT_EVIDENCE]",
-        "[INTERPRETATION]",
-        "[ANALYST_INFERENCE]",
-        "[ASSUMPTION]",
-    })
+    CLAIM_TYPE_LABELS: frozenset[str] = frozenset(
+        {
+            "[DIRECT_EVIDENCE]",
+            "[INTERPRETATION]",
+            "[ANALYST_INFERENCE]",
+            "[ASSUMPTION]",
+        }
+    )
 
     # Source register required fields
-    REQUIRED_SOURCE_FIELDS: frozenset[str] = frozenset({
-        "source_id",
-        "title",
-        "claim_type",
-        "confidence",
-    })
+    REQUIRED_SOURCE_FIELDS: frozenset[str] = frozenset(
+        {
+            "source_id",
+            "title",
+            "claim_type",
+            "confidence",
+        }
+    )
 
     def __init__(self) -> None:
         self._violation_counter = 0
@@ -113,7 +117,9 @@ class ResearchValidator:
 
         # Calculate quality score
         quality_score = self._calculate_quality_score(
-            violations, source_metrics, claim_metrics,
+            violations,
+            source_metrics,
+            claim_metrics,
         )
 
         # Calculate source coverage
@@ -299,10 +305,7 @@ class ResearchValidator:
         total_claims = sum(claim_counts.values())
 
         # Calculate distribution
-        distribution = {
-            k: v / max(total_claims, 1)
-            for k, v in claim_counts.items()
-        }
+        distribution = {k: v / max(total_claims, 1) for k, v in claim_counts.items()}
 
         return {
             "total_claims": total_claims,
@@ -424,7 +427,9 @@ class ResearchValidationAgent:
 
         # Run validation
         validation = self.validator.validate(
-            research_content, source_register, required_sections,
+            research_content,
+            source_register,
+            required_sections,
         )
 
         # Run gates

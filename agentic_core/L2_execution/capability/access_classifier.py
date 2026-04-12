@@ -12,17 +12,19 @@ from typing import Any
 
 class AccessType(Enum):
     """Types of access requests."""
-    READ = auto()      # Read operations
-    TOOL = auto()      # Tool invocation
-    MODEL = auto()     # Model/LLM access
-    NETWORK = auto()   # Network/external API
-    MEMORY = auto()     # Memory/storage access
-    WRITE = auto()      # Write operations (UWG path)
+
+    READ = auto()  # Read operations
+    TOOL = auto()  # Tool invocation
+    MODEL = auto()  # Model/LLM access
+    NETWORK = auto()  # Network/external API
+    MEMORY = auto()  # Memory/storage access
+    WRITE = auto()  # Write operations (UWG path)
 
 
 @dataclass
 class ClassificationResult:
     """Result of access classification."""
+
     access_type: AccessType
     confidence: float
     reason: str

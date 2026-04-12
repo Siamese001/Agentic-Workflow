@@ -63,7 +63,9 @@ class ADGSimpleE2ETest:
         # Calculate overall results
         self.results["test_end"] = datetime.now().isoformat()
         self.results["duration_seconds"] = time.time() - self.start_time
-        self.results["overall_success"] = all(check.get("success", False) for check in self.results["checks"].values())
+        self.results["overall_success"] = all(
+            check.get("success", False) for check in self.results["checks"].values()
+        )
 
         return self.results
 
@@ -211,14 +213,18 @@ class ADGSimpleE2ETest:
                 "precision_results": precision_results,
                 "precision_success": precision_results.get("overall_success", False),
                 "database_used": str(db_path.name),
-                "checks_passed": sum(1 for check in precision_results.get("checks", {}).values() if check.get("success", False)),
+                "checks_passed": sum(
+                    1 for check in precision_results.get("checks", {}).values() if check.get("success", False)
+                ),
                 "total_checks": len(precision_results.get("checks", {})),
             }
 
             print("  Precision pass: ✅" if result["details"]["precision_success"] else "❌")
             print(f"  Duration: {precision_duration:.1f}s")
             print(f"  Database: {db_path.name}")
-            print(f"  Checks passed: {result['details']['checks_passed']}/{result['details']['total_checks']}")
+            print(
+                f"  Checks passed: {result['details']['checks_passed']}/{result['details']['total_checks']}"
+            )
 
         except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
@@ -272,10 +278,14 @@ class ADGSimpleE2ETest:
             }
 
             print("  Basic queries: ✅")
-            print(f"  Queries successful: {result['details']['queries_successful']}/{result['details']['total_queries']}")
+            print(
+                f"  Queries successful: {result['details']['queries_successful']}/{result['details']['total_queries']}"
+            )
 
             # Show some sample results
-            if "layer_distribution" in query_results and isinstance(query_results["layer_distribution"], list):
+            if "layer_distribution" in query_results and isinstance(
+                query_results["layer_distribution"], list
+            ):
                 print("  Top layers:")
                 for layer, count in query_results["layer_distribution"][:3]:
                     print(f"    {layer}: {count:,}")
@@ -293,7 +303,7 @@ class ADGSimpleE2ETest:
         """Save test results to file."""
         results_file = self.adg_dir / f"simple_e2e_test_results_{self.timestamp}.json"
 
-        with open(results_file, 'w') as f:
+        with open(results_file, "w") as f:
             json.dump(self.results, f, indent=2, sort_keys=True)
 
         print(f"\n📊 Test results saved to: {results_file}")

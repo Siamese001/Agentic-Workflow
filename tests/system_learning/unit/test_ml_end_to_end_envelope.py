@@ -16,14 +16,17 @@ class TestMlEndToEndEnvelope:
     def test_ml_end_to_end_envelope_imports(self):
         """Test ml_end_to_end_envelope module imports."""
         from agentic_core import ml_end_to_end_envelope
+
         assert ml_end_to_end_envelope is not None
 
     def test_ml_end_to_end_envelope_class(self):
         """Test MlEndToEndEnvelope class exists."""
         from agentic_core import MlEndToEndEnvelope
+
         assert MlEndToEndEnvelope is not None
 
     def test_ml_end_to_end_envelope_callable(self):
         """Test ml_end_to_end_envelope functions are callable."""
         from agentic_core import validate_ml_end_to_end_envelope
+
         assert callable(validate_ml_end_to_end_envelope)

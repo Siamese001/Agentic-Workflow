@@ -11,6 +11,7 @@ from dataclasses import dataclass
 @dataclass
 class HealthStatus:
     """Health check result for a layer."""
+
     layer: int
     name: str
     healthy: bool
@@ -24,6 +25,7 @@ class TestLayerHealthSmoke:
     def test_layer_1_redis_connectivity(self):
         """Smoke: Layer 1 Redis connectivity - actual connection test."""
         import socket
+
         start = time.time()
 
         # Attempt actual Redis connection on default port
@@ -32,9 +34,9 @@ class TestLayerHealthSmoke:
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(1)
-            result = sock.connect_ex(('localhost', 6379))
+            result = sock.connect_ex(("localhost", 6379))
             sock.close()
-            redis_healthy = (result == 0)
+            redis_healthy = result == 0
             if not redis_healthy:
                 error_msg = f"Redis connection failed with code {result}"
         except Exception as e:
@@ -61,10 +63,10 @@ class TestLayerHealthSmoke:
         # Simulate Redis down by connecting to closed port
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(1)
-        result = sock.connect_ex(('localhost', 6380))  # Wrong port
+        result = sock.connect_ex(("localhost", 6380))  # Wrong port
         sock.close()
 
-        redis_healthy = (result == 0)
+        redis_healthy = result == 0
 
         # When Redis is down, system should mark unhealthy and have fallback
         assert redis_healthy is False, "Connection to wrong port should fail"

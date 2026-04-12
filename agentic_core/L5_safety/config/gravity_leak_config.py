@@ -90,7 +90,9 @@ class GravityLeakDetector:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "GravityLeakDetector._recompute_ast_scores", "state_snapshot",
+            str(_uuid.uuid4()),
+            "GravityLeakDetector._recompute_ast_scores",
+            "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -100,13 +102,17 @@ class GravityLeakDetector:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "GravityLeakDetector._recompute_ast_scores", "p0_governance",
+            str(_uuid.uuid4()),
+            "GravityLeakDetector._recompute_ast_scores",
+            "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "GravityLeakDetector._recompute_ast_scores",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "GravityLeakDetector._recompute_ast_scores",
         )
         initial_scores = {
             "app_rg": 0.0,

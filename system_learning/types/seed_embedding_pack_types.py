@@ -183,8 +183,11 @@ class SeedEmbeddingPackManifest:
             ASCII-only canonical JSON bytes.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SeedEmbeddingPackManifest.to_canonical_json_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SeedEmbeddingPackManifest.to_canonical_json_bytes"
+        )
 
         canonical_data = {
             "namespace": self.namespace,

@@ -15,12 +15,13 @@ from pathlib import Path
 from typing import Any
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Test configuration
 REPO_ROOT = Path(__file__).parent.parent.parent
 PERFORMANCE_RESULTS = REPO_ROOT / "docs" / "reports" / "mcp_performance_results.json"
+
 
 class MCPPerformanceTester:
     def __init__(self):
@@ -95,7 +96,11 @@ class MCPPerformanceTester:
                 start_time = time.time()
 
                 process = subprocess.run(
-                    [sys.executable, "-c", f"import sys; sys.path.insert(0, '{REPO_ROOT}'); import importlib.util; spec = importlib.util.spec_from_file_location('server', '{full_path}'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)"],
+                    [
+                        sys.executable,
+                        "-c",
+                        f"import sys; sys.path.insert(0, '{REPO_ROOT}'); import importlib.util; spec = importlib.util.spec_from_file_location('server', '{full_path}'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)",
+                    ],
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -107,12 +112,12 @@ class MCPPerformanceTester:
                 if process.returncode == 0:
                     result["measurements"].append(startup_time)
                 else:
-                    logger.warning(f"Startup test {i+1} failed: {process.stderr}")
+                    logger.warning(f"Startup test {i + 1} failed: {process.stderr}")
 
             except subprocess.TimeoutExpired:
                 result["measurements"].append(10.0)  # Max timeout
             except Exception as e:
-                logger.warning(f"Startup test {i+1} error: {e}")
+                logger.warning(f"Startup test {i + 1} error: {e}")
 
         if result["measurements"]:
             result["mean"] = statistics.mean(result["measurements"])
@@ -144,7 +149,11 @@ class MCPPerformanceTester:
 
             for i in range(3):
                 process = psutil.Popen(
-                    [sys.executable, "-c", f"import time; time.sleep(2); import sys; sys.path.insert(0, '{REPO_ROOT}'); exec(open('{full_path}').read())"],
+                    [
+                        sys.executable,
+                        "-c",
+                        f"import time; time.sleep(2); import sys; sys.path.insert(0, '{REPO_ROOT}'); exec(open('{full_path}').read())",
+                    ],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
                 )
@@ -157,7 +166,7 @@ class MCPPerformanceTester:
                     memory_mb = memory_info.rss / 1024 / 1024
                     result["measurements"].append(memory_mb)
                 except Exception as e:
-                    logger.warning(f"Memory measurement {i+1} failed: {e}")
+                    logger.warning(f"Memory measurement {i + 1} failed: {e}")
                 finally:
                     process.terminate()
                     try:
@@ -202,7 +211,11 @@ class MCPPerformanceTester:
                 start_time = time.time()
 
                 process = subprocess.run(
-                    [sys.executable, "-c", f"import sys; sys.path.insert(0, '{REPO_ROOT}'); import importlib.util; spec = importlib.util.spec_from_file_location('server', '{full_path}'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)"],
+                    [
+                        sys.executable,
+                        "-c",
+                        f"import sys; sys.path.insert(0, '{REPO_ROOT}'); import importlib.util; spec = importlib.util.spec_from_file_location('server', '{full_path}'); module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)",
+                    ],
                     capture_output=True,
                     text=True,
                     timeout=5,
@@ -367,7 +380,7 @@ class MCPPerformanceTester:
             # Test embedding generation
             start_time = time.time()
 
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
             texts = ["test text"] * 10
             embeddings = model.encode(texts)
 
@@ -423,9 +436,9 @@ class MCPPerformanceTester:
         """Generate comprehensive performance report"""
         total_time = time.time() - self.start_time
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("📊 MCP PERFORMANCE TEST REPORT")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         logger.info(f"Total Test Time: {total_time:.2f}s")
         logger.info(f"Servers Tested: {len(self.results)}")
@@ -471,9 +484,9 @@ class MCPPerformanceTester:
         # Save detailed report
         await self._save_performance_report()
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("📊 PERFORMANCE TESTING COMPLETE!")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
     async def _save_performance_report(self):
         """Save detailed performance report"""
@@ -485,16 +498,18 @@ class MCPPerformanceTester:
         }
 
         try:
-            with open(PERFORMANCE_RESULTS, 'w', encoding='utf-8') as f:
+            with open(PERFORMANCE_RESULTS, "w", encoding="utf-8") as f:
                 json.dump(report_data, f, indent=2, default=str)
             logger.info(f"📄 Performance report saved: {PERFORMANCE_RESULTS}")
         except Exception as e:
             logger.error(f"Failed to save performance report: {e}")
 
+
 async def main():
     """Main entry point"""
     tester = MCPPerformanceTester()
     await tester.run_all_performance_tests()
+
 
 if __name__ == "__main__":
     try:

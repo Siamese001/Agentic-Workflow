@@ -1,4 +1,5 @@
 """Backend parity tests — Redis cache must match SQLite truth."""
+
 import pytest
 
 from tools.adg.core.service import ADGService
@@ -76,10 +77,10 @@ class TestResponseShapeConsistency:
         # Test various queries
         for svc in [service_full, service_sqlite_only]:
             status = svc.get_status()
-            assert hasattr(status, 'backend_used')
+            assert hasattr(status, "backend_used")
 
             node = svc.get_node("1")
-            assert hasattr(node, 'backend_used')
+            assert hasattr(node, "backend_used")
 
             edges = svc.get_edge_fanout("1", "calls", limit=5)
-            assert hasattr(edges, 'backend_used')
+            assert hasattr(edges, "backend_used")

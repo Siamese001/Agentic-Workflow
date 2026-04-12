@@ -124,6 +124,7 @@ class OutreachEngineContext:
         """Inject an instruction into the context."""
         self._instructions.append({"text": instruction, "priority": priority})
 
+
 _emit_emits_metric_event("OutreachLearningAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("OutreachLearningAgent", "p4obs", "metric_2")
 _emit_emits_metric_event("OutreachLearningAgent", "p4obs", "metric_3")
@@ -185,6 +186,7 @@ THRESHOLD = 0.95
 
 class HealerMixin:
     """Legacy mixin - use LICAgentBase instead."""
+
     pass
 
 
@@ -270,12 +272,20 @@ class OutreachLearningLoop:
 
     # guardian: allow-type-erasure
     async def record_success(
-        self, TaskType: str, input_context: str, output_result: str, confidence: float = 0.8,
+        self,
+        TaskType: str,
+        input_context: str,
+        output_result: str,
+        confidence: float = 0.8,
     ) -> Any:
         """Record a successful outreach pattern."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"OutreachLearningLoop.record_success:{TaskType}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"OutreachLearningLoop.record_success:{TaskType}",
+        )
         example_id = hashlib.sha256(f"{TaskType}:{input_context}:{output_result}".encode()).hexdigest()[:12]
         example = OutreachLearningExample(
             example_id=example_id,
@@ -496,7 +506,9 @@ class OutreachLearningAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def record_result(self, success: bool, details: str) -> None:
         """Record execution result."""
-        self.memory.store("last_result", {"success": success, "details": details, "timestamp": datetime.now().isoformat()})
+        self.memory.store(
+            "last_result", {"success": success, "details": details, "timestamp": datetime.now().isoformat()}
+        )
         print(f"   [{self.name}]  Analysis complete")
 
     # guardian: allow-type-erasure
@@ -506,7 +518,11 @@ class OutreachLearningAgent(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     async def record_success(
-        self, TaskType: str, input_context: str, output_result: str, confidence: float = 0.8,
+        self,
+        TaskType: str,
+        input_context: str,
+        output_result: str,
+        confidence: float = 0.8,
     ) -> Any:
         """Record a successful pattern."""
         await self.learning_loop.record_success(TaskType, input_context, output_result, confidence)
@@ -534,7 +550,8 @@ class OutreachLearningAgent(SovereignBaseAgent):
                 relation_type=GraphMemoryBridge.RELATION_FAILED_TASK,
             )
             bridge.add_observation(
-                entity_name=self.__class__.__name__, observation=f"FailedTask={TaskType} error={error[:200]}",
+                entity_name=self.__class__.__name__,
+                observation=f"FailedTask={TaskType} error={error[:200]}",
             )
         # guardian: allow-silent-swallow
         except Exception:

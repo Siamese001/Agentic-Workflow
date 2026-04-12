@@ -8,6 +8,7 @@ Scans for:
 - skipif decorators tied to import availability
 - bare try/except ImportError blocks
 """
+
 from __future__ import annotations
 
 import ast
@@ -66,8 +67,9 @@ class SkipPatternVisitor(ast.NodeVisitor):
             parts.append(self._in_test_func)
         return "::".join(parts) if parts else "<module-level>"
 
-    def _add_finding(self, line: int, pattern: str, dependency: str,
-                     behavior: str, extra: dict | None = None):
+    def _add_finding(
+        self, line: int, pattern: str, dependency: str, behavior: str, extra: dict | None = None
+    ):
         entry = {
             "file_path": self.file_path,
             "test_name": self._current_test_name(),
@@ -110,7 +112,7 @@ class SkipPatternVisitor(ast.NodeVisitor):
             return
         func = dec.func
         # pytest.mark.skipif(...)
-        if (isinstance(func, ast.Attribute) and func.attr == "skipif"):
+        if isinstance(func, ast.Attribute) and func.attr == "skipif":
             source_line = ""
             if dec.lineno and dec.lineno <= len(self.source_lines):
                 # Grab a few lines for context
@@ -166,7 +168,7 @@ class SkipPatternVisitor(ast.NodeVisitor):
         m = re.search(r'find_spec\(["\']([^"\']+)', source_line)
         if m:
             return m.group(1)
-        m = re.search(r'import\s+(\w[\w.]*)', source_line)
+        m = re.search(r"import\s+(\w[\w.]*)", source_line)
         if m:
             return m.group(1)
         return ""
@@ -201,7 +203,7 @@ class SkipPatternVisitor(ast.NodeVisitor):
                     reason = str(kw.value.value)
             dep = ""
             if "import" in reason.lower():
-                m = re.search(r'(\w[\w.]*)', reason)
+                m = re.search(r"(\w[\w.]*)", reason)
                 dep = m.group(1) if m else ""
             self._add_finding(
                 node.lineno,
@@ -293,7 +295,17 @@ class SkipPatternVisitor(ast.NodeVisitor):
             else:
                 handler_actions.append(type(stmt).__name__)
 
-        behavior = "skip" if has_skip else "flag" if has_flag else "stub" if has_stub else "pass" if has_pass else "other"
+        behavior = (
+            "skip"
+            if has_skip
+            else "flag"
+            if has_flag
+            else "stub"
+            if has_stub
+            else "pass"
+            if has_pass
+            else "other"
+        )
         action_desc = "; ".join(handler_actions) if handler_actions else "empty"
 
         self._add_finding(
@@ -390,10 +402,22 @@ def infer_category(finding: dict) -> str:
 
     # Optional third-party
     optional_third = {
-        "playwright", "dash", "plotly", "fastapi", "uvicorn",
-        "sentence_transformers", "chromadb", "duckdb", "numpy",
-        "pandas", "scikit-learn", "sklearn", "beautifulsoup4",
-        "bs4", "rich", "opentelemetry",
+        "playwright",
+        "dash",
+        "plotly",
+        "fastapi",
+        "uvicorn",
+        "sentence_transformers",
+        "chromadb",
+        "duckdb",
+        "numpy",
+        "pandas",
+        "scikit-learn",
+        "sklearn",
+        "beautifulsoup4",
+        "bs4",
+        "rich",
+        "opentelemetry",
     }
     if dep.split(".")[0].lower() in optional_third:
         return "optional"

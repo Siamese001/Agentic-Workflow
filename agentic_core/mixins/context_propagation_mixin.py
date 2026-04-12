@@ -172,8 +172,11 @@ class ContextPropagationMixin:
     def set_context(self, trace_id: str, span_id: str | None = None):
         """Manually sets the tracing context for the current execution flow."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextPropagationMixin.set_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ContextPropagationMixin.set_context"
+        )
 
         trace_id_var.set(trace_id)
         if span_id:

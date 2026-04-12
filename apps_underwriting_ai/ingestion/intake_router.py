@@ -1,6 +1,7 @@
 """
 Intake Router - Routes incoming underwriting requests to appropriate ingestion pipeline.
 """
+
 import hashlib
 import json
 from dataclasses import dataclass, field
@@ -18,6 +19,7 @@ from .xlsx_mapper import XLSXMapper
 @dataclass
 class IngestionResult:
     """Result of ingestion operation."""
+
     success: bool
     request: Optional[UnderwritingRequest] = None
     warnings: list = field(default_factory=list)
@@ -64,10 +66,10 @@ class IntakeRouter:
 
         try:
             # Parse input
-            if isinstance(data, Path) or (isinstance(data, str) and not data.strip().startswith('{')):
+            if isinstance(data, Path) or (isinstance(data, str) and not data.strip().startswith("{")):
                 # File path
                 path = Path(data)
-                with open(path, 'r', encoding='utf-8') as f:
+                with open(path, "r", encoding="utf-8") as f:
                     raw_data = json.load(f)
                 provenance["source_path"] = str(path)
                 provenance["source_hash"] = self._compute_file_hash(path)
@@ -236,7 +238,7 @@ class IntakeRouter:
     def _compute_file_hash(path: Path) -> str:
         """Compute SHA256 hash of file contents."""
         h = hashlib.sha256()
-        with open(path, 'rb') as f:
-            for chunk in iter(lambda: f.read(8192), b''):
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(8192), b""):
                 h.update(chunk)
         return h.hexdigest()[:16]

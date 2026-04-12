@@ -3,6 +3,7 @@ Hallucination checking module for apps_rg.
 
 Provides basic hallucination detection for resume generation.
 """
+
 from typing import Any
 
 

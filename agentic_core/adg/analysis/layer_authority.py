@@ -258,8 +258,11 @@ class LayerAuthorityReport:
     @property
     def summary(self) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LayerAuthorityReport.summary")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LayerAuthorityReport.summary"
+        )
 
         by_layer: dict[str, int] = {}
         for v in self.violations:

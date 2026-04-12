@@ -28,6 +28,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class ExpertSpecialization:
     """Defines the specialization domain of an expert"""
@@ -46,6 +47,7 @@ class ExpertSpecialization:
         match_ratio = keyword_matches / len(self.keywords) if self.keywords else 0.0
         return match_ratio * self.capability_score
 
+
 @dataclass
 class ExpertPrediction:
     """Prediction from a single expert"""
@@ -58,6 +60,7 @@ class ExpertPrediction:
     processing_time: float
     reasoning: str | None = None
     features_used: dict[str, float] | None = None
+
 
 @dataclass
 class MoEDecision:
@@ -72,6 +75,7 @@ class MoEDecision:
     load_balancing_applied: bool
     reasoning: str
     decision_time: float
+
 
 class BaseExpert(ABC):
     """Abstract base class for routing experts"""
@@ -110,6 +114,7 @@ class BaseExpert(ABC):
         """Update load factor for load balancing"""
         self.specialization.load_factor = new_factor
         self.specialization.last_used = time.time()
+
 
 class CodeReviewExpert(BaseExpert):
     """Specialized expert for code review tasks"""
@@ -162,6 +167,7 @@ class CodeReviewExpert(BaseExpert):
             self.success_count += 1
         self.last_update = time.time()
 
+
 class ResumeExpert(BaseExpert):
     """Specialized expert for resume and career tasks"""
 
@@ -209,6 +215,7 @@ class ResumeExpert(BaseExpert):
         if success:
             self.success_count += 1
         self.last_update = time.time()
+
 
 class DataAnalysisExpert(BaseExpert):
     """Specialized expert for data analysis tasks"""
@@ -258,6 +265,7 @@ class DataAnalysisExpert(BaseExpert):
             self.success_count += 1
         self.last_update = time.time()
 
+
 class GatingNetwork:
     """Neural gating network for expert selection"""
 
@@ -275,24 +283,27 @@ class GatingNetwork:
         self.learning_rate = 0.01
         self.training_count = 0
 
-        _emit_stores_learning_state("gating_network", "initialization", {
-            "input_dim": input_dim,
-            "hidden_dim": hidden_dim,
-            "num_experts": num_experts,
-        })
+        _emit_stores_learning_state(
+            "gating_network",
+            "initialization",
+            {
+                "input_dim": input_dim,
+                "hidden_dim": hidden_dim,
+                "num_experts": num_experts,
+            },
+        )
 
     def forward(self, query_embedding: np.ndarray, expert_features: list[dict[str, float]]) -> np.ndarray:
         """Forward pass through gating network"""
         # Combine query embedding with expert features
-        expert_feature_vector = np.array([
-            list(features.values())[:self.input_dim - len(query_embedding)]
-            for features in expert_features
-        ]).flatten()
+        expert_feature_vector = np.array(
+            [list(features.values())[: self.input_dim - len(query_embedding)] for features in expert_features]
+        ).flatten()
 
         # Pad or truncate to match input dimension
         combined_input = np.concatenate([query_embedding, expert_feature_vector])
         if len(combined_input) > self.input_dim:
-            combined_input = combined_input[:self.input_dim]
+            combined_input = combined_input[: self.input_dim]
         elif len(combined_input) < self.input_dim:
             combined_input = np.pad(combined_input, (0, self.input_dim - len(combined_input)))
 
@@ -307,8 +318,13 @@ class GatingNetwork:
 
         return probabilities
 
-    def update(self, query_embedding: np.ndarray, expert_features: list[dict[str, float]],
-               selected_expert_idx: int, reward: float):
+    def update(
+        self,
+        query_embedding: np.ndarray,
+        expert_features: list[dict[str, float]],
+        selected_expert_idx: int,
+        reward: float,
+    ):
         """Update gating network with reinforcement learning"""
         # Get current probabilities
         current_probs = self.forward(query_embedding, expert_features)
@@ -322,13 +338,17 @@ class GatingNetwork:
         grad *= reward
 
         # Update weights (simplified)
-        combined_input = np.concatenate([
-            query_embedding,
-            np.array([list(f.values()) for f in expert_features]).flatten()[:self.input_dim - len(query_embedding)],
-        ])
+        combined_input = np.concatenate(
+            [
+                query_embedding,
+                np.array([list(f.values()) for f in expert_features]).flatten()[
+                    : self.input_dim - len(query_embedding)
+                ],
+            ]
+        )
 
         if len(combined_input) > self.input_dim:
-            combined_input = combined_input[:self.input_dim]
+            combined_input = combined_input[: self.input_dim]
         elif len(combined_input) < self.input_dim:
             combined_input = np.pad(combined_input, (0, self.input_dim - len(combined_input)))
 
@@ -338,12 +358,17 @@ class GatingNetwork:
 
         self.training_count += 1
 
-        _emit_records_learning_event("gating_network", "weight_update", {
-            "training_count": self.training_count,
-            "loss": float(loss),
-            "selected_expert": selected_expert_idx,
-            "reward": reward,
-        })
+        _emit_records_learning_event(
+            "gating_network",
+            "weight_update",
+            {
+                "training_count": self.training_count,
+                "loss": float(loss),
+                "selected_expert": selected_expert_idx,
+                "reward": reward,
+            },
+        )
+
 
 class LoadBalancer:
     """Load balancer for expert selection"""
@@ -393,6 +418,7 @@ class LoadBalancer:
 
         return weights
 
+
 class MixtureOfExperts:
     """
     Mixture of Experts (MoE) routing system with specialized experts,
@@ -432,11 +458,15 @@ class MixtureOfExperts:
         # Thread pool for concurrent expert evaluation
         self.executor = ThreadPoolExecutor(max_workers=max_concurrent_experts)
 
-        _emit_stores_learning_state("mixture_of_experts", "initialization", {
-            "experts_count": len(self.experts),
-            "max_concurrent": max_concurrent_experts,
-            "load_balance_strategy": self.load_balancer.load_balance_strategy,
-        })
+        _emit_stores_learning_state(
+            "mixture_of_experts",
+            "initialization",
+            {
+                "experts_count": len(self.experts),
+                "max_concurrent": max_concurrent_experts,
+                "load_balance_strategy": self.load_balancer.load_balance_strategy,
+            },
+        )
 
     def add_expert(self, expert: BaseExpert):
         """Add a new expert to the mixture"""
@@ -447,11 +477,15 @@ class MixtureOfExperts:
         if len(self.experts) != self.gating_network.num_experts:
             self.gating_network = GatingNetwork(num_experts=len(self.experts))
 
-        _emit_records_learning_event("mixture_of_experts", "expert_added", {
-            "expert_id": expert.expert_id,
-            "domain": expert.specialization.domain_name,
-            "total_experts": len(self.experts),
-        })
+        _emit_records_learning_event(
+            "mixture_of_experts",
+            "expert_added",
+            {
+                "expert_id": expert.expert_id,
+                "domain": expert.specialization.domain_name,
+                "total_experts": len(self.experts),
+            },
+        )
 
     def route(self, query: str, context: dict[str, Any]) -> MoEDecision:
         """
@@ -539,24 +573,36 @@ class MixtureOfExperts:
         self.prediction_count += 1
 
         # Emit trace events
-        _emit_records_execution_trace("mixture_of_experts", "routing_decision", {
-            "selected_expert": selected_expert_id,
-            "selected_agent": selected_prediction.agent_name,
-            "confidence": confidence,
-            "domain": selected_expert.specialization.domain_name,
-        })
+        _emit_records_execution_trace(
+            "mixture_of_experts",
+            "routing_decision",
+            {
+                "selected_expert": selected_expert_id,
+                "selected_agent": selected_prediction.agent_name,
+                "confidence": confidence,
+                "domain": selected_expert.specialization.domain_name,
+            },
+        )
 
-        _emit_dispatches_agent("mixture_of_experts", selected_prediction.agent_name, {
-            "expert_id": selected_expert_id,
-            "confidence": confidence,
-            "specialization": selected_expert.specialization.domain_name,
-        })
+        _emit_dispatches_agent(
+            "mixture_of_experts",
+            selected_prediction.agent_name,
+            {
+                "expert_id": selected_expert_id,
+                "confidence": confidence,
+                "specialization": selected_expert.specialization.domain_name,
+            },
+        )
 
-        _emit_coordinates_agents("mixture_of_experts", "expert_coordination", {
-            "selected_expert": selected_expert_id,
-            "all_experts": list(self.experts.keys()),
-            "load_balanced": True,
-        })
+        _emit_coordinates_agents(
+            "mixture_of_experts",
+            "expert_coordination",
+            {
+                "selected_expert": selected_expert_id,
+                "all_experts": list(self.experts.keys()),
+                "load_balanced": True,
+            },
+        )
 
         return decision
 
@@ -627,19 +673,27 @@ class MixtureOfExperts:
         self.load_balancer.update_load(decision.selected_expert, -0.05)
 
         # Emit learning events
-        _emit_records_learning_event("mixture_of_experts", "outcome_update", {
-            "success": success,
-            "selected_expert": decision.selected_expert,
-            "confidence": decision.confidence,
-            "success_rate": self.get_success_rate(),
-        })
+        _emit_records_learning_event(
+            "mixture_of_experts",
+            "outcome_update",
+            {
+                "success": success,
+                "selected_expert": decision.selected_expert,
+                "confidence": decision.confidence,
+                "success_rate": self.get_success_rate(),
+            },
+        )
 
-        _emit_feeds_meta_learning("mixture_of_experts", "feedback", {
-            "expert_id": decision.selected_expert,
-            "success": success,
-            "reward": reward,
-            "specialization": selected_expert.specialization.domain_name,
-        })
+        _emit_feeds_meta_learning(
+            "mixture_of_experts",
+            "feedback",
+            {
+                "expert_id": decision.selected_expert,
+                "success": success,
+                "reward": reward,
+                "specialization": selected_expert.specialization.domain_name,
+            },
+        )
 
     def get_success_rate(self) -> float:
         """Get current success rate"""
@@ -688,17 +742,22 @@ class MixtureOfExperts:
             },
         }
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(state, f, indent=2)
 
-        _emit_stores_learning_state("mixture_of_experts", "state_saved", {
-            "filepath": filepath,
-            "success_rate": self.get_success_rate(),
-        })
+        _emit_stores_learning_state(
+            "mixture_of_experts",
+            "state_saved",
+            {
+                "filepath": filepath,
+                "success_rate": self.get_success_rate(),
+            },
+        )
 
     def shutdown(self):
         """Shutdown thread pool and cleanup"""
         self.executor.shutdown(wait=True)
+
 
 # Utility functions
 def create_default_moe() -> MixtureOfExperts:
@@ -718,6 +777,7 @@ def create_default_moe() -> MixtureOfExperts:
     )
 
     return moe
+
 
 __all__ = [
     "MixtureOfExperts",

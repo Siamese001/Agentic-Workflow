@@ -183,7 +183,9 @@ class FailureSignature:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "FailureSignature.canonical_bytes",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "FailureSignature.canonical_bytes",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -216,7 +218,9 @@ class ResourceEnvelope:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ResourceEnvelope.canonical_bytes",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ResourceEnvelope.canonical_bytes",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -246,7 +250,9 @@ class ResourcePrediction:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ResourcePrediction.canonical_bytes",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ResourcePrediction.canonical_bytes",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

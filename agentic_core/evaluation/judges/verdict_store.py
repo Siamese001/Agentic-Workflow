@@ -134,8 +134,7 @@ class VerdictStore:
                     verdict.adg_digest,
                     verdict.provider_id,
                     verdict.evidence_hash,
-                    verdict.created_at
-                    or datetime.now(timezone.utc).isoformat(),
+                    verdict.created_at or datetime.now(timezone.utc).isoformat(),
                 ),
             )
 
@@ -196,8 +195,7 @@ class VerdictStore:
                         verdict.adg_digest,
                         verdict.provider_id,
                         verdict.evidence_hash,
-                        verdict.created_at
-                        or datetime.now(timezone.utc).isoformat(),
+                        verdict.created_at or datetime.now(timezone.utc).isoformat(),
                     ),
                 )
                 count += 1

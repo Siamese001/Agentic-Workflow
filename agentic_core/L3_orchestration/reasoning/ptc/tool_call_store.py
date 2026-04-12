@@ -244,7 +244,9 @@ class ToolCallStore:
 
     # guardian: allow-magic-config -- limit default is a pagination parameter for store queries
     def list_calls(
-        self, tool_id: str | None = None, limit: int = 100,
+        self,
+        tool_id: str | None = None,
+        limit: int = 100,
     ) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
         """List stored tool calls.
 
@@ -369,7 +371,8 @@ def record_tool_call(
 
 # guardian: allow-magic-config -- limit default is a pagination parameter for module-level API
 def list_tool_calls(
-    tool_id: str | None = None, limit: int = 100,
+    tool_id: str | None = None,
+    limit: int = 100,
 ) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
     """List tool calls from the global store.
 

@@ -290,7 +290,10 @@ class AdaptiveThresholds:
         self.max_thresholds = {"excellent": 0.95, "high": 0.85, "good": 0.7, "marginal": 0.55}
 
     def adjust_thresholds(
-        self, quality_scores: list[float], acceptance_rate: float, target_acceptance: float = 0.75,
+        self,
+        quality_scores: list[float],
+        acceptance_rate: float,
+        target_acceptance: float = 0.75,
     ) -> dict[str, float]:
         """Adjust thresholds based on performance.
 
@@ -304,7 +307,9 @@ class AdaptiveThresholds:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "AdaptiveFeedbackLoop.adjust_thresholds")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "AdaptiveFeedbackLoop.adjust_thresholds"
+        )
         if not quality_scores:
             return self.thresholds
         acceptance_gap = target_acceptance - acceptance_rate

@@ -3,6 +3,7 @@
 Detects abstract bases (classes extending Protocol or ABC) and checks
 whether they have concrete implementors in the scanned codebase.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

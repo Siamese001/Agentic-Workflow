@@ -3,7 +3,6 @@
 Batch fix 100 files with placeholder content.
 """
 
-
 # Standard placeholder template
 PLACEHOLDER_TEMPLATE = '''"""Placeholder test for {class_name}."""
 
@@ -37,7 +36,5 @@ class Test{class_name}:
 '''
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

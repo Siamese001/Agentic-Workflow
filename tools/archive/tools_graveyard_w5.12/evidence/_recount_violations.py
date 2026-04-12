@@ -1,4 +1,5 @@
 """Recount current fan_in>=3 violations after skeleton generation."""
+
 from __future__ import annotations
 
 import ast
@@ -29,8 +30,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 _INTERNAL_PREFIXES = (
-    "agentic_core", "apps_rg", "apps_lic", "apps_shared",
-    "system_learning", "ops_scripts",
+    "agentic_core",
+    "apps_rg",
+    "apps_lic",
+    "apps_shared",
+    "system_learning",
+    "ops_scripts",
 )
 FAN_IN_THRESHOLD = 3
 FOUNDATIONAL_DEPTH_MIN = 1
@@ -39,8 +44,11 @@ FOUNDATIONAL_DEPTH_MIN = 1
 def _is_prod(path: str) -> bool:
     p = path.replace("\\", "/")
     return (
-        not p.startswith("tests/") and not p.startswith("tools/")
-        and "ops_scripts" not in p and "__pycache__" not in p and p.endswith(".py")
+        not p.startswith("tests/")
+        and not p.startswith("tools/")
+        and "ops_scripts" not in p
+        and "__pycache__" not in p
+        and p.endswith(".py")
     )
 
 
@@ -112,9 +120,12 @@ def _has_foundational(module_path: str) -> bool:
     test_dir = ROOT / "tests" / "unit" / Path(*parts[:-1])
     if test_dir.exists():
         for f in test_dir.iterdir():
-            if (f.name.startswith(f"test_{stem}") and f.suffix == ".py"
-                    and not f.name.endswith("_adg.py")
-                    and _count_asserts(f) >= FOUNDATIONAL_DEPTH_MIN):
+            if (
+                f.name.startswith(f"test_{stem}")
+                and f.suffix == ".py"
+                and not f.name.endswith("_adg.py")
+                and _count_asserts(f) >= FOUNDATIONAL_DEPTH_MIN
+            ):
                 return True
     # also check unit_min_deps
     for f in (ROOT / "tests" / "unit_min_deps").glob(f"test_{stem}*.py"):

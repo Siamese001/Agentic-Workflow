@@ -176,7 +176,9 @@ class SovereignPolicyRegistry:
         severity=PolicySeverity.CRITICAL,
     )
     MAX_TOKENS_PER_TURN = SovereignPolicy(
-        id="GOV-002", description="Single LLM turn must not exceed 32k tokens.", severity=PolicySeverity.HIGH,
+        id="GOV-002",
+        description="Single LLM turn must not exceed 32k tokens.",
+        severity=PolicySeverity.HIGH,
     )
     NO_PLAINTEXT_SECRETS = SovereignPolicy(
         id="GOV-003",

@@ -39,12 +39,10 @@ STATIC_RELATIONS = {
     "instantiates",
     "exports",
     "belongs_to_layer",
-
     # Test structure (still design-time)
     "covers",
     "defines_test_case",
     "defines_test_suite",
-
     # Code quality (design-time analysis)
     "antipattern",
     "dead_imports",
@@ -61,59 +59,50 @@ RUNTIME_RELATIONS = {
     "emits_replay_key",
     "signs_execution_trace",
     "snapshots_state",
-
     # Runtime policy actions
     "applies_guardrail",
     "validated_by_safety_plane",
     "verifies_policy",
     "reads_policy_state",
     "observes_policy_state",
-
     # Runtime state
     "observes_runtime_state",
     "reads_runtime_state",
     "pulls_context",
     "writes_through",
-
     # Runtime orchestration
     "agent_executes_agent",
     "orchestrates_workflow",
     "dispatches_execution_plan",
     "dispatches_healing_run",
     "escalates_to_human",
-
     # Runtime learning
     "captures_pattern",
     "records_learning_event",
     "feeds_meta_learning",
     "updates_routing_strategy",
-
     # Runtime observability
     "emits_metric_event",
     "records_incident_event",
     "captures_runtime_anomaly",
     "writes_observability_log",
     "triggers_alert",
-
     # Runtime evaluation
     "invokes_eval",
     "invokes_evaluation",
     "gated_by_confidence",
     "execution_terminates_at_uwg",
-
     # Runtime agent operations
     "checks_agent_registry",
     "validates_agent_capability",
     "routes_to_agent",
     "coordinates_agents",
-
     # Runtime tool operations
     "records_tool_invocation",
     "captures_execution_output",
     "authorize_and_execute",
     "writes_via_uwg",
     "blocks_direct_write",
-
     # Runtime evidence
     "transcripts_response",
     "proposal_commits_routing",
@@ -134,7 +123,7 @@ def filter_static_edges(edges: list[Edge]) -> list[Edge]:
             runtime_filtered += 1
         else:
             # Unknown relation - default to static if it looks structural
-            if edge.relation_type in ['imports', 'calls', 'implements', 'exports', 'belongs_to_layer']:
+            if edge.relation_type in ["imports", "calls", "implements", "exports", "belongs_to_layer"]:
                 static_edges.append(edge)
             else:
                 runtime_filtered += 1
@@ -251,7 +240,7 @@ def main():
 
         print(f"\n[CLEAN] Static ADG written to: {clean_dir}")
         print(f"[CLEAN] SQLite: {paths.sqlite.name}")
-        print(f"[CLEAN] Size: {paths.sqlite.stat().st_size / (1024*1024):.1f} MB")
+        print(f"[CLEAN] Size: {paths.sqlite.stat().st_size / (1024 * 1024):.1f} MB")
 
         # Final verification
         print("\n" + "=" * 80)
@@ -265,6 +254,7 @@ def main():
     except (ValueError, TypeError, RuntimeError) as e:
         print(f"\n[ERROR] {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 

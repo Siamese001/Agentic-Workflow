@@ -208,10 +208,7 @@ class LearningMetricsDashboard:
 
         # Get active alerts (last hour)
         current_time = time.time()
-        active_alerts = [
-            alert for alert in self._alerts
-            if current_time - alert.timestamp < 3600
-        ]
+        active_alerts = [alert for alert in self._alerts if current_time - alert.timestamp < 3600]
 
         return DashboardMetrics(
             total_evaluations=total_evals,

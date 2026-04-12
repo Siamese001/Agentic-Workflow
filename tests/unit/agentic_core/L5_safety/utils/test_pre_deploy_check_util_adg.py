@@ -16,14 +16,17 @@ class TestPreDeployCheckUtilAdg:
     def test_pre_deploy_check_util_adg_imports(self):
         """Test pre_deploy_check_util_adg module imports."""
         from agentic_core import pre_deploy_check_util_adg
+
         assert pre_deploy_check_util_adg is not None
 
     def test_pre_deploy_check_util_adg_class(self):
         """Test PreDeployCheckUtilAdg class exists."""
         from agentic_core import PreDeployCheckUtilAdg
+
         assert PreDeployCheckUtilAdg is not None
 
     def test_pre_deploy_check_util_adg_callable(self):
         """Test pre_deploy_check_util_adg functions are callable."""
         from agentic_core import validate_pre_deploy_check_util_adg
+
         assert callable(validate_pre_deploy_check_util_adg)

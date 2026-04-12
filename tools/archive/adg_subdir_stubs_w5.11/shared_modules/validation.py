@@ -4,6 +4,7 @@ Source: tests\unit\tools\adg\test_adg_query_bridge.py
 Extracted: 2026-03-27T06:50:34.195032
 """
 
+
 class TestADGQueryBridge:
     """Test suite for ADGQueryBridge."""
 
@@ -21,7 +22,7 @@ class TestADGQueryBridge:
     @pytest.fixture
     def mock_sqlite_db(self):
         """Create a temporary SQLite database for testing."""
-        with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as f:
             db_path = f.name
 
         # Create test database
@@ -85,13 +86,13 @@ class TestADGQueryBridge:
 
     def test_init_with_redis(self, mock_redis_client, mock_sqlite_db):
         """Test bridge initialization with Redis."""
-        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
+        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace(".sqlite", ""))
         # Test that bridge can be initialized without errors
         assert bridge.repo_root is not None
 
     def test_init_without_redis(self, mock_sqlite_db):
         """Test bridge initialization without Redis (SQLite fallback)."""
-        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
+        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace(".sqlite", ""))
         # Test that bridge can be initialized without errors
         assert bridge.repo_root is not None
 
@@ -108,7 +109,7 @@ class TestADGQueryBridge:
     def test_check_cache_fresh_sqlite(self, bridge_with_fallback):
         """Test cache freshness check with SQLite."""
         # Mock file mtime
-        with patch('pathlib.Path.stat') as mock_stat:
+        with patch("pathlib.Path.stat") as mock_stat:
             mock_stat.return_value = Mock(st_mtime=1234567890)
             assert bridge_with_fallback._check_cache_fresh() is True
 
@@ -233,6 +234,7 @@ class TestADGQueryBridge:
             results = bridge_with_fallback.files_calling("test")
             assert isinstance(results, list)
 
+
 class TestADGQueryBridgeIntegration:
     """Integration tests for ADGQueryBridge."""
 
@@ -243,7 +245,7 @@ class TestADGQueryBridgeIntegration:
         assert bridge_ast.backend == "ast"
 
         # Test SQLite fallback
-        with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as f:
             db_path = f.name
         Path(db_path).unlink()  # Delete the file to test fallback
 
@@ -292,7 +294,7 @@ class TestADGQueryBridgeIntegration:
 
     def mock_sqlite_db(self):
         """Create a temporary SQLite database for testing."""
-        with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as f:
             db_path = f.name
 
         # Create test database
@@ -354,13 +356,13 @@ class TestADGQueryBridgeIntegration:
 
     def test_init_with_redis(self, mock_redis_client, mock_sqlite_db):
         """Test bridge initialization with Redis."""
-        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
+        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace(".sqlite", ""))
         # Test that bridge can be initialized without errors
         assert bridge.repo_root is not None
 
     def test_init_without_redis(self, mock_sqlite_db):
         """Test bridge initialization without Redis (SQLite fallback)."""
-        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace('.sqlite', ''))
+        bridge = ADGQueryBridge(repo_root=str(mock_sqlite_db).replace(".sqlite", ""))
         # Test that bridge can be initialized without errors
         assert bridge.repo_root is not None
 
@@ -377,7 +379,7 @@ class TestADGQueryBridgeIntegration:
     def test_check_cache_fresh_sqlite(self, bridge_with_fallback):
         """Test cache freshness check with SQLite."""
         # Mock file mtime
-        with patch('pathlib.Path.stat') as mock_stat:
+        with patch("pathlib.Path.stat") as mock_stat:
             mock_stat.return_value = Mock(st_mtime=1234567890)
             assert bridge_with_fallback._check_cache_fresh() is True
 
@@ -509,7 +511,7 @@ class TestADGQueryBridgeIntegration:
         assert bridge_ast.backend == "ast"
 
         # Test SQLite fallback
-        with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as f:
             db_path = f.name
         Path(db_path).unlink()  # Delete the file to test fallback
 

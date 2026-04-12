@@ -30,6 +30,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 @pytest.fixture(autouse=True)
 def mock_external_services():
     """Mock all external services to prevent network calls."""
@@ -62,5 +63,6 @@ class TestRgReflectionAgent:
 
     def test_has_execute_method(self, agent_class):
         pass
+
     def test_no_network_calls_on_import(self):
         pass

@@ -301,12 +301,14 @@ class BriefOrchestrator:
                     results.append(result)
                     self._results[result.agent_id] = result
 
-                    self._lineage.append({
-                        "agent_id": result.agent_id,
-                        "agent_type": result.agent_type.value,
-                        "status": result.status.value,
-                        "execution_time_ms": result.execution_time_ms,
-                    })
+                    self._lineage.append(
+                        {
+                            "agent_id": result.agent_id,
+                            "agent_type": result.agent_type.value,
+                            "status": result.status.value,
+                            "execution_time_ms": result.execution_time_ms,
+                        }
+                    )
 
             _emit_records_workflow_lineage("enterprise", "BriefOrchestrator", f"completed_batch_{len(batch)}")
 
@@ -340,8 +342,7 @@ class BriefOrchestrator:
             "style_gates_passed": gates_passed,
             "total_execution_time_ms": sum(r.execution_time_ms for r in completed),
             "results_by_type": {
-                atype: [r.result_data for r in results]
-                for atype, results in by_type.items()
+                atype: [r.result_data for r in results] for atype, results in by_type.items()
             },
             "execution_lineage": self._lineage,
         }
@@ -396,8 +397,9 @@ class MultiAgentBriefEngine:
         # Create execution plan
         plan = self.orchestrator.create_orchestration_plan(personas, source_dirs)
 
-        _log.info(f"[MultiAgentBriefEngine] Plan: {len(plan.agents)} agents, "
-                  f"{len(plan.execution_order)} batches")
+        _log.info(
+            f"[MultiAgentBriefEngine] Plan: {len(plan.agents)} agents, {len(plan.execution_order)} batches"
+        )
 
         # Execute plan
         results = await self.orchestrator.execute_plan(plan)

@@ -34,8 +34,12 @@ _emit_writes_through("p1", "cross_repo_system_learning_import", "uwg_governed_wr
 _emit_writes_through("p1", "cross_repo_system_learning_import", "uwg_governed_write_2")
 _emit_pulls_context("p1", "cross_repo_system_learning_import", "context_retrieval")
 _emit_pulls_context("p1", "cross_repo_system_learning_import", "context_retrieval_2")
-emit_determinism_digest("trace_cross_repo_system_learning_import", "cross_repo_system_learning_import_dispatch")
-emit_determinism_digest("trace_cross_repo_system_learning_import", "cross_repo_system_learning_import_complete")
+emit_determinism_digest(
+    "trace_cross_repo_system_learning_import", "cross_repo_system_learning_import_dispatch"
+)
+emit_determinism_digest(
+    "trace_cross_repo_system_learning_import", "cross_repo_system_learning_import_complete"
+)
 _emit_validated_by_safety_plane("p1", "cross_repo_system_learning_import", "safety_validation")
 
 ArtifactBucket = Literal[
@@ -280,7 +284,7 @@ def _hash_file(path: Path) -> tuple[str, str]:
     if path.suffix.lower() in _TEXT_EXTENSIONS:
         try:
             normalized = _normalize_text_bytes(raw)
-        except UnicodeDecodeError:    # guardian: Encoding errors should specify fallback encoding strategy
+        except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
             return raw_hash, raw_hash
         return raw_hash, _sha256_hex(normalized)
     return raw_hash, raw_hash
@@ -304,7 +308,9 @@ def _derive_ingestion_timestamp_from_path(path: str) -> int:
 
 def discover_artifacts(git_root: Path) -> tuple[DiscoveredArtifact, ...]:
     artifacts: list[DiscoveredArtifact] = []
-    for current, dirnames, filenames in tqdm(os.walk(git_root, topdown=True), desc="walk git root", unit="dir", leave=False):
+    for current, dirnames, filenames in tqdm(
+        os.walk(git_root, topdown=True), desc="walk git root", unit="dir", leave=False
+    ):
         dirnames[:] = sorted(d for d in dirnames if d not in _EXCLUDED_DIR_NAMES)
         filenames.sort()
         current_path = Path(current)
@@ -387,7 +393,9 @@ def _namespace_and_dimension_for_bucket(bucket: ArtifactBucket) -> tuple[str, in
     return ("cross_repo_healing_contexts", 768)
 
 
-def build_embedding_import_records(accepted: tuple[AcceptedArtifact, ...]) -> tuple[EmbeddingImportRecord, ...]:
+def build_embedding_import_records(
+    accepted: tuple[AcceptedArtifact, ...],
+) -> tuple[EmbeddingImportRecord, ...]:
     records: list[EmbeddingImportRecord] = []
     seen_hashes: set[str] = set()
 
@@ -398,8 +406,12 @@ def build_embedding_import_records(accepted: tuple[AcceptedArtifact, ...]) -> tu
         raw = path.read_bytes()
         try:
             normalized = _normalize_text_bytes(raw)
-        except UnicodeDecodeError as exc:    # guardian: Encoding errors should specify fallback encoding strategy
-            raise RuntimeError(f"HARD FAIL: UTF-8 decode failed for accepted artifact {item.source_path}: {exc}") from exc
+        except (
+            UnicodeDecodeError
+        ) as exc:  # guardian: Encoding errors should specify fallback encoding strategy
+            raise RuntimeError(
+                f"HARD FAIL: UTF-8 decode failed for accepted artifact {item.source_path}: {exc}"
+            ) from exc
 
         text_hash = _sha256_hex(normalized)
         if text_hash in seen_hashes:
@@ -425,7 +437,9 @@ def build_embedding_import_records(accepted: tuple[AcceptedArtifact, ...]) -> tu
     return tuple(records)
 
 
-def _validate_embedding_dimensions(records: list[EmbeddingImportRecord] | tuple[EmbeddingImportRecord, ...]) -> None:
+def _validate_embedding_dimensions(
+    records: list[EmbeddingImportRecord] | tuple[EmbeddingImportRecord, ...],
+) -> None:
     by_namespace: dict[str, set[int]] = {}
     for record in records:
         by_namespace.setdefault(record.namespace, set()).add(record.target_dimension)
@@ -448,9 +462,15 @@ def _build_wiring_map() -> dict[str, list[str]]:
             "proposal_generation_evidence_inputs",
             "retrieval_evaluation_corpus_inputs",
         ],
-        "AUDIT_SNAPSHOT_SOURCE": ["audit_rca_blast_radius_context_inputs", "meta_learning_snapshot_assembly_inputs"],
+        "AUDIT_SNAPSHOT_SOURCE": [
+            "audit_rca_blast_radius_context_inputs",
+            "meta_learning_snapshot_assembly_inputs",
+        ],
         "RCA_SOURCE": ["failure_fingerprinter_inputs", "proposal_generation_evidence_inputs"],
-        "HEALING_OUTCOME_SOURCE": ["healing_outcome_history_inputs", "meta_learning_snapshot_assembly_inputs"],
+        "HEALING_OUTCOME_SOURCE": [
+            "healing_outcome_history_inputs",
+            "meta_learning_snapshot_assembly_inputs",
+        ],
         "PATTERN_MEMORY_SOURCE": ["pattern_analysis_engine_inputs", "failure_fingerprinter_inputs"],
         "EMBEDDING_MEMORY_SOURCE": ["local_faiss_seed_pack_memory_inputs"],
         "RETRIEVAL_EVAL_SOURCE": ["retrieval_evaluation_corpus_inputs"],
@@ -545,7 +565,8 @@ def write_run_artifacts(repo_root: Path, result: ImportRunResult) -> dict[str, s
         "forbidden_mutation_surfaces_blocked": list(_FORBIDDEN_MUTATION_SURFACES),
         "wiring_map": result.wiring_map,
         "accepted_by_bucket": {
-            bucket: sum(1 for a in result.accepted if a.bucket == bucket) for bucket in sorted(_ALLOWED_BUCKETS)
+            bucket: sum(1 for a in result.accepted if a.bucket == bucket)
+            for bucket in sorted(_ALLOWED_BUCKETS)
         },
     }
     _write_json(context_path, context_payload)
@@ -615,7 +636,9 @@ def write_run_artifacts(repo_root: Path, result: ImportRunResult) -> dict[str, s
 
 def load_cross_repo_learning_context(repo_root: Path) -> dict[str, Any]:
     context_path = repo_root / "artifacts" / "system_learning" / "cross_repo_import" / "latest_context.json"
-    accepted_path = repo_root / "artifacts" / "system_learning" / "cross_repo_import" / "accepted_manifest.json"
+    accepted_path = (
+        repo_root / "artifacts" / "system_learning" / "cross_repo_import" / "accepted_manifest.json"
+    )
 
     if not context_path.exists() or not accepted_path.exists():
         return {

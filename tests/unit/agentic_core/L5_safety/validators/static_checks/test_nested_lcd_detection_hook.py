@@ -16,14 +16,17 @@ class TestNestedLcdDetectionHook:
     def test_nested_lcd_detection_hook_imports(self):
         """Test nested_lcd_detection_hook module imports."""
         from agentic_core import nested_lcd_detection_hook
+
         assert nested_lcd_detection_hook is not None
 
     def test_nested_lcd_detection_hook_class(self):
         """Test NestedLcdDetectionHook class exists."""
         from agentic_core import NestedLcdDetectionHook
+
         assert NestedLcdDetectionHook is not None
 
     def test_nested_lcd_detection_hook_callable(self):
         """Test nested_lcd_detection_hook functions are callable."""
         from agentic_core import validate_nested_lcd_detection_hook
+
         assert callable(validate_nested_lcd_detection_hook)

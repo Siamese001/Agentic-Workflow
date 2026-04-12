@@ -295,7 +295,9 @@ class EmbeddingGenerator:
             return embeddings
         except Exception as e:
             Logger.error(f"BGE-M3 embedding generation failed: {e}")
-            Logger.warning(f"Falling back to zero embeddings - {len(texts)} chunks will have invalid embeddings")
+            Logger.warning(
+                f"Falling back to zero embeddings - {len(texts)} chunks will have invalid embeddings"
+            )
             # Fallback to zero embeddings
             return [[0.0] * self.vector_dimensions for _ in texts]
 
@@ -320,7 +322,10 @@ class VectorDBIngestor:
     """Handles ingestion into ChromaDB vector store."""
 
     def __init__(
-        self, collection_name: str = "docs", persist_directory: str = None, vector_dimensions: int = 1536,
+        self,
+        collection_name: str = "docs",
+        persist_directory: str = None,
+        vector_dimensions: int = 1536,
     ):
         self.collection_name = collection_name
         self.config = MemoryStoreConfig()
@@ -449,7 +454,9 @@ def main():
         help="Embedding provider to use",
     )
     parser.add_argument(
-        "--exclude-glob", action="append", help="Glob pattern to exclude (can be used multiple times)",
+        "--exclude-glob",
+        action="append",
+        help="Glob pattern to exclude (can be used multiple times)",
     )
     parser.add_argument("--limit", type=int, help="Limit number of files to process (for testing)")
 
@@ -470,7 +477,8 @@ def main():
     # Initialize components
     chunker = DocumentChunker()
     embedding_generator = EmbeddingGenerator(
-        mock_embeddings=args.mock_embeddings, embedding_provider=args.embedding_provider,
+        mock_embeddings=args.mock_embeddings,
+        embedding_provider=args.embedding_provider,
     )
     ingestor = VectorDBIngestor(args.collection_name, vector_dimensions=embedding_generator.vector_dimensions)
 

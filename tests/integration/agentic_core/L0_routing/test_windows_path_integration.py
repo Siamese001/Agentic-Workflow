@@ -44,6 +44,7 @@ class TestAgentDiscoveryWindowsPaths:
         # The key assertion: verify no c:.Git style mangling in actual paths
         # by checking the normalization happens correctly
         from pathlib import Path
+
         test_path = Path(normal_path)
         assert "\\" not in test_path.as_posix()  # No backslashes in normalized
 

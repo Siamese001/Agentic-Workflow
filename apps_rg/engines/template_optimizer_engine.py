@@ -177,8 +177,11 @@ class TemplateOptimizerEngine(BaseRGEngine):
         Select presentation template based on JD analysis.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TemplateOptimizerEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TemplateOptimizerEngine.execute"
+        )
 
         mission = self.ctx.buffer.read("mission_input")
         jd_text = mission.get("job_description", "") if mission else ""

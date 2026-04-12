@@ -34,7 +34,11 @@ try:
     cur.execute("PRAGMA table_info(scan_cache)")
     cache_cols = [c[1] for c in cur.fetchall()]
     print(f"scan_cache columns: {cache_cols}")
-except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower -- diagnostic script; PRAGMA failure is non-fatal, error printed to stdout
+except (
+    ValueError,
+    TypeError,
+    RuntimeError,
+) as e:  # guardian: allow-silent-swallower -- diagnostic script; PRAGMA failure is non-fatal, error printed to stdout
     print(f"No scan_cache table: {e}")
 
 conn.close()

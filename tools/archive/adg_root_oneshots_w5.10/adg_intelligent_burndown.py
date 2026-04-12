@@ -184,7 +184,7 @@ class IntelligentThresholdFixer:
 
         # Load ADG
         print("[INFO] Loading ADG dependency graph...")
-        with open(adg_path, encoding='utf-8') as f:
+        with open(adg_path, encoding="utf-8") as f:
             self.adg = json.load(f)
 
         # Build import graph
@@ -200,18 +200,18 @@ class IntelligentThresholdFixer:
         """Build import relationships from ADG edges."""
         graph = defaultdict(set)
 
-        for edge in self.adg.get('edges', []):
-            source = edge.get('f', '')
-            target_sym = edge.get('sym', '')
+        for edge in self.adg.get("edges", []):
+            source = edge.get("f", "")
+            target_sym = edge.get("sym", "")
 
             if not source or not target_sym:
                 continue
 
             # Extract module from symbol
-            if '.' in target_sym:
-                parts = target_sym.split('.')
+            if "." in target_sym:
+                parts = target_sym.split(".")
                 # Reconstruct module path
-                target_module = '/'.join(parts[:-1]) + '.py'
+                target_module = "/".join(parts[:-1]) + ".py"
                 graph[source].add(target_module)
 
         return graph
@@ -220,12 +220,12 @@ class IntelligentThresholdFixer:
         """Load violations from baseline, grouped by file."""
         violations = defaultdict(list)
 
-        with open(self.baseline_path, encoding='utf-8') as f:
+        with open(self.baseline_path, encoding="utf-8") as f:
             for line in f:
-                if 'threshold=0.95' not in line:
+                if "threshold=0.95" not in line:
                     continue
 
-                parts = line.split(':')
+                parts = line.split(":")
                 if len(parts) < 2:
                     continue
 
@@ -246,22 +246,22 @@ class IntelligentThresholdFixer:
         # Check if file imports from path_constants
         if file_path in self.import_graph:
             for imported in self.import_graph[file_path]:
-                if 'path_constants' in imported:
+                if "path_constants" in imported:
                     imports_path_constants = True
                     # Would need to check AST to see if THRESHOLD specifically imported
                     break
 
         return {
-            'file': file_path,
-            'imports_path_constants': imports_path_constants,
-            'imports_threshold': imports_threshold,
-            'violation_lines': self.violations.get(file_path, []),
+            "file": file_path,
+            "imports_path_constants": imports_path_constants,
+            "imports_threshold": imports_threshold,
+            "violation_lines": self.violations.get(file_path, []),
         }
 
     def fix_file_ast(self, file_path: Path) -> dict[str, Any]:
         """Fix a file using AST parsing and manipulation."""
         try:
-            source = file_path.read_text(encoding='utf-8')
+            source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source, filename=str(file_path))
 
             # Analyze what needs fixing
@@ -272,15 +272,17 @@ class IntelligentThresholdFixer:
             for node in ast.walk(tree):
                 # Look for keyword arguments with threshold=0.95
                 if isinstance(node, ast.keyword):
-                    if node.arg == 'threshold':
+                    if node.arg == "threshold":
                         if isinstance(node.value, ast.Constant):
                             if node.value.value == 0.95:
                                 needs_import = True
-                                modifications.append({
-                                    'type': 'keyword_arg',
-                                    'line': node.lineno,
-                                    'arg': node.arg,
-                                })
+                                modifications.append(
+                                    {
+                                        "type": "keyword_arg",
+                                        "line": node.lineno,
+                                        "arg": node.arg,
+                                    }
+                                )
 
             # Check if already imports THRESHOLD
             has_threshold_import = False
@@ -288,9 +290,9 @@ class IntelligentThresholdFixer:
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom):
-                    if node.module and 'path_constants' in node.module:
+                    if node.module and "path_constants" in node.module:
                         for alias in node.names:
-                            if alias.name == 'THRESHOLD':
+                            if alias.name == "THRESHOLD":
                                 has_threshold_import = True
                                 break
                         if not has_threshold_import:
@@ -298,30 +300,30 @@ class IntelligentThresholdFixer:
                             import_node = node
 
             return {
-                'status': 'analyzed',
-                'needs_import': needs_import and not has_threshold_import,
-                'has_threshold_import': has_threshold_import,
-                'modifications': modifications,
-                'import_node': import_node,
+                "status": "analyzed",
+                "needs_import": needs_import and not has_threshold_import,
+                "has_threshold_import": has_threshold_import,
+                "modifications": modifications,
+                "import_node": import_node,
             }
 
         # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError as e:
             return {
-                'status': 'error',
-                'error': f'SyntaxError: {e}',
+                "status": "error",
+                "error": f"SyntaxError: {e}",
             }
         except (ValueError, TypeError, RuntimeError) as e:
             return {
-                'status': 'error',
-                'error': str(e),
+                "status": "error",
+                "error": str(e),
             }
 
     def generate_report(self) -> None:
         """Generate analysis report of violations."""
-        print("\n" + "="*80)
+        print("\n" + "=" * 80)
         print("ADG-DRIVEN ANTI-PATTERN ANALYSIS")
-        print("="*80)
+        print("=" * 80)
 
         # Analyze top violators
         sorted_files = sorted(
@@ -333,7 +335,7 @@ class IntelligentThresholdFixer:
         print("\nTop 20 files by violation count:")
         for file_path, lines in sorted_files:
             analysis = self.analyze_file_dependencies(file_path)
-            status = "✓ imports path_constants" if analysis['imports_path_constants'] else "✗ no import"
+            status = "✓ imports path_constants" if analysis["imports_path_constants"] else "✗ no import"
             print(f"  {len(lines):3d} violations - {file_path} ({status})")
 
         # Categorize files
@@ -342,7 +344,7 @@ class IntelligentThresholdFixer:
 
         for file_path in self.violations.keys():
             analysis = self.analyze_file_dependencies(file_path)
-            if analysis['imports_path_constants']:
+            if analysis["imports_path_constants"]:
                 has_import.append(file_path)
             else:
                 needs_import.append(file_path)
@@ -356,8 +358,8 @@ class IntelligentThresholdFixer:
         print("\n[DEPENDENCY CLUSTERS]")
         layer_counts = defaultdict(int)
         for file_path in self.violations.keys():
-            if '/' in file_path:
-                layer = file_path.split('/')[0]
+            if "/" in file_path:
+                layer = file_path.split("/")[0]
                 layer_counts[layer] += 1
 
         for layer, count in sorted(layer_counts.items(), key=lambda x: -x[1])[:10]:
@@ -385,5 +387,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

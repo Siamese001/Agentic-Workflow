@@ -246,7 +246,9 @@ class VerificationGateProtocol(ABC):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "VerificationGateProtocol.validate_request",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "VerificationGateProtocol.validate_request",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

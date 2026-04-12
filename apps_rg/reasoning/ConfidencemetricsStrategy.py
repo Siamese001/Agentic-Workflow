@@ -5,6 +5,7 @@ Optimization Strategies for Reasoning Engines
 Implements early stopping, path pruning, and convergence detection
 to reduce reasoning latency and improve quality.
 """
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -52,8 +53,11 @@ class EarlyStoppingStrategy:
             (should_stop, reason)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EarlyStoppingStrategy.should_stop_early")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EarlyStoppingStrategy.should_stop_early"
+        )
 
         # Minimum steps check
         if current_step < self.min_steps:
@@ -152,8 +156,11 @@ class ConfidenceEstimator:
             Confidence score (0.0 to 1.0)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfidenceEstimator.estimate_step_confidence")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConfidenceEstimator.estimate_step_confidence"
+        )
 
         score = 0.0
 
@@ -233,8 +240,11 @@ class PathPruningStrategy:
             True if path should be pruned
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PathPruningStrategy.should_prune")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PathPruningStrategy.should_prune"
+        )
 
         self.total_paths += 1
 
@@ -274,8 +284,11 @@ class OptimizedReasoningEngine:
             Optimized reasoning result
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizedReasoningEngine.reason_with_optimization")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizedReasoningEngine.reason_with_optimization"
+        )
 
         steps = []
         current = problem

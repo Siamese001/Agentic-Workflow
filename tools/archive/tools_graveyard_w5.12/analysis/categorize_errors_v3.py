@@ -68,7 +68,9 @@ for p in sorted(tests_dir.rglob("test_*.py")):
                         break
                     except FileNotFoundError as e:
                         categories["source_FileNotFoundError"] += 1
-                        cat_samples.setdefault("source_FileNotFoundError", []).append((fp, mod_name, str(e)[:60]))
+                        cat_samples.setdefault("source_FileNotFoundError", []).append(
+                            (fp, mod_name, str(e)[:60])
+                        )
                         errors += 1
                         break
                     except ImportError as e:
@@ -78,20 +80,28 @@ for p in sorted(tests_dir.rglob("test_*.py")):
                             cat_samples.setdefault("missing_constant_BATCH_SIZE", []).append((fp, mod_name))
                         elif "cannot import name" in emsg:
                             categories["missing_named_export"] += 1
-                            cat_samples.setdefault("missing_named_export", []).append((fp, mod_name, emsg[:80]))
+                            cat_samples.setdefault("missing_named_export", []).append(
+                                (fp, mod_name, emsg[:80])
+                            )
                         else:
                             categories["source_ImportError_other"] += 1
-                            cat_samples.setdefault("source_ImportError_other", []).append((fp, mod_name, emsg[:80]))
+                            cat_samples.setdefault("source_ImportError_other", []).append(
+                                (fp, mod_name, emsg[:80])
+                            )
                         errors += 1
                         break
                     except ModuleNotFoundError as e:
                         categories["source_ModuleNotFoundError"] += 1
-                        cat_samples.setdefault("source_ModuleNotFoundError", []).append((fp, mod_name, str(e)[:60]))
+                        cat_samples.setdefault("source_ModuleNotFoundError", []).append(
+                            (fp, mod_name, str(e)[:60])
+                        )
                         errors += 1
                         break
                     except Exception as e:
                         categories["source_other_exception"] += 1
-                        cat_samples.setdefault("source_other_exception", []).append((fp, mod_name, type(e).__name__, str(e)[:60]))
+                        cat_samples.setdefault("source_other_exception", []).append(
+                            (fp, mod_name, type(e).__name__, str(e)[:60])
+                        )
                         errors += 1
                         break
 

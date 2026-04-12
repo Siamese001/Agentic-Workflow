@@ -1,4 +1,5 @@
 """Debug: dump all edges for specific blocker modules from the latest ADG."""
+
 import os
 import sqlite3
 
@@ -14,9 +15,9 @@ MODULES = [
 ]
 
 for module in MODULES:
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"MODULE: {module}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
     # Check by source_file
     rows = c.execute(

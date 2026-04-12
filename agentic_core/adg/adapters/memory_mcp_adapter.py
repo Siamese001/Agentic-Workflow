@@ -223,7 +223,9 @@ class ADGMemoryAdapter:
             diff_edges: Net edge delta vs previous snapshot (for observations)
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryMCPAdapter.ingest_snapshot:{ts}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryMCPAdapter.ingest_snapshot:{ts}"
+        )
         snapshot_name = f"ADGSnapshot_{ts}"
         violation_edges = [e for e in result.edges if getattr(e, "relation_type", "") == "violates"]
         violation_count = len(violation_edges)

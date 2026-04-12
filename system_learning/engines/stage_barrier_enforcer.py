@@ -206,8 +206,11 @@ class StageBarrierEnforcer:
     def advance_to(self, stage: MetaLearningStage) -> None:
         """Advance to the next stage. Raises if attempting to go backwards."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StageBarrierEnforcer.advance_to")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "StageBarrierEnforcer.advance_to"
+        )
 
         if stage <= self._current:
             raise RuntimePolicyMutationViolation(

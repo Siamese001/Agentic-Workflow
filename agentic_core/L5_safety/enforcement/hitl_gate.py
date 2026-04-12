@@ -323,7 +323,9 @@ class HitlGate:
                 f"approve or deny the operation."
             )
             Logger.error(
-                "[HitlGate] No TTY — raising HitlRequiredError for %s / %s", req.agent, req.operation,
+                "[HitlGate] No TTY — raising HitlRequiredError for %s / %s",
+                req.agent,
+                req.operation,
             )
             raise HitlRequiredError(msg)
 
@@ -354,7 +356,10 @@ class HitlGate:
         print(_BORDER)
         try:
             raw = self._input_fn("  Choice [Y/N/S/A]: ").strip().upper()
-        except (EOFError, KeyboardInterrupt):    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+        except (
+            EOFError,
+            KeyboardInterrupt,
+        ):  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
             raw = "N"
 
         choice_map = {

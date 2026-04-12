@@ -1,5 +1,6 @@
 """Find ALL capitalized names used at runtime in sovereign_severity_types.py
 and add aliases for any that map to lowercase class definitions."""
+
 import ast
 import re
 
@@ -10,10 +11,12 @@ src = open(fp, encoding="utf-8").read()
 tree = ast.parse(src)
 classes = {n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)}
 
+
 # Build CamelCase -> snake_case map
 def to_snake(name):
     s = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", name)
     return s.lower()
+
 
 # Find all Name references that are CamelCase and NOT defined as classes
 all_names = set()
@@ -24,16 +27,43 @@ for node in ast.walk(tree):
         all_names.add(node.value.id)
 
 # Filter to only those that need aliases
-existing_aliases = set(re.findall(r'^(\w+)\s*=\s*\w+', src, re.MULTILINE))
+existing_aliases = set(re.findall(r"^(\w+)\s*=\s*\w+", src, re.MULTILINE))
 existing_classes = classes | existing_aliases
 
 # Also include known stdlib/pydantic names to exclude
-stdlib_names = {'Enum', 'BaseModel', 'Field', 'Optional', 'Any', 'Path', 'Dict', 'List',
-                'ClassVar', 'ConfigDict', 'Generic', 'TypeVar', 'Callable', 'dataclass',
-                'field', 'True', 'False', 'None', 'Exception', 'ValueError', 'TypeError',
-                'KeyError', 'RuntimeError', 'AttributeError', 'NotImplementedError',
-                'LayerSegment', 'AGENTIC_CORE_DIR', 'validator', 'field_validator',
-                'Builder', 'Config'}
+stdlib_names = {
+    "Enum",
+    "BaseModel",
+    "Field",
+    "Optional",
+    "Any",
+    "Path",
+    "Dict",
+    "List",
+    "ClassVar",
+    "ConfigDict",
+    "Generic",
+    "TypeVar",
+    "Callable",
+    "dataclass",
+    "field",
+    "True",
+    "False",
+    "None",
+    "Exception",
+    "ValueError",
+    "TypeError",
+    "KeyError",
+    "RuntimeError",
+    "AttributeError",
+    "NotImplementedError",
+    "LayerSegment",
+    "AGENTIC_CORE_DIR",
+    "validator",
+    "field_validator",
+    "Builder",
+    "Config",
+}
 
 needs_alias = {}
 for name in sorted(all_names):

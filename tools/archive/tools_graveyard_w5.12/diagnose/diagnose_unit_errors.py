@@ -7,7 +7,10 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/", "--co", "--tb=line", "-p", "no:logging", "-q"],
-    capture_output=True, text=True, cwd=ROOT, timeout=120,
+    capture_output=True,
+    text=True,
+    cwd=ROOT,
+    timeout=120,
 )
 clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 
@@ -23,7 +26,7 @@ for i, line in enumerate(lines):
 
         # If no inline error, look for E   lines nearby
         if not err_msg:
-            for j in range(max(0, i-5), min(len(lines), i+5)):
+            for j in range(max(0, i - 5), min(len(lines), i + 5)):
                 s = lines[j].strip()
                 if s.startswith("E   ") and ("Error" in s or "cannot import" in s or "No module" in s):
                     err_msg = s[4:].strip()

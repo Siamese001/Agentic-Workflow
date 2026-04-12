@@ -211,8 +211,11 @@ class EvaluationLoader:
             EvalSchemaError: If the top-level value is not a dict.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationLoader.load_eval_set")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationLoader.load_eval_set"
+        )
 
         if not name or not isinstance(name, str):
             raise ValueError("name must be a non-empty string")
@@ -227,7 +230,7 @@ class EvaluationLoader:
                     data = yaml.safe_load(fh)
             except yaml.YAMLError as exc:
                 raise EvalLoadError(f"Invalid YAML in {eval_file}: {exc}") from exc
-            except OSError as exc:    # guardian: Add error context logging
+            except OSError as exc:  # guardian: Add error context logging
                 raise EvalLoadError(f"Cannot read {eval_file}: {exc}") from exc
             if not isinstance(data, dict):
                 raise EvalSchemaError(

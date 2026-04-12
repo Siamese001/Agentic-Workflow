@@ -291,7 +291,9 @@ class RoutingOptimizationRegistry:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "RoutingOptimizationRegistry.get_instance",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "RoutingOptimizationRegistry.get_instance",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -374,7 +376,9 @@ class RoutingOptimizationRegistry:
             return self._optimizations.get(optimization_id)
 
     def query_optimizations_by_time_window(
-        self, start_tick: float, end_tick: float,
+        self,
+        start_tick: float,
+        end_tick: float,
     ) -> list[RoutingOptimizationRecord]:
         """Query routing optimizations by time window."""
         with self._lock:

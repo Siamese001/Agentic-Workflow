@@ -1,4 +1,5 @@
 """Foundational behavioral tests for apps_lic/engines/control_plane.py."""
+
 from __future__ import annotations
 
 import pytest
@@ -8,6 +9,7 @@ import pytest
 @pytest.fixture
 def control_plane():
     from apps_lic.engines.control_plane import ControlPlane
+
     return ControlPlane()
 
 
@@ -96,6 +98,7 @@ def test_knowledge_base_exports():
 def test_control_plane_evaluate_input_detects_pii(control_plane):
     """Test that ControlPlane detects PII in input."""
     from apps_lic.engines.control_plane import PolicyAction
+
     cp = control_plane
 
     result = cp.evaluate_input("My ssn is 123-45-6789")
@@ -108,6 +111,7 @@ def test_control_plane_evaluate_input_detects_pii(control_plane):
 def test_control_plane_evaluate_input_allows_safe_content(control_plane):
     """Test that ControlPlane allows safe content."""
     from apps_lic.engines.control_plane import PolicyAction
+
     cp = control_plane
 
     result = cp.evaluate_input("Hello, this is a safe message.")

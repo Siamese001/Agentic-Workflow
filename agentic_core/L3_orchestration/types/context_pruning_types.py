@@ -277,7 +277,9 @@ class ContextPruningStrategy:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextPruner.should_prune",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "ContextPruner.should_prune",
         )
         current_size = self._estimate_context_size(context)
         return current_size > self.max_context_size
@@ -458,7 +460,11 @@ class AdaptiveDepthManager:
 
     # guardian: allow-magic-config
     def __init__(
-        self, base_limit: int = 50, max_limit: int = 200, min_limit: int = 10, enable_adaptive: bool = True,
+        self,
+        base_limit: int = 50,
+        max_limit: int = 200,
+        min_limit: int = 10,
+        enable_adaptive: bool = True,
     ):
         """
         Initialize adaptive depth manager.
@@ -480,7 +486,9 @@ class AdaptiveDepthManager:
         )
 
     def calculate_adaptive_limit(
-        self, context: dict[str, Any], current_metrics: dict[str, Any] | None = None,
+        self,
+        context: dict[str, Any],
+        current_metrics: dict[str, Any] | None = None,
     ) -> int:
         """
         Calculate adaptive depth limit based on mission complexity.

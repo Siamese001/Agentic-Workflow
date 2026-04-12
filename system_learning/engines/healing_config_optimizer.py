@@ -220,8 +220,11 @@ class HealingConfigOptimizer:
             Aggregate snapshot for threshold optimization.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingConfigOptimizer.create_snapshot_from_intake")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingConfigOptimizer.create_snapshot_from_intake"
+        )
 
         # Convert intake snapshot to aggregate format
         aggregate_pairs = []
@@ -229,7 +232,9 @@ class HealingConfigOptimizer:
         if hasattr(intake_record, "snapshot"):
             for stats in intake_record.snapshot:
                 key = HealingOutcomeAggregateKey(
-                    healer_name=stats.healer_id, tier=stats.tier, failure_type=stats.failure_type,
+                    healer_name=stats.healer_id,
+                    tier=stats.tier,
+                    failure_type=stats.failure_type,
                 )
                 aggregate = HealingOutcomeAggregate(
                     success_count=stats.success_count,
@@ -253,7 +258,9 @@ class HealingConfigOptimizer:
 
         # Create final snapshot with correct version_id
         snapshot = HealingOutcomeAggregateSnapshot(
-            version_id=version_id, created_utc=created_utc, aggregates=tuple(aggregate_pairs),
+            version_id=version_id,
+            created_utc=created_utc,
+            aggregates=tuple(aggregate_pairs),
         )
 
         return snapshot
@@ -271,7 +278,9 @@ class HealingConfigOptimizer:
         Returns:
             Proposal with threshold adjustments (proposal-only).
         """
-        _emit_gated_by_confidence(str(uuid.uuid4()), "HealingConfigOptimizer.propose_threshold_adjustments", "0.5")
+        _emit_gated_by_confidence(
+            str(uuid.uuid4()), "HealingConfigOptimizer.propose_threshold_adjustments", "0.5"
+        )
         adjustments = []
 
         for key, aggregate in tqdm(snapshot.aggregates, desc="aggregate keys", unit="key", leave=False):
@@ -329,7 +338,9 @@ class HealingConfigOptimizer:
         # If embedding metadata is provided, use the embedding-aware method
         if embedding_metadata:
             return self.propose_threshold_adjustments_with_embeddings(
-                snapshot, pattern_report, embedding_metadata,
+                snapshot,
+                pattern_report,
+                embedding_metadata,
             )
 
         # Otherwise, use the original pattern-only logic
@@ -418,7 +429,9 @@ class HealingConfigOptimizer:
             grouped[key].append(adj)
 
         # Apply constraints per group
-        for (healer_name, tier), group_adj in tqdm(grouped.items(), desc="group adjustments", unit="group", leave=False):
+        for (healer_name, tier), group_adj in tqdm(
+            grouped.items(), desc="group adjustments", unit="group", leave=False
+        ):
             # Get current threshold
             current_threshold = self._get_current_threshold_for_healer(healer_name, tier)
 
@@ -615,8 +628,11 @@ class ThresholdAdjustment:
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThresholdAdjustment.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ThresholdAdjustment.canonical_bytes"
+        )
 
         data = {
             "healer_name": self.healer_name,
@@ -650,8 +666,11 @@ class ThresholdAdjustmentProposal:
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ThresholdAdjustmentProposal.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ThresholdAdjustmentProposal.canonical_bytes"
+        )
 
         adjustments_data = []
         for adj in tqdm(self.adjustments, desc="canonical bytes", unit="adj", leave=False):

@@ -18,28 +18,35 @@ class GeneratedTest(unittest.TestCase):
     def test_to_dict(self):
         """Test to_dict function."""
         from agentic_core.runtime.config import to_dict
+
         # TODO: Implement actual test
         result = to_dict()
         self.assertIsNotNone(result)
+
     def test_to_dict(self):
         """Test to_dict function."""
         from agentic_core.runtime.config import to_dict
+
         # TODO: Implement actual test
         result = to_dict()
         self.assertIsNotNone(result)
+
     def test_CapabilityGapType_init(self):
         """Test CapabilityGapType initialization."""
         from agentic_core.runtime.config import CapabilityGapType
+
         # TODO: Implement actual test
         instance = CapabilityGapType()
         self.assertIsNotNone(instance)
+
     def test_RecommendationType_init(self):
         """Test RecommendationType initialization."""
         from agentic_core.runtime.config import RecommendationType
+
         # TODO: Implement actual test
         instance = RecommendationType()
         self.assertIsNotNone(instance)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

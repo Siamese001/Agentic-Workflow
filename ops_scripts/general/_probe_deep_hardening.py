@@ -1,4 +1,5 @@
 """Deep hardening probe — run standalone, produces findings to stdout."""
+
 from __future__ import annotations
 
 import os
@@ -76,9 +77,9 @@ _emit_stores_embedding("p4", "_probe_deep_hardening", "embedding_store")
 _emit_updates_meta_learning_state("p4", "_probe_deep_hardening", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "_probe_deep_hardening", "exec_snapshot_link")
 # guardian: allow-global-mutation
-sys.path.insert(0, 'c:/Git/Agentic-Workflow')
+sys.path.insert(0, "c:/Git/Agentic-Workflow")
 # guardian: allow-global-mutation
-os.environ['HIVE_MIND_STRICT_MODE'] = 'false'
+os.environ["HIVE_MIND_STRICT_MODE"] = "false"
 from agentic_core.L4_state.utils.memory.semantic_cache_manager import PII_Sanitizer, SemanticCacheManager
 
 SemanticCacheManager.reset_instance()
@@ -172,108 +173,119 @@ _emit_gated_by_confidence("p1", "_probe_deep_hardening", "confidence_gate")
 def reset():
     SemanticCacheManager.reset_instance()
     _mod._global_cache = None
+
+
 reset()
 gc = GlobalCache()
 race_results = []
 
+
 def _worker():
     race_results.append(id(gc.get_hive_mind()))
+
+
 threads = [threading.Thread(target=_worker) for _ in range(20)]
 for t in threads:
     t.start()
 for t in threads:
     t.join()
-print('P1 race unique hive ids:', len(set(race_results)), '(expect 1)')
-print('P1 _hive type:', type(gc._hive).__name__)
+print("P1 race unique hive ids:", len(set(race_results)), "(expect 1)")
+print("P1 _hive type:", type(gc._hive).__name__)
 reset()
 gc2 = GlobalCache()
-gc2.put('k1', 'val1', text_for_embedding='ats keywords resume')
-gc2.put('k2', 'val2', text_for_embedding='ats keywords linkedin')
+gc2.put("k1", "val1", text_for_embedding="ats keywords resume")
+gc2.put("k2", "val2", text_for_embedding="ats keywords linkedin")
 # guardian: allow-magic-config
-r2 = gc2.get_semantic('ats keywords', max_results=3)
-print('P2 max_results=3 actual count:', len(r2), '(hive recall returns at most 1)')
+r2 = gc2.get_semantic("ats keywords", max_results=3)
+print("P2 max_results=3 actual count:", len(r2), "(hive recall returns at most 1)")
 reset()
 gc3 = GlobalCache()
 mgr3 = gc3.get_hive_mind()
-print('P3 redis_enabled:', mgr3.redis_enabled)
-gc3.put('k', {'v': 1}, text_for_embedding='ctx')
-print('P3 cache_stores after no-redis learn:', mgr3.get_statistics()['cache_stores'])
+print("P3 redis_enabled:", mgr3.redis_enabled)
+gc3.put("k", {"v": 1}, text_for_embedding="ctx")
+print("P3 cache_stores after no-redis learn:", mgr3.get_statistics()["cache_stores"])
 reset()
 gc4 = GlobalCache()
 stats4 = gc4.get_stats()
-print('P4 get_stats keys:', sorted(stats4.keys()))
+print("P4 get_stats keys:", sorted(stats4.keys()))
 reset()
 gc5 = GlobalCache()
-gc5.put('k', 'v')
-gc5.get('k')
+gc5.put("k", "v")
+gc5.get("k")
 gc5.clear()
-print('P5 stats after clear:', gc5._stats)
+print("P5 stats after clear:", gc5._stats)
 reset()
-pii_tests = [('user@example.com', 'EMAIL'), ('sk-abc1234567890123456789012345', 'OPENAI_KEY'), ('AKIAIOSFODNN7EXAMPLE123456', 'AWS_KEY'), ('192.168.1.1', 'IPV4'), ('555-123-4567', 'PHONE_US')]
+pii_tests = [
+    ("user@example.com", "EMAIL"),
+    ("sk-abc1234567890123456789012345", "OPENAI_KEY"),
+    ("AKIAIOSFODNN7EXAMPLE123456", "AWS_KEY"),
+    ("192.168.1.1", "IPV4"),
+    ("555-123-4567", "PHONE_US"),
+]
 for raw, pii_type in pii_tests:
     safe = PII_Sanitizer.is_safe(raw)
     sanitized = PII_Sanitizer.sanitize(raw)
-    found = pii_type.lower() in sanitized.lower() or 'REDACTED' in sanitized
-    print(f'P6 {pii_type}: is_safe={safe} redacted={found} result={sanitized!r}')
+    found = pii_type.lower() in sanitized.lower() or "REDACTED" in sanitized
+    print(f"P6 {pii_type}: is_safe={safe} redacted={found} result={sanitized!r}")
 reset()
 mgr7 = GlobalCache().get_hive_mind()
 stats7 = mgr7.get_statistics()
-for k in ('strict_mode', 'stateless_mode', 'sampling_rate_actual'):
-    print(f'P7 {k}: {k in stats7}')
+for k in ("strict_mode", "stateless_mode", "sampling_rate_actual"):
+    print(f"P7 {k}: {k in stats7}")
 reset()
 gc8 = GlobalCache()
 hive8 = gc8.get_hive_mind()
-gc8.put('mykey', {'answer': 42}, text_for_embedding='target query text', source_engine='ENG')
-recalled = hive8.recall('target query text', 'GlobalCache')
+gc8.put("mykey", {"answer": 42}, text_for_embedding="target query text", source_engine="ENG")
+recalled = hive8.recall("target query text", "GlobalCache")
 if recalled:
-    print('P8 recalled keys:', sorted(recalled.keys()))
-    print('P8 value key present:', 'value' in recalled)
-    print('P8 _metadata present:', '_metadata' in recalled)
-    meta = recalled.get('_metadata', {})
-    print('P8 metadata.namespace:', meta.get('namespace'))
+    print("P8 recalled keys:", sorted(recalled.keys()))
+    print("P8 value key present:", "value" in recalled)
+    print("P8 _metadata present:", "_metadata" in recalled)
+    meta = recalled.get("_metadata", {})
+    print("P8 metadata.namespace:", meta.get("namespace"))
 else:
-    print('P8 recalled=None (Redis unavailable — vector store only path)')
-    print('P8 CONFIRMED: without Redis, recall() cannot retrieve working-memory entries')
+    print("P8 recalled=None (Redis unavailable — vector store only path)")
+    print("P8 CONFIRMED: without Redis, recall() cannot retrieve working-memory entries")
 reset()
-print('P9 cache_get callable:', callable(cache_get))
-print('P9 cache_put callable:', callable(cache_put))
-print('P9 cache_search_semantic callable:', callable(cache_search_semantic))
-print('P9 cached callable:', callable(cached))
+print("P9 cache_get callable:", callable(cache_get))
+print("P9 cache_put callable:", callable(cache_put))
+print("P9 cache_search_semantic callable:", callable(cache_search_semantic))
+print("P9 cached callable:", callable(cached))
 reset()
 gc_a = GlobalCache()
 gc_b = GlobalCache()
-print('P10 both get same singleton:', gc_a.get_hive_mind() is gc_b.get_hive_mind())
-print('P10 independent _hive attrs:', gc_a._hive is not gc_b._hive or gc_a._hive is gc_b._hive)
+print("P10 both get same singleton:", gc_a.get_hive_mind() is gc_b.get_hive_mind())
+print("P10 independent _hive attrs:", gc_a._hive is not gc_b._hive or gc_a._hive is gc_b._hive)
 reset()
 inst1 = get_global_cache()
 inst2 = get_global_cache()
-print('P11 get_global_cache singleton:', inst1 is inst2)
+print("P11 get_global_cache singleton:", inst1 is inst2)
 reset()
 # guardian: allow-global-mutation
-os.environ['HIVE_MIND_STRICT_MODE'] = 'true'
+os.environ["HIVE_MIND_STRICT_MODE"] = "true"
 SemanticCacheManager.reset_instance()
 try:
     mgr12 = SemanticCacheManager.get_instance()
-    print('P12 strict_mode + no redis + vector_store available: NO raise (correct)')
-    print('P12 stateless_mode:', mgr12.stateless_mode)
+    print("P12 strict_mode + no redis + vector_store available: NO raise (correct)")
+    print("P12 stateless_mode:", mgr12.stateless_mode)
 # guardian: allow-silent-swallow
 except Exception as e:
-    print('P12 UNEXPECTED raise:', e)
+    print("P12 UNEXPECTED raise:", e)
 finally:
     # guardian: allow-global-mutation
-    os.environ['HIVE_MIND_STRICT_MODE'] = 'false'
+    os.environ["HIVE_MIND_STRICT_MODE"] = "false"
     SemanticCacheManager.reset_instance()
-raw13 = 'contact john@corp.com or call 555-867-5309 with key sk-abc1234567890123456789'
+raw13 = "contact john@corp.com or call 555-867-5309 with key sk-abc1234567890123456789"
 findings = PII_Sanitizer.detect_pii(raw13)
-print('P13 detect_pii types found:', sorted(findings.keys()))
+print("P13 detect_pii types found:", sorted(findings.keys()))
 reset()
 gc14 = GlobalCache()
-gc14.put('kk', 'stored_value', text_for_embedding='specific query phrase')
-r14 = gc14.get_semantic('specific query phrase')
-print('P14 get_semantic without promote:', r14)
+gc14.put("kk", "stored_value", text_for_embedding="specific query phrase")
+r14 = gc14.get_semantic("specific query phrase")
+print("P14 get_semantic without promote:", r14)
 reset()
 gc15 = GlobalCache()
 n = gc15.cleanup_expired()
-print('P15 cleanup_expired returns int:', isinstance(n, int))
+print("P15 cleanup_expired returns int:", isinstance(n, int))
 print()
-print('ALL PROBES COMPLETE')
+print("ALL PROBES COMPLETE")

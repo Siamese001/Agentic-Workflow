@@ -247,7 +247,10 @@ class ValidationOrchestrator(SovereignBaseAgent):
         cls.VERIFICATION_REGISTRY = {}
 
     def __init__(
-        self, context: IValidationProtocol | None = None, name: str | None = None, layer: str | None = None,
+        self,
+        context: IValidationProtocol | None = None,
+        name: str | None = None,
+        layer: str | None = None,
     ) -> None:
         """
         Initialize the Canon base agent.
@@ -292,7 +295,7 @@ class ValidationOrchestrator(SovereignBaseAgent):
         try:
             with open(file_path, "rb") as f:
                 return hashlib.sha256(f.read()).hexdigest()
-        except OSError as e:    # guardian: Add error context logging
+        except OSError as e:  # guardian: Add error context logging
             Logger.warning(f"Could not read file {file_path} for hashing: {e}")
             return ""
 
@@ -363,7 +366,11 @@ class ValidationOrchestrator(SovereignBaseAgent):
         return "\n".join(parts)
 
     def _record_success(
-        self, file_path: str, violation_key: int, violation_desc: str, fixed_code: str,
+        self,
+        file_path: str,
+        violation_key: int,
+        violation_desc: str,
+        fixed_code: str,
     ) -> None:
         """Record a successful healing attempt."""
         self.ctx.record_healing_attempt(file_path, success=True)
@@ -372,7 +379,9 @@ class ValidationOrchestrator(SovereignBaseAgent):
             self.ctx.healing_history[file_path] = []
         self.ctx.healing_history[file_path].append(f"Key{violation_key}")
         self.ctx.services.store_healing_pattern(
-            Violation=violation_desc, fix=fixed_code[:500], success_rate=1.0,
+            Violation=violation_desc,
+            fix=fixed_code[:500],
+            success_rate=1.0,
         )
 
     async def smart_fix(self, file_path: str, violation_key: int) -> bool:
@@ -458,7 +467,8 @@ class ValidationOrchestrator(SovereignBaseAgent):
             return False
         except (RuntimeError, ValueError) as e:
             Logger.critical(
-                f"Critical healing error for {file_path}, key {violation_key}: {e}", exc_info=True,
+                f"Critical healing error for {file_path}, key {violation_key}: {e}",
+                exc_info=True,
             )
             print(f"      [CRITICAL] Healing error for {Path(file_path).name}: {e}", flush=True)
             return False
@@ -469,7 +479,9 @@ class ValidationOrchestrator(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ValidationOrchestrator.execute",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "ValidationOrchestrator.execute",
         )
         # Wave 3: Guardrail pre-check
         guardrail = get_guardrail_gate()
@@ -511,7 +523,11 @@ class ValidationOrchestrator(SovereignBaseAgent):
         """
         try:
             super().heal_repository(
-                dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
             )
         except AttributeError:
             pass  # guardian: allow-silent-swallow -- intentional: AttributeError used for control flow

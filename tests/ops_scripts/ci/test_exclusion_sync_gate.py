@@ -9,6 +9,7 @@ Tests cover:
 - Main function CLI interface
 - Edge cases and error handling
 """
+
 from __future__ import annotations
 
 # Import the module under test
@@ -66,10 +67,12 @@ special_dirs:
         with patch.object(exclusion_sync_gate.Path, "__file__", str(yaml_path)):
             # Patch the path calculation to return our test file
             original_path = exclusion_sync_gate.Path
+
             def mock_path_calc(*args, **kwargs):
                 if args and isinstance(args[0], str):
                     return original_path(args[0])
                 return yaml_path
+
             with patch.object(exclusion_sync_gate, "Path", side_effect=mock_path_calc):
                 dirs = exclusion_sync_gate.load_yaml_exclusions()
 

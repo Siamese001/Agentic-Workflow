@@ -222,9 +222,9 @@ _emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_29")
 _emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_30")
 
 # Matches: assert True [# comment]  OR  assert True, "message"
-_ASSERT_TRUE_RE = re.compile(r'^(\s*)assert\s+True\s*(?:[,#][^\n]*)?\n?$')
+_ASSERT_TRUE_RE = re.compile(r"^(\s*)assert\s+True\s*(?:[,#][^\n]*)?\n?$")
 # Matches: assert len(expr) >= 0 [# comment]
-_LEN_GE_ZERO_RE = re.compile(r'^(\s*)assert\s+len\s*\([^)]+\)\s*>=\s*0\s*(?:[,#][^\n]*)?\n?$')
+_LEN_GE_ZERO_RE = re.compile(r"^(\s*)assert\s+len\s*\([^)]+\)\s*>=\s*0\s*(?:[,#][^\n]*)?\n?$")
 
 
 def _collect_test_files(roots: list[str]) -> list[Path]:
@@ -254,7 +254,10 @@ def _get_vacuous_lines(file_path: Path) -> set[int]:
 
 
 def _function_body_is_empty_after_removal(
-    source_lines: list[str], fn_start: int, fn_end: int, removed_lines: set[int],
+    source_lines: list[str],
+    fn_start: int,
+    fn_end: int,
+    removed_lines: set[int],
 ) -> bool:
     """
     Check if a function body has any meaningful statements remaining after removal.
@@ -284,7 +287,7 @@ def _get_function_ranges(source: str) -> list[tuple[int, int, int]]:
     """
     try:
         tree = ast.parse(source)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return []
 
     ranges = []
@@ -296,7 +299,7 @@ def _get_function_ranges(source: str) -> list[tuple[int, int, int]]:
             body_start = node.body[0].lineno
             # body_end = last line of last statement
             last_stmt = node.body[-1]
-            body_end = getattr(last_stmt, 'end_lineno', last_stmt.lineno)
+            body_end = getattr(last_stmt, "end_lineno", last_stmt.lineno)
             ranges.append((node.lineno, body_start, body_end))
     return ranges
 
@@ -350,7 +353,7 @@ def fix_file(file_path: Path, dry_run: bool = False) -> tuple[int, list[str]]:
 
     for lineno in sorted(lines_to_remove, reverse=True):
         idx = lineno - 1
-        original_line = new_lines[idx].rstrip('\n')
+        original_line = new_lines[idx].rstrip("\n")
         indent = len(original_line) - len(original_line.lstrip())
         ind = " " * indent
 

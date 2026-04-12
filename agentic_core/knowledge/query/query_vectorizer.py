@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class QueryVector:
     """Vector representation of a query."""
+
     query_text: str
     vector: list[float]
     model: str
@@ -84,7 +85,9 @@ class QueryVectorizer:
         """
         trace_id = f"vec_{hashlib.sha256(query.encode()).hexdigest()[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryVectorizer.vectorize",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "QueryVectorizer.vectorize",
         )
 
         # Check cache
@@ -138,14 +141,16 @@ class QueryVectorizer:
         """
         trace_id = f"batch_vec_{len(queries)}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "QueryVectorizer.vectorize_batch",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "QueryVectorizer.vectorize_batch",
         )
 
         results = []
 
         # Process in batches
         for i in range(0, len(queries), self.batch_size):
-            batch = queries[i:i + self.batch_size]
+            batch = queries[i : i + self.batch_size]
             batch_results = self._process_batch(batch, use_cache)
             results.extend(batch_results)
 
@@ -198,7 +203,7 @@ class QueryVectorizer:
         if len(self._vector_cache) >= self._cache_size:
             # Remove oldest half
             keys = list(self._vector_cache.keys())
-            for old_key in keys[:len(keys)//2]:
+            for old_key in keys[: len(keys) // 2]:
                 del self._vector_cache[old_key]
 
         self._vector_cache[key] = vector
@@ -235,6 +240,7 @@ class QueryVectorizer:
 
         # Normalize
         import math
+
         magnitude = math.sqrt(sum(v * v for v in vector))
         if magnitude > 0:
             vector = [v / magnitude for v in vector]

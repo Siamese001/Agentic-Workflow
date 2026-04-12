@@ -56,7 +56,9 @@ def _get_rlhf_optimizer():
         DefaultRLHFOptimizer,
         RLHFChangePackage,
     )
+
     return DefaultRLHFOptimizer, RLHFChangePackage
+
 
 # Lifecycle trace emissions for P0-P4 governance
 _emit_reads_policy_state("p0", "desk_d_governed_board", "policy_binding")
@@ -238,11 +240,13 @@ class DeskDGovernedBoard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_human_decision",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "DeskDGovernedBoard.process_human_decision",
         )
 
         # Map action to human decision string
-        if hasattr(human_artifact, 'action'):
+        if hasattr(human_artifact, "action"):
             if isinstance(human_artifact.action, HumanAction):
                 human_decision = "APPROVE" if human_artifact.action == HumanAction.APPROVE else "REJECT"
             else:
@@ -358,7 +362,9 @@ class DeskDGovernedBoard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "DeskDGovernedBoard.process_batch_for_rlhf",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "DeskDGovernedBoard.process_batch_for_rlhf",
         )
 
         if len(records) < min_pairs:
@@ -371,11 +377,13 @@ class DeskDGovernedBoard:
             chosen_threshold = 0.8 if record.human_decision == "APPROVE" else 0.4
             rejected_threshold = 0.4 if record.human_decision == "APPROVE" else 0.8
 
-            pairs.append({
-                "chosen": {"threshold": chosen_threshold},
-                "rejected": {"threshold": rejected_threshold},
-                "surface": surface_name,
-            })
+            pairs.append(
+                {
+                    "chosen": {"threshold": chosen_threshold},
+                    "rejected": {"threshold": rejected_threshold},
+                    "surface": surface_name,
+                }
+            )
 
         dpo_batch = {"pairs": pairs}
         batch_bytes = json.dumps(dpo_batch).encode("utf-8")
@@ -412,8 +420,7 @@ class DeskDGovernedBoard:
         """
         # Get accepted records for this cycle
         accepted_records = [
-            r for r in self._feedback_history
-            if r.timestamp >= self._metrics.learning_cycles_completed * 100
+            r for r in self._feedback_history if r.timestamp >= self._metrics.learning_cycles_completed * 100
         ]
 
         # Generate RLHF proposal from batch
@@ -492,9 +499,7 @@ class DeskDGovernedBoard:
                 "rlhf_proposals_generated": metrics.rlhf_proposals_generated,
                 "learning_cycles_completed": metrics.learning_cycles_completed,
             },
-            "feedback_summary": [
-                r.to_dict() for r in self._feedback_history[-10:]
-            ],
+            "feedback_summary": [r.to_dict() for r in self._feedback_history[-10:]],
         }
 
         with open(output_path, "w", encoding="utf-8") as f:

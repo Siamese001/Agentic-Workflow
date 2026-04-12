@@ -499,10 +499,7 @@ class GraphNeighborhoodMemory:
             logger.warning("Graph store not available, using text search fallback")
             # Fallback to text search
             results = self.search(adg_entity_name)
-            return [
-                self._bridge.get_agent_entity(r.get("name", ""))
-                for r in results if r.get("name")
-            ]
+            return [self._bridge.get_agent_entity(r.get("name", "")) for r in results if r.get("name")]
 
         try:
             # Search for the entity in the graph store
@@ -516,7 +513,9 @@ class GraphNeighborhoodMemory:
 
             # Traverse the graph to find related entities
             paths = self._graph_store.traverse(
-                start_entity.id, max_depth=max_depth, relation_types=relation_types,
+                start_entity.id,
+                max_depth=max_depth,
+                relation_types=relation_types,
             )
 
             # Collect unique entity IDs from paths
@@ -581,9 +580,13 @@ class GraphNeighborhoodMemory:
 
             # Sort by centrality (descending)
             high_centrality_cards.sort(
-                key=lambda c: self._graph_store.get_centrality(
-                    self._graph_store.search_entities(c.adg_entity_name, limit=1)[0].id,
-                ) if self._graph_store.search_entities(c.adg_entity_name, limit=1) else 0.0,
+                key=lambda c: (
+                    self._graph_store.get_centrality(
+                        self._graph_store.search_entities(c.adg_entity_name, limit=1)[0].id,
+                    )
+                    if self._graph_store.search_entities(c.adg_entity_name, limit=1)
+                    else 0.0
+                ),
                 reverse=True,
             )
 

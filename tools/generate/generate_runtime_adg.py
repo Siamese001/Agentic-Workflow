@@ -32,6 +32,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 @dataclass
 class RuntimeEdge:
     """A runtime execution edge."""
+
     from_name: str
     relation_type: str
     to_name: str
@@ -81,7 +82,6 @@ class RuntimeTraceCollector:
                 timestamp="2026-03-24T18:00:01Z",
                 execution_context="agent_execution",
             ),
-
             # Policy actions
             RuntimeEdge(
                 from_name="policy::GuardrailPolicy",
@@ -94,7 +94,6 @@ class RuntimeTraceCollector:
                 timestamp="2026-03-24T18:00:02Z",
                 execution_context="policy_check",
             ),
-
             # Healing operations
             RuntimeEdge(
                 from_name="healer::AutoHealer",
@@ -107,7 +106,6 @@ class RuntimeTraceCollector:
                 timestamp="2026-03-24T18:00:03Z",
                 execution_context="healing_loop",
             ),
-
             # Learning signals
             RuntimeEdge(
                 from_name="learner::PolicyLearner",
@@ -143,9 +141,19 @@ def create_runtime_adg() -> None:
 
     # Verify only runtime relations
     static_relations = {
-        "imports", "calls", "implements", "instantiates", "exports",
-        "belongs_to_layer", "covers", "defines_test_case", "defines_test_suite",
-        "antipattern", "dead_imports", "violates", "duplicate_method",
+        "imports",
+        "calls",
+        "implements",
+        "instantiates",
+        "exports",
+        "belongs_to_layer",
+        "covers",
+        "defines_test_case",
+        "defines_test_suite",
+        "antipattern",
+        "dead_imports",
+        "violates",
+        "duplicate_method",
         "unreachable_after_raise",
     }
 
@@ -246,7 +254,17 @@ def create_runtime_adg() -> None:
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol, timestamp, execution_context)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (src_id, dst_id, edge.relation_type, edge.edge_kind, edge.source_file, edge.line_no, edge.symbol, edge.timestamp, edge.execution_context),
+            (
+                src_id,
+                dst_id,
+                edge.relation_type,
+                edge.edge_kind,
+                edge.source_file,
+                edge.line_no,
+                edge.symbol,
+                edge.timestamp,
+                edge.execution_context,
+            ),
         )
 
     conn.commit()
@@ -291,4 +309,5 @@ def create_runtime_adg() -> None:
 
 if __name__ == "__main__":
     from dataclasses import dataclass
+
     create_runtime_adg()

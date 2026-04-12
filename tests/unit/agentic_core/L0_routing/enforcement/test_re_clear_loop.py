@@ -28,5 +28,5 @@ class PlaceholderTest(unittest.TestCase):
         self.assertIsNotNone("test")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

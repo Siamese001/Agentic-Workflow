@@ -179,8 +179,11 @@ class CacheEntry(BaseModel):
     def validate_embedding(cls, v):
         """Ensure embedding is a list of floats."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CacheEntry.validate_embedding")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CacheEntry.validate_embedding"
+        )
 
         if not isinstance(v, list):
             raise ValueError("Embedding must be a list")
@@ -234,8 +237,11 @@ class ContrastiveSemanticCache:
     def is_available(self) -> bool:
         """Check if the cache is available (model loaded or can be loaded)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContrastiveSemanticCache.is_available")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ContrastiveSemanticCache.is_available"
+        )
 
         if self._model_loaded:
             return not self._fallback_mode
@@ -332,7 +338,9 @@ class ContrastiveSemanticCache:
         try:
             query_norm = query_embedding / np.linalg.norm(query_embedding)
             cache_norm = self._embedding_matrix / np.linalg.norm(
-                self._embedding_matrix, axis=1, keepdims=True,
+                self._embedding_matrix,
+                axis=1,
+                keepdims=True,
             )
             similarities = np.dot(cache_norm, query_norm)
             return similarities

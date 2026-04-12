@@ -199,16 +199,23 @@ def scan_sensitive_content(file_path: Path) -> list[str]:
     ]
     violations = []
     try:
-        if file_path.stat().st_size > 2 * 1024 * 1024:    # guardian: File operations with encoding need error-specific handling
+        if (
+            file_path.stat().st_size > 2 * 1024 * 1024
+        ):  # guardian: File operations with encoding need error-specific handling
             return violations
         with open(file_path, encoding="utf-8", errors="ignore") as f:
             content = f.read()
         for pattern in sensitive_patterns:
             if re.search(pattern, content):
                 violations.append(f"Sensitive pattern detected: {pattern}")
-    except (UnicodeDecodeError, PermissionError, OSError):    # guardian: File operations with encoding need error-specific handling
+    except (
+        UnicodeDecodeError,
+        PermissionError,
+        OSError,
+    ):  # guardian: File operations with encoding need error-specific handling
+        import logging
 
-        import logging; logging.getLogger(__name__).debug("artifacts_guard: UnicodeDecodeError swallowed at L209: %s", e)
+        logging.getLogger(__name__).debug("artifacts_guard: UnicodeDecodeError swallowed at L209: %s", e)
     return violations
 
 

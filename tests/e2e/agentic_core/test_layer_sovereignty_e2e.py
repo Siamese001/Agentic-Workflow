@@ -26,6 +26,7 @@ from tests.e2e.conftest import (
 # Layer Gravity Tests (Import Restrictions)
 # =============================================================================
 
+
 class TestLayerGravity:
     """Test layer gravity: LN can only import from L0..LN.
 
@@ -148,6 +149,7 @@ class TestLayerGravity:
 # =============================================================================
 # Upward Mutation Prohibition Tests
 # =============================================================================
+
 
 class TestUpwardMutationProhibition:
     """Test upward mutation is FORBIDDEN per v12.
@@ -293,6 +295,7 @@ class TestUpwardMutationProhibition:
 # Runtime Mutation Prohibition Tests
 # =============================================================================
 
+
 class TestRuntimeMutationProhibition:
     """Test runtime mutation is FORBIDDEN per v12.
 
@@ -380,6 +383,7 @@ class TestRuntimeMutationProhibition:
 # =============================================================================
 # Layer Authority Tests
 # =============================================================================
+
 
 class TestLayerAuthority:
     """Test layer-specific authority boundaries.
@@ -560,6 +564,7 @@ class TestLayerAuthority:
 # =============================================================================
 # Cross-Layer Flow Tests
 # =============================================================================
+
 
 class TestCrossLayerFlow:
     """Test valid cross-layer flows per v12 architecture."""

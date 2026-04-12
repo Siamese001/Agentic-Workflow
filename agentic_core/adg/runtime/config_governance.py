@@ -240,8 +240,11 @@ class ConfigGovernanceReport:
     @property
     def by_outcome(self) -> dict[str, int]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigGovernanceReport.by_outcome")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigGovernanceReport.by_outcome"
+        )
 
         result: dict[str, int] = {}
         for e in self.events:
@@ -289,6 +292,7 @@ class ConfigGovernor:
     ) -> ConfigReadEvent:
         """Record a config read event."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigGovernor.read_config")
 

@@ -188,18 +188,18 @@ class MagicConfigReplacer(ast.NodeTransformer):
                 for target in node.targets:
                     if isinstance(target, ast.Name):
                         var_name = target.id.lower()
-                        if 'threshold' in var_name:
+                        if "threshold" in var_name:
                             # Replace with Name node referencing THRESHOLD
-                            node.value = ast.Name(id='THRESHOLD', ctx=ast.Load())
+                            node.value = ast.Name(id="THRESHOLD", ctx=ast.Load())
                             self.needs_import = True
                             self.replacements.append((node.lineno, var_name))
         return self.generic_visit(node)
 
     def visit_keyword(self, node: ast.keyword) -> Any:
         """Replace threshold=0.95 in function calls."""
-        if node.arg and 'threshold' in node.arg.lower():
+        if node.arg and "threshold" in node.arg.lower():
             if isinstance(node.value, ast.Constant) and node.value.value == 0.95:
-                node.value = ast.Name(id='THRESHOLD', ctx=ast.Load())
+                node.value = ast.Name(id="THRESHOLD", ctx=ast.Load())
                 self.needs_import = True
                 self.replacements.append((node.lineno, node.arg))
         return self.generic_visit(node)
@@ -208,32 +208,32 @@ class MagicConfigReplacer(ast.NodeTransformer):
 def analyze_file(file_path: Path) -> dict:
     """Analyze a file for magic config violations."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(file_path))
 
         # Check if already imports THRESHOLD
         has_threshold_import = False
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
-                if node.module and 'path_constants' in node.module:
-                    if any(alias.name == 'THRESHOLD' for alias in node.names):
+                if node.module and "path_constants" in node.module:
+                    if any(alias.name == "THRESHOLD" for alias in node.names):
                         has_threshold_import = True
                         break
 
         # Count threshold=0.95 occurrences
-        threshold_count = source.count('threshold=0.95') + source.count('THRESHOLD = 0.95')
+        threshold_count = source.count("threshold=0.95") + source.count("THRESHOLD = 0.95")
 
         return {
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'has_import': has_threshold_import,
-            'violations': threshold_count,
-            'can_fix': threshold_count > 0,
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "has_import": has_threshold_import,
+            "violations": threshold_count,
+            "can_fix": threshold_count > 0,
         }
     except (ValueError, TypeError, RuntimeError) as e:
         return {
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
-            'can_fix': False,
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
+            "can_fix": False,
         }
 
 
@@ -250,10 +250,10 @@ def main():
 
     # Parse baseline for threshold=0.95 violations
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if 'threshold=0.95' in line:
-                file_path = line.split(':')[0]
+            if "threshold=0.95" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
     # Deduplicate files
@@ -267,14 +267,14 @@ def main():
             continue
 
         analysis = analyze_file(file_path)
-        if analysis.get('can_fix'):
+        if analysis.get("can_fix"):
             fixable_files.append(analysis)
 
     print(f"[INFO] {len(fixable_files)} files can be automatically fixed")
 
     # Group by whether they already have the import
-    has_import = [f for f in fixable_files if f['has_import']]
-    needs_import = [f for f in fixable_files if not f['has_import']]
+    has_import = [f for f in fixable_files if f["has_import"]]
+    needs_import = [f for f in fixable_files if not f["has_import"]]
 
     print("\n[ANALYSIS]")
     print(f"  Already imports THRESHOLD: {len(has_import)} files")
@@ -282,13 +282,13 @@ def main():
 
     # Show top 10 files by violation count
     print("\n[TOP VIOLATORS]")
-    sorted_files = sorted(fixable_files, key=lambda x: x['violations'], reverse=True)[:10]
+    sorted_files = sorted(fixable_files, key=lambda x: x["violations"], reverse=True)[:10]
     for f in sorted_files:
-        status = "✓ has import" if f['has_import'] else "✗ needs import"
+        status = "✓ has import" if f["has_import"] else "✗ needs import"
         print(f"  {f['violations']:3d} violations - {f['file']} ({status})")
 
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

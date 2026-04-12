@@ -179,7 +179,10 @@ class ETLPipeline:
 
     # guardian: allow-magic-config
     def hydrate_cache(
-        self, min_success_count: int = 10, max_patterns: int = 50, project_filter: str | None = None,
+        self,
+        min_success_count: int = 10,
+        max_patterns: int = 50,
+        project_filter: str | None = None,
     ) -> dict[str, Any]:
         """
         Hydrate Redis cache with golden patterns from Pinecone.
@@ -193,12 +196,15 @@ class ETLPipeline:
             Statistics about the hydration process
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ETLPipeline.hydrate_cache")
 
         logger.info(f"Starting cache hydration with up to {max_patterns} golden patterns")
         golden_patterns = self._fetch_golden_patterns(
-            min_success_count=min_success_count, max_patterns=max_patterns, project_filter=project_filter,
+            min_success_count=min_success_count,
+            max_patterns=max_patterns,
+            project_filter=project_filter,
         )
         loaded_count = self._load_to_redis(golden_patterns)
         stats = {
@@ -212,7 +218,10 @@ class ETLPipeline:
         return stats
 
     def _fetch_golden_patterns(
-        self, min_success_count: int, max_patterns: int, project_filter: str | None,
+        self,
+        min_success_count: int,
+        max_patterns: int,
+        project_filter: str | None,
     ) -> list[CanonEntry]:
         """Fetch golden patterns from Pinecone."""
         try:
@@ -221,7 +230,10 @@ class ETLPipeline:
             if project_filter:
                 filter_dict["project_context"] = project_filter
             results = index.query(
-                vector=[0.0] * 768, top_k=max_patterns, include_metadata=True, filter=filter_dict,
+                vector=[0.0] * 768,
+                top_k=max_patterns,
+                include_metadata=True,
+                filter=filter_dict,
             )
             patterns = []
             for match in results["matches"]:
@@ -281,7 +293,10 @@ class ETLPipeline:
 
     # guardian: allow-magic-config
     def backfill_from_code(
-        self, code_files: list[str], project_context: str = "backfill", batch_size: int = 100,
+        self,
+        code_files: list[str],
+        project_context: str = "backfill",
+        batch_size: int = 100,
     ) -> dict[str, Any]:
         """
         Backfill Pinecone with code files.

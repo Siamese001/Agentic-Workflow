@@ -1,6 +1,5 @@
 """Tests for naming_policy module."""
 
-
 from agentic_core.L5_safety.reasoning.file_classification.naming_policy import (
     _check_forbidden_patterns,
     _sanitize_filename,

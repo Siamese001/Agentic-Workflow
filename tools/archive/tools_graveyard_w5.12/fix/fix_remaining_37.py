@@ -4,15 +4,18 @@ import os
 
 ROOT = r"C:\Git\Agentic-Workflow"
 
+
 def read(rel):
     fp = os.path.join(ROOT, rel.replace("/", os.sep))
     with open(fp, encoding="utf-8") as f:
         return f.read()
 
+
 def write(rel, content):
     fp = os.path.join(ROOT, rel.replace("/", os.sep))
     with open(fp, "w", encoding="utf-8") as f:
         f.write(content)
+
 
 def add_future_annotations(rel):
     """Add from __future__ import annotations after docstring."""
@@ -27,19 +30,23 @@ def add_future_annotations(rel):
         s = line.strip()
         if s.startswith('"""'):
             if in_ds:
-                pos = i + 1; break
+                pos = i + 1
+                break
             elif s.count('"""') >= 2:
-                pos = i + 1; break
+                pos = i + 1
+                break
             else:
                 in_ds = True
         elif s.endswith('"""') and in_ds:
-            pos = i + 1; break
-        elif s.startswith('#') and i == 0:
+            pos = i + 1
+            break
+        elif s.startswith("#") and i == 0:
             pos = i + 1
     lines.insert(pos, "")
     lines.insert(pos + 1, "from __future__ import annotations")
     write(rel, "\n".join(lines))
     return True
+
 
 def add_import_after_logging(rel, import_line):
     """Add an import line after 'import logging'."""
@@ -49,6 +56,7 @@ def add_import_after_logging(rel, import_line):
     c = c.replace("import logging\n", f"import logging\n{import_line}\n", 1)
     write(rel, c)
     return True
+
 
 fixed = 0
 
@@ -76,7 +84,7 @@ if "class RGFlowRouter" not in c and "from __future__ import annotations" not in
     # Add a stub class before it's used
     c = c.replace(
         "class EnhancedRGFlowRouter(RGFlowRouter):",
-        "class RGFlowRouter:\n    \"\"\"Stub base class.\"\"\"\n    def __init__(self, config=None): self.config = config or {}\n\n\nclass EnhancedRGFlowRouter(RGFlowRouter):",
+        'class RGFlowRouter:\n    """Stub base class."""\n    def __init__(self, config=None): self.config = config or {}\n\n\nclass EnhancedRGFlowRouter(RGFlowRouter):',
     )
     write(rel, c)
     fixed += 1
@@ -102,7 +110,11 @@ elif "Field" not in c.split("import")[0] if "import" in c else True:
 # validator not imported (pydantic v1 style)
 rel = "apps_shared/types/sovereign_severity_types.py"
 c = read(rel)
-if "validator" in c and "from pydantic" in c and "validator" not in c.split("from pydantic")[1].split(")")[0] if "from pydantic" in c else True:
+if (
+    "validator" in c and "from pydantic" in c and "validator" not in c.split("from pydantic")[1].split(")")[0]
+    if "from pydantic" in c
+    else True
+):
     if add_future_annotations(rel):
         fixed += 1
         print(f"  [future] {rel}")
@@ -115,7 +127,7 @@ if "Provider" in c and "class Provider" not in c and "import Provider" not in c:
     if "class RoutingTier" in c:
         c = c.replace(
             "class RoutingTier",
-            "class Provider(Enum):\n    \"\"\"LLM provider.\"\"\"\n    OPENAI = \"openai\"\n    ANTHROPIC = \"anthropic\"\n    GOOGLE = \"google\"\n    LOCAL = \"local\"\n\n\nclass RoutingTier",
+            'class Provider(Enum):\n    """LLM provider."""\n    OPENAI = "openai"\n    ANTHROPIC = "anthropic"\n    GOOGLE = "google"\n    LOCAL = "local"\n\n\nclass RoutingTier',
         )
         write(rel, c)
         fixed += 1
@@ -155,7 +167,7 @@ if "RateLimitMixin" in c and "class RateLimitMixin" not in c and "import RateLim
     # Need stub for base class
     c = c.replace(
         "class PilotOrchestrator(",
-        "class RateLimitMixin:\n    \"\"\"Rate limiting mixin stub.\"\"\"\n    pass\n\nclass StateValidationMixin:\n    \"\"\"State validation mixin stub.\"\"\"\n    pass\n\nclass event_emission_mixin:\n    \"\"\"Event emission mixin stub.\"\"\"\n    pass\n\nclass ContextPropagationMixin:\n    \"\"\"Context propagation mixin stub.\"\"\"\n    pass\n\nclass PilotOrchestrator(",
+        'class RateLimitMixin:\n    """Rate limiting mixin stub."""\n    pass\n\nclass StateValidationMixin:\n    """State validation mixin stub."""\n    pass\n\nclass event_emission_mixin:\n    """Event emission mixin stub."""\n    pass\n\nclass ContextPropagationMixin:\n    """Context propagation mixin stub."""\n    pass\n\nclass PilotOrchestrator(',
     )
     write(rel, c)
     fixed += 1
@@ -176,7 +188,9 @@ rel = "apps_shared/types/rate_limiter_types.py"
 c = read(rel)
 if "\nLIMIT" not in c and "LIMIT =" not in c and "limit=LIMIT" in c:
     # Define LIMIT before it's used
-    c = c.replace("# Predefined configurations", "LIMIT = 1000  # Default rate limit\n\n# Predefined configurations")
+    c = c.replace(
+        "# Predefined configurations", "LIMIT = 1000  # Default rate limit\n\n# Predefined configurations"
+    )
     write(rel, c)
     fixed += 1
     print(f"  [const] {rel}: LIMIT = 1000")

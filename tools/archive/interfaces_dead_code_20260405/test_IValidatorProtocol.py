@@ -16,14 +16,17 @@ class TestIvalidatorprotocol:
     def test_IValidatorProtocol_imports(self):
         """Test IValidatorProtocol module imports."""
         from agentic_core import IValidatorProtocol
+
         assert IValidatorProtocol is not None
 
     def test_IValidatorProtocol_class(self):
         """Test Ivalidatorprotocol class exists."""
         from agentic_core import Ivalidatorprotocol
+
         assert Ivalidatorprotocol is not None
 
     def test_IValidatorProtocol_callable(self):
         """Test IValidatorProtocol functions are callable."""
         from agentic_core import validate_IValidatorProtocol
+
         assert callable(validate_IValidatorProtocol)

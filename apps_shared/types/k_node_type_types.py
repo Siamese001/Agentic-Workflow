@@ -529,7 +529,11 @@ OUTREACH_CONNECTION_REQ_NODES = {
         reasoning_strategy=ReasoningStrategy.COT,
         rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
-            temperature=0.25, top_p=0.9, top_k=40, min_p=0.04, repetition_penalty=1.1,
+            temperature=0.25,
+            top_p=0.9,
+            top_k=40,
+            min_p=0.04,
+            repetition_penalty=1.1,
         ),
         beam_width=2,
         self_consistency_runs=1,
@@ -545,7 +549,11 @@ OUTREACH_CONNECTION_REQ_NODES = {
         reasoning_strategy=ReasoningStrategy.COT,
         rag_config=RAGConfig(enabled=False),
         decoding_params=DecodingParams(
-            temperature=0.2, top_p=0.88, top_k=30, min_p=0.03, repetition_penalty=1.05,
+            temperature=0.2,
+            top_p=0.88,
+            top_k=30,
+            min_p=0.03,
+            repetition_penalty=1.05,
         ),
         beam_width=1,
         self_consistency_runs=1,
@@ -592,8 +600,11 @@ class KXNodeRegistry:
             KNodeConfig or None if not found
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "KXNodeRegistry.get_outreach_node")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "KXNodeRegistry.get_outreach_node"
+        )
 
         if connection_request and node_key in self._connection_req_nodes:
             return self._connection_req_nodes[node_key]

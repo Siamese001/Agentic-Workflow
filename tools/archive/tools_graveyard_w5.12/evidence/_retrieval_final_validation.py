@@ -4,43 +4,82 @@ Final ADG retrieval wiring validation using correct schema:
 - edges.source_file contains the file path of the edge source
 - edges.src_id / dst_id are integer FKs to nodes.id (integer PK)
 """
+
 import os
 import sqlite3
 
 SQLITE_PATH = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03312026_1808.sqlite"
 
 RETRIEVAL_RELATIONS = [
-    "pulls_context", "reads_from", "writes_to", "reads_through", "writes_through",
-    "validated_by_safety_plane", "calls", "routes_through", "emits_metric_event",
+    "pulls_context",
+    "reads_from",
+    "writes_to",
+    "reads_through",
+    "writes_through",
+    "validated_by_safety_plane",
+    "calls",
+    "routes_through",
+    "emits_metric_event",
     "execution_terminates_at_uwg",
 ]
 
 AGENTIC_CORE_LAYERS = [
-    "L0_routing", "L1_cognition", "L2_execution",
-    "L3_orchestration", "L4_state", "L5_safety", "L6_observability",
+    "L0_routing",
+    "L1_cognition",
+    "L2_execution",
+    "L3_orchestration",
+    "L4_state",
+    "L5_safety",
+    "L6_observability",
 ]
 
 APPS_PACKAGES = [
-    "apps_lic", "apps_rg", "apps_eval", "apps_exec",
-    "apps_research", "apps_rfp", "apps_shared", "apps_underwriting_ai",
+    "apps_lic",
+    "apps_rg",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_shared",
+    "apps_underwriting_ai",
 ]
 
 # v18 spec retrieval symbols — exact module/class names to look for in resolved_path
 RETRIEVAL_SYMBOL_PATTERNS = [
     # L1 — query embedding & intent expansion
-    "query_intent_expansion", "graphrag_config", "react_config",
+    "query_intent_expansion",
+    "graphrag_config",
+    "react_config",
     # L2 — chunking / enrichment / conservation lab
-    "chunk", "enrich", "ingestion", "document_load",
-    "brief_assembly", "source_ingestion",
+    "chunk",
+    "enrich",
+    "ingestion",
+    "document_load",
+    "brief_assembly",
+    "source_ingestion",
     # L3 — context assembly / orchestration / GraphRAG
-    "context", "orchestrat", "retrieval", "graph_rag", "graphrag",
+    "context",
+    "orchestrat",
+    "retrieval",
+    "graph_rag",
+    "graphrag",
     # L4 — canonical store / vector / state
-    "vector", "faiss", "chroma", "l4d", "l4e", "manifest",
-    "semantic_cache", "parent_child",
+    "vector",
+    "faiss",
+    "chroma",
+    "l4d",
+    "l4e",
+    "manifest",
+    "semantic_cache",
+    "parent_child",
     # L5 — safety / guardrail on retrieval
-    "adaptive_retrieval", "retrieval_gate", "guardrail",
+    "adaptive_retrieval",
+    "retrieval_gate",
+    "guardrail",
     # L6 — observability
-    "rag_evaluator", "evaluation_cache", "retrieval_eval",
+    "rag_evaluator",
+    "evaluation_cache",
+    "retrieval_eval",
 ]
 
 

@@ -26,7 +26,9 @@ def test_startup_time(name, command, args, timeout=5):
         end_time = time.time()
 
         startup_time = end_time - start_time
-        success = result.returncode == 0 or "timeout" in result.stderr.lower() or "started" in result.stderr.lower()
+        success = (
+            result.returncode == 0 or "timeout" in result.stderr.lower() or "started" in result.stderr.lower()
+        )
 
         return startup_time, success, result.stderr[:200] if result.stderr else ""
 
@@ -34,6 +36,7 @@ def test_startup_time(name, command, args, timeout=5):
         return timeout, True, "Timeout (server started)"
     except Exception as e:
         return -1, False, str(e)
+
 
 def main():
     print("🔬 MCP Installation Performance Comparison")
@@ -97,8 +100,8 @@ def main():
 
         print(f"\n{server_name}:")
         print(f"   Global npm: {global_result['time']:.3f}s ({'✅' if global_result['success'] else '❌'})")
-        npx_time = "N/A" if npx_result['time'] < 0 else f"{npx_result['time']:.3f}s"
-        npx_status = "❌" if not npx_result['success'] else "✅"
+        npx_time = "N/A" if npx_result["time"] < 0 else f"{npx_result['time']:.3f}s"
+        npx_status = "❌" if not npx_result["success"] else "✅"
         print(f"   NPX:        {npx_time} ({npx_status})")
 
     # Benefits Analysis
@@ -130,6 +133,7 @@ def main():
         # Check which servers use global npm
         with open(config_file) as f:
             import json
+
             config = json.load(f)
 
         global_servers = []
@@ -165,6 +169,7 @@ def main():
     print("   npm install -g @modelcontextprotocol/server-sequential-thinking")
 
     return 0
+
 
 if __name__ == "__main__":
     exit(main())

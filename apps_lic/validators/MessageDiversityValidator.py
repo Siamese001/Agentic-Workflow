@@ -184,8 +184,11 @@ class MessageDiversityValidator(SovereignBaseAgent):
             (is_diverse, max_similarity, most_similar_message)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MessageDiversityValidator.check_diversity")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MessageDiversityValidator.check_diversity"
+        )
 
         if not self.message_history:
             return (True, 0.0, "")

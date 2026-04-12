@@ -16,14 +16,17 @@ class TestCommitProofInvariantTypesAdg:
     def test_commit_proof_invariant_types_adg_imports(self):
         """Test commit_proof_invariant_types_adg module imports."""
         from agentic_core import commit_proof_invariant_types_adg
+
         assert commit_proof_invariant_types_adg is not None
 
     def test_commit_proof_invariant_types_adg_class(self):
         """Test CommitProofInvariantTypesAdg class exists."""
         from agentic_core import CommitProofInvariantTypesAdg
+
         assert CommitProofInvariantTypesAdg is not None
 
     def test_commit_proof_invariant_types_adg_callable(self):
         """Test commit_proof_invariant_types_adg functions are callable."""
         from agentic_core import validate_commit_proof_invariant_types_adg
+
         assert callable(validate_commit_proof_invariant_types_adg)

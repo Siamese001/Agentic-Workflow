@@ -16,14 +16,17 @@ class TestMlWriteIntentTypesAdg:
     def test_ml_write_intent_types_adg_imports(self):
         """Test ml_write_intent_types_adg module imports."""
         from agentic_core import ml_write_intent_types_adg
+
         assert ml_write_intent_types_adg is not None
 
     def test_ml_write_intent_types_adg_class(self):
         """Test MlWriteIntentTypesAdg class exists."""
         from agentic_core import MlWriteIntentTypesAdg
+
         assert MlWriteIntentTypesAdg is not None
 
     def test_ml_write_intent_types_adg_callable(self):
         """Test ml_write_intent_types_adg functions are callable."""
         from agentic_core import validate_ml_write_intent_types_adg
+
         assert callable(validate_ml_write_intent_types_adg)

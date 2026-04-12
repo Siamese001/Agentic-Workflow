@@ -8,6 +8,7 @@ Three patterns:
 Strategy: For each file, extract the import statement(s) and test functions,
 then rewrite the file cleanly with direct imports.
 """
+
 from __future__ import annotations
 
 import ast
@@ -52,10 +53,26 @@ def extract_import_and_rewrite(filepath: pathlib.Path) -> dict:
         # Match: import X as Y, from X import Y, import X
         if stripped.startswith("import ") or stripped.startswith("from "):
             # Skip standard library imports
-            if any(stripped.startswith(f"import {m}") or stripped.startswith(f"from {m}")
-                   for m in ("__future__", "pytest", "sys", "os", "pathlib", "re",
-                             "json", "typing", "inspect", "collections", "unittest",
-                             "abc", "dataclasses", "enum", "functools")):
+            if any(
+                stripped.startswith(f"import {m}") or stripped.startswith(f"from {m}")
+                for m in (
+                    "__future__",
+                    "pytest",
+                    "sys",
+                    "os",
+                    "pathlib",
+                    "re",
+                    "json",
+                    "typing",
+                    "inspect",
+                    "collections",
+                    "unittest",
+                    "abc",
+                    "dataclasses",
+                    "enum",
+                    "functools",
+                )
+            ):
                 continue
             # Skip pytest.importorskip which isn't a real import
             if "importorskip" in stripped:
@@ -111,8 +128,17 @@ def extract_import_and_rewrite(filepath: pathlib.Path) -> dict:
     for block in test_blocks:
         block_text = "\n".join(block["lines"])
         # Remove _AVAILABLE references
-        block_text = re.sub(r'\s*assert _AVAILABLE or not _AVAILABLE\s*', '\n    pass  # Import verified at module level\n', block_text)
-        block_text = re.sub(r'\s*assert _AVAILABLE\s*$', '\n    pass  # Import verified at module level', block_text, flags=re.MULTILINE)
+        block_text = re.sub(
+            r"\s*assert _AVAILABLE or not _AVAILABLE\s*",
+            "\n    pass  # Import verified at module level\n",
+            block_text,
+        )
+        block_text = re.sub(
+            r"\s*assert _AVAILABLE\s*$",
+            "\n    pass  # Import verified at module level",
+            block_text,
+            flags=re.MULTILINE,
+        )
         # Fix indentation issues
         block_lines = block_text.splitlines()
         if block_lines:
@@ -129,7 +155,7 @@ def extract_import_and_rewrite(filepath: pathlib.Path) -> dict:
         new_lines.append("")
     for imp in imports:
         # Remove noqa comments for cleanliness, re-add standard noqa
-        imp_clean = re.sub(r'\s*#\s*noqa:.*$', '', imp).rstrip()
+        imp_clean = re.sub(r"\s*#\s*noqa:.*$", "", imp).rstrip()
         new_lines.append(f"{imp_clean}  # noqa: F401")
     new_lines.append("")
 
@@ -154,12 +180,12 @@ def extract_import_and_rewrite(filepath: pathlib.Path) -> dict:
         ast.parse(new_source, filename=rel)
     except SyntaxError as e:
         # If still broken, write a minimal valid file
-        new_source = f'{docstring}\nfrom __future__ import annotations\n\nimport pytest\n\n'
+        new_source = f"{docstring}\nfrom __future__ import annotations\n\nimport pytest\n\n"
         if pytestmark:
-            new_source += f'{pytestmark}\n\n'
+            new_source += f"{pytestmark}\n\n"
         for imp in imports:
-            imp_clean = re.sub(r'\s*#\s*noqa:.*$', '', imp).rstrip()
-            new_source += f'{imp_clean}  # noqa: F401\n'
+            imp_clean = re.sub(r"\s*#\s*noqa:.*$", "", imp).rstrip()
+            new_source += f"{imp_clean}  # noqa: F401\n"
         new_source += '\n\ndef test_module_importable():\n    """Module must be importable."""\n    pass  # Import verified at module level\n'
 
         try:

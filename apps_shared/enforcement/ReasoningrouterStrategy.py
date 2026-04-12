@@ -173,6 +173,7 @@ class TaskType(Enum):
 
 class ReasoningMode(Enum):
     """Reasoning modes for strategy selection."""
+
     REACT = "react"
     COT = "chain_of_thought"
     SIMPLE = "simple"
@@ -187,7 +188,9 @@ class ReasoningRouter:
     """
 
     def __init__(
-        self, default_mode: ReasoningMode = ReasoningMode.REACT, enable_adaptive_routing: bool = True,
+        self,
+        default_mode: ReasoningMode = ReasoningMode.REACT,
+        enable_adaptive_routing: bool = True,
     ):
         """Initialize reasoning router.
 
@@ -218,8 +221,11 @@ class ReasoningRouter:
             TaskType classification
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningRouter.classify_task")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningRouter.classify_task"
+        )
 
         if context and "task_type" in context:
             try:
@@ -281,12 +287,15 @@ class ReasoningRouter:
         """
         self._strategy_map[task_type] = mode
         logger.info(
-            "reasoning_strategy_override", extra={"task_type": task_type.value, "new_strategy": mode.value},
+            "reasoning_strategy_override",
+            extra={"task_type": task_type.value, "new_strategy": mode.value},
         )
 
 
 def select_reasoning_strategy(
-    task: str, context: dict[str, Any] | None = None, router: ReasoningRouter | None = None,
+    task: str,
+    context: dict[str, Any] | None = None,
+    router: ReasoningRouter | None = None,
 ) -> ReasoningMode:
     """Convenience function to select reasoning strategy.
 

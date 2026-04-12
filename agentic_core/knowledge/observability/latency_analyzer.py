@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class LatencyReport:
     """Latency analysis report."""
+
     stage_name: str
     p50_ms: float
     p95_ms: float
@@ -72,7 +73,9 @@ class LatencyAnalyzer:
         """
         trace_id = f"latency_{stage_name}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "LatencyAnalyzer.generate_report",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "LatencyAnalyzer.generate_report",
         )
 
         latencies = self._stage_latencies.get(stage_name, [])

@@ -1,6 +1,7 @@
 """
 Storage Adapter - Persists domain artifacts through approved repo seam.
 """
+
 import json
 from datetime import datetime
 from pathlib import Path
@@ -37,7 +38,7 @@ class StorageAdapter:
 
         content = self._render_memo_markdown(memo)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         return output_path
@@ -51,7 +52,7 @@ class StorageAdapter:
         output_path = self.base_path / f"{request_id}_decision_packet.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(packet.dict(), f, indent=2, default=str)
 
         return output_path
@@ -65,7 +66,7 @@ class StorageAdapter:
         output_path = self.base_path / f"{request_id}_audit_trace.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(trace.dict(), f, indent=2, default=str)
 
         return output_path
@@ -86,7 +87,7 @@ class StorageAdapter:
             "generated_at": datetime.now().isoformat(),
         }
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
 
         return output_path

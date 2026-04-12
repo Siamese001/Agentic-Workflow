@@ -45,46 +45,46 @@ class QueryRouter:
     def __init__(self):
         """Initialize query router with routing rules."""
         self.collection_mappings = {
-            # Code knowledge collections
+            # Code knowledge collections — canonical BGE-M3 store
             QueryType.CODE_KNOWLEDGE: {
-                "primary": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
+                "primary": ["code_chunks", "symbols", "arch_docs"],
                 "secondary": [],
             },
-            # Structural analysis collections
+            # Structural analysis collections — canonical BGE-M3 store
             # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.STRUCTURAL_ANALYSIS: {
-                "primary": ["repo_symbols"],
-                "secondary": ["repo_code_chunks", "repo_tests_guardrails"],
+                "primary": ["symbols"],
+                "secondary": ["code_chunks", "tests_guardrails"],
             },
             # Execution intelligence collections
             # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.EXECUTION_INTELLIGENCE: {
-                "primary": ["repo_runtime_evidence"],
-                "secondary": ["repo_symbols"],
+                "primary": ["runtime_evidence"],
+                "secondary": ["symbols"],
             },
             # Historical analysis collections
             # NOTE: repo_git_history removed — collection was corrupt (WAL compaction failure)
             QueryType.HISTORICAL_ANALYSIS: {
-                "primary": ["repo_incidents_rca"],
-                "secondary": ["repo_runtime_evidence"],
+                "primary": ["incidents_rca"],
+                "secondary": ["runtime_evidence"],
             },
-            # Blast radius analysis collections
+            # Blast radius analysis collections — canonical BGE-M3 store
             # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.BLAST_RADIUS: {
-                "primary": ["repo_symbols"],
-                "secondary": ["repo_code_chunks", "repo_tests_guardrails", "repo_runtime_evidence"],
+                "primary": ["symbols"],
+                "secondary": ["code_chunks", "tests_guardrails", "runtime_evidence"],
             },
             # Failure analysis collections
             # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.FAILURE_ANALYSIS: {
-                "primary": ["repo_incidents_rca", "repo_runtime_evidence"],
-                "secondary": ["repo_tests_guardrails"],
+                "primary": ["incidents_rca", "runtime_evidence"],
+                "secondary": ["tests_guardrails"],
             },
-            # General query collections
+            # General query collections — canonical BGE-M3 store
             # NOTE: repo_adg_graph removed — ADG MCP (mcp1_adg_edge_fanin/fanout) is authoritative
             QueryType.GENERAL_QUERY: {
-                "primary": ["repo_code_chunks", "repo_symbols", "repo_arch_docs"],
-                "secondary": ["repo_tests_guardrails"],
+                "primary": ["code_chunks", "symbols", "arch_docs"],
+                "secondary": ["tests_guardrails"],
             },
         }
 
@@ -351,12 +351,14 @@ def main():
     ]
 
     available_collections = [
-        "repo_code_chunks",
-        "repo_symbols",
-        "repo_arch_docs",
-        "repo_tests_guardrails",
-        "repo_runtime_evidence",
-        "repo_incidents_rca",
+        "code_chunks",
+        "symbols",
+        "arch_docs",
+        "tests_guardrails",
+        "runtime_evidence",
+        "incidents_rca",
+        "process_docs",
+        "ext_knowledge",
     ]
 
     print("Query Router Test:")

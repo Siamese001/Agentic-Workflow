@@ -53,8 +53,18 @@ class _LegacyRuleBasedEnricher:
 
     # Core concept indicators
     CONCEPT_INDICATORS = [
-        "embedding", "vector", "semantic", "chunk", "document", "knowledge",
-        "reasoning", "inference", "generation", "prompt", "context", "grounding",
+        "embedding",
+        "vector",
+        "semantic",
+        "chunk",
+        "document",
+        "knowledge",
+        "reasoning",
+        "inference",
+        "generation",
+        "prompt",
+        "context",
+        "grounding",
     ]
 
     # Query expansion synonyms
@@ -73,18 +83,18 @@ class _LegacyRuleBasedEnricher:
         """Build regex patterns for concept extraction."""
         patterns = set()
         for concept in self.CONCEPT_INDICATORS:
-            patterns.add(rf'\b{concept}\w*\b')
+            patterns.add(rf"\b{concept}\w*\b")
         return patterns
 
     def _extract_title(self, text: str) -> str:
         """Extract best-guess title from text."""
-        lines = text.strip().split('\n')
+        lines = text.strip().split("\n")
 
         # Look for markdown headers
         for line in lines[:5]:  # Check first 5 lines
             line = line.strip()
-            if line.startswith('#'):
-                return line.lstrip('#').strip()
+            if line.startswith("#"):
+                return line.lstrip("#").strip()
 
         # Look for all-caps or title-case lines
         for line in lines[:3]:
@@ -94,7 +104,7 @@ class _LegacyRuleBasedEnricher:
                     return line
 
         # Fallback: first sentence (truncated)
-        first_sentence = text.split('.')[0].strip()
+        first_sentence = text.split(".")[0].strip()
         if len(first_sentence) > 50:
             return first_sentence[:47] + "..."
         return first_sentence or "Untitled"
@@ -110,7 +120,7 @@ class _LegacyRuleBasedEnricher:
                 concepts.append(concept.capitalize())
 
         # Extract noun phrases (simple heuristic)
-        words = re.findall(r'\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b', text)
+        words = re.findall(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b", text)
         for word in words:
             if len(word) > 3 and word not in concepts:
                 concepts.append(word)
@@ -137,14 +147,14 @@ class _LegacyRuleBasedEnricher:
         implementation_keywords = ["implement", "build", "create", "use", "apply", "integrate"]
         if any(keyword in text_lower for keyword in implementation_keywords):
             # Find sentence with implementation clue
-            sentences = text.split('.')
+            sentences = text.split(".")
             for sentence in sentences:
                 if any(keyword in sentence.lower() for keyword in implementation_keywords):
                     return sentence.strip()[:200] + "..." if len(sentence.strip()) > 200 else sentence.strip()
 
         # Fallback: what this enables
         if "enable" in text_lower or "allow" in text_lower:
-            sentences = text.split('.')
+            sentences = text.split(".")
             for sentence in sentences:
                 if "enable" in sentence.lower() or "allow" in sentence.lower():
                     return sentence.strip()[:200] + "..." if len(sentence.strip()) > 200 else sentence.strip()
@@ -171,7 +181,7 @@ class _LegacyRuleBasedEnricher:
     def enrich_chunk(self, chunk_text: str, metadata: dict) -> dict:
         """Transform raw chunk into structured semantic representation."""
         # Clean text
-        cleaned_text = re.sub(r'\s+', ' ', chunk_text.strip())
+        cleaned_text = re.sub(r"\s+", " ", chunk_text.strip())
 
         # Extract components
         title = self._extract_title(cleaned_text)
@@ -181,8 +191,8 @@ class _LegacyRuleBasedEnricher:
         query_expansion = self._generate_query_expansion(cleaned_text)
 
         # Build summary (first 2-4 sentences)
-        sentences = [s.strip() for s in cleaned_text.split('.') if s.strip()]
-        summary = '. '.join(sentences[:3]) + '.' if len(sentences) >= 3 else cleaned_text[:200] + "..."
+        sentences = [s.strip() for s in cleaned_text.split(".") if s.strip()]
+        summary = ". ".join(sentences[:3]) + "." if len(sentences) >= 3 else cleaned_text[:200] + "..."
 
         # Build enriched representation
         enriched_parts = [
@@ -195,20 +205,20 @@ class _LegacyRuleBasedEnricher:
             f"Source Context: {metadata.get('source_url', 'Unknown source')}",
         ]
 
-        enriched_text = '\n\n'.join(filter(None, enriched_parts))
+        enriched_text = "\n\n".join(filter(None, enriched_parts))
 
         # Generate enrichment hash
         enrichment_hash = hashlib.sha256(enriched_text.encode()).hexdigest()
 
         return {
-            'enriched_text': enriched_text,
-            'title': title,
-            'summary': summary,
-            'key_concepts': key_concepts,
-            'agentic_patterns': agentic_patterns,
-            'execution_insight': execution_insight,
-            'query_expansion': query_expansion,
-            'enrichment_hash': enrichment_hash,
+            "enriched_text": enriched_text,
+            "title": title,
+            "summary": summary,
+            "key_concepts": key_concepts,
+            "agentic_patterns": agentic_patterns,
+            "execution_insight": execution_insight,
+            "query_expansion": query_expansion,
+            "enrichment_hash": enrichment_hash,
         }
 
 
@@ -221,22 +231,24 @@ class SemanticPipeline:
         self.enricher = SemanticEnricher()  # Canonical from agentic_core
 
         # Initialize ChromaDB
-        self.client = chromadb.PersistentClient(path=str(self.chroma_path), settings=Settings(allow_reset=True))
+        self.client = chromadb.PersistentClient(
+            path=str(self.chroma_path), settings=Settings(allow_reset=True)
+        )
 
         # Collections
         self.source_collection = self.client.get_or_create_collection("agentic_best_practices")
         self.target_collection = self.client.get_or_create_collection("agentic_best_practices_semantic")
 
         # Initialize embedding model
-        self.model = SentenceTransformer('BAAI/bge-m3')
+        self.model = SentenceTransformer("BAAI/bge-m3")
 
         # Statistics
         self.stats = {
-            'processed': 0,
-            'enriched': 0,
-            'skipped': 0,
-            'stored': 0,
-            'errors': 0,
+            "processed": 0,
+            "enriched": 0,
+            "skipped": 0,
+            "stored": 0,
+            "errors": 0,
         }
 
     def _reset_target_collection(self):
@@ -253,7 +265,7 @@ class SemanticPipeline:
                 where={"enrichment_hash": enrichment_hash},
                 limit=1,
             )
-            return len(result['ids']) > 0
+            return len(result["ids"]) > 0
         except Exception:
             return False
 
@@ -262,7 +274,7 @@ class SemanticPipeline:
         embeddings = []
 
         for i in tqdm(range(0, len(texts), batch_size), desc="Embedding batches"):
-            batch = texts[i:i + batch_size]
+            batch = texts[i : i + batch_size]
             batch_embeddings = self.model.encode(batch, normalize_embeddings=True)
             embeddings.extend(batch_embeddings.tolist())
 
@@ -275,32 +287,34 @@ class SemanticPipeline:
             enriched = self.enricher.enrich_chunk_adapter(chunk_text, metadata)
 
             # Check for duplicates
-            if self._check_existing_hash(enriched['enrichment_hash']):
-                self.stats['skipped'] += 1
+            if self._check_existing_hash(enriched["enrichment_hash"]):
+                self.stats["skipped"] += 1
                 return None
 
             # Prepare enriched metadata (ensure list values are never empty)
             enriched_metadata = metadata.copy()
-            enriched_metadata.update({
-                'semantic_version': 'v1',
-                'enrichment_type': 'agentic_semantic',
-                'original_chunk_id': chunk_id,
-                'enrichment_hash': enriched['enrichment_hash'],
-                'title': enriched['title'],
-                'key_concepts': enriched['key_concepts'] or ['general'],
-                'agentic_patterns': enriched['agentic_patterns'] or ['general'],
-            })
+            enriched_metadata.update(
+                {
+                    "semantic_version": "v1",
+                    "enrichment_type": "agentic_semantic",
+                    "original_chunk_id": chunk_id,
+                    "enrichment_hash": enriched["enrichment_hash"],
+                    "title": enriched["title"],
+                    "key_concepts": enriched["key_concepts"] or ["general"],
+                    "agentic_patterns": enriched["agentic_patterns"] or ["general"],
+                }
+            )
 
-            self.stats['enriched'] += 1
+            self.stats["enriched"] += 1
             return {
-                'id': f"semantic_{chunk_id}",
-                'text': enriched['enriched_text'],
-                'metadata': enriched_metadata,
+                "id": f"semantic_{chunk_id}",
+                "text": enriched["enriched_text"],
+                "metadata": enriched_metadata,
             }
 
         except Exception as e:
             print(f"Error processing chunk {chunk_id}: {e}")
-            self.stats['errors'] += 1
+            self.stats["errors"] += 1
             return None
 
     def run(self, limit: int | None = None, sample_size: int = 0):
@@ -319,9 +333,9 @@ class SemanticPipeline:
         else:
             result = self.source_collection.get()
 
-        chunk_ids = result['ids']
-        chunk_texts = result['documents']
-        chunk_metadatas = result['metadatas']
+        chunk_ids = result["ids"]
+        chunk_texts = result["documents"]
+        chunk_metadatas = result["metadatas"]
 
         total_chunks = len(chunk_ids)
         print(f"Found {total_chunks} chunks to process")
@@ -340,7 +354,7 @@ class SemanticPipeline:
             total=len(chunk_ids),
             desc="Processing chunks",
         ):
-            self.stats['processed'] += 1
+            self.stats["processed"] += 1
 
             processed_chunk = self._process_chunk(chunk_id, chunk_text, metadata or {})
             if processed_chunk:
@@ -356,14 +370,14 @@ class SemanticPipeline:
             return
 
         # Batch embed enriched texts
-        enriched_texts = [chunk['text'] for chunk in processed_chunks]
+        enriched_texts = [chunk["text"] for chunk in processed_chunks]
         print(f"Embedding {len(enriched_texts)} enriched chunks...")
 
         embeddings = self._batch_embed(enriched_texts)
 
         # Store in target collection
-        ids = [chunk['id'] for chunk in processed_chunks]
-        metadatas = [chunk['metadata'] for chunk in processed_chunks]
+        ids = [chunk["id"] for chunk in processed_chunks]
+        metadatas = [chunk["metadata"] for chunk in processed_chunks]
 
         print(f"Storing {len(ids)} semantic chunks...")
 
@@ -374,7 +388,7 @@ class SemanticPipeline:
             metadatas=metadatas,
         )
 
-        self.stats['stored'] = len(ids)
+        self.stats["stored"] = len(ids)
 
         print(f"Stored: {self.stats['stored']}")
         print("Pipeline completed successfully!")
@@ -382,7 +396,7 @@ class SemanticPipeline:
         # Print sample enriched chunk
         if processed_chunks:
             print("\n--- Sample Enriched Chunk ---")
-            print(processed_chunks[0]['text'])
+            print(processed_chunks[0]["text"])
             print("-------------------------------")
 
     def query_semantic(self, query: str, n_results: int = 5) -> list[dict]:
@@ -411,13 +425,15 @@ class SemanticPipeline:
 
         # Format results
         formatted_results = []
-        for i in range(len(results['ids'][0])):
-            formatted_results.append({
-                'id': results['ids'][0][i],
-                'document': results['documents'][0][i],
-                'metadata': results['metadatas'][0][i],
-                'distance': results['distances'][0][i] if 'distances' in results else None,
-            })
+        for i in range(len(results["ids"][0])):
+            formatted_results.append(
+                {
+                    "id": results["ids"][0][i],
+                    "document": results["documents"][0][i],
+                    "metadata": results["metadatas"][0][i],
+                    "distance": results["distances"][0][i] if "distances" in results else None,
+                }
+            )
 
         return formatted_results
 
@@ -425,16 +441,11 @@ class SemanticPipeline:
 def main():
     """CLI entry point."""
     parser = argparse.ArgumentParser(description="Semantic Enrichment Pipeline")
-    parser.add_argument("--chroma-path", default="artifacts/chromadb",
-                       help="Path to ChromaDB directory")
-    parser.add_argument("--rebuild", action="store_true",
-                       help="Rebuild target collection")
-    parser.add_argument("--limit", type=int,
-                       help="Limit number of chunks to process")
-    parser.add_argument("--sample", type=int,
-                       help="Process sample of N chunks")
-    parser.add_argument("--query", type=str,
-                       help="Test query against semantic collection")
+    parser.add_argument("--chroma-path", default="artifacts/chromadb", help="Path to ChromaDB directory")
+    parser.add_argument("--rebuild", action="store_true", help="Rebuild target collection")
+    parser.add_argument("--limit", type=int, help="Limit number of chunks to process")
+    parser.add_argument("--sample", type=int, help="Process sample of N chunks")
+    parser.add_argument("--query", type=str, help="Test query against semantic collection")
 
     args = parser.parse_args()
 

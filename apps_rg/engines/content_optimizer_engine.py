@@ -178,8 +178,11 @@ class ContentOptimizerEngine(BaseRGEngine):
         Reorder resume content based on impact scoring and weights.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContentOptimizerEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ContentOptimizerEngine.execute"
+        )
 
         data = self.ctx.buffer.read("hop2_enrichment")
         weights = self.ctx.buffer.read("adjusted_weights", default={})
@@ -191,7 +194,9 @@ class ContentOptimizerEngine(BaseRGEngine):
         for section in sections:
             bullets = section.get("bullets", [])
             optimized_bullets = sorted(
-                bullets, key=lambda b: self._calculate_impact_score(b, weights), reverse=True,
+                bullets,
+                key=lambda b: self._calculate_impact_score(b, weights),
+                reverse=True,
             )
             section["bullets"] = optimized_bullets
             optimized_sections.append(section)

@@ -67,12 +67,16 @@ class TestTokenEstimatorStressTests:
         """Cleanup test fixtures"""
         import shutil
         import time
+
         # Wait a moment for file handles to close (Windows)
         time.sleep(0.1)
         if self.temp_dir.exists():
             try:
                 shutil.rmtree(self.temp_dir, ignore_errors=True)
-            except (OSError, PermissionError):  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                OSError,
+                PermissionError,
+            ):  # guardian: allow-silent-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 pass  # Ignore cleanup errors on Windows
 
     def test_extreme_large_file_compression(self):

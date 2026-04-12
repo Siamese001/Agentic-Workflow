@@ -42,7 +42,8 @@ def main():
 
     # Step 2: Temporarily rename ADG gate script
     if not run_command(
-        "mv ops_scripts/ci/adg_burndown_gate.py ops_scripts/ci/adg_burndown_gate.py.bak", "Disable ADG gate",
+        "mv ops_scripts/ci/adg_burndown_gate.py ops_scripts/ci/adg_burndown_gate.py.bak",
+        "Disable ADG gate",
     ):
         print("⚠️ ADG gate already disabled or not found")
 
@@ -82,7 +83,8 @@ Documentation:
 
     # Step 5: Restore ADG gate
     if not run_command(
-        "mv ops_scripts/ci/adg_burndown_gate.py.bak ops_scripts/ci/adg_burndown_gate.py", "Restore ADG gate",
+        "mv ops_scripts/ci/adg_burndown_gate.py.bak ops_scripts/ci/adg_burndown_gate.py",
+        "Restore ADG gate",
     ):
         print("⚠️ Could not restore ADG gate")
 

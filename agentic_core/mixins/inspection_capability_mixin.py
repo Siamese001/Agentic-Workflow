@@ -220,8 +220,11 @@ class InspectionCapability:
             InspectionResult with healthy flag, issues, and metrics.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InspectionCapability.run_inspection")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InspectionCapability.run_inspection"
+        )
 
         import logging
 
@@ -231,7 +234,9 @@ class InspectionCapability:
         return InspectionResult(healthy=len(issues) == 0, issues=issues, metrics=metrics)
 
     def perform_checks(
-        self, target: Any, context: dict[str, Any] | None = None,
+        self,
+        target: Any,
+        context: dict[str, Any] | None = None,
     ) -> tuple[list[str], dict[str, Any]]:
         """Execute domain-specific inspection logic.
 

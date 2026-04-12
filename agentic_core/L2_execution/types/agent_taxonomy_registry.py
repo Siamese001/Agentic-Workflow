@@ -1278,6 +1278,7 @@ AGENT_TAXONOMY_MAP: dict[str, AgentClassification] = {
     ),
 }
 
+
 def get_taxonomy_registry() -> AgentTaxonomyRegistry:
     """Get the populated taxonomy registry."""
     registry = AgentTaxonomyRegistry()

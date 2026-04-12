@@ -194,11 +194,13 @@ class ResumeGenerator:
             tailored_resume = resume_data.copy()
             if "summary" in tailored_resume:
                 tailored_resume["summary"] = self._tailor_summary(
-                    tailored_resume["summary"], analysis_results,
+                    tailored_resume["summary"],
+                    analysis_results,
                 )
             if "experience" in tailored_resume:
                 tailored_resume["experience"] = self._tailor_experience(
-                    tailored_resume["experience"], analysis_results,
+                    tailored_resume["experience"],
+                    analysis_results,
                 )
             if "skills" in tailored_resume:
                 tailored_resume["skills"] = self._tailor_skills(tailored_resume["skills"], analysis_results)
@@ -230,7 +232,9 @@ class ResumeGenerator:
             return original_summary
 
     def _tailor_experience(
-        self, experience_list: list[dict[str, Any]], analysis: dict[str, Any],
+        self,
+        experience_list: list[dict[str, Any]],
+        analysis: dict[str, Any],
     ) -> list[dict[str, Any]]:
         """Tailor experience section to highlight relevant achievements."""
         tailored_experience = []
@@ -239,13 +243,17 @@ class ResumeGenerator:
             tailored_exp = exp.copy()
             if "responsibilities" in exp:
                 tailored_exp["responsibilities"] = self._tailor_bullets(
-                    exp["responsibilities"], target_skills, analysis.get("key_responsibilities", []),
+                    exp["responsibilities"],
+                    target_skills,
+                    analysis.get("key_responsibilities", []),
                 )
             elif "description" in exp:
                 tailored_exp["description"] = self._tailor_description(exp["description"], target_skills)
             if "achievements" in exp:
                 tailored_exp["achievements"] = self._tailor_bullets(
-                    exp["achievements"], target_skills, analysis.get("key_responsibilities", []),
+                    exp["achievements"],
+                    target_skills,
+                    analysis.get("key_responsibilities", []),
                 )
             tailored_experience.append(tailored_exp)
         return tailored_experience
@@ -275,7 +283,10 @@ class ResumeGenerator:
         return final_skills[:15]
 
     def _tailor_bullets(
-        self, bullets: list[str], target_skills: list[str], job_responsibilities: list[str],
+        self,
+        bullets: list[str],
+        target_skills: list[str],
+        job_responsibilities: list[str],
     ) -> list[str]:
         """Tailor bullet points to emphasize target skills."""
         tailored_bullets = []
@@ -361,8 +372,11 @@ class ResumeGenerator:
             ATS-optimized resume data
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeGenerator.optimize_for_ats")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ResumeGenerator.optimize_for_ats"
+        )
 
         optimized = resume_data.copy()
         all_keywords = (

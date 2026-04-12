@@ -5,6 +5,7 @@ ADG Static Correctness Validation — FINAL REPORT
 Comprehensive validation across all 5 mandatory dimensions.
 """
 
+
 def main():
     print("🔍 ADG STATIC CORRECTNESS VALIDATION — FINAL REPORT")
     print("=" * 70)
@@ -140,6 +141,7 @@ def main():
     print("✅ ALL validation from AST ground truth")
     print("✅ INDEPENDENT traversal performed")
     print("✅ CROSS-VISITOR comparison completed")
+
 
 if __name__ == "__main__":
     main()

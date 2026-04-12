@@ -50,6 +50,7 @@ def _load_adg_index() -> Any:
         return None
     try:
         import sqlite3
+
         conn = sqlite3.connect(db)
         return conn
     except Exception as e:
@@ -123,7 +124,9 @@ def cmd_scope(args: argparse.Namespace) -> int:
         # Get changed files from git diff
         result = subprocess.run(
             ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
-            capture_output=True, text=True, cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
         )
         changed_files = [f.strip() for f in result.stdout.split("\n") if f.strip().endswith(".py")]
 
@@ -212,7 +215,9 @@ def cmd_check(args: argparse.Namespace) -> int:
     # Run pytest collection-only
     result = subprocess.run(
         [sys.executable, "-m", "pytest", "tests/", "--collect-only", "-q"],
-        capture_output=True, text=True, cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
     )
 
     collection_ok = result.returncode == 0
@@ -220,7 +225,9 @@ def cmd_check(args: argparse.Namespace) -> int:
     # Also run eager import lint
     lint_result = subprocess.run(
         [sys.executable, "tools/lint_eager_imports.py", "tests", "--config", "config/eager_import_risk.yml"],
-        capture_output=True, text=True, cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
     )
 
     lint_ok = lint_result.returncode == 0

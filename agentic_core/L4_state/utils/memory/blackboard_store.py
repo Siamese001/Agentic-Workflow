@@ -299,7 +299,11 @@ class BlackboardStore:
         return True
 
     def verify_healing_lease(
-        self, resource_path: str, agent_id: str, commit_tick: int, operation: str,
+        self,
+        resource_path: str,
+        agent_id: str,
+        commit_tick: int,
+        operation: str,
     ) -> LeaseResult:
         """Verify lease for healing operations.
 

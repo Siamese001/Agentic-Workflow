@@ -425,7 +425,9 @@ def validate_command_whitelist(args: list[str], allowed_commands: list[str]) -> 
 
 # guardian: allow-magic-config
 def safe_git_execute(
-    git_args: list[str], repo_root: str | Path | None = None, timeout: int = 30,
+    git_args: list[str],
+    repo_root: str | Path | None = None,
+    timeout: int = 30,
 ) -> subprocess.CompletedProcess:
     """
     Convenience wrapper for safe git command execution.

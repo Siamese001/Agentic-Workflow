@@ -298,12 +298,15 @@ def create_embedding_client(
 
                 _trace_id = str(_uuid.uuid4())
                 _emit_records_execution_trace(
-                    _trace_id, LayerSegment.L3_ORCHESTRATION, "OpenAIEmbeddingClient.get_embedding",
+                    _trace_id,
+                    LayerSegment.L3_ORCHESTRATION,
+                    "OpenAIEmbeddingClient.get_embedding",
                 )
 
                 # W11: Use deterministic cache key
                 cache_key = create_deterministic_cache_key(
-                    guarded_text.redacted_text, self.embedder_identity,
+                    guarded_text.redacted_text,
+                    self.embedder_identity,
                 )
                 if cache_key in self._cache:
                     return self._cache[cache_key]
@@ -330,7 +333,8 @@ def create_embedding_client(
 
                 for i, guarded_text in enumerate(guarded_texts):
                     cache_key = create_deterministic_cache_key(
-                        guarded_text.redacted_text, self.embedder_identity,
+                        guarded_text.redacted_text,
+                        self.embedder_identity,
                     )
                     if cache_key in self._cache:
                         results[i] = self._cache[cache_key]
@@ -357,7 +361,8 @@ def create_embedding_client(
                     original_index, guarded_text = texts_to_embed[i]
                     # W11: Use deterministic cache key
                     cache_key = create_deterministic_cache_key(
-                        guarded_text.redacted_text, self.embedder_identity,
+                        guarded_text.redacted_text,
+                        self.embedder_identity,
                     )
                     self._cache[cache_key] = embedding
                     results[original_index] = embedding
@@ -456,12 +461,15 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
 
             _trace_id = str(_uuid.uuid4())
             _emit_records_execution_trace(
-                _trace_id, LayerSegment.L3_ORCHESTRATION, "BGEM3EmbeddingClient.get_embedding",
+                _trace_id,
+                LayerSegment.L3_ORCHESTRATION,
+                "BGEM3EmbeddingClient.get_embedding",
             )
 
             # Use deterministic cache key
             cache_key = create_deterministic_cache_key(
-                guarded_text.redacted_text, self.embedder_identity,
+                guarded_text.redacted_text,
+                self.embedder_identity,
             )
             if cache_key in self._cache:
                 return self._cache[cache_key]
@@ -488,7 +496,8 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
 
             for i, guarded_text in enumerate(guarded_texts):
                 cache_key = create_deterministic_cache_key(
-                    guarded_text.redacted_text, self.embedder_identity,
+                    guarded_text.redacted_text,
+                    self.embedder_identity,
                 )
                 if cache_key in self._cache:
                     results[i] = self._cache[cache_key]
@@ -583,6 +592,16 @@ def compute_w7_sovereignty_digest() -> str:
     # Compute deterministic hash
     canonical_json = json.dumps(state, separators=(",", ":"), sort_keys=True)
     return hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+
+
+def get_active_embedding_model_id() -> str:
+    """Return the active embedding model identifier for cache key derivation.
+
+    Reads EMBEDDING_MODEL_ID env var; falls back to the bge-m3-v1 slug
+    used as the default in the semantic cache pipeline.
+    Does not instantiate any client.
+    """
+    return os.environ.get("EMBEDDING_MODEL_ID", "bge-m3-v1")
 
 
 # Module initialization

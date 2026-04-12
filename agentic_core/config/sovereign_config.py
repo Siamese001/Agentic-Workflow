@@ -217,8 +217,11 @@ class SovereignConfigManager:
     def get_int(self, key: str, default: int = 0) -> int:
         """Get int env var."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignConfigManager.get_int")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignConfigManager.get_int"
+        )
 
         val = os.environ.get(key)
         if val is None:

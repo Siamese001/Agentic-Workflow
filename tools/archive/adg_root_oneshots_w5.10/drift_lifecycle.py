@@ -573,7 +573,7 @@ def _heal_orphan_test(path: str, dry_run: bool) -> HealResult:
         src.rename(dest)
         logger.info("[lifecycle] quarantined orphan: %s", path)
         return HealResult(item=item, status="fixed")
-    except OSError as exc:    # guardian: Add error context logging
+    except OSError as exc:  # guardian: Add error context logging
         return HealResult(item=item, status="error", error=str(exc))
 
 
@@ -655,7 +655,7 @@ def _heal_uncovered_module(r: redis.Redis, path: str, dry_run: bool) -> tuple[He
         stub_abs.write_text(stub_content, encoding="utf-8")
         logger.info("[lifecycle] generated stub: %s", stub_rel)
         return HealResult(item=item, status="fixed"), str(stub_rel)
-    except OSError as exc:    # guardian: Add error context logging
+    except OSError as exc:  # guardian: Add error context logging
         return HealResult(item=item, status="error", error=str(exc)), None
 
 
@@ -774,7 +774,7 @@ def _run_scoped_pytest(test_paths: list[str]) -> tuple[int, int, int]:
     except subprocess.TimeoutExpired:
         logger.warning("[lifecycle] pytest timed out for paths: %s", test_paths)
         return 2, 0, 0
-    except OSError as exc:    # guardian: Add error context logging
+    except OSError as exc:  # guardian: Add error context logging
         logger.warning("[lifecycle] pytest error: %s", exc)
         return 2, 0, 0
 
@@ -853,7 +853,7 @@ def _rescore(dry_run: bool) -> float:
         r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
         val = r.get("adg:drift:score")
         return float(val) if val else -1.0
-    except (subprocess.TimeoutExpired, OSError) as exc:    # guardian: Add error context logging
+    except (subprocess.TimeoutExpired, OSError) as exc:  # guardian: Add error context logging
         logger.warning("[lifecycle] rescore subprocess failed: %s", exc)
         return -1.0
     except redis.RedisError as exc:
@@ -1086,6 +1086,7 @@ if __name__ == "__main__":
 # ---------------------------------------------------------------------------
 # Public exports for testing
 # ---------------------------------------------------------------------------
+
 
 class ScopedTestRunner:
     """Test runner scoped to ADG coverage."""

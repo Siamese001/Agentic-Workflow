@@ -75,6 +75,8 @@ class SectionRenderer:
                 lines.append(f"<li>{anchor}</li>")
             lines.extend(["</ul>", ""])
 
-        lines.append(f"<p><em>Word count: {section.word_count} | Deterministic: {section.is_deterministic}</em></p>")
+        lines.append(
+            f"<p><em>Word count: {section.word_count} | Deterministic: {section.is_deterministic}</em></p>"
+        )
 
         return "\n".join(lines)

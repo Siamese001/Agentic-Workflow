@@ -16,14 +16,17 @@ class TestTypesInitAdg:
     def test_types_init_adg_imports(self):
         """Test types_init_adg module imports."""
         from agentic_core import types_init_adg
+
         assert types_init_adg is not None
 
     def test_types_init_adg_class(self):
         """Test TypesInitAdg class exists."""
         from agentic_core import TypesInitAdg
+
         assert TypesInitAdg is not None
 
     def test_types_init_adg_callable(self):
         """Test types_init_adg functions are callable."""
         from agentic_core import validate_types_init_adg
+
         assert callable(validate_types_init_adg)

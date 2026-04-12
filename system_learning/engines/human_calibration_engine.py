@@ -262,11 +262,13 @@ class HumanCalibrationEngine:
 
         # Create judgment record
         judgment = HumanJudgment(
-            judgment_id=stable_sha256_json({
-                "trace_id": trace_id,
-                "reviewer": reviewer_id,
-                "timestamp_utc": timestamp_utc,
-            }),
+            judgment_id=stable_sha256_json(
+                {
+                    "trace_id": trace_id,
+                    "reviewer": reviewer_id,
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             trace_id=trace_id,
             model_prediction=model_prediction,
             human_label=human_label,
@@ -297,11 +299,13 @@ class HumanCalibrationEngine:
 
         record = CalibrationRecord(
             artifact_type="CALIBRATION_RECORD",
-            record_id=stable_sha256_json({
-                "trace_id": trace_id,
-                "judgment": judgment.judgment_id,
-                "timestamp_utc": timestamp_utc,
-            }),
+            record_id=stable_sha256_json(
+                {
+                    "trace_id": trace_id,
+                    "judgment": judgment.judgment_id,
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             trace_id=trace_id,
             model_confidence=model_confidence,
             calibrated_confidence=calibrated_confidence,
@@ -337,7 +341,9 @@ class HumanCalibrationEngine:
             }
 
         drift_count = sum(1 for r in self._calibration_history if r.drift_flag)
-        avg_delta = sum(r.judgment.confidence_delta for r in self._calibration_history) / len(self._calibration_history)
+        avg_delta = sum(r.judgment.confidence_delta for r in self._calibration_history) / len(
+            self._calibration_history
+        )
 
         # Recommend retrain if drift rate is high
         drift_rate = drift_count / len(self._calibration_history)
@@ -378,8 +384,7 @@ class HumanCalibrationEngine:
             # Low disagreement - blend evenly
             weight_human = 0.3
 
-        calibrated = (weight_human * human_confidence +
-                     (1 - weight_human) * model_confidence)
+        calibrated = weight_human * human_confidence + (1 - weight_human) * model_confidence
 
         return round(calibrated, 6)
 

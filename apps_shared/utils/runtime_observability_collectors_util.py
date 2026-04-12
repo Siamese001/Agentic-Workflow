@@ -8,13 +8,16 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     record_execution_trace,
 )
 
-emit_determinism_digest("runtime_observability_collectors_util", "runtime_observability_collectors_util_digest")
+emit_determinism_digest(
+    "runtime_observability_collectors_util", "runtime_observability_collectors_util_digest"
+)
 record_execution_trace("runtime_observability_collectors_util", "runtime_observability_collectors_util_trace")
 
 
 @dataclass
 class TelemetryEvent:
     """Stub telemetry event for runtime observability."""
+
     name: str = ""
     data: dict[str, Any] = field(default_factory=dict)
 

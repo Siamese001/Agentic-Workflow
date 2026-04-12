@@ -189,6 +189,7 @@ class AgentTrace:
     @property
     def duration_ms(self) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentTrace.duration_ms")
 
@@ -226,6 +227,7 @@ class TraceRegistry(MCPHardenedMixin):
     def start_span(self, trace_id: str, agent_name: str, action: str) -> str:
         """Begin tracking an action."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceRegistry.start_span")
 

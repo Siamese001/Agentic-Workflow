@@ -32,13 +32,14 @@ class TestCapabilityExtractor:
         self.repo_root = Path(self.temp_dir)
 
         # Mock ContextWindowEstimator
-        with patch('tools.adg.capability_extractor.ContextWindowEstimator') as mock_estimator:
+        with patch("tools.adg.capability_extractor.ContextWindowEstimator") as mock_estimator:
             self.extractor = CapabilityExtractor(str(self.repo_root))
             self.mock_estimator = mock_estimator
 
     def teardown_method(self):
         """Cleanup test environment."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_init(self):
@@ -61,7 +62,7 @@ class TestCapabilityExtractor:
         test_data = {"files": [{"path": "test.py", "classification": "legitimate"}]}
         manifest_path = self.repo_root / "test_manifest.json"
 
-        with open(manifest_path, 'w') as f:
+        with open(manifest_path, "w") as f:
             json.dump(test_data, f)
 
         result = self.extractor.load_manifest(str(manifest_path))
@@ -299,6 +300,7 @@ class TestValidator:
         assert log_data["total_extractions"] == 1
         assert len(log_data["extractions"]) == 1
         assert log_data["extractions"][0]["source_file"] == "test.py"
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

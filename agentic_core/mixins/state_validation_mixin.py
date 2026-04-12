@@ -228,9 +228,11 @@ class StateValidationMixin:
             idempotent: If True, returns cached result for identical inputs.
         """
         import uuid as _uuid  # noqa: PLC0415
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateValidationMixin.validate_state")
 
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "StateValidationMixin.validate_state"
+        )
 
         def decorator(func):
             @wraps(func)

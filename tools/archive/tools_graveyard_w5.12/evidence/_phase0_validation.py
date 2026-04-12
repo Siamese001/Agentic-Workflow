@@ -1,4 +1,5 @@
 """Phase 0 Validation: Compare accelerator report vs SQLite coverage gaps."""
+
 import json
 import re
 from pathlib import Path
@@ -20,7 +21,7 @@ accel_gap_inferred = accel_total_inferred - accel_covered_count
 
 print("=== ACCELERATOR REPORT ===")
 print(f"  Covered modules:       {accel_covered_count}")
-print(f"  Coverage rate:         {accel_rate:.4f} ({accel_rate*100:.2f}%)")
+print(f"  Coverage rate:         {accel_rate:.4f} ({accel_rate * 100:.2f}%)")
 print(f"  Inferred total:        {accel_total_inferred}")
 print(f"  Inferred gap:          {accel_gap_inferred}")
 
@@ -28,9 +29,11 @@ print(f"  Inferred gap:          {accel_gap_inferred}")
 sqlite_path = ROOT / "tools/evidence/coverage_gaps.json"
 sqlite_gaps_raw = json.loads(sqlite_path.read_text(encoding="utf-8"))
 
+
 # Each entry: [layer, "ADG::Module::path/to/file.py"]
 def strip_prefix(s):
     return s.replace("ADG::Module::", "")
+
 
 sqlite_gap_paths = set(strip_prefix(entry[1]) for entry in sqlite_gaps_raw)
 sqlite_gap_count = len(sqlite_gap_paths)
@@ -75,11 +78,11 @@ for lyr in sorted(layer_buckets, key=lambda k: -len(layer_buckets[k])):
 # SQLite gaps NOT covered by accelerator — these are the "real" gaps
 # Now analyze what patterns appear in SQLite gaps that are NOT production-critical
 
-util_pattern = re.compile(r'L0_routing/scripts/.*_util\.py$')
-config_pattern = re.compile(r'.*_config\.py$')
-data_pattern = re.compile(r'^(data/|artifacts/|archives/|\.backup/|\.healing_backups/)')
-ops_pattern = re.compile(r'^ops_scripts/')
-tool_pattern = re.compile(r'^tools/')
+util_pattern = re.compile(r"L0_routing/scripts/.*_util\.py$")
+config_pattern = re.compile(r".*_config\.py$")
+data_pattern = re.compile(r"^(data/|artifacts/|archives/|\.backup/|\.healing_backups/)")
+ops_pattern = re.compile(r"^ops_scripts/")
+tool_pattern = re.compile(r"^tools/")
 
 categories = {
     "l0_scripts_util": [],
@@ -140,7 +143,11 @@ for cu in sorted(critical_utils):
 
 # ── apps_rg/config check ──────────────────────────────────────────────────────
 print("\n=== apps_rg/config MODULES IN SQLITE GAPS ===")
-apps_rg_gaps = [p for p in sqlite_gap_paths if p.startswith("apps_rg/") or p.startswith("apps_shared/") or p.startswith("apps_lic/")]
+apps_rg_gaps = [
+    p
+    for p in sqlite_gap_paths
+    if p.startswith("apps_rg/") or p.startswith("apps_shared/") or p.startswith("apps_lic/")
+]
 for p in sorted(apps_rg_gaps)[:20]:
     in_accel = p in accel_covered
     print(f"  {'[ACCEL_COVERED]' if in_accel else '[GAP]':<18} {p}")

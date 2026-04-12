@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # Test mode
     if len(sys.argv) > 1:
         test_file = sys.argv[1]
-        with open(test_file, encoding='utf-8') as f:
+        with open(test_file, encoding="utf-8") as f:
             content = f.read()
 
         result = validate_plan_format(content, test_file)

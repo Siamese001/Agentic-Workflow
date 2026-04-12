@@ -347,7 +347,9 @@ class executive_title_composer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "executive_title_composer.generate_headline",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "executive_title_composer.generate_headline",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -360,7 +362,9 @@ class executive_title_composer:
         validation_results = []
         for attempt in range(1, self.CONFIG.max_attempts + 1):
             headline = self._generate_content(
-                context=context, temperature=self.recovery_loop.current_temperature, attempt=attempt,
+                context=context,
+                temperature=self.recovery_loop.current_temperature,
+                attempt=attempt,
             )
             hygiene_result = self.gate_executor.execute_hygiene_scan(headline)
             validation_results.append(hygiene_result)
@@ -388,7 +392,9 @@ class executive_title_composer:
                     break
                 continue
             industry_result = self.gate_executor.execute_industry_first_gate(
-                headline=headline, valid_industries=self.GICS_SECTORS, gate_id="VG_INDUSTRY_FIRST_COMPLIANCE",
+                headline=headline,
+                valid_industries=self.GICS_SECTORS,
+                gate_id="VG_INDUSTRY_FIRST_COMPLIANCE",
             )
             validation_results.append(industry_result)
             if not industry_result.passed:

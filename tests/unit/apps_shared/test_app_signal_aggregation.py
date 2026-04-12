@@ -16,14 +16,17 @@ class TestAppSignalAggregation:
     def test_signal_aggregation_imports(self):
         """Test signal aggregation module imports."""
         from apps_shared import signal_aggregation
+
         assert signal_aggregation is not None
 
     def test_signal_aggregator_class(self):
         """Test signal aggregator class exists."""
         from apps_shared.signal_aggregation import SignalAggregator
+
         assert SignalAggregator is not None
 
     def test_aggregate_signals(self):
         """Test aggregate signals function."""
         from apps_shared.signal_aggregation import aggregate_signals
+
         assert callable(aggregate_signals)

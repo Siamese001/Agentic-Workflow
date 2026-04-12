@@ -81,7 +81,9 @@ class UnifiedAgentMonitor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "UnifiedAgentMonitor.record_execution",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "UnifiedAgentMonitor.record_execution",
         )
 
         metric = ExecutionMetrics(

@@ -34,6 +34,7 @@ from agentic_core.adg.artifact.SplitArtifact import (
 # Minimal synthetic fixture
 # ---------------------------------------------------------------------------
 
+
 def _make_artifact(entities: list[EntityRecord], relations: list[RelationRecord]) -> ADGArtifact:
     return ADGArtifact(
         commit_sha="deadbeef",
@@ -134,6 +135,7 @@ def multi_plane_artifact() -> ADGArtifact:
 # Core parity helper
 # ---------------------------------------------------------------------------
 
+
 def _assert_parity(artifact: ADGArtifact) -> None:
     """Assert normalize_with_planes() output is bitwise-identical to reference."""
     normalizer = ArtifactNormalizer()
@@ -142,7 +144,10 @@ def _assert_parity(artifact: ADGArtifact) -> None:
     planes_ref = split_artifact(artifact)
 
     ng_full, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-        artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
+        artifact,
+        _FILE_GRAPH_RELS,
+        _SYMBOL_GRAPH_RELS,
+        _GOVERNANCE_GRAPH_RELS,
     )
 
     # Full graph
@@ -153,16 +158,12 @@ def _assert_parity(artifact: ADGArtifact) -> None:
     assert len(ng_full.edges) == len(ng_ref.edges), "Full edge count mismatch"
 
     # File plane
-    assert ng_file.artifact_digest == planes_ref.file_graph.artifact_digest, (
-        "file_graph digest mismatch"
-    )
+    assert ng_file.artifact_digest == planes_ref.file_graph.artifact_digest, "file_graph digest mismatch"
     assert len(ng_file.nodes) == len(planes_ref.file_graph.nodes), "file_graph node count mismatch"
     assert len(ng_file.edges) == len(planes_ref.file_graph.edges), "file_graph edge count mismatch"
 
     # Symbol plane
-    assert ng_sym.artifact_digest == planes_ref.symbol_graph.artifact_digest, (
-        "symbol_graph digest mismatch"
-    )
+    assert ng_sym.artifact_digest == planes_ref.symbol_graph.artifact_digest, "symbol_graph digest mismatch"
     assert len(ng_sym.nodes) == len(planes_ref.symbol_graph.nodes), "symbol_graph node count mismatch"
     assert len(ng_sym.edges) == len(planes_ref.symbol_graph.edges), "symbol_graph edge count mismatch"
 
@@ -177,6 +178,7 @@ def _assert_parity(artifact: ADGArtifact) -> None:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.unit
 class TestNormalizeWithPlanesParity:
@@ -205,7 +207,10 @@ class TestNormalizeWithPlanesParity:
         )
         normalizer = ArtifactNormalizer()
         _, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-            artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
+            artifact,
+            _FILE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
         )
         assert len(ng_file.edges) == 1
         assert len(ng_sym.edges) == 0
@@ -215,7 +220,10 @@ class TestNormalizeWithPlanesParity:
         """Sum of plane edges must equal total artifact relations (every edge assigned)."""
         normalizer = ArtifactNormalizer()
         ng_full, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-            multi_plane_artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
+            multi_plane_artifact,
+            _FILE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
         )
         plane_total = len(ng_file.edges) + len(ng_sym.edges) + len(ng_gov.edges)
         assert plane_total == len(ng_full.edges), (
@@ -227,7 +235,10 @@ class TestNormalizeWithPlanesParity:
         """Each plane's node IDs must start at 0 and be contiguous (plane-local)."""
         normalizer = ArtifactNormalizer()
         _, ng_file, ng_sym, ng_gov = normalizer.normalize_with_planes(
-            minimal_artifact, _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS,
+            minimal_artifact,
+            _FILE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
         )
         for plane_name, ng in [("file", ng_file), ("sym", ng_sym), ("gov", ng_gov)]:
             if not ng.nodes:

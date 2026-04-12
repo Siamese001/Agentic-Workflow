@@ -212,5 +212,7 @@ class StrategistBioWriter(RGAgentBase):
     async def run(self, input_data: dict) -> dict:
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ExecutiveSummaryOutputAgent.run")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ExecutiveSummaryOutputAgent.run"
+        )
         return {"bio": "Draft content..."}

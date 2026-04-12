@@ -28,6 +28,7 @@ from typing import Any
 
 class EnforcementType(Enum):
     """Types of code enforcement."""
+
     SSOT_SYNC = "SSOT_SYNC"
     CODE_STANDARDS = "CODE_STANDARDS"
     PATTERN = "PATTERN"
@@ -37,6 +38,7 @@ class EnforcementType(Enum):
 
 class ViolationSeverity(Enum):
     """Severity levels for violations."""
+
     INFO = 0
     WARNING = 1
     ERROR = 2
@@ -288,7 +290,10 @@ class CodeEnforcer:
         return False
 
     def check_sovereignty(
-        self, source_layer: str, target_file: Path, agent_id: str | None = None,
+        self,
+        source_layer: str,
+        target_file: Path,
+        agent_id: str | None = None,
     ) -> tuple[bool, str]:
         """Check if a layer can modify a target file.
 

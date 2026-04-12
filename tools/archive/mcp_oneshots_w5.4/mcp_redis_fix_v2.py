@@ -26,7 +26,7 @@ class MCPRedisFix:
         """Connect to Redis with error handling"""
         try:
             self.redis_client = redis.Redis(
-                host='localhost',
+                host="localhost",
                 port=6379,
                 db=0,
                 decode_responses=True,
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     main()
 '''
 
-        with open(script_path, 'w') as f:
+        with open(script_path, "w") as f:
             f.write(script_content)
 
     def _run_command_with_progress(self, cmd: str, timeout: int = 300) -> dict:
@@ -288,9 +288,14 @@ if __name__ == "__main__":
 
         try:
             process = subprocess.Popen(
-                cmd, shell=True, cwd=str(self.repo_root),
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, bufsize=1, universal_newlines=True,
+                cmd,
+                shell=True,
+                cwd=str(self.repo_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                universal_newlines=True,
             )
 
             output_lines = []
@@ -356,6 +361,7 @@ if __name__ == "__main__":
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+
 def test_redis_fixes_v2():
     """Test the MCP Redis fixes v2"""
 
@@ -383,13 +389,14 @@ def test_redis_fixes_v2():
     result = fix.run_adg_ingestion_optimized(force=True)
     print(f"✅ Optimized ingestion: {result['success']}")
 
-    if result['success']:
+    if result["success"]:
         print("✅ Ingestion completed successfully!")
         # Test MCP functions after ingestion
         mcp_test = fix.test_mcp_redis_functions()
         print(f"✅ MCP functions after ingestion: {mcp_test['success']}")
 
     return True
+
 
 def main():
     """Main function"""
@@ -409,6 +416,7 @@ def main():
     print("✅ Real-time progress reporting")
 
     return True
+
 
 if __name__ == "__main__":
     main()

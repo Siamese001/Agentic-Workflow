@@ -276,7 +276,6 @@ if TYPE_CHECKING:
     from apps_lic.engines.LeadQualityAgent import LeadQualityAgent
 
 
-
 class OutreachHealingStrategy(Enum):
     """Healing strategies for outreach campaigns."""
 
@@ -359,7 +358,11 @@ class OutreachSignalRouterAgent(SovereignBaseAgent):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "OutreachSignalRouterAgent.get_agents_for_signals")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "OutreachSignalRouterAgent.get_agents_for_signals",
+        )
         agents: set[str] = set()
         for signal in signals:
             if signal in cls.SIGNAL_TO_AGENTS:
@@ -381,7 +384,10 @@ class OutreachSignalRouterAgent(SovereignBaseAgent):
 
     @classmethod
     def determine_strategy(
-        cls, cycle_number: int, signals: set[str], modified_sections: set[str],
+        cls,
+        cycle_number: int,
+        signals: set[str],
+        modified_sections: set[str],
     ) -> OutreachHealingStrategy:
         """
         Determine healing strategy based on context.

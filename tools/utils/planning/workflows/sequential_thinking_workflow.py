@@ -30,8 +30,9 @@ try:
         get_template,
         render_template,
     )
+
     ADG_TEMPLATES_AVAILABLE = True
-    ENFORCEMENT_ENABLED = ENFORCEMENT_CONFIG.get('enabled', True)
+    ENFORCEMENT_ENABLED = ENFORCEMENT_CONFIG.get("enabled", True)
 except ImportError:
     ADG_TEMPLATES_AVAILABLE = False
     ENFORCEMENT_ENABLED = False
@@ -41,6 +42,7 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class SequentialThinkingEnhancedWorkflow:
     """
     SWE 1.5 planning workflow with integrated sequential thinking.
@@ -49,10 +51,12 @@ class SequentialThinkingEnhancedWorkflow:
     and integrates with the token budget management system.
     """
 
-    def __init__(self,
-                 budget_file: Path | None = None,
-                 custom_budget: TokenBudget | None = None,
-                 seq_thinking_enabled: bool = True):
+    def __init__(
+        self,
+        budget_file: Path | None = None,
+        custom_budget: TokenBudget | None = None,
+        seq_thinking_enabled: bool = True,
+    ):
         """
         Initialize the sequential thinking enhanced workflow.
 
@@ -76,15 +80,15 @@ class SequentialThinkingEnhancedWorkflow:
 
         # Sequential thinking configuration
         self.seq_thinking_config = {
-            'max_thoughts': int(os.environ.get('SEQUENTIAL_THINKING_MAX_THOUGHTS', '15')),
-            'token_budget': int(os.environ.get('SEQUENTIAL_THINKING_TOKEN_BUDGET', '30000')),
-            'complexity_threshold': os.environ.get('SEQUENTIAL_THINKING_COMPLEXITY_THRESHOLD', 'medium'),
-            'auto_trigger': os.environ.get('SEQUENTIAL_THINKING_AUTO_TRIGGER', 'true').lower() == 'true',
+            "max_thoughts": int(os.environ.get("SEQUENTIAL_THINKING_MAX_THOUGHTS", "15")),
+            "token_budget": int(os.environ.get("SEQUENTIAL_THINKING_TOKEN_BUDGET", "30000")),
+            "complexity_threshold": os.environ.get("SEQUENTIAL_THINKING_COMPLEXITY_THRESHOLD", "medium"),
+            "auto_trigger": os.environ.get("SEQUENTIAL_THINKING_AUTO_TRIGGER", "true").lower() == "true",
         }
 
     def _check_seq_thinking_available(self) -> bool:
         """Check if sequential thinking MCP is available."""
-        return os.environ.get('SEQUENTIAL_THINKING_ENABLED', 'false').lower() == 'true'
+        return os.environ.get("SEQUENTIAL_THINKING_ENABLED", "false").lower() == "true"
 
     def force_sequential_thinking(self, step_type: str, step_config: dict[str, Any]) -> bool:
         """Determine if sequential thinking should be forced for this step."""
@@ -93,29 +97,29 @@ class SequentialThinkingEnhancedWorkflow:
             return False
 
         # Force for complex analysis tasks
-        complex_types = ['analysis', 'architecture', 'refactoring', 'debugging', 'planning']
-        high_complexity = ['high', 'critical']
+        complex_types = ["analysis", "architecture", "refactoring", "debugging", "planning"]
+        high_complexity = ["high", "critical"]
 
         # Check step type
         if step_type in complex_types:
             return True
 
         # Check complexity level
-        if step_config.get('complexity', 'medium').lower() in high_complexity:
+        if step_config.get("complexity", "medium").lower() in high_complexity:
             return True
 
         # Check for multi-file operations
-        if len(step_config.get('files', [])) > 3:
+        if len(step_config.get("files", [])) > 3:
             return True
 
         # Check for integration tasks
-        if any(keyword in step_type.lower() for keyword in ['integration', 'multiple', 'cross']):
+        if any(keyword in step_type.lower() for keyword in ["integration", "multiple", "cross"]):
             return True
 
         # Check auto-trigger configuration
-        if self.seq_thinking_config['auto_trigger']:
+        if self.seq_thinking_config["auto_trigger"]:
             # Auto-trigger for medium+ complexity
-            if step_config.get('complexity', 'medium') in ['medium', 'high', 'critical']:
+            if step_config.get("complexity", "medium") in ["medium", "high", "critical"]:
                 return True
 
         return False
@@ -142,9 +146,9 @@ class SequentialThinkingEnhancedWorkflow:
                     rendered = self._render_adg_template(template_enum, step_type, step_config)
 
                     # Validate compliance if strict mode is enabled
-                    if ENFORCEMENT_CONFIG.get('strict_mode', True):
+                    if ENFORCEMENT_CONFIG.get("strict_mode", True):
                         validation = validate_enforcement_compliance(rendered, enforced_template)
-                        if not validation['compliant']:
+                        if not validation["compliant"]:
                             logger.warning(f"Template validation failed: {validation['violations']}")
                         else:
                             logger.info(f"Template validation passed: {validation['percentage']:.1f}% score")
@@ -165,23 +169,22 @@ class SequentialThinkingEnhancedWorkflow:
         # ENFORCEMENT: Map step types to mandatory ADG templates
         adg_template_mapping = {
             # ADG-specific task types - ENFORCED
-            'adg_analysis': SequentialThinkingTemplate.SWE_ADG_ANALYSIS,
-            'violation_remediation': SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
-            'layer_boundary_audit': SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT,
-            'dependency_graph_analysis': SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
-            'architectural_review': SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
-            'anti_pattern_detection': SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION,
-            'system_restructuring': SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,
-            'graph_traversal_optimization': SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION,
-
+            "adg_analysis": SequentialThinkingTemplate.SWE_ADG_ANALYSIS,
+            "violation_remediation": SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
+            "layer_boundary_audit": SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT,
+            "dependency_graph_analysis": SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
+            "architectural_review": SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
+            "anti_pattern_detection": SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION,
+            "system_restructuring": SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,
+            "graph_traversal_optimization": SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION,
             # General SWE tasks - ENFORCED to use ADG templates when relevant
-            'architecture': SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
-            'debugging': SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,  # Violations often cause bugs
-            'implementation': SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,  # Implementation affects dependencies
-            'refactoring': SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,  # Refactoring is restructuring
-            'planning': SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,  # Planning requires architectural review
-            'testing': SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,  # Testing often reveals violations
-            'integration': SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,  # Integration affects dependencies
+            "architecture": SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
+            "debugging": SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,  # Violations often cause bugs
+            "implementation": SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,  # Implementation affects dependencies
+            "refactoring": SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,  # Refactoring is restructuring
+            "planning": SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,  # Planning requires architectural review
+            "testing": SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,  # Testing often reveals violations
+            "integration": SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,  # Integration affects dependencies
         }
 
         # ENFORCEMENT: Check if this step type requires ADG template
@@ -191,21 +194,29 @@ class SequentialThinkingEnhancedWorkflow:
             return self._render_adg_template(template_type, step_type, step_config)
 
         # ENFORCEMENT: Check complexity-based enforcement
-        if step_config and step_config.get('complexity', 'medium').lower() in ['high', 'critical']:
+        if step_config and step_config.get("complexity", "medium").lower() in ["high", "critical"]:
             # High/critical complexity tasks MUST use ADG templates
             template_type = self._select_complexity_based_adg_template(step_type, step_config)
-            logger.info(f"COMPLEXITY ENFORCEMENT: ADG template: {template_type.value} for {step_type} ({step_config.get('complexity')})")
+            logger.info(
+                f"COMPLEXITY ENFORCEMENT: ADG template: {template_type.value} for {step_type} ({step_config.get('complexity')})"
+            )
             return self._render_adg_template(template_type, step_type, step_config)
 
         # ENFORCEMENT: Check file-based enforcement
-        if step_config and len(step_config.get('files', [])) > ENFORCEMENT_RULES['file_enforcement']['multi_file_threshold']:
+        if (
+            step_config
+            and len(step_config.get("files", []))
+            > ENFORCEMENT_RULES["file_enforcement"]["multi_file_threshold"]
+        ):
             # Multi-file operations MUST use ADG templates
             template_type = SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS
-            logger.info(f"FILE ENFORCEMENT: ADG template: {template_type.value} for {step_type} ({len(step_config.get('files', []))} files)")
+            logger.info(
+                f"FILE ENFORCEMENT: ADG template: {template_type.value} for {step_type} ({len(step_config.get('files', []))} files)"
+            )
             return self._render_adg_template(template_type, step_type, step_config)
 
         # Default fallback for simple tasks (if allowed)
-        if ENFORCEMENT_CONFIG.get('fallback_allowed', False):
+        if ENFORCEMENT_CONFIG.get("fallback_allowed", False):
             logger.info(f"Using fallback template for simple task: {step_type}")
             return self._get_fallback_template(step_type, step_config)
         else:
@@ -213,7 +224,9 @@ class SequentialThinkingEnhancedWorkflow:
             logger.info(f"STRICT MODE: Using basic ADG template for: {step_type}")
             return self._render_adg_template(SequentialThinkingTemplate.SWE_ANALYSIS, step_type, step_config)
 
-    def _render_adg_template(self, template_type: SequentialThinkingTemplate, step_type: str, step_config: dict[str, Any] = None) -> str:
+    def _render_adg_template(
+        self, template_type: SequentialThinkingTemplate, step_type: str, step_config: dict[str, Any] = None
+    ) -> str:
         """Render ADG template with current system context."""
 
         try:
@@ -233,80 +246,78 @@ class SequentialThinkingEnhancedWorkflow:
             logger.error(f"Failed to render ADG template {template_type.value}: {e}")
             return self._get_fallback_template(step_type, step_config)
 
-    def _get_template_variables(self, template_type: SequentialThinkingTemplate, step_type: str,
-                               adg_context: dict[str, str], step_config: dict[str, Any] = None) -> dict[str, str]:
+    def _get_template_variables(
+        self,
+        template_type: SequentialThinkingTemplate,
+        step_type: str,
+        adg_context: dict[str, str],
+        step_config: dict[str, Any] = None,
+    ) -> dict[str, str]:
         """Get template-specific variables for rendering."""
 
         # Base variables for all templates
         base_vars = {
-            'context': f'Analysis of {step_type} task with current system state',
+            "context": f"Analysis of {step_type} task with current system state",
         }
 
         # Template-specific variable mappings
         template_mappings = {
             SequentialThinkingTemplate.SWE_ADG_ANALYSIS: {
-                'analysis_title': f'System {step_type.title()} Analysis',
-                'node_count': adg_context['node_count'],
-                'edge_count': adg_context['edge_count'],
-                'layer_info': adg_context['layer_info'],
-                'violation_count': adg_context['violation_count'],
+                "analysis_title": f"System {step_type.title()} Analysis",
+                "node_count": adg_context["node_count"],
+                "edge_count": adg_context["edge_count"],
+                "layer_info": adg_context["layer_info"],
+                "violation_count": adg_context["violation_count"],
             },
-
             SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION: {
-                'remediation_title': f'{step_type.title()} Remediation Plan',
-                'violation_count': adg_context['violation_count'],
-                'high_severity_count': adg_context['high_severity_count'],
-                'medium_severity_count': adg_context['medium_severity_count'],
-                'low_severity_count': adg_context['low_severity_count'],
-                'common_violation_types': adg_context['common_violation_types'],
+                "remediation_title": f"{step_type.title()} Remediation Plan",
+                "violation_count": adg_context["violation_count"],
+                "high_severity_count": adg_context["high_severity_count"],
+                "medium_severity_count": adg_context["medium_severity_count"],
+                "low_severity_count": adg_context["low_severity_count"],
+                "common_violation_types": adg_context["common_violation_types"],
             },
-
             SequentialThinkingTemplate.SWE_LAYER_BOUNDARY_AUDIT: {
-                'audit_title': f'{step_type.title()} Compliance Audit',
-                'layer_count': adg_context['layer_count'],
-                'layer_distribution': adg_context['layer_distribution'],
-                'boundary_violations': adg_context['boundary_violations'],
-                'gravity_violations': adg_context['gravity_violations'],
+                "audit_title": f"{step_type.title()} Compliance Audit",
+                "layer_count": adg_context["layer_count"],
+                "layer_distribution": adg_context["layer_distribution"],
+                "boundary_violations": adg_context["boundary_violations"],
+                "gravity_violations": adg_context["gravity_violations"],
             },
-
             SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS: {
-                'analysis_title': f'Dependency Graph {step_type.title()} Analysis',
-                'dependency_count': adg_context['dependency_count'],
-                'circular_deps': adg_context['circular_deps'],
-                'longest_chain': adg_context['longest_chain'],
-                'hub_nodes': adg_context['hub_nodes'],
+                "analysis_title": f"Dependency Graph {step_type.title()} Analysis",
+                "dependency_count": adg_context["dependency_count"],
+                "circular_deps": adg_context["circular_deps"],
+                "longest_chain": adg_context["longest_chain"],
+                "hub_nodes": adg_context["hub_nodes"],
             },
-
             SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW: {
-                'review_title': f'System {step_type.title()} Review',
-                'component_count': adg_context['component_count'],
-                'patterns_used': adg_context['patterns_used'],
-                'integration_points': adg_context['integration_points'],
-                'quality_attributes': adg_context['quality_attributes'],
+                "review_title": f"System {step_type.title()} Review",
+                "component_count": adg_context["component_count"],
+                "patterns_used": adg_context["patterns_used"],
+                "integration_points": adg_context["integration_points"],
+                "quality_attributes": adg_context["quality_attributes"],
             },
-
             SequentialThinkingTemplate.SWE_ANTIPATTERN_DETECTION: {
-                'detection_title': f'Anti-pattern {step_type.title()} Detection',
-                'antipattern_count': adg_context['antipattern_count'],
-                'high_impact_count': adg_context['high_impact_count'],
-                'common_categories': adg_context['common_categories'],
-                'affected_files': adg_context['affected_files'],
+                "detection_title": f"Anti-pattern {step_type.title()} Detection",
+                "antipattern_count": adg_context["antipattern_count"],
+                "high_impact_count": adg_context["high_impact_count"],
+                "common_categories": adg_context["common_categories"],
+                "affected_files": adg_context["affected_files"],
             },
-
             SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING: {
-                'restructuring_title': f'System {step_type.title()} Restructuring',
-                'system_size': adg_context['system_size'],
-                'complexity_metrics': adg_context['complexity_metrics'],
-                'identified_issues': adg_context['identified_issues'],
-                'restructuring_goals': adg_context['restructuring_goals'],
+                "restructuring_title": f"System {step_type.title()} Restructuring",
+                "system_size": adg_context["system_size"],
+                "complexity_metrics": adg_context["complexity_metrics"],
+                "identified_issues": adg_context["identified_issues"],
+                "restructuring_goals": adg_context["restructuring_goals"],
             },
-
             SequentialThinkingTemplate.SWE_GRAPH_TRAVERSAL_OPTIMIZATION: {
-                'optimization_title': f'Graph Traversal {step_type.title()} Optimization',
-                'current_traversal_time': adg_context['current_traversal_time'],
-                'graph_size': adg_context['graph_size'],
-                'traversal_frequency': adg_context['traversal_frequency'],
-                'bottlenecks': adg_context['bottlenecks'],
+                "optimization_title": f"Graph Traversal {step_type.title()} Optimization",
+                "current_traversal_time": adg_context["current_traversal_time"],
+                "graph_size": adg_context["graph_size"],
+                "traversal_frequency": adg_context["traversal_frequency"],
+                "bottlenecks": adg_context["bottlenecks"],
             },
         }
 
@@ -318,12 +329,14 @@ class SequentialThinkingEnhancedWorkflow:
 
         # Add step-specific variables
         if step_config:
-            template_vars.update({
-                'step_name': step_config.get('name', step_type),
-                'step_description': step_config.get('description', ''),
-                'step_files': ', '.join(step_config.get('files', [])),
-                'step_complexity': step_config.get('complexity', 'medium'),
-            })
+            template_vars.update(
+                {
+                    "step_name": step_config.get("name", step_type),
+                    "step_description": step_config.get("description", ""),
+                    "step_files": ", ".join(step_config.get("files", [])),
+                    "step_complexity": step_config.get("complexity", "medium"),
+                }
+            )
 
         return template_vars
 
@@ -332,101 +345,115 @@ class SequentialThinkingEnhancedWorkflow:
 
         # Try to get real ADG data
         try:
-            if ENFORCEMENT_CONFIG.get('real_time_adg_data', True):
+            if ENFORCEMENT_CONFIG.get("real_time_adg_data", True):
                 # Import ADG Redis tools if available
                 from mcp1_adg_meta import mcp1_adg_meta
                 from mcp1_adg_violations import mcp1_adg_violations
 
                 # Get ADG metadata
                 meta_result = mcp1_adg_meta()
-                if meta_result.get('status') == 'ok':
-                    meta_data = meta_result.get('data', {})
-                    node_count = str(meta_data.get('node_count', '0'))
-                    edge_count = str(meta_data.get('edge_count', '0'))
-                    violation_count = str(meta_data.get('violation_count', '0'))
+                if meta_result.get("status") == "ok":
+                    meta_data = meta_result.get("data", {})
+                    node_count = str(meta_data.get("node_count", "0"))
+                    edge_count = str(meta_data.get("edge_count", "0"))
+                    violation_count = str(meta_data.get("violation_count", "0"))
                 else:
                     # Use fallback values
-                    node_count = ADG_FALLBACK_CONTEXT['node_count']
-                    edge_count = ADG_FALLBACK_CONTEXT['edge_count']
-                    violation_count = ADG_FALLBACK_CONTEXT['violation_count']
+                    node_count = ADG_FALLBACK_CONTEXT["node_count"]
+                    edge_count = ADG_FALLBACK_CONTEXT["edge_count"]
+                    violation_count = ADG_FALLBACK_CONTEXT["violation_count"]
 
                 # Get violation details
                 violations_result = mcp1_adg_violations()
-                if violations_result.get('status') == 'ok':
-                    violations_data = violations_result.get('data', {})
-                    high_severity = str(len([v for v in violations_data.get('violations', []) if v.get('severity') == 'HIGH']))
-                    medium_severity = str(len([v for v in violations_data.get('violations', []) if v.get('severity') == 'MEDIUM']))
-                    low_severity = str(len([v for v in violations_data.get('violations', []) if v.get('severity') == 'LOW']))
+                if violations_result.get("status") == "ok":
+                    violations_data = violations_result.get("data", {})
+                    high_severity = str(
+                        len([v for v in violations_data.get("violations", []) if v.get("severity") == "HIGH"])
+                    )
+                    medium_severity = str(
+                        len(
+                            [
+                                v
+                                for v in violations_data.get("violations", [])
+                                if v.get("severity") == "MEDIUM"
+                            ]
+                        )
+                    )
+                    low_severity = str(
+                        len([v for v in violations_data.get("violations", []) if v.get("severity") == "LOW"])
+                    )
                 else:
                     # Use fallback values
-                    high_severity = ADG_FALLBACK_CONTEXT['high_severity_count']
-                    medium_severity = ADG_FALLBACK_CONTEXT['medium_severity_count']
-                    low_severity = ADG_FALLBACK_CONTEXT['low_severity_count']
+                    high_severity = ADG_FALLBACK_CONTEXT["high_severity_count"]
+                    medium_severity = ADG_FALLBACK_CONTEXT["medium_severity_count"]
+                    low_severity = ADG_FALLBACK_CONTEXT["low_severity_count"]
 
                 return {
-                    'node_count': node_count,
-                    'edge_count': edge_count,
-                    'violation_count': violation_count,
-                    'layer_info': ADG_FALLBACK_CONTEXT['layer_info'],
-                    'high_severity_count': high_severity,
-                    'medium_severity_count': medium_severity,
-                    'low_severity_count': low_severity,
-                    'common_violation_types': ADG_FALLBACK_CONTEXT['common_violation_types'],
-                    'boundary_violations': ADG_FALLBACK_CONTEXT['boundary_violations'],
-                    'gravity_violations': ADG_FALLBACK_CONTEXT['gravity_violations'],
-                    'layer_count': ADG_FALLBACK_CONTEXT['layer_count'],
-                    'layer_distribution': ADG_FALLBACK_CONTEXT['layer_distribution'],
-                    'dependency_count': edge_count,
-                    'circular_deps': ADG_FALLBACK_CONTEXT['circular_deps'],
-                    'longest_chain': ADG_FALLBACK_CONTEXT['longest_chain'],
-                    'hub_nodes': ADG_FALLBACK_CONTEXT['hub_nodes'],
-                    'component_count': ADG_FALLBACK_CONTEXT['component_count'],
-                    'patterns_used': ADG_FALLBACK_CONTEXT['patterns_used'],
-                    'integration_points': ADG_FALLBACK_CONTEXT['integration_points'],
-                    'quality_attributes': ADG_FALLBACK_CONTEXT['quality_attributes'],
-                    'antipattern_count': violation_count,
-                    'high_impact_count': high_severity,
-                    'common_categories': ADG_FALLBACK_CONTEXT['common_categories'],
-                    'affected_files': ADG_FALLBACK_CONTEXT['affected_files'],
-                    'system_size': ADG_FALLBACK_CONTEXT['system_size'],
-                    'complexity_metrics': ADG_FALLBACK_CONTEXT['complexity_metrics'],
-                    'identified_issues': ADG_FALLBACK_CONTEXT['identified_issues'],
-                    'restructuring_goals': ADG_FALLBACK_CONTEXT['restructuring_goals'],
-                    'current_traversal_time': ADG_FALLBACK_CONTEXT['current_traversal_time'],
-                    'graph_size': f'{edge_count} edges',
-                    'traversal_frequency': ADG_FALLBACK_CONTEXT['traversal_frequency'],
-                    'bottlenecks': ADG_FALLBACK_CONTEXT['bottlenecks'],
+                    "node_count": node_count,
+                    "edge_count": edge_count,
+                    "violation_count": violation_count,
+                    "layer_info": ADG_FALLBACK_CONTEXT["layer_info"],
+                    "high_severity_count": high_severity,
+                    "medium_severity_count": medium_severity,
+                    "low_severity_count": low_severity,
+                    "common_violation_types": ADG_FALLBACK_CONTEXT["common_violation_types"],
+                    "boundary_violations": ADG_FALLBACK_CONTEXT["boundary_violations"],
+                    "gravity_violations": ADG_FALLBACK_CONTEXT["gravity_violations"],
+                    "layer_count": ADG_FALLBACK_CONTEXT["layer_count"],
+                    "layer_distribution": ADG_FALLBACK_CONTEXT["layer_distribution"],
+                    "dependency_count": edge_count,
+                    "circular_deps": ADG_FALLBACK_CONTEXT["circular_deps"],
+                    "longest_chain": ADG_FALLBACK_CONTEXT["longest_chain"],
+                    "hub_nodes": ADG_FALLBACK_CONTEXT["hub_nodes"],
+                    "component_count": ADG_FALLBACK_CONTEXT["component_count"],
+                    "patterns_used": ADG_FALLBACK_CONTEXT["patterns_used"],
+                    "integration_points": ADG_FALLBACK_CONTEXT["integration_points"],
+                    "quality_attributes": ADG_FALLBACK_CONTEXT["quality_attributes"],
+                    "antipattern_count": violation_count,
+                    "high_impact_count": high_severity,
+                    "common_categories": ADG_FALLBACK_CONTEXT["common_categories"],
+                    "affected_files": ADG_FALLBACK_CONTEXT["affected_files"],
+                    "system_size": ADG_FALLBACK_CONTEXT["system_size"],
+                    "complexity_metrics": ADG_FALLBACK_CONTEXT["complexity_metrics"],
+                    "identified_issues": ADG_FALLBACK_CONTEXT["identified_issues"],
+                    "restructuring_goals": ADG_FALLBACK_CONTEXT["restructuring_goals"],
+                    "current_traversal_time": ADG_FALLBACK_CONTEXT["current_traversal_time"],
+                    "graph_size": f"{edge_count} edges",
+                    "traversal_frequency": ADG_FALLBACK_CONTEXT["traversal_frequency"],
+                    "bottlenecks": ADG_FALLBACK_CONTEXT["bottlenecks"],
                 }
             else:
                 # Use fallback data only
                 return ADG_FALLBACK_CONTEXT.copy()
 
         except Exception as e:
-            if ENFORCEMENT_CONFIG.get('audit_trail', True):
+            if ENFORCEMENT_CONFIG.get("audit_trail", True):
                 logger.warning(f"Could not fetch real ADG data, using fallback: {e}")
 
             # Always return fallback context
             return ADG_FALLBACK_CONTEXT.copy()
 
-    def _select_complexity_based_adg_template(self, step_type: str, step_config: dict[str, Any]) -> SequentialThinkingTemplate:
+    def _select_complexity_based_adg_template(
+        self, step_type: str, step_config: dict[str, Any]
+    ) -> SequentialThinkingTemplate:
         """Select ADG template based on complexity and step type."""
 
-        complexity = step_config.get('complexity', 'medium').lower()
+        complexity = step_config.get("complexity", "medium").lower()
 
-        if complexity == 'critical':
+        if complexity == "critical":
             # Critical complexity always gets system restructuring
             return SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING
 
         # High complexity mapping
         complexity_mapping = {
-            'analysis': SequentialThinkingTemplate.SWE_ADG_ANALYSIS,
-            'debugging': SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
-            'implementation': SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
-            'architecture': SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
-            'refactoring': SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,
-            'planning': SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
-            'testing': SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
-            'integration': SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
+            "analysis": SequentialThinkingTemplate.SWE_ADG_ANALYSIS,
+            "debugging": SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
+            "implementation": SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
+            "architecture": SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
+            "refactoring": SequentialThinkingTemplate.SWE_SYSTEM_RESTRUCTURING,
+            "planning": SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW,
+            "testing": SequentialThinkingTemplate.SWE_VIOLATION_REMEDIATION,
+            "integration": SequentialThinkingTemplate.SWE_DEPENDENCY_GRAPH_ANALYSIS,
         }
 
         return complexity_mapping.get(step_type, SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW)
@@ -434,7 +461,7 @@ class SequentialThinkingEnhancedWorkflow:
     def _get_fallback_template(self, step_type: str, step_config: dict[str, Any] = None) -> str:
 
         templates = {
-            'analysis': """
+            "analysis": """
 # Sequential Analysis for {step_name}
 
 ## Context
@@ -477,7 +504,7 @@ Analyze the provided code/problem systematically using sequential thinking.
 
 Please analyze this systematically using the sequential thinking approach.
 """,
-            'implementation': """
+            "implementation": """
 # Sequential Implementation Planning for {step_name}
 
 ## Context
@@ -520,7 +547,7 @@ Plan the implementation using sequential thinking for structured reasoning.
 
 Please plan this implementation systematically using sequential thinking.
 """,
-            'debugging': """
+            "debugging": """
 # Sequential Debugging Analysis for {step_name}
 
 ## Context
@@ -565,14 +592,15 @@ Please debug this systematically using sequential thinking.
 """,
         }
 
-        return templates.get(step_type, templates['analysis'])
+        return templates.get(step_type, templates["analysis"])
 
-    def _execute_sequential_thinking(self, step_name: str, step_type: str,
-                                   context: dict[str, Any], step_config: dict[str, Any] = None) -> dict[str, Any]:
+    def _execute_sequential_thinking(
+        self, step_name: str, step_type: str, context: dict[str, Any], step_config: dict[str, Any] = None
+    ) -> dict[str, Any]:
         """Execute sequential thinking for a step with ENFORCED ADG templates."""
 
         if not self.seq_thinking_enabled:
-            return {'success': False, 'reason': 'Sequential thinking not available'}
+            return {"success": False, "reason": "Sequential thinking not available"}
 
         logger.info(f"Executing sequential thinking for step: {step_name} (type: {step_type})")
 
@@ -581,7 +609,9 @@ Please debug this systematically using sequential thinking.
 
         # Log which template is being used
         if ADG_TEMPLATES_AVAILABLE and step_config:
-            logger.info(f"ENFORCED template selection for {step_type} (complexity: {step_config.get('complexity', 'medium')})")
+            logger.info(
+                f"ENFORCED template selection for {step_type} (complexity: {step_config.get('complexity', 'medium')})"
+            )
 
         # Format context for template
         context_str = json.dumps(context, indent=2)
@@ -593,12 +623,12 @@ Please debug this systematically using sequential thinking.
                 prompt = template
                 # Replace template variables if they exist
                 for key, value in step_config.items():
-                    if f'{{{key}}}' in template:
-                        prompt = prompt.replace(f'{{{key}}}', str(value))
+                    if f"{{{key}}}" in template:
+                        prompt = prompt.replace(f"{{{key}}}", str(value))
 
                 # Replace common variables
-                prompt = prompt.replace('{step_name}', step_name)
-                prompt = prompt.replace('{context}', context_str)
+                prompt = prompt.replace("{step_name}", step_name)
+                prompt = prompt.replace("{context}", context_str)
             else:
                 # Fallback formatting
                 prompt = template.format(
@@ -615,8 +645,8 @@ Please debug this systematically using sequential thinking.
         # In a real implementation, this would call the sequential thinking MCP
         # For now, we simulate the call
         seq_result = {
-            'success': True,
-            'thoughts': [
+            "success": True,
+            "thoughts": [
                 f"Thought 1: Analyzing {step_name} requirements and context",
                 f"Thought 2: Breaking down {step_type} into manageable components",
                 "Thought 3: Identifying dependencies and risks",
@@ -624,13 +654,13 @@ Please debug this systematically using sequential thinking.
                 "Thought 5: Planning validation strategy",
                 "Thought 6: Defining next steps and success criteria",
             ],
-            'recommendations': [
+            "recommendations": [
                 "Proceed with structured approach",
                 "Monitor for complexity indicators",
                 "Validate assumptions early",
             ],
-            'token_usage': 5000,  # Estimated
-            'response_time': 2.5,   # Estimated
+            "token_usage": 5000,  # Estimated
+            "response_time": 2.5,  # Estimated
         }
 
         self.seq_thinking_usage += 1
@@ -638,8 +668,9 @@ Please debug this systematically using sequential thinking.
 
         return seq_result
 
-    def execute_step_with_seq_thinking(self, step_name: str, step_type: str,
-                                     step_config: dict[str, Any]) -> dict[str, Any]:
+    def execute_step_with_seq_thinking(
+        self, step_name: str, step_type: str, step_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute step with forced sequential thinking when appropriate."""
 
         # Prepare context for token estimation
@@ -648,44 +679,46 @@ Please debug this systematically using sequential thinking.
         # Check if we should force sequential thinking
         if self.force_sequential_thinking(step_type, step_config):
             # Inject sequential thinking trigger
-            step_config['force_sequential_thinking'] = True
-            step_config['seq_thinking_template'] = self._get_seq_thinking_template(step_type)
+            step_config["force_sequential_thinking"] = True
+            step_config["seq_thinking_template"] = self._get_seq_thinking_template(step_type)
 
             logger.info(f"Forcing sequential thinking for step: {step_name}")
 
             # Execute sequential thinking first
             seq_result = self._execute_sequential_thinking(step_name, step_type, context, step_config)
 
-            if seq_result['success']:
+            if seq_result["success"]:
                 # Add sequential thinking results to context
-                context['sequential_thinking'] = seq_result
+                context["sequential_thinking"] = seq_result
                 logger.info(f"Sequential thinking enhanced context for {step_name}")
             else:
-                logger.warning(f"Sequential thinking failed for {step_name}: {seq_result.get('reason', 'Unknown')}")
+                logger.warning(
+                    f"Sequential thinking failed for {step_name}: {seq_result.get('reason', 'Unknown')}"
+                )
 
         # Perform preflight token budget check
         estimate = self.preflight_hook.preflight_check(**context)
 
         # Record step result
         step_result = {
-            'step': step_name,
-            'type': step_type,
-            'status': 'completed',
-            'budget_status': estimate.status,
-            'estimated_tokens': estimate.total_projected_tokens,
-            'compression_applied': len(estimate.compression_applied) > 0,
-            'top_contributors': estimate.top_contributors,
-            'recommendations': estimate.recommended_reductions,
-            'sequential_thinking_used': step_config.get('force_sequential_thinking', False),
+            "step": step_name,
+            "type": step_type,
+            "status": "completed",
+            "budget_status": estimate.status,
+            "estimated_tokens": estimate.total_projected_tokens,
+            "compression_applied": len(estimate.compression_applied) > 0,
+            "top_contributors": estimate.top_contributors,
+            "recommendations": estimate.recommended_reductions,
+            "sequential_thinking_used": step_config.get("force_sequential_thinking", False),
         }
 
         # Execute the actual step logic
-        if estimate.action == 'proceed':
+        if estimate.action == "proceed":
             logger.info(f"Step {step_name} proceeding with {estimate.total_projected_tokens:,} tokens")
             result = self._execute_step_logic(step_type, step_config, estimate)
             step_result.update(result)
 
-        elif estimate.action == 'compress':
+        elif estimate.action == "compress":
             logger.info(f"Step {step_name} compressed from original estimate")
             logger.info(f"Compression applied: {estimate.compression_applied}")
             result = self._execute_step_logic(step_type, step_config, estimate)
@@ -700,18 +733,20 @@ Please debug this systematically using sequential thinking.
         self.step_results.append(step_result)
         return step_result
 
-    def _prepare_step_context(self, step_name: str, step_type: str, step_config: dict[str, Any]) -> dict[str, Any]:
+    def _prepare_step_context(
+        self, step_name: str, step_type: str, step_config: dict[str, Any]
+    ) -> dict[str, Any]:
         """Prepare context for token estimation based on step type and configuration."""
         base_context = {
-            'plan_step': f"{self.current_phase}/{self.current_wave}/{step_name}",
-            'system_prompt': self._get_system_prompt(step_type),
-            'user_prompt': step_config.get('prompt', ''),
-            'files': self._get_file_contents(step_config.get('files', [])),
-            'diffs': self._get_diff_contents(step_config.get('diffs', [])),
-            'logs': self._get_log_contents(step_config.get('logs', [])),
-            'retrieved_context': self._get_retrieved_context(step_config.get('context', [])),
-            'prior_steps': self._get_prior_step_contents(),
-            'sequential_thinking_enabled': self.seq_thinking_enabled,
+            "plan_step": f"{self.current_phase}/{self.current_wave}/{step_name}",
+            "system_prompt": self._get_system_prompt(step_type),
+            "user_prompt": step_config.get("prompt", ""),
+            "files": self._get_file_contents(step_config.get("files", [])),
+            "diffs": self._get_diff_contents(step_config.get("diffs", [])),
+            "logs": self._get_log_contents(step_config.get("logs", [])),
+            "retrieved_context": self._get_retrieved_context(step_config.get("context", [])),
+            "prior_steps": self._get_prior_step_contents(),
+            "sequential_thinking_enabled": self.seq_thinking_enabled,
         }
 
         return base_context
@@ -719,13 +754,13 @@ Please debug this systematically using sequential thinking.
     def _get_system_prompt(self, step_type: str) -> str:
         """Get system prompt based on step type with sequential thinking integration."""
         base_prompts = {
-            'analysis': "You are a code analysis expert. Analyze the provided code and identify issues.",
-            'implementation': "You are a senior software engineer. Implement the requested feature.",
-            'testing': "You are a QA engineer. Write comprehensive tests for the provided code.",
-            'refactoring': "You are a code refactoring specialist. Improve the code structure.",
-            'documentation': "You are a technical writer. Create clear documentation.",
-            'debugging': "You are a debugging specialist. Systematically identify and resolve issues.",
-            'planning': "You are a system architect. Plan complex implementations systematically.",
+            "analysis": "You are a code analysis expert. Analyze the provided code and identify issues.",
+            "implementation": "You are a senior software engineer. Implement the requested feature.",
+            "testing": "You are a QA engineer. Write comprehensive tests for the provided code.",
+            "refactoring": "You are a code refactoring specialist. Improve the code structure.",
+            "documentation": "You are a technical writer. Create clear documentation.",
+            "debugging": "You are a debugging specialist. Systematically identify and resolve issues.",
+            "planning": "You are a system architect. Plan complex implementations systematically.",
         }
 
         base_prompt = base_prompts.get(step_type, "You are a helpful assistant.")
@@ -741,18 +776,23 @@ Please debug this systematically using sequential thinking.
         for file_path in file_paths:
             path = Path(file_path)
             if path.exists():
-                with open(path, encoding='utf-8') as f:
+                with open(path, encoding="utf-8") as f:
                     content = f.read()
-                files.append({
-                    'path': file_path,
-                    'content': content,
-                })
+                files.append(
+                    {
+                        "path": file_path,
+                        "content": content,
+                    }
+                )
             else:
                 # Simulate file content for demonstration
-                files.append({
-                    'path': file_path,
-                    'content': f"# Simulated content for {file_path}\n" + "def example_function():\n    pass\n" * 100,
-                })
+                files.append(
+                    {
+                        "path": file_path,
+                        "content": f"# Simulated content for {file_path}\n"
+                        + "def example_function():\n    pass\n" * 100,
+                    }
+                )
         return files
 
     def _get_diff_contents(self, diff_paths: list[str]) -> list[dict[str, Any]]:
@@ -768,10 +808,12 @@ Please debug this systematically using sequential thinking.
      pass
 +def new_function():
 +    pass"""
-            diffs.append({
-                'path': diff_path,
-                'content': diff_content,
-            })
+            diffs.append(
+                {
+                    "path": diff_path,
+                    "content": diff_content,
+                }
+            )
         return diffs
 
     def _get_log_contents(self, log_sources: list[str]) -> list[dict[str, Any]]:
@@ -787,10 +829,12 @@ Traceback (most recent call last):
     load_config()
 FileNotFoundError: Config file not found
 2023-01-01 12:00:03 INFO Process completed"""
-            logs.append({
-                'source': source,
-                'content': log_content,
-            })
+            logs.append(
+                {
+                    "source": source,
+                    "content": log_content,
+                }
+            )
         return logs
 
     def _get_retrieved_context(self, context_sources: list[str]) -> list[dict[str, Any]]:
@@ -798,16 +842,21 @@ FileNotFoundError: Config file not found
         context = []
         for i, source in enumerate(context_sources):
             # Simulate retrieved context
-            context_content = f"""Retrieved context chunk {i+1} from {source}:
+            context_content = (
+                f"""Retrieved context chunk {i + 1} from {source}:
 This is documentation about the codebase structure and best practices.
 It contains important information about coding standards and patterns.
 {source} provides guidance for implementation decisions.
-""" * 5  # Make it substantial
-            context.append({
-                'source': source,
-                'content': context_content,
-                'chunk_id': f"chunk_{i+1}",
-            })
+"""
+                * 5
+            )  # Make it substantial
+            context.append(
+                {
+                    "source": source,
+                    "content": context_content,
+                    "chunk_id": f"chunk_{i + 1}",
+                }
+            )
         return context
 
     def _get_prior_step_contents(self) -> list[str]:
@@ -821,10 +870,10 @@ It contains important information about coding standards and patterns.
         execution_time = 0.5  # Simulated execution time
 
         return {
-            'execution_time': execution_time,
-            'output_tokens': 5000,  # Simulated output
-            'success': True,
-            'artifacts': [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"],
+            "execution_time": execution_time,
+            "output_tokens": 5000,  # Simulated output
+            "success": True,
+            "artifacts": [f"artifact_{step_type}_{hash(str(step_config)) % 1000}.json"],
         }
 
     def get_workflow_summary(self) -> dict[str, Any]:
@@ -832,16 +881,16 @@ It contains important information about coding standards and patterns.
         budget_summary = self.preflight_hook.get_budget_summary()
 
         return {
-            'workflow_summary': {
-                'phases_completed': 1,  # Single phase in this example
-                'total_steps': len(self.step_results),
-                'total_tokens': sum(r['estimated_tokens'] for r in self.step_results),
-                'sequential_thinking_usage': self.seq_thinking_usage,
-                'sequential_thinking_enabled': self.seq_thinking_enabled,
+            "workflow_summary": {
+                "phases_completed": 1,  # Single phase in this example
+                "total_steps": len(self.step_results),
+                "total_tokens": sum(r["estimated_tokens"] for r in self.step_results),
+                "sequential_thinking_usage": self.seq_thinking_usage,
+                "sequential_thinking_enabled": self.seq_thinking_enabled,
             },
-            'budget_summary': budget_summary,
-            'step_results': self.step_results,
-            'sequential_thinking_config': self.seq_thinking_config,
+            "budget_summary": budget_summary,
+            "step_results": self.step_results,
+            "sequential_thinking_config": self.seq_thinking_config,
         }
 
 
@@ -852,7 +901,7 @@ def example_sequential_thinking_workflow():
     # Initialize workflow with sequential thinking enabled
     custom_budget = TokenBudget(
         WARNING_THRESHOLD=120000,  # Earlier warning for demo
-        SAFE_OPERATING_CAP=150000,   # Lower safe cap for demo
+        SAFE_OPERATING_CAP=150000,  # Lower safe cap for demo
     )
 
     workflow = SequentialThinkingEnhancedWorkflow(
@@ -864,45 +913,51 @@ def example_sequential_thinking_workflow():
     # Define phase configuration with complex tasks that should trigger sequential thinking
     phase_configs = [
         {
-            'name': 'complex_analysis_wave',
-            'steps': [
+            "name": "complex_analysis_wave",
+            "steps": [
                 {
-                    'name': 'architecture_analysis',
-                    'type': 'analysis',
-                    'prompt': 'Analyze the system architecture for scalability issues',
-                    'files': ['src/main.py', 'src/utils.py', 'src/config.py', 'src/database.py', 'src/api.py'],
-                    'context': ['architecture.md', 'requirements.txt'],
-                    'complexity': 'high',
+                    "name": "architecture_analysis",
+                    "type": "analysis",
+                    "prompt": "Analyze the system architecture for scalability issues",
+                    "files": [
+                        "src/main.py",
+                        "src/utils.py",
+                        "src/config.py",
+                        "src/database.py",
+                        "src/api.py",
+                    ],
+                    "context": ["architecture.md", "requirements.txt"],
+                    "complexity": "high",
                 },
                 {
-                    'name': 'dependency_analysis',
-                    'type': 'analysis',
-                    'prompt': 'Analyze dependencies and potential conflicts',
-                    'files': ['requirements.txt', 'setup.py', 'pyproject.toml'],
-                    'logs': ['pip_install.log'],
-                    'complexity': 'medium',
+                    "name": "dependency_analysis",
+                    "type": "analysis",
+                    "prompt": "Analyze dependencies and potential conflicts",
+                    "files": ["requirements.txt", "setup.py", "pyproject.toml"],
+                    "logs": ["pip_install.log"],
+                    "complexity": "medium",
                 },
             ],
         },
         {
-            'name': 'implementation_wave',
-            'steps': [
+            "name": "implementation_wave",
+            "steps": [
                 {
-                    'name': 'feature_implementation',
-                    'type': 'implementation',
-                    'prompt': 'Implement the new feature following best practices',
-                    'files': ['src/main.py', 'src/utils.py'],
-                    'diffs': ['src/main.py'],
-                    'context': ['documentation.md', 'api_reference.md'],
-                    'complexity': 'high',
+                    "name": "feature_implementation",
+                    "type": "implementation",
+                    "prompt": "Implement the new feature following best practices",
+                    "files": ["src/main.py", "src/utils.py"],
+                    "diffs": ["src/main.py"],
+                    "context": ["documentation.md", "api_reference.md"],
+                    "complexity": "high",
                 },
                 {
-                    'name': 'debug_session',
-                    'type': 'debugging',
-                    'prompt': 'Debug the performance issue in the main module',
-                    'files': ['src/main.py', 'logs/error.log'],
-                    'logs': ['performance.log', 'error.log'],
-                    'complexity': 'critical',
+                    "name": "debug_session",
+                    "type": "debugging",
+                    "prompt": "Debug the performance issue in the main module",
+                    "files": ["src/main.py", "logs/error.log"],
+                    "logs": ["performance.log", "error.log"],
+                    "complexity": "critical",
                 },
             ],
         },
@@ -910,13 +965,13 @@ def example_sequential_thinking_workflow():
 
     # Execute the phase
     try:
-        results = workflow.execute_phase('complex_feature_development', phase_configs)
+        results = workflow.execute_phase("complex_feature_development", phase_configs)
 
         # Print workflow summary
         summary = workflow.get_workflow_summary()
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("SEQUENTIAL THINKING ENHANCED WORKFLOW SUMMARY")
-        print("="*60)
+        print("=" * 60)
         print(f"Phases completed: {summary['workflow_summary']['phases_completed']}")
         print(f"Total steps: {summary['workflow_summary']['total_steps']}")
         print(f"Total tokens used: {summary['workflow_summary']['total_tokens']:,}")

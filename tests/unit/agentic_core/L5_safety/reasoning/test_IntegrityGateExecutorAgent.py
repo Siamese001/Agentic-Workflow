@@ -16,14 +16,17 @@ class TestIntegritygateexecutoragent:
     def test_IntegrityGateExecutorAgent_imports(self):
         """Test IntegrityGateExecutorAgent module imports."""
         from agentic_core import IntegrityGateExecutorAgent
+
         assert IntegrityGateExecutorAgent is not None
 
     def test_IntegrityGateExecutorAgent_class(self):
         """Test Integritygateexecutoragent class exists."""
         from agentic_core import Integritygateexecutoragent
+
         assert Integritygateexecutoragent is not None
 
     def test_IntegrityGateExecutorAgent_callable(self):
         """Test IntegrityGateExecutorAgent functions are callable."""
         from agentic_core import validate_IntegrityGateExecutorAgent
+
         assert callable(validate_IntegrityGateExecutorAgent)

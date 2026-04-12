@@ -1,6 +1,7 @@
 """
 Test RFP Integrations.
 """
+
 import unittest
 
 from apps_rfp.integrations import ExecutionAdapter, ObservabilityAdapter

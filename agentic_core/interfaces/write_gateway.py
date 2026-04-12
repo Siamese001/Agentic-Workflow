@@ -34,7 +34,10 @@ from agentic_core.L2_execution.types.l2_instruction_packet import InstructionPac
 
 
 def compute_replay_key(
-    plan_hash: str, tool_calls: Sequence[str], stdout_digest: str, state_diff_hash: str,
+    plan_hash: str,
+    tool_calls: Sequence[str],
+    stdout_digest: str,
+    state_diff_hash: str,
 ) -> str:
     """Addendum 2.1: Compute deterministic replay key for a write operation.
 

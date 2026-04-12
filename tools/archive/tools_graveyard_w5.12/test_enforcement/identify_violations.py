@@ -41,8 +41,15 @@ class ViolationDetector:
 
         # First-party modules that should never be skipped
         self.first_party_modules = {
-            'agentic_core', 'apps_', 'tools', 'ops_scripts', 'tests',
-            'system_learning', 'infrastructure', 'artifacts', 'data',
+            "agentic_core",
+            "apps_",
+            "tools",
+            "ops_scripts",
+            "tests",
+            "system_learning",
+            "infrastructure",
+            "artifacts",
+            "data",
         }
 
     def detect_violations(self, inventory_file: str, classification_file: str) -> list[TestViolation]:
@@ -58,12 +65,12 @@ class ViolationDetector:
 
         # Create lookup maps
         test_map = {}
-        for test in inventory['tests']:
+        for test in inventory["tests"]:
             key = f"{test['file_path']}::{test['test_name']}"
             test_map[key] = test
 
         class_map = {}
-        for cls in classification['classifications']:
+        for cls in classification["classifications"]:
             key = f"{cls['file_path']}::{cls['test_name']}"
             class_map[key] = cls
 
@@ -87,99 +94,111 @@ class ViolationDetector:
 
     def _check_skip_violations(self, test_data: dict, cls_data: dict):
         """Check for improper skip patterns."""
-        skip_type = test_data['skip_type']
-        dependency = test_data['dependency']
+        skip_type = test_data["skip_type"]
+        dependency = test_data["dependency"]
 
         # VIOLATION: try/except ImportError patterns (detected as runtime_condition)
-        if skip_type == 'runtime_condition' and 'ImportError' in test_data.get('skip_reason', ''):
-            self.violations.append(TestViolation(
-                file_path=test_data['file_path'],
-                test_name=test_data['test_name'],
-                violation_type='import_error_skip',
-                severity=SeverityLevel.HIGH.value,
-                description='Using try/except ImportError pattern instead of proper marker',
-                suggested_fix='Use direct import for core tests or pytest.importorskip with @pytest.mark.optional',
-                line_number=test_data['line_number'],
-            ))
+        if skip_type == "runtime_condition" and "ImportError" in test_data.get("skip_reason", ""):
+            self.violations.append(
+                TestViolation(
+                    file_path=test_data["file_path"],
+                    test_name=test_data["test_name"],
+                    violation_type="import_error_skip",
+                    severity=SeverityLevel.HIGH.value,
+                    description="Using try/except ImportError pattern instead of proper marker",
+                    suggested_fix="Use direct import for core tests or pytest.importorskip with @pytest.mark.optional",
+                    line_number=test_data["line_number"],
+                )
+            )
 
         # VIOLATION: pytest.importorskip without optional marker
-        elif skip_type == 'marker' and dependency and cls_data.get('category') != 'OPTIONAL':
-            self.violations.append(TestViolation(
-                file_path=test_data['file_path'],
-                test_name=test_data['test_name'],
-                violation_type='unmarked_importorskip',
-                severity=SeverityLevel.HIGH.value,
-                description=f'Using pytest.importorskip for {dependency} without optional marker',
-                suggested_fix='Add @pytest.mark.optional or @pytest.mark.external marker',
-                line_number=test_data['line_number'],
-            ))
+        elif skip_type == "marker" and dependency and cls_data.get("category") != "OPTIONAL":
+            self.violations.append(
+                TestViolation(
+                    file_path=test_data["file_path"],
+                    test_name=test_data["test_name"],
+                    violation_type="unmarked_importorskip",
+                    severity=SeverityLevel.HIGH.value,
+                    description=f"Using pytest.importorskip for {dependency} without optional marker",
+                    suggested_fix="Add @pytest.mark.optional or @pytest.mark.external marker",
+                    line_number=test_data["line_number"],
+                )
+            )
 
     def _check_core_violations(self, test_data: dict, cls_data: dict):
         """Check for core test violations."""
-        category = cls_data.get('category', 'CORE')
-        skip_type = test_data['skip_type']
+        category = cls_data.get("category", "CORE")
+        skip_type = test_data["skip_type"]
 
         # VIOLATION: Core tests should not skip
-        if category == 'CORE' and skip_type != 'none':
-            self.violations.append(TestViolation(
-                file_path=test_data['file_path'],
-                test_name=test_data['test_name'],
-                violation_type='core_test_skip',
-                severity=SeverityLevel.HIGH.value,
-                description='Core test should not skip - validates required functionality',
-                suggested_fix='Remove skip logic or reclassify as OPTIONAL/EXTERNAL',
-                line_number=test_data['line_number'],
-            ))
+        if category == "CORE" and skip_type != "none":
+            self.violations.append(
+                TestViolation(
+                    file_path=test_data["file_path"],
+                    test_name=test_data["test_name"],
+                    violation_type="core_test_skip",
+                    severity=SeverityLevel.HIGH.value,
+                    description="Core test should not skip - validates required functionality",
+                    suggested_fix="Remove skip logic or reclassify as OPTIONAL/EXTERNAL",
+                    line_number=test_data["line_number"],
+                )
+            )
 
         # VIOLATION: Core tests with low confidence classification
-        elif category == 'CORE' and cls_data.get('confidence', 0) < 0.7:
-            self.violations.append(TestViolation(
-                file_path=test_data['file_path'],
-                test_name=test_data['test_name'],
-                violation_type='uncertain_core',
-                severity=SeverityLevel.MEDIUM.value,
-                description='Core test classification has low confidence',
-                suggested_fix='Add explicit @pytest.mark.core marker',
-                line_number=test_data['line_number'],
-            ))
+        elif category == "CORE" and cls_data.get("confidence", 0) < 0.7:
+            self.violations.append(
+                TestViolation(
+                    file_path=test_data["file_path"],
+                    test_name=test_data["test_name"],
+                    violation_type="uncertain_core",
+                    severity=SeverityLevel.MEDIUM.value,
+                    description="Core test classification has low confidence",
+                    suggested_fix="Add explicit @pytest.mark.core marker",
+                    line_number=test_data["line_number"],
+                )
+            )
 
     def _check_first_party_violations(self, test_data: dict, cls_data: dict):
         """Check for first-party import violations."""
-        dependency = test_data['dependency']
-        skip_type = test_data['skip_type']
+        dependency = test_data["dependency"]
+        skip_type = test_data["skip_type"]
 
-        if skip_type in ['import_error', 'marker'] and dependency:
+        if skip_type in ["import_error", "marker"] and dependency:
             # Check if dependency is first-party
             for fp_module in self.first_party_modules:
                 if dependency.startswith(fp_module):
-                    self.violations.append(TestViolation(
-                        file_path=test_data['file_path'],
-                        test_name=test_data['test_name'],
-                        violation_type='first_party_skip',
-                        severity=SeverityLevel.HIGH.value,
-                        description=f'Skipping first-party module: {dependency}',
-                        suggested_fix='Never skip first-party imports - ensure module is available',
-                        line_number=test_data['line_number'],
-                    ))
+                    self.violations.append(
+                        TestViolation(
+                            file_path=test_data["file_path"],
+                            test_name=test_data["test_name"],
+                            violation_type="first_party_skip",
+                            severity=SeverityLevel.HIGH.value,
+                            description=f"Skipping first-party module: {dependency}",
+                            suggested_fix="Never skip first-party imports - ensure module is available",
+                            line_number=test_data["line_number"],
+                        )
+                    )
                     break
 
     def _check_marker_violations(self, test_data: dict, cls_data: dict):
         """Check for marker violations."""
         # This would need actual file analysis to detect missing markers
         # For now, flag tests with low confidence that should have explicit markers
-        confidence = cls_data.get('confidence', 0)
-        category = cls_data.get('category', 'CORE')
+        confidence = cls_data.get("confidence", 0)
+        category = cls_data.get("category", "CORE")
 
-        if confidence < 0.6 and category != 'CORE':
-            self.violations.append(TestViolation(
-                file_path=test_data['file_path'],
-                test_name=test_data['test_name'],
-                violation_type='missing_marker',
-                severity=SeverityLevel.MEDIUM.value,
-                description=f'Test classification uncertain ({category}) - needs explicit marker',
-                suggested_fix=f'Add @pytest.mark.{category.lower()} marker',
-                line_number=test_data['line_number'],
-            ))
+        if confidence < 0.6 and category != "CORE":
+            self.violations.append(
+                TestViolation(
+                    file_path=test_data["file_path"],
+                    test_name=test_data["test_name"],
+                    violation_type="missing_marker",
+                    severity=SeverityLevel.MEDIUM.value,
+                    description=f"Test classification uncertain ({category}) - needs explicit marker",
+                    suggested_fix=f"Add @pytest.mark.{category.lower()} marker",
+                    line_number=test_data["line_number"],
+                )
+            )
 
 
 def generate_violation_report(violations: list[TestViolation]) -> dict[str, Any]:
@@ -214,9 +233,9 @@ def generate_violation_report(violations: list[TestViolation]) -> dict[str, Any]
         "summary": {
             "by_type": {vtype: len(vlist) for vtype, vlist in by_type.items()},
             "by_severity": {
-                "HIGH": len(by_severity['HIGH']),
-                "MEDIUM": len(by_severity['MEDIUM']),
-                "LOW": len(by_severity['LOW']),
+                "HIGH": len(by_severity["HIGH"]),
+                "MEDIUM": len(by_severity["MEDIUM"]),
+                "LOW": len(by_severity["LOW"]),
             },
         },
         "violations": [],
@@ -224,15 +243,17 @@ def generate_violation_report(violations: list[TestViolation]) -> dict[str, Any]
 
     # Add violation details
     for violation in violations:
-        report["violations"].append({
-            "file_path": violation.file_path,
-            "test_name": violation.test_name,
-            "violation_type": violation.violation_type,
-            "severity": violation.severity,
-            "description": violation.description,
-            "suggested_fix": violation.suggested_fix,
-            "line_number": violation.line_number,
-        })
+        report["violations"].append(
+            {
+                "file_path": violation.file_path,
+                "test_name": violation.test_name,
+                "violation_type": violation.violation_type,
+                "severity": violation.severity,
+                "description": violation.description,
+                "suggested_fix": violation.suggested_fix,
+                "line_number": violation.line_number,
+            }
+        )
 
     return report
 
@@ -245,8 +266,8 @@ def main():
 
     detector = ViolationDetector()
 
-    inventory_file = 'tools/test_enforcement/test_inventory.json'
-    classification_file = 'tools/test_enforcement/test_classification.json'
+    inventory_file = "tools/test_enforcement/test_inventory.json"
+    classification_file = "tools/test_enforcement/test_classification.json"
 
     violations = detector.detect_violations(inventory_file, classification_file)
     report = generate_violation_report(violations)
@@ -255,7 +276,7 @@ def main():
     output_dir = PROJECT_ROOT / "tools" / "test_enforcement"
     violations_file = output_dir / "test_violations.json"
 
-    with open(violations_file, 'w', encoding='utf-8') as f:
+    with open(violations_file, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, sort_keys=True)
 
     print(f"✅ Violations report written to: {violations_file}")

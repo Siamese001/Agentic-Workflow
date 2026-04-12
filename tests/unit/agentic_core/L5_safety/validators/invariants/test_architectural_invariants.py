@@ -121,6 +121,7 @@ class TestBoundaryValidator:
 
     def test_mismatched_diffs_raise(self):
         from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+
         pre = {"file_a": "v1"}
         post = {"file_a": "v1_updated"}
         fake_uwg_diff = {"file_a": {"pre": "v1", "post": "DIFFERENT"}}
@@ -137,6 +138,7 @@ class TestLedgerIntegrityValidator:
 
     def test_tampered_hash_raises(self):
         from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
+
         entries: list = []
         append_with_hash(entries, {"op": "write", "file": "foo.py"})
         entries[0]["_hash"] = "tampered0000000000000000000000000000000000000000000000000000000000"
@@ -145,6 +147,7 @@ class TestLedgerIntegrityValidator:
 
     def test_missing_hash_raises(self):
         from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
+
         entries = [{"op": "write", "file": "foo.py"}]
         with pytest.raises(LedgerIntegrityViolation, match="missing '_hash'"):
             validate_ledger_chain(entries)

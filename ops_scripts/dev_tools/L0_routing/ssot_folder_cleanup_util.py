@@ -36,6 +36,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class CleanupStats:
     """Statistics for cleanup operations."""
+
     files_scanned: int = 0
     files_moved: int = 0
     files_archived: int = 0
@@ -253,20 +254,24 @@ def cleanup_repository(
         triage = triage_file(file_path, project_root)
 
         if triage["action"] == "MOVE" and triage["target_path"]:
-            move_plan.append({
-                "source": file_path,
-                "target": triage["target_path"],
-                "reason": triage["reason"],
-                "confidence": triage["confidence"],
-            })
+            move_plan.append(
+                {
+                    "source": file_path,
+                    "target": triage["target_path"],
+                    "reason": triage["reason"],
+                    "confidence": triage["confidence"],
+                }
+            )
         elif triage["action"] == "ARCHIVE":
-            move_plan.append({
-                "source": file_path,
-                "target": "archives/ssot_cleanup",
-                "reason": triage["reason"],
-                "confidence": triage["confidence"],
-                "archive": True,
-            })
+            move_plan.append(
+                {
+                    "source": file_path,
+                    "target": "archives/ssot_cleanup",
+                    "reason": triage["reason"],
+                    "confidence": triage["confidence"],
+                    "archive": True,
+                }
+            )
         else:
             Logger.info(f"Skipping {file_path}: {triage['action']} - {triage['reason']}")
 

@@ -86,8 +86,8 @@ try:
     class MCPHardenedMixin(mcp_hardened_mixin):
         pass
 except ImportError as e:
-
     raise ImportError(f"Required dependency missing: {e}")
+
     class MCPHardenedMixin:
         pass
 
@@ -95,11 +95,12 @@ except ImportError as e:
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError as e:
-
     raise ImportError(f"Required dependency missing: {e}")
 
     class HealerMixin:
         pass
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -226,8 +227,11 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
             FileNotFoundError: If the manifest does not exist.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ManifestManager.load_manifest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ManifestManager.load_manifest"
+        )
 
         target_file = self.base_path / f"{manifest_id}.json"
         if not target_file.exists():

@@ -25,6 +25,7 @@ class TestInvariant1MutationSourceIsL2:
         """Test negative_missing_entry_raises runtime behavior."""
         pass
 
+
 class TestInvariant4C0NoAuthorityFields:
     def test_positive_safe_payload_accepted(self):
         """Test positive_safe_payload_accepted runtime behavior."""

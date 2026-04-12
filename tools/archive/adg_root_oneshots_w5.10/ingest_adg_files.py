@@ -19,14 +19,19 @@ adg_files = [
     "dependency_graph_analysis.md",
 ]
 
+
 def ingest_file(filepath):
     """Ingest a single file into adg_artifacts collection"""
     cmd = [
-        "python", "tools/ingestion/ingest_docs.py",
-        "--source-dir", ".",
-        "--collection-name", "adg_artifacts",
+        "python",
+        "tools/ingestion/ingest_docs.py",
+        "--source-dir",
+        ".",
+        "--collection-name",
+        "adg_artifacts",
         "--mock-embeddings",
-        "--include-pattern", filepath,
+        "--include-pattern",
+        filepath,
     ]
 
     try:
@@ -38,6 +43,7 @@ def ingest_file(filepath):
         print(f"Error output: {e.stderr}")
         return False
 
+
 def main():
     """Main function"""
     print("Ingesting ADG-related files into adg_artifacts collection...")
@@ -48,6 +54,7 @@ def main():
             success_count += 1
 
     print(f"\nComplete: {success_count}/{len(adg_files)} files ingested")
+
 
 if __name__ == "__main__":
     main()

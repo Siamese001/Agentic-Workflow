@@ -158,6 +158,7 @@ class RiskCorrelator:
     def build(self, fingerprints: Sequence[str], drift_events: Sequence[DriftEvent]) -> CorrelatedRiskReport:
         """Build correlated risk report from fingerprints and drift events."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RiskCorrelator.build")
 

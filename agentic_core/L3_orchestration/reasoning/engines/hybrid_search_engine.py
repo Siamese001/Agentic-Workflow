@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import glob
 import logging
+import re as _re
 import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,10 +26,14 @@ try:
 except ImportError:
     _BGEInstallError = RuntimeError  # type: ignore[assignment,misc]
 
-# BM25Index imported lazily to avoid L3->L4 violation
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
+)
+from agentic_core.L4_state.utils.memory.bm25_store import SparseIndex, get_sparse_index
+from agentic_core.L3_orchestration.reasoning.engines.evidence_shaper import (
+    EvidenceBundle,
+    EvidenceShaper,
 )
 
 Logger = logging.getLogger(__name__)
@@ -62,7 +67,7 @@ class HybridSearchEngine:
     def __init__(
         self,
         chroma_client: Any | None = None,
-        bm25_index: BM25Index | None = None,
+        bm25_index: SparseIndex | None = None,
         vector_weight: float = 0.7,
         lexical_weight: float = 0.3,
         top_k: int = 10,
@@ -72,14 +77,14 @@ class HybridSearchEngine:
 
         Args:
             chroma_client: ChromaDB client for vector search
-            bm25_index: BM25 index for lexical search
-            vector_weight: Weight for vector scores (default 0.7)
-            lexical_weight: Weight for lexical scores (default 0.3)
+            bm25_index: SparseIndex (persistent FTS5 sidecar) for lexical search
+            vector_weight: Base weight for vector scores (0.7); overridden by signal detection
+            lexical_weight: Base weight for lexical scores (0.3); overridden by signal detection
             top_k: Number of results to return
             adg_db_path: Path to ADG SQLite database for structural queries
         """
         self.chroma_client = chroma_client
-        self.bm25_index = bm25_index
+        self.bm25_index = bm25_index  # SparseIndex | None
         self.vector_weight = vector_weight
         self.lexical_weight = lexical_weight
         self.top_k = top_k
@@ -121,14 +126,17 @@ class HybridSearchEngine:
         _trace_id = f"hybrid_search_{self._search_count}"
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HybridSearchEngine.search")
 
+        # Phase B2: dynamic weight selection based on query signal
+        vw, lw = _compute_weights(query, self.vector_weight, self.lexical_weight)
+
         # 4a: Vector Search (Semantic)
         vector_results = self._vector_search(query, query_embedding, collection_name, filter_dict)
 
-        # 4b: Lexical Search (BM25)
-        lexical_results = self._lexical_search(query)
+        # 4b: Lexical Search — persistent FTS5 sidecar for this collection
+        lexical_results = self._lexical_search(query, collection_name)
 
-        # Fuse results (4d: Score-Based Fusion)
-        fused_results = self._fuse_results(vector_results, lexical_results)
+        # Fuse results (4d: Score-Based Fusion) with dynamic weights
+        fused_results = self._fuse_results(vector_results, lexical_results, vw, lw)
 
         # Apply governance filters
         if governance_filter:
@@ -144,6 +152,37 @@ class HybridSearchEngine:
         Logger.info(f"Hybrid search complete: {len(fused_results)} results in {elapsed_ms:.1f}ms")
 
         return fused_results[: self.top_k]
+
+    def shape_search(
+        self,
+        query: str,
+        query_embedding: list[float] | None = None,
+        collection_name: str = "code_chunks",
+        filter_dict: dict[str, Any] | None = None,
+        governance_filter: dict[str, Any] | None = None,
+    ) -> EvidenceBundle:
+        """Hybrid search + C0 evidence shaping in one call.
+
+        Returns an EvidenceBundle instead of a raw list.  Backward compatibility:
+        callers that need list[HybridSearchResult] can read .ranked_chunks.
+
+        Adds on top of search():
+          - digest-based deduplication
+          - exact-match winner preservation
+          - sibling expansion (chunk_index ± 1) where metadata supports it
+          - contradiction detection and flagging
+          - citation anchor generation
+          - heuristic rerank by signal-weighted composite score
+        """
+        raw = self.search(
+            query,
+            query_embedding=query_embedding,
+            collection_name=collection_name,
+            filter_dict=filter_dict,
+            governance_filter=governance_filter,
+        )
+        shaper = EvidenceShaper()
+        return shaper.shape(query, raw, collection_name, self.chroma_client)
 
     def _vector_search(
         self,
@@ -219,46 +258,52 @@ class HybridSearchEngine:
 
         return results
 
-    def _lexical_search(self, query: str) -> dict[str, HybridSearchResult]:
-        """Execute lexical BM25 search (4b).
+    def _lexical_search(
+        self, query: str, collection_name: str = "code_chunks"
+    ) -> dict[str, HybridSearchResult]:
+        """Execute lexical FTS5 search against the persistent sidecar (4b).
+
+        Resolves the correct SparseIndex for *collection_name* — either from
+        self.bm25_index (if explicitly provided) or via get_sparse_index().
+        Falls back silently for collections without a sidecar.
 
         Args:
             query: Query text
+            collection_name: Canonical collection name (selects sidecar DB)
 
         Returns:
-            Dict mapping chunk_id to HybridSearchResult
+            Dict mapping chunk_id to HybridSearchResult with lexical_score set
         """
-        results = {}
+        results: dict[str, HybridSearchResult] = {}
 
-        if self.bm25_index is None:
-            Logger.warning("BM25 index not available for lexical search")
+        # Resolve the sparse index: explicit arg wins, else look up sidecar by collection
+        sparse: SparseIndex | None = self.bm25_index or get_sparse_index(collection_name)
+
+        if sparse is None or not sparse.is_available:
+            Logger.debug("No sparse sidecar for collection '%s' — sparse leg skipped", collection_name)
             return results
 
         try:
-            # Get top-k from BM25
-            bm25_results = self.bm25_index.search(query, top_k=self.top_k * 2)
+            fts_results = sparse.search(query, top_k=self.top_k * 2)
 
-            for result in tqdm(bm25_results, desc="bm25-results", leave=False, disable=True):
-                doc_id = result.get("id", "")
-                score = result.get("score", 0.0)
-                content = result.get("content", "")
-
-                # Normalize BM25 score to 0-1 range
-                # BM25 scores can vary widely, so we use a sigmoid-like normalization
-                normalized_score = min(score / 10.0, 1.0)  # Cap at 1.0
-
+            for item in fts_results:
+                doc_id = item.get("id", "")
+                if not doc_id:
+                    continue
+                # SparseIndex already normalises score to (0, 1] via 1/(1+rank)
+                score = float(item.get("score", 0.0))
                 results[doc_id] = HybridSearchResult(
                     chunk_id=doc_id,
-                    content=content,
-                    lexical_score=normalized_score,
-                    metadata=result.get("metadata", {}),
+                    content=item.get("content", ""),
+                    lexical_score=score,
+                    metadata=item.get("metadata", {}),
                     source="lexical",
                 )
 
-            Logger.debug(f"Lexical search: {len(results)} results")
+            Logger.debug("Lexical search [%s]: %d results", collection_name, len(results))
 
-        except (RuntimeError, ValueError) as e:
-            Logger.error(f"Lexical search failed: {e}")
+        except (sqlite3.OperationalError, ValueError) as e:
+            Logger.error("Lexical search failed for '%s': %s", collection_name, e)
 
         return results
 
@@ -266,20 +311,27 @@ class HybridSearchEngine:
         self,
         vector_results: dict[str, HybridSearchResult],
         lexical_results: dict[str, HybridSearchResult],
+        vector_weight: float | None = None,
+        lexical_weight: float | None = None,
     ) -> list[HybridSearchResult]:
         """Fuse vector and lexical results (4d: Score-Based Fusion).
 
-        Uses weighted linear combination:
+        Uses weighted linear combination with dynamically chosen weights:
         combined_score = vector_weight * vector_score + lexical_weight * lexical_score
 
         Args:
             vector_results: Results from vector search
             lexical_results: Results from lexical search
+            vector_weight: Override from signal detection (falls back to self.vector_weight)
+            lexical_weight: Override from signal detection (falls back to self.lexical_weight)
 
         Returns:
             Sorted list of fused results
         """
-        fused = {}
+        vw = vector_weight if vector_weight is not None else self.vector_weight
+        lw = lexical_weight if lexical_weight is not None else self.lexical_weight
+
+        fused: dict[str, HybridSearchResult] = {}
 
         # Add vector results
         for doc_id, result in vector_results.items():
@@ -288,27 +340,18 @@ class HybridSearchEngine:
         # Merge lexical results
         for doc_id, result in lexical_results.items():
             if doc_id in fused:
-                # Merge scores
                 existing = fused[doc_id]
                 existing.lexical_score = result.lexical_score
                 existing.source = "both"
             else:
                 fused[doc_id] = result
 
-        # Calculate combined scores
-        for doc_id, result in fused.items():
-            result.combined_score = (
-                self.vector_weight * result.vector_score + self.lexical_weight * result.lexical_score
-            )
+        # Calculate combined scores using resolved weights
+        for result in fused.values():
+            result.combined_score = vw * result.vector_score + lw * result.lexical_score
 
         # Sort by combined score
-        sorted_results = sorted(
-            fused.values(),
-            key=lambda r: r.combined_score,
-            reverse=True,
-        )
-
-        return sorted_results
+        return sorted(fused.values(), key=lambda r: r.combined_score, reverse=True)
 
     def _generate_query_embedding(self, query: str) -> list[float] | None:
         """Generate embedding for query (🔵 intent_vec) using BAAI/bge-m3 (1024-dim).
@@ -832,17 +875,101 @@ class HybridSearchEngine:
         return filtered
 
 
-# Global instance
-_global_hybrid_engine: HybridSearchEngine | None = None
+# ---------------------------------------------------------------------------
+# Phase B2 — dynamic weight selection
+# ---------------------------------------------------------------------------
+
+# Patterns that indicate an exact-match / lexical-dominant query
+_QUOTED_PHRASE_RE = _re.compile(r'"[^"]+"|\u2018[^\u2019]+\u2019')
+_SNAKE_CASE_RE = _re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+){1,}\b")
+_CAMEL_CASE_RE = _re.compile(r"\b[A-Z][a-zA-Z0-9]+[A-Z][a-zA-Z0-9]*\b|\b[a-z][a-z0-9]*[A-Z][a-zA-Z0-9]*\b")
+_DOTTED_PATH_RE = _re.compile(r"\b(?:[a-zA-Z_][a-zA-Z0-9_]*\.){2,}[a-zA-Z_][a-zA-Z0-9_]*\b")
+_HASH_ID_RE = _re.compile(r"\b[0-9a-f]{7,40}\b|\b[A-Z][A-Z0-9_]{3,}\b")
+_SECTION_RE = _re.compile(r"\b(?:§|section|enum|phase|ADR|L[0-9])[\s\-]?[0-9A-Z]", _re.IGNORECASE)
+
+
+def _detect_query_signal(query: str) -> str:
+    """Return 'exact', 'semantic', or 'mixed' based on observable query features.
+
+    Exact-match signals (sparse should dominate):
+    - Quoted phrases
+    - snake_case / CamelCase identifiers
+    - Dotted import paths (a.b.c)
+    - Hashes / UPPER_CONST slugs
+    - Section numbers / enum names / ADR references
+
+    Semantic signals (dense should dominate):
+    - Long natural-language sentences (>8 words, no exact signals)
+    """
+    signals = 0
+    if _QUOTED_PHRASE_RE.search(query):
+        signals += 2
+    if _SNAKE_CASE_RE.search(query):
+        signals += 2
+    if _CAMEL_CASE_RE.search(query):
+        signals += 2  # CamelCase identifiers are unambiguous exact-match signals
+    if _DOTTED_PATH_RE.search(query):
+        signals += 2
+    if _HASH_ID_RE.search(query):
+        signals += 1
+    if _SECTION_RE.search(query):
+        signals += 1
+
+    word_count = len(query.split())
+    is_long_prose = word_count > 8 and signals == 0
+
+    if signals >= 2:
+        return "exact"
+    if is_long_prose:
+        return "semantic"
+    return "mixed"
+
+
+# Weight table by signal type
+#   exact  → sparse-dominant  (sparse 0.65, dense 0.35)
+#   mixed  → balanced         (sparse 0.45, dense 0.55)
+#   semantic → dense-dominant (sparse 0.15, dense 0.85)
+_WEIGHT_TABLE: dict[str, tuple[float, float]] = {
+    "exact": (0.35, 0.65),  # (vector_weight, lexical_weight)
+    "mixed": (0.55, 0.45),
+    "semantic": (0.85, 0.15),
+}
+
+
+def _compute_weights(
+    query: str,
+    base_vector: float,
+    base_lexical: float,
+) -> tuple[float, float]:
+    """Return (vector_weight, lexical_weight) for this query.
+
+    Uses dynamic signal detection; falls back to caller-supplied base weights
+    when the engine has no sparse index (graceful degradation).
+    """
+    signal = _detect_query_signal(query)
+    vw, lw = _WEIGHT_TABLE.get(signal, (base_vector, base_lexical))
+    Logger.debug("Query signal=%s → vw=%.2f lw=%.2f  query=%r", signal, vw, lw, query[:60])
+    return vw, lw
+
+
+# ---------------------------------------------------------------------------
+# Global factories
+# ---------------------------------------------------------------------------
+
+# Global instance per-collection (keyed so different collections get distinct engines)
+_engine_cache: dict[str, HybridSearchEngine] = {}
 
 # Canonical BGE store — same path used by ingest_code_chunks.py and SemanticRetriever
 _CANONICAL_CHROMA_PATH = str(Path(__file__).resolve().parents[4] / "data" / "cache" / "chromadb")
 
 
-def get_global_hybrid_engine() -> HybridSearchEngine:
-    """Get or create global hybrid search engine backed by the canonical BGE Chroma store."""
-    global _global_hybrid_engine
-    if _global_hybrid_engine is None:
+def get_global_hybrid_engine(collection_name: str = "code_chunks") -> HybridSearchEngine:
+    """Get or create a hybrid search engine for *collection_name*.
+
+    Sparse leg is wired automatically via get_sparse_index() when a sidecar exists.
+    Sparse leg is silently absent for collections without a built sidecar.
+    """
+    if collection_name not in _engine_cache:
         try:
             import chromadb as _chromadb
 
@@ -851,8 +978,18 @@ def get_global_hybrid_engine() -> HybridSearchEngine:
             Exception
         ):  # guardian: allow-broad-exception -- best-effort client init, falls back to vector-disabled mode
             _chroma_client = None
-        _global_hybrid_engine = HybridSearchEngine(chroma_client=_chroma_client)
-    return _global_hybrid_engine
+
+        sparse = get_sparse_index(collection_name)  # None for unsupported collections
+        _engine_cache[collection_name] = HybridSearchEngine(
+            chroma_client=_chroma_client,
+            bm25_index=sparse,
+        )
+        Logger.info(
+            "HybridSearchEngine created: collection=%s sparse=%s",
+            collection_name,
+            "yes" if (sparse and sparse.is_available) else "no",
+        )
+    return _engine_cache[collection_name]
 
 
 def hybrid_search(
@@ -860,8 +997,21 @@ def hybrid_search(
     query_embedding: list[float] | None = None,
     collection_name: str = "code_chunks",
 ) -> list[HybridSearchResult]:
-    """Convenience function for hybrid search against the global BGE-backed engine."""
-    return get_global_hybrid_engine().search(query, query_embedding, collection_name)
+    """Convenience function for hybrid search against the collection-aware cached engine."""
+    return get_global_hybrid_engine(collection_name).search(query, query_embedding, collection_name)
+
+
+def shaped_hybrid_search(
+    query: str,
+    query_embedding: list[float] | None = None,
+    collection_name: str = "code_chunks",
+) -> EvidenceBundle:
+    """Hybrid search + C0 evidence shaping. Returns EvidenceBundle.
+
+    The primary entry point for callers that want citation anchors, provenance,
+    contradiction flags, and heuristic rerank on top of the dense+sparse fusion.
+    """
+    return get_global_hybrid_engine(collection_name).shape_search(query, query_embedding, collection_name)
 
 
 def get_hybrid_search_engine(
@@ -870,12 +1020,14 @@ def get_hybrid_search_engine(
     lexical_weight: float = 0.3,
     top_k: int = 10,
 ) -> HybridSearchEngine:
-    """Return a HybridSearchEngine wired to the canonical Chroma store."""
+    """Return a HybridSearchEngine wired to the canonical Chroma store and sparse sidecar."""
     import chromadb as _chromadb
 
     client = _chromadb.PersistentClient(path=_CANONICAL_CHROMA_PATH)
+    sparse = get_sparse_index(collection_name)  # None for unsupported collections
     return HybridSearchEngine(
         chroma_client=client,
+        bm25_index=sparse,
         vector_weight=vector_weight,
         lexical_weight=lexical_weight,
         top_k=top_k,

@@ -157,7 +157,6 @@ _emit_updates_meta_learning_state("p4", "routing_tier_config", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "routing_tier_config", "exec_snapshot_link")
 
 
-
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192
@@ -167,8 +166,10 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 class Provider(Enum):
     """LLM provider."""
+
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
@@ -229,8 +230,11 @@ class RouteConfig:
     def get_model_for_provider(self, provider: Provider) -> str | None:
         """Get model override for a specific provider."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RouteConfig.get_model_for_provider")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RouteConfig.get_model_for_provider"
+        )
 
         if self.model_overrides:
             return self.model_overrides.get(provider.value)

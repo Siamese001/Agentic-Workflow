@@ -16,14 +16,17 @@ class TestL4StateLifecycle:
     def test_l4_state_lifecycle_imports(self):
         """Test l4_state_lifecycle module imports."""
         from agentic_core import l4_state_lifecycle
+
         assert l4_state_lifecycle is not None
 
     def test_l4_state_lifecycle_class(self):
         """Test L4StateLifecycle class exists."""
         from agentic_core import L4StateLifecycle
+
         assert L4StateLifecycle is not None
 
     def test_l4_state_lifecycle_callable(self):
         """Test l4_state_lifecycle functions are callable."""
         from agentic_core import validate_l4_state_lifecycle
+
         assert callable(validate_l4_state_lifecycle)

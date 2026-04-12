@@ -265,8 +265,11 @@ class PromptOutcomeBusAdapter:
         TraceFeatureRecord
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOutcomeBusAdapter.convert")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptOutcomeBusAdapter.convert"
+        )
 
         record_id = _build_record_id(outcome.outcome_id)
 

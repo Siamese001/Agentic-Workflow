@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class ScopeMetadata:
     """Resolved scope metadata for query routing."""
+
     scope_id: str
     tenant_id: str | None = None
     region: str | None = None
@@ -65,7 +66,9 @@ class ScopeMetadataResolver:
         """
         trace_id = f"scope_{hashlib.sha256(str(filter_context).encode()).hexdigest()[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ScopeMetadataResolver.resolve",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "ScopeMetadataResolver.resolve",
         )
 
         # Check cache
@@ -140,10 +143,7 @@ class ScopeMetadataResolver:
             return count
 
         # Find and remove entries matching scope_id
-        keys_to_remove = [
-            k for k, (v, _) in self._cache.items()
-            if v.scope_id == scope_id
-        ]
+        keys_to_remove = [k for k, (v, _) in self._cache.items() if v.scope_id == scope_id]
         for key in keys_to_remove:
             del self._cache[key]
 

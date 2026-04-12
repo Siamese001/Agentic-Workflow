@@ -227,8 +227,11 @@ class RetrievalCaseEmbedder:
             The generated CorpusRecord.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalCaseEmbedder.ingest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalCaseEmbedder.ingest"
+        )
 
         text = record.to_embedding_text()
         content_hash = compute_content_hash(text.encode("utf-8"))
@@ -383,7 +386,8 @@ class RetrievalCaseEmbedder:
             }
         avg_sup = round(sum(m.get("support_score", 0.0) for m in metas) / n, 6)
         avg_comp = round(
-            sum(m.get("completeness_score", 0.0) for m in metas) / n, 6,
+            sum(m.get("completeness_score", 0.0) for m in metas) / n,
+            6,
         )
         esc_rate = round(sum(1 for m in metas if m.get("escalation_flag")) / n, 6)
         heal_rate = round(sum(1 for m in metas if m.get("healer_invoked")) / n, 6)
@@ -438,10 +442,7 @@ class RetrievalCaseEmbedder:
         with self._lock:
             metas = list(self._meta.values())
         n = len(metas)
-        pure_esc = sum(
-            1 for m in metas
-            if m.get("escalation_flag") and not m.get("healer_invoked")
-        )
+        pure_esc = sum(1 for m in metas if m.get("escalation_flag") and not m.get("healer_invoked"))
         weak_sup = sum(1 for m in metas if m.get("support_score", 1.0) < 0.5)
         replay_fail = sum(1 for m in metas if not m.get("replay_pass", True))
         if n == 0:

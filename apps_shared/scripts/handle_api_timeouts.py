@@ -172,6 +172,7 @@ class HandleApiTimeouts:
     def execute(self, func: Callable, *args, **kwargs: dict[str, object]) -> RetryResult:
         """Execute with retry."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HandleApiTimeouts.execute")
 

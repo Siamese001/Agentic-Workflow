@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L1_cognition.memory.healing_memory_retriever."""
+
 from __future__ import annotations
 
 import importlib

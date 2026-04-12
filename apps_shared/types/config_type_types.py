@@ -422,7 +422,9 @@ class ConfigLoadPlanner:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ConfigLoadPlanner.plan_load")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ConfigLoadPlanner.plan_load"
+        )
         self.logger.info(
             f"Starting config load planning for: {load_request.get('plan_name', 'unknown')}",
         )

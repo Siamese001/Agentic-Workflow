@@ -31,7 +31,7 @@ async def test_mcp_server():
         return False
 
     # Check that FastMCP instance exists
-    if not hasattr(server_module, 'mcp'):
+    if not hasattr(server_module, "mcp"):
         print("❌ FastMCP instance 'mcp' not found")
         return False
 
@@ -46,7 +46,7 @@ async def test_mcp_server():
     except Exception as e:
         print(f"❌ Failed to list tools: {e}")
         # Fallback: check the mcp._tools attribute directly
-        if hasattr(mcp_instance, '_tools'):
+        if hasattr(mcp_instance, "_tools"):
             tool_names = list(mcp_instance._tools.keys())
             print(f"✅ Found {len(tool_names)} tools (via _tools): {', '.join(tool_names)}")
         else:
@@ -92,6 +92,7 @@ async def test_mcp_server():
 
     print("✅ OpenTelemetry MCP Server test passed!")
     return True
+
 
 if __name__ == "__main__":
     success = asyncio.run(test_mcp_server())

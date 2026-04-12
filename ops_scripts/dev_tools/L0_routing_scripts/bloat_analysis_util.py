@@ -340,7 +340,7 @@ def find_unused_imports():
                             "path": str(f.relative_to(ROOT)),
                             "unused_count": len(unused),
                             "examples": unused[:5],
-                        # guardian: allow-silent-swallow - acceptable exception handling
+                            # guardian: allow-silent-swallow - acceptable exception handling
                         },
                     )
             except (OSError, UnicodeDecodeError, SyntaxError) as e:
@@ -381,7 +381,7 @@ def find_script_candidates():
                     {
                         "path": str(f.relative_to(ROOT)),
                         "size_kb": round(stat.st_size / 1024, 1),
-                        "signals": signals,    # guardian: File operations with encoding need error-specific handling
+                        "signals": signals,  # guardian: File operations with encoding need error-specific handling
                     },
                 )
         # guardian: allow-silent-swallow - acceptable exception handling

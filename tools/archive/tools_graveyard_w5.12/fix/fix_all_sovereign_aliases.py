@@ -1,4 +1,5 @@
 """Find ALL missing CamelCase aliases in sovereign_severity_types.py registry blocks and add them."""
+
 import ast
 import re
 
@@ -10,7 +11,7 @@ tree = ast.parse(src)
 classes = {n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)}
 
 # Get all existing aliases (CamelCase = snake_case at module level)
-alias_pat = re.compile(r'^([A-Z][A-Za-z]+)\s*=\s*(\w+)\s*$', re.MULTILINE)
+alias_pat = re.compile(r"^([A-Z][A-Za-z]+)\s*=\s*(\w+)\s*$", re.MULTILINE)
 existing_aliases = {m.group(1) for m in alias_pat.finditer(src)}
 
 # Find all CamelCase names used in CORE_CONTRACTS_REGISTRY and .update() blocks
@@ -22,6 +23,7 @@ for key, val in registry_refs:
         def to_snake(name):
             s = re.sub(r"(?<=[a-z0-9])(?=[A-Z])", "_", name)
             return s.lower()
+
         snake = to_snake(val)
         if snake in classes:
             needed[val] = snake

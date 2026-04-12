@@ -232,7 +232,9 @@ class SemanticGatekeeperAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticGatekeeperAgent.heal_repository",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SemanticGatekeeperAgent.heal_repository",
         )
 
         super().heal_repository(dry_run, execute, depth, max_depth, _call_path)

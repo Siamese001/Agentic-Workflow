@@ -854,7 +854,9 @@ class GuardianResult:
         """Add a check entry and update top-level status."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"GuardianContractResult.add_check:{check_id}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"GuardianContractResult.add_check:{check_id}",
         )
         status_val = status.value if isinstance(status, CheckStatus) else status
         self.checks.append(
@@ -1146,6 +1148,7 @@ def maybe_sign_result(
     enclave = get_default_signing_enclave()
     result.sign(enclave, GUARDIAN_SIGNING_KEY_ID, commit_hash or "HEAD")
     return result
+
 
 _emit_reads_through("l4", "guardian_contract_types", "urg_read_1")
 _emit_reads_through("l4", "guardian_contract_types", "urg_read_2")

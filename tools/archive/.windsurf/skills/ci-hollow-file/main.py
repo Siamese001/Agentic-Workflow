@@ -24,22 +24,27 @@ def validate_hollow_file(file_path: str) -> tuple[bool, str, str]:
         if not path.exists():
             return False, "", f"File not found: {file_path}"
 
-        content = path.read_text(encoding='utf-8').strip()
+        content = path.read_text(encoding="utf-8").strip()
 
         # Check for hollow file patterns
         if not content:
             return False, "File is empty", ""
 
         # Check for only whitespace/comments
-        lines = [line.strip() for line in content.split('\n') if line.strip()]
+        lines = [line.strip() for line in content.split("\n") if line.strip()]
         meaningful_lines = []
 
         for line in lines:
             # Skip comment lines
-            if line.startswith('#') or line.startswith('//') or line.startswith('"""') or line.startswith("'''"):
+            if (
+                line.startswith("#")
+                or line.startswith("//")
+                or line.startswith('"""')
+                or line.startswith("'''")
+            ):
                 continue
             # Skip import statements
-            if line.startswith('import ') or line.startswith('from '):
+            if line.startswith("import ") or line.startswith("from "):
                 continue
             # Skip docstring markers
             if line in ['"""', "'''"]:
@@ -50,8 +55,12 @@ def validate_hollow_file(file_path: str) -> tuple[bool, str, str]:
             return False, "File contains only imports/comments", ""
 
         # Check minimum meaningful content (at least 5 lines of actual code)
-        if len(meaningful_lines) < 5 and path.suffix == '.py':
-            return False, f"Python file has insufficient content ({len(meaningful_lines)} meaningful lines)", ""
+        if len(meaningful_lines) < 5 and path.suffix == ".py":
+            return (
+                False,
+                f"Python file has insufficient content ({len(meaningful_lines)} meaningful lines)",
+                "",
+            )
 
         return True, "File has meaningful content", ""
 

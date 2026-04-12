@@ -247,7 +247,9 @@ class RetrievalBoundarySnapshot:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "RetrievalBoundarySnapshot.canonical_bytes", "state_snapshot",
+            str(_uuid.uuid4()),
+            "RetrievalBoundarySnapshot.canonical_bytes",
+            "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -257,13 +259,17 @@ class RetrievalBoundarySnapshot:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "RetrievalBoundarySnapshot.canonical_bytes", "p0_governance",
+            str(_uuid.uuid4()),
+            "RetrievalBoundarySnapshot.canonical_bytes",
+            "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "RetrievalBoundarySnapshot.canonical_bytes",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "RetrievalBoundarySnapshot.canonical_bytes",
         )
 
         doc: dict[str, Any] = {

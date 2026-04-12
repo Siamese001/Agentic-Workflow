@@ -16,14 +16,17 @@ class TestCompletenessAdg:
     def test_completeness_adg_imports(self):
         """Test completeness_adg module imports."""
         from agentic_core import completeness_adg
+
         assert completeness_adg is not None
 
     def test_completeness_adg_class(self):
         """Test CompletenessAdg class exists."""
         from agentic_core import CompletenessAdg
+
         assert CompletenessAdg is not None
 
     def test_completeness_adg_callable(self):
         """Test completeness_adg functions are callable."""
         from agentic_core import validate_completeness_adg
+
         assert callable(validate_completeness_adg)

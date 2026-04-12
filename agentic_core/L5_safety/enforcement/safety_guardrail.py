@@ -187,7 +187,10 @@ class SafetyGuardrail:
         self.deletion_limit = deletion_limit
 
     def verify_change(
-        self, original_code: str, new_code: str, fission_active: bool = False,
+        self,
+        original_code: str,
+        new_code: str,
+        fission_active: bool = False,
     ) -> tuple[bool, str]:
         """
         Verify that code changes are safe and don't violate zero-loss principles.
@@ -213,7 +216,7 @@ class SafetyGuardrail:
             return (False, "Safety Block: Attempted to wipe file.")
         try:
             ast.parse(new_code)
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             return (False, f"Safety Block: Mutation introduced syntax error: {e.msg} at line {e.lineno}")
         orig_len: Any = len(original_code.splitlines())
         new_len: Any = len(new_code.splitlines())

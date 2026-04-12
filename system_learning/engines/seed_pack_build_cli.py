@@ -261,7 +261,10 @@ def main() -> None:
         help="OpenAI model to use (default: text-embedding-3-large)",
     )
     parser.add_argument(
-        "--provider", default="openai", choices=["openai"], help="Embedding provider to use (default: openai)",
+        "--provider",
+        default="openai",
+        choices=["openai"],
+        help="Embedding provider to use (default: openai)",
     )
     parser.add_argument(
         "--dimensions",
@@ -276,7 +279,10 @@ def main() -> None:
         help="Bootstrap mode (default: minimal_seed)",
     )
     parser.add_argument(
-        "--minimal-seed-count", type=int, default=None, help="Minimal seed count for minimal_seed mode",
+        "--minimal-seed-count",
+        type=int,
+        default=None,
+        help="Minimal seed count for minimal_seed mode",
     )
     parser.add_argument(
         "--corpus-path",
@@ -303,7 +309,9 @@ def main() -> None:
             embedder = DeterministicHashEmbedder(dimensions=args.dimensions)
         else:
             embedder = create_embedding_client(
-                provider=args.provider, model=args.model, dimensions=args.dimensions,
+                provider=args.provider,
+                model=args.model,
+                dimensions=args.dimensions,
             )
         print(f"Model dimensions: {args.dimensions}")
         model_checksum = hashlib.sha256(

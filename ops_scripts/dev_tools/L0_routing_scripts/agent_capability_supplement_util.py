@@ -484,7 +484,11 @@ def analyze_supplementation():
     else:
         print("[OK] No high-confidence supplementation opportunities detected")
     md_report = generate_markdown_report(
-        live_cap_counter, dead_cap_detail, unique_to_dead, underrepresented, recommendations,
+        live_cap_counter,
+        dead_cap_detail,
+        unique_to_dead,
+        underrepresented,
+        recommendations,
     )
     report_path = PROJECT_ROOT / "agent_supplementation_report.md"
     assert_no_persistent_write("L0", "write_text")

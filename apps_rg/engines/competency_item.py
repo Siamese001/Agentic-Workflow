@@ -192,6 +192,7 @@ class GapClosureEngine(BaseRGEngine):
         Generate gap-closing competencies based on enriched profile and JD.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GapClosureEngine.execute")
 

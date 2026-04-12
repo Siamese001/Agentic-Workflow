@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 
 class AbstainAction(Enum):
     """Action to take when abstaining."""
+
     ABSTAIN = "abstain"
     CLARIFY = "clarify"
     FALLBACK = "fallback"
@@ -27,6 +28,7 @@ class AbstainAction(Enum):
 @dataclass
 class AbstainDecision:
     """Decision to abstain or proceed."""
+
     should_abstain: bool
     action: AbstainAction
     reason: str
@@ -80,14 +82,16 @@ class AbstainDetector:
         """
         trace_id = f"abstain_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "AbstainDetector.evaluate",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "AbstainDetector.evaluate",
         )
 
         # Extract support score
-        support_score = getattr(evidence_contract, 'support_score', 0.0)
+        support_score = getattr(evidence_contract, "support_score", 0.0)
 
         # Check grounding
-        grounding_verified = getattr(evidence_contract, 'provenance_verified', False)
+        grounding_verified = getattr(evidence_contract, "provenance_verified", False)
 
         # Calculate confidence
         confidence = self._calculate_confidence(support_score, grounding_verified)
@@ -145,7 +149,7 @@ class AbstainDetector:
     def _should_clarify(self, query: str, context: dict[str, Any]) -> bool:
         """Determine if clarification should be requested."""
         # Clarify if query is ambiguous or vague
-        vague_indicators = ['something', 'anything', 'whatever', 'etc']
+        vague_indicators = ["something", "anything", "whatever", "etc"]
 
         query_lower = query.lower()
         vague_count = sum(1 for w in vague_indicators if w in query_lower)

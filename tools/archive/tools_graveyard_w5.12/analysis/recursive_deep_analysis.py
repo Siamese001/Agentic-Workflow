@@ -21,6 +21,7 @@ from typing import Any
 # ADG helpers
 # ---------------------------------------------------------------------------
 
+
 def _build_adg_index(db_path: str, target_dir: str) -> dict[str, dict[str, list]]:
     """
     Single-pass: load all dead-code edges whose source file is inside
@@ -66,19 +67,14 @@ def _build_adg_index(db_path: str, target_dir: str) -> dict[str, dict[str, list]
 # Per-file AST analysis
 # ---------------------------------------------------------------------------
 
+
 def _ast_stats(path: Path) -> dict[str, Any]:
     try:
         src = path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(src, filename=str(path))
-        functions = [
-            n.name
-            for n in ast.walk(tree)
-            if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
-        ]
+        functions = [n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
         classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
-        imports = [
-            n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))
-        ]
+        imports = [n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
         lines = src.splitlines()
         # count non-blank, non-comment lines as "code lines"
         code_lines = [l for l in lines if l.strip() and not l.strip().startswith("#")]
@@ -192,6 +188,7 @@ def classify_file(
 # Recursive walker
 # ---------------------------------------------------------------------------
 
+
 def walk_directory(
     root: Path,
     target_dir: str,
@@ -254,6 +251,7 @@ def walk_directory(
 # Summary builder
 # ---------------------------------------------------------------------------
 
+
 def build_summary(records: list[dict], target_dir: str) -> dict[str, Any]:
     folder_stats: dict[str, dict] = {}
 
@@ -301,15 +299,16 @@ def build_summary(records: list[dict], target_dir: str) -> dict[str, Any]:
 # Main
 # ---------------------------------------------------------------------------
 
+
 def analyze(target_dir: str, db_path: str, output_path: str) -> None:
     root = Path(target_dir)
     if not root.exists():
         print(f"ERROR: {target_dir} does not exist")
         return
 
-    print(f"\n{'='*72}")
+    print(f"\n{'=' * 72}")
     print(f"  DEEP RECURSIVE ANALYSIS: {target_dir}")
-    print(f"{'='*72}")
+    print(f"{'=' * 72}")
 
     print("  [1/4] Building ADG dead-code index...")
     adg_index = _build_adg_index(db_path, target_dir)

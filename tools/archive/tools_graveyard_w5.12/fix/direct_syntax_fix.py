@@ -17,11 +17,11 @@ class DirectSyntaxFixer:
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
         self.stats = {
-            'total_files': 0,
-            'syntax_errors_fixed': 0,
-            'files_completely_cleaned': 0,
-            'migration_artifacts_removed': 0,
-            'files_with_errors': 0,
+            "total_files": 0,
+            "syntax_errors_fixed": 0,
+            "files_completely_cleaned": 0,
+            "migration_artifacts_removed": 0,
+            "files_with_errors": 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 
@@ -41,16 +41,16 @@ class DirectSyntaxFixer:
         print(f"Found {len(active_test_files)} active test files to check...")
 
         for test_file in active_test_files:
-            self.stats['total_files'] += 1
+            self.stats["total_files"] += 1
             if self.fix_file(test_file):
-                self.stats['files_with_errors'] += 1
+                self.stats["files_with_errors"] += 1
 
         return self.stats
 
     def fix_file(self, file_path: pathlib.Path) -> bool:
         """Fix syntax errors in a single file using direct approach."""
         try:
-            original_content = file_path.read_text(encoding='utf-8')
+            original_content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
@@ -69,8 +69,8 @@ class DirectSyntaxFixer:
         try:
             ast.parse(fixed_content)
             # If successful, write back
-            file_path.write_text(fixed_content, encoding='utf-8')
-            self.stats['syntax_errors_fixed'] += 1
+            file_path.write_text(fixed_content, encoding="utf-8")
+            self.stats["syntax_errors_fixed"] += 1
             return True
         except SyntaxError as e:
             self.failed_files.append((str(file_path), f"Syntax error after fix: {e}"))
@@ -94,16 +94,17 @@ class DirectSyntaxFixer:
                 continue
 
             # Check if this line starts a problematic section
-            if (self._is_legacy_comment(line) or
-                self._is_removed_comment(line) or
-                self._is_orphaned_import_start(line)):
-
+            if (
+                self._is_legacy_comment(line)
+                or self._is_removed_comment(line)
+                or self._is_orphaned_import_start(line)
+            ):
                 in_problem_section = True
-                self.stats['migration_artifacts_removed'] += 1
+                self.stats["migration_artifacts_removed"] += 1
                 continue
 
             # Check if this line ends a problematic section
-            if in_problem_section and not line.startswith(' ') and not line.startswith('\t'):
+            if in_problem_section and not line.startswith(" ") and not line.startswith("\t"):
                 in_problem_section = False
                 # This line starts a new section, keep it
                 cleaned_lines.append(line)
@@ -114,8 +115,7 @@ class DirectSyntaxFixer:
                 continue
 
             # Remove standalone problematic lines
-            if (self._is_orphaned_import_content(line, stripped) or
-                self._is_unmatched_parenthesis(line)):
+            if self._is_orphaned_import_content(line, stripped) or self._is_unmatched_parenthesis(line):
                 continue
 
             # Keep everything else
@@ -124,38 +124,85 @@ class DirectSyntaxFixer:
         # Clean up the result
         cleaned_lines = self._final_cleanup(cleaned_lines)
 
-        return '\n'.join(cleaned_lines)
+        return "\n".join(cleaned_lines)
 
     def _is_legacy_comment(self, line: str) -> bool:
         """Check if line is a legacy migration comment."""
-        return ('#  # MOVED:' in line or
-                line.strip().startswith('#  # MOVED:') or
-                re.match(r'^\s*#\s*#\s*MOVED:.*$', line))
+        return (
+            "#  # MOVED:" in line
+            or line.strip().startswith("#  # MOVED:")
+            or re.match(r"^\s*#\s*#\s*MOVED:.*$", line)
+        )
 
     def _is_removed_comment(self, line: str) -> bool:
         """Check if line is a removed migration comment."""
-        return line.strip().startswith('# REMOVED:')
+        return line.strip().startswith("# REMOVED:")
 
     def _is_orphaned_import_start(self, line: str) -> bool:
         """Check if line starts orphaned import content."""
         stripped = line.strip()
-        return (not line.startswith(' ') and not line.startswith('\t') and
-                (any(keyword in stripped for keyword in ['_emit_', 'emit_', 'MAX_', 'BATCH_', 'BUFFER_', 'DEFAULT_', 'MAX_', 'RETRIES_', 'THRESHOLD']) or
-                 re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped)))
+        return (
+            not line.startswith(" ")
+            and not line.startswith("\t")
+            and (
+                any(
+                    keyword in stripped
+                    for keyword in [
+                        "_emit_",
+                        "emit_",
+                        "MAX_",
+                        "BATCH_",
+                        "BUFFER_",
+                        "DEFAULT_",
+                        "MAX_",
+                        "RETRIES_",
+                        "THRESHOLD",
+                    ]
+                )
+                or re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*,?\s*$", stripped)
+            )
+        )
 
     def _is_orphaned_import_content(self, line: str, stripped: str) -> bool:
         """Check if line is orphaned import content."""
-        if stripped.startswith('#') or stripped.startswith(('from ', 'import ', 'def ', 'class ', '@', '"""', "'''", 'try:', 'except', 'finally:', 'if ', 'elif ', 'else:', 'for ', 'while ', 'with ', 'return ', 'yield ', 'raise ', 'break', 'continue', 'pass', 'global', 'nonlocal')):
+        if stripped.startswith("#") or stripped.startswith(
+            (
+                "from ",
+                "import ",
+                "def ",
+                "class ",
+                "@",
+                '"""',
+                "'''",
+                "try:",
+                "except",
+                "finally:",
+                "if ",
+                "elif ",
+                "else:",
+                "for ",
+                "while ",
+                "with ",
+                "return ",
+                "yield ",
+                "raise ",
+                "break",
+                "continue",
+                "pass",
+                "global",
+                "nonlocal",
+            )
+        ):
             return False
 
         # Check for orphaned patterns
         orphaned_patterns = [
-            r'^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*#.*$',
-            r'^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$',
-            r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*#.*$',
-            r'^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$',
-            r'^[A-Z_][A-Z0-9_]*,?\s*#.*$',
-            r'^[A-Z_][A-Z0-9_]*,?\s*$',
+            r"^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*#.*$",
+            r"^_emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$",
+            r"^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*#.*$",
+            r"^emit_[a-zA-Z_][a-zA-Z0-9_]*,?\s*$",
+            r"^[A-Z_][A-Z0-9_]*,?\s*#.*$",
+            r"^[A-Z_][A-Z0-9_]*,?\s*$",
         ]
 
         for pattern in orphaned_patterns:
@@ -166,7 +213,7 @@ class DirectSyntaxFixer:
 
     def _is_unmatched_parenthesis(self, line: str) -> bool:
         """Check if line is unmatched parenthesis."""
-        return re.match(r'^\s*\)\s*$', line)
+        return re.match(r"^\s*\)\s*$", line)
 
     def _final_cleanup(self, lines: list[str]) -> list[str]:
         """Perform final cleanup of the lines."""
@@ -186,9 +233,9 @@ class DirectSyntaxFixer:
 
     def print_summary(self):
         """Print fixing summary."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("DIRECT SYNTAX FIX SUMMARY")
-        print("="*60)
+        print("=" * 60)
         print(f"Total files checked: {self.stats['total_files']}")
         print(f"Files with errors fixed: {self.stats['files_with_errors']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
@@ -203,7 +250,7 @@ class DirectSyntaxFixer:
             if len(self.failed_files) > 10:
                 print(f"  ... and {len(self.failed_files) - 10} more")
 
-        print("="*60)
+        print("=" * 60)
 
 
 def main():
@@ -230,7 +277,7 @@ def main():
 
     for test_file in active_test_files:
         try:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
             ast.parse(content)
         except SyntaxError:
             syntax_errors += 1

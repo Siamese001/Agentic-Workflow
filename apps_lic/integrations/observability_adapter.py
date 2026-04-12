@@ -87,4 +87,5 @@ class ObservabilityAdapter:
     def _timestamp(self) -> str:
         """Generate ISO timestamp."""
         from datetime import datetime, timezone
+
         return datetime.now(timezone.utc).isoformat()

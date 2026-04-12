@@ -253,7 +253,9 @@ class HealingMemoryEmbedder:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "HealingMemoryEmbedder.reset_instance",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "HealingMemoryEmbedder.reset_instance",
         )
 
         global _embedder_singleton
@@ -311,7 +313,9 @@ class HealingMemoryEmbedder:
         return None
 
     def embed_healing_pattern(
-        self, violation: dict[str, Any], healing_result: dict[str, Any],
+        self,
+        violation: dict[str, Any],
+        healing_result: dict[str, Any],
     ) -> list[float] | None:
         """
         Generate embedding for a healing pattern (violation + result).

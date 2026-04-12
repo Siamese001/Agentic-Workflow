@@ -23,7 +23,11 @@ for f in skip_calls:
     dep = f.get("dependency", "")
 
     reason_lower = reason.lower()
-    if "deps unavailable" in reason_lower or "not available" in reason_lower or "not importable" in reason_lower:
+    if (
+        "deps unavailable" in reason_lower
+        or "not available" in reason_lower
+        or "not importable" in reason_lower
+    ):
         reason_counter["deps_unavailable"] += 1
         deps_unavailable_skips.append(f)
     elif "schema.py" in reason_lower or "schema" in reason_lower:
@@ -107,7 +111,9 @@ conftest_findings = [f for f in findings if "conftest" in f.get("pattern_type", 
 print()
 print(f"Conftest optionalization patterns: {len(conftest_findings)}")
 for cf in conftest_findings:
-    print(f"  {cf['file']}:{cf['line']} dep={cf.get('dependency', '')} classification={cf.get('classification', '')}")
+    print(
+        f"  {cf['file']}:{cf['line']} dep={cf.get('dependency', '')} classification={cf.get('classification', '')}"
+    )
 
 # 8. Fixture swallowers
 fixture_swallowers = [f for f in findings if f["pattern_type"] == "try_except_import_error_in_fixture"]
@@ -122,9 +128,20 @@ print("=" * 70)
 print("MECE CLASSIFICATION SUMMARY")
 print("=" * 70)
 
-invalid_count = len(fp_swallowers) + len(deps_unavailable_skips) + len(io_tests) + len([x for x in xfails if x.get("strict", "") != "True"])
+invalid_count = (
+    len(fp_swallowers)
+    + len(deps_unavailable_skips)
+    + len(io_tests)
+    + len([x for x in xfails if x.get("strict", "") != "True"])
+)
 avoidable_count = len(tp_swallowers) + len(shallow)
-valid_count = len([f for f in skip_calls if "redis" in f.get("reason", "").lower() or "platform" in f.get("reason", "").lower()])
+valid_count = len(
+    [
+        f
+        for f in skip_calls
+        if "redis" in f.get("reason", "").lower() or "platform" in f.get("reason", "").lower()
+    ]
+)
 questionable_count = len(no_reason_skips) + len(skipifs)
 
 print(f"A. INVALID (must fix): ~{invalid_count}")

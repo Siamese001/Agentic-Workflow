@@ -38,6 +38,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 try:
     from prometheus_client import CollectorRegistry
     from prometheus_client import start_http_server as _prom_start_server
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
@@ -110,7 +111,9 @@ def start_metrics_server(
         )
 
         _emit_records_execution_trace(
-            "metrics_server_start", "L6_OBSERVABILITY", "metrics_server",
+            "metrics_server_start",
+            "L6_OBSERVABILITY",
+            "metrics_server",
         )
 
         return httpd
@@ -149,7 +152,9 @@ def stop_metrics_server(server: Any) -> bool:
 
         logger.info("metrics_server_stopped")
         _emit_records_execution_trace(
-            "metrics_server_stop", "L6_OBSERVABILITY", "metrics_server",
+            "metrics_server_stop",
+            "L6_OBSERVABILITY",
+            "metrics_server",
         )
 
         return True

@@ -171,6 +171,7 @@ class ClerkExtractor:
     def extract(self) -> tuple[dict, list[ValidationResult]]:
         """Extract and validate structured data from master resume."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ClerkExtractor.extract")
 

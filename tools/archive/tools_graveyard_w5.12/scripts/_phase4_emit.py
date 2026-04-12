@@ -94,7 +94,12 @@ clusters = [
 ]
 
 out = Path("artifacts/execute_ssot_root_clusters.json")
-out.write_text(json.dumps({"clusters": clusters, "total_clusters": len(clusters), "total_failures": 15}, indent=2), encoding="utf-8")
+out.write_text(
+    json.dumps({"clusters": clusters, "total_clusters": len(clusters), "total_failures": 15}, indent=2),
+    encoding="utf-8",
+)
 print("PHASE 4 artifact written.")
 for c in clusters:
-    print(f"  Cluster {c['cluster_id']}: {c['root_function']} — {c['failure_count']} failures — {c['error_category']}")
+    print(
+        f"  Cluster {c['cluster_id']}: {c['root_function']} — {c['failure_count']} failures — {c['error_category']}"
+    )

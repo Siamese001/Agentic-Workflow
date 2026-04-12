@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.agents.adg_backed_registry."""
+
 from __future__ import annotations
 
 import importlib
@@ -44,8 +45,7 @@ def test_any_is_instantiable(mod):
     assert cls is not None, "Any must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "Any must be a class"
 
-
-# Arrange
+    # Arrange
     input_data = {}  # Replace with actual test data
 
     # Act

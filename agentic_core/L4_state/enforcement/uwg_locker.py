@@ -17,6 +17,7 @@ from .uwg_clerk import WriteRequest
 @dataclass
 class WriteLock:
     """Represents an acquired write lock."""
+
     request_hash: str
     actor_id: str
     path: str
@@ -101,10 +102,7 @@ class UWGLocker:
         Returns number of locks released.
         """
         with self._lock_mutex:
-            to_release = [
-                path for path, lock in self._active_locks.items()
-                if lock.actor_id == actor_id
-            ]
+            to_release = [path for path, lock in self._active_locks.items() if lock.actor_id == actor_id]
             for path in to_release:
                 del self._active_locks[path]
             return len(to_release)

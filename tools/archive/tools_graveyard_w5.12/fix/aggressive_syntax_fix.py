@@ -13,10 +13,10 @@ class AggressiveSyntaxFixer:
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
         self.stats = {
-            'total_files': 0,
-            'syntax_errors_fixed': 0,
-            'all_migration_artifacts_removed': 0,
-            'files_with_errors': 0,
+            "total_files": 0,
+            "syntax_errors_fixed": 0,
+            "all_migration_artifacts_removed": 0,
+            "files_with_errors": 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 
@@ -36,16 +36,16 @@ class AggressiveSyntaxFixer:
         print(f"Found {len(active_test_files)} active test files to check...")
 
         for test_file in active_test_files:
-            self.stats['total_files'] += 1
+            self.stats["total_files"] += 1
             if self.fix_file(test_file):
-                self.stats['files_with_errors'] += 1
+                self.stats["files_with_errors"] += 1
 
         return self.stats
 
     def fix_file(self, file_path: pathlib.Path) -> bool:
         """Fix syntax errors in a single file using aggressive approach."""
         try:
-            original_content = file_path.read_text(encoding='utf-8')
+            original_content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
@@ -64,8 +64,8 @@ class AggressiveSyntaxFixer:
         try:
             ast.parse(fixed_content)
             # If successful, write back
-            file_path.write_text(fixed_content, encoding='utf-8')
-            self.stats['syntax_errors_fixed'] += 1
+            file_path.write_text(fixed_content, encoding="utf-8")
+            self.stats["syntax_errors_fixed"] += 1
             return True
         except SyntaxError as e:
             self.failed_files.append((str(file_path), f"Syntax error after fix: {e}"))
@@ -88,36 +88,75 @@ class AggressiveSyntaxFixer:
                 continue
 
             # Remove ANY line that contains migration artifacts
-            if ('#  # MOVED:' in line or
-                '#  # MOVED:' in stripped or
-                stripped.startswith('#  # MOVED:')):
-
+            if "#  # MOVED:" in line or "#  # MOVED:" in stripped or stripped.startswith("#  # MOVED:"):
                 # Remove this line and ALL subsequent indented lines
-                self.stats['all_migration_artifacts_removed'] += 1
+                self.stats["all_migration_artifacts_removed"] += 1
                 i += 1
 
                 # Skip all following indented lines
                 while i < len(lines):
                     next_line = lines[i]
-                    if next_line.strip() and not next_line.startswith(' ') and not next_line.startswith('\t'):
+                    if next_line.strip() and not next_line.startswith(" ") and not next_line.startswith("\t"):
                         break
                     i += 1
 
                 continue
 
             # Remove orphaned import content (lines that look like import content but aren't proper imports)
-            if (not stripped.startswith('#') and
-                not stripped.startswith(('from ', 'import ', 'def ', 'class ', '@', '"""', "'''", 'try:', 'except', 'finally:', 'if ', 'elif ', 'else:', 'for ', 'while ', 'with ', 'return ', 'yield ', 'raise ', 'break', 'continue', 'pass', 'global', 'nonlocal')) and
-                (any(keyword in stripped for keyword in ['_emit_', 'MAX_', 'BATCH_', 'BUFFER_', 'DEFAULT_', 'MAX_', 'RETRIES_', 'THRESHOLD']) or
-                 re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*,?\s*$', stripped) or
-                 re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*\s*#.*$', stripped))):
-
+            if (
+                not stripped.startswith("#")
+                and not stripped.startswith(
+                    (
+                        "from ",
+                        "import ",
+                        "def ",
+                        "class ",
+                        "@",
+                        '"""',
+                        "'''",
+                        "try:",
+                        "except",
+                        "finally:",
+                        "if ",
+                        "elif ",
+                        "else:",
+                        "for ",
+                        "while ",
+                        "with ",
+                        "return ",
+                        "yield ",
+                        "raise ",
+                        "break",
+                        "continue",
+                        "pass",
+                        "global",
+                        "nonlocal",
+                    )
+                )
+                and (
+                    any(
+                        keyword in stripped
+                        for keyword in [
+                            "_emit_",
+                            "MAX_",
+                            "BATCH_",
+                            "BUFFER_",
+                            "DEFAULT_",
+                            "MAX_",
+                            "RETRIES_",
+                            "THRESHOLD",
+                        ]
+                    )
+                    or re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*,?\s*$", stripped)
+                    or re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*\s*#.*$", stripped)
+                )
+            ):
                 # This looks like orphaned import content, remove it
                 i += 1
                 continue
 
             # Remove unmatched closing parentheses
-            if re.match(r'^\s*\)\s*$', line):
+            if re.match(r"^\s*\)\s*$", line):
                 i += 1
                 continue
 
@@ -137,13 +176,13 @@ class AggressiveSyntaxFixer:
                 cleaned_lines.append(line)
                 prev_empty = False
 
-        return '\n'.join(cleaned_lines)
+        return "\n".join(cleaned_lines)
 
     def print_summary(self):
         """Print fixing summary."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("AGGRESSIVE SYNTAX FIX SUMMARY")
-        print("="*60)
+        print("=" * 60)
         print(f"Total files checked: {self.stats['total_files']}")
         print(f"Files with errors fixed: {self.stats['files_with_errors']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
@@ -157,7 +196,7 @@ class AggressiveSyntaxFixer:
             if len(self.failed_files) > 10:
                 print(f"  ... and {len(self.failed_files) - 10} more")
 
-        print("="*60)
+        print("=" * 60)
 
 
 def main():
@@ -184,7 +223,7 @@ def main():
 
     for test_file in active_test_files:
         try:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
             ast.parse(content)
         except SyntaxError:
             syntax_errors += 1

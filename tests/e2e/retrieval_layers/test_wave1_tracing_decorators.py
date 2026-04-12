@@ -30,10 +30,12 @@ class MockTracingAgent:
                 yield span
             finally:
                 self._span_stack.pop()
-                self._trace_buffer.append({
-                    "operation_name": operation_name,
-                    "attributes": attributes,
-                })
+                self._trace_buffer.append(
+                    {
+                        "operation_name": operation_name,
+                        "attributes": attributes,
+                    }
+                )
 
         return span_context()
 
@@ -78,6 +80,7 @@ def test_trace_cognitive() -> bool:
     except Exception as e:
         print(f"✗ @trace_cognitive test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -104,6 +107,7 @@ def test_trace_action() -> bool:
     except Exception as e:
         print(f"✗ @trace_action test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -131,6 +135,7 @@ def test_trace_tool() -> bool:
     except Exception as e:
         print(f"✗ @trace_tool test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -158,6 +163,7 @@ def test_trace_orchestrator() -> bool:
     except Exception as e:
         print(f"✗ @trace_orchestrator test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -184,6 +190,7 @@ def test_trace_router() -> bool:
     except Exception as e:
         print(f"✗ @trace_router test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -207,6 +214,7 @@ def test_decorator_without_tracing() -> bool:
     except Exception as e:
         print(f"✗ Graceful degradation test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -236,6 +244,7 @@ def test_decorator_preserves_signature() -> bool:
     except Exception as e:
         print(f"✗ Signature preservation test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -265,6 +274,7 @@ def main() -> int:
         except Exception as e:
             print(f"✗ Test crashed: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((name, False))
 

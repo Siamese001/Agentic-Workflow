@@ -16,14 +16,17 @@ class TestNormalizer:
     def test_normalizer_imports(self):
         """Test normalizer module imports."""
         from agentic_core import normalizer
+
         assert normalizer is not None
 
     def test_normalizer_class(self):
         """Test Normalizer class exists."""
         from agentic_core import Normalizer
+
         assert Normalizer is not None
 
     def test_normalizer_callable(self):
         """Test normalizer functions are callable."""
         from agentic_core import validate_normalizer
+
         assert callable(validate_normalizer)

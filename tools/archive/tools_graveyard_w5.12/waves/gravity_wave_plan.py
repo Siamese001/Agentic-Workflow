@@ -29,7 +29,6 @@ VIOLATIONS = {
     "L0->L_TOOLS": [
         "agentic_core/L0_routing/artifacts/execution_trace_artifact.py:234",
     ],
-
     # L1 (Cognition) violations - 2 total
     "L1->L2": [
         "agentic_core/L1_cognition/engines/cognitive_engine.py:93",
@@ -37,12 +36,10 @@ VIOLATIONS = {
     "L1->L6": [
         "agentic_core/L1_cognition/enforcement/reasoning_chokepoint.py:62",
     ],
-
     # L5 (Safety) violations - 1 total
     "L5->L_TOOLS": [
         "agentic_core/L5_safety/hitl/review_queue_api.py:32",
     ],
-
     # L6 (Observability) violations - 2 total
     "L6->L_SL": [
         "agentic_core/L6_observability/engines/desk_d_governed_board.py:74",
@@ -50,7 +47,6 @@ VIOLATIONS = {
     "L6->L_TOOLS": [
         "agentic_core/L6_observability/mcp_drift_store.py:32",
     ],
-
     # L_SHARED violations - 3 total
     "L_SHARED->L3": [
         "agentic_core/mixins/adaptive_execution_mixin.py:81",
@@ -61,7 +57,6 @@ VIOLATIONS = {
     "L_SHARED->L_SL": [
         "agentic_core/mixins/integrated_tracing_mixin.py:37",
     ],
-
     # L_SL (System Learning) violations - 4 total
     "L_SL->L3": [
         "system_learning/adapters/workflow_outcome_sl_adapter.py:10",
@@ -75,7 +70,6 @@ VIOLATIONS = {
     "L_SL->L_RUNTIME": [
         "system_learning/engines/enhanced_rag_retrieval_cache.py:55",
     ],
-
     # L_TOOLS violations - 1 total
     "L_TOOLS->L_RUNTIME": [
         "agentic_core/adg/schema_util.py:24",
@@ -85,11 +79,20 @@ VIOLATIONS = {
 WAVE_PLAN = {
     "Wave 1 - L0->L2 (Critical)": VIOLATIONS["L0->L2"],
     "Wave 2 - L0->L3/L_PG (Critical)": VIOLATIONS["L0->L3"] + VIOLATIONS["L0->L_PG"],
-    "Wave 3 - L0->L_RUNTIME/L_SL/L_TOOLS": VIOLATIONS["L0->L_RUNTIME"] + VIOLATIONS["L0->L_SL"] + VIOLATIONS["L0->L_TOOLS"],
+    "Wave 3 - L0->L_RUNTIME/L_SL/L_TOOLS": VIOLATIONS["L0->L_RUNTIME"]
+    + VIOLATIONS["L0->L_SL"]
+    + VIOLATIONS["L0->L_TOOLS"],
     "Wave 4 - L1 Violations": VIOLATIONS["L1->L2"] + VIOLATIONS["L1->L6"],
-    "Wave 5 - L5/L6 Violations": VIOLATIONS["L5->L_TOOLS"] + VIOLATIONS["L6->L_SL"] + VIOLATIONS["L6->L_TOOLS"],
-    "Wave 6 - L_SHARED Violations": VIOLATIONS["L_SHARED->L3"] + VIOLATIONS["L_SHARED->L_PG"] + VIOLATIONS["L_SHARED->L_SL"],
-    "Wave 7 - L_SL Violations": VIOLATIONS["L_SL->L3"] + VIOLATIONS["L_SL->L4"] + VIOLATIONS["L_SL->L_APP"] + VIOLATIONS["L_SL->L_RUNTIME"],
+    "Wave 5 - L5/L6 Violations": VIOLATIONS["L5->L_TOOLS"]
+    + VIOLATIONS["L6->L_SL"]
+    + VIOLATIONS["L6->L_TOOLS"],
+    "Wave 6 - L_SHARED Violations": VIOLATIONS["L_SHARED->L3"]
+    + VIOLATIONS["L_SHARED->L_PG"]
+    + VIOLATIONS["L_SHARED->L_SL"],
+    "Wave 7 - L_SL Violations": VIOLATIONS["L_SL->L3"]
+    + VIOLATIONS["L_SL->L4"]
+    + VIOLATIONS["L_SL->L_APP"]
+    + VIOLATIONS["L_SL->L_RUNTIME"],
     "Wave 8 - L_TOOLS Violations": VIOLATIONS["L_TOOLS->L_RUNTIME"],
 }
 

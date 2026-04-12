@@ -408,7 +408,10 @@ class SignalEnvelope(GenericModel, Generic[T]):
             logger.debug(f"Stage {stage_name} already completed for envelope {self.id}")
             return
         result = StageResult(
-            stage_name=stage_name, status=PipelineStageStatus.PENDING, duration_ms=0.0, output_hash="",
+            stage_name=stage_name,
+            status=PipelineStageStatus.PENDING,
+            duration_ms=0.0,
+            output_hash="",
         )
         self.history.append(result)
         self._touch()
@@ -453,7 +456,11 @@ class SignalEnvelope(GenericModel, Generic[T]):
         self._touch()
 
     def mark_stage_failed(
-        self, stage_name: str, error_message: str, duration_ms: float = 0.0, retry_count: int = 0,
+        self,
+        stage_name: str,
+        error_message: str,
+        duration_ms: float = 0.0,
+        retry_count: int = 0,
     ) -> None:
         """Mark a stage as failed.
 
@@ -465,7 +472,11 @@ class SignalEnvelope(GenericModel, Generic[T]):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PipelineExecution.mark_stage_failed:{stage_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"PipelineExecution.mark_stage_failed:{stage_name}",
+        )
         for i, result in enumerate(self.history):
             if result.stage_name == stage_name:
                 self.history[i] = StageResult(
@@ -636,7 +647,9 @@ class SignalEnvelope(GenericModel, Generic[T]):
 
     @classmethod
     def from_legacy_dict(
-        cls, data: dict[str, Any], metadata: dict[str, str] | None = None,
+        cls,
+        data: dict[str, Any],
+        metadata: dict[str, str] | None = None,
     ) -> "SignalEnvelope":
         """Create envelope from legacy dict format for backward compatibility.
 

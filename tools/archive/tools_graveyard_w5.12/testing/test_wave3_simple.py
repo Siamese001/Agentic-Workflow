@@ -25,7 +25,7 @@ def test_wave3_ingestion_scripts():
             cwd=Path(__file__).parent,
             capture_output=True,
             text=True,
-            encoding='utf-8',
+            encoding="utf-8",
         )
 
         if result.returncode == 0:
@@ -43,7 +43,7 @@ def test_wave3_ingestion_scripts():
             cwd=Path(__file__).parent,
             capture_output=True,
             text=True,
-            encoding='utf-8',
+            encoding="utf-8",
         )
 
         if result.returncode == 0:

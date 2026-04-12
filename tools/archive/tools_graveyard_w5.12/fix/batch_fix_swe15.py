@@ -4,7 +4,6 @@ Batch fix tool optimized for SWE 1.5 128K context window.
 Processes files in waves of 200 with parallel operations.
 """
 
-
 # Standard placeholder template
 PLACEHOLDER_TEMPLATE = '''import pytest
 
@@ -35,8 +34,5 @@ class Test{class_name}:
 '''
 
 
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

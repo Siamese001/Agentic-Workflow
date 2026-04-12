@@ -278,10 +278,10 @@ def detect_test_gaps(
         if edge.relation_type == "covers":
             to_name = edge.to_name
             if to_name.startswith(_MODULE_PREFIX):
-                covered.add(to_name[len(_MODULE_PREFIX):])
+                covered.add(to_name[len(_MODULE_PREFIX) :])
             elif to_name.startswith(_SYMBOL_PREFIX):
                 # ADG::Symbol::a.b.c  ->  a/b/c.py  or  a/b/c/__init__.py
-                sym = to_name[len(_SYMBOL_PREFIX):]
+                sym = to_name[len(_SYMBOL_PREFIX) :]
                 parts = sym.split(".")
                 for n in range(len(parts), 0, -1):
                     prefix = "/".join(parts[:n])

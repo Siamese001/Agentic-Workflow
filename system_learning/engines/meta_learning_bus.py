@@ -475,7 +475,9 @@ class MetaLearningBus:
 
         _trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningBus.process_traces",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "MetaLearningBus.process_traces",
         )
         adg_relations: list[tuple[str, str, str]] = []
 
@@ -532,7 +534,10 @@ class MetaLearningBus:
 
         # Stage 6 — Validation
         validation_results, commits, rejected_validation = self._stage_validate_and_commit(
-            proposals_scored, clusters, timestamp_utc, adg_relations,
+            proposals_scored,
+            clusters,
+            timestamp_utc,
+            adg_relations,
         )
 
         all_rejected = rejected_low_reward + rejected_validation
@@ -734,7 +739,9 @@ class MetaLearningBus:
                 hitl_rates[proposal.proposal_id] = cluster.hitl_escalation_rate
 
         validation_results = self._validation_engine.validate_batch(
-            proposals, timestamp_utc, hitl_rates=hitl_rates,
+            proposals,
+            timestamp_utc,
+            hitl_rates=hitl_rates,
         )
 
         commits: list[OptimizationCommit] = []
@@ -856,7 +863,9 @@ class MetaLearningBus:
         """Persist ADG relations via the bridge (fail-open)."""
         if self._bridge is None:
             return
-        for from_entity, relation_type, to_entity in tqdm(relations, desc="emit relations", unit="rel", leave=False):
+        for from_entity, relation_type, to_entity in tqdm(
+            relations, desc="emit relations", unit="rel", leave=False
+        ):
             try:
                 self._bridge.create_relation(
                     from_entity=from_entity,

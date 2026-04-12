@@ -16,14 +16,17 @@ class TestFewshotregistrystrategy:
     def test_FewshotregistryStrategy_imports(self):
         """Test FewshotregistryStrategy module imports."""
         from agentic_core import FewshotregistryStrategy
+
         assert FewshotregistryStrategy is not None
 
     def test_FewshotregistryStrategy_class(self):
         """Test Fewshotregistrystrategy class exists."""
         from agentic_core import Fewshotregistrystrategy
+
         assert Fewshotregistrystrategy is not None
 
     def test_FewshotregistryStrategy_callable(self):
         """Test FewshotregistryStrategy functions are callable."""
         from agentic_core import validate_FewshotregistryStrategy
+
         assert callable(validate_FewshotregistryStrategy)

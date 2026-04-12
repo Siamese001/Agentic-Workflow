@@ -262,6 +262,7 @@ class DefaultRuleBasedGate:
             APPROVE or REJECT.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRuleBasedGate.decide")
 
@@ -324,8 +325,11 @@ class DefaultRiskClassifier:
             Risk tier (0-4).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRiskClassifier.classify")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultRiskClassifier.classify"
+        )
 
         num_surfaces = getattr(pkg, "num_surfaces", 1)
         max_delta = getattr(pkg, "max_delta", 0.0)

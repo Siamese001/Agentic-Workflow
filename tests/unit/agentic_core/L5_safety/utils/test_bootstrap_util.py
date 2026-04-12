@@ -29,7 +29,7 @@ class TestVerifyRedisConnection:
         """Test that ImportError returns False."""
         from agentic_core.L5_safety.utils.bootstrap_util import verify_redis_connection
 
-        with patch.dict('sys.modules', {'agentic_core.L4_state.caching.redis_adapter': None}):
+        with patch.dict("sys.modules", {"agentic_core.L4_state.caching.redis_adapter": None}):
             result = verify_redis_connection()
             assert result is False
 
@@ -111,10 +111,10 @@ class TestRunBootstrap:
         result = run_bootstrap(tmp_path)
 
         assert isinstance(result, BootstrapResult)
-        assert hasattr(result, 'status')
-        assert hasattr(result, 'redis_connected')
-        assert hasattr(result, 'critical_files_present')
-        assert hasattr(result, 'critical_files_missing')
+        assert hasattr(result, "status")
+        assert hasattr(result, "redis_connected")
+        assert hasattr(result, "critical_files_present")
+        assert hasattr(result, "critical_files_missing")
 
 
 class TestHealBootstrapIssues:

@@ -16,14 +16,17 @@ class TestSovereignactionplaneagentAdg:
     def test_SovereignActionPlaneAgent_adg_imports(self):
         """Test SovereignActionPlaneAgent_adg module imports."""
         from agentic_core import SovereignActionPlaneAgent_adg
+
         assert SovereignActionPlaneAgent_adg is not None
 
     def test_SovereignActionPlaneAgent_adg_class(self):
         """Test SovereignactionplaneagentAdg class exists."""
         from agentic_core import SovereignactionplaneagentAdg
+
         assert SovereignactionplaneagentAdg is not None
 
     def test_SovereignActionPlaneAgent_adg_callable(self):
         """Test SovereignActionPlaneAgent_adg functions are callable."""
         from agentic_core import validate_SovereignActionPlaneAgent_adg
+
         assert callable(validate_SovereignActionPlaneAgent_adg)

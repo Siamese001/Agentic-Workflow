@@ -35,8 +35,7 @@ class TestObservabilityStack:
             data = response.json()
             # Should have at least some active targets
             active_targets = [
-                t for t in data.get("data", {}).get("activeTargets", [])
-                if t.get("health") == "up"
+                t for t in data.get("data", {}).get("activeTargets", []) if t.get("health") == "up"
             ]
             assert len(active_targets) > 0, "No active Prometheus targets"
         except requests.ConnectionError:

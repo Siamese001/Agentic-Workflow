@@ -7,6 +7,7 @@ Classifies every production module by whether it is covered by:
   - Neither
 Also produces fan_in threshold analysis.
 """
+
 from __future__ import annotations
 
 import json
@@ -202,18 +203,23 @@ def is_prod(p: str) -> bool:
 def adg_to_dotted(name: str) -> str:
     for pfx in ("ADG::Symbol::", "ADG::Module::", "Symbol::", "Module::"):
         if name.startswith(pfx):
-            name = name[len(pfx):]
+            name = name[len(pfx) :]
     return name.removesuffix(".py")
 
 
 def layer_from(path: str) -> str:
     p = path.replace("\\", "/")
     for prefix, label in [
-        ("agentic_core/L0", "L0"), ("agentic_core/L1", "L1"),
-        ("agentic_core/L2", "L2"), ("agentic_core/L3", "L3"),
-        ("agentic_core/L4", "L4"), ("agentic_core/L5", "L5"),
-        ("agentic_core/L6", "L6"), ("apps_rg", "L_APP"),
-        ("apps_shared", "L_SHARED"), ("system_learning", "L_SL"),
+        ("agentic_core/L0", "L0"),
+        ("agentic_core/L1", "L1"),
+        ("agentic_core/L2", "L2"),
+        ("agentic_core/L3", "L3"),
+        ("agentic_core/L4", "L4"),
+        ("agentic_core/L5", "L5"),
+        ("agentic_core/L6", "L6"),
+        ("apps_rg", "L_APP"),
+        ("apps_shared", "L_SHARED"),
+        ("system_learning", "L_SL"),
         ("agentic_core/runtime", "L_RUNTIME"),
         ("agentic_core/enforcement", "L_ENF"),
         ("agentic_core/utils", "L_UTILS"),
@@ -306,7 +312,9 @@ print()
 print("=== FAN_IN THRESHOLD ANALYSIS ===")
 print(f"  Modules with fan_in>0 : {len(fan_in)}")
 print()
-print(f"  {'thresh':>8}  {'#above':>8}  {'adg_only':>9}  {'found':>7}  {'both':>6}  {'gap_needing_found':>18}")
+print(
+    f"  {'thresh':>8}  {'#above':>8}  {'adg_only':>9}  {'found':>7}  {'both':>6}  {'gap_needing_found':>18}"
+)
 total = len(prod_set)
 for t in [1, 2, 3, 5, 10, 20]:
     above = [p for p in prod_set if fan_in.get(p, 0) >= t]
@@ -347,8 +355,7 @@ out = {
         "neither": len(neither),
     },
     "top_adg_only_high_fanin": [
-        {"module": p, "fan_in": fan_in.get(p, 0), "layer": layer_from(p)}
-        for p in top_gap
+        {"module": p, "fan_in": fan_in.get(p, 0), "layer": layer_from(p)} for p in top_gap
     ],
     "true_overlap_both": [
         {
@@ -359,13 +366,17 @@ out = {
         }
         for p in top_both
     ],
-    "neither": [
-        {"module": p, "fan_in": fan_in.get(p, 0)} for p in neither
-    ],
+    "neither": [{"module": p, "fan_in": fan_in.get(p, 0)} for p in neither],
     "fan_in_threshold": {
         str(t): {
             "modules_above": len([p for p in prod_set if fan_in.get(p, 0) >= t]),
-            "adg_only_gap": len([p for p in prod_set if fan_in.get(p, 0) >= t and covered_by_adg[p] and not covered_by_foundational[p]]),
+            "adg_only_gap": len(
+                [
+                    p
+                    for p in prod_set
+                    if fan_in.get(p, 0) >= t and covered_by_adg[p] and not covered_by_foundational[p]
+                ]
+            ),
         }
         for t in [1, 2, 3, 5, 10, 20]
     },

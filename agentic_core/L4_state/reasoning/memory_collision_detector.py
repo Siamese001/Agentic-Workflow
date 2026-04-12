@@ -222,7 +222,9 @@ class MemoryCollisionDetector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "MemoryCollisionDetector.acquire_locks",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "MemoryCollisionDetector.acquire_locks",
         )
 
         try:

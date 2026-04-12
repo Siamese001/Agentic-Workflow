@@ -1,6 +1,7 @@
 """
 AP Aging Parser - Parses accounts payable aging schedules.
 """
+
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import List, Optional
 @dataclass
 class APBucket:
     """Single AP aging bucket."""
+
     bucket_name: str
     amount: Optional[float] = None
 
@@ -17,6 +19,7 @@ class APBucket:
 @dataclass
 class ParsedAPAging:
     """Result of parsing AP aging schedule."""
+
     buckets: List[APBucket] = field(default_factory=list)
     total_ap: Optional[float] = None
     days_payable_outstanding: Optional[int] = None
@@ -55,17 +58,17 @@ class APAgingParser:
         buckets = []
 
         bucket_patterns = [
-            (r'(?:Current|0-30)[\s:]*[$]?([\d,\.]+)', 'Current'),
-            (r'(?:31-60|31\s*-\s*60)[\s:]*[$]?([\d,\.]+)', '31-60'),
-            (r'(?:61-90|61\s*-\s*90)[\s:]*[$]?([\d,\.]+)', '61-90'),
-            (r'(?:90\+|Over\s*90)[\s:]*[$]?([\d,\.]+)', '90+'),
+            (r"(?:Current|0-30)[\s:]*[$]?([\d,\.]+)", "Current"),
+            (r"(?:31-60|31\s*-\s*60)[\s:]*[$]?([\d,\.]+)", "31-60"),
+            (r"(?:61-90|61\s*-\s*90)[\s:]*[$]?([\d,\.]+)", "61-90"),
+            (r"(?:90\+|Over\s*90)[\s:]*[$]?([\d,\.]+)", "90+"),
         ]
 
         for pattern, bucket_name in bucket_patterns:
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
                 try:
-                    amount = float(match.group(1).replace(',', ''))
+                    amount = float(match.group(1).replace(",", ""))
                     buckets.append(APBucket(bucket_name=bucket_name, amount=amount))
                 except ValueError:
                     continue
@@ -75,14 +78,14 @@ class APAgingParser:
     def _extract_total_ap(self, text: str) -> Optional[float]:
         """Extract total AP."""
         patterns = [
-            r'(?:Total Accounts Payable|Total A/P|Grand Total)[\s:]*[$]?([\d,\.]+)',
+            r"(?:Total Accounts Payable|Total A/P|Grand Total)[\s:]*[$]?([\d,\.]+)",
         ]
 
         for pattern in patterns:
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
                 try:
-                    return float(match.group(1).replace(',', ''))
+                    return float(match.group(1).replace(",", ""))
                 except ValueError:
                     continue
         return None

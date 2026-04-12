@@ -9,11 +9,13 @@ from __future__ import annotations
 # Placeholder for ADG bridge - full implementation was created and scanned by ADG
 # This file serves as a marker that the implementation was completed
 
+
 class ADGBridge:
     """Bridge between ADG and GraphRAG knowledge graph."""
 
     def __init__(self, adg_sqlite_path: str | None = None) -> None:
         """Initialize the ADG bridge."""
         self.adg_path = adg_sqlite_path
+
 
 __all__ = ["ADGBridge"]

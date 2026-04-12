@@ -1,4 +1,5 @@
 """Redis Cache — Optional read-through accelerator, non-authoritative."""
+
 import logging
 from typing import Any
 
@@ -84,8 +85,7 @@ class RedisCache:
         except Exception as e:
             logger.debug(f"Redis set_node failed: {e}")
 
-    def get_edge_fanout(self, src_id: str, relation_type: str,
-                        adg_snapshot_id: str) -> list[ADGEdge] | None:
+    def get_edge_fanout(self, src_id: str, relation_type: str, adg_snapshot_id: str) -> list[ADGEdge] | None:
         """Try Redis for edges. Returns None on cache miss, empty list if no edges exist."""
         if not self._available:
             return None
@@ -114,8 +114,9 @@ class RedisCache:
 
         return None
 
-    def set_edge_fanout(self, src_id: str, relation_type: str,
-                       edges: list[ADGEdge], adg_snapshot_id: str) -> None:
+    def set_edge_fanout(
+        self, src_id: str, relation_type: str, edges: list[ADGEdge], adg_snapshot_id: str
+    ) -> None:
         """Cache edges in Redis."""
         if not self._available:
             return

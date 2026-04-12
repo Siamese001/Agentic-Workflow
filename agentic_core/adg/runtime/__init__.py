@@ -1,4 +1,5 @@
 """ADG Runtime package — indexed query engine, cache loader, and runtime graph infrastructure."""
+
 from pathlib import Path
 
 from agentic_core.adg.runtime.antipattern_registry import (

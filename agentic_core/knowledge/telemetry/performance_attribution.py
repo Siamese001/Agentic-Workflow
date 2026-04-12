@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for a query type."""
+
     query_count: int = 0
     total_latency_ms: float = 0.0
     success_count: int = 0
@@ -49,6 +50,7 @@ class PerformanceMetrics:
 @dataclass
 class PerformanceReport:
     """Performance report."""
+
     timestamp: float = field(default_factory=time.time)
     overall_metrics: PerformanceMetrics = field(default_factory=PerformanceMetrics)
     by_intent: dict[str, PerformanceMetrics] = field(default_factory=dict)
@@ -91,12 +93,14 @@ class PerformanceAttribution:
         """
         trace_id = f"perf_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "PerformanceAttribution.record_query",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "PerformanceAttribution.record_query",
         )
 
-        intent = getattr(tags, 'intent', 'unknown')
-        domain = getattr(tags, 'domain', 'general')
-        complexity = getattr(tags, 'complexity', 'medium')
+        intent = getattr(tags, "intent", "unknown")
+        domain = getattr(tags, "domain", "general")
+        complexity = getattr(tags, "complexity", "medium")
 
         # Update intent metrics
         self._by_intent[intent].query_count += 1

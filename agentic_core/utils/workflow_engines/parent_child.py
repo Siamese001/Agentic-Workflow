@@ -197,8 +197,11 @@ class ParentChildRegistry:
     def register_chunk(self, entry: ChunkEntry, parent_content: str = "") -> None:
         """Register a chunk entry and its parent section content."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ParentChildRegistry.register_chunk")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ParentChildRegistry.register_chunk"
+        )
 
         self._chunks[entry.chunk_id] = entry
         if entry.parent_section_id and parent_content:
@@ -233,6 +236,7 @@ class ParentChildExpander(IParentChildExpander):
     def expand(self, child: Document, neighbor_window: int = 1) -> GroundedDocument:
         """Expand child chunk to include parent section and sibling context."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ParentChildExpander.expand")
 

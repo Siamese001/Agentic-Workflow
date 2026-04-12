@@ -52,10 +52,7 @@ class FixMissingTypingRule(BaseRepairRule):
 
     def match(self, deficiency: Deficiency) -> bool:
         """Check if this rule applies."""
-        return (
-            deficiency.category == FixCategory.AUTO_FIX
-            and deficiency.issue_type in self.HANDLED_ISSUES
-        )
+        return deficiency.category == FixCategory.AUTO_FIX and deficiency.issue_type in self.HANDLED_ISSUES
 
     def can_fix(self, deficiency: Deficiency) -> tuple[bool, str]:
         """Determine if fix can be applied."""
@@ -171,7 +168,8 @@ class FixMissingTypingRule(BaseRepairRule):
             return False
 
     def _find_functions_missing_types(
-        self, tree: ast.AST,
+        self,
+        tree: ast.AST,
     ) -> list[tuple[ast.FunctionDef, bool, bool]]:
         """Find functions missing type annotations.
 

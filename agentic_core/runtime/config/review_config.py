@@ -12,6 +12,7 @@ from typing import Any
 
 # Configuration constants
 
+
 class ReviewStatus(Enum):
     """Status of a review request."""
 

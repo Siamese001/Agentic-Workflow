@@ -17,8 +17,6 @@ from .optimized_vllm_client import (
     get_vllm_client,
 )
 
-# Backward compatibility re-exports
-from .qwen_inference_worker import AppsQwenInferenceWorker, QwenInferenceWorker
 
 __all__ = [
     "OptimizedVLLMClient",
@@ -33,7 +31,4 @@ __all__ = [
     "CircuitState",
     "RetryConfig",
     "HardeningMetrics",
-    "QwenInferenceWorker",
-    # Backward compatibility
-    "AppsQwenInferenceWorker",
 ]

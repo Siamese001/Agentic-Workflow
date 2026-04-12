@@ -309,7 +309,9 @@ class ResumeSectionNode:
         }
 
     def __call__(
-        self, job_description: str, additional_context: dict[str, Any] = None,
+        self,
+        job_description: str,
+        additional_context: dict[str, Any] = None,
     ) -> ResumeSectionOutput:
         """
         Executes resume section analysis using functor pattern.
@@ -337,7 +339,9 @@ class ResumeSectionNode:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeSectionAnalyzer.analyze_resume_sections")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumeSectionAnalyzer.analyze_resume_sections"
+        )
         logger.info("Analyzing resume sections from job description")
         role_result = self._extract_role(job_description)
         logger.info(f"Role extracted: {role_result.role} (confidence: {role_result.confidence:.2f})")
@@ -490,7 +494,9 @@ class ResumeSectionNode:
         role_data = self.extract_role_data(profile)
         bullet_out = self.two_phase_node.generate_bullets_phase_a(thematic_output, role_data)
         overview_out = self.two_phase_node.synthesize_overview_phase_b(
-            bullet_out, thematic_output, target_section="resume_overview",
+            bullet_out,
+            thematic_output,
+            target_section="resume_overview",
         )
         return {
             "bullets": bullet_out.bullets,
@@ -526,7 +532,9 @@ class ResumeSectionNode:
         return self.section_templates.get(industry_key, self.section_templates["default"])
 
     def validate_section_completeness(
-        self, sections: list[str], required_sections: list[str],
+        self,
+        sections: list[str],
+        required_sections: list[str],
     ) -> dict[str, Any]:
         """Validate if all required sections are present.
 

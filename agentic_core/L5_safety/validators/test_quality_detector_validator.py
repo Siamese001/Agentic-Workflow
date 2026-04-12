@@ -473,7 +473,9 @@ class TestQualityDetector(AntiPatternDetector):
 
     def detect(self, file_path: Path, tree: ast.Module) -> list[AntiPatternViolation]:
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"TestQualityDetector.detect:{file_path.name}",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            f"TestQualityDetector.detect:{file_path.name}",
         )
         violations: list[AntiPatternViolation] = []
 

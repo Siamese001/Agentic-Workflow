@@ -204,7 +204,9 @@ class RAGChangePackage:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RAGChangePackage.canonical_bytes",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "RAGChangePackage.canonical_bytes",
         )
 
         # Canonical concatenation with delimiter

@@ -217,6 +217,7 @@ class OfflineEvaluationRunner:
             EvaluationReport with per-example results and aggregate scores
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OfflineEvaluationRunner.run")
 
@@ -321,7 +322,11 @@ class OfflineEvaluationRunner:
             logging.getLogger(__name__).warning(
                 f"Failed to store evaluation snapshot {report.run_id[:8]}: {e}",
             )
-        except (OSError, RuntimeError, MemoryError) as e:    # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
+        except (
+            OSError,
+            RuntimeError,
+            MemoryError,
+        ) as e:  # guardian: Multiple exceptions (OSError, RuntimeError) need specific handling
             # Critical storage errors - log and continue
             logging.getLogger(__name__).error(
                 f"Critical error storing evaluation snapshot {report.run_id[:8]}: {e}",

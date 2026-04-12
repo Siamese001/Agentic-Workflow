@@ -220,7 +220,9 @@ class MathematicalDeterminismEngine:
             if metadata and (not self._is_deterministic_metadata(metadata)):
                 raise ValueError(f"Artifact '{name}' metadata contains nondeterministic fields")
             self._artifacts[name] = DeterministicArtifact(
-                name=name, hash_value=hash_value, metadata=metadata or {},
+                name=name,
+                hash_value=hash_value,
+                metadata=metadata or {},
             )
 
     def seal(self) -> DeterminismProof:
@@ -262,8 +264,11 @@ class MathematicalDeterminismEngine:
         run_id and creation_timestamp are intentionally excluded.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MathematicalDeterminismEngine.verify_replay")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MathematicalDeterminismEngine.verify_replay"
+        )
 
         if not self._sealed:
             raise RuntimeError("Engine must be sealed before verification")

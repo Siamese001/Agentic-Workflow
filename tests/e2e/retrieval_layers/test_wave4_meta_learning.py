@@ -12,16 +12,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
-
 def test_meta_learning_bridge_imports() -> bool:
     """Test that L6MetaLearningBridge can be imported."""
     try:
-
         print("✓ L6MetaLearningBridge imports successfully")
         return True
     except Exception as e:
         print(f"✗ Import failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -63,6 +62,7 @@ def test_meta_learning_record() -> bool:
     except Exception as e:
         print(f"✗ MetaLearningRecord test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -96,6 +96,7 @@ def test_bridge_initialization() -> bool:
     except Exception as e:
         print(f"✗ Bridge initialization failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -156,6 +157,7 @@ def test_store_snapshot_with_linkage() -> bool:
     except Exception as e:
         print(f"✗ Store snapshot test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -209,6 +211,7 @@ def test_feed_meta_learning() -> bool:
     except Exception as e:
         print(f"✗ Feed meta-learning test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -263,6 +266,7 @@ def test_add_telemetry_event() -> bool:
     except Exception as e:
         print(f"✗ Add telemetry test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -319,6 +323,7 @@ def test_add_eval_result() -> bool:
     except Exception as e:
         print(f"✗ Add eval result test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -367,6 +372,7 @@ def test_get_record_stats() -> bool:
     except Exception as e:
         print(f"✗ Get stats test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -421,6 +427,7 @@ def test_persistence() -> bool:
     except Exception as e:
         print(f"✗ Persistence test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -452,6 +459,7 @@ def main() -> int:
         except Exception as e:
             print(f"✗ Test crashed: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((name, False))
 

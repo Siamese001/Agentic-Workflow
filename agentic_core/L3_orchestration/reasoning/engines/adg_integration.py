@@ -421,7 +421,10 @@ class ADGQueryClient:
             graph_store = create_sqlite_graph_store_or_none()
             if graph_store is not None:
                 return self._analyze_impact_via_graph_store(
-                    graph_store, root_node_id, max_depth, relation_types,
+                    graph_store,
+                    root_node_id,
+                    max_depth,
+                    relation_types,
                 )
         except Exception as e:
             Logger.warning(f"Graph store impact analysis failed: {e}, using manual BFS")
@@ -503,7 +506,9 @@ class ADGQueryClient:
         """
         # Use graph store traverse for BFS
         paths = graph_store.traverse(
-            root_node_id, max_depth=max_depth, relation_types=relation_types,
+            root_node_id,
+            max_depth=max_depth,
+            relation_types=relation_types,
         )
 
         # Collect affected nodes and edges
@@ -552,8 +557,9 @@ class ADGQueryClient:
             elif isinstance(centrality, dict):
                 centrality_score = centrality.get("degree_centrality", 0.0)
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("adg_integration: Exception swallowed at L554: %s", e)
+            logging.getLogger(__name__).debug("adg_integration: Exception swallowed at L554: %s", e)
 
         root_node = self._get_node_info(root_node_id) or ADGNode(
             node_id=root_node_id,
@@ -596,7 +602,8 @@ class ADGQueryClient:
             graph_store = create_sqlite_graph_store_or_none()
             if graph_store is not None:
                 return self._detect_layer_violations_via_graph_store(
-                    graph_store, file_path,
+                    graph_store,
+                    file_path,
                 )
         except Exception as e:
             Logger.warning(f"Graph store layer violation detection failed: {e}, using manual SQL")
@@ -691,7 +698,8 @@ class ADGQueryClient:
         for node in nodes:
             # Get all outgoing relationships
             relationships = graph_store.get_relationships(
-                node.id, direction="outgoing",
+                node.id,
+                direction="outgoing",
             )
 
             for rel in relationships:

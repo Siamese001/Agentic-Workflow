@@ -334,8 +334,11 @@ class ObservabilityExecutionAdapter:
             handler: Handler function
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ObservabilityExecutionAdapter.register_handler")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ObservabilityExecutionAdapter.register_handler"
+        )
 
         self._operation_handlers[operation_type] = handler
         self.logger.info(f"Registered observability handler for {operation_type.value}")
@@ -358,7 +361,9 @@ class ObservabilityExecutionAdapter:
             handler = self._operation_handlers.get(request.operation_type)
             if not handler:
                 return self._create_error_result(
-                    request, f"No handler for operation type: {request.operation_type.value}", start_time,
+                    request,
+                    f"No handler for operation type: {request.operation_type.value}",
+                    start_time,
                 )
             result = self._execute_with_monitoring(handler, request, trace_id)
             result.execution_time = time.time() - start_time
@@ -436,7 +441,10 @@ class ObservabilityExecutionAdapter:
         return len(to_remove)
 
     def _execute_with_monitoring(
-        self, handler: Callable, request: ObservabilityRequest, trace_id: str | None,
+        self,
+        handler: Callable,
+        request: ObservabilityRequest,
+        trace_id: str | None,
     ) -> ObservabilityResult:
         """Execute operation with monitoring."""
         try:
@@ -496,7 +504,10 @@ class ObservabilityExecutionAdapter:
                 self._metrics_store[metric_name] = self._metrics_store[metric_name][-1000:]
 
     def _create_error_result(
-        self, request: ObservabilityRequest, error: str, start_time: float,
+        self,
+        request: ObservabilityRequest,
+        error: str,
+        start_time: float,
     ) -> ObservabilityResult:
         """Create error result."""
         return ObservabilityResult(
@@ -586,7 +597,10 @@ class ObservabilityExecutionAdapter:
 
 # guardian: allow-magic-config
 def create_observability_execution_adapter(
-    default_timeout: float = 10.0, enable_tracing: bool = True, enable_metrics: bool = True, **kwargs: object,
+    default_timeout: float = 10.0,
+    enable_tracing: bool = True,
+    enable_metrics: bool = True,
+    **kwargs: object,
 ) -> ObservabilityExecutionAdapter:
     """Create a configured observability execution adapter."""
     config = ObservabilityConfig(

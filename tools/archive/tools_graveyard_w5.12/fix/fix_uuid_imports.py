@@ -2,6 +2,7 @@
 
 Does NOT remove local imports - they're harmless. Just ensures module-level is present.
 """
+
 import ast
 import os
 import re
@@ -42,9 +43,13 @@ for scan_dir in SCAN_DIRS:
                 if line and line[0] not in (" ", "\t"):
                     if stripped.startswith("from __future__"):
                         insert_idx = i + 1
-                    elif stripped.startswith("import ") and not any(stripped.startswith("import " + pkg) for pkg in local_pkgs):
+                    elif stripped.startswith("import ") and not any(
+                        stripped.startswith("import " + pkg) for pkg in local_pkgs
+                    ):
                         insert_idx = i + 1
-                    elif stripped.startswith("from ") and not any(stripped.startswith("from " + pkg) for pkg in local_pkgs):
+                    elif stripped.startswith("from ") and not any(
+                        stripped.startswith("from " + pkg) for pkg in local_pkgs
+                    ):
                         insert_idx = i + 1
 
             if insert_idx == 0:

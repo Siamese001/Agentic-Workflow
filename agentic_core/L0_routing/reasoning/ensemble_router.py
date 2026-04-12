@@ -27,6 +27,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class RoutingPrediction:
     """Prediction from a single routing model"""
@@ -37,6 +38,7 @@ class RoutingPrediction:
     reasoning: str | None = None
     features_used: dict[str, float] | None = None
     model_metadata: dict[str, Any] | None = None
+
 
 @dataclass
 class EnsembleFeatures:
@@ -64,18 +66,21 @@ class EnsembleFeatures:
 
     def to_vector(self) -> np.ndarray:
         """Convert features to vector for meta-learner"""
-        return np.array([
-            self.mean_confidence,
-            self.std_confidence,
-            self.max_confidence,
-            self.min_confidence,
-            self.agent_agreement_score,
-            self.top_agent_consensus,
-            self.agent_diversity,
-            self.mean_uncertainty,
-            self.std_uncertainty,
-            self.uncertainty_correlation,
-        ])
+        return np.array(
+            [
+                self.mean_confidence,
+                self.std_confidence,
+                self.max_confidence,
+                self.min_confidence,
+                self.agent_agreement_score,
+                self.top_agent_consensus,
+                self.agent_diversity,
+                self.mean_uncertainty,
+                self.std_uncertainty,
+                self.uncertainty_correlation,
+            ]
+        )
+
 
 @dataclass
 class EnsembleDecision:
@@ -89,6 +94,7 @@ class EnsembleDecision:
     meta_confidence: float
     reasoning: str
     decision_time: float
+
 
 class BaseRoutingModel(ABC):
     """Abstract base class for routing models"""
@@ -115,6 +121,7 @@ class BaseRoutingModel(ABC):
         if self.prediction_count == 0:
             return 1.0
         return self.success_count / self.prediction_count
+
 
 class IntentEmbeddingModel(BaseRoutingModel):
     """Wrapper for existing IntentEmbeddingClassifier"""
@@ -148,7 +155,11 @@ class IntentEmbeddingModel(BaseRoutingModel):
                     features_used={"fallback": True},
                     model_metadata={"model_type": "embedding_fallback"},
                 )
-        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- embedding prediction error returns fallback
+        except (
+            ValueError,
+            TypeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-silent-swallow -- embedding prediction error returns fallback
             logger.error(f"IntentEmbeddingModel prediction error: {e}")
             return RoutingPrediction(
                 agent_name="error_fallback",
@@ -165,6 +176,7 @@ class IntentEmbeddingModel(BaseRoutingModel):
         if success:
             self.success_count += 1
             self.reliability_score = self.get_reliability()
+
 
 class RuleBasedModel(BaseRoutingModel):
     """Rule-based routing model"""
@@ -221,6 +233,7 @@ class RuleBasedModel(BaseRoutingModel):
             self.success_count += 1
             self.reliability_score = self.get_reliability()
 
+
 class MetaLearner:
     """Meta-learner for combining base model predictions"""
 
@@ -237,10 +250,14 @@ class MetaLearner:
         self.learning_rate = 0.01
         self.training_count = 0
 
-        _emit_stores_learning_state("meta_learner", "initialization", {
-            "input_dim": input_dim,
-            "hidden_dim": hidden_dim,
-        })
+        _emit_stores_learning_state(
+            "meta_learner",
+            "initialization",
+            {
+                "input_dim": input_dim,
+                "hidden_dim": hidden_dim,
+            },
+        )
 
     def forward(self, features: EnsembleFeatures) -> float:
         """Forward pass through meta-learner"""
@@ -282,12 +299,17 @@ class MetaLearner:
 
         self.training_count += 1
 
-        _emit_records_learning_event("meta_learner", "weight_update", {
-            "training_count": self.training_count,
-            "error": float(error),
-            "output": float(output),
-            "target": target,
-        })
+        _emit_records_learning_event(
+            "meta_learner",
+            "weight_update",
+            {
+                "training_count": self.training_count,
+                "error": float(error),
+                "output": float(output),
+                "target": target,
+            },
+        )
+
 
 class EnsembleRouter:
     """
@@ -324,21 +346,29 @@ class EnsembleRouter:
         self.model_weights: dict[str, float] = {}
         self._update_model_weights()
 
-        _emit_stores_learning_state("ensemble_router", "initialization", {
-            "base_models": len(self.base_models),
-            "ensemble_strategy": ensemble_strategy,
-        })
+        _emit_stores_learning_state(
+            "ensemble_router",
+            "initialization",
+            {
+                "base_models": len(self.base_models),
+                "ensemble_strategy": ensemble_strategy,
+            },
+        )
 
     def add_model(self, model: BaseRoutingModel):
         """Add a base model to the ensemble"""
         self.base_models.append(model)
         self._update_model_weights()
 
-        _emit_records_learning_event("ensemble_router", "model_added", {
-            "model_name": model.model_name,
-            "weight": model.weight,
-            "total_models": len(self.base_models),
-        })
+        _emit_records_learning_event(
+            "ensemble_router",
+            "model_added",
+            {
+                "model_name": model.model_name,
+                "weight": model.weight,
+                "total_models": len(self.base_models),
+            },
+        )
 
     def _update_model_weights(self):
         """Update model weights based on reliability"""
@@ -437,16 +467,22 @@ class EnsembleRouter:
             try:
                 prediction = model.predict(query, context)
                 base_predictions.append(prediction)
-            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow -- model prediction failure adds fallback
+            except (
+                ValueError,
+                TypeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-silent-swallow -- model prediction failure adds fallback
                 logger.error(f"Model {model.model_name} prediction failed: {e}")
                 # Add fallback prediction
-                base_predictions.append(RoutingPrediction(
-                    agent_name="error_fallback",
-                    confidence=0.1,
-                    uncertainty=0.9,
-                    reasoning=f"Model error: {str(e)}",
-                    model_metadata={"model_type": "error"},
-                ))
+                base_predictions.append(
+                    RoutingPrediction(
+                        agent_name="error_fallback",
+                        confidence=0.1,
+                        uncertainty=0.9,
+                        reasoning=f"Model error: {str(e)}",
+                        model_metadata={"model_type": "error"},
+                    )
+                )
 
         # Extract ensemble features
         ensemble_features = self._extract_ensemble_features(base_predictions)
@@ -491,18 +527,26 @@ class EnsembleRouter:
         self.prediction_count += 1
 
         # Emit trace events
-        _emit_records_execution_trace("ensemble_router", "routing_decision", {
-            "selected_agent": selected_agent,
-            "confidence": confidence,
-            "strategy": self.ensemble_strategy,
-            "models_used": len(base_predictions),
-        })
+        _emit_records_execution_trace(
+            "ensemble_router",
+            "routing_decision",
+            {
+                "selected_agent": selected_agent,
+                "confidence": confidence,
+                "strategy": self.ensemble_strategy,
+                "models_used": len(base_predictions),
+            },
+        )
 
-        _emit_dispatches_agent("ensemble_router", selected_agent, {
-            "confidence": confidence,
-            "uncertainty": ensemble_uncertainty,
-            "decision_time": decision.decision_time,
-        })
+        _emit_dispatches_agent(
+            "ensemble_router",
+            selected_agent,
+            {
+                "confidence": confidence,
+                "uncertainty": ensemble_uncertainty,
+                "decision_time": decision.decision_time,
+            },
+        )
 
         return decision
 
@@ -523,7 +567,9 @@ class EnsembleRouter:
 
         return top_agent, confidence
 
-    def _meta_learning_decision(self, predictions: list[RoutingPrediction], features: EnsembleFeatures) -> tuple[str, float]:
+    def _meta_learning_decision(
+        self, predictions: list[RoutingPrediction], features: EnsembleFeatures
+    ) -> tuple[str, float]:
         """Use meta-learner for final decision"""
         # Get meta-learner confidence
         meta_confidence = self.meta_learner.forward(features)
@@ -578,18 +624,26 @@ class EnsembleRouter:
         self._update_model_weights()
 
         # Emit learning events
-        _emit_records_learning_event("ensemble_router", "outcome_update", {
-            "success": success,
-            "selected_agent": decision.selected_agent,
-            "confidence": decision.confidence,
-            "success_rate": self.get_success_rate(),
-        })
+        _emit_records_learning_event(
+            "ensemble_router",
+            "outcome_update",
+            {
+                "success": success,
+                "selected_agent": decision.selected_agent,
+                "confidence": decision.confidence,
+                "success_rate": self.get_success_rate(),
+            },
+        )
 
-        _emit_feeds_meta_learning("ensemble_router", "feedback", {
-            "decision_features": decision.ensemble_features.to_vector().tolist()[:5],
-            "success": success,
-            "target": target,
-        })
+        _emit_feeds_meta_learning(
+            "ensemble_router",
+            "feedback",
+            {
+                "decision_features": decision.ensemble_features.to_vector().tolist()[:5],
+                "success": success,
+                "target": target,
+            },
+        )
 
     def get_success_rate(self) -> float:
         """Get current success rate"""
@@ -632,13 +686,18 @@ class EnsembleRouter:
             },
         }
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(state, f, indent=2)
 
-        _emit_stores_learning_state("ensemble_router", "state_saved", {
-            "filepath": filepath,
-            "success_rate": self.get_success_rate(),
-        })
+        _emit_stores_learning_state(
+            "ensemble_router",
+            "state_saved",
+            {
+                "filepath": filepath,
+                "success_rate": self.get_success_rate(),
+            },
+        )
+
 
 # Utility functions
 def create_default_ensemble(embedding_classifier) -> EnsembleRouter:
@@ -665,6 +724,7 @@ def create_default_ensemble(embedding_classifier) -> EnsembleRouter:
     )
 
     return ensemble
+
 
 __all__ = [
     "EnsembleRouter",

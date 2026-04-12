@@ -44,6 +44,7 @@ Logger = logging.getLogger(__name__)
 
 class AnomalyType(Enum):
     """Types of anomalies that can be detected."""
+
     STATISTICAL = "statistical"
     PERFORMANCE = "performance"
     BEHAVIORAL = "behavioral"
@@ -53,6 +54,7 @@ class AnomalyType(Enum):
 
 class ModelType(Enum):
     """Available ML model types."""
+
     ISOLATION_FOREST = "isolation_forest"
     Z_SCORE = "z_score"
     IQR = "iqr"
@@ -171,6 +173,7 @@ class MLAnomalyDetector:
         """Check if scikit-learn is available."""
         try:
             import sklearn
+
             Logger.info("[ML_DETECTOR] scikit-learn available for advanced ML")
             return True
         except ImportError:
@@ -194,7 +197,9 @@ class MLAnomalyDetector:
             # Initialize statistical models (always available)
             self._models["z_score"] = {"threshold": self._model_config["z_score"]["threshold"]}
             self._models["iqr"] = {"factor": self._model_config["iqr"]["factor"]}
-            self._models["moving_average"] = {"window_size": self._model_config["moving_average"]["window_size"]}
+            self._models["moving_average"] = {
+                "window_size": self._model_config["moving_average"]["window_size"]
+            }
             self._models["exponential_smoothing"] = {
                 "alpha": self._model_config["exponential_smoothing"]["alpha"],
                 "beta": self._model_config["exponential_smoothing"]["beta"],
@@ -219,14 +224,19 @@ class MLAnomalyDetector:
         if timestamp is None:
             timestamp = time.time()
 
-        self._training_data[metric_name].append({
-            "value": value,
-            "timestamp": timestamp,
-        })
+        self._training_data[metric_name].append(
+            {
+                "value": value,
+                "timestamp": timestamp,
+            }
+        )
 
         # Check if we need to retrain models
         if len(self._training_data[metric_name]) >= self._detection_thresholds["min_samples_for_training"]:
-            if time.time() - self._last_training_time > self._detection_thresholds["retrain_interval_hours"] * 3600:
+            if (
+                time.time() - self._last_training_time
+                > self._detection_thresholds["retrain_interval_hours"] * 3600
+            ):
                 self._retrain_models(metric_name)
 
     def detect_anomalies(self, metrics_data: dict[str, float]) -> list[AnomalyDetection]:
@@ -262,7 +272,8 @@ class MLAnomalyDetector:
 
             # Filter by confidence threshold
             filtered_anomalies = [
-                anomaly for anomaly in metric_anomalies
+                anomaly
+                for anomaly in metric_anomalies
                 if anomaly.confidence >= self._detection_thresholds["confidence_threshold"]
             ]
 
@@ -276,7 +287,9 @@ class MLAnomalyDetector:
 
         return anomalies
 
-    def _detect_statistical_anomalies(self, metric_name: str, value: float, timestamp: float) -> list[AnomalyDetection]:
+    def _detect_statistical_anomalies(
+        self, metric_name: str, value: float, timestamp: float
+    ) -> list[AnomalyDetection]:
         """Detect anomalies using statistical methods."""
         anomalies = []
 
@@ -304,7 +317,9 @@ class MLAnomalyDetector:
 
         return anomalies
 
-    def _detect_z_score_anomaly(self, metric_name: str, value: float, values: list[float], timestamp: float) -> AnomalyDetection | None:
+    def _detect_z_score_anomaly(
+        self, metric_name: str, value: float, values: list[float], timestamp: float
+    ) -> AnomalyDetection | None:
         """Detect anomaly using Z-score method."""
         try:
             if len(values) < 2:
@@ -346,7 +361,9 @@ class MLAnomalyDetector:
 
         return None
 
-    def _detect_iqr_anomaly(self, metric_name: str, value: float, values: list[float], timestamp: float) -> AnomalyDetection | None:
+    def _detect_iqr_anomaly(
+        self, metric_name: str, value: float, values: list[float], timestamp: float
+    ) -> AnomalyDetection | None:
         """Detect anomaly using Interquartile Range method."""
         try:
             if len(values) < 4:
@@ -392,7 +409,9 @@ class MLAnomalyDetector:
 
         return None
 
-    def _detect_moving_average_anomaly(self, metric_name: str, value: float, values: list[float], timestamp: float) -> AnomalyDetection | None:
+    def _detect_moving_average_anomaly(
+        self, metric_name: str, value: float, values: list[float], timestamp: float
+    ) -> AnomalyDetection | None:
         """Detect anomaly using moving average method."""
         try:
             window_size = self._model_config["moving_average"]["window_size"]
@@ -426,7 +445,10 @@ class MLAnomalyDetector:
                     timestamp=timestamp,
                     metric_name=metric_name,
                     value=value,
-                    expected_range=(moving_avg - std_threshold * moving_std, moving_avg + std_threshold * moving_std),
+                    expected_range=(
+                        moving_avg - std_threshold * moving_std,
+                        moving_avg + std_threshold * moving_std,
+                    ),
                     description=f"Moving average anomaly: deviation {deviation:.2f} (threshold: {std_threshold})",
                     metadata={"moving_avg": moving_avg, "moving_std": moving_std, "deviation": deviation},
                 )
@@ -436,7 +458,9 @@ class MLAnomalyDetector:
 
         return None
 
-    def _detect_ml_anomalies(self, metric_name: str, value: float, timestamp: float) -> list[AnomalyDetection]:
+    def _detect_ml_anomalies(
+        self, metric_name: str, value: float, timestamp: float
+    ) -> list[AnomalyDetection]:
         """Detect anomalies using ML models."""
         anomalies = []
 
@@ -452,7 +476,9 @@ class MLAnomalyDetector:
 
         return anomalies
 
-    def _detect_isolation_forest_anomaly(self, metric_name: str, value: float, timestamp: float) -> AnomalyDetection | None:
+    def _detect_isolation_forest_anomaly(
+        self, metric_name: str, value: float, timestamp: float
+    ) -> AnomalyDetection | None:
         """Detect anomaly using Isolation Forest."""
         try:
             model = self._models["isolation_forest"]
@@ -466,7 +492,7 @@ class MLAnomalyDetector:
             values = np.array([[data["value"]] for data in historical_data])
 
             # Fit scaler if not already fitted
-            if not hasattr(scaler, 'mean_'):
+            if not hasattr(scaler, "mean_"):
                 scaler.fit(values)
 
             # Scale the current value
@@ -538,7 +564,9 @@ class MLAnomalyDetector:
 
         return None
 
-    def _predict_exponential_smoothing(self, metric_name: str, values: list[float], horizon_minutes: int) -> PredictionResult | None:
+    def _predict_exponential_smoothing(
+        self, metric_name: str, values: list[float], horizon_minutes: int
+    ) -> PredictionResult | None:
         """Predict using exponential smoothing."""
         try:
             alpha = self._model_config["exponential_smoothing"]["alpha"]
@@ -566,7 +594,9 @@ class MLAnomalyDetector:
 
             # Calculate confidence score
             if std_error > 0:
-                confidence_score = max(0.1, 1.0 - (std_error / abs(predicted_value)) if predicted_value != 0 else 0.5)
+                confidence_score = max(
+                    0.1, 1.0 - (std_error / abs(predicted_value)) if predicted_value != 0 else 0.5
+                )
             else:
                 confidence_score = 0.9
 
@@ -691,7 +721,7 @@ class MLAnomalyDetector:
                 "last_training_time": self._last_training_time,
             }
 
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 pickle.dump(model_data, f)
 
             Logger.info(f"[ML_DETECTOR] Models saved to {filepath}")
@@ -704,7 +734,7 @@ class MLAnomalyDetector:
     def load_models(self, filepath: str) -> bool:
         """Load trained models from file."""
         try:
-            with open(filepath, 'rb') as f:
+            with open(filepath, "rb") as f:
                 model_data = pickle.load(f)
 
             self._models = model_data["models"]

@@ -35,6 +35,7 @@ def test_full_pipeline_integration() -> bool:
         )
 
         print("  Step 2: Create test agent with tracing decorators (Wave 1)")
+
         class TestAgent:
             @trace_cognitive(reasoning_mode="react")
             def think(self, query: str) -> dict[str, Any]:
@@ -49,32 +50,36 @@ def test_full_pipeline_integration() -> bool:
         # The decorator wraps the method but we need a tracing-enabled instance
         # For this test, manually add spans
         print("  Step 3: Emit test spans")
-        adapter._completed_spans.append({
-            "span_id": "span-think-001",
-            "trace_id": "trace-e2e-001",
-            "name": "cognitive.think",
-            "kind": "cognitive",
-            "layer": "L1",
-            "component": "TestAgent",
-            "ts_utc": 1000,
-            "duration_ms": 150.0,
-            "status": "ok",
-            "attributes": {"reasoning_mode": "react", "span_kind": "cognitive"},
-        })
+        adapter._completed_spans.append(
+            {
+                "span_id": "span-think-001",
+                "trace_id": "trace-e2e-001",
+                "name": "cognitive.think",
+                "kind": "cognitive",
+                "layer": "L1",
+                "component": "TestAgent",
+                "ts_utc": 1000,
+                "duration_ms": 150.0,
+                "status": "ok",
+                "attributes": {"reasoning_mode": "react", "span_kind": "cognitive"},
+            }
+        )
 
-        adapter._completed_spans.append({
-            "span_id": "span-tool-001",
-            "trace_id": "trace-e2e-001",
-            "parent_span_id": "span-think-001",
-            "name": "tool.search",
-            "kind": "tool",
-            "layer": "L2",
-            "component": "TestAgent",
-            "ts_utc": 1200,
-            "duration_ms": 50.0,
-            "status": "ok",
-            "attributes": {"tool_name": "search", "span_kind": "tool"},
-        })
+        adapter._completed_spans.append(
+            {
+                "span_id": "span-tool-001",
+                "trace_id": "trace-e2e-001",
+                "parent_span_id": "span-think-001",
+                "name": "tool.search",
+                "kind": "tool",
+                "layer": "L2",
+                "component": "TestAgent",
+                "ts_utc": 1200,
+                "duration_ms": 50.0,
+                "status": "ok",
+                "attributes": {"tool_name": "search", "span_kind": "tool"},
+            }
+        )
 
         print("  Step 4: Drain spans with auto-persistence (Wave 3)")
         adapter.set_trace_id("trace-e2e-001")
@@ -126,6 +131,7 @@ def test_full_pipeline_integration() -> bool:
     except Exception as e:
         print(f"✗ Full pipeline test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -161,6 +167,7 @@ def test_metrics_integration() -> bool:
     except Exception as e:
         print(f"✗ Metrics integration test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -186,6 +193,7 @@ def test_all_waves_present() -> bool:
     except Exception as e:
         print(f"✗ All waves present test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -213,18 +221,20 @@ def test_error_handling_and_degradation() -> bool:
             enable_logging=False,
         )
 
-        adapter2._completed_spans.append({
-            "span_id": "test-001",
-            "trace_id": "trace-001",
-            "name": "test",
-            "kind": "action",
-            "layer": "L2",
-            "component": "Test",
-            "ts_utc": 1000,
-            "duration_ms": 10.0,
-            "status": "ok",
-            "attributes": {},
-        })
+        adapter2._completed_spans.append(
+            {
+                "span_id": "test-001",
+                "trace_id": "trace-001",
+                "name": "test",
+                "kind": "action",
+                "layer": "L2",
+                "component": "Test",
+                "ts_utc": 1000,
+                "duration_ms": 10.0,
+                "status": "ok",
+                "attributes": {},
+            }
+        )
 
         spans = adapter2.drain_completed_spans(mission="disabled-test", persist=False)
         assert len(spans) == 1
@@ -236,6 +246,7 @@ def test_error_handling_and_degradation() -> bool:
     except Exception as e:
         print(f"✗ Error handling test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -315,6 +326,7 @@ def main() -> int:
         except Exception as e:
             print(f"✗ Test crashed: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((name, False))
 

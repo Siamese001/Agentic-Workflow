@@ -20,14 +20,16 @@ log = logging.getLogger(__name__)
 
 class CircuitState(Enum):
     """Circuit breaker states."""
-    CLOSED = "closed"       # Normal operation
-    OPEN = "open"          # Failing, reject requests
+
+    CLOSED = "closed"  # Normal operation
+    OPEN = "open"  # Failing, reject requests
     HALF_OPEN = "half_open"  # Testing if recovered
 
 
 @dataclass
 class CircuitBreakerConfig:
     """Configuration for circuit breaker."""
+
     failure_threshold: int = 5
     recovery_timeout: float = 30.0
     half_open_max_calls: int = 3
@@ -77,7 +79,9 @@ class CircuitBreaker:
         """
         trace_id = f"cb_{self.name}_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "CircuitBreaker.can_execute",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "CircuitBreaker.can_execute",
         )
 
         if self._state == CircuitState.CLOSED:
@@ -85,8 +89,10 @@ class CircuitBreaker:
 
         if self._state == CircuitState.OPEN:
             # Check if recovery timeout passed
-            if self._last_failure_time and \
-               time.time() - self._last_failure_time >= self.config.recovery_timeout:
+            if (
+                self._last_failure_time
+                and time.time() - self._last_failure_time >= self.config.recovery_timeout
+            ):
                 self._transition_to(CircuitState.HALF_OPEN)
                 return True
             return False
@@ -190,6 +196,7 @@ class CircuitBreaker:
 
 class CircuitBreakerOpen(Exception):
     """Exception raised when circuit breaker is open."""
+
     pass
 
 

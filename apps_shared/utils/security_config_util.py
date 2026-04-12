@@ -23,6 +23,7 @@ THRESHOLD = 0.95
 
 class ValidationLevel(Enum):
     """Validation level."""
+
     STRICT = "strict"
     LENIENT = "lenient"
     NONE = "none"
@@ -31,6 +32,7 @@ class ValidationLevel(Enum):
 @dataclass
 class ValidationResult:
     """Validation result."""
+
     valid: bool
     errors: list[str]
     sanitized_value: str | None = None
@@ -52,7 +54,7 @@ class InputSanitizer:
     @staticmethod
     def sanitize_identifier(value: str) -> str:
         """Sanitize identifier."""
-        return re.sub(r'[^a-zA-Z0-9_]', '', value)
+        return re.sub(r"[^a-zA-Z0-9_]", "", value)
 
 
 class InputValidator:
@@ -109,7 +111,6 @@ class SecureTokenGenerator:
     def verify_hash(value: str, hash_value: str) -> bool:
         """Verify hash."""
         return SecureTokenGenerator.hash_value(value) == hash_value
-
 
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -261,8 +262,6 @@ _emit_links_execution_to_snapshot("p4", "security_config_util", "exec_snapshot_l
 logger = logging.getLogger(__name__)
 
 
-
-
 class RateLimiter:
     """Simple in-memory rate limiter."""
 
@@ -275,6 +274,7 @@ class RateLimiter:
     def is_allowed(self, key: str) -> bool:
         """Check if a request is allowed for the given key."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RateLimiter.is_allowed")
 
@@ -317,10 +317,15 @@ class SecurityAuditLog:
         self._events: list[dict[str, Any]] = []
 
     def log_event(
-        self, event_type: str, message: str, severity: str = "info", metadata: dict[str, Any] | None = None,
+        self,
+        event_type: str,
+        message: str,
+        severity: str = "info",
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Log a security event."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecurityAuditLog.log_event")
 
@@ -338,7 +343,10 @@ class SecurityAuditLog:
         log_method(f"[{event_type}] {message}")
 
     def log_validation_failure(
-        self, field: str, errors: list[str], metadata: dict[str, Any] | None = None,
+        self,
+        field: str,
+        errors: list[str],
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Log a validation failure."""
         self.log_event(
@@ -360,7 +368,10 @@ class SecurityAuditLog:
     def log_suspicious_activity(self, activity: str, metadata: dict[str, Any] | None = None) -> None:
         """Log suspicious activity."""
         self.log_event(
-            event_type="suspicious_activity", message=activity, severity="error", metadata=metadata,
+            event_type="suspicious_activity",
+            message=activity,
+            severity="error",
+            metadata=metadata,
         )
 
     def get_events(self, event_type: str | None = None, severity: str | None = None) -> list[dict[str, Any]]:

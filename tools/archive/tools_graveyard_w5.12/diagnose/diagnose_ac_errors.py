@@ -1,4 +1,5 @@
 """Diagnose agentic_core collection errors and output source file + error pairs."""
+
 import re
 import subprocess
 import sys
@@ -6,9 +7,23 @@ from collections import Counter
 
 root = r"C:\Git\Agentic-Workflow"
 r = subprocess.run(
-    [sys.executable, "-m", "pytest", "tests/unit/agentic_core",
-     "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
-    capture_output=True, text=True, encoding="utf-8", errors="replace", cwd=root,
+    [
+        sys.executable,
+        "-m",
+        "pytest",
+        "tests/unit/agentic_core",
+        "-c",
+        "tools/pytest_minimal.ini",
+        "--co",
+        "--tb=short",
+        "-p",
+        "no:warnings",
+    ],
+    capture_output=True,
+    text=True,
+    encoding="utf-8",
+    errors="replace",
+    cwd=root,
 )
 out = r.stdout + r.stderr
 lines = out.splitlines()
@@ -20,7 +35,7 @@ while i < len(lines):
         test_file = lines[i].split("_ ERROR collecting")[-1].strip().rstrip(" _")
         src_file = ""
         e_msg = ""
-        for j in range(i+1, min(i+15, len(lines))):
+        for j in range(i + 1, min(i + 15, len(lines))):
             l = lines[j].strip()
             if l.startswith("E   "):
                 e_msg = l[4:]

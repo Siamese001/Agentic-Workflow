@@ -36,7 +36,9 @@ class EmbeddingInfluenceViolation(Exception):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "EmbeddingInfluenceViolation.__init__",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "EmbeddingInfluenceViolation.__init__",
         )
         self.decision_type = decision_type
         self.found_in = found_in

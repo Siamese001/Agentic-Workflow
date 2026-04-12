@@ -183,14 +183,16 @@ class AdaptiveRetrievalGate:
                 re.IGNORECASE,
             ),
             "reference": re.compile(
-                "\\b(previous|last|that|above|mentioned|earlier|said|told|asked|discussed)\\b", re.IGNORECASE,
+                "\\b(previous|last|that|above|mentioned|earlier|said|told|asked|discussed)\\b",
+                re.IGNORECASE,
             ),
             "self_reference": re.compile(
                 "\\b(who are you|what are you|what can you do|how do you work|your name|help)\\b",
                 re.IGNORECASE,
             ),
             "continuation": re.compile(
-                "^(and|but|so|then|also|plus|however|therefore|meanwhile)\\b", re.IGNORECASE,
+                "^(and|but|so|then|also|plus|however|therefore|meanwhile)\\b",
+                re.IGNORECASE,
             ),
         }
         self.complex_keywords = {
@@ -297,13 +299,19 @@ class AdaptiveRetrievalGate:
             RetrievalDecision with recommendation
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AdaptiveRetrievalGate.should_retrieve")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AdaptiveRetrievalGate.should_retrieve"
+        )
 
         query = query.strip()
         if not query:
             return RetrievalDecision(
-                should_retrieve=False, reason="Empty query", query_type="EMPTY", confidence=1.0,
+                should_retrieve=False,
+                reason="Empty query",
+                query_type="EMPTY",
+                confidence=1.0,
             )
         query_type = self._classify_query_type(query)
         complexity_score = self._calculate_complexity_score(query, query_type)
@@ -348,7 +356,10 @@ class AdaptiveRetrievalGate:
             f"Retrieval decision: {should_retrieve} | Type: {query_type} | Reason: {reason} | Query: {query[:50]}...",
         )
         return RetrievalDecision(
-            should_retrieve=should_retrieve, reason=reason, query_type=query_type, confidence=confidence,
+            should_retrieve=should_retrieve,
+            reason=reason,
+            query_type=query_type,
+            confidence=confidence,
         )
 
     def get_statistics(self, decisions: list[RetrievalDecision]) -> dict[str, float]:

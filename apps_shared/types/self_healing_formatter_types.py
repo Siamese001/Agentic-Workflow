@@ -313,13 +313,18 @@ class JSONRepairStrategy(FormatRepair):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfHealingFormatter.repair")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfHealingFormatter.repair"
+        )
         original_error = None
         attempts = 0
         try:
             data = json.loads(broken_content)
             return RepairResult(
-                success=True, repaired_data=data, strategy_used=self.strategy_name, attempts=attempts,
+                success=True,
+                repaired_data=data,
+                strategy_used=self.strategy_name,
+                attempts=attempts,
             )
         except json.JSONDecodeError as e:
             original_error = str(e)
@@ -418,7 +423,10 @@ class MarkdownStripStrategy(FormatRepair):
             if match:
                 stripped = match.group(1).strip()
                 return RepairResult(
-                    success=True, repaired_data=stripped, strategy_used=self.strategy_name, attempts=1,
+                    success=True,
+                    repaired_data=stripped,
+                    strategy_used=self.strategy_name,
+                    attempts=1,
                 )
         return RepairResult(
             success=False,
@@ -487,7 +495,10 @@ class RegexExtractStrategy(FormatRepair):
                 extracted[name] = matches
         if extracted:
             return RepairResult(
-                success=True, repaired_data=extracted, strategy_used=self.strategy_name, attempts=1,
+                success=True,
+                repaired_data=extracted,
+                strategy_used=self.strategy_name,
+                attempts=1,
             )
         return RepairResult(
             success=False,
@@ -541,9 +552,15 @@ class SchemaFillStrategy(FormatRepair):
             filled = self._fill_missing_fields(data, target_schema)
             validated = target_schema(**filled)
             return RepairResult(
-                success=True, repaired_data=validated, strategy_used=self.strategy_name, attempts=1,
+                success=True,
+                repaired_data=validated,
+                strategy_used=self.strategy_name,
+                attempts=1,
             )
-        except (ValidationError, Exception) as e:    # guardian: Multiple exceptions (ValidationError, Exception) need specific handling
+        except (
+            ValidationError,
+            Exception,
+        ) as e:  # guardian: Multiple exceptions (ValidationError, Exception) need specific handling
             return RepairResult(
                 success=False,
                 repaired_data=broken_content,
@@ -688,13 +705,18 @@ class SelfHealingFormatter:
         for strategy in self.repair_strategies:
             try:
                 repair_result = await strategy.repair(
-                    content_str, target_schema, {"format_type": format_type, "engine_type": engine_type},
+                    content_str,
+                    target_schema,
+                    {"format_type": format_type, "engine_type": engine_type},
                 )
                 if repair_result.success:
                     self._stats["strategy_usage"][strategy.strategy_name.value] += 1
                     try:
                         healed_result = self.base_formatter.format(
-                            repair_result.repaired_data, format_type, engine_type, config,
+                            repair_result.repaired_data,
+                            format_type,
+                            engine_type,
+                            config,
                         )
                         if healed_result.success:
                             healed_result.metadata.update(

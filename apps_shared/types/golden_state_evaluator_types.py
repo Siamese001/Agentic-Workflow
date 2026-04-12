@@ -96,6 +96,8 @@ except ImportError:
 
     def create_judge_evaluator():
         return JudgeEvaluator()
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -345,7 +347,9 @@ class GoldenStateEvaluator:
                 case = GoldenCase.from_dict(case_data)
                 self.golden_cases.append(case)
             if self.enable_logging:
-                Logger.info("golden_cases_loaded", extra={"count": len(self.golden_cases)})    # guardian: File operations should check existence before access
+                Logger.info(
+                    "golden_cases_loaded", extra={"count": len(self.golden_cases)}
+                )  # guardian: File operations should check existence before access
         except FileNotFoundError:
             if self.enable_logging:
                 Logger.warning("golden_dataset_not_found", extra={"path": str(self.dataset_path)})
@@ -365,8 +369,11 @@ class GoldenStateEvaluator:
             EvaluationReport with results
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GoldenStateEvaluator.evaluate_case")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GoldenStateEvaluator.evaluate_case"
+        )
 
         errors: list[str] = []
         expected_output = case.expected_output
@@ -380,7 +387,8 @@ class GoldenStateEvaluator:
             context={"Task": case.mission, "category": case.category},
         )
         action_match_score = self._evaluate_actions(
-            expected=case.expected_actions, actual=output.actions_taken,
+            expected=case.expected_actions,
+            actual=output.actions_taken,
         )
         self._check_output_constraints(case.expected_output, output.actual_output, errors)
         passed = judge_result.passed and action_match_score >= 0.5 and (len(errors) == 0)

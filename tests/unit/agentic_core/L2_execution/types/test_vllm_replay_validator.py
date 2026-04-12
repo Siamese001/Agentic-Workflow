@@ -16,14 +16,17 @@ class TestVllmReplayValidator:
     def test_vllm_replay_validator_imports(self):
         """Test vllm_replay_validator module imports."""
         from agentic_core import vllm_replay_validator
+
         assert vllm_replay_validator is not None
 
     def test_vllm_replay_validator_class(self):
         """Test VllmReplayValidator class exists."""
         from agentic_core import VllmReplayValidator
+
         assert VllmReplayValidator is not None
 
     def test_vllm_replay_validator_callable(self):
         """Test vllm_replay_validator functions are callable."""
         from agentic_core import validate_vllm_replay_validator
+
         assert callable(validate_vllm_replay_validator)

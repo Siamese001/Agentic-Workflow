@@ -311,7 +311,9 @@ class ReflectionEngine:
         self.circuit_breaker = CircuitBreakerFactory.get(
             "reflection_engine",
             CircuitBreakerConfig(
-                failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT, timeout=self.config.timeout,
+                failure_threshold=THRESHOLD,
+                recovery_timeout=DEFAULT_TIMEOUT,
+                timeout=self.config.timeout,
             ),
         )
 
@@ -335,7 +337,9 @@ class ReflectionEngine:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfCritiqueEvaluator.evaluate",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "SelfCritiqueEvaluator.evaluate",
         )
         start_time = time.time()
         self.stats["total_critiques"] += 1
@@ -363,7 +367,7 @@ class ReflectionEngine:
                     self._llm_path_evaluate,
                     content,
                     normalized_criteria,
-                    context,    # guardian: CircuitOpenError should be handled with specific context
+                    context,  # guardian: CircuitOpenError should be handled with specific context
                 )
                 self.stats["llm_critiques"] += 1
         # guardian: allow-silent-swallow - acceptable exception handling

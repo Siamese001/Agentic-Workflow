@@ -23,19 +23,19 @@ logger = logging.getLogger(__name__)
 class AgenticSpanProcessor:
     """Custom span processor for agentic workflow telemetry.
 
-    Filters and enriches OpenTelemetry spans with agentic-specific
-d    context before export to backends.
+        Filters and enriches OpenTelemetry spans with agentic-specific
+    d    context before export to backends.
 
-    Attributes
-    ----------
-    _filters : list[Callable[[dict[str, Any]], bool]]
-        Active span filters
-    _enrichers : list[Callable[[dict[str, Any]], dict[str, Any]]]
-        Active span enrichers
-    _layer_filter : set[str] | None
-        Layers to include (None = all layers)
-    _component_filter : set[str] | None
-        Components to include (None = all components)
+        Attributes
+        ----------
+        _filters : list[Callable[[dict[str, Any]], bool]]
+            Active span filters
+        _enrichers : list[Callable[[dict[str, Any]], dict[str, Any]]]
+            Active span enrichers
+        _layer_filter : set[str] | None
+            Layers to include (None = all layers)
+        _component_filter : set[str] | None
+            Components to include (None = all components)
     """
 
     def __init__(
@@ -144,7 +144,9 @@ d    context before export to backends.
                 processed.append(result)
 
         _emit_records_telemetry_event(
-            "agentic_span_processor", "L4_STATE", "spans_processed",
+            "agentic_span_processor",
+            "L4_STATE",
+            "spans_processed",
             input_count=len(spans),
             output_count=len(processed),
         )

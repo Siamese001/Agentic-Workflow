@@ -184,7 +184,9 @@ class DetectionSignal:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "DetectionSignal.classify_risk_level",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "DetectionSignal.classify_risk_level",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

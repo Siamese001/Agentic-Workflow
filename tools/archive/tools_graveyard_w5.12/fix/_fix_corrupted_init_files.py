@@ -2,6 +2,7 @@
 """
 Fix corrupted __init__.py files where config constants were inserted incorrectly.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

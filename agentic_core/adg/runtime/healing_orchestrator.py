@@ -284,8 +284,11 @@ class HealingOrchestratorReport:
     @property
     def success_rate(self) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOrchestratorReport.success_rate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOrchestratorReport.success_rate"
+        )
 
         terminal = [r for r in self.healing_runs if r.is_terminal]
         if not terminal:
@@ -339,8 +342,11 @@ class HealingOrchestrator:
     ) -> HealingRun:
         """Dispatch a new healing run."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOrchestrator.dispatch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOrchestrator.dispatch"
+        )
 
         run = HealingRun(
             agent_id=self._agent_id,
@@ -396,6 +402,7 @@ class HealingOrchestrator:
             run.phase = HealingRunPhase.TIMED_OUT
             run.aborted_at = time.time()
             run.abort_reason = "timeout"
+
 
 _emit_reads_through("l4", "healing_orchestrator", "urg_read_1")
 _emit_reads_through("l4", "healing_orchestrator", "urg_read_2")

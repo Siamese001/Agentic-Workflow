@@ -11,7 +11,7 @@ from typing import Final, Mapping, Sequence
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "structure_blueprint_data")
 SCRIPTS_FORBIDDEN_PATTERNS: Final[Sequence[str]] = ["^[A-Z]", "^test_"]

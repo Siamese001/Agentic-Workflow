@@ -198,8 +198,11 @@ class SecretsManagementMixin:
             SecretAccessError: If secret is missing and no default provided.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecretsManagementMixin.get_secret")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SecretsManagementMixin.get_secret"
+        )
 
         if not self._is_valid_secret_key(key):
             self._audit_access(key, success=False)

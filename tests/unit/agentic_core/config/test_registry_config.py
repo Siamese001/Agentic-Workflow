@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.config.registry_config."""
+
 from __future__ import annotations
 
 import importlib

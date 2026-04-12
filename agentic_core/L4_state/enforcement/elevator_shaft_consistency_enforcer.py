@@ -152,7 +152,9 @@ class ElevatorShaftConsistencyEnforcer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ElevatorShaftConsistencyEnforcer.record_advance",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ElevatorShaftConsistencyEnforcer.record_advance",
         )
 
         validate_semantic_clock(snapshot, context=f"layer={layer}")
@@ -229,8 +231,11 @@ class ElevatorShaftConsistencyEnforcer:
                 )
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("elevator_shaft_consistency_enforcer: Exception swallowed at L231: %s", e)
+            logging.getLogger(__name__).debug(
+                "elevator_shaft_consistency_enforcer: Exception swallowed at L231: %s", e
+            )
         return {
             layer: {"last_tick": rec.last_tick, "advance_count": rec.advance_count}
             for layer, rec in sorted(self._layer_records.items())

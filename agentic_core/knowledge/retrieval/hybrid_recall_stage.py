@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class RecallResult:
     """Result from recall stage."""
+
     doc_id: str
     score: float
     source: str  # "dense", "sparse"
@@ -74,7 +75,9 @@ class HybridRecallStage:
         """
         trace_id = f"recall_{hash(str(query_vector)) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "HybridRecallStage.recall",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "HybridRecallStage.recall",
         )
 
         # Dense retrieval
@@ -91,8 +94,10 @@ class HybridRecallStage:
             f"dense_{len(dense_results)}_sparse_{len(sparse_results)}",
         )
 
-        log.debug(f"Hybrid recall: {len(dense_results)} dense + {len(sparse_results)} sparse = {len(merged)} merged")
-        return merged[:self.top_k]
+        log.debug(
+            f"Hybrid recall: {len(dense_results)} dense + {len(sparse_results)} sparse = {len(merged)} merged"
+        )
+        return merged[: self.top_k]
 
     def _dense_recall(
         self,
@@ -105,12 +110,14 @@ class HybridRecallStage:
 
         # Simulate vector similarity search
         for i in range(10):
-            results.append(RecallResult(
-                doc_id=f"doc_dense_{i}",
-                score=0.9 - (i * 0.05),
-                source="dense",
-                content=f"Dense result {i}",
-            ))
+            results.append(
+                RecallResult(
+                    doc_id=f"doc_dense_{i}",
+                    score=0.9 - (i * 0.05),
+                    source="dense",
+                    content=f"Dense result {i}",
+                )
+            )
 
         return results
 
@@ -125,12 +132,14 @@ class HybridRecallStage:
 
         # Simulate sparse matching
         for i in range(10):
-            results.append(RecallResult(
-                doc_id=f"doc_sparse_{i}",
-                score=0.85 - (i * 0.04),
-                source="sparse",
-                content=f"Sparse result {i}",
-            ))
+            results.append(
+                RecallResult(
+                    doc_id=f"doc_sparse_{i}",
+                    score=0.85 - (i * 0.04),
+                    source="sparse",
+                    content=f"Sparse result {i}",
+                )
+            )
 
         return results
 
@@ -161,10 +170,7 @@ class HybridRecallStage:
         # Calculate hybrid scores
         merged = []
         for doc_id, (dense_score, sparse_score) in doc_scores.items():
-            hybrid_score = (
-                dense_score * self.vector_weight +
-                sparse_score * self.sparse_weight
-            )
+            hybrid_score = dense_score * self.vector_weight + sparse_score * self.sparse_weight
 
             # Determine source
             if dense_score > 0 and sparse_score > 0:
@@ -174,16 +180,18 @@ class HybridRecallStage:
             else:
                 source = "sparse"
 
-            merged.append(RecallResult(
-                doc_id=doc_id,
-                score=hybrid_score,
-                source=source,
-                content=doc_content.get(doc_id, ""),
-                metadata={
-                    "dense_score": dense_score,
-                    "sparse_score": sparse_score,
-                },
-            ))
+            merged.append(
+                RecallResult(
+                    doc_id=doc_id,
+                    score=hybrid_score,
+                    source=source,
+                    content=doc_content.get(doc_id, ""),
+                    metadata={
+                        "dense_score": dense_score,
+                        "sparse_score": sparse_score,
+                    },
+                )
+            )
 
         # Sort by score descending
         merged.sort(key=lambda x: x.score, reverse=True)

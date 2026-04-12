@@ -37,6 +37,7 @@ from tests.e2e.conftest import (
 # Complete System Flow Tests
 # =============================================================================
 
+
 class TestCompleteSystemFlow:
     """Test complete system execution flows end-to-end."""
 
@@ -262,6 +263,7 @@ class TestCompleteSystemFlow:
 # Multi-Agent Orchestration Tests
 # =============================================================================
 
+
 class TestMultiAgentOrchestration:
     """Test multi-agent orchestration scenarios."""
 
@@ -387,6 +389,7 @@ class TestMultiAgentOrchestration:
 # =============================================================================
 # Meta-Learning Feedback Loop Tests
 # =============================================================================
+
 
 class TestMetaLearningFeedback:
     """Test meta-learning feedback loops."""
@@ -523,6 +526,7 @@ class TestMetaLearningFeedback:
 # Performance and Load Tests
 # =============================================================================
 
+
 class TestPerformanceLoad:
     """Test system performance under load."""
 
@@ -617,6 +621,7 @@ class TestPerformanceLoad:
 # End-to-End Report Generation
 # =============================================================================
 
+
 class TestE2EReportGeneration:
     """Generate comprehensive E2E test reports."""
 
@@ -683,6 +688,7 @@ class TestE2EReportGeneration:
 # =============================================================================
 # Fail-Closed Validation
 # =============================================================================
+
 
 class TestFailClosedValidation:
     """Test fail-closed behavior across the system."""

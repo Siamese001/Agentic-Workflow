@@ -228,6 +228,7 @@ class PromptTemplate:
             Rendered prompt
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptTemplate.render")
 
@@ -304,6 +305,7 @@ class PromptRegistry:
             template: Prompt template
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptRegistry.register")
 

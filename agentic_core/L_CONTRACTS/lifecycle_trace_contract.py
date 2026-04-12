@@ -302,7 +302,10 @@ def _emit_records_execution_trace(root_trace_id: str, layer: str, operation: str
 
 
 def _emit_signs_execution_trace(
-    root_trace_id: str, segment_hash: str, segment_signature: str, order_index: int,
+    root_trace_id: str,
+    segment_hash: str,
+    segment_signature: str,
+    order_index: int,
 ) -> None:
     """Emit signs_execution_trace ADG edge (§5)."""
     _SIGN_LOG.debug(
@@ -1076,7 +1079,9 @@ class LifecycleTraceRecorder:
         self._transcript_id: str = ""
         self._model_id: str = ""
         _LOG.debug(
-            "LifecycleTraceRecorder started root_trace_id=%s run_id=%s", self.root_trace_id, self.run_id,
+            "LifecycleTraceRecorder started root_trace_id=%s run_id=%s",
+            self.root_trace_id,
+            self.run_id,
         )
 
     def record_segment(
@@ -1176,7 +1181,10 @@ class LifecycleTraceRecorder:
         # Final record + sign on completed contract
         _emit_records_execution_trace(self.root_trace_id, "FINAL", outcome)
         _emit_signs_execution_trace(
-            self.root_trace_id, final_outcome_hash, final_outcome_hash, self._order_counter,
+            self.root_trace_id,
+            final_outcome_hash,
+            final_outcome_hash,
+            self._order_counter,
         )
 
         _record_contract(contract)

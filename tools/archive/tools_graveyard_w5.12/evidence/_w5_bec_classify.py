@@ -10,6 +10,7 @@ For each entry checks AST to determine:
 Usage:
     python tools/evidence/_w5_bec_classify.py
 """
+
 from __future__ import annotations
 
 import ast

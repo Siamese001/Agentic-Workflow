@@ -48,6 +48,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 # Deferred imports for graceful degradation
 try:
     from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+
     SNAPSHOT_AVAILABLE = True
 except ImportError:
     SNAPSHOT_AVAILABLE = False
@@ -75,6 +76,7 @@ class MetaLearningRecord:
         telemetry_events: Telemetry events linked to snapshot
         metadata: Additional metadata
     """
+
     snapshot_id: str
     trace_id: str
     mission: str
@@ -198,7 +200,9 @@ class L6MetaLearningBridge:
 
         # Emit learning event
         _emit_records_learning_event(
-            snapshot_id, "L6_OBSERVABILITY", "snapshot_stored_for_meta_learning",
+            snapshot_id,
+            "L6_OBSERVABILITY",
+            "snapshot_stored_for_meta_learning",
         )
 
         # Persist to disk if enabled
@@ -234,7 +238,9 @@ class L6MetaLearningBridge:
                 json.dump(record.to_dict(), f, indent=2)
 
             _emit_stores_learning_state(
-                "L6_OBSERVABILITY", "l6_meta_learning_bridge", record.snapshot_id,
+                "L6_OBSERVABILITY",
+                "l6_meta_learning_bridge",
+                record.snapshot_id,
             )
 
             return True
@@ -300,12 +306,16 @@ class L6MetaLearningBridge:
 
         # Emit meta-learning feed event
         _emit_feeds_meta_learning(
-            snapshot_id, "L6_OBSERVABILITY", downstream_consumer or "meta_learning_pipeline",
+            snapshot_id,
+            "L6_OBSERVABILITY",
+            downstream_consumer or "meta_learning_pipeline",
         )
 
         # Update meta-learning state
         _emit_updates_meta_learning_state(
-            snapshot_id, "L6_OBSERVABILITY", f"fed_to_{downstream_consumer or 'pipeline'}",
+            snapshot_id,
+            "L6_OBSERVABILITY",
+            f"fed_to_{downstream_consumer or 'pipeline'}",
         )
 
         logger.info(
@@ -392,12 +402,8 @@ class L6MetaLearningBridge:
             "total_records": len(self._records),
             "storage_path": str(self.storage_path),
             "enable_persistence": self.enable_persistence,
-            "total_eval_results": sum(
-                len(r.eval_results) for r in self._records.values()
-            ),
-            "total_telemetry_events": sum(
-                len(r.telemetry_events) for r in self._records.values()
-            ),
+            "total_eval_results": sum(len(r.eval_results) for r in self._records.values()),
+            "total_telemetry_events": sum(len(r.telemetry_events) for r in self._records.values()),
         }
 
     def list_records(self) -> list[str]:

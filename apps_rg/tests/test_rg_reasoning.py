@@ -1,6 +1,5 @@
 """Tests for apps_rg reasoning components."""
 
-
 from apps_rg.reasoning.RgResumeOrchestrator import (
     RgResumeOrchestrator,
 )

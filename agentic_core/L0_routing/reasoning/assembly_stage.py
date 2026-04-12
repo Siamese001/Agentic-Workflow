@@ -26,21 +26,29 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 # Lazy imports to avoid L0->L_PG gravity violations
 def _get_prompt_bom():
     from agentic_core.prompt_governance.contracts import PromptBOM
+
     return PromptBOM
+
 
 def _get_compiled_artifact():
     from agentic_core.prompt_governance.contracts.compiled_artifact_types import CompiledPromptArtifact
+
     return CompiledPromptArtifact
+
 
 def _get_neutralizer():
     from agentic_core.prompt_governance.security.assembly_injection_neutralizer import (
         AssemblyInjectionNeutralizer,
     )
+
     return AssemblyInjectionNeutralizer
+
 
 def _validate_slot_order(*args, **kwargs):
     from agentic_core.prompt_governance.validation.validate_assembly import validate_slot_order
+
     return validate_slot_order(*args, **kwargs)
+
 
 # Rest of the existing file content continues...
 
@@ -252,13 +260,16 @@ class AirlockAssembler:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "AirlockAssembler.assemble_from_bom",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "AirlockAssembler.assemble_from_bom",
         )
         emit_replay_key(_trace_id, f"artifact:{bom.trace_id}")
         emit_determinism_digest(_trace_id, f"path:{bom.path}")
 
         # 1. Load S0 from TemplateRegistry
         from agentic_core.L4_state.utils.memory.template_registry import get_template_registry
+
         registry = get_template_registry()
         s0_content = registry.get_s0(bom.system_version_hash)
 
@@ -333,7 +344,9 @@ class AirlockAssembler:
         # Compute HMAC-SHA256 signature
         canonical = json.dumps(artifact.to_dict(), sort_keys=True, separators=(",", ":"))
         signature = hmac.new(
-            secret_key, canonical.encode("utf-8"), hashlib.sha256,
+            secret_key,
+            canonical.encode("utf-8"),
+            hashlib.sha256,
         ).hexdigest()
 
         # Return signed artifact

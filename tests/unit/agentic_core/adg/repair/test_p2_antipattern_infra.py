@@ -4,6 +4,7 @@ Tests:
 - test_p2_rule_always_block_fix: FixP2AntipatternsRule never auto-applies code changes
 - test_sqlite_analyzer_p2_antipatterns: get_p2_antipatterns() detects HIGH-severity edges
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -19,6 +20,7 @@ from tools.adg.repair.types import Deficiency, FixCategory
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_deficiency(issue_type: str, file_path: str = "foo/bar.py", line_no: int = 42) -> Deficiency:
     return Deficiency(
@@ -96,18 +98,22 @@ def _make_test_db(rows: list[tuple]) -> Path:
 # Tests: FixP2AntipatternsRule
 # ---------------------------------------------------------------------------
 
+
 class TestFixP2AntipatternsRule:
     """FixP2AntipatternsRule must never apply code changes."""
 
     def setup_method(self):
         self.rule = FixP2AntipatternsRule()
 
-    @pytest.mark.parametrize("issue_type", [
-        "silent_exception_swallow",
-        "broad_exception_catch",
-        "log_and_swallow",
-        "return_none_swallow",
-    ])
+    @pytest.mark.parametrize(
+        "issue_type",
+        [
+            "silent_exception_swallow",
+            "broad_exception_catch",
+            "log_and_swallow",
+            "return_none_swallow",
+        ],
+    )
     def test_match_all_p2_kinds(self, issue_type: str):
         deficiency = _make_deficiency(issue_type)
         assert self.rule.match(deficiency) is True
@@ -116,24 +122,30 @@ class TestFixP2AntipatternsRule:
         deficiency = _make_deficiency("missing_governance_edges")
         assert self.rule.match(deficiency) is False
 
-    @pytest.mark.parametrize("issue_type", [
-        "silent_exception_swallow",
-        "broad_exception_catch",
-        "log_and_swallow",
-        "return_none_swallow",
-    ])
+    @pytest.mark.parametrize(
+        "issue_type",
+        [
+            "silent_exception_swallow",
+            "broad_exception_catch",
+            "log_and_swallow",
+            "return_none_swallow",
+        ],
+    )
     def test_can_fix_always_false(self, issue_type: str):
         deficiency = _make_deficiency(issue_type)
         can, reason = self.rule.can_fix(deficiency)
         assert can is False
         assert "human" in reason.lower() or "classification" in reason.lower()
 
-    @pytest.mark.parametrize("issue_type", [
-        "silent_exception_swallow",
-        "broad_exception_catch",
-        "log_and_swallow",
-        "return_none_swallow",
-    ])
+    @pytest.mark.parametrize(
+        "issue_type",
+        [
+            "silent_exception_swallow",
+            "broad_exception_catch",
+            "log_and_swallow",
+            "return_none_swallow",
+        ],
+    )
     def test_apply_fix_never_succeeds(self, issue_type: str):
         deficiency = _make_deficiency(issue_type)
         result = self.rule.apply_fix(deficiency)
@@ -142,12 +154,15 @@ class TestFixP2AntipatternsRule:
         assert result.error_message is not None
         assert "[P2-CLASSIFY]" in result.error_message
 
-    @pytest.mark.parametrize("issue_type", [
-        "silent_exception_swallow",
-        "broad_exception_catch",
-        "log_and_swallow",
-        "return_none_swallow",
-    ])
+    @pytest.mark.parametrize(
+        "issue_type",
+        [
+            "silent_exception_swallow",
+            "broad_exception_catch",
+            "log_and_swallow",
+            "return_none_swallow",
+        ],
+    )
     def test_apply_fix_contains_remediation_hint(self, issue_type: str):
         deficiency = _make_deficiency(issue_type)
         result = self.rule.apply_fix(deficiency)
@@ -157,6 +172,7 @@ class TestFixP2AntipatternsRule:
     def test_verify_fix_always_true(self):
         deficiency = _make_deficiency("log_and_swallow")
         from tools.adg.repair.types import FixResult
+
         result = FixResult(success=False, deficiency_id=deficiency.id, error_message="noop")
         assert self.rule.verify_fix(deficiency, result) is True
 
@@ -177,6 +193,7 @@ class TestFixP2AntipatternsRule:
 # Tests: SQLiteAnalyzer.get_p2_antipatterns()
 # ---------------------------------------------------------------------------
 
+
 class TestSqliteAnalyzerP2Antipatterns:
     """SQLiteAnalyzer.get_p2_antipatterns() detects all four HIGH-severity kinds."""
 
@@ -196,9 +213,9 @@ class TestSqliteAnalyzerP2Antipatterns:
     def test_detects_all_four_kinds(self, tmp_path):
         rows = [
             (1, "antipattern", "silent_exception_swallow", "a.py", 1, ""),
-            (2, "antipattern", "broad_exception_catch",    "b.py", 2, ""),
-            (3, "antipattern", "log_and_swallow",          "c.py", 3, ""),
-            (4, "antipattern", "return_none_swallow",      "d.py", 4, ""),
+            (2, "antipattern", "broad_exception_catch", "b.py", 2, ""),
+            (3, "antipattern", "log_and_swallow", "c.py", 3, ""),
+            (4, "antipattern", "return_none_swallow", "d.py", 4, ""),
         ]
         db_path = _make_test_db(rows)
         with SQLiteAnalyzer(db_path) as analyzer:
@@ -215,7 +232,7 @@ class TestSqliteAnalyzerP2Antipatterns:
     def test_excludes_non_high_severity(self, tmp_path):
         rows = [
             (1, "antipattern", "mutable_default_arg", "x.py", 5, ""),
-            (2, "antipattern", "star_import_use",     "y.py", 6, ""),
+            (2, "antipattern", "star_import_use", "y.py", 6, ""),
         ]
         db_path = _make_test_db(rows)
         with SQLiteAnalyzer(db_path) as analyzer:
@@ -224,10 +241,7 @@ class TestSqliteAnalyzerP2Antipatterns:
         db_path.unlink(missing_ok=True)
 
     def test_no_limit_returns_all(self, tmp_path):
-        rows = [
-            (i, "antipattern", "broad_exception_catch", f"file_{i}.py", i, "")
-            for i in range(1, 251)
-        ]
+        rows = [(i, "antipattern", "broad_exception_catch", f"file_{i}.py", i, "") for i in range(1, 251)]
         db_path = _make_test_db(rows)
         with SQLiteAnalyzer(db_path) as analyzer:
             results = analyzer.get_p2_antipatterns()

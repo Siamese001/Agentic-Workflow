@@ -1,4 +1,5 @@
 """Step 8+9: Validate denominator reduction and governance preservation."""
+
 import glob
 import json
 import os
@@ -51,7 +52,9 @@ total_pre = pre["total_edges"]
 total_post = conn.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
 total_nodes_post = conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
 print(f"\n  Total edges:  {total_pre:>10,} -> {total_post:>10,}  ({total_post - total_pre:>+,})")
-print(f"  Total nodes:  {pre['total_nodes']:>10,} -> {total_nodes_post:>10,}  ({total_nodes_post - pre['total_nodes']:>+,})")
+print(
+    f"  Total nodes:  {pre['total_nodes']:>10,} -> {total_nodes_post:>10,}  ({total_nodes_post - pre['total_nodes']:>+,})"
+)
 
 # === STEP 9: Governance preservation ===
 print("\n" + "=" * 70)
@@ -100,9 +103,11 @@ print(f"  Governance preserved:  {'PASS' if gov_pass else 'FAIL'}")
 print(f"  Overall:               {'PASS ✓' if all_pass and gov_pass else 'FAIL ✗'}")
 
 # === Save post-rollback snapshot ===
-all_types = dict(conn.execute(
-    "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC",
-).fetchall())
+all_types = dict(
+    conn.execute(
+        "SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type ORDER BY COUNT(*) DESC",
+    ).fetchall()
+)
 
 post_snapshot = {
     "sqlite_path": db_path,

@@ -519,7 +519,11 @@ def enforce_policy_before_action(
     # Step 3 — Apply guardrail check (applies_guardrail edge)
     try:
         guardrail_outcome = _apply_guardrail_check(
-            action_class, action_name, resolved_hash, actor_id, trace_id,
+            action_class,
+            action_name,
+            resolved_hash,
+            actor_id,
+            trace_id,
         )
     except (ValueError, TypeError, RuntimeError) as e:
         guardrail_outcome = PolicyOutcome.ERROR
@@ -529,7 +533,12 @@ def enforce_policy_before_action(
     if action_class.requires_safety_plane:
         try:
             safety_outcome = _run_safety_plane(
-                action_class, action_name, resolved_hash, actor_id, trace_id, meta,
+                action_class,
+                action_name,
+                resolved_hash,
+                actor_id,
+                trace_id,
+                meta,
             )
         except (ValueError, TypeError, RuntimeError) as e:
             safety_outcome = PolicyOutcome.ERROR

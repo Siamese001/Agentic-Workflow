@@ -12,6 +12,7 @@ from typing import Any
 @dataclass
 class InterceptResult:
     """Result of call interception."""
+
     is_allowed: bool
     risk_tier: str
     injection_detected: bool

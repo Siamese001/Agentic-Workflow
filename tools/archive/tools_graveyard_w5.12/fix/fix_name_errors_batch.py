@@ -1,10 +1,12 @@
 """Batch fix NameErrors in agentic_core source files."""
+
 import ast
 import os
 import re
 
 ROOT_DIR = r"C:\Git\Agentic-Workflow"
 fixed_count = 0
+
 
 def safe_edit(filepath, old, new):
     """Replace old with new in file, verify syntax."""
@@ -72,11 +74,11 @@ for rel in ROOT_FILES:
         continue
     src = open(fp, encoding="utf-8").read()
     # Pattern: lowercase `root` defined but `ROOT` used
-    if re.search(r'^root\s*[:=]', src, re.MULTILINE) and 'ROOT' in src:
+    if re.search(r"^root\s*[:=]", src, re.MULTILINE) and "ROOT" in src:
         # Change lowercase root definition to uppercase ROOT
-        new_src = re.sub(r'^(root)\s*([:=])', 'ROOT\\2', src, count=1, flags=re.MULTILINE)
+        new_src = re.sub(r"^(root)\s*([:=])", "ROOT\\2", src, count=1, flags=re.MULTILINE)
         # Also fix type annotation: root: Any = ... -> ROOT: Any = ...
-        new_src = re.sub(r'^root: Any\s*=', 'ROOT: Any =', new_src, count=1, flags=re.MULTILINE)
+        new_src = re.sub(r"^root: Any\s*=", "ROOT: Any =", new_src, count=1, flags=re.MULTILINE)
         if new_src != src:
             try:
                 ast.parse(new_src)
@@ -86,7 +88,7 @@ for rel in ROOT_FILES:
                 print(f"  FIXED root->ROOT in {rel}")
             except SyntaxError as e:
                 print(f"  SYNTAX ERROR: {rel}: {e}")
-    elif 'ROOT' not in src.split('\n')[0:200]:
+    elif "ROOT" not in src.split("\n")[0:200]:
         print(f"  NEEDS MANUAL: {rel}")
     else:
         print(f"  OK: {rel}")
@@ -107,7 +109,10 @@ for rel in GED_FILES:
         if "GLOBAL_EXCLUDED_DIRS" in line and "=" not in line.split("GLOBAL_EXCLUDED_DIRS")[0]:
             # This line USES GLOBAL_EXCLUDED_DIRS, add definition before it
             indent = len(line) - len(line.lstrip())
-            defn = " " * indent + 'GLOBAL_EXCLUDED_DIRS = ["__pycache__", ".git", "node_modules", "venv", ".venv", "archives"]'
+            defn = (
+                " " * indent
+                + 'GLOBAL_EXCLUDED_DIRS = ["__pycache__", ".git", "node_modules", "venv", ".venv", "archives"]'
+            )
             lines.insert(i, defn)
             new_src = "\n".join(lines)
             try:
@@ -134,12 +139,16 @@ for rel in APPS_LIC_FILES:
         # Already has an import from path_constants — add APPS_LIC_DIR to it
         # Or add a new import
         if "APPS_LIC_DIR" not in src.split("path_constants import")[0]:
-            add_import_after_last_import(fp,
-                "from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR")
+            add_import_after_last_import(
+                fp,
+                "from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR",
+            )
             print(f"  FIXED APPS_LIC_DIR import in {rel}")
     elif "APPS_LIC_DIR" in src:
-        add_import_after_last_import(fp,
-            "from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR")
+        add_import_after_last_import(
+            fp,
+            "from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR",
+        )
         print(f"  FIXED APPS_LIC_DIR import in {rel}")
 
 # ── Fix 4: _emit_writes_through ──
@@ -152,23 +161,27 @@ for rel in EWT_FILES:
     if not os.path.exists(fp):
         continue
     src = open(fp, encoding="utf-8").read()
-    if "_emit_writes_through" in src and "_emit_writes_through" not in [l.strip() for l in src.split("\n") if "import" in l and "_emit_writes_through" in l]:
-        add_import_after_last_import(fp,
-            "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through")
+    if "_emit_writes_through" in src and "_emit_writes_through" not in [
+        l.strip() for l in src.split("\n") if "import" in l and "_emit_writes_through" in l
+    ]:
+        add_import_after_last_import(
+            fp, "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through"
+        )
         print(f"  FIXED _emit_writes_through import in {rel}")
 
 # ── Fix 5: Other individual fixes ──
 INDIVIDUAL_FIXES = {
-    "agentic_core/L3_orchestration/engines/dag_manager.py":
-        ("HealerMixin", "from agentic_core.mixins.healer_mixin import HealerMixin"),
-    "agentic_core/config/core/domain_constitution_config.py":
-        ("L0_MAINTENANCE_DIR", None),  # Define inline
-    "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py":
-        ("Path", "from pathlib import Path"),
-    "agentic_core/runtime/config/security_level_config.py":
-        ("MCPHardenedMixin", None),  # Need stub
-    "agentic_core/prompt_governance/validation/validate_assembly.py":
-        ("REPORTS_DIR", "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR"),
+    "agentic_core/L3_orchestration/engines/dag_manager.py": (
+        "HealerMixin",
+        "from agentic_core.mixins.healer_mixin import HealerMixin",
+    ),
+    "agentic_core/config/core/domain_constitution_config.py": ("L0_MAINTENANCE_DIR", None),  # Define inline
+    "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py": ("Path", "from pathlib import Path"),
+    "agentic_core/runtime/config/security_level_config.py": ("MCPHardenedMixin", None),  # Need stub
+    "agentic_core/prompt_governance/validation/validate_assembly.py": (
+        "REPORTS_DIR",
+        "from agentic_core.L0_routing.config.path_constants import REPORTS_DIR",
+    ),
 }
 
 for rel, (name, imp) in INDIVIDUAL_FIXES.items():
@@ -184,7 +197,7 @@ for rel, (name, imp) in INDIVIDUAL_FIXES.items():
 fp = os.path.join(ROOT_DIR, "agentic_core/config/core/domain_constitution_config.py")
 if os.path.exists(fp):
     src = open(fp, encoding="utf-8").read()
-    if "L0_MAINTENANCE_DIR" in src and 'L0_MAINTENANCE_DIR =' not in src:
+    if "L0_MAINTENANCE_DIR" in src and "L0_MAINTENANCE_DIR =" not in src:
         lines = src.split("\n")
         for i, line in enumerate(lines):
             if "L0_MAINTENANCE_DIR" in line and "=" not in line.split("L0_MAINTENANCE_DIR")[0]:
@@ -209,7 +222,9 @@ if os.path.exists(fp):
         for i, line in enumerate(lines):
             if "MCPHardenedMixin" in line and ("class " in line or "=" in line):
                 # Add stub before first usage
-                lines.insert(i, '\nclass MCPHardenedMixin:\n    """Stub mixin for MCP hardened agents."""\n    pass\n')
+                lines.insert(
+                    i, '\nclass MCPHardenedMixin:\n    """Stub mixin for MCP hardened agents."""\n    pass\n'
+                )
                 new_src = "\n".join(lines)
                 # guardian: allow-silent-swallow - acceptable exception handling
                 try:

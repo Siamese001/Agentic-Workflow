@@ -13,7 +13,9 @@ cursor = conn.cursor()
 print("=== INVESTIGATING DATA INTEGRITY ISSUES ===")
 
 # 1. Check empty resolved_path
-cursor.execute("SELECT entity_type, COUNT(*) FROM nodes WHERE resolved_path = '' OR resolved_path IS NULL GROUP BY entity_type")
+cursor.execute(
+    "SELECT entity_type, COUNT(*) FROM nodes WHERE resolved_path = '' OR resolved_path IS NULL GROUP BY entity_type"
+)
 resolved_path_issues = cursor.fetchall()
 print(f"Empty resolved_path by entity_type: {resolved_path_issues}")
 

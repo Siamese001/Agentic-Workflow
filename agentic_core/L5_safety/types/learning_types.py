@@ -216,7 +216,9 @@ class HealingPattern:
         """Update confidence score based on success rate and usage."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "HealingPattern.update_confidence",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "HealingPattern.update_confidence",
         )
         base_confidence: Any = self.success_rate
         usage_factor: Any = min(1.0, (self.success_count + self.failure_count) / 10)
@@ -534,7 +536,8 @@ class AdaptiveLearningEngine:
 
 
 def create_adaptive_learning_engine(
-    storage_path: str | None = None, autonomous_mode: bool = True,
+    storage_path: str | None = None,
+    autonomous_mode: bool = True,
 ) -> AdaptiveLearningEngine:
     """Factory function to create adaptive learning engine."""
     return AdaptiveLearningEngine(pattern_storage_path=storage_path, autonomous_mode=autonomous_mode)

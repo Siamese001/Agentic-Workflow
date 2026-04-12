@@ -1,4 +1,5 @@
 """Placeholder test file - syntax fixed."""
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -16,6 +17,7 @@ class GeneratedTest(unittest.TestCase):
     def test_runtime_guard(self):
         """Test runtime_guard function."""
         from agentic_core.L0_routing.enforcement import runtime_guard
+
         # runtime_guard returns a decorator, test it's callable
         decorator = runtime_guard("test_entry")
         self.assertTrue(callable(decorator))
@@ -31,11 +33,13 @@ class GeneratedTest(unittest.TestCase):
     def test_assert_v15_guarded(self):
         """Test assert_v15_guarded function."""
         from agentic_core.L0_routing.enforcement import assert_v15_guarded
+
         # assert_v15_guarded returns None, just test it doesn't raise
         try:
             assert_v15_guarded("test_entry")
         except Exception:
             pass  # Expected to fail without proper guard setup
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

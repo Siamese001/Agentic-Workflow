@@ -1,4 +1,5 @@
 """Guard the 9 remaining failing test files with broad try/except."""
+
 import ast
 import os
 
@@ -28,10 +29,16 @@ for f in FILES:
     for line in lines:
         s = line.strip()
         if phase == "header":
-            if (s.startswith("from __future__") or s.startswith("import pytest")
-                or s.startswith("pytestmark") or s.startswith("#")
-                or s.startswith('"""') or s.startswith("'''")
-                or s == "" or (s.startswith('"') and s.endswith('"'))):
+            if (
+                s.startswith("from __future__")
+                or s.startswith("import pytest")
+                or s.startswith("pytestmark")
+                or s.startswith("#")
+                or s.startswith('"""')
+                or s.startswith("'''")
+                or s == ""
+                or (s.startswith('"') and s.endswith('"'))
+            ):
                 header.append(line)
             else:
                 phase = "rest"
@@ -46,8 +53,7 @@ for f in FILES:
     for line in rest:
         s = line.strip()
         if phase2 == "imports":
-            if (s.startswith("@pytest.mark") or s.startswith("class Test")
-                or s.startswith("def test_")):
+            if s.startswith("@pytest.mark") or s.startswith("class Test") or s.startswith("def test_"):
                 phase2 = "body"
                 body_section.append(line)
             else:

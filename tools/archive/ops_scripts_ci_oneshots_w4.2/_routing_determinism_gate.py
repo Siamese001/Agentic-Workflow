@@ -33,7 +33,6 @@ emit_determinism_digest("_routing_determinism_gate", "_routing_determinism_gate_
 record_execution_trace("_routing_determinism_gate", "_routing_determinism_gate_trace")
 
 
-
 def _latest_db() -> str:
     files = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"))
     if not files:

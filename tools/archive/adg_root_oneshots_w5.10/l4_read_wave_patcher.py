@@ -7,6 +7,7 @@ Usage:
     python tools/l4_read_wave_patcher.py --wave 31 --dry-run
     python tools/l4_read_wave_patcher.py --wave 31
 """
+
 import argparse
 import re
 import sqlite3
@@ -40,7 +41,7 @@ def count_existing_reads_through_calls(filepath: Path) -> int:
     if not filepath.exists():
         return 0
     text = filepath.read_text(encoding="utf-8", errors="replace")
-    return len(re.findall(r'_emit_reads_through\(', text))
+    return len(re.findall(r"_emit_reads_through\(", text))
 
 
 def get_wave_targets(conn, wave: int, limit: int = 15):
@@ -88,7 +89,8 @@ def get_wave_targets(conn, wave: int, limit: int = 15):
         pattern, desc = "%", f"remaining uncovered (wave {wave})"
 
     # Over-query to account for already-patched modules
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT e.source_file,
                SUM(CASE WHEN e.relation_type='reads_from' THEN 1 ELSE 0 END) as rf,
                SUM(CASE WHEN e.relation_type='reads_through' THEN 1 ELSE 0 END) as rth
@@ -100,7 +102,9 @@ def get_wave_targets(conn, wave: int, limit: int = 15):
         HAVING rf > rth
         ORDER BY (rf - rth) DESC
         LIMIT 200
-    """, (pattern,)).fetchall()
+    """,
+        (pattern,),
+    ).fetchall()
 
     # Filter out modules already covered on disk
     filtered = []
@@ -120,8 +124,9 @@ def has_reads_through_import(text: str) -> bool:
     return "_emit_reads_through" in text
 
 
-def patch_module(filepath: Path, module_name: str, target_rf: int,
-                 existing_rth: int, dry_run: bool = False) -> int:
+def patch_module(
+    filepath: Path, module_name: str, target_rf: int, existing_rth: int, dry_run: bool = False
+) -> int:
     """Add _emit_reads_through calls to match reads_from count.
 
     Returns number of calls added.
@@ -160,8 +165,10 @@ def patch_module(filepath: Path, module_name: str, target_rf: int,
                     break
             if single_import_idx is not None:
                 # Add a separate import line right after it
-                lines.insert(single_import_idx + 1,
-                    "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through")
+                lines.insert(
+                    single_import_idx + 1,
+                    "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through",
+                )
             else:
                 # Strategy C: Add new import after last import line
                 insert_idx = 0
@@ -176,8 +183,10 @@ def patch_module(filepath: Path, module_name: str, target_rf: int,
                         insert_idx = i + 1
                         if ")" in stripped:
                             in_paren = False
-                lines.insert(insert_idx,
-                    "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through")
+                lines.insert(
+                    insert_idx,
+                    "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through",
+                )
         text = "\n".join(lines)
 
     short_name = module_name.replace("/", "_").replace(".", "_").replace("-", "_")
@@ -198,10 +207,14 @@ def patch_module(filepath: Path, module_name: str, target_rf: int,
     new_text = "\n".join(lines)
 
     if dry_run:
-        print(f"  DRY-RUN: {module_name} — would add {needed} calls (existing={existing_calls}, target={target_rf})")
+        print(
+            f"  DRY-RUN: {module_name} — would add {needed} calls (existing={existing_calls}, target={target_rf})"
+        )
     else:
         filepath.write_text(new_text, encoding="utf-8")
-        print(f"  PATCHED: {module_name} — added {needed} calls (existing={existing_calls}, now={existing_calls + needed}, target={target_rf})")
+        print(
+            f"  PATCHED: {module_name} — added {needed} calls (existing={existing_calls}, now={existing_calls + needed}, target={target_rf})"
+        )
 
     return needed
 

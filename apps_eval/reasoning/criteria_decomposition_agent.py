@@ -94,32 +94,84 @@ class CriteriaDecomposer:
     # Pattern maps for criteria classification
     TYPE_PATTERNS: dict[CriteriaType, list[str]] = {
         CriteriaType.PERFORMANCE: [
-            "latency", "throughput", "response time", "milliseconds",
-            "seconds", "concurrent", "load", "scale", "benchmark",
-            "ops per second", "requests per", "rps", "tps",
+            "latency",
+            "throughput",
+            "response time",
+            "milliseconds",
+            "seconds",
+            "concurrent",
+            "load",
+            "scale",
+            "benchmark",
+            "ops per second",
+            "requests per",
+            "rps",
+            "tps",
         ],
         CriteriaType.SECURITY: [
-            "encrypt", "authentication", "authorization", "audit",
-            "penetration", "vulnerability", "access control", "rbac",
-            "mfa", "sso", "security", "sanitize", "validate",
+            "encrypt",
+            "authentication",
+            "authorization",
+            "audit",
+            "penetration",
+            "vulnerability",
+            "access control",
+            "rbac",
+            "mfa",
+            "sso",
+            "security",
+            "sanitize",
+            "validate",
         ],
         CriteriaType.RELIABILITY: [
-            "uptime", "availability", "fault tolerance", "retry",
-            "circuit breaker", "graceful degradation", "failure",
-            "recovery", "backup", "replication", "mttr", "mtbf",
+            "uptime",
+            "availability",
+            "fault tolerance",
+            "retry",
+            "circuit breaker",
+            "graceful degradation",
+            "failure",
+            "recovery",
+            "backup",
+            "replication",
+            "mttr",
+            "mtbf",
         ],
         CriteriaType.SCALABILITY: [
-            "horizontal scale", "vertical scale", "shard", "partition",
-            "distributed", "cluster", "node", "replica", "elastic",
-            "auto-scale", "million", "billion", "terabyte",
+            "horizontal scale",
+            "vertical scale",
+            "shard",
+            "partition",
+            "distributed",
+            "cluster",
+            "node",
+            "replica",
+            "elastic",
+            "auto-scale",
+            "million",
+            "billion",
+            "terabyte",
         ],
         CriteriaType.COMPLIANCE: [
-            "gdpr", "hipaa", "soc2", "iso27001", "compliance",
-            "regulatory", "audit", "certification", "standard",
+            "gdpr",
+            "hipaa",
+            "soc2",
+            "iso27001",
+            "compliance",
+            "regulatory",
+            "audit",
+            "certification",
+            "standard",
         ],
         CriteriaType.DETERMINISM: [
-            "deterministic", "repeatable", "idempotent", "pure function",
-            "no side effects", "immutable", "stable output", "time-independent",
+            "deterministic",
+            "repeatable",
+            "idempotent",
+            "pure function",
+            "no side effects",
+            "immutable",
+            "stable output",
+            "time-independent",
         ],
     }
 
@@ -227,14 +279,14 @@ class CriteriaDecomposer:
 
         summary.complexity_distribution = complexity_dist
         summary.test_type_distribution = type_dist
-        summary.coverage_by_dimension = {
-            dim: sum(covs) / len(covs) for dim, covs in dim_coverage.items()
-        }
+        summary.coverage_by_dimension = {dim: sum(covs) / len(covs) for dim, covs in dim_coverage.items()}
 
         # Identify critical path (highest weight items with most dependencies)
         weighted_items = sorted(
             decompositions,
-            key=lambda d: d.weight * len([c for c in d.components if c.complexity == TestComplexity.BENCHMARK]),
+            key=lambda d: (
+                d.weight * len([c for c in d.components if c.complexity == TestComplexity.BENCHMARK])
+            ),
             reverse=True,
         )
         summary.critical_path = [d.source_criteria_id for d in weighted_items[:5]]
@@ -376,20 +428,26 @@ class CriteriaDecomposer:
 
         # Type-specific criteria
         if criteria_type == CriteriaType.PERFORMANCE:
-            criteria.extend([
-                "Performance metric meets defined threshold",
-                "No degradation under concurrent load",
-            ])
+            criteria.extend(
+                [
+                    "Performance metric meets defined threshold",
+                    "No degradation under concurrent load",
+                ]
+            )
         elif criteria_type == CriteriaType.SECURITY:
-            criteria.extend([
-                "Security scan passes with no critical findings",
-                "Access controls properly enforced",
-            ])
+            criteria.extend(
+                [
+                    "Security scan passes with no critical findings",
+                    "Access controls properly enforced",
+                ]
+            )
         elif criteria_type == CriteriaType.DETERMINISM:
-            criteria.extend([
-                "Output is identical across multiple executions",
-                "No time-dependent or random dependencies",
-            ])
+            criteria.extend(
+                [
+                    "Output is identical across multiple executions",
+                    "No time-dependent or random dependencies",
+                ]
+            )
 
         return criteria
 
@@ -503,10 +561,10 @@ class CriteriaDecompositionAgent:
             "execution_batches": len(batches),
             "batch_breakdown": batches,
             "unit_tests": len([c for c in all_components if c.complexity == TestComplexity.UNIT]),
-            "integration_tests": len([c for c in all_components if c.complexity == TestComplexity.INTEGRATION]),
+            "integration_tests": len(
+                [c for c in all_components if c.complexity == TestComplexity.INTEGRATION]
+            ),
             "system_tests": len([c for c in all_components if c.complexity == TestComplexity.SYSTEM]),
             "benchmarks": len([c for c in all_components if c.complexity == TestComplexity.BENCHMARK]),
-            "coverage_gaps": list(set(
-                gap for d in decompositions for gap in d.coverage_gaps
-            )),
+            "coverage_gaps": list(set(gap for d in decompositions for gap in d.coverage_gaps)),
         }

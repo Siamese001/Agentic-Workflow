@@ -80,17 +80,18 @@ def create_test_scenarios():
 
     return [adg_scenario, test_scenario, memory_scenario]
 
+
 def create_sequential_thinking_prompt(scenario):
     """Create a structured prompt for sequential thinking analysis."""
 
     prompt = f"""
-# Sequential Thinking Analysis: {scenario['title']}
+# Sequential Thinking Analysis: {scenario["title"]}
 
 ## Context
-{json.dumps(scenario['context'], indent=2)}
+{json.dumps(scenario["context"], indent=2)}
 
 ## Core Question
-{scenario['question']}
+{scenario["question"]}
 
 ## Sequential Analysis Requirements
 
@@ -138,6 +139,7 @@ Please analyze this systematically using the sequential thinking approach.
 
     return prompt
 
+
 def main():
     """Main function to run integration tests."""
     print("🧠 Sequential Thinking Integration Test for Agentic-Workflow")
@@ -153,7 +155,7 @@ def main():
 
         # Save prompt to file for manual testing
         prompt_file = Path(__file__).parent / f"sequential_thinking_scenario_{i}.md"
-        with open(prompt_file, 'w') as f:
+        with open(prompt_file, "w") as f:
             f.write(prompt)
 
         print(f"✅ Saved scenario prompt to: {prompt_file}")
@@ -186,13 +188,14 @@ def main():
     }
 
     test_file = Path(__file__).parent / "sequential_thinking_test_input.json"
-    with open(test_file, 'w') as f:
+    with open(test_file, "w") as f:
         json.dump(simple_test, f, indent=2)
 
     print(f"✅ Created test input file: {test_file}")
     print("   Use this with the sequential_thinking tool for immediate testing")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -17,6 +17,7 @@ class TestToSmartSnakeCase:
         """Test to_smart_snake_case module imports."""
         try:
             from agentic_core import to_smart_snake_case
+
             assert to_smart_snake_case is not None
         except ImportError:
             pytest.skip("to_smart_snake_case not available")
@@ -25,6 +26,7 @@ class TestToSmartSnakeCase:
         """Test ToSmartSnakeCase class exists."""
         try:
             from agentic_core import ToSmartSnakeCase
+
             assert ToSmartSnakeCase is not None
         except ImportError:
             pytest.skip("ToSmartSnakeCase not available")
@@ -33,6 +35,7 @@ class TestToSmartSnakeCase:
         """Test to_smart_snake_case functions are callable."""
         try:
             from agentic_core import validate_to_smart_snake_case
+
             assert callable(validate_to_smart_snake_case)
         except ImportError:
             pytest.skip("validate_to_smart_snake_case not available")

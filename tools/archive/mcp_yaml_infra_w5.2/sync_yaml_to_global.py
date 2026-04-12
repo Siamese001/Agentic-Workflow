@@ -194,14 +194,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Sync MCP config from YAML SSOT to global Windsurf config",
     )
-    parser.add_argument("--check", action="store_true",
-                        help="Check drift without writing (exit 0=synced, 1=drift)")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="Show generated config without writing")
-    parser.add_argument("--verify", action="store_true",
-                        help="Run health check after sync")
-    parser.add_argument("--verbose", "-v", action="store_true",
-                        help="Verbose output")
+    parser.add_argument(
+        "--check", action="store_true", help="Check drift without writing (exit 0=synced, 1=drift)"
+    )
+    parser.add_argument("--dry-run", action="store_true", help="Show generated config without writing")
+    parser.add_argument("--verify", action="store_true", help="Run health check after sync")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     args = parser.parse_args()
 
     # --- Load YAML ---
@@ -267,7 +265,8 @@ def main() -> int:
 
     GLOBAL_CONFIG.parent.mkdir(parents=True, exist_ok=True)
     GLOBAL_CONFIG.write_text(
-        json.dumps(new_config, indent=2) + "\n", encoding="utf-8",
+        json.dumps(new_config, indent=2) + "\n",
+        encoding="utf-8",
     )
     print(f"\nWrote {server_count} servers to {GLOBAL_CONFIG}")
     print("Restart Windsurf to apply changes.")

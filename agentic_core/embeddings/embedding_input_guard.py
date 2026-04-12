@@ -186,7 +186,8 @@ class EmbeddingInputGuard:
         re.compile(r"sk-[a-zA-Z0-9]{20,}"),  # API keys
         re.compile(r"Bearer [a-zA-Z0-9\-_.+/=]+"),  # Bearer tokens
         re.compile(
-            r"[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}", re.IGNORECASE,
+            r"[a-f0-9]{8}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{4}-?[a-f0-9]{12}",
+            re.IGNORECASE,
         ),  # UUIDs
         re.compile(r"[\w\.-]+@[\w\.-]+\.\w+"),  # Emails
     ]
@@ -195,6 +196,7 @@ class EmbeddingInputGuard:
     def guard(cls, text: str, field_name: str) -> GuardedText:
         """Guard and redact input text before embedding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingInputGuard.guard")
 

@@ -16,14 +16,17 @@ class TestPascalSovereigntyEdgeCases:
     def test_pascal_sovereignty_edge_cases_imports(self):
         """Test pascal_sovereignty_edge_cases module imports."""
         from agentic_core import pascal_sovereignty_edge_cases
+
         assert pascal_sovereignty_edge_cases is not None
 
     def test_pascal_sovereignty_edge_cases_class(self):
         """Test PascalSovereigntyEdgeCases class exists."""
         from agentic_core import PascalSovereigntyEdgeCases
+
         assert PascalSovereigntyEdgeCases is not None
 
     def test_pascal_sovereignty_edge_cases_callable(self):
         """Test pascal_sovereignty_edge_cases functions are callable."""
         from agentic_core import validate_pascal_sovereignty_edge_cases
+
         assert callable(validate_pascal_sovereignty_edge_cases)

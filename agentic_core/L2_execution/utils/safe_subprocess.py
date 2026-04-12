@@ -272,7 +272,10 @@ def safe_subprocess_call(
 ) -> int:
     """Safe subprocess.call wrapper."""
     result = safe_subprocess_run(
-        argv, cwd=cwd, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs,
+        argv,
+        cwd=cwd,
+        allow_protected_root_mutation=allow_protected_root_mutation,
+        **kwargs,
     )
     return result.returncode
 
@@ -286,7 +289,11 @@ def safe_subprocess_check_call(
 ) -> None:
     """Safe subprocess.check_call wrapper."""
     safe_subprocess_run(
-        argv, cwd=cwd, check=True, allow_protected_root_mutation=allow_protected_root_mutation, **kwargs,
+        argv,
+        cwd=cwd,
+        check=True,
+        allow_protected_root_mutation=allow_protected_root_mutation,
+        **kwargs,
     )
 
 

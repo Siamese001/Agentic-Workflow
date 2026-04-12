@@ -12,7 +12,6 @@ Design invariants:
 """
 # guardian: allow-silent_swallower - ADG violation exemption
 
-
 from __future__ import annotations
 
 import hashlib
@@ -306,7 +305,9 @@ class HealingMemoryRetriever:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "HealingMemoryRetriever.retrieve_similar_incidents",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "HealingMemoryRetriever.retrieve_similar_incidents",
         )
 
         if not signal_text or not signal_text.strip():
@@ -362,12 +363,15 @@ class HealingMemoryRetriever:
         # Track retrieval quality metrics for system learning
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             # Calculate quality metrics
             avg_similarity = sum(inc.similarity for inc in results) / len(results) if results else 0.0
             high_similarity_count = sum(1 for inc in results if inc.similarity > 0.8)
-            retrieval_quality = "high" if avg_similarity > 0.8 else "medium" if avg_similarity > 0.6 else "low"
+            retrieval_quality = (
+                "high" if avg_similarity > 0.8 else "medium" if avg_similarity > 0.6 else "low"
+            )
 
             bridge.persist_healing_memory_retrieval_quality(
                 signal_hash=hashlib.sha256(signal_text.encode()).hexdigest()[:16],
@@ -379,15 +383,19 @@ class HealingMemoryRetriever:
                 timestamp_utc=int(time.time() * 1000),
             )
         except Exception as e:
-
             # System learning unavailable - continue without tracking
-            import logging; logging.getLogger(__name__).debug("healing_memory_retriever: Exception swallowed at L381: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("healing_memory_retriever: Exception swallowed at L381: %s", e)
 
         return results
 
 
 def build_retriever(
-    base_path: Path | None = None, profile: Any | None = None, *, index_id: str = _INDEX_ID,
+    base_path: Path | None = None,
+    profile: Any | None = None,
+    *,
+    index_id: str = _INDEX_ID,
 ) -> HealingMemoryRetriever | NullHealingMemoryRetriever:
     """Factory: return a live HealingMemoryRetriever or NullHealingMemoryRetriever.
 
@@ -413,8 +421,11 @@ def build_retriever(
             try:
                 store.load_from_disk(index_id, disk_dir)
             except (ManifestIntegrityError, Exception) as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("healing_memory_retriever: ManifestIntegrityError swallowed at L414: %s", e)
+                logging.getLogger(__name__).debug(
+                    "healing_memory_retriever: ManifestIntegrityError swallowed at L414: %s", e
+                )
         return HealingMemoryRetriever(store=store, profile=profile, index_id=index_id)
     except ImportError:  # guardian: allow-silent-swallow
         return NullHealingMemoryRetriever()

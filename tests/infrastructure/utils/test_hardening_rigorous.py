@@ -16,14 +16,17 @@ class TestHardeningRigorous:
     def test_hardening_rigorous_imports(self):
         """Test hardening rigorous module imports."""
         from ops_scripts.ci import hardening_rigorous
+
         assert hardening_rigorous is not None
 
     def test_hardening_rigorous_checker(self):
         """Test hardening rigorous checker exists."""
         from ops_scripts.ci.hardening_rigorous import RigorousHardeningChecker
+
         assert RigorousHardeningChecker is not None
 
     def test_hardening_rigorous_validate(self):
         """Test hardening rigorous validate function."""
         from ops_scripts.ci.hardening_rigorous import validate_rigorous_hardening
+
         assert callable(validate_rigorous_hardening)

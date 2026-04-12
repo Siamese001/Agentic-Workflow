@@ -26,7 +26,7 @@ from agentic_core.L3_orchestration.inference.qwen_vllm.tools import get_gpu_moni
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class BenchmarkConfig:
     """Configuration for benchmark run."""
+
     base_url: str = "http://localhost:8000/v1"
     model: str = "Qwen/Qwen2.5-14B-Instruct-AWQ"
 
@@ -59,6 +60,7 @@ class BenchmarkConfig:
 @dataclass
 class LiveMetrics:
     """Live metrics during benchmark execution."""
+
     timestamp: float
     requests_completed: int
     requests_failed: int
@@ -91,7 +93,8 @@ class BenchmarkRunner:
         # Setup signal handlers for graceful shutdown
         for sig in (signal.SIGINT, signal.SIGTERM):
             asyncio.get_event_loop().add_signal_handler(
-                sig, lambda: self._stop_event.set(),
+                sig,
+                lambda: self._stop_event.set(),
             )
 
         # Start GPU monitoring
@@ -260,10 +263,7 @@ class BenchmarkRunner:
             start = time.time()
 
             # Create all tasks
-            tasks = [
-                _make_request(i)
-                for i in range(self.config.concurrent_requests_per_level)
-            ]
+            tasks = [_make_request(i) for i in range(self.config.concurrent_requests_per_level)]
 
             # Execute with progress logging
             logger.info(f"  Launching {len(tasks)} tasks at concurrency {level}")
@@ -288,7 +288,9 @@ class BenchmarkRunner:
 
     async def _phase_stress(self) -> None:
         """Stress test with sustained high concurrency."""
-        logger.info(f"  Stress test: {self.config.stress_concurrent} concurrent for {self.config.stress_duration_sec}s")
+        logger.info(
+            f"  Stress test: {self.config.stress_concurrent} concurrent for {self.config.stress_duration_sec}s"
+        )
 
         client = OptimizedVLLMClient(
             base_url=self.config.base_url,
@@ -331,10 +333,7 @@ class BenchmarkRunner:
         try:
             # Run workers for specified duration
             start = time.time()
-            workers = [
-                asyncio.create_task(_stress_worker())
-                for _ in range(self.config.stress_concurrent)
-            ]
+            workers = [asyncio.create_task(_stress_worker()) for _ in range(self.config.stress_concurrent)]
 
             # Wait for duration
             await asyncio.wait_for(
@@ -509,7 +508,7 @@ class BenchmarkRunner:
 
         # Save report
         report_path = "qwen_benchmark_report.json"
-        with open(report_path, 'w') as f:
+        with open(report_path, "w") as f:
             json.dump(report, f, indent=2)
 
         logger.info(f"\n{'=' * 70}")
@@ -541,9 +540,7 @@ class BenchmarkRunner:
             "avg_throughput_rps": sum(throughputs) / len(throughputs) if throughputs else 0,
             "avg_latency_p50_ms": sum(latencies_p50) / len(latencies_p50) if latencies_p50 else 0,
             "total_requests": sum(
-                data.get("total_requests", 0)
-                for data in self.results.values()
-                if isinstance(data, dict)
+                data.get("total_requests", 0) for data in self.results.values() if isinstance(data, dict)
             ),
         }
 

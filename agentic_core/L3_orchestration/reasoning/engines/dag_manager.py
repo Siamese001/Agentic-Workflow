@@ -207,7 +207,11 @@ except (ImportError, AttributeError):
 
 
 class DAGManager(
-    HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin,
+    HealerMixin,
+    MCPHardenedMixin,
+    L3SubatomicTestingMixin,
+    RedisCacheMixin,
+    PineconeVectorMixin,
 ):
     """Manages the dynamic DAG with mutation capabilities.
 
@@ -261,7 +265,9 @@ class DAGManager(
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "DAGManager.register_function",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "DAGManager.register_function",
         )
 
         self.function_registry[name] = function

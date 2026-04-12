@@ -202,8 +202,11 @@ class HOPStageCapability:
             RuntimeError: If any required input is missing from the buffer.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HOPStageCapability.read_required_inputs")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HOPStageCapability.read_required_inputs"
+        )
 
         inputs: dict[str, Any] = {}
         agent_name = self.__class__.__name__

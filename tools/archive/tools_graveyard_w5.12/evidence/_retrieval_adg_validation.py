@@ -39,28 +39,69 @@ RETRIEVAL_RELATIONS = [
     "execution_terminates_at_uwg",
 ]
 
-AGENTIC_CORE_LAYERS = ["L0_routing", "L1_cognition", "L2_execution",
-                        "L3_orchestration", "L4_state", "L5_safety", "L6_observability"]
+AGENTIC_CORE_LAYERS = [
+    "L0_routing",
+    "L1_cognition",
+    "L2_execution",
+    "L3_orchestration",
+    "L4_state",
+    "L5_safety",
+    "L6_observability",
+]
 
-APPS_PACKAGES = ["apps_lic", "apps_rg", "apps_eval", "apps_exec",
-                 "apps_research", "apps_rfp", "apps_shared", "apps_underwriting_ai"]
+APPS_PACKAGES = [
+    "apps_lic",
+    "apps_rg",
+    "apps_eval",
+    "apps_exec",
+    "apps_research",
+    "apps_rfp",
+    "apps_shared",
+    "apps_underwriting_ai",
+]
 
 # Retrieval-specific symbol patterns from v18 spec
 RETRIEVAL_SYMBOLS = [
     # L1 - query embedding / intent expansion
-    "query_intent_expansion", "QueryIntentExpansion", "embed", "intent",
+    "query_intent_expansion",
+    "QueryIntentExpansion",
+    "embed",
+    "intent",
     # L2 - chunking / enrichment / conservation
-    "chunk", "Chunk", "enrich", "Enrich", "semantic_enrichment", "ChunkManifest",
-    "conservation", "ingestion", "DocumentLoader",
+    "chunk",
+    "Chunk",
+    "enrich",
+    "Enrich",
+    "semantic_enrichment",
+    "ChunkManifest",
+    "conservation",
+    "ingestion",
+    "DocumentLoader",
     # L3 - context assembly / orchestration
-    "context_assembl", "ContextAssembl", "retrieval_orchestrat", "RetrievalOrchestrat",
-    "GraphRAG", "graphrag", "graph_rag",
+    "context_assembl",
+    "ContextAssembl",
+    "retrieval_orchestrat",
+    "RetrievalOrchestrat",
+    "GraphRAG",
+    "graphrag",
+    "graph_rag",
     # L4 - canonical store / vector / state
-    "vector", "Vector", "faiss", "chroma", "ParentChildIndex", "chunk_manifest",
-    "retrieval_cache", "RetrievalCache", "semantic_cache", "SemanticCache",
+    "vector",
+    "Vector",
+    "faiss",
+    "chroma",
+    "ParentChildIndex",
+    "chunk_manifest",
+    "retrieval_cache",
+    "RetrievalCache",
+    "semantic_cache",
+    "SemanticCache",
     # L5 - safety / guardrail on retrieval
-    "retrieval_guard", "RetrievalGate", "AdaptiveRetrievalGate",
-    "retrieval_gate", "adaptive_retrieval",
+    "retrieval_guard",
+    "RetrievalGate",
+    "AdaptiveRetrievalGate",
+    "retrieval_gate",
+    "adaptive_retrieval",
 ]
 
 
@@ -99,14 +140,16 @@ def run():
     print("\n[AGENTIC_CORE LAYER COVERAGE - retrieval relations]")
     layer_coverage = {}
     for layer in AGENTIC_CORE_LAYERS:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT relation_type, COUNT(*) as cnt
             FROM edges
             WHERE (source LIKE ? OR target LIKE ?)
               AND relation_type IN ({})
             GROUP BY relation_type
         """.format(",".join("?" * len(RETRIEVAL_RELATIONS))),
-        [f"%{layer}%", f"%{layer}%"] + RETRIEVAL_RELATIONS)
+            [f"%{layer}%", f"%{layer}%"] + RETRIEVAL_RELATIONS,
+        )
         rows = cur.fetchall()
         total = sum(r[1] for r in rows)
         layer_coverage[layer] = {"total": total, "by_rel": {r[0]: r[1] for r in rows}}
@@ -119,14 +162,16 @@ def run():
     print("\n[APPS_* COVERAGE - retrieval relations]")
     apps_coverage = {}
     for app in APPS_PACKAGES:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT relation_type, COUNT(*) as cnt
             FROM edges
             WHERE (source LIKE ? OR target LIKE ?)
               AND relation_type IN ({})
             GROUP BY relation_type
         """.format(",".join("?" * len(RETRIEVAL_RELATIONS))),
-        [f"%{app}%", f"%{app}%"] + RETRIEVAL_RELATIONS)
+            [f"%{app}%", f"%{app}%"] + RETRIEVAL_RELATIONS,
+        )
         rows = cur.fetchall()
         total = sum(r[1] for r in rows)
         apps_coverage[app] = {"total": total, "by_rel": {r[0]: r[1] for r in rows}}
@@ -160,15 +205,21 @@ def run():
         ("L6_observability", "L4_state"),
     ]
     for src_layer, tgt_layer in cross_pairs:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT COUNT(*) FROM edges
             WHERE source LIKE ? AND target LIKE ?
-        """, (f"%{src_layer}%", f"%{tgt_layer}%"))
+        """,
+            (f"%{src_layer}%", f"%{tgt_layer}%"),
+        )
         fwd = cur.fetchone()[0]
-        cur.execute("""
+        cur.execute(
+            """
             SELECT COUNT(*) FROM edges
             WHERE source LIKE ? AND target LIKE ?
-        """, (f"%{tgt_layer}%", f"%{src_layer}%"))
+        """,
+            (f"%{tgt_layer}%", f"%{src_layer}%"),
+        )
         rev = cur.fetchone()[0]
         status = "OK" if (fwd + rev) > 0 else "GAP"
         print(f"  [{status}] {src_layer} <-> {tgt_layer}: {fwd} fwd / {rev} rev")
@@ -177,11 +228,14 @@ def run():
     print("\n[APPS_* -> AGENTIC_CORE RETRIEVAL WIRING]")
     for app in APPS_PACKAGES:
         for layer in ["L1_cognition", "L2_execution", "L3_orchestration", "L4_state", "L5_safety"]:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT COUNT(*) FROM edges
                 WHERE (source LIKE ? AND target LIKE ?)
                    OR (source LIKE ? AND target LIKE ?)
-            """, (f"%{app}%", f"%{layer}%", f"%{layer}%", f"%{app}%"))
+            """,
+                (f"%{app}%", f"%{layer}%", f"%{layer}%", f"%{app}%"),
+            )
             count = cur.fetchone()[0]
             if count == 0:
                 print(f"  [GAP]  {app} <-> {layer}: 0 edges")

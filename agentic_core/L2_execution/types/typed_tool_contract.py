@@ -436,7 +436,9 @@ class TypedToolRegistry:
         import uuid  # noqa: PLC0415
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"TypedToolRegistry.register:{entry.tool_name}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"TypedToolRegistry.register:{entry.tool_name}",
         )
         with self._lock:
             self._entries[(entry.tool_name, entry.tool_version)] = entry

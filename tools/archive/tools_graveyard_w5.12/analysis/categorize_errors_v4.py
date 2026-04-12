@@ -56,9 +56,11 @@ except Exception as e:
     try:
         result = subprocess.run(
             [sys.executable, "-c", code],
-            capture_output=True, text=True,
+            capture_output=True,
+            text=True,
             timeout=PER_MODULE_TIMEOUT,
-            encoding="utf-8", errors="replace",
+            encoding="utf-8",
+            errors="replace",
         )
         stdout = result.stdout.strip()
         if stdout:
@@ -93,7 +95,9 @@ def main():
         if (i + 1) % 50 == 0 or i == 0:
             elapsed = time.monotonic() - SCRIPT_START
             pct = ((i + 1) / file_count) * 100
-            print(f"  [{pct:5.1f}%] {i+1}/{file_count} files | {elapsed:.0f}s elapsed | errors={errors} ok={ok_count}")
+            print(
+                f"  [{pct:5.1f}%] {i + 1}/{file_count} files | {elapsed:.0f}s elapsed | errors={errors} ok={ok_count}"
+            )
 
         check_script_timeout()
 
@@ -199,7 +203,9 @@ def main():
     report_path = Path("artifacts/collection_error_categories.json")
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report = {
-        "total": total, "ok": ok_count, "errors": errors,
+        "total": total,
+        "ok": ok_count,
+        "errors": errors,
         "elapsed_seconds": round(elapsed, 1),
         "categories": dict(categories.most_common()),
         "samples": {k: [str(s) for s in v[:10]] for k, v in cat_samples.items()},

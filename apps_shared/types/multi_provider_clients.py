@@ -1,4 +1,5 @@
 """Stub: multi_provider_clients — minimal shim for HardenedGeminiExecutor."""
+
 from __future__ import annotations
 
 from enum import Enum
@@ -19,8 +20,7 @@ class _StubClient:
 
     def interactions(self, *args: Any, **kwargs: Any) -> Any:
         raise ImportError(
-            f"No real client available for provider {self._provider!r}. "
-            "Install the required SDK.",
+            f"No real client available for provider {self._provider!r}. Install the required SDK.",
         )
 
 

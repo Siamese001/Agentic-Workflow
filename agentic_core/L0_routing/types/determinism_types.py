@@ -175,7 +175,8 @@ class SemanticClockSnapshot:
 
 
 def validate_semantic_clock(
-    semantic_clock: SemanticClockSnapshot | None, context: str = "",
+    semantic_clock: SemanticClockSnapshot | None,
+    context: str = "",
 ) -> SemanticClockSnapshot:
     """§Phase3.2 — Hard-fail if semantic_clock is None at a determinism chokepoint."""
     if semantic_clock is None:

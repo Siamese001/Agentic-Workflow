@@ -204,20 +204,25 @@ class ShadowEvaluationRunner:
             ShadowEvaluationResult with delta report and monitoring snapshots
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ShadowEvaluationRunner.run")
 
         replay_runner = ReplayEvaluationRunner(metrics=self.metrics, l4_store=self.l4_store)
         delta_report = replay_runner.run(
-            dataset=dataset, config_a=self.baseline_config, config_b=self.candidate_config,
+            dataset=dataset,
+            config_a=self.baseline_config,
+            config_b=self.candidate_config,
         )
         baseline_report = self._run_single(self.baseline_config, dataset)
         candidate_report = self._run_single(self.candidate_config, dataset)
         baseline_retrieval_snapshot = self._build_retrieval_snapshot(
-            baseline_report, version=self.baseline_config.version,
+            baseline_report,
+            version=self.baseline_config.version,
         )
         candidate_retrieval_snapshot = self._build_retrieval_snapshot(
-            candidate_report, version=self.candidate_config.version,
+            candidate_report,
+            version=self.candidate_config.version,
         )
         candidate_alerts = []
         if self.retrieval_monitor is not None:

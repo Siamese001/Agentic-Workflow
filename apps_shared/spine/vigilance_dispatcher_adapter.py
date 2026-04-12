@@ -218,8 +218,11 @@ class VigilanceDispatcherAdapter:
         Falls back to no-op if any step fails.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "VigilanceDispatcherAdapter.dispatch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "VigilanceDispatcherAdapter.dispatch"
+        )
 
         if not self._real:
             return

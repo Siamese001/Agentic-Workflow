@@ -14,6 +14,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 @pytest.mark.unit
 class TestOutcomeLogger:
     """Test deterministic OutcomeLogger implementation."""
@@ -25,8 +26,8 @@ class TestOutcomeLogger:
         logger = OutcomeLogger()
 
         assert logger is not None
-        assert hasattr(logger, 'log_outcome')
-        assert hasattr(logger, 'get_outcomes')
+        assert hasattr(logger, "log_outcome")
+        assert hasattr(logger, "get_outcomes")
 
     def test_log_outcome_records_event(self):
         """Test log_outcome records an event."""
@@ -45,9 +46,9 @@ class TestOutcomeLogger:
         outcomes = logger.get_outcomes()
 
         assert len(outcomes) == 1
-        assert outcomes[0]['event_type'] == "test_event"
-        assert outcomes[0]['outcome'] == "success"
-        assert outcomes[0]['metadata']['test'] == "value"
+        assert outcomes[0]["event_type"] == "test_event"
+        assert outcomes[0]["outcome"] == "success"
+        assert outcomes[0]["metadata"]["test"] == "value"
 
     def test_get_outcomes_returns_copy(self):
         """Test get_outcomes returns a copy, not reference."""
@@ -78,9 +79,9 @@ class TestOutcomeLogger:
         outcomes = logger.get_outcomes()
 
         assert len(outcomes) == 3
-        assert outcomes[0]['event_type'] == "event1"
-        assert outcomes[1]['event_type'] == "event2"
-        assert outcomes[2]['event_type'] == "event3"
+        assert outcomes[0]["event_type"] == "event1"
+        assert outcomes[1]["event_type"] == "event2"
+        assert outcomes[2]["event_type"] == "event3"
 
     def test_clear_outcomes(self):
         """Test clearing outcomes."""
@@ -92,6 +93,6 @@ class TestOutcomeLogger:
         assert len(logger.get_outcomes()) == 1
 
         # Clear if method exists
-        if hasattr(logger, 'clear_outcomes'):
+        if hasattr(logger, "clear_outcomes"):
             logger.clear_outcomes()
             assert len(logger.get_outcomes()) == 0

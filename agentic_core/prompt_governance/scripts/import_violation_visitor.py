@@ -175,8 +175,11 @@ class ImportViolationVisitor(ast.NodeVisitor):
     def visit_Import(self, node):
         """Check 'import x.y.z' statements."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ImportViolationVisitor.visit_Import")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ImportViolationVisitor.visit_Import"
+        )
 
         for alias in node.names:
             import_path = alias.name
@@ -223,7 +226,7 @@ def analyze_file(file_path: Path) -> list[dict]:
         visitor = ImportViolationVisitor(file_path)
         visitor.visit(tree)
         return visitor.violations
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [
             {
                 "file": str(file_path),

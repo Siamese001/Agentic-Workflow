@@ -195,7 +195,9 @@ class SovereignMcpMarketplace:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "SovereignMcpMarketplace.discover_and_register_safe", "state_snapshot",
+            str(_uuid.uuid4()),
+            "SovereignMcpMarketplace.discover_and_register_safe",
+            "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -205,13 +207,17 @@ class SovereignMcpMarketplace:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "SovereignMcpMarketplace.discover_and_register_safe", "p0_governance",
+            str(_uuid.uuid4()),
+            "SovereignMcpMarketplace.discover_and_register_safe",
+            "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignMcpMarketplace.discover_and_register_safe",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SovereignMcpMarketplace.discover_and_register_safe",
         )
 
         installed = marketplace_data.get("installed", [])

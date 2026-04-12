@@ -13,6 +13,7 @@ This guides the narrowing strategy:
 Usage:
     python tools/evidence/_has_reraise_analysis.py
 """
+
 from __future__ import annotations
 
 import ast
@@ -39,7 +40,13 @@ def handler_has_log(handler: ast.ExceptHandler) -> bool:
     for node in ast.walk(handler):
         if isinstance(node, ast.Call):
             func = node.func
-            if isinstance(func, ast.Attribute) and func.attr in ("error", "warning", "exception", "info", "debug"):
+            if isinstance(func, ast.Attribute) and func.attr in (
+                "error",
+                "warning",
+                "exception",
+                "info",
+                "debug",
+            ):
                 return True
             if isinstance(func, ast.Name) and func.id in ("print",):
                 return True

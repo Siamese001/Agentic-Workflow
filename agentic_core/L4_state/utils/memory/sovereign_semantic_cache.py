@@ -307,8 +307,11 @@ class SovereignSemanticCache(SovereignBaseAgent):
                 self.redis.delete(key)
             # guardian: allow-silent-swallow
             except Exception as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("sovereign_semantic_cache: Exception swallowed at L309: %s", e)
+                logging.getLogger(__name__).debug(
+                    "sovereign_semantic_cache: Exception swallowed at L309: %s", e
+                )
         self._vector_store.pop(key, None)
         Logger.info(f"[L4 PURGE] Purged semantic trail for {Path(file_path).name}")
 

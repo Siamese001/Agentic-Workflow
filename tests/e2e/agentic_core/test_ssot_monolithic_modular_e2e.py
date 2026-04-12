@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.insert(0, 'c:/Git/Agentic-Workflow')
+sys.path.insert(0, "c:/Git/Agentic-Workflow")
 
 import subprocess
 
@@ -10,26 +10,43 @@ import subprocess
 def run_monolithic():
     """Run monolithic version via entrypoint."""
     result = subprocess.run(
-        [sys.executable, '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint',
-         '--legacy', '--targets', 'agentic_core', '--heal', '-v'],
+        [
+            sys.executable,
+            "-m",
+            "agentic_core.L0_routing.scripts.execute_ssot_entrypoint",
+            "--legacy",
+            "--targets",
+            "agentic_core",
+            "--heal",
+            "-v",
+        ],
         capture_output=True,
         text=True,
         timeout=120,
-        cwd='c:/Git/Agentic-Workflow',
+        cwd="c:/Git/Agentic-Workflow",
     )
     return result
+
 
 def run_modular():
     """Run modular version via entrypoint (without --legacy flag)."""
     result = subprocess.run(
-        [sys.executable, '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint',
-         '--targets', 'agentic_core', '--heal', '-v'],
+        [
+            sys.executable,
+            "-m",
+            "agentic_core.L0_routing.scripts.execute_ssot_entrypoint",
+            "--targets",
+            "agentic_core",
+            "--heal",
+            "-v",
+        ],
         capture_output=True,
         text=True,
         timeout=120,
-        cwd='c:/Git/Agentic-Workflow',
+        cwd="c:/Git/Agentic-Workflow",
     )
     return result
+
 
 def main():
     print("=" * 80)
@@ -82,32 +99,32 @@ def main():
 
     if mod_result:
         mod_out = mod_result.stdout
-        if 'discovery phase' in mod_out.lower():
-            mod_phases.append('Discovery')
-        if 'validation phase' in mod_out.lower():
-            mod_phases.append('Validation')
-        if 'alignment phase' in mod_out.lower():
-            mod_phases.append('Alignment')
-        if 'healing phase' in mod_out.lower():
-            mod_phases.append('Healing')
-        if 'reporting phase' in mod_out.lower():
-            mod_phases.append('Reporting')
+        if "discovery phase" in mod_out.lower():
+            mod_phases.append("Discovery")
+        if "validation phase" in mod_out.lower():
+            mod_phases.append("Validation")
+        if "alignment phase" in mod_out.lower():
+            mod_phases.append("Alignment")
+        if "healing phase" in mod_out.lower():
+            mod_phases.append("Healing")
+        if "reporting phase" in mod_out.lower():
+            mod_phases.append("Reporting")
         print(f"Modular phases: {mod_phases or 'Unknown/Discovery only'}")
     else:
         print("Modular: FAILED to run")
 
     if mono_result:
         mono_out = mono_result.stdout
-        if 'discovery phase' in mono_out.lower():
-            mono_phases.append('Discovery')
-        if 'validation phase' in mono_out.lower():
-            mono_phases.append('Validation')
-        if 'alignment phase' in mono_out.lower():
-            mono_phases.append('Alignment')
-        if 'healing phase' in mono_out.lower():
-            mono_phases.append('Healing')
-        if 'reporting phase' in mono_out.lower():
-            mono_phases.append('Reporting')
+        if "discovery phase" in mono_out.lower():
+            mono_phases.append("Discovery")
+        if "validation phase" in mono_out.lower():
+            mono_phases.append("Validation")
+        if "alignment phase" in mono_out.lower():
+            mono_phases.append("Alignment")
+        if "healing phase" in mono_out.lower():
+            mono_phases.append("Healing")
+        if "reporting phase" in mono_out.lower():
+            mono_phases.append("Reporting")
         print(f"Monolithic phases: {mono_phases or 'Unknown'}")
     else:
         print("Monolithic: FAILED to run")
@@ -127,6 +144,7 @@ def main():
         print("\n⚠ Monolithic works, modular needs fixes")
     else:
         print("\n✗ Both need fixes")
+
 
 if __name__ == "__main__":
     main()

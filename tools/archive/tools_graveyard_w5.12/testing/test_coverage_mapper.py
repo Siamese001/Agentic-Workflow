@@ -285,10 +285,10 @@ class TestCoverageMapper:
 
             # to_adg can be a module or symbol
             if to_adg.startswith(_MODULE_PREFIX):
-                target_path = to_adg[len(_MODULE_PREFIX):]
+                target_path = to_adg[len(_MODULE_PREFIX) :]
                 self._add_coverage(self._module_to_tests, target_path, from_path)
             elif to_adg.startswith(_SYMBOL_PREFIX):
-                symbol_name = to_adg[len(_SYMBOL_PREFIX):]
+                symbol_name = to_adg[len(_SYMBOL_PREFIX) :]
                 self._add_coverage(self._symbol_to_tests, symbol_name, from_path)
                 # Also credit the parent module (dot-notation up to last segment)
                 if "." in symbol_name:

@@ -355,7 +355,9 @@ class _EmbeddingPipelineVisitor(BaseRuntimeVisitor):
         elif tail in EMBEDDING_SYMBOLS or base in EMBEDDING_SYMBOLS:
             self._emit("embeds_into", "embedding_pipeline", sym or tail, node.lineno, _Edge, canonical_name)
         elif tail in VECTOR_STORE_SYMBOLS or base in VECTOR_STORE_SYMBOLS:
-            self._emit("stores_embedding", "embedding_pipeline", sym or tail, node.lineno, _Edge, canonical_name)
+            self._emit(
+                "stores_embedding", "embedding_pipeline", sym or tail, node.lineno, _Edge, canonical_name
+            )
         elif tail in RETRIEVAL_SYMBOLS or sym in RETRIEVAL_SYMBOLS:
             self._emit("retrieves_via", "retrieval_pipeline", sym or tail, node.lineno, _Edge, canonical_name)
 

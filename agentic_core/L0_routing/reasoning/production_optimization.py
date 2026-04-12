@@ -29,6 +29,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class OptimizationMetrics:
     """Metrics for optimization performance"""
@@ -46,6 +47,7 @@ class OptimizationMetrics:
     memory_usage_after: int  # MB
     memory_savings: float
 
+
 @dataclass
 class CacheEntry:
     """Cache entry with metadata"""
@@ -57,6 +59,7 @@ class CacheEntry:
     access_count: int = 0
     size_bytes: int = 0
     hit_count: int = 0
+
 
 @dataclass
 class CacheStats:
@@ -71,6 +74,7 @@ class CacheStats:
     max_size: int
     memory_usage_mb: float
 
+
 class ModelCompressor(ABC):
     """Abstract base class for model compression"""
 
@@ -83,6 +87,7 @@ class ModelCompressor(ABC):
     def decompress(self, compressed_model: Any) -> Any:
         """Decompress model"""
         pass
+
 
 class QuantizationCompressor(ModelCompressor):
     """Quantization-based model compression"""
@@ -97,7 +102,7 @@ class QuantizationCompressor(ModelCompressor):
         start_time = time.time()
 
         # Validate model compatibility
-        if not hasattr(model, '__dict__'):
+        if not hasattr(model, "__dict__"):
             raise ValueError("Model must have __dict__ attribute for quantization")
 
         # Get original model size (simplified)
@@ -117,7 +122,9 @@ class QuantizationCompressor(ModelCompressor):
         optimized_accuracy = self._measure_accuracy(compressed_model)
         accuracy_degradation = (original_accuracy - optimized_accuracy) / original_accuracy
         optimized_memory = self._estimate_memory_usage(compressed_model)
-        memory_savings = (original_memory - optimized_memory) / original_memory if original_memory > 0 else 0.0
+        memory_savings = (
+            (original_memory - optimized_memory) / original_memory if original_memory > 0 else 0.0
+        )
 
         metrics = OptimizationMetrics(
             original_size=original_size,
@@ -136,12 +143,16 @@ class QuantizationCompressor(ModelCompressor):
 
         compression_time = time.time() - start_time
 
-        _emit_records_learning_event("quantization_compressor", "compression_complete", {
-            "compression_ratio": compression_ratio,
-            "latency_improvement": latency_improvement,
-            "accuracy_degradation": accuracy_degradation,
-            "compression_time": compression_time,
-        })
+        _emit_records_learning_event(
+            "quantization_compressor",
+            "compression_complete",
+            {
+                "compression_ratio": compression_ratio,
+                "latency_improvement": latency_improvement,
+                "accuracy_degradation": accuracy_degradation,
+                "compression_time": compression_time,
+            },
+        )
 
         return compressed_model, metrics
 
@@ -157,7 +168,7 @@ class QuantizationCompressor(ModelCompressor):
         # Here we simulate quantization by reducing precision
         quantized_model = {}
 
-        if hasattr(model, '__dict__'):
+        if hasattr(model, "__dict__"):
             for attr_name, attr_value in model.__dict__.items():
                 if isinstance(attr_value, np.ndarray):
                     # Simulate quantization
@@ -170,7 +181,7 @@ class QuantizationCompressor(ModelCompressor):
 
     def _estimate_model_size(self, model: Any) -> int:
         """Estimate model size in bytes"""
-        if hasattr(model, '__dict__'):
+        if hasattr(model, "__dict__"):
             size = 0
             for attr_value in model.__dict__.values():
                 if isinstance(attr_value, np.ndarray):
@@ -183,11 +194,8 @@ class QuantizationCompressor(ModelCompressor):
     def _measure_inference_latency(self, model: Any) -> float:
         """Measure inference latency in milliseconds"""
         # Simulate inference latency
-        if hasattr(model, '__dict__'):
-            param_count = sum(
-                1 for v in model.__dict__.values()
-                if isinstance(v, np.ndarray)
-            )
+        if hasattr(model, "__dict__"):
+            param_count = sum(1 for v in model.__dict__.values() if isinstance(v, np.ndarray))
             return max(1.0, param_count * 0.1)  # 0.1ms per parameter
         return 10.0  # Default 10ms
 
@@ -199,6 +207,7 @@ class QuantizationCompressor(ModelCompressor):
     def _estimate_memory_usage(self, model: Any) -> int:
         """Estimate memory usage in MB"""
         return self._estimate_model_size(model) // (1024 * 1024)
+
 
 class PruningCompressor(ModelCompressor):
     """Pruning-based model compression"""
@@ -227,7 +236,9 @@ class PruningCompressor(ModelCompressor):
         optimized_accuracy = self._measure_accuracy(compressed_model)
         accuracy_degradation = (original_accuracy - optimized_accuracy) / original_accuracy
         optimized_memory = self._estimate_memory_usage(compressed_model)
-        memory_savings = (original_memory - optimized_memory) / original_memory if original_memory > 0 else 0.0
+        memory_savings = (
+            (original_memory - optimized_memory) / original_memory if original_memory > 0 else 0.0
+        )
 
         metrics = OptimizationMetrics(
             original_size=original_size,
@@ -246,12 +257,16 @@ class PruningCompressor(ModelCompressor):
 
         compression_time = time.time() - start_time
 
-        _emit_records_learning_event("pruning_compressor", "compression_complete", {
-            "compression_ratio": compression_ratio,
-            "latency_improvement": latency_improvement,
-            "accuracy_degradation": accuracy_degradation,
-            "compression_time": compression_time,
-        })
+        _emit_records_learning_event(
+            "pruning_compressor",
+            "compression_complete",
+            {
+                "compression_ratio": compression_ratio,
+                "latency_improvement": latency_improvement,
+                "accuracy_degradation": accuracy_degradation,
+                "compression_time": compression_time,
+            },
+        )
 
         return compressed_model, metrics
 
@@ -263,7 +278,7 @@ class PruningCompressor(ModelCompressor):
         """Prune model weights (simplified)"""
         pruned_model = {}
 
-        if hasattr(model, '__dict__'):
+        if hasattr(model, "__dict__"):
             for attr_name, attr_value in model.__dict__.items():
                 if isinstance(attr_value, np.ndarray):
                     # Simulate pruning by setting small values to zero
@@ -278,7 +293,7 @@ class PruningCompressor(ModelCompressor):
 
     def _estimate_model_size(self, model: Any) -> int:
         """Estimate model size in bytes"""
-        if hasattr(model, '__dict__'):
+        if hasattr(model, "__dict__"):
             size = 0
             for attr_value in model.__dict__.values():
                 if isinstance(attr_value, np.ndarray):
@@ -292,10 +307,9 @@ class PruningCompressor(ModelCompressor):
 
     def _measure_inference_latency(self, model: Any) -> float:
         """Measure inference latency"""
-        if hasattr(model, '__dict__'):
+        if hasattr(model, "__dict__"):
             param_count = sum(
-                np.count_nonzero(v) for v in model.__dict__.values()
-                if isinstance(v, np.ndarray)
+                np.count_nonzero(v) for v in model.__dict__.values() if isinstance(v, np.ndarray)
             )
             return max(0.5, param_count * 0.05)  # Faster with pruning
         return 5.0
@@ -307,6 +321,7 @@ class PruningCompressor(ModelCompressor):
     def _estimate_memory_usage(self, model: Any) -> int:
         """Estimate memory usage in MB"""
         return self._estimate_model_size(model) // (1024 * 1024)
+
 
 class LRUCache:
     """Least Recently Used cache implementation"""
@@ -410,15 +425,14 @@ class LRUCache:
                 memory_usage_mb=memory_usage,
             )
 
+
 class DistributedCache:
     """Distributed cache with multiple nodes"""
 
     def __init__(self, nodes: list[str], replication_factor: int = 2):
         self.nodes = nodes
         self.replication_factor = replication_factor
-        self.local_caches: dict[str, LRUCache] = {
-            node: LRUCache(max_size=500) for node in nodes
-        }
+        self.local_caches: dict[str, LRUCache] = {node: LRUCache(max_size=500) for node in nodes}
         self.node_selector = self._create_node_selector()
 
     def get(self, key: str) -> Any | None:
@@ -466,6 +480,7 @@ class DistributedCache:
         """Get statistics for all nodes"""
         return {node: cache.get_stats() for node, cache in self.local_caches.items()}
 
+
 class PerformanceOptimizer:
     """
     Performance optimization system for ML routing models.
@@ -498,11 +513,15 @@ class PerformanceOptimizer:
         # Thread pool for concurrent operations
         self.executor = ThreadPoolExecutor(max_workers=4)
 
-        _emit_stores_learning_state("performance_optimizer", "initialization", {
-            "compressors": [type(c).__name__ for c in self.compressors],
-            "cache_type": type(self.cache).__name__,
-            "optimization_target": optimization_target,
-        })
+        _emit_stores_learning_state(
+            "performance_optimizer",
+            "initialization",
+            {
+                "compressors": [type(c).__name__ for c in self.compressors],
+                "cache_type": type(self.cache).__name__,
+                "optimization_target": optimization_target,
+            },
+        )
 
     def optimize_model(self, model_id: str, model: Any) -> dict[str, OptimizationMetrics]:
         """Optimize model using all available compressors"""
@@ -517,22 +536,28 @@ class PerformanceOptimizer:
                 self.compressed_models[f"{model_id}_{compressor_name}"] = (compressed_model, metrics)
                 optimization_results[compressor_name] = metrics
 
-                _emit_records_learning_event("performance_optimizer", "model_optimized", {
-                    "model_id": model_id,
-                    "compressor": compressor_name,
-                    "compression_ratio": metrics.compression_ratio,
-                    "latency_improvement": metrics.latency_improvement,
-                })
+                _emit_records_learning_event(
+                    "performance_optimizer",
+                    "model_optimized",
+                    {
+                        "model_id": model_id,
+                        "compressor": compressor_name,
+                        "compression_ratio": metrics.compression_ratio,
+                        "latency_improvement": metrics.latency_improvement,
+                    },
+                )
 
             except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Compression with {type(compressor).__name__} failed: {e}")
 
         # Record optimization
-        self.optimization_history.append({
-            "model_id": model_id,
-            "timestamp": time.time(),
-            "results": optimization_results,
-        })
+        self.optimization_history.append(
+            {
+                "model_id": model_id,
+                "timestamp": time.time(),
+                "results": optimization_results,
+            }
+        )
 
         return optimization_results
 
@@ -558,7 +583,7 @@ class PerformanceOptimizer:
             return None
 
         best_key = None
-        best_score = -float('inf')
+        best_score = -float("inf")
 
         for key in candidate_keys:
             _, metrics = self.compressed_models[key]
@@ -569,7 +594,9 @@ class PerformanceOptimizer:
             elif self.optimization_target == "memory":
                 score = metrics.memory_savings - metrics.accuracy_degradation
             else:  # balanced
-                score = (metrics.latency_improvement + metrics.memory_savings) / 2 - metrics.accuracy_degradation
+                score = (
+                    metrics.latency_improvement + metrics.memory_savings
+                ) / 2 - metrics.accuracy_degradation
 
             if score > best_score:
                 best_score = score
@@ -581,23 +608,35 @@ class PerformanceOptimizer:
         """Cache prediction result"""
         self.cache.put(cache_key, prediction, ttl)
 
-        _emit_emits_metric_event("performance_optimizer", "cache_write", {
-            "cache_key": cache_key,
-            "ttl": ttl,
-        })
+        _emit_emits_metric_event(
+            "performance_optimizer",
+            "cache_write",
+            {
+                "cache_key": cache_key,
+                "ttl": ttl,
+            },
+        )
 
     def get_cached_prediction(self, cache_key: str) -> Any | None:
         """Get cached prediction"""
         prediction = self.cache.get(cache_key)
 
         if prediction is not None:
-            _emit_emits_metric_event("performance_optimizer", "cache_hit", {
-                "cache_key": cache_key,
-            })
+            _emit_emits_metric_event(
+                "performance_optimizer",
+                "cache_hit",
+                {
+                    "cache_key": cache_key,
+                },
+            )
         else:
-            _emit_emits_metric_event("performance_optimizer", "cache_miss", {
-                "cache_key": cache_key,
-            })
+            _emit_emits_metric_event(
+                "performance_optimizer",
+                "cache_miss",
+                {
+                    "cache_key": cache_key,
+                },
+            )
 
         return prediction
 
@@ -607,7 +646,7 @@ class PerformanceOptimizer:
             "optimization_target": self.optimization_target,
             "total_optimizations": len(self.optimization_history),
             "compressed_models": len(self.compressed_models),
-            "cache_stats": self.cache.get_stats() if hasattr(self.cache, 'get_stats') else {},
+            "cache_stats": self.cache.get_stats() if hasattr(self.cache, "get_stats") else {},
             "compressor_performance": {},
         }
 
@@ -645,20 +684,25 @@ class PerformanceOptimizer:
                 }
                 for key, (_, metrics) in self.compressed_models.items()
             },
-            "cache_stats": self.cache.get_stats() if hasattr(self.cache, 'get_stats') else {},
+            "cache_stats": self.cache.get_stats() if hasattr(self.cache, "get_stats") else {},
         }
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(state, f, indent=2)
 
-        _emit_stores_learning_state("performance_optimizer", "state_saved", {
-            "filepath": filepath,
-            "compressed_models": len(self.compressed_models),
-        })
+        _emit_stores_learning_state(
+            "performance_optimizer",
+            "state_saved",
+            {
+                "filepath": filepath,
+                "compressed_models": len(self.compressed_models),
+            },
+        )
 
     def shutdown(self):
         """Cleanup resources"""
         self.executor.shutdown(wait=True)
+
 
 # Utility functions
 def create_default_optimizer() -> PerformanceOptimizer:
@@ -677,6 +721,7 @@ def create_default_optimizer() -> PerformanceOptimizer:
         optimization_target="balanced",
     )
 
+
 def create_distributed_optimizer(nodes: list[str]) -> PerformanceOptimizer:
     """Create optimizer with distributed cache"""
 
@@ -692,6 +737,7 @@ def create_distributed_optimizer(nodes: list[str]) -> PerformanceOptimizer:
         cache=cache,
         optimization_target="latency",
     )
+
 
 __all__ = [
     "PerformanceOptimizer",

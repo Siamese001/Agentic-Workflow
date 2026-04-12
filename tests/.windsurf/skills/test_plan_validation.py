@@ -11,7 +11,9 @@ from pathlib import Path
 import pytest
 
 # Import the module under test
-sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / ".windsurf" / "skills" / "plan-validation"))
+sys.path.insert(
+    0, str(Path(__file__).parent.parent.parent.parent / ".windsurf" / "skills" / "plan-validation")
+)
 from main import (
     validate_plan_format,
     validate_plan_location,

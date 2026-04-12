@@ -1,6 +1,7 @@
 """
 Condition Recommender - Generates conditions for APPROVE_WITH_CONDITIONS decisions.
 """
+
 from typing import List
 
 from ..types import DecisionState, RiskFeatures, UnderwritingRequest
@@ -98,8 +99,11 @@ class ConditionRecommender:
         # Appraisal
         if request.collateral.appraisal_date:
             from datetime import datetime
+
             try:
-                appraisal_dt = datetime.fromisoformat(request.collateral.appraisal_date.replace('Z', '+00:00'))
+                appraisal_dt = datetime.fromisoformat(
+                    request.collateral.appraisal_date.replace("Z", "+00:00")
+                )
                 days_old = (datetime.now() - appraisal_dt).days
                 if days_old > 180:
                     conditions.append("Updated appraisal required if transaction not closed within 60 days")

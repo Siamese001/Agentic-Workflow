@@ -229,8 +229,11 @@ class LineageIndex:
     def mutations_for_state(self, state_key: str) -> list[LineageRecord]:
         """Return all modules that write to a state symbol matching state_key."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LineageIndex.mutations_for_state")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LineageIndex.mutations_for_state"
+        )
 
         results: list[LineageRecord] = []
         for sym, records in self._by_symbol.items():

@@ -167,7 +167,11 @@ _emit_links_execution_to_snapshot("p4", "structural_healing_engine_util", "exec_
 
 
 def relocate_file(
-    source_path: Path, target_path: Path, project_root: Path, *, dry_run: bool = True,
+    source_path: Path,
+    target_path: Path,
+    project_root: Path,
+    *,
+    dry_run: bool = True,
 ) -> dict[str, Any]:
     """Relocate a file with integrity verification and rollback.
 

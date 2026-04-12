@@ -23,11 +23,5 @@ if str(ROOT) not in sys.path:
 # First, add the missing emitter functions to lifecycle_trace_contract
 
 
-
-
-
-
-
-
 if __name__ == "__main__":
     sys.exit(main())

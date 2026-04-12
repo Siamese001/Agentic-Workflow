@@ -276,7 +276,11 @@ class ThinkActObserveEngine:
             LOGGER.info("think_act_observe_engine_initialized", extra={"config": self.config.to_dict()})
 
     async def execute_cycle(
-        self, mission: str, scene: dict[str, Any], think_fn: Any, act_fn: Any,
+        self,
+        mission: str,
+        scene: dict[str, Any],
+        think_fn: Any,
+        act_fn: Any,
     ) -> dict[str, Any]:
         """Execute the full Think-Act-Observe cycle.
 
@@ -430,7 +434,9 @@ class ThinkActObserveEngine:
             return {"success": True, "results": results}
 
     async def _observe_phase(
-        self, think_result: dict[str, Any], act_result: dict[str, Any],
+        self,
+        think_result: dict[str, Any],
+        act_result: dict[str, Any],
     ) -> dict[str, Any]:
         """Execute OBSERVE phase.
 

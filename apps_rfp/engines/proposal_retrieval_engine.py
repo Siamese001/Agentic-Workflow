@@ -238,12 +238,14 @@ class ProposalRetrievalEngine:
         filters = {"industry": industry} if industry else None
         results = self.store.query_similar(query, n_results=n_results, filters=filters)
 
-        self._query_history.append({
-            "query": query,
-            "filters": filters,
-            "results_count": len(results),
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._query_history.append(
+            {
+                "query": query,
+                "filters": filters,
+                "results_count": len(results),
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         return results
 
@@ -261,12 +263,14 @@ class ProposalRetrievalEngine:
             # Extract section if we have structured metadata
             meta = prop.metadata
             if "sections" in meta and section_type in meta["sections"]:
-                sections.append({
-                    "proposal_id": prop.proposal_id,
-                    "title": prop.title,
-                    "section_content": meta["sections"][section_type],
-                    "similarity": prop.similarity_score,
-                })
+                sections.append(
+                    {
+                        "proposal_id": prop.proposal_id,
+                        "title": prop.title,
+                        "section_content": meta["sections"][section_type],
+                        "similarity": prop.similarity_score,
+                    }
+                )
 
             if len(sections) >= n_results:
                 break

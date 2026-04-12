@@ -457,7 +457,9 @@ class FileDeadLetterStorage(DeadLetterStorage):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DeadLetterQueue.add:{item.envelope.trace_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"DeadLetterQueue.add:{item.envelope.trace_id}"
+        )
         try:
             path = self._get_item_path(item)
             data = item.to_dict()
@@ -680,7 +682,9 @@ class DeadLetterQueue:
 
     # guardian: allow-magic-config
     async def list_failed_envelopes(
-        self, status: DeadLetterStatus | None = None, limit: int = 100,
+        self,
+        status: DeadLetterStatus | None = None,
+        limit: int = 100,
     ) -> list[DeadLetterItem]:
         """List failed envelopes.
 
@@ -704,7 +708,9 @@ class DeadLetterQueue:
             True if updated successfully
         """
         return await self.storage.update_status(
-            trace_id, DeadLetterStatus.UNDER_INVESTIGATION, f"Investigation started by {investigator}",
+            trace_id,
+            DeadLetterStatus.UNDER_INVESTIGATION,
+            f"Investigation started by {investigator}",
         )
 
     async def resolve(self, trace_id: str, resolution: str, resolved_by: str) -> bool:
@@ -719,7 +725,9 @@ class DeadLetterQueue:
             True if updated successfully
         """
         success = await self.storage.update_status(
-            trace_id, DeadLetterStatus.RESOLVED, f"Resolved by {resolved_by}: {resolution}",
+            trace_id,
+            DeadLetterStatus.RESOLVED,
+            f"Resolved by {resolved_by}: {resolution}",
         )
         if success:
             self._stats["resolved"] += 1

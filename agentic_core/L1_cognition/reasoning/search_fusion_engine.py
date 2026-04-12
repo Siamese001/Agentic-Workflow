@@ -153,7 +153,10 @@ class SearchFusionEngine:
 
             # Step 2: Apply fusion method
             fused_response = await self._fuse_results(
-                local_response, global_response, drift_response, query,
+                local_response,
+                global_response,
+                drift_response,
+                query,
             )
 
             # Step 3: Apply diversification if enabled
@@ -161,7 +164,7 @@ class SearchFusionEngine:
                 fused_response.results = self._apply_diversification(fused_response.results)
 
             # Step 4: Apply final limits
-            fused_response.results = fused_response.results[:query.max_results]
+            fused_response.results = fused_response.results[: query.max_results]
             fused_response.total_returned = len(fused_response.results)
 
             # Update statistics
@@ -194,7 +197,8 @@ class SearchFusionEngine:
             )
 
     async def _execute_individual_searches(
-        self, query: SearchQuery,
+        self,
+        query: SearchQuery,
     ) -> tuple[SearchResponse, SearchResponse, SearchResponse]:
         """Execute individual search strategies in parallel."""
         import asyncio
@@ -236,7 +240,10 @@ class SearchFusionEngine:
         drift_future = self.drift_engine.search(drift_query)
 
         local_response, global_response, drift_response = await asyncio.gather(
-            local_future, global_future, drift_future, return_exceptions=True,
+            local_future,
+            global_future,
+            drift_future,
+            return_exceptions=True,
         )
 
         # Handle exceptions
@@ -361,9 +368,9 @@ class SearchFusionEngine:
         fused_results = []
         for result_id, scores in all_results.items():
             weighted_score = (
-                scores["local_score"] * self.fusion_config.local_weight +
-                scores["global_score"] * self.fusion_config.global_weight +
-                scores["drift_score"] * self.fusion_config.drift_weight
+                scores["local_score"] * self.fusion_config.local_weight
+                + scores["global_score"] * self.fusion_config.global_weight
+                + scores["drift_score"] * self.fusion_config.drift_weight
             )
 
             # Normalize score
@@ -473,9 +480,9 @@ class SearchFusionEngine:
                 drift_rank = ranks.get("drift", len(drift_response.results) + 1)
 
                 fused_score = (
-                    self.fusion_config.local_weight / local_rank +
-                    self.fusion_config.global_weight / global_rank +
-                    self.fusion_config.drift_weight / drift_rank
+                    self.fusion_config.local_weight / local_rank
+                    + self.fusion_config.global_weight / global_rank
+                    + self.fusion_config.drift_weight / drift_rank
                 )
 
                 # Normalize score
@@ -574,9 +581,9 @@ class SearchFusionEngine:
                 drift_rank = ranks.get("drift", len(drift_response.results) + 1)
 
                 rrf_score = (
-                    self.fusion_config.local_weight * (1.0 / (k + local_rank)) +
-                    self.fusion_config.global_weight * (1.0 / (k + global_rank)) +
-                    self.fusion_config.drift_weight * (1.0 / (k + drift_rank))
+                    self.fusion_config.local_weight * (1.0 / (k + local_rank))
+                    + self.fusion_config.global_weight * (1.0 / (k + global_rank))
+                    + self.fusion_config.drift_weight * (1.0 / (k + drift_rank))
                 )
 
                 # Normalize score
@@ -719,7 +726,11 @@ def create_search_fusion_engine(
 ) -> SearchFusionEngine:
     """Create a search fusion engine."""
     return SearchFusionEngine(
-        graph_store, fusion_config, local_config, global_config, drift_config,
+        graph_store,
+        fusion_config,
+        local_config,
+        global_config,
+        drift_config,
     )
 
 

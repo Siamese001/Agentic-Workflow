@@ -289,11 +289,15 @@ class NegotiationConfig(BaseModel):
     max_rounds: int = Field(default_factory=lambda: int(os.getenv("NEGOTIATION_MAX_ROUNDS", "2")), ge=1, le=5)
     max_message_length: int = Field(default=1000, ge=100, le=10000)
     response_timeout: float = Field(
-        default_factory=lambda: float(os.getenv("NEGOTIATION_RESPONSE_TIMEOUT", "30.0")), ge=5.0, le=300.0,
+        default_factory=lambda: float(os.getenv("NEGOTIATION_RESPONSE_TIMEOUT", "30.0")),
+        ge=5.0,
+        le=300.0,
     )
     enable_persistence: bool = True
     auto_resolve_threshold: float = Field(
-        default_factory=lambda: float(os.getenv("NEGOTIATION_AUTO_RESOLVE_THRESHOLD", "0.8")), ge=0.0, le=1.0,
+        default_factory=lambda: float(os.getenv("NEGOTIATION_AUTO_RESOLVE_THRESHOLD", "0.8")),
+        ge=0.0,
+        le=1.0,
     )
 
 
@@ -407,7 +411,9 @@ class NodeNegotiator:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "NodeNegotiator.request_change")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "NodeNegotiator.request_change"
+        )
         self.stats["total_negotiations"] += 1
         round_id = self._get_or_create_round(downstream_hop.config.hop_id, upstream_hop_id)
         negotiation = self.active_negotiations[round_id]
@@ -442,7 +448,9 @@ class NodeNegotiator:
         negotiation.messages.append(response)
 
     async def _handle_change_request(
-        self, message: NegotiationMessage, negotiation: NegotiationRound,
+        self,
+        message: NegotiationMessage,
+        negotiation: NegotiationRound,
     ) -> None:
         """Handle change request."""
         logger.info(f"Change requested: {message.payload}")
@@ -487,7 +495,8 @@ class NodeNegotiator:
                 return round_id
         round_id = f"neg_{int(time.time() * 1000)}_{hop1_id}_{hop2_id}"
         self.active_negotiations[round_id] = NegotiationRound(
-            round_id=round_id, participants=[hop1_id, hop2_id],
+            round_id=round_id,
+            participants=[hop1_id, hop2_id],
         )
         return round_id
 
@@ -563,7 +572,11 @@ def get_node_negotiator(**kwargs) -> NodeNegotiator:
 
 
 async def request_upstream_change(
-    downstream_hop: SubatomicHop, upstream_hop_id: str, change_request: str, reason: str, **kwargs,
+    downstream_hop: SubatomicHop,
+    upstream_hop_id: str,
+    change_request: str,
+    reason: str,
+    **kwargs,
 ) -> NegotiationResult:
     """Convenience function for requesting upstream changes.
 
@@ -619,7 +632,9 @@ class NegotiatingHop(SubatomicHop):
         self.negotiation_enabled = True
 
     async def evaluate_downstream_feedback(
-        self, downstream_output: Any, expected_criteria: list[str],
+        self,
+        downstream_output: Any,
+        expected_criteria: list[str],
     ) -> bool:
         """Evaluate if downstream feedback requires negotiation.
 
@@ -635,7 +650,10 @@ class NegotiatingHop(SubatomicHop):
         return False
 
     async def request_upstream_modification(
-        self, upstream_hop_id: str, modification: str, reason: str,
+        self,
+        upstream_hop_id: str,
+        modification: str,
+        reason: str,
     ) -> NegotiationResult:
         """Request modification from upstream node.
 
@@ -650,5 +668,8 @@ class NegotiatingHop(SubatomicHop):
         if not self.negotiation_enabled:
             raise RuntimeError("Negotiation not enabled")
         return await request_upstream_change(
-            downstream_hop=self, upstream_hop_id=upstream_hop_id, change_request=modification, reason=reason,
+            downstream_hop=self,
+            upstream_hop_id=upstream_hop_id,
+            change_request=modification,
+            reason=reason,
         )

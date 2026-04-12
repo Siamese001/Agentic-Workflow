@@ -85,6 +85,7 @@ def test_enhanced_filtering():
                     _is_runtime_only_relation,
                     _should_keep_runtime_edge,
                 )
+
                 if _is_runtime_only_relation(edge.relation_type):
                     runtime_edges += 1
                     if _should_keep_runtime_edge(edge):
@@ -95,7 +96,9 @@ def test_enhanced_filtering():
             print(f"  Runtime edges: {runtime_edges}")
             print(f"  Kept runtime edges: {kept_runtime_edges}")
             print(f"  Filtered runtime edges: {runtime_edges - kept_runtime_edges}")
-            print(f"  Runtime filtering rate: {((runtime_edges - kept_runtime_edges) / runtime_edges * 100) if runtime_edges > 0 else 0:.1f}%")
+            print(
+                f"  Runtime filtering rate: {((runtime_edges - kept_runtime_edges) / runtime_edges * 100) if runtime_edges > 0 else 0:.1f}%"
+            )
             print(f"  Edge types: {len(edge_types)}")
 
             return edge_types, runtime_edges, kept_runtime_edges
@@ -103,7 +106,9 @@ def test_enhanced_filtering():
         full_types, full_runtime, full_kept = analyze_edges(result_full.edges, "Full mode")
         print()
 
-        selective_types, selective_runtime, selective_kept = analyze_edges(result_selective.edges, "Selective mode")
+        selective_types, selective_runtime, selective_kept = analyze_edges(
+            result_selective.edges, "Selective mode"
+        )
         print()
 
         prod_types, prod_runtime, prod_kept = analyze_edges(result_prod.edges, "Production only")
@@ -111,9 +116,13 @@ def test_enhanced_filtering():
 
         # Calculate improvements
         total_edge_reduction = len(result_full.edges) - len(result_selective.edges)
-        total_reduction_percent = (total_edge_reduction / len(result_full.edges)) * 100 if result_full.edges else 0
+        total_reduction_percent = (
+            (total_edge_reduction / len(result_full.edges)) * 100 if result_full.edges else 0
+        )
 
-        runtime_filtering_improvement = (full_runtime - selective_runtime) / full_runtime * 100 if full_runtime > 0 else 0
+        runtime_filtering_improvement = (
+            (full_runtime - selective_runtime) / full_runtime * 100 if full_runtime > 0 else 0
+        )
 
         print("=== Results ===")
         print(f"Total edge reduction: {total_edge_reduction} ({total_reduction_percent:.1f}%)")
@@ -122,14 +131,19 @@ def test_enhanced_filtering():
 
         # Verify critical edges preserved
         critical_runtime_types = {
-            "applies_guardrail", "verifies_policy", "validated_by_safety_plane",
-            "execution_terminates_at_uwg", "records_execution_trace",
+            "applies_guardrail",
+            "verifies_policy",
+            "validated_by_safety_plane",
+            "execution_terminates_at_uwg",
+            "records_execution_trace",
         }
 
         selective_critical = {rt for rt in selective_types.keys() if rt in critical_runtime_types}
         prod_critical = {rt for rt in prod_types.keys() if rt in critical_runtime_types}
 
-        print(f"Critical runtime edges preserved (selective): {len(selective_critical)}/{len(critical_runtime_types)}")
+        print(
+            f"Critical runtime edges preserved (selective): {len(selective_critical)}/{len(critical_runtime_types)}"
+        )
         print(f"Critical runtime edges preserved (prod): {len(prod_critical)}/{len(critical_runtime_types)}")
 
         if selective_critical == critical_runtime_types:
@@ -151,8 +165,10 @@ def test_enhanced_filtering():
     finally:
         # Cleanup
         import shutil
+
         if cache_dir.exists():
             shutil.rmtree(cache_dir)
+
 
 if __name__ == "__main__":
     results = test_enhanced_filtering()

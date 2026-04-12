@@ -217,7 +217,9 @@ class CoreSynthesisExecutor:
         """Execute the complete synthesis and restructure plan."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "CoreSynthesisExecutor.execute_synthesis",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "CoreSynthesisExecutor.execute_synthesis",
         )
         print("🔬 PHASE 20: ZERO-LOSS SYNTHESIS & RESTRUCTURE")
         print("=" * 80)
@@ -457,7 +459,10 @@ class CoreSynthesisExecutor:
                 shutil.move(str(file_path), str(dest))
                 print(f"🔧 Evicted to utils: {file_path.name}")
                 evicted_count += 1
-            except (OSError, shutil.Error) as e:  # guardian: allow-specific -- eviction failure continues with others
+            except (
+                OSError,
+                shutil.Error,
+            ) as e:  # guardian: allow-specific -- eviction failure continues with others
                 print(f"❌ Failed to evict {file_path.name}: {e}")
                 return False
 
@@ -481,7 +486,10 @@ class CoreSynthesisExecutor:
                         print(f"❌ Circular dependency found in {file_path.name}: {zone}")
                         return False
 
-            except (OSError, UnicodeDecodeError) as e:  # guardian: allow-specific -- file read error returns False
+            except (
+                OSError,
+                UnicodeDecodeError,
+            ) as e:  # guardian: allow-specific -- file read error returns False
                 print(f"❌ Error checking {file_path.name}: {e}")
                 return False
 

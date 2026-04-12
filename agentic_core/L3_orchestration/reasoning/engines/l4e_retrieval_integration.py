@@ -45,6 +45,7 @@ class ADGEdgeHydration:
     Represents the resolved reads_from, writes_to, and pulls_context
     edges from the ADG graph that are relevant to a retrieved chunk.
     """
+
     chunk_id: str
     reads_from: list[dict[str, Any]] = field(default_factory=list)
     writes_to: list[dict[str, Any]] = field(default_factory=list)
@@ -60,6 +61,7 @@ class GraphRetrievalContext:
     Combines vector search results with graph-hydrated metadata
     for completeness-aware retrieval.
     """
+
     chunk_id: str
     content: str
     score: float
@@ -94,7 +96,9 @@ class GraphRetrievalContext:
                 "depth": self.expansion_depth,
                 "relationship": self.expansion_relationship,
                 "confidence": self.expansion_confidence,
-            } if self.expansion_depth > 0 else None,
+            }
+            if self.expansion_depth > 0
+            else None,
         }
 
 
@@ -131,7 +135,9 @@ class ADGEdgeHydrator:
         """
         _trace_id = f"hydrate_{chunk_id}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ADGEdgeHydrator.hydrate",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ADGEdgeHydrator.hydrate",
         )
 
         hydration = ADGEdgeHydration(chunk_id=chunk_id)
@@ -180,16 +186,20 @@ class ADGEdgeHydrator:
 
         for node in nodes:
             edges = self.adg_client.get_edges_for_node(
-                node.node_id, relation_type="reads_from", direction="out",
+                node.node_id,
+                relation_type="reads_from",
+                direction="out",
             )
             for edge in edges:
-                reads_from.append({
-                    "symbol": edge.symbol,
-                    "source_node": node.symbol_name,
-                    "target_node_id": edge.dst_id,
-                    "relation": edge.relation_type,
-                    "line_no": edge.line_no,
-                })
+                reads_from.append(
+                    {
+                        "symbol": edge.symbol,
+                        "source_node": node.symbol_name,
+                        "target_node_id": edge.dst_id,
+                        "relation": edge.relation_type,
+                        "line_no": edge.line_no,
+                    }
+                )
 
         return reads_from
 
@@ -200,16 +210,20 @@ class ADGEdgeHydrator:
 
         for node in nodes:
             edges = self.adg_client.get_edges_for_node(
-                node.node_id, relation_type="writes_to", direction="out",
+                node.node_id,
+                relation_type="writes_to",
+                direction="out",
             )
             for edge in edges:
-                writes_to.append({
-                    "symbol": edge.symbol,
-                    "source_node": node.symbol_name,
-                    "target_node_id": edge.dst_id,
-                    "relation": edge.relation_type,
-                    "line_no": edge.line_no,
-                })
+                writes_to.append(
+                    {
+                        "symbol": edge.symbol,
+                        "source_node": node.symbol_name,
+                        "target_node_id": edge.dst_id,
+                        "relation": edge.relation_type,
+                        "line_no": edge.line_no,
+                    }
+                )
 
         return writes_to
 
@@ -220,12 +234,14 @@ class ADGEdgeHydrator:
 
         for node in nodes:
             # pulls_context is based on nodes in the file
-            pulls_context.append({
-                "source": node.symbol_name,
-                "node_id": node.node_id,
-                "entity_type": node.entity_type,
-                "layer": node.layer,
-            })
+            pulls_context.append(
+                {
+                    "source": node.symbol_name,
+                    "node_id": node.node_id,
+                    "entity_type": node.entity_type,
+                    "layer": node.layer,
+                }
+            )
 
         return pulls_context
 
@@ -292,7 +308,9 @@ class GraphRetrievalEngine:
 
         _trace_id = f"retrieve_{self._retrieval_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphRetrievalEngine.retrieve",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "GraphRetrievalEngine.retrieve",
         )
         _emit_reads_through(_trace_id, "vector", query[:50])
 
@@ -354,18 +372,22 @@ class GraphRetrievalEngine:
             )
 
             formatted = []
-            for i, (doc_id, document, metadata) in enumerate(zip(
-                results['ids'][0],
-                results['documents'][0],
-                results['metadatas'][0],
-            )):
-                formatted.append({
-                    "chunk_id": doc_id,
-                    "content": document,
-                    "metadata": metadata,
-                    "score": 1.0 - (i * 0.1),  # Descending score
-                    "source": "vector",
-                })
+            for i, (doc_id, document, metadata) in enumerate(
+                zip(
+                    results["ids"][0],
+                    results["documents"][0],
+                    results["metadatas"][0],
+                )
+            ):
+                formatted.append(
+                    {
+                        "chunk_id": doc_id,
+                        "content": document,
+                        "metadata": metadata,
+                        "score": 1.0 - (i * 0.1),  # Descending score
+                        "source": "vector",
+                    }
+                )
 
             return formatted
 
@@ -399,16 +421,18 @@ class GraphRetrievalEngine:
                     continue
 
                 seen_ids.add(ctx.chunk_id)
-                all_results.append({
-                    "chunk_id": ctx.chunk_id,
-                    "content": ctx.content,
-                    "metadata": ctx.metadata,
-                    "score": ctx.confidence * 0.5,
-                    "source": "l4e_expansion",
-                    "expansion_depth": ctx.depth,
-                    "expansion_relationship": ctx.relationship,
-                    "expansion_confidence": ctx.confidence,
-                })
+                all_results.append(
+                    {
+                        "chunk_id": ctx.chunk_id,
+                        "content": ctx.content,
+                        "metadata": ctx.metadata,
+                        "score": ctx.confidence * 0.5,
+                        "source": "l4e_expansion",
+                        "expansion_depth": ctx.depth,
+                        "expansion_relationship": ctx.relationship,
+                        "expansion_confidence": ctx.confidence,
+                    }
+                )
 
         return all_results
 
@@ -461,9 +485,9 @@ class GraphRetrievalEngine:
             # Factor 2: ADG edge support
             if ctx.adg_hydration:
                 edge_count = (
-                    len(ctx.adg_hydration.reads_from) +
-                    len(ctx.adg_hydration.writes_to) +
-                    len(ctx.adg_hydration.pulls_context)
+                    len(ctx.adg_hydration.reads_from)
+                    + len(ctx.adg_hydration.writes_to)
+                    + len(ctx.adg_hydration.pulls_context)
                 )
                 score += min(0.3, edge_count * 0.05)
 
@@ -512,14 +536,16 @@ class GraphRetrievalEngine:
             if total_tokens + chunk_tokens > max_tokens:
                 break
 
-            formatted_chunks.append({
-                "chunk_id": ctx.chunk_id,
-                "content": ctx.content,
-                "title": ctx.manifest.title if ctx.manifest else "",
-                "key_concepts": ctx.manifest.key_concepts if ctx.manifest else [],
-                "groundedness": ctx.groundedness_score,
-                "source": ctx.source,
-            })
+            formatted_chunks.append(
+                {
+                    "chunk_id": ctx.chunk_id,
+                    "content": ctx.content,
+                    "title": ctx.manifest.title if ctx.manifest else "",
+                    "key_concepts": ctx.manifest.key_concepts if ctx.manifest else [],
+                    "groundedness": ctx.groundedness_score,
+                    "source": ctx.source,
+                }
+            )
             total_tokens += chunk_tokens
 
         return {

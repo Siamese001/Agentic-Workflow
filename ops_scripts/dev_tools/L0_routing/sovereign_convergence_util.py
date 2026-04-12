@@ -204,14 +204,14 @@ def align_territory() -> Any:
             for item in src_path.iterdir():
                 if item.is_file():
                     assert_no_persistent_write("L0", "shutil.mutate")
-                    shutil.move(str(item), str(dest_path / item.name))    # guardian: Add error context logging
+                    shutil.move(str(item), str(dest_path / item.name))  # guardian: Add error context logging
                 elif item.is_dir():
                     assert_no_persistent_write("L0", "shutil.mutate")
                     shutil.move(str(item), str(dest_path / item.name))
             try:
                 src_path.rmdir()
                 print(f"      [x] Removed legacy shell: {source}")
-            except OSError:    # guardian: Add error context logging
+            except OSError:  # guardian: Add error context logging
                 print(f"      [!] Warning: Could not remove {source} (not empty?)")
         else:
             print(f"  [-] Skipped: {source} (Not found)")

@@ -72,7 +72,9 @@ def profile_scanner_safe():
             # Save detailed profile
             profile_file = Path("scanner_profile_safe.stats")
             profiler.dump_stats(str(profile_file))
-            print(f"\n💾 Detailed profile saved to: {profile_file}")    # guardian: TimeoutError should be handled with specific context
+            print(
+                f"\n💾 Detailed profile saved to: {profile_file}"
+            )  # guardian: TimeoutError should be handled with specific context
 
             return result
 

@@ -51,7 +51,9 @@ class GeneratedTool:
     """DEPRECATED: Use agentic_core.L2_execution.utils.toolsmith_util.GeneratedTool instead."""
 
     def __init__(self, **kwargs):
-        warnings.warn("GeneratedTool is deprecated. Use toolsmith_util.GeneratedTool instead.", DeprecationWarning)
+        warnings.warn(
+            "GeneratedTool is deprecated. Use toolsmith_util.GeneratedTool instead.", DeprecationWarning
+        )
         self._impl = _GeneratedTool(**kwargs)
 
 

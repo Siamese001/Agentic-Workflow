@@ -188,7 +188,7 @@ class EvaluationValidator:
             if score < 0.0 or score > 1.0:
                 violations.append(
                     ValidationViolation(
-                        violation_id=f"V{len(violations)+1:03d}",
+                        violation_id=f"V{len(violations) + 1:03d}",
                         rule_id="R001",
                         check_id=dim_id,
                         severity=ViolationSeverity.BLOCKING,
@@ -215,7 +215,7 @@ class EvaluationValidator:
         for dim in missing:
             violations.append(
                 ValidationViolation(
-                    violation_id=f"V{len(violations)+1:03d}",
+                    violation_id=f"V{len(violations) + 1:03d}",
                     rule_id="R002",
                     check_id=dim,
                     severity=ViolationSeverity.WARNING,
@@ -266,7 +266,7 @@ class EvaluationValidator:
             if suite_id:  # Skip None values
                 violations.append(
                     ValidationViolation(
-                        violation_id=f"V{len(violations)+1:03d}",
+                        violation_id=f"V{len(violations) + 1:03d}",
                         rule_id="R004",
                         check_id=suite_id,
                         severity=ViolationSeverity.BLOCKING,
@@ -379,9 +379,7 @@ class EvaluationValidator:
         criteria_decompositions: list[dict[str, Any]],
     ) -> dict[str, Any]:
         """Assess test coverage against decomposed criteria."""
-        total_components = sum(
-            len(d.get("components", [])) for d in criteria_decompositions
-        )
+        total_components = sum(len(d.get("components", [])) for d in criteria_decompositions)
 
         if total_components == 0:
             return {"coverage_percentage": 0.0, "gaps": ["no_criteria_decomposed"]}

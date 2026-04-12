@@ -52,9 +52,7 @@ class AgentRunResult:
     @property
     def has_error(self) -> bool:
         """True if any error occurred during execution."""
-        return self.error is not None or any(
-            sp.error is not None for sp in self.subphases.values()
-        )
+        return self.error is not None or any(sp.error is not None for sp in self.subphases.values())
 
 
 @runtime_checkable
@@ -131,7 +129,11 @@ def compute_pipeline_digest(
 
 
 def emit_pipeline_digest(
-    pipeline_order: list[str], adapter_keys: list[str], territory: str, heal: bool, enable_llm: bool,
+    pipeline_order: list[str],
+    adapter_keys: list[str],
+    territory: str,
+    heal: bool,
+    enable_llm: bool,
 ) -> str:
     """Compute digest, print the canonical line, and return the digest string.
 

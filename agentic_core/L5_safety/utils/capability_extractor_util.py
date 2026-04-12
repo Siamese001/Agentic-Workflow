@@ -205,7 +205,9 @@ class CapabilityExtractor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CapabilityExtractor.extract_capabilities",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CapabilityExtractor.extract_capabilities",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -240,7 +242,11 @@ class CapabilityExtractor:
                 caps["semantic_tags"].add(tag)
 
     def _analyze_method_body(
-        self, item: ast.FunctionDef, method_name: str, method_loc: int, caps: dict,
+        self,
+        item: ast.FunctionDef,
+        method_name: str,
+        method_loc: int,
+        caps: dict,
     ) -> None:
         """Analyze method body for specialized patterns.
 

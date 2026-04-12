@@ -1,8 +1,10 @@
 import sqlite3
 
-conn = sqlite3.connect('C:/Git/Agentic-Workflow/artifacts/adg/adg_indexed_04062026_1246.sqlite')
+conn = sqlite3.connect("C:/Git/Agentic-Workflow/artifacts/adg/adg_indexed_04062026_1246.sqlite")
 print("Source files with tools/adg:")
-for row in conn.execute('SELECT DISTINCT source_file FROM edges WHERE source_file LIKE "%tools/adg%" LIMIT 5'):
+for row in conn.execute(
+    'SELECT DISTINCT source_file FROM edges WHERE source_file LIKE "%tools/adg%" LIMIT 5'
+):
     print(row[0])
 
 print("\nEdge kinds with broad_exception_catch:")

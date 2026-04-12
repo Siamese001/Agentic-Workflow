@@ -253,7 +253,9 @@ def main():
     if args.auto_sync and results["validation_passed"]:
         layer_progress = f"{args.layer}: {results['success_count']}/{len(args.files)}"
         commit_hash = sync_to_github(
-            f"{args.layer}_batch_{args.batch}", results["success_count"], layer_progress,
+            f"{args.layer}_batch_{args.batch}",
+            results["success_count"],
+            layer_progress,
         )
 
         if commit_hash:

@@ -21,7 +21,7 @@ from agentic_core.L2_execution.types.heal_contract_types import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "heal_result_adapter")
 # Mirror the pattern used by HealCheckResult.__post_init__ to detect absolute paths.

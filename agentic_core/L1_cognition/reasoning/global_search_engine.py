@@ -142,7 +142,7 @@ class GlobalSearchEngine:
 
             response = SearchResponse(
                 query=query,
-                results=filtered_results[:query.max_results],
+                results=filtered_results[: query.max_results],
                 total_found=len(filtered_results),
                 total_returned=min(len(filtered_results), query.max_results),
                 search_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
@@ -223,7 +223,7 @@ class GlobalSearchEngine:
         entity_results = []
 
         # Get entities from top communities
-        top_communities = community_results[:self.config.max_communities]
+        top_communities = community_results[: self.config.max_communities]
 
         for community_result in top_communities:
             community_id = community_result.item_id
@@ -234,7 +234,9 @@ class GlobalSearchEngine:
             if community and community.entities:
                 # Search within this community
                 community_entities = await self._search_community_entities(
-                    community, query, community_result.relevance_score,
+                    community,
+                    query,
+                    community_result.relevance_score,
                 )
                 entity_results.extend(community_entities)
 
@@ -250,7 +252,7 @@ class GlobalSearchEngine:
         entity_results = []
 
         # Limit entities per community
-        entity_ids = list(community.entities)[:self.config.max_entities_per_community]
+        entity_ids = list(community.entities)[: self.config.max_entities_per_community]
 
         for entity_id in entity_ids:
             # Get entity (sync call)
@@ -261,7 +263,9 @@ class GlobalSearchEngine:
                 entity_score = self._calculate_entity_relevance(entity, query)
 
                 # Apply community boost
-                boosted_score = min(1.0, entity_score * community_boost * self.config.community_summary_weight)
+                boosted_score = min(
+                    1.0, entity_score * community_boost * self.config.community_summary_weight
+                )
 
                 if boosted_score >= query.min_relevance_score:
                     result = SearchResult(
@@ -313,8 +317,7 @@ class GlobalSearchEngine:
 
         # Combined score
         combined_score = (
-            text_score * self.config.keyword_match_weight +
-            density_score * self.config.entity_density_weight
+            text_score * self.config.keyword_match_weight + density_score * self.config.entity_density_weight
         )
 
         return min(1.0, combined_score)

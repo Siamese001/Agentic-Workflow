@@ -307,7 +307,9 @@ class ReasoningIntensityEnforcer:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningIntensityEnforcer.validate_envelope",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ReasoningIntensityEnforcer.validate_envelope",
         )
 
         from agentic_core.L0_routing.types.reasoning_intensity_types import (

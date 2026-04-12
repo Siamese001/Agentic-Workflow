@@ -39,7 +39,7 @@ def main():
 
     elif command == "commit":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Usage: mcp_git_wrapper.py commit \"message\""}))
+            print(json.dumps({"error": 'Usage: mcp_git_wrapper.py commit "message"'}))
             sys.exit(1)
 
         message = sys.argv[2]
@@ -48,7 +48,7 @@ def main():
 
     elif command == "commit-safe":
         if len(sys.argv) < 3:
-            print(json.dumps({"error": "Usage: mcp_git_wrapper.py commit-safe \"message\""}))
+            print(json.dumps({"error": 'Usage: mcp_git_wrapper.py commit-safe "message"'}))
             sys.exit(1)
 
         message = sys.argv[2]
@@ -62,6 +62,7 @@ def main():
     else:
         print(json.dumps({"error": f"Unknown command: {command}"}))
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

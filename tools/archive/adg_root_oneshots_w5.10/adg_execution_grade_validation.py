@@ -31,9 +31,20 @@ print(f"Using ADG: {DB_PATH.name}")
 
 # Dirs the ADG scanner excludes (from SOVEREIGN_EXCLUDED_FOLDERS + scanner logic)
 _SCANNER_EXCLUDED_DIRS = {
-    ".git", "__pycache__", ".venv", "venv", "node_modules", ".tox",
-    "dist", "build", "archives", ".mypy_cache", ".pytest_cache",
-    ".ruff_cache", "htmlcov", "egg-info",
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "node_modules",
+    ".tox",
+    "dist",
+    "build",
+    "archives",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    "htmlcov",
+    "egg-info",
 }
 
 
@@ -53,6 +64,7 @@ def _repo_relative(filepath: Path, root: Path) -> str:
 # ============================================================================
 # S1: AST NODE COVERAGE — every .py function/class should have an ADG node
 # ============================================================================
+
 
 def validate_node_coverage(conn):
     print("\n" + "=" * 70)
@@ -144,6 +156,7 @@ def validate_node_coverage(conn):
 # S2: EDGE REALITY CHECK — calls/imports/reads_from backed by real AST
 # ============================================================================
 
+
 def validate_edge_reality(conn):
     print("\n" + "=" * 70)
     print("S2: EDGE REALITY CHECK (execution_edge_coverage)")
@@ -158,13 +171,16 @@ def validate_edge_reality(conn):
     results_by_type = {}
 
     for etype in edge_types_to_check:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT source_file, line_no, symbol, relation_type
             FROM edges
             WHERE relation_type = ? AND line_no > 1
             ORDER BY RANDOM()
             LIMIT 20
-        """, (etype,))
+        """,
+            (etype,),
+        )
         samples = cur.fetchall()
 
         verified = 0
@@ -213,6 +229,7 @@ def validate_edge_reality(conn):
 # S3: DENOMINATOR INTEGRITY (anti-cheat recomputation)
 # ============================================================================
 
+
 def validate_denominator_integrity(conn):
     print("\n" + "=" * 70)
     print("S3: DENOMINATOR INTEGRITY (independent AST recount)")
@@ -242,7 +259,8 @@ def validate_denominator_integrity(conn):
     }
     for dt in denom_types:
         count = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (dt,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?",
+            (dt,),
         ).fetchone()[0]
         denom_types[dt] = count
 
@@ -254,7 +272,7 @@ def validate_denominator_integrity(conn):
             source = fpath.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(fpath))
             has_call = any(isinstance(n, ast.Call) for n in ast.walk(tree))
-            if has_call:    # guardian: Parsing and encoding errors need separate handling strategies
+            if has_call:  # guardian: Parsing and encoding errors need separate handling strategies
                 # guardian: allow-silent-swallow - acceptable exception handling
                 files_with_calls += 1
         except (SyntaxError, UnicodeDecodeError):
@@ -277,8 +295,10 @@ def validate_denominator_integrity(conn):
     print("\n  Denominator edge counts:")
     for dt, count in denom_types.items():
         print(f"    {dt}: {count:,}")
-    print(f"\n  Independent call-file estimate: ~{estimated_files_with_calls:,} "
-          f"(sampled {files_with_calls}/{len(sample)} = {call_rate:.1%})")
+    print(
+        f"\n  Independent call-file estimate: ~{estimated_files_with_calls:,} "
+        f"(sampled {files_with_calls}/{len(sample)} = {call_rate:.1%})"
+    )
     print(f"  ADG 'calls' edges: {denom_types['calls']:,}")
     print(f"\n  PASS: {passed} (file_coverage >= 0.85)")
 
@@ -295,6 +315,7 @@ def validate_denominator_integrity(conn):
 # S4: SCANNER vs REALITY GAP TEST (precision / recall via AST shadow graph)
 # ============================================================================
 
+
 def validate_scanner_vs_reality(conn):
     print("\n" + "=" * 70)
     print("S4: SCANNER vs REALITY GAP (precision / recall)")
@@ -306,11 +327,11 @@ def validate_scanner_vs_reality(conn):
     sample_files = random.sample(list(_iter_python_files(ROOT)), min(100, 6623))
 
     shadow_imports = set()  # (from_module, to_module) pairs
-    shadow_calls = set()    # (from_module, symbol) pairs
+    shadow_calls = set()  # (from_module, symbol) pairs
 
     for fpath in sample_files:
         rel = _repo_relative(fpath, ROOT)
-        try:    # guardian: Parsing and encoding errors need separate handling strategies
+        try:  # guardian: Parsing and encoding errors need separate handling strategies
             # guardian: allow-silent-swallow - acceptable exception handling
             source = fpath.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(fpath))
@@ -345,7 +366,8 @@ def validate_scanner_vs_reality(conn):
         if count > 0:
             adg_import_files.add(rel)
         any_edge = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE source_file = ?", (rel,),
+            "SELECT COUNT(*) FROM edges WHERE source_file = ?",
+            (rel,),
         ).fetchone()[0]
         if any_edge > 0:
             adg_edge_files.add(rel)
@@ -391,8 +413,12 @@ def validate_scanner_vs_reality(conn):
     passed = overall_precision >= 0.95 and import_recall >= 0.95
 
     print(f"\n  Shadow graph from {len(sample_files)} sampled files ({len(adg_edge_files)} in ADG scope):")
-    print(f"    Shadow imports: {len(shadow_imports):,} (from {len(shadow_import_files)} files, {len(shadow_import_in_adg)} in ADG scope)")
-    print(f"    Shadow calls:   {len(shadow_calls):,} (from {len({f for f,_ in shadow_calls})} files, {len(shadow_call_files)} in ADG scope)")
+    print(
+        f"    Shadow imports: {len(shadow_imports):,} (from {len(shadow_import_files)} files, {len(shadow_import_in_adg)} in ADG scope)"
+    )
+    print(
+        f"    Shadow calls:   {len(shadow_calls):,} (from {len({f for f, _ in shadow_calls})} files, {len(shadow_call_files)} in ADG scope)"
+    )
     print(f"\n  Import precision: {import_precision:.4f}")
     print(f"  Import recall:    {import_recall:.4f}")
     print(f"  Call precision:   {call_precision:.4f}")
@@ -415,6 +441,7 @@ def validate_scanner_vs_reality(conn):
 # ============================================================================
 # S5: VIOLATION TRACE VALIDATION
 # ============================================================================
+
 
 def validate_violation_traces(conn):
     print("\n" + "=" * 70)
@@ -447,10 +474,9 @@ def validate_violation_traces(conn):
             source = fpath.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(fpath))
             # Verify: the violation source file and line exist in AST
-            has_node = any(
-                hasattr(n, "lineno") and n.lineno == ln
-                for n in ast.walk(tree)
-            ) if ln > 0 else True  # line_no=0 violations are module-level    # guardian: Parsing and encoding errors need separate handling strategies
+            has_node = (
+                any(hasattr(n, "lineno") and n.lineno == ln for n in ast.walk(tree)) if ln > 0 else True
+            )  # line_no=0 violations are module-level    # guardian: Parsing and encoding errors need separate handling strategies
             # guardian: allow-silent-swallow - acceptable exception handling
             checked += 1
             if has_node:
@@ -477,6 +503,7 @@ def validate_violation_traces(conn):
 # S6: DETERMINISM DIGEST REPRODUCIBILITY
 # ============================================================================
 
+
 def validate_determinism(conn):
     print("\n" + "=" * 70)
     print("S6: DETERMINISM DIGEST REPRODUCIBILITY")
@@ -500,7 +527,7 @@ def validate_determinism(conn):
     # Check structural consistency: edges should be sorted deterministically
     cur.execute("SELECT id FROM edges ORDER BY id LIMIT 10000")
     ids = [r[0] for r in cur.fetchall()]
-    ids_sorted = all(ids[i] <= ids[i+1] for i in range(len(ids)-1))
+    ids_sorted = all(ids[i] <= ids[i + 1] for i in range(len(ids) - 1))
 
     # Check node digest
     cur.execute("SELECT * FROM nodes ORDER BY id LIMIT 5000")
@@ -547,6 +574,7 @@ def validate_determinism(conn):
 # S7: SYNTHETIC EDGE CHECK (post P1608 removal)
 # ============================================================================
 
+
 def validate_no_synthetics(conn):
     print("\n" + "=" * 70)
     print("S7: SYNTHETIC EDGE CHECK (post P1608 removal)")
@@ -556,10 +584,18 @@ def validate_no_synthetics(conn):
 
     # P1608 relation types that should be gone or near-zero
     p1608_types = [
-        "mutation_signature", "parent_snapshot_hash", "policy_verification",
-        "dispatches_execution_plan", "defines_test_case", "defines_test_suite",
-        "defines_invariant", "emits_test_result", "records_validation_outcome",
-        "links_to_execution_trace", "gates_promotion", "detects_regression",
+        "mutation_signature",
+        "parent_snapshot_hash",
+        "policy_verification",
+        "dispatches_execution_plan",
+        "defines_test_case",
+        "defines_test_suite",
+        "defines_invariant",
+        "emits_test_result",
+        "records_validation_outcome",
+        "links_to_execution_trace",
+        "gates_promotion",
+        "detects_regression",
     ]
 
     total_p1608 = 0
@@ -567,7 +603,8 @@ def validate_no_synthetics(conn):
     print("  " + "-" * 50)
     for rt in p1608_types:
         count = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (rt,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?",
+            (rt,),
         ).fetchone()[0]
         total_p1608 += count
         if count > 0:
@@ -578,11 +615,13 @@ def validate_no_synthetics(conn):
 
     # Some of these types may have legitimate AST-backed edges (e.g., dispatches_execution_plan from P1OrchVisitor)
     # Check if remaining edges have real line numbers
-    cur.execute("""
+    cur.execute(
+        """
         SELECT COUNT(*) FROM edges
         WHERE relation_type IN ({})
         AND line_no <= 1
-    """.format(",".join(f"'{rt}'" for rt in p1608_types)))
+    """.format(",".join(f"'{rt}'" for rt in p1608_types))
+    )
     synthetic_remaining = cur.fetchone()[0]
 
     passed = synthetic_remaining == 0
@@ -602,6 +641,7 @@ def validate_no_synthetics(conn):
 # ============================================================================
 # S8: 13-GAP REASSESSMENT (post-cleanup)
 # ============================================================================
+
 
 def validate_13_gaps(conn):
     print("\n" + "=" * 70)
@@ -634,11 +674,13 @@ def validate_13_gaps(conn):
     gap_results = {}
     for i, (gap_type, phase) in enumerate(gaps, 1):
         total = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (gap_type,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?",
+            (gap_type,),
         ).fetchone()[0]
 
         real_lines = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1", (gap_type,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1",
+            (gap_type,),
         ).fetchone()[0]
 
         ast_pct = real_lines / total if total > 0 else 0
@@ -672,6 +714,7 @@ def validate_13_gaps(conn):
 # S9: UWG MUTATION ALIGNMENT (what CAN be checked)
 # ============================================================================
 
+
 def validate_uwg_alignment(conn):
     print("\n" + "=" * 70)
     print("S9: UWG MUTATION ALIGNMENT")
@@ -686,10 +729,12 @@ def validate_uwg_alignment(conn):
     total_ast_backed = 0
     for ut in uwg_types:
         total = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ?", (ut,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ?",
+            (ut,),
         ).fetchone()[0]
         ast_backed = cur.execute(
-            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1", (ut,),
+            "SELECT COUNT(*) FROM edges WHERE relation_type = ? AND line_no > 1",
+            (ut,),
         ).fetchone()[0]
         ast_pct = ast_backed / total if total > 0 else 0
         total_uwg += total
@@ -719,6 +764,7 @@ def validate_uwg_alignment(conn):
 # S10: ORDERING CONSISTENCY (structural only — no runtime traces available)
 # ============================================================================
 
+
 def validate_ordering(conn):
     print("\n" + "=" * 70)
     print("S10: ORDERING CONSISTENCY (structural)")
@@ -739,6 +785,7 @@ def validate_ordering(conn):
 
     # Group by (file, src_id) and check line ordering
     from collections import defaultdict
+
     groups = defaultdict(list)
     for sf, sid, ln, sym in flows:
         groups[(sf, sid)].append(ln)
@@ -750,7 +797,7 @@ def validate_ordering(conn):
             continue
         total_groups += 1
         # Check if lines are monotonically non-decreasing
-        if all(lines[i] <= lines[i+1] for i in range(len(lines)-1)):
+        if all(lines[i] <= lines[i + 1] for i in range(len(lines) - 1)):
             ordered_groups += 1
 
     ordering_rate = ordered_groups / total_groups if total_groups > 0 else 1.0
@@ -767,6 +814,7 @@ def validate_ordering(conn):
 # ============================================================================
 # MAIN — RUN ALL VALIDATIONS
 # ============================================================================
+
 
 def main():
     random.seed(42)  # reproducible sampling
@@ -795,17 +843,17 @@ def main():
     print("=" * 70)
 
     metrics = {
-        "execution_node_coverage":   results["s1_node_coverage"]["execution_node_coverage"],
-        "execution_edge_coverage":   results["s2_edge_reality"]["execution_edge_coverage"],
+        "execution_node_coverage": results["s1_node_coverage"]["execution_node_coverage"],
+        "execution_edge_coverage": results["s2_edge_reality"]["execution_edge_coverage"],
         "denominator_file_coverage": results["s3_denominator"]["file_coverage"],
-        "overall_precision":         results["s4_precision_recall"]["overall_precision"],
-        "overall_recall":            results["s4_precision_recall"]["overall_recall"],
-        "violation_truth_rate":      results["s5_violations"]["violation_truth_rate"],
-        "replay_graph_consistency":  results["s6_determinism"]["replay_graph_consistency"],
-        "synthetic_remaining":       results["s7_synthetics"]["synthetic_remaining"],
-        "13_gaps_all_valid":         results["s8_13_gaps"]["all_passed"],
-        "uwg_alignment":            results["s9_uwg"]["uwg_alignment"],
-        "ordering_match_rate":       results["s10_ordering"]["ordering_match_rate"],
+        "overall_precision": results["s4_precision_recall"]["overall_precision"],
+        "overall_recall": results["s4_precision_recall"]["overall_recall"],
+        "violation_truth_rate": results["s5_violations"]["violation_truth_rate"],
+        "replay_graph_consistency": results["s6_determinism"]["replay_graph_consistency"],
+        "synthetic_remaining": results["s7_synthetics"]["synthetic_remaining"],
+        "13_gaps_all_valid": results["s8_13_gaps"]["all_passed"],
+        "uwg_alignment": results["s9_uwg"]["uwg_alignment"],
+        "ordering_match_rate": results["s10_ordering"]["ordering_match_rate"],
     }
 
     print(f"\n  {'Metric':40s} {'Value':>12} {'Pass'}")
@@ -846,20 +894,25 @@ def main():
         print("\n  >> REPRESENTATION COMPLETE — STRUCTURALLY FAITHFUL")
         print("  >> (Runtime execution traces not available for full execution-grade proof)")
     else:
-        failed = [k for k, v in metrics.items()
-                  if not results[{
-                      "execution_node_coverage": "s1_node_coverage",
-                      "execution_edge_coverage": "s2_edge_reality",
-                      "denominator_file_coverage": "s3_denominator",
-                      "overall_precision": "s4_precision_recall",
-                      "overall_recall": "s4_precision_recall",
-                      "violation_truth_rate": "s5_violations",
-                      "replay_graph_consistency": "s6_determinism",
-                      "synthetic_remaining": "s7_synthetics",
-                      "13_gaps_all_valid": "s8_13_gaps",
-                      "uwg_alignment": "s9_uwg",
-                      "ordering_match_rate": "s10_ordering",
-                  }[k]]["passed"]]
+        failed = [
+            k
+            for k, v in metrics.items()
+            if not results[
+                {
+                    "execution_node_coverage": "s1_node_coverage",
+                    "execution_edge_coverage": "s2_edge_reality",
+                    "denominator_file_coverage": "s3_denominator",
+                    "overall_precision": "s4_precision_recall",
+                    "overall_recall": "s4_precision_recall",
+                    "violation_truth_rate": "s5_violations",
+                    "replay_graph_consistency": "s6_determinism",
+                    "synthetic_remaining": "s7_synthetics",
+                    "13_gaps_all_valid": "s8_13_gaps",
+                    "uwg_alignment": "s9_uwg",
+                    "ordering_match_rate": "s10_ordering",
+                }[k]
+            ]["passed"]
+        ]
         print("\n  >> SCANNER MODEL INCOMPLETE")
         print(f"  >> Failed metrics: {', '.join(failed)}")
 

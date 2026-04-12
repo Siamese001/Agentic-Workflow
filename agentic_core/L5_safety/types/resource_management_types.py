@@ -295,7 +295,9 @@ class ResourceManagementGuardrail:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ResourceManagementGuardrail.check_resource",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "ResourceManagementGuardrail.check_resource",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

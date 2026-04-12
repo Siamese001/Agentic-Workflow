@@ -222,13 +222,17 @@ class UtilityScriptClassifier:
     def classify_script(cls, file_path: Path) -> str:
         """Classify a script by its operational category."""
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "UtilityScriptClassifier.classify_script", "L5_POLICY",
+            str(uuid.uuid4()),
+            "UtilityScriptClassifier.classify_script",
+            "L5_POLICY",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "UtilityScriptClassifier.classify_script",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "UtilityScriptClassifier.classify_script",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -309,7 +313,9 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "UtilitySilentSwallowerDetector.detect",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "UtilitySilentSwallowerDetector.detect",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -342,7 +348,11 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
         return violations
 
     def _check_try_except(
-        self, node: ast.Try, file_path: Path, source_lines: list[str], script_category: str,
+        self,
+        node: ast.Try,
+        file_path: Path,
+        source_lines: list[str],
+        script_category: str,
     ) -> AntiPatternViolation | None:
         """Check a try-except node for silent swallower violations."""
 
@@ -455,7 +465,11 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
         return False
 
     def _create_violation(
-        self, file_path: Path, handler: ast.ExceptHandler, message: str, enforcement_level: EnforcementLevel,
+        self,
+        file_path: Path,
+        handler: ast.ExceptHandler,
+        message: str,
+        enforcement_level: EnforcementLevel,
     ) -> AntiPatternViolation:
         """Create an anti-pattern violation."""
         severity = "error" if enforcement_level == EnforcementLevel.HARD_BLOCK else "warning"

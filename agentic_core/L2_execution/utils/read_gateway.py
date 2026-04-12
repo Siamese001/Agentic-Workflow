@@ -9,7 +9,6 @@ Tool ID Prefix: ACT-020
 """
 # guardian: allow-silent_swallower - ADG violation exemption
 
-
 from __future__ import annotations
 
 import json
@@ -314,7 +313,6 @@ def get_file_info(path: str | Path) -> dict[str, Any]:
         result: Any = mcp6_get_file_info(path=str(p))
         return result if isinstance(result, dict) else {"raw": result}
     except ImportError as e:
-
         raise ImportError(f"Required dependency missing: {e}")
         Logger.debug("[ReadGateway] mcp6_get_file_info unavailable, using direct stat")
     except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow

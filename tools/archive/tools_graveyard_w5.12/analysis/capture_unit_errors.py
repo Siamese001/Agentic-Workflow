@@ -1,4 +1,5 @@
 """Capture unit test collection errors to a file, then parse them."""
+
 import os
 import re
 import subprocess
@@ -18,7 +19,10 @@ for sd in sorted(os.listdir(unit_dir)):
 
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/unit/{sd}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     out = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 
@@ -30,7 +34,7 @@ for sd in sorted(os.listdir(unit_dir)):
             test_file = lines[i].strip()
             err_msg = ""
             src_file = ""
-            for j in range(i+1, min(i+30, len(lines))):
+            for j in range(i + 1, min(i + 30, len(lines))):
                 s = lines[j].strip()
                 if s.startswith("E   ") and len(s) > 6:
                     msg = s[4:].strip()
@@ -41,12 +45,14 @@ for sd in sorted(os.listdir(unit_dir)):
                 if m:
                     src_file = m.group(1).replace("\\", "/")
 
-            all_errors.append({
-                "subdir": sd,
-                "test_file": test_file,
-                "src_file": src_file,
-                "err_msg": err_msg,
-            })
+            all_errors.append(
+                {
+                    "subdir": sd,
+                    "test_file": test_file,
+                    "src_file": src_file,
+                    "err_msg": err_msg,
+                }
+            )
         i += 1
 
 # Categorize

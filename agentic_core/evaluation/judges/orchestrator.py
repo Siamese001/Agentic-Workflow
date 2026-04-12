@@ -70,11 +70,7 @@ class JudgeOrchestrator:
             adg_db_path=adg_db_path,
         )
         self._rubric_engine = RubricEngine(rubrics_path) if rubrics_path else RubricEngine()
-        self._store = (
-            VerdictStore(verdict_db_path)
-            if verdict_db_path
-            else VerdictStore()
-        )
+        self._store = VerdictStore(verdict_db_path) if verdict_db_path else VerdictStore()
         self._registry = provider_registry or create_default_registry()
 
     @property
@@ -90,7 +86,8 @@ class JudgeOrchestrator:
         return self._registry
 
     def _collect_relations_for_rubrics(
-        self, rubric_ids: list[str],
+        self,
+        rubric_ids: list[str],
     ) -> list[str]:
         """Collect all ADG relations needed across the selected rubrics."""
         relations: set[str] = set()
@@ -128,9 +125,7 @@ class JudgeOrchestrator:
         # Select rubrics
         if rubric_ids:
             rubrics = [
-                self._rubric_engine.get(rid)
-                for rid in rubric_ids
-                if self._rubric_engine.get(rid) is not None
+                self._rubric_engine.get(rid) for rid in rubric_ids if self._rubric_engine.get(rid) is not None
             ]
         else:
             rubrics = self._rubric_engine.get_applicable_rubrics(
@@ -172,7 +167,10 @@ class JudgeOrchestrator:
                 if provider:
                     try:
                         verdict = await run_llm_judge(
-                            rid, bundle, provider, self._rubric_engine,
+                            rid,
+                            bundle,
+                            provider,
+                            self._rubric_engine,
                         )
                     except Exception as exc:
                         _log.warning(
@@ -202,17 +200,11 @@ class JudgeOrchestrator:
         # Compute overall score
         if verdicts:
             scored = [v for v in verdicts if v.outcome != VerdictOutcome.SKIP.value]
-            overall = (
-                round(sum(v.score for v in scored) / len(scored), 4)
-                if scored
-                else 1.0
-            )
+            overall = round(sum(v.score for v in scored) / len(scored), 4) if scored else 1.0
         else:
             overall = 1.0
 
-        passed = all(
-            v.outcome != VerdictOutcome.FAIL.value for v in verdicts
-        )
+        passed = all(v.outcome != VerdictOutcome.FAIL.value for v in verdicts)
 
         report = JudgeReport(
             target=module_path,
@@ -253,7 +245,8 @@ class JudgeOrchestrator:
         return reports
 
     def _build_scorecard(
-        self, verdicts: list[JudgeVerdict],
+        self,
+        verdicts: list[JudgeVerdict],
     ) -> list[JudgeReportRow]:
         """Build scorecard rows from verdicts, grouped by dimension."""
         dim_data: dict[str, list[JudgeVerdict]] = {}
@@ -262,9 +255,7 @@ class JudgeOrchestrator:
 
         rows: list[JudgeReportRow] = []
         for dim, dim_verdicts in sorted(dim_data.items()):
-            scored = [
-                v for v in dim_verdicts if v.outcome != VerdictOutcome.SKIP.value
-            ]
+            scored = [v for v in dim_verdicts if v.outcome != VerdictOutcome.SKIP.value]
             if not scored:
                 continue
 

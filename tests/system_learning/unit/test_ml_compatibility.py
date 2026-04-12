@@ -16,14 +16,17 @@ class TestMlCompatibility:
     def test_ml_compatibility_imports(self):
         """Test ml_compatibility module imports."""
         from agentic_core import ml_compatibility
+
         assert ml_compatibility is not None
 
     def test_ml_compatibility_class(self):
         """Test MlCompatibility class exists."""
         from agentic_core import MlCompatibility
+
         assert MlCompatibility is not None
 
     def test_ml_compatibility_callable(self):
         """Test ml_compatibility functions are callable."""
         from agentic_core import validate_ml_compatibility
+
         assert callable(validate_ml_compatibility)

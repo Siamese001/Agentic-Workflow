@@ -17,6 +17,7 @@ class TestGuardrailEnforcement:
         """Test guardrail_enforcement module imports."""
         try:
             from agentic_core import guardrail_enforcement
+
             assert guardrail_enforcement is not None
         except ImportError:
             pytest.skip("guardrail_enforcement not available")
@@ -25,6 +26,7 @@ class TestGuardrailEnforcement:
         """Test GuardrailEnforcement class exists."""
         try:
             from agentic_core import GuardrailEnforcement
+
             assert GuardrailEnforcement is not None
         except ImportError:
             pytest.skip("GuardrailEnforcement not available")
@@ -33,6 +35,7 @@ class TestGuardrailEnforcement:
         """Test guardrail_enforcement functions are callable."""
         try:
             from agentic_core import validate_guardrail_enforcement
+
             assert callable(validate_guardrail_enforcement)
         except ImportError:
             pytest.skip("validate_guardrail_enforcement not available")

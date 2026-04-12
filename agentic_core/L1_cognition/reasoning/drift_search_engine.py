@@ -64,7 +64,10 @@ class DRIFTSearchEngine:
 
             # Step 2: Dynamic fusion of results
             fused_results = await self._dynamic_fusion(
-                semantic_results, structural_results, reasoning_results, query,
+                semantic_results,
+                structural_results,
+                reasoning_results,
+                query,
             )
 
             # Step 3: Apply adaptive traversal
@@ -82,7 +85,7 @@ class DRIFTSearchEngine:
 
             response = SearchResponse(
                 query=query,
-                results=filtered_results[:query.max_results],
+                results=filtered_results[: query.max_results],
                 total_found=len(filtered_results),
                 total_returned=min(len(filtered_results), query.max_results),
                 search_time_ms=(datetime.utcnow() - start_time).total_seconds() * 1000,
@@ -166,7 +169,7 @@ class DRIFTSearchEngine:
             traversal = self.graph_store.traverse(
                 start_id=entity.id,
                 max_depth=2,
-                relation_types=query.relation_types if hasattr(query, 'relation_types') else None,
+                relation_types=query.relation_types if hasattr(query, "relation_types") else None,
             )
 
             # Convert traversal results to search results
@@ -174,7 +177,9 @@ class DRIFTSearchEngine:
                 for path_entity in path.nodes:
                     # Calculate structural relevance
                     struct_score = self._calculate_structural_relevance(
-                        path_entity, entity, query,
+                        path_entity,
+                        entity,
+                        query,
                     )
 
                     result = SearchResult(
@@ -264,7 +269,7 @@ class DRIFTSearchEngine:
         similarity = self._calculate_text_similarity(entity, keyword)
 
         # Reasoning confidence decay
-        depth_factor = self.config.feedback_decay_factor ** 0  # Depth 1
+        depth_factor = self.config.feedback_decay_factor**0  # Depth 1
 
         return similarity * depth_factor
 
@@ -307,9 +312,9 @@ class DRIFTSearchEngine:
 
             # Dynamic weighted fusion
             fused_score = (
-                semantic_score * self.config.semantic_weight +
-                structural_score * self.config.structural_weight +
-                reasoning_score * self.config.reasoning_weight
+                semantic_score * self.config.semantic_weight
+                + structural_score * self.config.structural_weight
+                + reasoning_score * self.config.reasoning_weight
             )
 
             # Get the best result to use as base
@@ -367,7 +372,7 @@ class DRIFTSearchEngine:
                 traversal = self.graph_store.traverse(
                     start_id=result.item_id,
                     max_depth=1,
-                    relation_types=query.relation_types if hasattr(query, 'relation_types') else None,
+                    relation_types=query.relation_types if hasattr(query, "relation_types") else None,
                 )
 
                 # Update result with traversal context
@@ -468,7 +473,7 @@ class DRIFTSearchEngine:
         for rating, timestamp in self._feedback_history[query_id]:
             age_hours = (current_time - timestamp).total_seconds() / 3600
             if age_hours < 24:  # Only keep feedback from last 24 hours
-                decayed_rating = rating * (self.config.feedback_decay_factor ** age_hours)
+                decayed_rating = rating * (self.config.feedback_decay_factor**age_hours)
                 decayed_feedback.append((decayed_rating, timestamp))
 
         self._feedback_history[query_id] = decayed_feedback

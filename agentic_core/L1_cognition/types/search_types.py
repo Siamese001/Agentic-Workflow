@@ -35,7 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
     emit_determinism_digest,  # noqa: E402
-    )
+)
 
 _emit_emits_metric_event("search_types", "p4obs", "metric_1")
 _emit_emits_metric_event("search_types", "p4obs", "metric_2")
@@ -355,10 +355,7 @@ class SearchSession:
         if not self.responses:
             return 0.0
 
-        total_relevance = sum(
-            sum(r.relevance_score for r in response.results)
-            for response in self.responses
-        )
+        total_relevance = sum(sum(r.relevance_score for r in response.results) for response in self.responses)
         total_results = sum(len(response.results) for response in self.responses)
 
         return total_relevance / max(1, total_results)

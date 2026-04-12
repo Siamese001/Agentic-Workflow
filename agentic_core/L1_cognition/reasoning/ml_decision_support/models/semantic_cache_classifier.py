@@ -68,16 +68,16 @@ class EWMACacheClassifier(BaseMLModel):
 
         # Feature names for model
         self.feature_names = [
-            'access_frequency',
-            'recency_score',
-            'hit_ratio',
-            'access_pattern_regularity',
-            'content_relevance',
-            'semantic_similarity',
-            'resource_utilization',
-            'temporal_decay',
-            'user_preference',
-            'cache_efficiency',
+            "access_frequency",
+            "recency_score",
+            "hit_ratio",
+            "access_pattern_regularity",
+            "content_relevance",
+            "semantic_similarity",
+            "resource_utilization",
+            "temporal_decay",
+            "user_preference",
+            "cache_efficiency",
         ]
 
         # Default thresholds
@@ -181,16 +181,16 @@ class EWMACacheClassifier(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.cache_entries = model_data.get('cache_entries', {})
-            self.access_history = model_data.get('access_history', {})
-            self.ewma_scores = model_data.get('ewma_scores', {})
-            self.alpha = model_data.get('alpha', 0.3)
-            self.decay_factor = model_data.get('decay_factor', 0.95)
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.cache_entries = model_data.get("cache_entries", {})
+            self.access_history = model_data.get("access_history", {})
+            self.ewma_scores = model_data.get("ewma_scores", {})
+            self.alpha = model_data.get("alpha", 0.3)
+            self.decay_factor = model_data.get("decay_factor", 0.95)
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -200,26 +200,26 @@ class EWMACacheClassifier(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model state to file."""
         model_data = {
-            'cache_entries': self.cache_entries,
-            'access_history': self.access_history,
-            'ewma_scores': self.ewma_scores,
-            'alpha': self.alpha,
-            'decay_factor': self.decay_factor,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': list(self.CACHE_MAPPING.values()),
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
-                'total_cache_entries': len(self.cache_entries),
+            "cache_entries": self.cache_entries,
+            "access_history": self.access_history,
+            "ewma_scores": self.ewma_scores,
+            "alpha": self.alpha,
+            "decay_factor": self.decay_factor,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": list(self.CACHE_MAPPING.values()),
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
+                "total_cache_entries": len(self.cache_entries),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -303,16 +303,18 @@ class EWMACacheClassifier(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'ewma_score': ewma_score,
-                'raw_prediction_class': predicted_class,
-                'thresholds_passed': passes_threshold,
-                'cache_classification': predicted_classification,
-                'cache_action': self._get_recommended_action(predicted_classification),
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "ewma_score": ewma_score,
+                    "raw_prediction_class": predicted_class,
+                    "thresholds_passed": passes_threshold,
+                    "cache_classification": predicted_classification,
+                    "cache_action": self._get_recommended_action(predicted_classification),
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -350,40 +352,40 @@ class EWMACacheClassifier(BaseMLModel):
         # Initialize cache entry if not exists
         if cache_id not in self.cache_entries:
             self.cache_entries[cache_id] = {
-                'created_at': current_time,
-                'last_access': current_time,
-                'access_count': 0,
-                'hit_count': 0,
-                'miss_count': 0,
-                'content_relevance': 0.5,
-                'semantic_similarity': 0.5,
-                'resource_utilization': 0.5,
+                "created_at": current_time,
+                "last_access": current_time,
+                "access_count": 0,
+                "hit_count": 0,
+                "miss_count": 0,
+                "content_relevance": 0.5,
+                "semantic_similarity": 0.5,
+                "resource_utilization": 0.5,
             }
             self.access_history[cache_id] = deque(maxlen=100)  # Keep last 100 accesses
             self.ewma_scores[cache_id] = 0.5  # Initial EWMA score
 
         # Update entry
         entry = self.cache_entries[cache_id]
-        entry['last_access'] = current_time
-        entry['access_count'] += 1
+        entry["last_access"] = current_time
+        entry["access_count"] += 1
 
         # Update access history
         self.access_history[cache_id].append(current_time)
 
         # Update hit/miss counts
-        event_type = access_event.get('type', 'hit')
-        if event_type == 'hit':
-            entry['hit_count'] += 1
-        elif event_type == 'miss':
-            entry['miss_count'] += 1
+        event_type = access_event.get("type", "hit")
+        if event_type == "hit":
+            entry["hit_count"] += 1
+        elif event_type == "miss":
+            entry["miss_count"] += 1
 
         # Update content metrics if provided
-        if 'content_relevance' in access_event:
-            entry['content_relevance'] = access_event['content_relevance']
-        if 'semantic_similarity' in access_event:
-            entry['semantic_similarity'] = access_event['semantic_similarity']
-        if 'resource_utilization' in access_event:
-            entry['resource_utilization'] = access_event['resource_utilization']
+        if "content_relevance" in access_event:
+            entry["content_relevance"] = access_event["content_relevance"]
+        if "semantic_similarity" in access_event:
+            entry["semantic_similarity"] = access_event["semantic_similarity"]
+        if "resource_utilization" in access_event:
+            entry["resource_utilization"] = access_event["resource_utilization"]
 
         # Calculate new EWMA score
         features = self._extract_features_from_entry(cache_id)
@@ -479,15 +481,15 @@ class EWMACacheClassifier(BaseMLModel):
         stats = self._calculate_cache_statistics(cache_id)
 
         return {
-            'cache_id': cache_id,
-            'classification': prediction.prediction,
-            'confidence': prediction.confidence,
-            'ewma_score': ewma_score,
-            'top_factors': prediction.top_features,
-            'recommendations': recommendations,
-            'statistics': stats,
-            'recommended_action': self._get_recommended_action(prediction.prediction),
-            'priority': self._get_cache_priority(prediction.prediction, ewma_score),
+            "cache_id": cache_id,
+            "classification": prediction.prediction,
+            "confidence": prediction.confidence,
+            "ewma_score": ewma_score,
+            "top_factors": prediction.top_features,
+            "recommendations": recommendations,
+            "statistics": stats,
+            "recommended_action": self._get_recommended_action(prediction.prediction),
+            "priority": self._get_cache_priority(prediction.prediction, ewma_score),
         }
 
     def _extract_features_from_entry(self, cache_id: str) -> dict[str, float]:
@@ -498,28 +500,29 @@ class EWMACacheClassifier(BaseMLModel):
         now = datetime.now()
 
         # Access frequency (accesses per day)
-        if entry.get('created_at'):
-            age_days = max(1, (now - entry['created_at']).days)
-            access_frequency = entry.get('access_count', 0) / age_days
+        if entry.get("created_at"):
+            age_days = max(1, (now - entry["created_at"]).days)
+            access_frequency = entry.get("access_count", 0) / age_days
         else:
             access_frequency = 0.0
 
         # Recency score (how recent was last access)
-        if entry.get('last_access'):
-            hours_since_access = (now - entry['last_access']).total_seconds() / 3600
+        if entry.get("last_access"):
+            hours_since_access = (now - entry["last_access"]).total_seconds() / 3600
             recency_score = max(0.0, 1.0 - (hours_since_access / 168.0))  # 1 week decay
         else:
             recency_score = 0.0
 
         # Hit ratio
-        total_accesses = entry.get('hit_count', 0) + entry.get('miss_count', 0)
-        hit_ratio = entry.get('hit_count', 0) / max(1, total_accesses)
+        total_accesses = entry.get("hit_count", 0) + entry.get("miss_count", 0)
+        hit_ratio = entry.get("hit_count", 0) / max(1, total_accesses)
 
         # Access pattern regularity (variance in access intervals)
         if len(access_history) > 1:
             access_times = list(access_history)
-            intervals = [(access_times[i+1] - access_times[i]).total_seconds()
-                        for i in range(len(access_times)-1)]
+            intervals = [
+                (access_times[i + 1] - access_times[i]).total_seconds() for i in range(len(access_times) - 1)
+            ]
 
             if intervals:
                 mean_interval = sum(intervals) / len(intervals)
@@ -532,16 +535,16 @@ class EWMACacheClassifier(BaseMLModel):
             regularity = 0.5
 
         # Content relevance and semantic similarity (from entry)
-        content_relevance = entry.get('content_relevance', 0.5)
-        semantic_similarity = entry.get('semantic_similarity', 0.5)
+        content_relevance = entry.get("content_relevance", 0.5)
+        semantic_similarity = entry.get("semantic_similarity", 0.5)
 
         # Resource utilization (from entry)
-        resource_utilization = entry.get('resource_utilization', 0.5)
+        resource_utilization = entry.get("resource_utilization", 0.5)
 
         # Temporal decay (based on age)
-        if entry.get('created_at'):
-            age_days = (now - entry['created_at']).days
-            temporal_decay = self.decay_factor ** age_days
+        if entry.get("created_at"):
+            age_days = (now - entry["created_at"]).days
+            temporal_decay = self.decay_factor**age_days
         else:
             temporal_decay = 1.0
 
@@ -552,33 +555,35 @@ class EWMACacheClassifier(BaseMLModel):
         cache_efficiency = (hit_ratio * 0.7) + (resource_utilization * 0.3)
 
         return {
-            'access_frequency': min(1000.0, access_frequency),
-            'recency_score': recency_score,
-            'hit_ratio': hit_ratio,
-            'access_pattern_regularity': regularity,
-            'content_relevance': content_relevance,
-            'semantic_similarity': semantic_similarity,
-            'resource_utilization': resource_utilization,
-            'temporal_decay': temporal_decay,
-            'user_preference': user_preference,
-            'cache_efficiency': cache_efficiency,
+            "access_frequency": min(1000.0, access_frequency),
+            "recency_score": recency_score,
+            "hit_ratio": hit_ratio,
+            "access_pattern_regularity": regularity,
+            "content_relevance": content_relevance,
+            "semantic_similarity": semantic_similarity,
+            "resource_utilization": resource_utilization,
+            "temporal_decay": temporal_decay,
+            "user_preference": user_preference,
+            "cache_efficiency": cache_efficiency,
         }
 
     def _calculate_ewma_score(self, feature_vector: np.ndarray) -> float:
         """Calculate EWMA score from feature vector."""
         # Feature weights (can be tuned)
-        weights = np.array([
-            0.15,  # access_frequency
-            0.20,  # recency_score
-            0.20,  # hit_ratio
-            0.10,  # access_pattern_regularity
-            0.10,  # content_relevance
-            0.10,  # semantic_similarity
-            0.05,  # resource_utilization
-            0.05,  # temporal_decay
-            0.03,  # user_preference
-            0.02,   # cache_efficiency
-        ])
+        weights = np.array(
+            [
+                0.15,  # access_frequency
+                0.20,  # recency_score
+                0.20,  # hit_ratio
+                0.10,  # access_pattern_regularity
+                0.10,  # content_relevance
+                0.10,  # semantic_similarity
+                0.05,  # resource_utilization
+                0.05,  # temporal_decay
+                0.03,  # user_preference
+                0.02,  # cache_efficiency
+            ]
+        )
 
         # Weighted sum
         weighted_score = np.dot(feature_vector, weights)
@@ -655,29 +660,37 @@ class EWMACacheClassifier(BaseMLModel):
 
         # Base recommendations by classification
         if classification == "Hot":
-            recommendations.extend([
-                "Keep entry in primary cache tier",
-                "Consider preloading related content",
-                "Monitor for performance impact",
-            ])
+            recommendations.extend(
+                [
+                    "Keep entry in primary cache tier",
+                    "Consider preloading related content",
+                    "Monitor for performance impact",
+                ]
+            )
         elif classification == "Warm":
-            recommendations.extend([
-                "Maintain in cache with regular monitoring",
-                "Consider content refresh if available",
-                "Track access patterns for optimization",
-            ])
+            recommendations.extend(
+                [
+                    "Maintain in cache with regular monitoring",
+                    "Consider content refresh if available",
+                    "Track access patterns for optimization",
+                ]
+            )
         elif classification == "Cold":
-            recommendations.extend([
-                "Consider eviction during cache cleanup",
-                "Move to secondary storage if valuable",
-                "Review content relevance",
-            ])
+            recommendations.extend(
+                [
+                    "Consider eviction during cache cleanup",
+                    "Move to secondary storage if valuable",
+                    "Review content relevance",
+                ]
+            )
         else:  # Stale
-            recommendations.extend([
-                "Evict immediately",
-                "Remove from all cache tiers",
-                "Consider content refresh if still relevant",
-            ])
+            recommendations.extend(
+                [
+                    "Evict immediately",
+                    "Remove from all cache tiers",
+                    "Consider content refresh if still relevant",
+                ]
+            )
 
         # Score-based recommendations
         if ewma_score > 0.8:
@@ -686,7 +699,7 @@ class EWMACacheClassifier(BaseMLModel):
             recommendations.append("Low-value entry - prioritize for eviction")
 
         # Entry-specific recommendations
-        hit_ratio = entry.get('hit_count', 0) / max(1, entry.get('hit_count', 0) + entry.get('miss_count', 0))
+        hit_ratio = entry.get("hit_count", 0) / max(1, entry.get("hit_count", 0) + entry.get("miss_count", 0))
         if hit_ratio < 0.3:
             recommendations.append("Low hit ratio - consider eviction")
         elif hit_ratio > 0.8:
@@ -702,16 +715,19 @@ class EWMACacheClassifier(BaseMLModel):
         now = datetime.now()
 
         stats = {
-            'access_count': entry.get('access_count', 0),
-            'hit_count': entry.get('hit_count', 0),
-            'miss_count': entry.get('miss_count', 0),
-            'hit_ratio': entry.get('hit_count', 0) / max(1, entry.get('hit_count', 0) + entry.get('miss_count', 0)),
-            'created_at': entry.get('created_at'),
-            'last_access': entry.get('last_access'),
-            'age_days': (now - entry.get('created_at', now)).days if entry.get('created_at') else 0,
-            'hours_since_last_access': (now - entry.get('last_access', now)).total_seconds() / 3600 if entry.get('last_access') else float('inf'),
-            'access_history_length': len(access_history),
-            'ewma_score': self.ewma_scores.get(cache_id, 0.0),
+            "access_count": entry.get("access_count", 0),
+            "hit_count": entry.get("hit_count", 0),
+            "miss_count": entry.get("miss_count", 0),
+            "hit_ratio": entry.get("hit_count", 0)
+            / max(1, entry.get("hit_count", 0) + entry.get("miss_count", 0)),
+            "created_at": entry.get("created_at"),
+            "last_access": entry.get("last_access"),
+            "age_days": (now - entry.get("created_at", now)).days if entry.get("created_at") else 0,
+            "hours_since_last_access": (now - entry.get("last_access", now)).total_seconds() / 3600
+            if entry.get("last_access")
+            else float("inf"),
+            "access_history_length": len(access_history),
+            "ewma_score": self.ewma_scores.get(cache_id, 0.0),
         }
 
         return stats
@@ -731,34 +747,36 @@ class EWMACacheClassifier(BaseMLModel):
         """Get feature importance for explainability."""
         # For EWMA, importance is based on feature weights
         weights = {
-            'recency_score': 0.20,
-            'hit_ratio': 0.20,
-            'access_frequency': 0.15,
-            'access_pattern_regularity': 0.10,
-            'content_relevance': 0.10,
-            'semantic_similarity': 0.10,
-            'resource_utilization': 0.05,
-            'temporal_decay': 0.05,
-            'user_preference': 0.03,
-            'cache_efficiency': 0.02,
+            "recency_score": 0.20,
+            "hit_ratio": 0.20,
+            "access_frequency": 0.15,
+            "access_pattern_regularity": 0.10,
+            "content_relevance": 0.10,
+            "semantic_similarity": 0.10,
+            "resource_utilization": 0.05,
+            "temporal_decay": 0.05,
+            "user_preference": 0.03,
+            "cache_efficiency": 0.02,
         }
 
         feature_importance = []
         for i, feature_name in enumerate(self.feature_names):
-            feature_importance.append({
-                'feature_name': feature_name,
-                'importance_score': weights.get(feature_name, 0.0),
-                'feature_value': model_input.features.get(feature_name),
-                'rank': i + 1,
-                'weight': weights.get(feature_name, 0.0),
-            })
+            feature_importance.append(
+                {
+                    "feature_name": feature_name,
+                    "importance_score": weights.get(feature_name, 0.0),
+                    "feature_value": model_input.features.get(feature_name),
+                    "rank": i + 1,
+                    "weight": weights.get(feature_name, 0.0),
+                }
+            )
 
         # Sort by importance
-        feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+        feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
         # Update ranks
         for i, feature in enumerate(feature_importance):
-            feature['rank'] = i + 1
+            feature["rank"] = i + 1
 
         return feature_importance
 
@@ -781,10 +799,19 @@ class EWMACacheClassifier(BaseMLModel):
                 preprocessing_steps.append(f"non_numeric_to_default_{key}")
 
             # Clip to valid ranges
-            if key in ['recency_score', 'hit_ratio', 'access_pattern_regularity', 'content_relevance',
-                      'semantic_similarity', 'resource_utilization', 'temporal_decay', 'user_preference', 'cache_efficiency']:
+            if key in [
+                "recency_score",
+                "hit_ratio",
+                "access_pattern_regularity",
+                "content_relevance",
+                "semantic_similarity",
+                "resource_utilization",
+                "temporal_decay",
+                "user_preference",
+                "cache_efficiency",
+            ]:
                 processed_features[key] = max(0.0, min(1.0, float(processed_features[key])))
-            elif key == 'access_frequency':
+            elif key == "access_frequency":
                 processed_features[key] = max(0.0, min(1000.0, float(processed_features[key])))
 
         return processed_features, preprocessing_steps
@@ -806,7 +833,7 @@ class EWMACacheClassifier(BaseMLModel):
         # Calculate optimal alpha based on data volatility
         all_features = []
         for example in training_data:
-            features = example['features']
+            features = example["features"]
             feature_vector = []
             for feature_name in self.feature_names:
                 value = features.get(feature_name, 0.0)

@@ -15,12 +15,13 @@ from pathlib import Path
 from typing import Any
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Test configuration
 REPO_ROOT = Path(__file__).parent.parent.parent
 INTEGRATION_RESULTS = REPO_ROOT / "docs" / "reports" / "mcp_integration_validation_results.json"
+
 
 class MCPIntegrationValidator:
     def __init__(self):
@@ -146,7 +147,7 @@ jobs:
         for file_path, content in test_files.items():
             full_path = self.temp_workspace / file_path
             full_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(full_path, 'w', encoding='utf-8') as f:
+            with open(full_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
         logger.info(f"Created test project with {len(test_files)} files")
@@ -316,8 +317,10 @@ jobs:
 
             # Modify the main.py file
             main_file = self.temp_workspace / "src/main.py"
-            with open(main_file, 'a') as f:
-                f.write("\n\ndef new_feature():\n    \"\"\"New feature for integration test\"\"\"\n    return \"integration_test_success\"\n")
+            with open(main_file, "a") as f:
+                f.write(
+                    '\n\ndef new_feature():\n    """New feature for integration test"""\n    return "integration_test_success"\n'
+                )
 
             end_time = time.time()
 
@@ -335,7 +338,7 @@ jobs:
         try:
             # Create test for new feature
             test_file = self.temp_workspace / "tests/test_new_feature.py"
-            with open(test_file, 'w') as f:
+            with open(test_file, "w") as f:
                 f.write("""#!/usr/bin/env python3
 import unittest
 import sys
@@ -385,7 +388,11 @@ if __name__ == '__main__':
         try:
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-c", "import inspect; import sys; sys.path.insert(0, 'src'); import main; print(inspect.getdoc(main.main))"],
+                [
+                    "python",
+                    "-c",
+                    "import inspect; import sys; sys.path.insert(0, 'src'); import main; print(inspect.getdoc(main.main))",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -403,7 +410,11 @@ if __name__ == '__main__':
         steps.append(step)
 
         # Step 2: Generate API documentation (Terminal + Vector DB MCP)
-        step = {"name": "Generate API Documentation", "success": True, "mcp_servers": ["terminal", "vector_db"]}
+        step = {
+            "name": "Generate API Documentation",
+            "success": True,
+            "mcp_servers": ["terminal", "vector_db"],
+        }
         try:
             # Create documentation content
             doc_content = """
@@ -439,7 +450,7 @@ Returns:
                 pass
 
             collection = client.create_collection("docs")
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             embedding = model.encode([doc_content])
             collection.add(
@@ -571,16 +582,21 @@ Returns:
                     response = requests.put(url, json={"updated": True}, timeout=10)
                 end_time = time.time()
 
-                results.append({
-                    "method": method,
-                    "status_code": response.status_code,
-                    "duration": end_time - start_time,
-                    "success": response.status_code == 200,
-                })
+                results.append(
+                    {
+                        "method": method,
+                        "status_code": response.status_code,
+                        "duration": end_time - start_time,
+                        "success": response.status_code == 200,
+                    }
+                )
 
             step["duration"] = sum(r["duration"] for r in results)
             step["success"] = all(r["success"] for r in results)
-            step["details"] = {"endpoints_tested": len(results), "success_rate": sum(r["success"] for r in results) / len(results)}
+            step["details"] = {
+                "endpoints_tested": len(results),
+                "success_rate": sum(r["success"] for r in results) / len(results),
+            }
         except Exception as e:
             step["success"] = False
             step["error"] = str(e)
@@ -622,7 +638,7 @@ Returns:
                 pass
 
             collection = client.create_collection("api_data")
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             # Sample API responses
             api_data = [
@@ -665,7 +681,7 @@ Returns:
 
             # Create sample data file
             data_file = self.temp_workspace / "data.csv"
-            with open(data_file, 'w') as f:
+            with open(data_file, "w") as f:
                 f.write("id,name,value\n")
                 f.write("1,item1,100\n")
                 f.write("2,item2,200\n")
@@ -687,13 +703,17 @@ Returns:
         try:
             start_time = time.time()
             process = subprocess.run(
-                ["python", "-c", """
+                [
+                    "python",
+                    "-c",
+                    """
 import csv
 with open('data.csv', 'r') as f:
     reader = csv.DictReader(f)
     total = sum(int(row['value']) for row in reader)
 print(f'Total: {total}')
-"""],
+""",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -727,7 +747,7 @@ print(f'Total: {total}')
                 pass
 
             collection = client.create_collection("processed_data")
-            model = SentenceTransformer('all-MiniLM-L6-v2')
+            model = SentenceTransformer("all-MiniLM-L6-v2")
 
             data_docs = [
                 "Item 1 has value 100 and is in the low price range",
@@ -740,7 +760,7 @@ print(f'Total: {total}')
                 documents=data_docs,
                 embeddings=embeddings.tolist(),
                 ids=[f"data_{i}" for i in range(len(data_docs))],
-                metadatas=[{"item_id": i+1, "value": (i+1)*100} for i in range(len(data_docs))],
+                metadatas=[{"item_id": i + 1, "value": (i + 1) * 100} for i in range(len(data_docs))],
             )
 
             start_time = time.time()
@@ -800,7 +820,7 @@ print(f'Total: {total}')
             end_time = time.time()
 
             # Parse results
-            output_lines = process.stdout.split('\n')
+            output_lines = process.stdout.split("\n")
             passed = sum(1 for line in output_lines if "PASSED" in line)
             failed = sum(1 for line in output_lines if "FAILED" in line)
 
@@ -820,7 +840,7 @@ print(f'Total: {total}')
 
             # Generate test report
             report_file = self.temp_workspace / "test_report.txt"
-            with open(report_file, 'w') as f:
+            with open(report_file, "w") as f:
                 f.write("Test Execution Report\n")
                 f.write("====================\n")
                 f.write(f"Generated at: {time.ctime()}\n")
@@ -890,7 +910,7 @@ print(f'Total: {total}')
 
             # Simulate deployment verification
             verification_file = self.temp_workspace / "deployment.log"
-            with open(verification_file, 'w') as f:
+            with open(verification_file, "w") as f:
                 f.write("Deployment completed successfully\n")
                 f.write(f"Timestamp: {time.ctime()}\n")
                 f.write("Version: 1.0.0\n")
@@ -912,9 +932,9 @@ print(f'Total: {total}')
         """Generate comprehensive validation report"""
         total_time = time.time() - self.start_time
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         logger.info("📊 MCP INTEGRATION VALIDATION REPORT")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
         logger.info(f"Total Validation Time: {total_time:.2f}s")
         logger.info(f"Scenarios Validated: {len(self.results)}")
@@ -959,14 +979,14 @@ print(f'Total: {total}')
         # Save detailed report
         await self._save_validation_report()
 
-        logger.info("\n" + "="*80)
+        logger.info("\n" + "=" * 80)
         if success_rate >= 90:
             logger.info("🎉 INTEGRATION VALIDATION EXCELLENT!")
         elif success_rate >= 75:
             logger.info("✅ INTEGRATION VALIDATION GOOD!")
         else:
             logger.warning(f"⚠️ INTEGRATION VALIDATION NEEDS IMPROVEMENT ({success_rate:.1f}% success)")
-        logger.info("="*80)
+        logger.info("=" * 80)
 
     async def _save_validation_report(self):
         """Save detailed validation report"""
@@ -979,7 +999,7 @@ print(f'Total: {total}')
         }
 
         try:
-            with open(INTEGRATION_RESULTS, 'w', encoding='utf-8') as f:
+            with open(INTEGRATION_RESULTS, "w", encoding="utf-8") as f:
                 json.dump(report_data, f, indent=2, default=str)
             logger.info(f"📄 Integration validation report saved: {INTEGRATION_RESULTS}")
         except Exception as e:
@@ -990,15 +1010,18 @@ print(f'Total: {total}')
         if self.temp_workspace and self.temp_workspace.exists():
             try:
                 import shutil
+
                 shutil.rmtree(self.temp_workspace)
                 logger.info(f"Cleaned up temporary workspace: {self.temp_workspace}")
             except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 logger.warning(f"Failed to cleanup workspace: {e}")
 
+
 async def main():
     """Main entry point"""
     validator = MCPIntegrationValidator()
     await validator.run_all_integration_validations()
+
 
 if __name__ == "__main__":
     try:

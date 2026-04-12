@@ -16,14 +16,17 @@ class TestStructuralvalidatoragent:
     def test_StructuralValidatorAgent_imports(self):
         """Test StructuralValidatorAgent module imports."""
         from agentic_core import StructuralValidatorAgent
+
         assert StructuralValidatorAgent is not None
 
     def test_StructuralValidatorAgent_class(self):
         """Test Structuralvalidatoragent class exists."""
         from agentic_core import Structuralvalidatoragent
+
         assert Structuralvalidatoragent is not None
 
     def test_StructuralValidatorAgent_callable(self):
         """Test StructuralValidatorAgent functions are callable."""
         from agentic_core import validate_StructuralValidatorAgent
+
         assert callable(validate_StructuralValidatorAgent)

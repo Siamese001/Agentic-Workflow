@@ -39,7 +39,7 @@ def mock_redis_client():
 @pytest.fixture
 def mock_sqlite_db():
     """Create a temporary SQLite database for testing."""
-    with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+    with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as f:
         db_path = f.name
 
     # Create test database
@@ -253,7 +253,7 @@ class TestADGQueryBridgeIntegration:
         assert bridge_ast.repo_root is not None
 
         # Test SQLite path exists
-        with tempfile.NamedTemporaryFile(suffix='.sqlite', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as f:
             db_path = f.name
         Path(db_path).unlink()  # Delete the file to test fallback
 

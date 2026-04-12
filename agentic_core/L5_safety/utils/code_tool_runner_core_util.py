@@ -232,18 +232,24 @@ class CodeToolRunnerCapability:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "CodeToolRunnerCapability.heal_repository", "state_snapshot",
+            str(_uuid.uuid4()),
+            "CodeToolRunnerCapability.heal_repository",
+            "state_snapshot",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "CodeToolRunnerCapability.heal_repository", "p0_governance",
+            str(_uuid.uuid4()),
+            "CodeToolRunnerCapability.heal_repository",
+            "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CodeToolRunnerCapability.heal_repository",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CodeToolRunnerCapability.heal_repository",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

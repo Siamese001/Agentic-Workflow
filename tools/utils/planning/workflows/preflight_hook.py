@@ -14,6 +14,7 @@ from ..token_estimator import ContextWindowEstimator, TokenEstimate
 
 logger = logging.getLogger(__name__)
 
+
 class PlanningPreflightHook:
     """
     Preflight hook for planning steps that enforces token budget compliance.
@@ -22,9 +23,7 @@ class PlanningPreflightHook:
     the context window stays within safe limits.
     """
 
-    def __init__(self,
-                 estimator: ContextWindowEstimator | None = None,
-                 budget_file: Path | None = None):
+    def __init__(self, estimator: ContextWindowEstimator | None = None, budget_file: Path | None = None):
         self.estimator = estimator or ContextWindowEstimator()
         self.budget_file = budget_file or Path("docs/reports/plans/token_budget_log.json")
         self.budget_history = []
@@ -44,21 +43,23 @@ class PlanningPreflightHook:
         """Save budget estimates to file"""
         try:
             self.budget_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(self.budget_file, 'w') as f:
+            with open(self.budget_file, "w") as f:
                 json.dump(self.budget_history, f, indent=2)
         except Exception as e:
             logger.error(f"Failed to save budget history: {e}")
 
-    def preflight_check(self,
-                       plan_step: str,
-                       system_prompt: str,
-                       user_prompt: str,
-                       files: list[dict[str, Any]],
-                       diffs: list[dict[str, Any]],
-                       logs: list[dict[str, Any]],
-                       retrieved_context: list[dict[str, Any]],
-                       prior_steps: list[str],
-                       **kwargs) -> TokenEstimate:
+    def preflight_check(
+        self,
+        plan_step: str,
+        system_prompt: str,
+        user_prompt: str,
+        files: list[dict[str, Any]],
+        diffs: list[dict[str, Any]],
+        logs: list[dict[str, Any]],
+        retrieved_context: list[dict[str, Any]],
+        prior_steps: list[str],
+        **kwargs,
+    ) -> TokenEstimate:
         """
         Perform preflight token budget check for a plan step.
 
@@ -117,12 +118,12 @@ class PlanningPreflightHook:
             return {"total_steps": 0, "message": "No budget history available"}
 
         total_steps = len(self.budget_history)
-        total_tokens = sum(step['total_projected_tokens'] for step in self.budget_history)
+        total_tokens = sum(step["total_projected_tokens"] for step in self.budget_history)
         avg_tokens = total_tokens / total_steps
 
         status_counts = {}
         for step in self.budget_history:
-            status = step['status']
+            status = step["status"]
             status_counts[status] = status_counts.get(status, 0) + 1
 
         return {
@@ -130,8 +131,8 @@ class PlanningPreflightHook:
             "total_tokens": total_tokens,
             "average_tokens_per_step": avg_tokens,
             "status_distribution": status_counts,
-            "max_tokens": max(step['total_projected_tokens'] for step in self.budget_history),
-            "min_tokens": min(step['total_projected_tokens'] for step in self.budget_history),
+            "max_tokens": max(step["total_projected_tokens"] for step in self.budget_history),
+            "min_tokens": min(step["total_projected_tokens"] for step in self.budget_history),
         }
 
     def clear_history(self) -> None:
@@ -139,9 +140,12 @@ class PlanningPreflightHook:
         self.budget_history = []
         self._save_budget_history()
 
+
 class TokenBudgetExceededError(Exception):
     """Raised when token budget exceeds hard limit"""
+
     pass
+
 
 # Decorator for automatic preflight checking
 def require_token_budget(preflight_hook: PlanningPreflightHook):
@@ -154,17 +158,18 @@ def require_token_budget(preflight_hook: PlanningPreflightHook):
             # Step implementation
             pass
     """
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             # Extract relevant parameters for token estimation
-            plan_step = kwargs.get('plan_step', func.__name__)
-            system_prompt = kwargs.get('system_prompt', '')
-            user_prompt = kwargs.get('user_prompt', '')
-            files = kwargs.get('files', [])
-            diffs = kwargs.get('diffs', [])
-            logs = kwargs.get('logs', [])
-            retrieved_context = kwargs.get('retrieved_context', [])
-            prior_steps = kwargs.get('prior_steps', [])
+            plan_step = kwargs.get("plan_step", func.__name__)
+            system_prompt = kwargs.get("system_prompt", "")
+            user_prompt = kwargs.get("user_prompt", "")
+            files = kwargs.get("files", [])
+            diffs = kwargs.get("diffs", [])
+            logs = kwargs.get("logs", [])
+            retrieved_context = kwargs.get("retrieved_context", [])
+            prior_steps = kwargs.get("prior_steps", [])
 
             # Perform preflight check
             estimate = preflight_hook.preflight_check(
@@ -179,7 +184,7 @@ def require_token_budget(preflight_hook: PlanningPreflightHook):
             )
 
             # If action is 'block', raise error
-            if estimate.action == 'block':
+            if estimate.action == "block":
                 raise TokenBudgetExceededError(
                     f"Plan step '{plan_step}' blocked due to token budget: "
                     f"{estimate.total_projected_tokens:,} tokens",
@@ -195,4 +200,5 @@ def require_token_budget(preflight_hook: PlanningPreflightHook):
             return func(*args, **kwargs)
 
         return wrapper
+
     return decorator

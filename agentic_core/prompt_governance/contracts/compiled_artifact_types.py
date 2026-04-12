@@ -125,15 +125,20 @@ class CompiledPromptArtifact:
 
     def _canonical_content(self) -> str:
         """Produce canonical string for signature verification."""
-        return str({
-            "trace_id": self.trace_id,
-            "final_system_string": self.final_system_string,
-            "final_user_string": self.final_user_string,
-            "allowed_tools_schema": tuple(sorted(
-                self.allowed_tools_schema, key=lambda x: str(x),
-            )),
-            "token_estimate": self.token_estimate,
-        })
+        return str(
+            {
+                "trace_id": self.trace_id,
+                "final_system_string": self.final_system_string,
+                "final_user_string": self.final_user_string,
+                "allowed_tools_schema": tuple(
+                    sorted(
+                        self.allowed_tools_schema,
+                        key=lambda x: str(x),
+                    )
+                ),
+                "token_estimate": self.token_estimate,
+            }
+        )
 
     def verify_signature(self, secret_key: bytes) -> bool:
         """Verify HMAC-SHA256 signature.

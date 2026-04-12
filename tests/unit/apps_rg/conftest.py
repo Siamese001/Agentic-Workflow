@@ -13,9 +13,9 @@ if _REPO_ROOT not in sys.path:
 # so imports like `from apps_rg.config.X import Y` resolve to the real package
 _TESTS_ROOT = str(Path(__file__).resolve().parents[2])
 _to_purge = [
-    k for k, m in sys.modules.items()
-    if (k == "apps_rg" or k.startswith("apps_rg."))
-    and _TESTS_ROOT in (getattr(m, "__file__", "") or "")
+    k
+    for k, m in sys.modules.items()
+    if (k == "apps_rg" or k.startswith("apps_rg.")) and _TESTS_ROOT in (getattr(m, "__file__", "") or "")
 ]
 for _k in _to_purge:
     del sys.modules[_k]

@@ -30,6 +30,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class EvaluationSignal:
     """Signal from evaluation runner."""
+
     signal_type: str  # 'completeness', 'fragmentation', 'groundedness', 'lexical_gap', 'signal_volume'
     score: float
     threshold: float
@@ -40,6 +41,7 @@ class EvaluationSignal:
 @dataclass
 class CompletenessRAGProposal:
     """Proposal from CompletenessRAGProposer to L5 Board."""
+
     proposal_type: str  # 'Depth++', 'Enrichment+', 'HybridMode', 'LexicalBoost', 'None'
     confidence: float
     rationale: str
@@ -83,7 +85,7 @@ class CompletenessEvaluator:
         answer_length_score = min(len(generated_answer) / 100, 1.0)
 
         # Combined completeness score
-        completeness = (coverage_ratio * 0.7 + answer_length_score * 0.3)
+        completeness = coverage_ratio * 0.7 + answer_length_score * 0.3
 
         triggered = completeness < self.threshold
 
@@ -153,7 +155,7 @@ class FragmentationEvaluator:
                     overlaps.append(overlap)
 
         avg_overlap = sum(overlaps) / len(overlaps) if overlaps else 0.0
-        fragmentation = (source_diversity * 0.6 + (1 - avg_overlap) * 0.4)
+        fragmentation = source_diversity * 0.6 + (1 - avg_overlap) * 0.4
 
         triggered = fragmentation > self.threshold
 
@@ -374,7 +376,9 @@ class CompletenessRAGProposer:
                 self._proposal_count += 1
 
                 _emit_updates_meta_learning_state(
-                    _trace_id, "CompletenessRAGProposer", proposal.proposal_type,
+                    _trace_id,
+                    "CompletenessRAGProposer",
+                    proposal.proposal_type,
                 )
 
                 return proposal
@@ -481,7 +485,9 @@ class PipelineDEvaluationRunner:
         """
         _trace_id = f"pipeline_d_{self._run_count}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "PipelineDEvaluationRunner.evaluate_retrieval",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "PipelineDEvaluationRunner.evaluate_retrieval",
         )
 
         # Run all 5 evaluations
@@ -489,19 +495,23 @@ class PipelineDEvaluationRunner:
 
         # 1. Completeness
         completeness_signal = self.completeness_eval.evaluate(
-            query, retrieved_contexts, generated_answer,
+            query,
+            retrieved_contexts,
+            generated_answer,
         )
         signals.append(completeness_signal)
 
         # 2. Fragmentation
         fragmentation_signal = self.fragmentation_eval.evaluate(
-            retrieved_contexts, chunk_metadata,
+            retrieved_contexts,
+            chunk_metadata,
         )
         signals.append(fragmentation_signal)
 
         # 3. Groundedness
         groundedness_signal = self.groundedness_eval.evaluate(
-            generated_answer, retrieved_contexts,
+            generated_answer,
+            retrieved_contexts,
         )
         signals.append(groundedness_signal)
 
@@ -519,7 +529,10 @@ class PipelineDEvaluationRunner:
         # Capture metrics
         for signal in signals:
             _emit_captures_evaluation_metric(
-                _trace_id, "pipeline_d", signal.signal_type, signal.score,
+                _trace_id,
+                "pipeline_d",
+                signal.signal_type,
+                signal.score,
             )
 
         self._run_count += 1

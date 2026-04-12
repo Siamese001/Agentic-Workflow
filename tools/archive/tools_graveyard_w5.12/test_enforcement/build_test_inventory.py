@@ -53,7 +53,7 @@ class TestVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
-        if node.name.startswith('test_'):
+        if node.name.startswith("test_"):
             self.current_function = node.name
             # Check for decorators first
             self.check_decorators(node)
@@ -61,33 +61,37 @@ class TestVisitor(ast.NodeVisitor):
             self.generic_visit(node)
             # If no skip found, record as normal test
             if not any(t.test_name == node.name for t in self.tests):
-                self.tests.append(TestInventory(
-                    file_path=self.file_path,
-                    test_name=node.name,
-                    skip_type="none",
-                    dependency="",
-                    current_behavior="pass",
-                    inferred_category="core",  # Default assumption
-                    line_number=node.lineno,
-                ))
+                self.tests.append(
+                    TestInventory(
+                        file_path=self.file_path,
+                        test_name=node.name,
+                        skip_type="none",
+                        dependency="",
+                        current_behavior="pass",
+                        inferred_category="core",  # Default assumption
+                        line_number=node.lineno,
+                    )
+                )
         self.current_function = None
         self.generic_visit(node)
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
-        if node.name.startswith('test_'):
+        if node.name.startswith("test_"):
             self.current_function = node.name
             self.check_decorators(node)
             self.generic_visit(node)
             if not any(t.test_name == node.name for t in self.tests):
-                self.tests.append(TestInventory(
-                    file_path=self.file_path,
-                    test_name=node.name,
-                    skip_type="none",
-                    dependency="",
-                    current_behavior="pass",
-                    inferred_category="core",
-                    line_number=node.lineno,
-                ))
+                self.tests.append(
+                    TestInventory(
+                        file_path=self.file_path,
+                        test_name=node.name,
+                        skip_type="none",
+                        dependency="",
+                        current_behavior="pass",
+                        inferred_category="core",
+                        line_number=node.lineno,
+                    )
+                )
         self.current_function = None
         self.generic_visit(node)
 
@@ -96,18 +100,15 @@ class TestVisitor(ast.NodeVisitor):
         for decorator in node.decorator_list:
             if isinstance(decorator, ast.Call):
                 # Check pytest.skip
-                if (isinstance(decorator.func, ast.Attribute) and
-                    decorator.func.attr == 'skip'):
+                if isinstance(decorator.func, ast.Attribute) and decorator.func.attr == "skip":
                     self.extract_skip_info(decorator, "marker")
                 # Check pytest.importorskip
-                elif (isinstance(decorator.func, ast.Attribute) and
-                      decorator.func.attr == 'importorskip'):
+                elif isinstance(decorator.func, ast.Attribute) and decorator.func.attr == "importorskip":
                     self.extract_importorskip_info(decorator)
 
     def visit_Call(self, node: ast.Call):
         """Check for pytest.skip calls in function body."""
-        if (isinstance(node.func, ast.Attribute) and
-            node.func.attr == 'skip'):
+        if isinstance(node.func, ast.Attribute) and node.func.attr == "skip":
             self.extract_skip_info(node, "runtime_condition")
         self.generic_visit(node)
 
@@ -115,8 +116,7 @@ class TestVisitor(ast.NodeVisitor):
         """Check for try/except ImportError patterns."""
         if self.current_function:
             for handler in node.handlers:
-                if (isinstance(handler.type, ast.Name) and
-                    handler.type.id == 'ImportError'):
+                if isinstance(handler.type, ast.Name) and handler.type.id == "ImportError":
                     # Found ImportError handling
                     self.extract_importerror_info(node, handler)
         self.generic_visit(node)
@@ -138,19 +138,21 @@ class TestVisitor(ast.NodeVisitor):
 
         # Try to infer dependency from reason
         if reason:
-            deps = re.findall(r'([a-zA-Z_][a-zA-Z0-9_]*)', reason)
+            deps = re.findall(r"([a-zA-Z_][a-zA-Z0-9_]*)", reason)
             dependency = deps[0] if deps else reason
 
-        self.tests.append(TestInventory(
-            file_path=self.file_path,
-            test_name=self.current_function,
-            skip_type=skip_type,
-            dependency=dependency,
-            current_behavior="skip",
-            inferred_category="optional",  # Skip suggests optional
-            line_number=node.lineno,
-            skip_reason=reason,
-        ))
+        self.tests.append(
+            TestInventory(
+                file_path=self.file_path,
+                test_name=self.current_function,
+                skip_type=skip_type,
+                dependency=dependency,
+                current_behavior="skip",
+                inferred_category="optional",  # Skip suggests optional
+                line_number=node.lineno,
+                skip_reason=reason,
+            )
+        )
 
     def extract_importorskip_info(self, node: ast.Call):
         """Extract information from pytest.importorskip calls."""
@@ -164,16 +166,18 @@ class TestVisitor(ast.NodeVisitor):
             elif isinstance(node.args[0], ast.Str):
                 dependency = node.args[0].s
 
-        self.tests.append(TestInventory(
-            file_path=self.file_path,
-            test_name=self.current_function,
-            skip_type="import_error",
-            dependency=dependency,
-            current_behavior="skip",
-            inferred_category="optional",
-            line_number=node.lineno,
-            skip_reason=f"Missing dependency: {dependency}",
-        ))
+        self.tests.append(
+            TestInventory(
+                file_path=self.file_path,
+                test_name=self.current_function,
+                skip_type="import_error",
+                dependency=dependency,
+                current_behavior="skip",
+                inferred_category="optional",
+                line_number=node.lineno,
+                skip_reason=f"Missing dependency: {dependency}",
+            )
+        )
 
     def extract_importerror_info(self, try_node: ast.Try):
         """Extract information from try/except ImportError patterns."""
@@ -192,16 +196,18 @@ class TestVisitor(ast.NodeVisitor):
 
         dependency = imported_deps[0] if imported_deps else "unknown"
 
-        self.tests.append(TestInventory(
-            file_path=self.file_path,
-            test_name=self.current_function,
-            skip_type="import_error",
-            dependency=dependency,
-            current_behavior="skip",
-            inferred_category="optional",
-            line_number=try_node.lineno,
-            skip_reason=f"ImportError for {dependency}",
-        ))
+        self.tests.append(
+            TestInventory(
+                file_path=self.file_path,
+                test_name=self.current_function,
+                skip_type="import_error",
+                dependency=dependency,
+                current_behavior="skip",
+                inferred_category="optional",
+                line_number=try_node.lineno,
+                skip_reason=f"ImportError for {dependency}",
+            )
+        )
 
 
 def find_test_files(root_dir: Path) -> list[Path]:
@@ -231,7 +237,7 @@ def find_test_files(root_dir: Path) -> list[Path]:
 def scan_test_file(file_path: Path) -> list[TestInventory]:
     """Scan a single test file for patterns."""
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
         tree = ast.parse(content, filename=str(file_path))
@@ -240,7 +246,7 @@ def scan_test_file(file_path: Path) -> list[TestInventory]:
 
         return visitor.tests
 
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         print(f"Syntax error in {file_path}: {e}")
         return []
     except Exception as e:
@@ -315,7 +321,7 @@ def main():
     output_dir.mkdir(exist_ok=True)
 
     inventory_file = output_dir / "test_inventory.json"
-    with open(inventory_file, 'w', encoding='utf-8') as f:
+    with open(inventory_file, "w", encoding="utf-8") as f:
         json.dump(inventory, f, indent=2, sort_keys=True)
 
     print(f"\n✅ Inventory written to: {inventory_file}")
@@ -329,7 +335,7 @@ def main():
     print(f"  Behaviors: {summary['behaviors']}")
 
     # Highlight potential violations
-    import_error_skips = summary['skip_types'].get('import_error', 0)
+    import_error_skips = summary["skip_types"].get("import_error", 0)
     if import_error_skips > 0:
         print(f"\n⚠️  FOUND {import_error_skips} ImportError-based skips - NEEDS REVIEW!")
 

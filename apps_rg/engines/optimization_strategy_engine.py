@@ -168,14 +168,20 @@ class OptimizationStrategyEngine(BaseRGEngine):
         super().__init__(ctx, node_id="ORCHESTRATION.OPTIMIZATION")
 
     async def execute(
-        self, iteration_count: int, quality_score: float, budget_remaining: float,
+        self,
+        iteration_count: int,
+        quality_score: float,
+        budget_remaining: float,
     ) -> dict[str, Any]:
         """
         Determine if optimization should continue or stop early.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizationStrategyEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OptimizationStrategyEngine.execute"
+        )
 
         self._mcp_audit("optimization_check", {"iteration": iteration_count, "score": quality_score})
         decision = {"should_continue": True, "reason": "", "pruning_recommendations": []}

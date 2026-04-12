@@ -37,6 +37,7 @@ from agentic_core.L2_execution.types.l2_execution_contract import (
 # L2EmbeddingSovereignAgent
 # =============================================================================
 
+
 @dataclass
 class L2EmbeddingSovereignAgent(L2ExecutionAgent):
     """L2ExecutionAgent-compliant wrapper for EmbeddingSovereignAgent."""
@@ -185,6 +186,7 @@ class L2EmbeddingSovereignAgent(L2ExecutionAgent):
 # L2RedisSovereignAgent
 # =============================================================================
 
+
 @dataclass
 class L2RedisSovereignAgent(L2ExecutionAgent):
     """L2ExecutionAgent-compliant wrapper for RedisSovereignAgent."""
@@ -286,6 +288,7 @@ class L2RedisSovereignAgent(L2ExecutionAgent):
 # L2SovereignMCPGatewayAgent
 # =============================================================================
 
+
 @dataclass
 class L2SovereignMCPGatewayAgent(L2ExecutionAgent):
     """L2ExecutionAgent-compliant wrapper for SovereignMCPGatewayAgent."""
@@ -382,6 +385,7 @@ class L2SovereignMCPGatewayAgent(L2ExecutionAgent):
 # L2StructuredEngineAgent
 # =============================================================================
 
+
 @dataclass
 class L2StructuredEngineAgent(L2ExecutionAgent):
     """L2ExecutionAgent-compliant wrapper for StructuredEngineAgent."""
@@ -472,6 +476,7 @@ class L2StructuredEngineAgent(L2ExecutionAgent):
 # =============================================================================
 # L2SubAtomicRegistryAgent
 # =============================================================================
+
 
 @dataclass
 class L2SubAtomicRegistryAgent(L2ExecutionAgent):

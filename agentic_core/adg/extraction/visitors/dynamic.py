@@ -24,6 +24,7 @@ class _DynamicExecutionVisitor(BaseStructuralVisitor):
     def __init__(self, ctx: VisitorContext) -> None:
         super().__init__(ctx)
         from agentic_core.adg.contracts.schema_util import DYNAMIC_EXEC_SYMBOLS
+
         self._dynamic_symbols = DYNAMIC_EXEC_SYMBOLS
 
     def visit_Call(self, node: ast.Call) -> None:
@@ -181,6 +182,7 @@ class _InternalCallGraphVisitor(BaseStructuralVisitor):
                     return
 
                 from agentic_core.adg.contracts.schema_util import canonical_name
+
                 to_name = canonical_name("Symbol", full_sym)
 
                 # Import here to avoid circular dependency

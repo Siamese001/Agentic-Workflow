@@ -1,6 +1,7 @@
 """
 Covenant Recommender - Generates covenants when needed.
 """
+
 from typing import List
 
 from ..types import RiskFeatures, UnderwritingRequest
@@ -65,7 +66,10 @@ class CovenantRecommender:
             covenants.append("Annual financial statements reviewed by CPA within 90 days of year-end")
             covenants.append("No material adverse change in business condition without immediate notice")
 
-        if features.operating_risk.customer_concentration_score and features.operating_risk.customer_concentration_score > 0.3:
+        if (
+            features.operating_risk.customer_concentration_score
+            and features.operating_risk.customer_concentration_score > 0.3
+        ):
             covenants.append("Top customer concentration not to exceed 35% of AR without approval")
 
         return covenants

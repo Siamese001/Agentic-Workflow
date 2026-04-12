@@ -28,11 +28,23 @@ class CodeChunker:
 
     # Metadata schema for validation
     REQUIRED_METADATA_FIELDS = {
-        "file_path", "module", "layer", "entity_type", "name",
-        "line_start", "line_end", "type",
+        "file_path",
+        "module",
+        "layer",
+        "entity_type",
+        "name",
+        "line_start",
+        "line_end",
+        "type",
     }
     OPTIONAL_METADATA_FIELDS = {
-        "args", "docstring", "methods", "adg_node_id", "embedding_model", "ingested_at", "parent_id",
+        "args",
+        "docstring",
+        "methods",
+        "adg_node_id",
+        "embedding_model",
+        "ingested_at",
+        "parent_id",
     }
 
     def __init__(self):
@@ -64,9 +76,23 @@ class CodeChunker:
             errors.append("line_start must be int")
         if "line_end" in metadata and not isinstance(metadata["line_end"], int):
             errors.append("line_end must be int")
-        if "layer" in metadata and metadata["layer"] not in ["L0", "L1", "L2", "L3", "L4", "L5", "L6", "Unknown"]:
+        if "layer" in metadata and metadata["layer"] not in [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "L5",
+            "L6",
+            "Unknown",
+        ]:
             errors.append(f"Invalid layer: {metadata['layer']}")
-        if "entity_type" in metadata and metadata["entity_type"] not in ["function", "async_function", "class", "module"]:
+        if "entity_type" in metadata and metadata["entity_type"] not in [
+            "function",
+            "async_function",
+            "class",
+            "module",
+        ]:
             errors.append(f"Invalid entity_type: {metadata['entity_type']}")
 
         return (len(errors) == 0, errors)
@@ -116,7 +142,12 @@ class CodeChunker:
                     if not node.args.args:
                         continue
                     chunk = self._create_function_chunk(
-                        node, content, file_path, module_name, layer, is_async=True,
+                        node,
+                        content,
+                        file_path,
+                        module_name,
+                        layer,
+                        is_async=True,
                     )
 
                 if chunk:
@@ -283,7 +314,8 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
             conn.row_factory = sqlite3.Row
             cur = conn.cursor()
             cur.execute(
-                "SELECT id, resolved_path FROM nodes WHERE resolved_path LIKE ?", (f"%{source_dir}%",),
+                "SELECT id, resolved_path FROM nodes WHERE resolved_path LIKE ?",
+                (f"%{source_dir}%",),
             )
             for row in cur.fetchall():
                 adg_node_map[row["resolved_path"]] = row["id"]
@@ -336,7 +368,9 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
     # Log parent-child relationship statistics
     total_parent_child = sum(1 for c in all_chunks if c["metadata"].get("parent_id") is not None)
     if total_parent_child > 0:
-        logger.info(f"Parent-child relationships: {total_parent_child}/{len(all_chunks)} chunks have parent_id")
+        logger.info(
+            f"Parent-child relationships: {total_parent_child}/{len(all_chunks)} chunks have parent_id"
+        )
 
     # ADG sync validation: verify node_id mapping coverage
     chunks_with_adg_id = sum(1 for c in all_chunks if c["metadata"].get("adg_node_id") is not None)
@@ -384,8 +418,7 @@ def ingest_code(source_dir: str, collection_name: str = "repo_code_chunks", dry_
     logger.info("Populating BM25 index...")
     bm25_store = get_bm25_store()
     bm25_docs = [
-        {"id": chunk["id"], "text": chunk["content"], "metadata": chunk["metadata"]}
-        for chunk in all_chunks
+        {"id": chunk["id"], "text": chunk["content"], "metadata": chunk["metadata"]} for chunk in all_chunks
     ]
     bm25_store.add_documents(bm25_docs)
     logger.info(f"BM25 index populated with {len(bm25_docs)} documents")

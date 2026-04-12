@@ -185,13 +185,19 @@ class AgentDiscoveryCache:
     """
 
     def __init__(
-        self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_DISCOVERY_TTL,
+        self,
+        cache: DeterministicRedisCache | None = None,
+        ttl_seconds: int = _DEFAULT_DISCOVERY_TTL,
     ):
         self._cache = cache or get_hot_cache()
         self._ttl = ttl_seconds
 
     def get_or_fetch(
-        self, discovery_path: Path, fetch_from_disk: Any, *, replay_mode: bool = False,
+        self,
+        discovery_path: Path,
+        fetch_from_disk: Any,
+        *,
+        replay_mode: bool = False,
     ) -> list[dict[str, Any]]:
         """Read-through helper: return cached parsed agents or call *fetch_from_disk*.
 
@@ -218,7 +224,7 @@ class AgentDiscoveryCache:
             try:
                 content_hash = self._compute_file_hash(discovery_path)
                 cache_key = f"agent_discovery:{content_hash}"
-            except FileNotFoundError:    # guardian: File operations should check existence before access
+            except FileNotFoundError:  # guardian: File operations should check existence before access
                 raise
             except (OSError, ValueError) as e:
                 logger.warning(f"[Discovery cache] Hash computation failed: {e}")
@@ -237,7 +243,7 @@ class AgentDiscoveryCache:
                 content_hash = self._compute_file_hash(discovery_path)
                 cache_key = f"agent_discovery:{content_hash}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            except FileNotFoundError:    # guardian: File operations should check existence before access
+            except FileNotFoundError:  # guardian: File operations should check existence before access
                 pass  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow
             except (OSError, ConnectionError) as e:
                 logger.warning(f"[Discovery cache] Cache write failed: {e}")

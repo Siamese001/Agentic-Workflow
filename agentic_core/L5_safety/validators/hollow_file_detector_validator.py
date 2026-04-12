@@ -88,7 +88,7 @@ class BehavioralNodeCounter(ast.NodeVisitor):
         """Analyze function definition."""
         # Check if function has non-trivial body
         if self._has_behavioral_body(node.body):
-            if node.name.startswith('_emit_'):
+            if node.name.startswith("_emit_"):
                 # Module-level emit calls are boilerplate
                 self.boilerplate_statements += 1
             else:
@@ -98,7 +98,7 @@ class BehavioralNodeCounter(ast.NodeVisitor):
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         """Analyze async function definition."""
         if self._has_behavioral_body(node.body):
-            if node.name.startswith('_emit_'):
+            if node.name.startswith("_emit_"):
                 self.boilerplate_statements += 1
             else:
                 self.behavioral_functions += 1
@@ -111,7 +111,7 @@ class BehavioralNodeCounter(ast.NodeVisitor):
         for item in node.body:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if self._has_behavioral_body([item]):
-                    if not item.name.startswith('_emit_'):
+                    if not item.name.startswith("_emit_"):
                         behavioral_methods += 1
 
         if behavioral_methods > 0:
@@ -131,9 +131,11 @@ class BehavioralNodeCounter(ast.NodeVisitor):
         if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
             # Module-level string literals (likely docstrings or comments)
             self.string_literals += 1
-        elif (isinstance(node.value, ast.Call) and
-              isinstance(node.value.func, ast.Name) and
-              node.value.func.id.startswith('_emit_')):
+        elif (
+            isinstance(node.value, ast.Call)
+            and isinstance(node.value.func, ast.Name)
+            and node.value.func.id.startswith("_emit_")
+        ):
             # Module-level emit calls
             self.boilerplate_statements += 1
         return node
@@ -151,10 +153,12 @@ class BehavioralNodeCounter(ast.NodeVisitor):
             elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):
                 if stmt.value.value == Ellipsis:
                     return False
-            elif (isinstance(stmt, ast.Raise) and
-                  isinstance(stmt.exc, ast.Call) and
-                  isinstance(stmt.exc.func, ast.Name) and
-                  stmt.exc.func.id == 'NotImplementedError'):
+            elif (
+                isinstance(stmt, ast.Raise)
+                and isinstance(stmt.exc, ast.Call)
+                and isinstance(stmt.exc.func, ast.Name)
+                and stmt.exc.func.id == "NotImplementedError"
+            ):
                 return False
 
         # Look for actual behavioral statements
@@ -177,7 +181,7 @@ class BehavioralNodeCounter(ast.NodeVisitor):
         elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
             # Function call - check if it's not just an emit
             call = stmt.value
-            if not (isinstance(call.func, ast.Name) and call.func.id.startswith('_emit_')):
+            if not (isinstance(call.func, ast.Name) and call.func.id.startswith("_emit_")):
                 return True
         elif isinstance(stmt, ast.With):
             return True
@@ -191,10 +195,12 @@ class BehavioralNodeCounter(ast.NodeVisitor):
         elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant):
             if stmt.value.value == Ellipsis:
                 return True
-        elif (isinstance(stmt, ast.Raise) and
-              isinstance(stmt.exc, ast.Call) and
-              isinstance(stmt.exc.func, ast.Name) and
-              stmt.exc.func.id == 'NotImplementedError'):
+        elif (
+            isinstance(stmt, ast.Raise)
+            and isinstance(stmt.exc, ast.Call)
+            and isinstance(stmt.exc.func, ast.Name)
+            and stmt.exc.func.id == "NotImplementedError"
+        ):
             return True
 
         return False
@@ -212,9 +218,11 @@ class BehavioralNodeCounter(ast.NodeVisitor):
 
         if behavioral_nodes == 0:
             return HollowFileClassification.HOLLOW
-        elif (self.behavioral_classes > 0 and
-              self.behavioral_methods == 0 and
-              behavioral_nodes == self.behavioral_classes):
+        elif (
+            self.behavioral_classes > 0
+            and self.behavioral_methods == 0
+            and behavioral_nodes == self.behavioral_classes
+        ):
             # Classes exist but no behavioral methods
             return HollowFileClassification.SCAFFOLDING
         elif boilerplate_ratio > 0.7:
@@ -257,53 +265,59 @@ class HollowFileDetector(AntiPatternDetector):
 
         # Generate violations based on classification
         if classification == HollowFileClassification.HOLLOW:
-            violations.append(AntiPatternViolation(
-                file_path=file_path,
-                line_number=1,
-                category=self.category,
-                message="File contains no behavioral logic - only boilerplate",
-                evidence=f"Behavioral nodes: 0, Boilerplate ratio: {counter.get_boilerplate_ratio():.2%}",
-                severity="error",
-                suggested_fix="Delete file or add behavioral logic",
-                metadata={
-                    "classification": classification.value,
-                    "behavioral_functions": counter.behavioral_functions,
-                    "behavioral_classes": counter.behavioral_classes,
-                    "boilerplate_statements": counter.boilerplate_statements,
-                    "total_statements": counter.total_statements,
-                },
-            ))
+            violations.append(
+                AntiPatternViolation(
+                    file_path=file_path,
+                    line_number=1,
+                    category=self.category,
+                    message="File contains no behavioral logic - only boilerplate",
+                    evidence=f"Behavioral nodes: 0, Boilerplate ratio: {counter.get_boilerplate_ratio():.2%}",
+                    severity="error",
+                    suggested_fix="Delete file or add behavioral logic",
+                    metadata={
+                        "classification": classification.value,
+                        "behavioral_functions": counter.behavioral_functions,
+                        "behavioral_classes": counter.behavioral_classes,
+                        "boilerplate_statements": counter.boilerplate_statements,
+                        "total_statements": counter.total_statements,
+                    },
+                )
+            )
         elif classification == HollowFileClassification.SCAFFOLDING:
-            violations.append(AntiPatternViolation(
-                file_path=file_path,
-                line_number=1,
-                category=self.category,
-                message="File contains only scaffolding - classes with no behavioral methods",
-                evidence=f"Classes: {counter.behavioral_classes}, Behavioral methods: 0",
-                severity="warning",
-                suggested_fix="Implement behavioral methods or delete scaffolding",
-                metadata={
-                    "classification": classification.value,
-                    "behavioral_classes": counter.behavioral_classes,
-                    "total_statements": counter.total_statements,
-                },
-            ))
+            violations.append(
+                AntiPatternViolation(
+                    file_path=file_path,
+                    line_number=1,
+                    category=self.category,
+                    message="File contains only scaffolding - classes with no behavioral methods",
+                    evidence=f"Classes: {counter.behavioral_classes}, Behavioral methods: 0",
+                    severity="warning",
+                    suggested_fix="Implement behavioral methods or delete scaffolding",
+                    metadata={
+                        "classification": classification.value,
+                        "behavioral_classes": counter.behavioral_classes,
+                        "total_statements": counter.total_statements,
+                    },
+                )
+            )
         elif classification == HollowFileClassification.BOILERPLATE_HEAVY:
-            violations.append(AntiPatternViolation(
-                file_path=file_path,
-                line_number=1,
-                category=self.category,
-                message=f"File is {counter.get_boilerplate_ratio():.1%} boilerplate",
-                evidence=f"Boilerplate: {counter.boilerplate_statements}/{counter.total_statements}",
-                severity="warning",
-                suggested_fix="Consider reducing boilerplate or extracting to separate module",
-                metadata={
-                    "classification": classification.value,
-                    "boilerplate_ratio": counter.get_boilerplate_ratio(),
-                    "boilerplate_statements": counter.boilerplate_statements,
-                    "total_statements": counter.total_statements,
-                },
-            ))
+            violations.append(
+                AntiPatternViolation(
+                    file_path=file_path,
+                    line_number=1,
+                    category=self.category,
+                    message=f"File is {counter.get_boilerplate_ratio():.1%} boilerplate",
+                    evidence=f"Boilerplate: {counter.boilerplate_statements}/{counter.total_statements}",
+                    severity="warning",
+                    suggested_fix="Consider reducing boilerplate or extracting to separate module",
+                    metadata={
+                        "classification": classification.value,
+                        "boilerplate_ratio": counter.get_boilerplate_ratio(),
+                        "boilerplate_statements": counter.boilerplate_statements,
+                        "total_statements": counter.total_statements,
+                    },
+                )
+            )
 
         return violations
 

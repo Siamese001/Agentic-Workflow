@@ -1,4 +1,5 @@
 """L4 gap analysis — count remaining modules needing writes_through."""
+
 import re
 import sqlite3
 from collections import defaultdict
@@ -35,7 +36,7 @@ for source_file, wt, wth_db in rows:
     fp = ROOT / source_file
     if fp.exists():
         text = fp.read_text(encoding="utf-8", errors="replace")
-        disk_calls = len(re.findall(r'_emit_writes_through\(', text))
+        disk_calls = len(re.findall(r"_emit_writes_through\(", text))
     else:
         disk_calls = wth_db
     total_wth_disk += disk_calls

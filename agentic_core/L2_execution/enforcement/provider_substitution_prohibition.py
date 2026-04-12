@@ -221,7 +221,9 @@ def validate_provider_request(
 
 
 def enforce_fail_closed_on_failure(
-    original_request: ProviderRequest, error: Exception, attempted_substitution: dict[str, str] | None = None,
+    original_request: ProviderRequest,
+    error: Exception,
+    attempted_substitution: dict[str, str] | None = None,
 ) -> None:
     """Ensure fail-closed behavior on provider failure (REQ-415).
 
@@ -257,7 +259,9 @@ class ProviderSubstitutionGuard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ProviderSubstitutionGuard.register_request",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ProviderSubstitutionGuard.register_request",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -288,7 +292,10 @@ class ProviderSubstitutionGuard:
         validate_provider_request(original_request, actual_provider, actual_model)
 
     def handle_failure(
-        self, request_id: str, error: Exception, attempted_substitution: dict[str, str] | None = None,
+        self,
+        request_id: str,
+        error: Exception,
+        attempted_substitution: dict[str, str] | None = None,
     ) -> None:
         """Handle provider failure with fail-closed enforcement.
 
@@ -337,23 +344,38 @@ def test_provider_substitution_prohibition() -> bool:
     """
     try:
         test_request = ProviderRequest(
-            provider="openai", model="gpt-4", agent_id="test_agent", request_id="test_123",
+            provider="openai",
+            model="gpt-4",
+            agent_id="test_agent",
+            request_id="test_123",
         )
         try:
             validate_provider_request(test_request, "anthropic", "claude-3-5-sonnet")
             return False
-        except ProviderSubstitutionViolation:    # guardian: ProviderSubstitutionViolation should be handled with specific context
+        except (
+            ProviderSubstitutionViolation
+        ):  # guardian: ProviderSubstitutionViolation should be handled with specific context
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("provider_substitution_prohibition: ProviderSubstitutionViolation swallowed at L345: %s", e)
+            logging.getLogger(__name__).debug(
+                "provider_substitution_prohibition: ProviderSubstitutionViolation swallowed at L345: %s", e
+            )
         try:
             validate_provider_request(test_request, "openai", "gpt-3.5-turbo")
             return False
-        except ProviderSubstitutionViolation:    # guardian: ProviderSubstitutionViolation should be handled with specific context
+        except (
+            ProviderSubstitutionViolation
+        ):  # guardian: ProviderSubstitutionViolation should be handled with specific context
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("provider_substitution_prohibition: ProviderSubstitutionViolation swallowed at L350: %s", e)
+            logging.getLogger(__name__).debug(
+                "provider_substitution_prohibition: ProviderSubstitutionViolation swallowed at L350: %s", e
+            )
         try:
             validate_provider_request(test_request, "openai", "gpt-4")
-        except ProviderSubstitutionViolation:    # guardian: ProviderSubstitutionViolation should be handled with specific context
+        except (
+            ProviderSubstitutionViolation
+        ):  # guardian: ProviderSubstitutionViolation should be handled with specific context
             return False
         return True
     except (ValueError, TypeError, RuntimeError) as e:

@@ -6,6 +6,7 @@ referencing a not-yet-defined local.
 
 Fix: rename LHS to _X_PATH to avoid shadowing.
 """
+
 import ast
 import os
 import re
@@ -14,8 +15,10 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 # Pattern: CONST = something / CONST  (self-shadowing assignment)
 SHADOW_PATTERN = re.compile(
-    r'^(\s*)(\w+)\s*=\s*(\w+)\s*/\s*\2\s*$', re.MULTILINE,
+    r"^(\s*)(\w+)\s*=\s*(\w+)\s*/\s*\2\s*$",
+    re.MULTILINE,
 )
+
 
 def fix_file(filepath):
     """Fix self-shadowing constant assignments in a file."""
@@ -36,16 +39,16 @@ def fix_file(filepath):
         new_line = f"{indent}{new_name} = {rhs_prefix} / {const_name}"
 
         # Replace the assignment
-        src = src[:m.start()] + new_line + src[m.end():]
+        src = src[: m.start()] + new_line + src[m.end() :]
 
         # Replace all subsequent uses of the old name that referred to the path
         # (but NOT the import at the top)
         # This is tricky - we need to replace uses after this line
         # Actually, let's check if the shadowed name is used later
-        rest = src[m.start() + len(new_line):]
+        rest = src[m.start() + len(new_line) :]
         if const_name in rest:
             # Replace uses of const_name that are path-like (after this point)
-            src = src[:m.start() + len(new_line)] + rest.replace(const_name, new_name)
+            src = src[: m.start() + len(new_line)] + rest.replace(const_name, new_name)
 
         fixed += 1
 

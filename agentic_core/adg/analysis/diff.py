@@ -201,6 +201,7 @@ class GraphDiff:
     @property
     def summary(self) -> str:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphDiff.summary")
 

@@ -276,7 +276,10 @@ class InMemoryVectorCache:
         """
         try:
             results: Any = self.collection.query(
-                query_embeddings=query_embeddings, n_results=top_k, where=where, where_document=where_document,
+                query_embeddings=query_embeddings,
+                n_results=top_k,
+                where=where,
+                where_document=where_document,
             )
             Logger.debug(f"In-memory search returned {len(results.get('ids', [[]])[0])} results")
             return results
@@ -364,7 +367,10 @@ class TieredVectorStore:
 
     # guardian: allow-magic-config
     async def search(
-        self, query_embeddings: list[list[float]], top_k: int = 10, try_hot_first: bool = True,
+        self,
+        query_embeddings: list[list[float]],
+        top_k: int = 10,
+        try_hot_first: bool = True,
     ) -> dict[str, Any]:
         """Search with hot cache fallback to warm storage.
 
@@ -393,7 +399,8 @@ class TieredVectorStore:
 
 # guardian: allow-magic-config
 def create_memory_vector_cache(
-    collection_name: str = "hot_cache", max_memory_gb: int = 8,
+    collection_name: str = "hot_cache",
+    max_memory_gb: int = 8,
 ) -> InMemoryVectorCache:
     """Create an InMemoryVectorCache instance.
 
@@ -408,7 +415,8 @@ def create_memory_vector_cache(
 
 
 def create_tiered_vector_store(
-    hot_collection_name: str = "hot_cache", warm_store_url: str = "http://localhost:6333",
+    hot_collection_name: str = "hot_cache",
+    warm_store_url: str = "http://localhost:6333",
 ) -> TieredVectorStore:
     """Create a TieredVectorStore instance.
 

@@ -22,7 +22,7 @@ from sentence_transformers import SentenceTransformer
 from tqdm import tqdm
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -35,31 +35,28 @@ class EnhancedWebRAGIngestionPipeline:
         "docs.trychroma.com": "framework",
         "microsoft.github.io": "framework",
         "modelcontextprotocol.io": "framework",
-
         # Vendor docs
         "huggingface.co": "vendor_docs",
         "docs.anthropic.com": "vendor_docs",
-
         # Governance sources
         "nist.gov": "governance",
         "nvlpubs.nist.gov": "governance",
-
         # Embedding model docs
         "huggingface.co/BAAI": "embedding_model",
-
         # Agent runtime docs
         "microsoft.github.io/autogen": "agent_runtime",
-
         # Default categorization
         "python.langchain.com": "framework",
         "paulgraham.com": "blog",
     }
 
-    def __init__(self,
-                 urls_file: str = "data/rag_seeds/agentic_best_practices_urls.txt",
-                 chroma_path: str = "artifacts/chromadb",
-                 collection_name: str = "agentic_best_practices",
-                 model_name: str = "BAAI/bge-m3"):
+    def __init__(
+        self,
+        urls_file: str = "data/rag_seeds/agentic_best_practices_urls.txt",
+        chroma_path: str = "artifacts/chromadb",
+        collection_name: str = "agentic_best_practices",
+        model_name: str = "BAAI/bge-m3",
+    ):
         """
         Initialize the enhanced RAG ingestion pipeline.
 
@@ -154,10 +151,10 @@ class EnhancedWebRAGIngestionPipeline:
             raise FileNotFoundError(f"URLs file not found: {self.urls_file}")
 
         url_entries = []
-        with open(self.urls_file, encoding='utf-8') as f:
+        with open(self.urls_file, encoding="utf-8") as f:
             for line_num, line in enumerate(f, 1):
                 line = line.strip()
-                if line and not line.startswith('#'):  # Skip empty lines and comments
+                if line and not line.startswith("#"):  # Skip empty lines and comments
                     url = line
                     source_type = self.determine_source_type(url)
 
@@ -184,7 +181,7 @@ class EnhancedWebRAGIngestionPipeline:
             HTML content or None if failed
         """
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
         }
 
         try:
@@ -210,42 +207,42 @@ class EnhancedWebRAGIngestionPipeline:
         Returns:
             Tuple of (clean_text, document_title)
         """
-        soup = BeautifulSoup(html, 'lxml')
+        soup = BeautifulSoup(html, "lxml")
 
         # Remove unwanted elements
-        for element in soup(['script', 'style', 'nav', 'footer', 'header', 'aside', 'iframe']):
+        for element in soup(["script", "style", "nav", "footer", "header", "aside", "iframe"]):
             element.decompose()
 
         # Extract title
-        title_tag = soup.find('title')
+        title_tag = soup.find("title")
         title = title_tag.get_text().strip() if title_tag else urlparse(url).netloc
 
         # Try to find main content areas
         main_content = None
-        for selector in ['main', 'article', '[role="main"]', '.content', '#content']:
+        for selector in ["main", "article", '[role="main"]', ".content", "#content"]:
             main_content = soup.select_one(selector)
             if main_content:
                 break
 
         # If no main content found, use body
         if not main_content:
-            main_content = soup.find('body') or soup
+            main_content = soup.find("body") or soup
 
         # Extract text from priority elements
         text_parts = []
 
         # Headings and paragraphs
-        for element in main_content.find_all(['h1', 'h2', 'h3', 'p', 'div']):
+        for element in main_content.find_all(["h1", "h2", "h3", "p", "div"]):
             text = element.get_text().strip()
             if text and len(text) > 10:  # Skip very short text
                 text_parts.append(text)
 
         # Join and normalize text
-        full_text = '\n\n'.join(text_parts)
+        full_text = "\n\n".join(text_parts)
 
         # Normalize whitespace
-        lines = [line.strip() for line in full_text.split('\n') if line.strip()]
-        clean_text = '\n'.join(lines)
+        lines = [line.strip() for line in full_text.split("\n") if line.strip()]
+        clean_text = "\n".join(lines)
 
         return clean_text, title
 
@@ -269,7 +266,7 @@ class EnhancedWebRAGIngestionPipeline:
         while start < len(words):
             end = start + chunk_size
             chunk_words = words[start:end]
-            chunk = ' '.join(chunk_words)
+            chunk = " ".join(chunk_words)
 
             if len(chunk.strip()) > 50:  # Skip very short chunks
                 chunks.append(chunk.strip())
@@ -283,7 +280,7 @@ class EnhancedWebRAGIngestionPipeline:
 
     def generate_content_hash(self, content: str) -> str:
         """Generate SHA256 hash of content for deduplication."""
-        return hashlib.sha256(content.encode('utf-8')).hexdigest()
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
     def process_url(self, url: str, url_metadata: dict) -> int:
         """
@@ -320,7 +317,7 @@ class EnhancedWebRAGIngestionPipeline:
         stored_count = 0
         domain = urlparse(url).netloc
         fetched_at = int(time.time())
-        source_type = url_metadata.get('source_type', 'other')
+        source_type = url_metadata.get("source_type", "other")
 
         # Update source type statistics
         self.stats["source_types"][source_type] = self.stats["source_types"].get(source_type, 0) + 1
@@ -345,7 +342,7 @@ class EnhancedWebRAGIngestionPipeline:
                 limit=1,
             )
 
-            if existing['ids']:
+            if existing["ids"]:
                 logger.debug(f"Skipping duplicate chunk: {content_hash[:8]}...")
                 self.stats["chunks_skipped"] += 1
                 continue
@@ -360,7 +357,7 @@ class EnhancedWebRAGIngestionPipeline:
                 "fetched_at": fetched_at,
                 "content_hash": content_hash,
                 "source_type": source_type,
-                "line_number": url_metadata.get('line_number', 0),
+                "line_number": url_metadata.get("line_number", 0),
             }
 
             # Add to batch
@@ -405,11 +402,13 @@ class EnhancedWebRAGIngestionPipeline:
                     self.stats["chunks_stored"] += chunks_stored
                     self.stats["urls_successful"] += 1
 
-                    pbar.set_postfix({
-                        "Success": self.stats["urls_successful"],
-                        "Failed": self.stats["urls_failed"],
-                        "Chunks": self.stats["chunks_stored"],
-                    })
+                    pbar.set_postfix(
+                        {
+                            "Success": self.stats["urls_successful"],
+                            "Failed": self.stats["urls_failed"],
+                            "Chunks": self.stats["chunks_stored"],
+                        }
+                    )
 
                 except Exception as e:
                     logger.error(f"Error processing {url}: {e}")
@@ -470,8 +469,8 @@ class EnhancedWebRAGIngestionPipeline:
         logger.info(f"Found {len(results['documents'][0])} results:")
         print("\n" + "=" * 50)
 
-        for i, (doc, metadata) in enumerate(zip(results['documents'][0], results['metadatas'][0])):
-            print(f"\nResult {i+1}:")
+        for i, (doc, metadata) in enumerate(zip(results["documents"][0], results["metadatas"][0])):
+            print(f"\nResult {i + 1}:")
             print(f"Source: {metadata.get('source_url', 'Unknown')}")
             print(f"Source Type: {metadata.get('source_type', 'Unknown')}")
             print(f"Title: {metadata.get('document_title', 'Unknown')}")
@@ -490,8 +489,8 @@ class EnhancedWebRAGIngestionPipeline:
         all_results = self.collection.get()
         source_type_counts = {}
 
-        for metadata in all_results['metadatas']:
-            source_type = metadata.get('source_type', 'unknown')
+        for metadata in all_results["metadatas"]:
+            source_type = metadata.get("source_type", "unknown")
             source_type_counts[source_type] = source_type_counts.get(source_type, 0) + 1
 
         for source_type, count in sorted(source_type_counts.items()):

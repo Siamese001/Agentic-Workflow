@@ -256,7 +256,9 @@ class MutationPathReport:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "MutationPathReport.compliance_rate",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "MutationPathReport.compliance_rate",
         )
 
         total = self.violation_count + len(self.compliant_modules)

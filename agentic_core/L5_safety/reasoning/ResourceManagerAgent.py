@@ -306,7 +306,11 @@ class ResourceManagerAgent(SovereignBaseAgent):
 
     # guardian: allow-magic-config
     def set_budget(
-        self, resource_type: ResourceType, total: float, hard_cap: bool = True, warning_threshold: float = 0.8,
+        self,
+        resource_type: ResourceType,
+        total: float,
+        hard_cap: bool = True,
+        warning_threshold: float = 0.8,
     ) -> None:
         """Set budget for a resource type."""
         with self._lock:
@@ -319,7 +323,11 @@ class ResourceManagerAgent(SovereignBaseAgent):
             Logger.info(f"Budget set: {resource_type.name} = {total}")
 
     def allocate(
-        self, agent_id: str, resource_type: ResourceType, amount: float, priority: int = 0,
+        self,
+        agent_id: str,
+        resource_type: ResourceType,
+        amount: float,
+        priority: int = 0,
     ) -> ResourceAllocation:
         """
         Allocate resources to an agent.
@@ -368,11 +376,18 @@ class ResourceManagerAgent(SovereignBaseAgent):
             if self._agent_config.enable_fallback:
                 return self._apply_fallback(agent_id, resource_type, amount, priority)
             return ResourceAllocation(
-                resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.DENIED,
+                resource_type=resource_type,
+                amount=0,
+                agent_id=agent_id,
+                status=AllocationStatus.DENIED,
             )
 
     def _apply_fallback(
-        self, agent_id: str, resource_type: ResourceType, amount: float, priority: int,
+        self,
+        agent_id: str,
+        resource_type: ResourceType,
+        amount: float,
+        priority: int,
     ) -> ResourceAllocation:
         """Apply fallback strategies when allocation fails."""
         for strategy in self._agent_config.fallback_strategies:
@@ -380,7 +395,10 @@ class ResourceManagerAgent(SovereignBaseAgent):
                 self._pending_queue.append((agent_id, resource_type, amount, priority))
                 Logger.info(f"Queued allocation request from {agent_id}")
                 return ResourceAllocation(
-                    resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.FALLBACK,
+                    resource_type=resource_type,
+                    amount=0,
+                    agent_id=agent_id,
+                    status=AllocationStatus.FALLBACK,
                 )
             elif strategy == "throttle":
                 budget = self._budgets[resource_type]
@@ -395,7 +413,10 @@ class ResourceManagerAgent(SovereignBaseAgent):
                         status=AllocationStatus.FALLBACK,
                     )
         return ResourceAllocation(
-            resource_type=resource_type, amount=0, agent_id=agent_id, status=AllocationStatus.DENIED,
+            resource_type=resource_type,
+            amount=0,
+            agent_id=agent_id,
+            status=AllocationStatus.DENIED,
         )
 
     def release(self, agent_id: str, resource_type: ResourceType, amount: float) -> bool:

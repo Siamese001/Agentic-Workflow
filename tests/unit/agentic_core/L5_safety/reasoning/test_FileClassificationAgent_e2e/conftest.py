@@ -1,4 +1,5 @@
 """E2E Test Harness for FileClassificationAgent - Wave 1 Baseline"""
+
 import pytest
 
 # Check if FileClassificationAgent is available
@@ -10,6 +11,7 @@ try:
         FileClassificationAgent,
         FileClassificationHealerAgent,
     )
+
     FCA_AVAILABLE = True
 except ImportError:
     FCA_AVAILABLE = False
@@ -76,17 +78,21 @@ class ClassificationReporter:
         for file_path in directory.glob(pattern):
             try:
                 result = self.agent.classify_file(file_path)
-                self.results.append({
-                    "file": str(file_path.relative_to(directory)),
-                    "classification": result,
-                    "compliant_name": self.agent.get_compliant_name(file_path, result),
-                })
+                self.results.append(
+                    {
+                        "file": str(file_path.relative_to(directory)),
+                        "classification": result,
+                        "compliant_name": self.agent.get_compliant_name(file_path, result),
+                    }
+                )
             except Exception as e:
-                self.results.append({
-                    "file": str(file_path.relative_to(directory)),
-                    "classification": "ERROR",
-                    "error": str(e),
-                })
+                self.results.append(
+                    {
+                        "file": str(file_path.relative_to(directory)),
+                        "classification": "ERROR",
+                        "error": str(e),
+                    }
+                )
 
     def generate_report(self) -> dict[str, Any]:
         """Generate summary statistics."""
@@ -110,8 +116,8 @@ def reporter(agent):
 # Test configuration constants
 TEST_CONFIG = {
     "performance_target_ms": 5,  # 5ms per file target
-    "coverage_target": 0.95,     # 95% test coverage target
-    "change_threshold": 0.05,    # 5% classification change threshold
+    "coverage_target": 0.95,  # 95% test coverage target
+    "change_threshold": 0.05,  # 5% classification change threshold
 }
 
 

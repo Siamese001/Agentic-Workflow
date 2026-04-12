@@ -234,7 +234,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SystemArchitectAgent.execute",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "SystemArchitectAgent.execute",
         )
         print()
         print(f"   [{self.name}] 🔍 Checking Architecture: Hierarchy & Headers...")
@@ -267,18 +269,23 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Checks for high-signal headers and specialized Test Protocols.
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "SystemArchitectAgent._check_file_headers", "L5_POLICY",
+            str(uuid.uuid4()),
+            "SystemArchitectAgent._check_file_headers",
+            "L5_POLICY",
         )
         violations = []
         for file_path in self.ctx.python_files:
-            try:    # guardian: File operations with encoding need error-specific handling
+            try:  # guardian: File operations with encoding need error-specific handling
                 with open(file_path, encoding="utf-8") as f:
                     content = f.read(500)
                 if not content.strip().startswith('"""'):
                     violations.append(f"{file_path}: Missing Canonical Header Docstring")
                 if TESTS_DIR in str(file_path) and "Test Protocol" not in content:
                     violations.append(f"{file_path}: Missing Test Protocol in header")
-            except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+            except (
+                OSError,
+                UnicodeDecodeError,
+            ):  # guardian: File operations with encoding need error-specific handling
                 continue
         return violations
 
@@ -329,7 +336,8 @@ class SystemArchitectAgent(SovereignBaseAgent):
         return (len(violations) == 0, violations)
 
     def _detect_circular_dependencies_via_graph_store(
-        self, target_path: str,
+        self,
+        target_path: str,
     ) -> list[str] | None:
         """Detect circular dependencies using SQLiteGraphStore (ADG import graph).
 
@@ -367,7 +375,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 # Traverse import graph to find cycles
                 # Use traverse with max_depth=10 to detect cycles
                 paths = graph_store.traverse(
-                    node.id, max_depth=10, relation_types=["imports"],
+                    node.id,
+                    max_depth=10,
+                    relation_types=["imports"],
                 )
 
                 # Check if any path leads back to the source (cycle)
@@ -438,14 +448,20 @@ class SystemArchitectAgent(SovereignBaseAgent):
             for p, mod in module_map.items():
                 try:
                     tree = ast.parse(p.read_text(encoding="utf-8"))
-                    for node in ast.walk(tree):    # guardian: Parsing and encoding errors need separate handling strategies
+                    for node in ast.walk(
+                        tree
+                    ):  # guardian: Parsing and encoding errors need separate handling strategies
                         if isinstance(node, ast.Import):
                             for alias in node.names:
                                 dependency_graph[mod].add(alias.name)
                         elif isinstance(node, ast.ImportFrom):
                             if node.module:
                                 dependency_graph[mod].add(node.module)
-                except (OSError, UnicodeDecodeError, SyntaxError) as e:    # guardian: Parsing and encoding errors need separate handling strategies
+                except (
+                    OSError,
+                    UnicodeDecodeError,
+                    SyntaxError,
+                ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
                     Logger.warning(f"Failed to parse {p}: {e}")
             self._cached_scan_root = cache_key
             self._cached_module_map = module_map
@@ -473,8 +489,11 @@ class SystemArchitectAgent(SovereignBaseAgent):
                         _adg_antipatterns,
                     )
             except (RuntimeError, OSError) as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("SystemArchitectAgent: RuntimeError swallowed at L475: %s", e)
+                logging.getLogger(__name__).debug(
+                    "SystemArchitectAgent: RuntimeError swallowed at L475: %s", e
+                )
 
             return {
                 "valid": len(graph_cycles) == 0,
@@ -580,14 +599,19 @@ class SystemArchitectAgent(SovereignBaseAgent):
 
         violations: Any = []
         max_lines: Any = int(os.getenv("MAX_FILE_LINES", "1000"))
-        for file_path in self.ctx.python_files:    # guardian: File operations with encoding need error-specific handling
+        for (
+            file_path
+        ) in self.ctx.python_files:  # guardian: File operations with encoding need error-specific handling
             try:
                 resolved_path: Any = Path(file_path).resolve()
                 with open(resolved_path, encoding="utf-8") as f:
                     line_count: Any = len(f.readlines())
                 if line_count > max_lines:
                     violations.append(f"{file_path}: {line_count} lines exceeds max {max_lines}")
-            except (OSError, UnicodeDecodeError):    # guardian: File operations with encoding need error-specific handling
+            except (
+                OSError,
+                UnicodeDecodeError,
+            ):  # guardian: File operations with encoding need error-specific handling
                 continue
         return (len(violations) == 0, violations)
 
@@ -604,7 +628,8 @@ class SystemArchitectAgent(SovereignBaseAgent):
             if folder_path.exists():
                 init_file = folder_path / "__init__.py"
                 _wg.open_write(
-                    init_file, f'''"""\n{folder_rel.replace("/", ".")} package initialization.\n"""\n''',
+                    init_file,
+                    f'''"""\n{folder_rel.replace("/", ".")} package initialization.\n"""\n''',
                 )
                 print(f"      [✓] {self.name}: INITIALIZED {folder_rel}/__init__.py")
         remaining_violations = [v for v in violations if "Missing __init__.py" not in v]
@@ -632,14 +657,17 @@ class SystemArchitectAgent(SovereignBaseAgent):
         """
         Sovereign Header & Strategy Repair.
         Injects specialized Test Protocols and high-signal headers.
-        """    # guardian: File operations with encoding need error-specific handling
+        """  # guardian: File operations with encoding need error-specific handling
         from pathlib import Path
 
         try:
             resolved_path = Path(file_path).resolve()
             with open(resolved_path, encoding="utf-8") as f:
                 original_code = f.read()
-        except (OSError, UnicodeDecodeError) as e:    # guardian: File operations with encoding need error-specific handling
+        except (
+            OSError,
+            UnicodeDecodeError,
+        ) as e:  # guardian: File operations with encoding need error-specific handling
             print(f"      [!] Cannot read {file_path}: {e}")
             return
         if any(
@@ -700,7 +728,11 @@ class SystemArchitectAgent(SovereignBaseAgent):
         _call_path.add(agent_name)
         try:
             super().heal_repository(
-                dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+                dry_run=dry_run,
+                execute=execute,
+                depth=depth,
+                max_depth=max_depth,
+                _call_path=_call_path,
             )
             print(f"[{agent_name}] L2 execution - healing chain invoked")
             return {"skipped": 1}

@@ -191,7 +191,11 @@ class IBlackboardLeaseVerifier(Protocol):
     def verify_healing_lease(self, agent_id: str, file_path: str) -> bool: ...
 
     def log_security_event(
-        self, agent_id: str, event_type: str, file_path: str, details: dict[str, Any],
+        self,
+        agent_id: str,
+        event_type: str,
+        file_path: str,
+        details: dict[str, Any],
     ) -> None: ...
 
 
@@ -296,7 +300,10 @@ def read_file(args: ReadFileArgs) -> str:
 
 @require_healing_lease
 def write_file(
-    args: WriteFileArgs, blackboard=None, agent_id: str | None = None, override_preservation: bool = False,
+    args: WriteFileArgs,
+    blackboard=None,
+    agent_id: str | None = None,
+    override_preservation: bool = False,
 ) -> None:
     """
     Write content to file with sandbox validation, HealingLease verification, and preservation enforcement.
@@ -339,8 +346,11 @@ def write_file(
                             )
                         # guardian: allow-silent-swallow
                         except Exception as e:
+                            import logging
 
-                            import logging; logging.getLogger(__name__).debug("IBlackboardLeaseVerifierProtocol: Exception swallowed at L341: %s", e)
+                            logging.getLogger(__name__).debug(
+                                "IBlackboardLeaseVerifierProtocol: Exception swallowed at L341: %s", e
+                            )
                 raise PreservationViolationError(
                     f"Preservation Violation: New content ({new_lines} lines) is less than 90% of original ({original_lines} lines). Minimum required: {min_lines} lines. This would delete {round((1 - new_lines / original_lines) * 100, 2)}% of the file. Set override_preservation=True if this is intentional (SystemArchitect only).",
                 )
@@ -470,7 +480,9 @@ def delete_file(args: DeleteFileArgs, blackboard=None, agent_id: str | None = No
         raise IsADirectoryError(f"Cannot delete directory with delete_file: {args.path}")
     gatekeeper = ArchivalGatekeeper.get_instance(get_project_root())
     result = gatekeeper.safe_delete(
-        resolved_path, agent_id or "filesystem.delete_file", "Filesystem delete operation",
+        resolved_path,
+        agent_id or "filesystem.delete_file",
+        "Filesystem delete operation",
     )
     if not result.success:
         if result.approval_status == "DENIED":

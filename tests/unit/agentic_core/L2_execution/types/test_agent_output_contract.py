@@ -16,14 +16,17 @@ class TestAgentOutputContract:
     def test_agent_output_contract_imports(self):
         """Test agent_output_contract module imports."""
         from agentic_core import agent_output_contract
+
         assert agent_output_contract is not None
 
     def test_agent_output_contract_class(self):
         """Test AgentOutputContract class exists."""
         from agentic_core import AgentOutputContract
+
         assert AgentOutputContract is not None
 
     def test_agent_output_contract_callable(self):
         """Test agent_output_contract functions are callable."""
         from agentic_core import validate_agent_output_contract
+
         assert callable(validate_agent_output_contract)

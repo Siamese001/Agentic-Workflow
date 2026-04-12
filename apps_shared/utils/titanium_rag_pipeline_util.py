@@ -316,7 +316,9 @@ class TitaniumRAGPipeline:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "TitaniumRAGPipeline.query")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "TitaniumRAGPipeline.query"
+        )
         start_time = time.time()
         self.stats["total_queries"] += 1
 

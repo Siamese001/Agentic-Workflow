@@ -25,36 +25,36 @@ def debug_template_content():
 
     # Test one template in detail
     step_config = {
-        'name': 'ADG Graph Analysis',
-        'type': 'adg_analysis',
-        'complexity': 'high',
-        'files': ['adg.sqlite'],
+        "name": "ADG Graph Analysis",
+        "type": "adg_analysis",
+        "complexity": "high",
+        "files": ["adg.sqlite"],
     }
 
-    template_content = workflow._get_seq_thinking_template('adg_analysis', step_config)
+    template_content = workflow._get_seq_thinking_template("adg_analysis", step_config)
 
     print("📋 ADG Graph Analysis Template Content:")
     print("-" * 50)
 
     # Show first 30 lines
-    lines = template_content.split('\n')
+    lines = template_content.split("\n")
     for i, line in enumerate(lines[:30]):
-        print(f"{i+1:2d}: {line}")
+        print(f"{i + 1:2d}: {line}")
 
     if len(lines) > 30:
-        print(f"... ({len(lines)-30} more lines)")
+        print(f"... ({len(lines) - 30} more lines)")
 
     # Check for expected values
     print("\n🔍 Checking for expected values:")
     expected_values = [
-        '10,432',  # node_count
-        '681,161',  # edge_count
-        '5,301',   # violation_count
-        'L0: 7,220',  # layer_info
-        'node_count',  # variable name
-        'edge_count',  # variable name
-        'violation_count',  # variable name
-        'layer_info',  # variable name
+        "10,432",  # node_count
+        "681,161",  # edge_count
+        "5,301",  # violation_count
+        "L0: 7,220",  # layer_info
+        "node_count",  # variable name
+        "edge_count",  # variable name
+        "violation_count",  # variable name
+        "layer_info",  # variable name
     ]
 
     for value in expected_values:
@@ -74,13 +74,14 @@ def debug_template_content():
 
         stats_section = template_content[stats_start:stats_end]
         print("   Content:")
-        for line in stats_section.split('\n')[:10]:
+        for line in stats_section.split("\n")[:10]:
             if line.strip():
                 print(f"      {line}")
     else:
         print("   ❌ ADG Graph Statistics section not found")
 
     return template_content
+
 
 if __name__ == "__main__":
     debug_template_content()

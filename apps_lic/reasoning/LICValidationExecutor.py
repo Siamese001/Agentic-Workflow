@@ -177,7 +177,11 @@ class LICValidationExecutor(LICEngineValidationCapability, ParameterizedValidato
         """Dispatch to rule-specific validation (LIC-local registry)."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"LICValidationExecutor.collect_issues:{self.rule_set}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"LICValidationExecutor.collect_issues:{self.rule_set}",
+        )
         if self.rule_set == "campaign_balance":
             return self._validate_campaign_balance(data)
         elif self.rule_set == "deliverability":

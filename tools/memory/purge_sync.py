@@ -38,7 +38,6 @@ def get_db_connection() -> sqlite3.Connection:
     return sqlite3.connect(MEMORY_DB)
 
 
-
 def get_current_stats(conn: sqlite3.Connection) -> Dict:
     """Get current memory graph statistics."""
     cursor = conn.cursor()
@@ -84,10 +83,12 @@ def get_stale_entities(conn: sqlite3.Connection, older_than_days: int) -> List[s
     """Get entity names that are stale (older than threshold) and not protected."""
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT name, entity_type, created_at FROM entities
         WHERE entity_type NOT IN ({})
-    """.format(",".join("'" + t + "'" for t in PROTECTED_TYPES)))
+    """.format(",".join("'" + t + "'" for t in PROTECTED_TYPES))
+    )
 
     stale = []
     for name, _, created_at in cursor.fetchall():
@@ -128,7 +129,6 @@ def purge_entities(conn: sqlite3.Connection, entity_names: List[str], dry_run: b
     return count
 
 
-
 def write_evidence(before: Dict, after: Dict, purged_count: int) -> Path:
     """Write telemetry evidence artifact."""
     TELEMETRY_DIR.mkdir(parents=True, exist_ok=True)
@@ -142,8 +142,11 @@ def write_evidence(before: Dict, after: Dict, purged_count: int) -> Path:
         "after": after,
         "purged_count": purged_count,
         "reduction_percent": round(
-            (before["total_entities"] - after["total_entities"]) / max(before["total_entities"], 1) * 100, 1,
-        ) if before["total_entities"] > 0 else 0,
+            (before["total_entities"] - after["total_entities"]) / max(before["total_entities"], 1) * 100,
+            1,
+        )
+        if before["total_entities"] > 0
+        else 0,
     }
 
     with open(evidence_file, "w", encoding="utf-8") as f:
@@ -162,11 +165,11 @@ def cmd_stats(_args):
     print(f"  Total entities:      {stats['total_entities']}")
     print(f"  Total observations:  {stats['total_observations']}")
     print(f"  Total relations:     {stats['total_relations']}")
-    if stats['oldest_entity_days'] is not None:
+    if stats["oldest_entity_days"] is not None:
         print(f"  Oldest entity age:   {stats['oldest_entity_days']} days")
 
     print("\nEntity types:")
-    for etype, count in sorted(stats['by_type'].items(), key=lambda x: -x[1]):
+    for etype, count in sorted(stats["by_type"].items(), key=lambda x: -x[1]):
         protected = " [PROTECTED]" if etype in PROTECTED_TYPES else ""
         print(f"  {etype}: {count}{protected}")
 
@@ -194,7 +197,6 @@ def cmd_purge(args):
     return 0
 
 
-
 def cmd_full_sync(args):
     """Execute full purge sync workflow."""
     conn = get_db_connection()
@@ -220,14 +222,14 @@ def cmd_full_sync(args):
     print("\n=== Post-Purge Stats ===")
     conn = get_db_connection()
     after = get_current_stats(conn)
-    print(f"Entities: {after['total_entities']} ({before['total_entities'] - after['total_entities']} removed)")
+    print(
+        f"Entities: {after['total_entities']} ({before['total_entities'] - after['total_entities']} removed)"
+    )
     print(f"Observations: {after['total_observations']}")
     print(f"Relations: {after['total_relations']}")
 
     # Verify protected entities
-    protected_ok = all(
-        after['by_type'].get(pt, 0) > 0 for pt in PROTECTED_TYPES
-    )
+    protected_ok = all(after["by_type"].get(pt, 0) > 0 for pt in PROTECTED_TYPES)
     print(f"\nProtected entities: {'✓' if protected_ok else '✗'}")
     conn.close()
 
@@ -237,8 +239,11 @@ def cmd_full_sync(args):
         print(f"\nEvidence written: {evidence_path}")
 
     # Health check
-    if after['total_entities'] > 500:
-        print(f"\nWarning: Entity count ({after['total_entities']}) exceeds recommended threshold (500)", file=sys.stderr)
+    if after["total_entities"] > 500:
+        print(
+            f"\nWarning: Entity count ({after['total_entities']}) exceeds recommended threshold (500)",
+            file=sys.stderr,
+        )
 
     return 0
 

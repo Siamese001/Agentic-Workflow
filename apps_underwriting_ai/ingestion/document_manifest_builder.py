@@ -1,6 +1,7 @@
 """
 Document Manifest Builder - Builds and manages document manifests.
 """
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -12,6 +13,7 @@ from ..types import DocumentPackage, DocumentRef
 @dataclass
 class ManifestEntry:
     """Single entry in document manifest."""
+
     doc_id: str
     doc_type: str
     file_name: str
@@ -94,25 +96,25 @@ class DocumentManifestBuilder:
             )
 
             # Add to appropriate category
-            if entry.doc_type == 'financial_statement':
+            if entry.doc_type == "financial_statement":
                 package.financial_statements.append(doc_ref)
-            elif entry.doc_type == 'tax_return':
+            elif entry.doc_type == "tax_return":
                 package.tax_returns.append(doc_ref)
-            elif entry.doc_type == 'bank_statement':
+            elif entry.doc_type == "bank_statement":
                 package.bank_statements.append(doc_ref)
-            elif entry.doc_type == 'ar_aging':
+            elif entry.doc_type == "ar_aging":
                 package.ar_aging.append(doc_ref)
-            elif entry.doc_type == 'ap_aging':
+            elif entry.doc_type == "ap_aging":
                 package.ap_aging.append(doc_ref)
-            elif entry.doc_type == 'debt_schedule':
+            elif entry.doc_type == "debt_schedule":
                 package.debt_schedule.append(doc_ref)
-            elif entry.doc_type == 'entity_doc':
+            elif entry.doc_type == "entity_doc":
                 package.entity_docs.append(doc_ref)
-            elif entry.doc_type == 'insurance':
+            elif entry.doc_type == "insurance":
                 package.insurance_certificates.append(doc_ref)
-            elif entry.doc_type == 'appraisal':
+            elif entry.doc_type == "appraisal":
                 package.appraisals.append(doc_ref)
-            elif entry.doc_type == 'management_comment':
+            elif entry.doc_type == "management_comment":
                 package.management_comments.append(doc_ref)
 
         return package

@@ -109,7 +109,9 @@ class EntropyTelemetryEngine:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "EntropyTelemetryEngine.record_tier_decision",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "EntropyTelemetryEngine.record_tier_decision",
         )
 
         timestamp = int(time.time())
@@ -158,7 +160,10 @@ class EntropyTelemetryEngine:
         """
         self._update_cache_if_needed()
         return self._cached_flip_metrics or FlipMetrics(
-            0, 0.0, (HealingTier.LOCAL_AGENT, HealingTier.LOCAL_AGENT), {},
+            0,
+            0.0,
+            (HealingTier.LOCAL_AGENT, HealingTier.LOCAL_AGENT),
+            {},
         )
 
     def get_path_d_metrics(self) -> PathDMetrics:

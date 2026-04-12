@@ -290,7 +290,9 @@ class ReasoningKnowledgeRegistry:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "ReasoningKnowledgeRegistry.get_instance",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "ReasoningKnowledgeRegistry.get_instance",
         )
 
         if cls._instance is None:

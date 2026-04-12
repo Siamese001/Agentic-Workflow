@@ -26,6 +26,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class BanditContext:
     """Context features for bandit decision making"""
@@ -50,14 +51,17 @@ class BanditContext:
 
     def to_vector(self) -> np.ndarray:
         """Convert context to feature vector"""
-        return np.concatenate([
-            self.intent_embedding,
-            [self.intent_length, self.intent_complexity],
-            [self.user_history_score, self.user_success_rate],
-            [self.current_load, self.time_of_day, self.day_of_week],
-            [self.adg_territory_score],
-            list(self.confidence_tiers.values()),
-        ])
+        return np.concatenate(
+            [
+                self.intent_embedding,
+                [self.intent_length, self.intent_complexity],
+                [self.user_history_score, self.user_success_rate],
+                [self.current_load, self.time_of_day, self.day_of_week],
+                [self.adg_territory_score],
+                list(self.confidence_tiers.values()),
+            ]
+        )
+
 
 @dataclass
 class BanditArm:
@@ -80,6 +84,7 @@ class BanditArm:
         self.b += reward * context
         self.theta = np.linalg.inv(self.A) @ self.b
 
+
 @dataclass
 class BanditDecision:
     """Result of bandit decision making"""
@@ -91,6 +96,7 @@ class BanditDecision:
     expected_reward: float
     context_used: BanditContext
     all_arm_scores: dict[str, float]
+
 
 class LinUCBBandit:
     """
@@ -142,11 +148,15 @@ class LinUCBBandit:
         self.regret_history: list[float] = []
         self.exploration_rate = 0.1
 
-        _emit_stores_learning_state("linucb_bandit", "initialization", {
-            "context_dim": context_dim,
-            "alpha": alpha,
-            "arms_count": len(self.arms),
-        })
+        _emit_stores_learning_state(
+            "linucb_bandit",
+            "initialization",
+            {
+                "context_dim": context_dim,
+                "alpha": alpha,
+                "arms_count": len(self.arms),
+            },
+        )
 
     def add_arm(self, arm_id: str, agent_name: str, capability_match: float = 1.0):
         """Add a new routing arm"""
@@ -160,11 +170,15 @@ class LinUCBBandit:
             b=np.zeros(self.context_dim),
         )
 
-        _emit_records_learning_event("linucb_bandit", "arm_added", {
-            "arm_id": arm_id,
-            "agent_name": agent_name,
-            "capability_match": capability_match,
-        })
+        _emit_records_learning_event(
+            "linucb_bandit",
+            "arm_added",
+            {
+                "arm_id": arm_id,
+                "agent_name": agent_name,
+                "capability_match": capability_match,
+            },
+        )
 
     def select_arm(self, context: BanditContext) -> BanditDecision:
         """
@@ -183,7 +197,9 @@ class LinUCBBandit:
 
         # Validate dimension compatibility
         if len(context_vector) != self.context_dim:
-            raise ValueError(f"Context dimension mismatch: expected {self.context_dim}, got {len(context_vector)}")
+            raise ValueError(
+                f"Context dimension mismatch: expected {self.context_dim}, got {len(context_vector)}"
+            )
 
         # Calculate UCB for each arm
         arm_scores = {}
@@ -230,18 +246,26 @@ class LinUCBBandit:
         self.round_count += 1
 
         # Emit trace events
-        _emit_records_execution_trace("linucb_bandit", "arm_selection", {
-            "selected_arm": selected_arm_id,
-            "confidence": confidence,
-            "uncertainty": uncertainty,
-            "round": self.round_count,
-        })
+        _emit_records_execution_trace(
+            "linucb_bandit",
+            "arm_selection",
+            {
+                "selected_arm": selected_arm_id,
+                "confidence": confidence,
+                "uncertainty": uncertainty,
+                "round": self.round_count,
+            },
+        )
 
-        _emit_emits_metric_event("linucb_bandit", "decision", {
-            "confidence": confidence,
-            "uncertainty": uncertainty,
-            "exploration_rate": self.exploration_rate,
-        })
+        _emit_emits_metric_event(
+            "linucb_bandit",
+            "decision",
+            {
+                "confidence": confidence,
+                "uncertainty": uncertainty,
+                "exploration_rate": self.exploration_rate,
+            },
+        )
 
         return decision
 
@@ -264,10 +288,7 @@ class LinUCBBandit:
         self.reward_history.append(reward)
 
         # Calculate and track regret
-        max_expected = max(
-            float(arm.theta @ context_vector)
-            for arm in self.arms.values()
-        )
+        max_expected = max(float(arm.theta @ context_vector) for arm in self.arms.values())
         actual_reward = float(selected_arm.theta @ context_vector)
         regret = max_expected - actual_reward
         self.regret_history.append(regret)
@@ -281,24 +302,36 @@ class LinUCBBandit:
             arm.b *= self.decay_factor
 
         # Emit learning events
-        _emit_records_learning_event("linucb_bandit", "reward_observed", {
-            "reward": reward,
-            "cumulative_reward": self.total_reward,
-            "regret": regret,
-            "round": self.round_count,
-        })
+        _emit_records_learning_event(
+            "linucb_bandit",
+            "reward_observed",
+            {
+                "reward": reward,
+                "cumulative_reward": self.total_reward,
+                "regret": regret,
+                "round": self.round_count,
+            },
+        )
 
-        _emit_feeds_meta_learning("linucb_bandit", "reward_update", {
-            "arm_id": decision.selected_arm,
-            "reward": reward,
-            "context_features": context_vector.tolist()[:10],  # First 10 features
-        })
+        _emit_feeds_meta_learning(
+            "linucb_bandit",
+            "reward_update",
+            {
+                "arm_id": decision.selected_arm,
+                "reward": reward,
+                "context_features": context_vector.tolist()[:10],  # First 10 features
+            },
+        )
 
-        _emit_updates_routing_strategy("linucb_bandit", "bandit_update", {
-            "selected_arm": decision.selected_arm,
-            "new_success_rate": reward,
-            "exploration_rate": self.exploration_rate,
-        })
+        _emit_updates_routing_strategy(
+            "linucb_bandit",
+            "bandit_update",
+            {
+                "selected_arm": decision.selected_arm,
+                "new_success_rate": reward,
+                "exploration_rate": self.exploration_rate,
+            },
+        )
 
     def get_arm_statistics(self) -> dict[str, dict[str, float]]:
         """Get statistics for all arms"""
@@ -347,14 +380,18 @@ class LinUCBBandit:
             "regret_history": self.regret_history,
         }
 
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(state, f, indent=2)
 
-        _emit_stores_learning_state("linucb_bandit", "state_saved", {
-            "filepath": filepath,
-            "round_count": self.round_count,
-            "total_reward": self.total_reward,
-        })
+        _emit_stores_learning_state(
+            "linucb_bandit",
+            "state_saved",
+            {
+                "filepath": filepath,
+                "round_count": self.round_count,
+                "total_reward": self.total_reward,
+            },
+        )
 
     def load_state(self, filepath: str):
         """Load bandit state from file"""
@@ -385,11 +422,15 @@ class LinUCBBandit:
             arm.theta = np.array(arm_data["theta"])
             self.arms[arm_id] = arm
 
-        _emit_stores_learning_state("linucb_bandit", "state_loaded", {
-            "filepath": filepath,
-            "round_count": self.round_count,
-            "arms_count": len(self.arms),
-        })
+        _emit_stores_learning_state(
+            "linucb_bandit",
+            "state_loaded",
+            {
+                "filepath": filepath,
+                "round_count": self.round_count,
+                "arms_count": len(self.arms),
+            },
+        )
 
     def reset(self):
         """Reset bandit to initial state"""
@@ -405,9 +446,14 @@ class LinUCBBandit:
         self.regret_history = []
         self.exploration_rate = 0.1
 
-        _emit_stores_learning_state("linucb_bandit", "reset", {
-            "arms_reset": len(self.arms),
-        })
+        _emit_stores_learning_state(
+            "linucb_bandit",
+            "reset",
+            {
+                "arms_reset": len(self.arms),
+            },
+        )
+
 
 # Utility functions for context creation
 def create_bandit_context(
@@ -434,9 +480,15 @@ def create_bandit_context(
 
     # ADG features
     adg_territory_score = adg_metrics.get("territory_score", 0.5)
-    confidence_tiers = adg_metrics.get("confidence_tiers", {
-        "C0": 100, "C1": 200, "C2": 300, "C3": 400,
-    })
+    confidence_tiers = adg_metrics.get(
+        "confidence_tiers",
+        {
+            "C0": 100,
+            "C1": 200,
+            "C2": 300,
+            "C3": 400,
+        },
+    )
 
     return BanditContext(
         intent_embedding=intent_embedding,
@@ -450,6 +502,7 @@ def create_bandit_context(
         adg_territory_score=adg_territory_score,
         confidence_tiers=confidence_tiers,
     )
+
 
 def calculate_routing_reward(
     selected_agent: str,
@@ -474,6 +527,7 @@ def calculate_routing_reward(
     reward = max(0.0, min(1.0, time_reward))
 
     return reward
+
 
 __all__ = [
     "LinUCBBandit",

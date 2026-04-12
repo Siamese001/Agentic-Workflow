@@ -1,6 +1,7 @@
 """
 Test RFP Outputs.
 """
+
 import unittest
 
 from apps_rfp.outputs import ProposalRenderer, ProposalSummaryRenderer, SectionRenderer

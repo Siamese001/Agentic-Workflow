@@ -172,7 +172,11 @@ try:
         status = r.get("adg:status")
         print(f"   ADG status: {status}")
 
-except (ValueError, TypeError, RuntimeError):  # guardian: allow-silent-swallower -- diagnostic script; PRAGMA failure is non-fatal, error printed to stdout
+except (
+    ValueError,
+    TypeError,
+    RuntimeError,
+):  # guardian: allow-silent-swallower -- diagnostic script; PRAGMA failure is non-fatal, error printed to stdout
     print("❌ Redis not running or not accessible")
     print("   Redis hot cache is not available")
 # guardian: allow-silent-swallow - optional dependency

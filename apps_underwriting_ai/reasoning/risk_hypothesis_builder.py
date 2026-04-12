@@ -1,6 +1,7 @@
 """
 Risk Hypothesis Builder - Produces structured risk hypothesis from features and evidence.
 """
+
 from dataclasses import dataclass, field
 from typing import List
 
@@ -10,6 +11,7 @@ from ..types import RiskFeatures, UnderwritingRequest
 @dataclass
 class RiskHypothesis:
     """Structured risk hypothesis output."""
+
     primary_strengths: List[str] = field(default_factory=list)
     primary_risks: List[str] = field(default_factory=list)
     open_questions: List[str] = field(default_factory=list)
@@ -55,7 +57,9 @@ class RiskHypothesisBuilder:
         hypothesis.open_questions = self._identify_open_questions(features, request)
 
         # Generate initial recommendation
-        hypothesis.initial_recommendation, hypothesis.recommendation_confidence = self._generate_recommendation(features)
+        hypothesis.initial_recommendation, hypothesis.recommendation_confidence = (
+            self._generate_recommendation(features)
+        )
 
         return hypothesis
 
@@ -70,14 +74,18 @@ class RiskHypothesisBuilder:
             strengths.append(f"Adequate debt service coverage at {features.capacity.dscr_ttm:.2f}x")
 
         if features.capacity.debt_to_ebitda_ttm and features.capacity.debt_to_ebitda_ttm <= 2.0:
-            strengths.append(f"Conservative leverage at {features.capacity.debt_to_ebitda_ttm:.2f}x Debt/EBITDA")
+            strengths.append(
+                f"Conservative leverage at {features.capacity.debt_to_ebitda_ttm:.2f}x Debt/EBITDA"
+            )
 
         if features.capacity.revenue_trend_score >= 0.7:
             strengths.append("Positive revenue trend trajectory")
 
         # Liquidity strengths
         if features.liquidity.current_ratio and features.liquidity.current_ratio >= 1.5:
-            strengths.append(f"Healthy liquidity with current ratio of {features.liquidity.current_ratio:.2f}x")
+            strengths.append(
+                f"Healthy liquidity with current ratio of {features.liquidity.current_ratio:.2f}x"
+            )
 
         if features.liquidity.deposit_stability_score >= 0.8:
             strengths.append("Stable deposit relationship with minimal NSF/overdraft activity")
@@ -111,7 +119,9 @@ class RiskHypothesisBuilder:
 
         # Capacity risks
         if features.capacity.dscr_ttm and features.capacity.dscr_ttm < 1.25:
-            risks.append(f"Thin debt service coverage at {features.capacity.dscr_ttm:.2f}x, below policy minimum")
+            risks.append(
+                f"Thin debt service coverage at {features.capacity.dscr_ttm:.2f}x, below policy minimum"
+            )
 
         if features.capacity.debt_to_ebitda_ttm and features.capacity.debt_to_ebitda_ttm > 3.5:
             risks.append(f"Elevated leverage at {features.capacity.debt_to_ebitda_ttm:.2f}x Debt/EBITDA")

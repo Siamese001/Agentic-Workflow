@@ -276,7 +276,9 @@ class ReconciliationViolation:
         """L0 maintenance agent - operational only."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "FilesystemSSOTReconciler.heal_repository",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "FilesystemSSOTReconciler.heal_repository",
         )
         super().heal_repository()
         if _call_path is None:
@@ -422,19 +424,26 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         """Handle interactive approval flow. Returns (should_apply, early_return_result)."""
         Logger.info("Interactive mode - requesting user approval")
         try:
-            approved = self._request_user_approval(proposals)    # guardian: KeyboardInterrupt should be handled with specific context
+            approved = self._request_user_approval(
+                proposals
+            )  # guardian: KeyboardInterrupt should be handled with specific context
             if not approved:
                 Logger.info("User rejected proposed changes")
                 return (False, self._create_rejected_result(proposals, "Changes rejected by user"))
             Logger.info("User approved changes - proceeding with application")
             return (True, None)
         except KeyboardInterrupt:
-            Logger.warning("User aborted reconciliation")    # guardian: KeyboardInterrupt should be handled with specific context
+            Logger.warning(
+                "User aborted reconciliation"
+            )  # guardian: KeyboardInterrupt should be handled with specific context
             return (False, self._create_rejected_result(proposals, "Reconciliation aborted by user"))
 
     # guardian: allow-type-erasure
     async def enforce_gospel(
-        self, auto_apply: bool = False, interactive: bool = True, target_territory: str | None = None,
+        self,
+        auto_apply: bool = False,
+        interactive: bool = True,
+        target_territory: str | None = None,
     ) -> dict[str, Any]:
         """Main entry point: Align filesystem to match the Gospel (blueprint)."""
         scope_msg = f"Targeting: {target_territory}" if target_territory else "Global Scan"
@@ -603,7 +612,9 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         return drift
 
     def _check_registry_subfolders(
-        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]],
+        self,
+        current_blueprint: dict[str, Any],
+        drift: list[dict[str, Any]],
     ) -> None:
         """
         Check SOVEREIGN_REGISTRY subfolders.
@@ -631,7 +642,12 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             extra = blueprint_subfolders - actual_subfolders
             if extra:
                 drift.append(
-                    {"type": "missing_subfolders", "root": root, "folders": sorted(extra), "Severity": "high"},
+                    {
+                        "type": "missing_subfolders",
+                        "root": root,
+                        "folders": sorted(extra),
+                        "Severity": "high",
+                    },
                 )
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
@@ -676,7 +692,9 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             Logger.info(f"Missing canonical signals: {missing_signals}")
 
     def _check_registry_subfolders(
-        self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]],
+        self,
+        current_blueprint: dict[str, Any],
+        drift: list[dict[str, Any]],
     ) -> None:
         """Check SOVEREIGN_REGISTRY subfolders for drift."""
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
@@ -698,7 +716,12 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             extra = blueprint_subfolders - actual_subfolders
             if extra:
                 drift.append(
-                    {"type": "missing_subfolders", "root": root, "folders": sorted(extra), "Severity": "high"},
+                    {
+                        "type": "missing_subfolders",
+                        "root": root,
+                        "folders": sorted(extra),
+                        "Severity": "high",
+                    },
                 )
                 Logger.warning(f"Missing subfolders in {root}: {extra}")
 
@@ -781,7 +804,10 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         violations = []
         for prop in proposals:
             coord = ASTCoordinate(
-                line=1, column=0, node_id=f"filesystem_{prop['action']}", node_type="FilesystemOperation",
+                line=1,
+                column=0,
+                node_id=f"filesystem_{prop['action']}",
+                node_type="FilesystemOperation",
             )
             violation = ViolationConstraint(
                 constraint_type="filesystem_drift",
@@ -815,7 +841,10 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 if source.exists():
                     _wg.ensure_dir(target.parent)
                     gk_result = self.gatekeeper.safe_move(
-                        source, target, self.agent_name, "Archive unauthorized folder",
+                        source,
+                        target,
+                        self.agent_name,
+                        "Archive unauthorized folder",
                     )
                     if gk_result.success:
                         applied_logs.append(f"ARCHIVED: {prop['source']} -> {prop['target']}")
@@ -850,7 +879,9 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             action = proposal["action"]
             if action == "add_to_sovereign_registry":
                 content = self._apply_sovereign_registry_update(
-                    content, proposal["root"], proposal["subfolders"],
+                    content,
+                    proposal["root"],
+                    proposal["subfolders"],
                 )
             elif action == "add_to_core_subfolder_map":
                 content = self._apply_core_map_update(content, proposal["l1_folder"], proposal["subfolders"])
@@ -858,7 +889,11 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 content = self._apply_signals_update(content, proposal["signals"])
             Logger.debug(f"Applied proposal: {action}")
         with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", dir=self.blueprint_file.parent, delete=False, suffix=".py",
+            mode="w",
+            encoding="utf-8",
+            dir=self.blueprint_file.parent,
+            delete=False,
+            suffix=".py",
         ) as tmp:
             tmp.write(content)
             tmp_path = tmp.name
@@ -975,13 +1010,14 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 elif response in ("quit", "q", "exit"):
                     print("\n[ABORT] Blueprint reconciliation aborted by user")
                     Logger.warning("User aborted reconciliation")
-                    raise KeyboardInterrupt    # guardian: EOFError should be handled with specific context
+                    raise KeyboardInterrupt  # guardian: EOFError should be handled with specific context
                 else:
                     print("Invalid response. Please answer 'yes', 'no', or 'quit'")
             except EOFError:
                 Logger.warning("Non-interactive environment detected - cannot request approval")
                 print("\n[ERROR] Cannot request approval in non-interactive environment")
                 return False
+
     # guardian: EOFError should be handled with specific context
     def _validate_blueprint_syntax(self) -> bool:
         """
@@ -992,14 +1028,18 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         """
         try:
             content = self.blueprint_file.read_text(encoding="utf-8")
-            compile(content, str(self.blueprint_file), "exec")    # guardian: Syntax errors should be caught at parser level, not runtime
+            compile(
+                content, str(self.blueprint_file), "exec"
+            )  # guardian: Syntax errors should be caught at parser level, not runtime
             Logger.info("Blueprint syntax validation passed")
             return True
         except SyntaxError as e:
             Logger.error(f"Blueprint syntax error after update: {e}")
             return False
 
-    def _rollback_to_backup(self, backup_path: Path) -> None:    # guardian: Syntax errors should be caught at parser level, not runtime
+    def _rollback_to_backup(
+        self, backup_path: Path
+    ) -> None:  # guardian: Syntax errors should be caught at parser level, not runtime
         """
         Restore blueprint from backup (Phase 3 safety mechanism).
 
@@ -1105,7 +1145,10 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
 
     # guardian: allow-magic-config
     def cleanup_violations(
-        self, violations: list[ReconciliationViolation], dry_run: bool = True, max_actions: int = 50,
+        self,
+        violations: list[ReconciliationViolation],
+        dry_run: bool = True,
+        max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup reconciliation violations with blueprint updates.

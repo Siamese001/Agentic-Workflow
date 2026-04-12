@@ -51,9 +51,9 @@ def demonstrate_layer_performance():
         print(f"Layers Used: {', '.join(results['layers_used'])}")
         print(f"Results Found: {len(results['results'])}")
 
-        if results['results']:
-            for i, result in enumerate(results['results'][:2]):
-                print(f"  Result {i+1} ({result['layer']}): {result['content'][:80]}...")
+        if results["results"]:
+            for i, result in enumerate(results["results"][:2]):
+                print(f"  Result {i + 1} ({result['layer']}): {result['content'][:80]}...")
 
     print()
 
@@ -114,9 +114,9 @@ def demonstrate_semantic_search():
 
         results = orchestrator.retrieve(query, n_results=2)
 
-        if results['results']:
-            for i, result in enumerate(results['results']):
-                print(f"  Result {i+1}: {result['content'][:60]}...")
+        if results["results"]:
+            for i, result in enumerate(results["results"]):
+                print(f"  Result {i + 1}: {result['content'][:60]}...")
 
     print()
 
@@ -141,13 +141,15 @@ def demonstrate_trace_retrieval():
 
         results = orchestrator.retrieve(query, n_results=3)
 
-        trace_results = [r for r in results['results'] if r['layer'] == 'L3_Traces']
+        trace_results = [r for r in results["results"] if r["layer"] == "L3_Traces"]
 
         if trace_results:
             for i, result in enumerate(trace_results[:2]):
-                metadata = result['metadata']
-                print(f"  Trace {i+1}: ID={metadata.get('trace_id', 'unknown')}, "
-                      f"Line={metadata.get('line_number', 'unknown')}")
+                metadata = result["metadata"]
+                print(
+                    f"  Trace {i + 1}: ID={metadata.get('trace_id', 'unknown')}, "
+                    f"Line={metadata.get('line_number', 'unknown')}"
+                )
         else:
             print("  No trace results found")
 
@@ -216,7 +218,7 @@ def demonstrate_performance_benchmark():
         query_time = end_time - start_time
         times.append(query_time)
 
-        layers = ','.join(results['layers_used'])
+        layers = ",".join(results["layers_used"])
         layer_usage[layers] = layer_usage.get(layers, 0) + 1
 
         print(f"Query {i}: {query_time * 1000:.2f}ms ({layers})")

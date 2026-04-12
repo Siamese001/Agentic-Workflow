@@ -56,7 +56,9 @@ class CitationEnforcementViolation(Exception):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "CitationEnforcementViolation.__init__",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "CitationEnforcementViolation.__init__",
         )
         self.detail = detail
         super().__init__(

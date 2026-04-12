@@ -4,8 +4,10 @@ Source: system_learning\ml_integration\training_pipeline.py
 Extracted: 2026-03-27T06:50:34.075560
 """
 
+
 class ModelType(Enum):
     """Supported ML model types."""
+
     RANDOM_FOREST = "random_forest"
     XGBOOST = "xgboost"
     NEURAL_NETWORK = "neural_network"
@@ -15,8 +17,10 @@ class ModelType(Enum):
     PROPHET = "prophet"
     CUSTOM = "custom"
 
+
 class TrainingStatus(Enum):
     """Training status levels."""
+
     PENDING = "pending"
     PREPARING_DATA = "preparing_data"
     TRAINING = "training"
@@ -26,13 +30,16 @@ class TrainingStatus(Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
 
+
 class OptimizationMethod(Enum):
     """Hyperparameter optimization methods."""
+
     GRID_SEARCH = "grid_search"
     RANDOM_SEARCH = "random_search"
     BAYESIAN = "bayesian"
     GENETIC = "genetic"
     EVOLUTIONARY = "evolutionary"
+
 
 class ModelConfig:
     """Model configuration parameters."""
@@ -64,6 +71,7 @@ class ModelConfig:
             "early_stopping": self.early_stopping,
             "early_stopping_patience": self.early_stopping_patience,
         }
+
 
 class TrainingMetrics:
     """Training performance metrics."""
@@ -110,6 +118,7 @@ class TrainingMetrics:
             "timestamp": self.timestamp,
         }
 
+
 class ModelDeployment:
     """Model deployment information."""
 
@@ -137,6 +146,7 @@ class ModelDeployment:
             "monitoring_enabled": self.monitoring_enabled,
         }
 
+
 class BaseMLModel(ABC):
     """Abstract base class for ML models."""
 
@@ -149,7 +159,9 @@ class BaseMLModel(ABC):
         self.target_column = config.target_column
 
     @abstractmethod
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train the model."""
         pass
 
@@ -173,10 +185,13 @@ class BaseMLModel(ABC):
         """Load a trained model."""
         pass
 
+
 class RandomForestModel(BaseMLModel):
     """Random Forest model implementation."""
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train Random Forest model."""
         try:
             from sklearn.ensemble import RandomForestClassifier
@@ -214,9 +229,9 @@ class RandomForestModel(BaseMLModel):
                 model_type=ModelType.RANDOM_FOREST,
                 training_time=training_time,
                 accuracy=accuracy_score(y_val, y_pred),
-                precision=precision_score(y_val, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_val, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_val, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_val, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_val, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_val, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_val, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_val, y_pred).tolist(),
                 feature_importance=dict(zip(self.feature_columns, self.model.feature_importances_)),
@@ -249,7 +264,7 @@ class RandomForestModel(BaseMLModel):
     def save_model(self, filepath: str) -> bool:
         """Save the trained model."""
         try:
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
         except Exception as e:  # guardian: allow-broad-exception -- ML pipeline resilience: log error and return False/None to signal failure without crashing the pipeline
@@ -259,7 +274,7 @@ class RandomForestModel(BaseMLModel):
     def load_model(self, filepath: str) -> bool:
         """Load a trained model."""
         try:
-            with open(filepath, 'rb') as f:
+            with open(filepath, "rb") as f:
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
@@ -267,10 +282,13 @@ class RandomForestModel(BaseMLModel):
             Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
             return False
 
+
 class XGBoostModel(BaseMLModel):
     """XGBoost model implementation."""
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train XGBoost model."""
         try:
             from sklearn.metrics import (
@@ -293,13 +311,16 @@ class XGBoostModel(BaseMLModel):
                 subsample=self.config.hyperparameters.get("subsample", 1.0),
                 colsample_bytree=self.config.hyperparameters.get("colsample_bytree", 1.0),
                 random_state=self.config.random_state,
-                eval_metric='logloss',
-                early_stopping_rounds=self.config.early_stopping_patience if self.config.early_stopping else None,
+                eval_metric="logloss",
+                early_stopping_rounds=self.config.early_stopping_patience
+                if self.config.early_stopping
+                else None,
             )
 
             # Train with early stopping
             self.model.fit(
-                X_train, y_train,
+                X_train,
+                y_train,
                 eval_set=[(X_val, y_val)],
                 verbose=False,
             )
@@ -316,9 +337,9 @@ class XGBoostModel(BaseMLModel):
                 model_type=ModelType.XGBOOST,
                 training_time=training_time,
                 accuracy=accuracy_score(y_val, y_pred),
-                precision=precision_score(y_val, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_val, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_val, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_val, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_val, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_val, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_val, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_val, y_pred).tolist(),
                 feature_importance=dict(zip(self.feature_columns, self.model.feature_importances_)),
@@ -353,7 +374,7 @@ class XGBoostModel(BaseMLModel):
     def save_model(self, filepath: str) -> bool:
         """Save the trained model."""
         try:
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
         except Exception as e:  # guardian: allow-broad-exception -- ML pipeline resilience: log error and return False/None to signal failure without crashing the pipeline
@@ -363,7 +384,7 @@ class XGBoostModel(BaseMLModel):
     def load_model(self, filepath: str) -> bool:
         """Load a trained model."""
         try:
-            with open(filepath, 'rb') as f:
+            with open(filepath, "rb") as f:
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
@@ -371,10 +392,13 @@ class XGBoostModel(BaseMLModel):
             Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
             return False
 
+
 class NeuralNetworkModel(BaseMLModel):
     """Neural Network model implementation."""
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train Neural Network model."""
         try:
             from sklearn.metrics import (
@@ -423,12 +447,12 @@ class NeuralNetworkModel(BaseMLModel):
                 model_type=ModelType.NEURAL_NETWORK,
                 training_time=training_time,
                 accuracy=accuracy_score(y_val, y_pred),
-                precision=precision_score(y_val, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_val, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_val, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_val, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_val, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_val, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_val, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_val, y_pred).tolist(),
-                training_loss=getattr(self.model, 'loss_curve_', []),
+                training_loss=getattr(self.model, "loss_curve_", []),
                 hyperparameters=self.config.hyperparameters,
             )
 
@@ -445,6 +469,7 @@ class NeuralNetworkModel(BaseMLModel):
             raise ValueError("Model not trained")
 
         from sklearn.preprocessing import StandardScaler
+
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
 
@@ -456,6 +481,7 @@ class NeuralNetworkModel(BaseMLModel):
             raise ValueError("Model not trained")
 
         from sklearn.preprocessing import StandardScaler
+
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
 
@@ -464,7 +490,7 @@ class NeuralNetworkModel(BaseMLModel):
     def save_model(self, filepath: str) -> bool:
         """Save the trained model."""
         try:
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
         except Exception as e:  # guardian: allow-broad-exception -- ML pipeline resilience: log error and return False/None to signal failure without crashing the pipeline
@@ -474,13 +500,14 @@ class NeuralNetworkModel(BaseMLModel):
     def load_model(self, filepath: str) -> bool:
         """Load a trained model."""
         try:
-            with open(filepath, 'rb') as f:
+            with open(filepath, "rb") as f:
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
         except Exception as e:  # guardian: allow-broad-exception -- ML pipeline resilience: log error and return False/None to signal failure without crashing the pipeline
             Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
             return False
+
 
 class MLTrainingPipeline:
     """
@@ -552,6 +579,7 @@ class MLTrainingPipeline:
         try:
             # Create model storage directory
             import os
+
             os.makedirs(self._config["model_storage_path"], exist_ok=True)
 
             self._initialized = True
@@ -582,7 +610,9 @@ class MLTrainingPipeline:
             Logger.error(f"[ML_PIPELINE] Failed to add training data {dataset_name}: {e}")
             return False
 
-    def train_anomaly_detection_model(self, dataset_name: str, model_type: str = "random_forest") -> Optional[str]:
+    def train_anomaly_detection_model(
+        self, dataset_name: str, model_type: str = "random_forest"
+    ) -> Optional[str]:
         """
         Train an anomaly detection model.
 
@@ -628,7 +658,11 @@ class MLTrainingPipeline:
             y = data[target_column].values
 
             X_train, X_val, y_train, y_val = train_test_split(
-                X, y, test_size=config.test_size, random_state=config.random_state, stratify=y,
+                X,
+                y,
+                test_size=config.test_size,
+                random_state=config.random_state,
+                stratify=y,
             )
 
             # Create and train model
@@ -645,7 +679,9 @@ class MLTrainingPipeline:
             model.save_model(model_path)
 
             Logger.info(f"[ML_PIPELINE] Trained anomaly detection model: {model_id}")
-            Logger.info(f"[ML_PIPELINE] Model performance: accuracy={metrics.accuracy:.3f}, f1={metrics.f1_score:.3f}")
+            Logger.info(
+                f"[ML_PIPELINE] Model performance: accuracy={metrics.accuracy:.3f}, f1={metrics.f1_score:.3f}"
+            )
 
             return model_id
 
@@ -707,15 +743,17 @@ class MLTrainingPipeline:
                 model_type=metrics.model_type,
                 training_time=0.0,
                 accuracy=accuracy_score(y_test, y_pred),
-                precision=precision_score(y_test, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_test, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_test, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_test, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_test, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_test, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_test, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_test, y_pred).tolist(),
                 hyperparameters=metrics.hyperparameters,
             )
 
-            Logger.info(f"[ML_PIPELINE] Model {model_id} test evaluation: accuracy={test_metrics.accuracy:.3f}")
+            Logger.info(
+                f"[ML_PIPELINE] Model {model_id} test evaluation: accuracy={test_metrics.accuracy:.3f}"
+            )
 
             return test_metrics
 
@@ -793,7 +831,9 @@ class MLTrainingPipeline:
             Logger.error(f"[ML_PIPELINE] Model prediction failed: {e}")
             return None
 
-    def get_model_metrics(self, model_id: Optional[str] = None) -> Union[TrainingMetrics, Dict[str, TrainingMetrics]]:
+    def get_model_metrics(
+        self, model_id: Optional[str] = None
+    ) -> Union[TrainingMetrics, Dict[str, TrainingMetrics]]:
         """Get metrics for a specific model or all models."""
         if model_id:
             return self._model_metrics.get(model_id)
@@ -817,6 +857,7 @@ class MLTrainingPipeline:
             "timestamp": time.time(),
         }
 
+
 def get_global_ml_pipeline() -> MLTrainingPipeline:
     """Get the global ML training pipeline instance."""
     global _global_pipeline
@@ -824,10 +865,12 @@ def get_global_ml_pipeline() -> MLTrainingPipeline:
         _global_pipeline = MLTrainingPipeline()
     return _global_pipeline
 
+
 def initialize_ml_pipeline() -> bool:
     """Initialize global ML training pipeline."""
     pipeline = get_global_ml_pipeline()
     return pipeline.initialize_pipeline()
+
 
 def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_forest") -> Optional[str]:
     """
@@ -895,7 +938,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             "monitoring_enabled": self.monitoring_enabled,
         }
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train the model."""
         pass
 
@@ -915,7 +960,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
         """Load a trained model."""
         pass
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train Random Forest model."""
         try:
             from sklearn.ensemble import RandomForestClassifier
@@ -953,9 +1000,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
                 model_type=ModelType.RANDOM_FOREST,
                 training_time=training_time,
                 accuracy=accuracy_score(y_val, y_pred),
-                precision=precision_score(y_val, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_val, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_val, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_val, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_val, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_val, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_val, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_val, y_pred).tolist(),
                 feature_importance=dict(zip(self.feature_columns, self.model.feature_importances_)),
@@ -988,7 +1035,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def save_model(self, filepath: str) -> bool:
         """Save the trained model."""
         try:
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
         except Exception as e:  # guardian: allow-broad-exception -- ML pipeline resilience: log error and return False/None to signal failure without crashing the pipeline
@@ -998,7 +1045,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def load_model(self, filepath: str) -> bool:
         """Load a trained model."""
         try:
-            with open(filepath, 'rb') as f:
+            with open(filepath, "rb") as f:
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
@@ -1006,7 +1053,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
             return False
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train XGBoost model."""
         try:
             from sklearn.metrics import (
@@ -1029,13 +1078,16 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
                 subsample=self.config.hyperparameters.get("subsample", 1.0),
                 colsample_bytree=self.config.hyperparameters.get("colsample_bytree", 1.0),
                 random_state=self.config.random_state,
-                eval_metric='logloss',
-                early_stopping_rounds=self.config.early_stopping_patience if self.config.early_stopping else None,
+                eval_metric="logloss",
+                early_stopping_rounds=self.config.early_stopping_patience
+                if self.config.early_stopping
+                else None,
             )
 
             # Train with early stopping
             self.model.fit(
-                X_train, y_train,
+                X_train,
+                y_train,
                 eval_set=[(X_val, y_val)],
                 verbose=False,
             )
@@ -1052,9 +1104,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
                 model_type=ModelType.XGBOOST,
                 training_time=training_time,
                 accuracy=accuracy_score(y_val, y_pred),
-                precision=precision_score(y_val, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_val, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_val, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_val, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_val, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_val, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_val, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_val, y_pred).tolist(),
                 feature_importance=dict(zip(self.feature_columns, self.model.feature_importances_)),
@@ -1089,7 +1141,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def save_model(self, filepath: str) -> bool:
         """Save the trained model."""
         try:
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
         except Exception as e:  # guardian: allow-broad-exception -- ML pipeline resilience: log error and return False/None to signal failure without crashing the pipeline
@@ -1099,7 +1151,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def load_model(self, filepath: str) -> bool:
         """Load a trained model."""
         try:
-            with open(filepath, 'rb') as f:
+            with open(filepath, "rb") as f:
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
@@ -1107,7 +1159,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
             return False
 
-    def train(self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray) -> TrainingMetrics:
+    def train(
+        self, X_train: np.ndarray, y_train: np.ndarray, X_val: np.ndarray, y_val: np.ndarray
+    ) -> TrainingMetrics:
         """Train Neural Network model."""
         try:
             from sklearn.metrics import (
@@ -1156,12 +1210,12 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
                 model_type=ModelType.NEURAL_NETWORK,
                 training_time=training_time,
                 accuracy=accuracy_score(y_val, y_pred),
-                precision=precision_score(y_val, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_val, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_val, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_val, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_val, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_val, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_val, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_val, y_pred).tolist(),
-                training_loss=getattr(self.model, 'loss_curve_', []),
+                training_loss=getattr(self.model, "loss_curve_", []),
                 hyperparameters=self.config.hyperparameters,
             )
 
@@ -1178,6 +1232,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             raise ValueError("Model not trained")
 
         from sklearn.preprocessing import StandardScaler
+
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
 
@@ -1189,6 +1244,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             raise ValueError("Model not trained")
 
         from sklearn.preprocessing import StandardScaler
+
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X)
 
@@ -1197,7 +1253,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def save_model(self, filepath: str) -> bool:
         """Save the trained model."""
         try:
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
         except Exception as e:  # guardian: allow-broad-exception -- ML pipeline resilience: log error and return False/None to signal failure without crashing the pipeline
@@ -1207,7 +1263,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
     def load_model(self, filepath: str) -> bool:
         """Load a trained model."""
         try:
-            with open(filepath, 'rb') as f:
+            with open(filepath, "rb") as f:
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
@@ -1220,6 +1276,7 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
         try:
             # Create model storage directory
             import os
+
             os.makedirs(self._config["model_storage_path"], exist_ok=True)
 
             self._initialized = True
@@ -1250,7 +1307,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             Logger.error(f"[ML_PIPELINE] Failed to add training data {dataset_name}: {e}")
             return False
 
-    def train_anomaly_detection_model(self, dataset_name: str, model_type: str = "random_forest") -> Optional[str]:
+    def train_anomaly_detection_model(
+        self, dataset_name: str, model_type: str = "random_forest"
+    ) -> Optional[str]:
         """
         Train an anomaly detection model.
 
@@ -1296,7 +1355,11 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             y = data[target_column].values
 
             X_train, X_val, y_train, y_val = train_test_split(
-                X, y, test_size=config.test_size, random_state=config.random_state, stratify=y,
+                X,
+                y,
+                test_size=config.test_size,
+                random_state=config.random_state,
+                stratify=y,
             )
 
             # Create and train model
@@ -1313,7 +1376,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             model.save_model(model_path)
 
             Logger.info(f"[ML_PIPELINE] Trained anomaly detection model: {model_id}")
-            Logger.info(f"[ML_PIPELINE] Model performance: accuracy={metrics.accuracy:.3f}, f1={metrics.f1_score:.3f}")
+            Logger.info(
+                f"[ML_PIPELINE] Model performance: accuracy={metrics.accuracy:.3f}, f1={metrics.f1_score:.3f}"
+            )
 
             return model_id
 
@@ -1363,15 +1428,17 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
                 model_type=metrics.model_type,
                 training_time=0.0,
                 accuracy=accuracy_score(y_test, y_pred),
-                precision=precision_score(y_test, y_pred, average='weighted', zero_division=0),
-                recall=recall_score(y_test, y_pred, average='weighted', zero_division=0),
-                f1_score=f1_score(y_test, y_pred, average='weighted', zero_division=0),
+                precision=precision_score(y_test, y_pred, average="weighted", zero_division=0),
+                recall=recall_score(y_test, y_pred, average="weighted", zero_division=0),
+                f1_score=f1_score(y_test, y_pred, average="weighted", zero_division=0),
                 auc_roc=roc_auc_score(y_test, y_pred_proba),
                 confusion_matrix=confusion_matrix(y_test, y_pred).tolist(),
                 hyperparameters=metrics.hyperparameters,
             )
 
-            Logger.info(f"[ML_PIPELINE] Model {model_id} test evaluation: accuracy={test_metrics.accuracy:.3f}")
+            Logger.info(
+                f"[ML_PIPELINE] Model {model_id} test evaluation: accuracy={test_metrics.accuracy:.3f}"
+            )
 
             return test_metrics
 
@@ -1449,7 +1516,9 @@ def train_anomaly_detection_model(dataset_name: str, model_type: str = "random_f
             Logger.error(f"[ML_PIPELINE] Model prediction failed: {e}")
             return None
 
-    def get_model_metrics(self, model_id: Optional[str] = None) -> Union[TrainingMetrics, Dict[str, TrainingMetrics]]:
+    def get_model_metrics(
+        self, model_id: Optional[str] = None
+    ) -> Union[TrainingMetrics, Dict[str, TrainingMetrics]]:
         """Get metrics for a specific model or all models."""
         if model_id:
             return self._model_metrics.get(model_id)

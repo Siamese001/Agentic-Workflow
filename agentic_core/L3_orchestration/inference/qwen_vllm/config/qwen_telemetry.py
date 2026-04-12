@@ -18,6 +18,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 @dataclass
 class QwenInferenceMetric:
     """Single metric data point."""
+
     timestamp: float
     app_name: str
     model_id: str
@@ -29,6 +30,7 @@ class QwenInferenceMetric:
 @dataclass
 class QwenSessionMetrics:
     """Metrics for a single inference session."""
+
     session_id: str
     app_name: str
     start_time: float
@@ -92,10 +94,14 @@ class QwenInferenceTelemetry:
 
         # Calculate final metrics
         if session.total_requests > 0:
-            session.average_confidence = sum(
-                m.value for m in self._metrics
-                if m.context.get("session_id") == session_id and m.metric_name == "confidence"
-            ) / session.total_requests
+            session.average_confidence = (
+                sum(
+                    m.value
+                    for m in self._metrics
+                    if m.context.get("session_id") == session_id and m.metric_name == "confidence"
+                )
+                / session.total_requests
+            )
 
         _emit_captures_evaluation_metric(
             session_id,
@@ -256,7 +262,9 @@ class QwenInferenceTelemetry:
         return {
             "total_requests": session.total_requests,
             "success_rate": session.successful_requests / session.total_requests,
-            "average_latency_ms": session.total_latency_ms / session.successful_requests if session.successful_requests > 0 else 0.0,
+            "average_latency_ms": session.total_latency_ms / session.successful_requests
+            if session.successful_requests > 0
+            else 0.0,
             "average_confidence": session.average_confidence,
             "total_tokens": session.tokens_used,
         }
@@ -289,9 +297,15 @@ class QwenInferenceTelemetry:
 
         return {
             "total_requests": total_requests,
-            "success_rate": (total_requests - len(error_metrics)) / total_requests if total_requests > 0 else 0.0,
-            "average_latency_ms": sum(m.value for m in latency_metrics) / len(latency_metrics) if latency_metrics else 0.0,
-            "average_confidence": sum(m.value for m in confidence_metrics) / len(confidence_metrics) if confidence_metrics else 0.0,
+            "success_rate": (total_requests - len(error_metrics)) / total_requests
+            if total_requests > 0
+            else 0.0,
+            "average_latency_ms": sum(m.value for m in latency_metrics) / len(latency_metrics)
+            if latency_metrics
+            else 0.0,
+            "average_confidence": sum(m.value for m in confidence_metrics) / len(confidence_metrics)
+            if confidence_metrics
+            else 0.0,
         }
 
 

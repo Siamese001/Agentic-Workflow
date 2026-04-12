@@ -16,11 +16,11 @@ else:
     print(f"Has _cache_key: {'_cache_key' in cache}")
 
     # Check if this is a ScanCache format or ScanResult format
-    if 'version' in cache and 'entries' in cache:
+    if "version" in cache and "entries" in cache:
         print("\n✅ This is a ScanCache format (used by scanner)")
         print("   - Used by ADGStaticScanner.scan()")
         print("   - Contains per-file cached edges")
-    elif 'manifest' in cache or 'edges' in cache:
+    elif "manifest" in cache or "edges" in cache:
         print("\n✅ This is a ScanResult format (used by cache_loader)")
         print("   - Used by load_or_scan()")
         print("   - Contains full scan result")

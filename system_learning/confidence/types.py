@@ -156,6 +156,7 @@ _emit_links_execution_to_snapshot("p4", "types", "exec_snapshot_link")
 @dataclass(frozen=True)
 class ConfidenceLevel:
     """Confidence level for test compatibility."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -165,6 +166,7 @@ class ConfidenceLevel:
 @dataclass(frozen=True)
 class ConfidenceFactor:
     """Confidence factor for test compatibility."""
+
     COVERAGE = "coverage"
     COMPLEXITY = "complexity"
     TEST_RESULTS = "test_results"
@@ -185,8 +187,11 @@ class HealingAttempt:
     def canonical_bytes(self) -> bytes:
         """Canonical byte representation for deterministic fingerprinting."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingAttempt.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingAttempt.canonical_bytes"
+        )
 
         data = {
             "attempt_id": self.attempt_id,
@@ -218,12 +223,17 @@ class HealingConfidenceReport:
 
     @classmethod
     def from_canonical_bytes(
-        cls, decisions: list[ConfidenceDecision], canonical_bytes: bytes,
+        cls,
+        decisions: list[ConfidenceDecision],
+        canonical_bytes: bytes,
     ) -> HealingConfidenceReport:
         """Create report from canonical bytes."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingConfidenceReport.from_canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingConfidenceReport.from_canonical_bytes"
+        )
 
         confidence_fingerprint = hashlib.sha256(canonical_bytes).hexdigest()
         return cls(

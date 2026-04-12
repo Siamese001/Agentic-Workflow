@@ -38,6 +38,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class RetrievalEvaluation:
     """Retrieval evaluation data contract [19]."""
+
     eval_id: str  # trace_id + query_hash
     trace_id: str
     query_hash: str
@@ -222,7 +223,9 @@ class RetrievalEvalRegistry:
         """
         _trace_id = f"l4f_eval_{trace_id[:16]}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "RetrievalEvalRegistry.evaluate_retrieval",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "RetrievalEvalRegistry.evaluate_retrieval",
         )
 
         # Generate eval_id
@@ -245,7 +248,9 @@ class RetrievalEvalRegistry:
         p_at_10 = metrics["precision_at_k"].get(10, 0.0)
         if p_at_1 > 0.8 and p_at_10 < 0.3:
             triggers.append("fragmentation")
-            _emit_captures_evaluation_metric(_trace_id, "retrieval", "fragmentation_detected", p_at_1 - p_at_10)
+            _emit_captures_evaluation_metric(
+                _trace_id, "retrieval", "fragmentation_detected", p_at_1 - p_at_10
+            )
 
         # Groundedness trigger (F1 will be computed later with answer)
 
@@ -272,7 +277,9 @@ class RetrievalEvalRegistry:
         # Emit meta-learning signal
         if triggers:
             _emit_feeds_meta_learning(
-                _trace_id, "RetrievalEvalRegistry", json.dumps(triggers),
+                _trace_id,
+                "RetrievalEvalRegistry",
+                json.dumps(triggers),
             )
 
         Logger.info(f"Evaluated retrieval: {eval_id[:32]}... (NDCG={metrics['ndcg']:.2f})")
@@ -305,7 +312,10 @@ class RetrievalEvalRegistry:
         if f1_groundedness < 0.5:
             triggers.append("groundedness")
             _emit_captures_evaluation_metric(
-                _trace_id, "retrieval", "f1_groundedness_low", f1_groundedness,
+                _trace_id,
+                "retrieval",
+                "f1_groundedness_low",
+                f1_groundedness,
             )
 
         conn = sqlite3.connect(self.db_path)
@@ -313,7 +323,8 @@ class RetrievalEvalRegistry:
 
         try:
             # Update evaluation with answer metrics
-            cursor.execute("""
+            cursor.execute(
+                """
                 UPDATE retrieval_evaluations SET
                     generated_answer = ?,
                     support_score = ?,
@@ -321,20 +332,24 @@ class RetrievalEvalRegistry:
                     answer_supported = ?,
                     triggers = json_insert(triggers, '$', ?)
                 WHERE eval_id = ?
-            """, (
-                generated_answer,
-                support_score,
-                f1_groundedness,
-                1 if answer_supported else 0,
-                json.dumps(triggers),
-                eval_id,
-            ))
+            """,
+                (
+                    generated_answer,
+                    support_score,
+                    f1_groundedness,
+                    1 if answer_supported else 0,
+                    json.dumps(triggers),
+                    eval_id,
+                ),
+            )
 
             conn.commit()
 
             if triggers:
                 _emit_feeds_meta_learning(
-                    _trace_id, "RetrievalEvalRegistry", json.dumps(triggers),
+                    _trace_id,
+                    "RetrievalEvalRegistry",
+                    json.dumps(triggers),
                 )
 
             Logger.info(f"Evaluated answer: {eval_id[:32]}... (F1={f1_groundedness:.2f})")
@@ -352,7 +367,8 @@ class RetrievalEvalRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT OR REPLACE INTO retrieval_evaluations (
                     eval_id, trace_id, query_hash, query_text,
                     retrieved_chunk_ids, relevant_chunk_ids,
@@ -360,26 +376,28 @@ class RetrievalEvalRegistry:
                     generated_answer, answer_supported, support_score,
                     eval_mode, timestamp, retrieval_config, triggers
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                evaluation.eval_id,
-                evaluation.trace_id,
-                evaluation.query_hash,
-                evaluation.query_text,
-                json.dumps(evaluation.retrieved_chunk_ids),
-                json.dumps(evaluation.relevant_chunk_ids),
-                json.dumps(evaluation.precision_at_k),
-                json.dumps(evaluation.recall_at_k),
-                evaluation.mrr,
-                evaluation.ndcg,
-                evaluation.f1_groundedness,
-                evaluation.generated_answer,
-                1 if evaluation.answer_supported else 0,
-                evaluation.support_score,
-                evaluation.eval_mode,
-                evaluation.timestamp,
-                json.dumps(evaluation.retrieval_config),
-                json.dumps(evaluation.triggers),
-            ))
+            """,
+                (
+                    evaluation.eval_id,
+                    evaluation.trace_id,
+                    evaluation.query_hash,
+                    evaluation.query_text,
+                    json.dumps(evaluation.retrieved_chunk_ids),
+                    json.dumps(evaluation.relevant_chunk_ids),
+                    json.dumps(evaluation.precision_at_k),
+                    json.dumps(evaluation.recall_at_k),
+                    evaluation.mrr,
+                    evaluation.ndcg,
+                    evaluation.f1_groundedness,
+                    evaluation.generated_answer,
+                    1 if evaluation.answer_supported else 0,
+                    evaluation.support_score,
+                    evaluation.eval_mode,
+                    evaluation.timestamp,
+                    json.dumps(evaluation.retrieval_config),
+                    json.dumps(evaluation.triggers),
+                ),
+            )
 
             conn.commit()
             return True
@@ -396,9 +414,12 @@ class RetrievalEvalRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM retrieval_evaluations WHERE eval_id = ?
-            """, (eval_id,))
+            """,
+                (eval_id,),
+            )
 
             row = cursor.fetchone()
             if row is None:
@@ -415,9 +436,12 @@ class RetrievalEvalRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM retrieval_evaluations WHERE trace_id = ?
-            """, (trace_id,))
+            """,
+                (trace_id,),
+            )
 
             rows = cursor.fetchall()
             return [self._row_to_evaluation(row, cursor) for row in rows]
@@ -473,8 +497,11 @@ class RetrievalEvalRegistry:
                     for trigger in triggers:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
                 except Exception as e:
+                    import logging
 
-                    import logging; logging.getLogger(__name__).debug("retrieval_eval_registry: Exception swallowed at L475: %s", e)
+                    logging.getLogger(__name__).debug(
+                        "retrieval_eval_registry: Exception swallowed at L475: %s", e
+                    )
 
             return {
                 "avg_mrr": row[0] or 0.0,

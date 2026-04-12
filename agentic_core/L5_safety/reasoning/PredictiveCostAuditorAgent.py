@@ -275,7 +275,9 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "PredictiveCostAuditorAgent.execute",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "PredictiveCostAuditorAgent.execute",
         )
         Logger.info("💰 Predictive Cost Auditor: Analyzing healing economics...")
         self._load_healing_history()
@@ -335,7 +337,11 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         else:
             sink_severity = "none"
         Recommendation = self._generate_recommendation(
-            file_path, total_attempts, cost_usd, success_rate, sink_severity,
+            file_path,
+            total_attempts,
+            cost_usd,
+            success_rate,
+            sink_severity,
         )
         return FileAudit(
             file_path=file_path,
@@ -351,7 +357,12 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         )
 
     def _generate_recommendation(
-        self, file_path: str, attempts: int, cost_usd: float, success_rate: float, Severity: str,
+        self,
+        file_path: str,
+        attempts: int,
+        cost_usd: float,
+        success_rate: float,
+        Severity: str,
     ) -> str:
         """Generate Recommendation for file."""
         if Severity == "critical":
@@ -381,7 +392,9 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
             efficiency_score = 0
         estimated_cost_usd = total_tokens / 1000 * self.TOKEN_COST_PER_1K
         recommendations = self._generate_global_recommendations(
-            healing_sinks, efficiency_score, estimated_cost_usd,
+            healing_sinks,
+            efficiency_score,
+            estimated_cost_usd,
         )
         return CostReport(
             total_files=total_files,
@@ -396,7 +409,10 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         )
 
     def _generate_global_recommendations(
-        self, healing_sinks: list[FileAudit], efficiency_score: float, cost_usd: float,
+        self,
+        healing_sinks: list[FileAudit],
+        efficiency_score: float,
+        cost_usd: float,
     ) -> list[str]:
         """Generate global recommendations."""
         recommendations = []
@@ -534,7 +550,11 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         Cost Audit Healing - Generates thermal maps and efficiency reports.
         """
         metrics = super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if not isinstance(metrics, dict):
             metrics = {"violations": 0, "fixed": 0, "errors": 0}

@@ -236,6 +236,7 @@ class SafetyAnalysisMixin:
             True if pattern matches target
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyAnalysisMixin.matches")
 
@@ -267,6 +268,7 @@ class HealingMixin:
             Healing result dictionary
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingMixin.standard_heal")
 
@@ -300,7 +302,8 @@ class StateAnalysisMixin:
     @staticmethod
     # guardian: allow-magic-config
     def _check_past_failures(
-        state_history: list[dict[str, Any]], failure_threshold: int = 3,
+        state_history: list[dict[str, Any]],
+        failure_threshold: int = 3,
     ) -> dict[str, Any]:
         """
         Analyze past failures to determine retry strategy.

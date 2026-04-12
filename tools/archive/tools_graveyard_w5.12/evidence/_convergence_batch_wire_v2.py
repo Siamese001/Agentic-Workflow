@@ -9,6 +9,7 @@ Strategy:
 3. For modules needing emit_determinism_digest(): add import + call
 4. For modules needing record_execution_trace(): add import + call
 """
+
 from __future__ import annotations
 
 import ast
@@ -42,7 +43,7 @@ def find_last_import_line(source: str) -> int:
     """
     try:
         tree = ast.parse(source)
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return 0
 
     last_import_line = 0
@@ -151,7 +152,7 @@ def wire_module(module_rel: str) -> None:
                         new_lines.append(f"    {sym},")
                         stats["import_added"] += 1
                 new_lines.append(")")
-                lines[idx:idx + 1] = new_lines
+                lines[idx : idx + 1] = new_lines
 
         # Re-find the last import line after modification
         new_content = "\n".join(lines)
@@ -189,7 +190,7 @@ def wire_module(module_rel: str) -> None:
         # Verify it still parses as valid Python
         try:
             ast.parse(content)
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             stats["errors"].append(f"SYNTAX ERROR in {module_rel}: {e}")
             # Don't write broken file
             return

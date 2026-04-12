@@ -51,7 +51,9 @@ class SynthesisEngineService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "SynthesisEngineService.synthesize_findings",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "SynthesisEngineService.synthesize_findings",
         )
         _emit_routes_to_capability("p2", "synthesis_engine", "insight_integration")
         _emit_stores_embedding("p4", "synthesis_engine", "synthesis_embedding")
@@ -81,8 +83,7 @@ class SynthesisEngineService:
                 "theme": theme,
                 "summary": f"Synthesis of {len(theme_insights)} insights on {theme}",
                 "key_points": [i.get("key_point", "") for i in theme_insights[:5]],
-                "confidence": sum(i.get("confidence", 0.5) for i in theme_insights)
-                / len(theme_insights),
+                "confidence": sum(i.get("confidence", 0.5) for i in theme_insights) / len(theme_insights),
                 "source_count": len(set(i.get("source_id") for i in theme_insights)),
             }
             findings.append(finding)
@@ -105,7 +106,9 @@ class SynthesisEngineService:
             target_audience,
         )
         _emit_records_telemetry_event(
-            "p4", "synthesis_engine", f"synthesis_complete:{len(findings)}",
+            "p4",
+            "synthesis_engine",
+            f"synthesis_complete:{len(findings)}",
         )
 
         return synthesis

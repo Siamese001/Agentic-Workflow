@@ -16,14 +16,17 @@ class TestCheckOutputQualityUtilAdg:
     def test_check_output_quality_util_adg_imports(self):
         """Test check_output_quality_util_adg module imports."""
         from agentic_core import check_output_quality_util_adg
+
         assert check_output_quality_util_adg is not None
 
     def test_check_output_quality_util_adg_class(self):
         """Test CheckOutputQualityUtilAdg class exists."""
         from agentic_core import CheckOutputQualityUtilAdg
+
         assert CheckOutputQualityUtilAdg is not None
 
     def test_check_output_quality_util_adg_callable(self):
         """Test check_output_quality_util_adg functions are callable."""
         from agentic_core import validate_check_output_quality_util_adg
+
         assert callable(validate_check_output_quality_util_adg)

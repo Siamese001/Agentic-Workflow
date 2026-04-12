@@ -212,12 +212,12 @@ _VALID_BUDGET_CLASSES: frozenset[str] = frozenset(
 
 _VALID_FAILURE_SLOTS: frozenset[str] = frozenset(
     {
-        "S0",   # policy violation
-        "D0",   # policy violation / context overflow
-        "I0",   # misinterpreted task / style drift
-        "C0",   # hallucination / context overflow
-        "U0",   # misinterpreted task
-        "NONE", # no slot failure identified
+        "S0",  # policy violation
+        "D0",  # policy violation / context overflow
+        "I0",  # misinterpreted task / style drift
+        "C0",  # hallucination / context overflow
+        "U0",  # misinterpreted task
+        "NONE",  # no slot failure identified
     },
 )
 
@@ -298,8 +298,7 @@ class PromptSlotManifest:
     def __post_init__(self) -> None:
         if self.budget_class not in _VALID_BUDGET_CLASSES:
             raise ValueError(
-                f"budget_class must be one of {sorted(_VALID_BUDGET_CLASSES)}, "
-                f"got {self.budget_class!r}",
+                f"budget_class must be one of {sorted(_VALID_BUDGET_CLASSES)}, got {self.budget_class!r}",
             )
         for slot, tok in (
             ("s0_tokens", self.s0_tokens),
@@ -469,8 +468,7 @@ class PromptSafetyDecision:
     def __post_init__(self) -> None:
         if self.adg_relation not in self._VALID_ADG_RELATIONS:
             raise ValueError(
-                f"adg_relation must be one of {sorted(self._VALID_ADG_RELATIONS)}, "
-                f"got {self.adg_relation!r}",
+                f"adg_relation must be one of {sorted(self._VALID_ADG_RELATIONS)}, got {self.adg_relation!r}",
             )
         if self.allowed and self.denial_reasons:
             raise ValueError(
@@ -655,13 +653,11 @@ class PromptOutcomeRecord:
     def __post_init__(self) -> None:
         if self.final_outcome not in _VALID_OUTCOME_CLASSES:
             raise ValueError(
-                f"final_outcome must be one of {sorted(_VALID_OUTCOME_CLASSES)}, "
-                f"got {self.final_outcome!r}",
+                f"final_outcome must be one of {sorted(_VALID_OUTCOME_CLASSES)}, got {self.final_outcome!r}",
             )
         if self.failure_slot not in _VALID_FAILURE_SLOTS:
             raise ValueError(
-                f"failure_slot must be one of {sorted(_VALID_FAILURE_SLOTS)}, "
-                f"got {self.failure_slot!r}",
+                f"failure_slot must be one of {sorted(_VALID_FAILURE_SLOTS)}, got {self.failure_slot!r}",
             )
         for attr, val in (
             ("groundedness_score", self.groundedness_score),
@@ -755,13 +751,11 @@ class PreferenceRecord:
     def __post_init__(self) -> None:
         if self.decision not in _VALID_PREFERENCE_DECISIONS:
             raise ValueError(
-                f"decision must be one of {sorted(_VALID_PREFERENCE_DECISIONS)}, "
-                f"got {self.decision!r}",
+                f"decision must be one of {sorted(_VALID_PREFERENCE_DECISIONS)}, got {self.decision!r}",
             )
         if self.outcome not in _VALID_OUTCOME_CLASSES:
             raise ValueError(
-                f"outcome must be one of {sorted(_VALID_OUTCOME_CLASSES)}, "
-                f"got {self.outcome!r}",
+                f"outcome must be one of {sorted(_VALID_OUTCOME_CLASSES)}, got {self.outcome!r}",
             )
         if not self.trace_id:
             raise ValueError("trace_id must not be empty")
@@ -852,13 +846,11 @@ class PromptDriftSignal:
     def __post_init__(self) -> None:
         if self.drift_type not in _VALID_DRIFT_TYPES:
             raise ValueError(
-                f"drift_type must be one of {sorted(_VALID_DRIFT_TYPES)}, "
-                f"got {self.drift_type!r}",
+                f"drift_type must be one of {sorted(_VALID_DRIFT_TYPES)}, got {self.drift_type!r}",
             )
         if self.adg_relation not in self._VALID_ADG_RELATIONS:
             raise ValueError(
-                f"adg_relation must be one of {sorted(self._VALID_ADG_RELATIONS)}, "
-                f"got {self.adg_relation!r}",
+                f"adg_relation must be one of {sorted(self._VALID_ADG_RELATIONS)}, got {self.adg_relation!r}",
             )
         if self.baseline_window_size < 0:
             raise ValueError("baseline_window_size must be >= 0")

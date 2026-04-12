@@ -51,7 +51,9 @@ class RequirementAnalysisAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RequirementAnalysisAgent.analyze_requirements",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "RequirementAnalysisAgent.analyze_requirements",
         )
         _emit_orchestrates_workflow("p3", "req_analysis_agent", "analysis_workflow")
         _emit_dispatches_agent("p3", "req_analysis_agent", "analysis_dispatch")
@@ -62,7 +64,9 @@ class RequirementAnalysisAgent:
 
         _log.info("Analyzed %d requirements from RFP", len(requirements))
         _emit_records_telemetry_event(
-            "p4", "req_analysis_agent", f"analysis_complete:{len(requirements)}",
+            "p4",
+            "req_analysis_agent",
+            f"analysis_complete:{len(requirements)}",
         )
 
         return {

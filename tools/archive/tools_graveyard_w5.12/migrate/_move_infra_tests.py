@@ -6,6 +6,7 @@ preserving the directory sub-structure.
 
 Skips moves where the destination already exists.
 """
+
 from __future__ import annotations
 
 import json

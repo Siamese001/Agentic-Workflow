@@ -47,6 +47,7 @@ try:
         emit_determinism_digest,
         emit_replay_key,
     )
+
     PTC_AVAILABLE = True
 except ImportError:
     PTC_AVAILABLE = False
@@ -58,6 +59,7 @@ except ImportError:
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture(autouse=True)
 def reset_and_inject_keys():
@@ -93,6 +95,7 @@ def ptc_invoker() -> ToolInvoker:
 # =============================================================================
 # Test Class: Malicious Input Attacks
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCMaliciousInputs:
@@ -246,11 +249,14 @@ class TestPTCMaliciousInputs:
 # Test Class: Resource Exhaustion Attacks
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCResourceExhaustion:
     """Tests against resource exhaustion attacks."""
 
-    def test_memory_exhaustion_via_large_args(self, ptc_invoker: ToolInvoker, ptc_registry: ToolRegistry) -> None:
+    def test_memory_exhaustion_via_large_args(
+        self, ptc_invoker: ToolInvoker, ptc_registry: ToolRegistry
+    ) -> None:
         """Test large argument payloads are handled safely."""
         spec = ToolSpec(
             tool_id="echo",
@@ -383,6 +389,7 @@ class TestPTCResourceExhaustion:
 # Test Class: Concurrency Stress Tests
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCConcurrencyStress:
     """Stress tests for concurrent execution scenarios."""
@@ -480,13 +487,18 @@ class TestPTCConcurrencyStress:
         assert len(results) == 50
         # All should have valid risk levels
         for r in results:
-            assert r.risk_level in (PTCScriptRiskLevel.LOW, PTCScriptRiskLevel.MEDIUM,
-                                   PTCScriptRiskLevel.HIGH, PTCScriptRiskLevel.CRITICAL)
+            assert r.risk_level in (
+                PTCScriptRiskLevel.LOW,
+                PTCScriptRiskLevel.MEDIUM,
+                PTCScriptRiskLevel.HIGH,
+                PTCScriptRiskLevel.CRITICAL,
+            )
 
 
 # =============================================================================
 # Test Class: Chaos Tests (Random Failures)
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCChaos:
@@ -591,6 +603,7 @@ class TestPTCChaos:
 # Test Class: Determinism Under Stress
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCDeterminismStress:
     """Verify determinism guarantees hold under stress."""
@@ -621,11 +634,11 @@ class TestPTCDeterminismStress:
             data = {}
             current = data
             for i in range(random.randint(1, 10)):
-                key = ''.join(random.choices(string.ascii_lowercase, k=5))
+                key = "".join(random.choices(string.ascii_lowercase, k=5))
                 if random.random() < 0.5:
                     current[key] = {
                         "nested": random.randint(1, 100),
-                        "value": ''.join(random.choices(string.ascii_letters, k=10)),
+                        "value": "".join(random.choices(string.ascii_letters, k=10)),
                     }
                 else:
                     current[key] = [random.randint(1, 100) for _ in range(random.randint(1, 5))]
@@ -661,6 +674,7 @@ class TestPTCDeterminismStress:
 # Test Class: Safety Gate Torture Tests
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCSafetyGateTorture:
     """Aggressive safety gate testing."""
@@ -693,8 +707,9 @@ class TestPTCSafetyGateTorture:
                 PTCScriptRiskLevel.CRITICAL: 3,
             }
 
-            assert risk_order[assessment.risk_level] >= risk_order[min_expected_risk], \
+            assert risk_order[assessment.risk_level] >= risk_order[min_expected_risk], (
                 f"Code '{code[:30]}...' expected at least {min_expected_risk.value}, got {assessment.risk_level.value}"
+            )
 
     def test_confidence_score_boundary_values(self) -> None:
         """Test confidence score boundaries."""

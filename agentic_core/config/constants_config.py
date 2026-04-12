@@ -61,7 +61,9 @@ try:
     _DET, _GED, _SEF = _get_ssot_exclusions()
     DEFAULT_EXCLUDE_DIRS: frozenset[str] = _GED | _SEF | _DET
 except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
-    DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset({"__pycache__", ".git", "node_modules", "venv", ".venv", "archives"})
+    DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset(
+        {"__pycache__", ".git", "node_modules", "venv", ".venv", "archives"}
+    )
 
 
 # =============================================================================

@@ -12,6 +12,7 @@ from dataclasses import dataclass
 @dataclass
 class BenchmarkResult:
     """Performance benchmark result."""
+
     layer: int
     operation: str
     latency_ms: float
@@ -188,6 +189,7 @@ class TestLayer3Performance:
 
     def test_l3_parallel_search_performance(self):
         """L3: Parallel FAISS + BM25 execution time < 80ms."""
+
         def faiss_search():
             time.sleep(0.030)
             return ["chunk1", "chunk2"]
@@ -379,6 +381,7 @@ class TestScalabilityBenchmarks:
 
     def test_concurrent_l1_requests(self):
         """Scalability: Handle 1000 concurrent L1 requests."""
+
         def l1_request():
             time.sleep(0.0005)
             return {"hit": True}
@@ -397,9 +400,9 @@ class TestScalabilityBenchmarks:
     def test_mixed_workload_performance(self):
         """Scalability: Mixed workload (70% L1, 20% L3, 10% L5)."""
         workload = (
-            [1] * 70 +  # 70% L1 hits
-            [3] * 20 +  # 20% L3 RAG
-            [5] * 10    # 10% L5 LLM
+            [1] * 70  # 70% L1 hits
+            + [3] * 20  # 20% L3 RAG
+            + [5] * 10  # 10% L5 LLM
         )
 
         def execute(layer: int):

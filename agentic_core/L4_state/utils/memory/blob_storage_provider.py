@@ -268,7 +268,9 @@ class LocalDiskAdapter:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"FilesystemBlobProvider.list_blobs:{prefix}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"FilesystemBlobProvider.list_blobs:{prefix}",
         )
         blobs: Any = []
         from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
@@ -503,13 +505,17 @@ class _TombstonedRedisDistributedLock:
         )
 
     # guardian: AssertionError should be handled with specific context
+
+
 def _run_self_tests(self) -> dict:
     """Run internal self-tests."""
     results = {"passed": 0, "failed": 0, TESTS_DIR: []}
     try:
         assert self is not None
         results["passed"] += 1
-        results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})    # guardian: AssertionError should be handled with specific context
+        results[TESTS_DIR].append(
+            {"name": "test_instantiation", "status": "passed"}
+        )  # guardian: AssertionError should be handled with specific context
     except AssertionError as e:
         results["failed"] += 1
         results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
@@ -551,14 +557,16 @@ class SignalLedger:
 
         if hasattr(result, "__dict__"):
             result_dict: Any = result.__dict__
-        else:    # guardian: File operations should check existence before access
+        else:  # guardian: File operations should check existence before access
             result_dict: Any = result
         result_dict["timestamp"] = datetime.utcnow().isoformat()
         result_dict["session_id"] = self.session_id
         json_line: Any = json.dumps(result_dict) + "\n"
         try:
             existing_data: Any = await self.storage.read_blob(self.ledger_key)
-            existing_lines: Any = existing_data.decode("utf-8")    # guardian: File operations should check existence before access
+            existing_lines: Any = existing_data.decode(
+                "utf-8"
+            )  # guardian: File operations should check existence before access
         except FileNotFoundError:
             existing_lines: Any = ""
         updated_data: Any = existing_lines + json_line
@@ -576,14 +584,14 @@ class SignalLedger:
         Returns:
             List of result dictionaries
         """
-        try:    # guardian: File operations should check existence before access
+        try:  # guardian: File operations should check existence before access
             data: Any = await self.storage.read_blob(self.ledger_key)
             lines: Any = data.decode("utf-8").strip().split("\n")
             results: Any = []
             for line in lines:
                 if line.strip():
                     results.append(json.loads(line))
-            return results    # guardian: File operations should check existence before access
+            return results  # guardian: File operations should check existence before access
         except FileNotFoundError:
             return []
 

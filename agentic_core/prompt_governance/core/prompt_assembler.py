@@ -334,7 +334,9 @@ class PromptAssembler:
                 ET.fromstring(f"<root>{template_content}</root>")
                 template_name = file_path.stem
                 self.templates[template_name] = PromptTemplate(
-                    name=template_name, template=template_content, description="Custom template",
+                    name=template_name,
+                    template=template_content,
+                    description="Custom template",
                 )
                 Logger.debug(f"Loaded template: {template_name}")
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
@@ -380,7 +382,9 @@ class PromptAssembler:
             PromptAssemblyError: If XML structure is malformed
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PromptAssembler.assemble:{role}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"PromptAssembler.assemble:{role}"
+        )
         if template_name and template_name in self.templates:
             template = self.templates[template_name].template
         else:
@@ -468,7 +472,9 @@ class PromptAssembler:
             sanitized_schema = None
             if output_schema:
                 sanitized_schema = InputSanitizer.sanitize_json_content(output_schema)
-        except SecurityIntegrityError as e:    # guardian: SecurityIntegrityError should be handled with specific context
+        except (
+            SecurityIntegrityError
+        ) as e:  # guardian: SecurityIntegrityError should be handled with specific context
             Logger.error(f"Security validation failed during prompt assembly: {e}")
             raise
         directives = self._format_directives(sanitized_injections)
@@ -498,15 +504,30 @@ class PromptAssembler:
             healing_proposal=sanitized_healing_proposal if sanitized_healing_proposal else "",
             output_format=output_format,
         )
-        expected_tags = ["SLOT_S0", "SLOT_D0", "SLOT_M0", "SLOT_I0", "SLOT_E0", "SLOT_C0", "SLOT_Y0", "SLOT_U0", "SLOT_H0", "SLOT_R0"]
+        expected_tags = [
+            "SLOT_S0",
+            "SLOT_D0",
+            "SLOT_M0",
+            "SLOT_I0",
+            "SLOT_E0",
+            "SLOT_C0",
+            "SLOT_Y0",
+            "SLOT_U0",
+            "SLOT_H0",
+            "SLOT_R0",
+        ]
         try:
             InputSanitizer.validate_template_integrity(prompt, expected_tags)
-        except SecurityIntegrityError as e:    # guardian: SecurityIntegrityError should be handled with specific context
+        except (
+            SecurityIntegrityError
+        ) as e:  # guardian: SecurityIntegrityError should be handled with specific context
             Logger.error(f"Tag integrity check failed: {e}")
             raise SecurityIntegrityError(f"Prompt assembly failed integrity check: {e}")
         try:
             InputSanitizer.validate_xml_structure(prompt)
-        except SecurityIntegrityError as e:    # guardian: SecurityIntegrityError should be handled with specific context
+        except (
+            SecurityIntegrityError
+        ) as e:  # guardian: SecurityIntegrityError should be handled with specific context
             Logger.error(f"XML validation failed: {e}")
             raise SecurityIntegrityError(f"Generated XML is malformed: {e}")
         validate_slot_order(prompt)
@@ -543,7 +564,11 @@ class PromptAssembler:
         and ``parse_response(schema=...)``.
         """
         prompt_text = self.assemble(
-            role=role, objective=objective, context_data=context_data, injections=injections, **kwargs,
+            role=role,
+            objective=objective,
+            context_data=context_data,
+            injections=injections,
+            **kwargs,
         )
         return AssembledPrompt(
             text=prompt_text,
@@ -566,7 +591,9 @@ class PromptAssembler:
         """Format injection patterns as directives."""
         lines = []
         sorted_injections = sorted(
-            injections, key=lambda x: (x.injection.priority, x.relevance_score), reverse=True,
+            injections,
+            key=lambda x: (x.injection.priority, x.relevance_score),
+            reverse=True,
         )
         for match in sorted_injections:
             template = match.injection.template
@@ -693,7 +720,11 @@ def get_prompt_assembler(legacy_mode: bool = False) -> PromptAssembler:
 
 
 def assemble_prompt(
-    role: str, objective: str, context_data: dict[str, Any] | str, injections: list[InjectionMatch], **kwargs,
+    role: str,
+    objective: str,
+    context_data: dict[str, Any] | str,
+    injections: list[InjectionMatch],
+    **kwargs,
 ) -> str:
     """Assemble a prompt using the global assembler.
 
@@ -709,12 +740,20 @@ def assemble_prompt(
     """
     assembler = get_prompt_assembler()
     return assembler.assemble(
-        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs,
+        role=role,
+        objective=objective,
+        context_data=context_data,
+        injections=injections,
+        **kwargs,
     )
 
 
 def assemble_prompt_with_schema(
-    role: str, objective: str, context_data: dict[str, Any] | str, injections: list[InjectionMatch], **kwargs,
+    role: str,
+    objective: str,
+    context_data: dict[str, Any] | str,
+    injections: list[InjectionMatch],
+    **kwargs,
 ) -> AssembledPrompt:
     """Assemble a prompt with schema binding using the global assembler.
 
@@ -723,7 +762,11 @@ def assemble_prompt_with_schema(
     """
     assembler = get_prompt_assembler()
     return assembler.assemble_with_schema(
-        role=role, objective=objective, context_data=context_data, injections=injections, **kwargs,
+        role=role,
+        objective=objective,
+        context_data=context_data,
+        injections=injections,
+        **kwargs,
     )
 
 
@@ -764,5 +807,9 @@ def enhance_prompt_with_fencing(
     if context is None:
         context = {"original_prompt": base_prompt}
     return assemble_prompt(
-        role=role, objective=objective, context_data=context, injections=injections, legacy_mode=True,
+        role=role,
+        objective=objective,
+        context_data=context,
+        injections=injections,
+        legacy_mode=True,
     )

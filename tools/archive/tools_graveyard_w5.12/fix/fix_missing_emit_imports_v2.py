@@ -11,8 +11,8 @@ ROOT = r"C:\Git\Agentic-Workflow"
 LTC = "agentic_core.runtime.lifecycle_trace_contract"
 
 # All known emitter patterns (call sites)
-EMIT_CALL_RE = re.compile(r'\b(_emit_\w+)\s*\(')
-EMIT_NOPREFIX_RE = re.compile(r'\b(emit_determinism_digest|emit_replay_key)\s*\(')
+EMIT_CALL_RE = re.compile(r"\b(_emit_\w+)\s*\(")
+EMIT_NOPREFIX_RE = re.compile(r"\b(emit_determinism_digest|emit_replay_key)\s*\(")
 
 fixed = 0
 

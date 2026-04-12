@@ -244,7 +244,11 @@ class ExecutionProof:
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         expected = _compute_replay_key(
-            self.trace_id, self.run_id, self.module, self.operation, self.execution_input_hash,
+            self.trace_id,
+            self.run_id,
+            self.module,
+            self.operation,
+            self.execution_input_hash,
         )
         return expected == self.replay_key
 

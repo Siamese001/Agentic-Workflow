@@ -90,8 +90,7 @@ def _get_modules_to_process(layer: str | None = None) -> list[Path]:
 
         for py_file in src_dir.rglob("*.py"):
             # Skip tests, __pycache__, etc.
-            if any(part.startswith("__") or part == "tests" or part == "test"
-                   for part in py_file.parts):
+            if any(part.startswith("__") or part == "tests" or part == "test" for part in py_file.parts):
                 continue
 
             # Layer filtering
@@ -188,17 +187,19 @@ def cmd_p0(args: argparse.Namespace) -> int:
         "symbols_added": [],
     }
 
-    for module in modules[:args.limit] if args.limit else modules:
+    for module in modules[: args.limit] if args.limit else modules:
         results["modules_processed"] += 1
 
         for symbol in symbols:
             if not _check_module_has_symbol(module, symbol):
                 if _add_emitter_to_module(module, symbol, apply):
                     results["modules_modified"] += 1
-                    results["symbols_added"].append({
-                        "module": str(module.relative_to(REPO_ROOT)),
-                        "symbol": symbol,
-                    })
+                    results["symbols_added"].append(
+                        {
+                            "module": str(module.relative_to(REPO_ROOT)),
+                            "symbol": symbol,
+                        }
+                    )
 
     if args.json:
         Path(args.json).write_text(json.dumps(results, indent=2))
@@ -396,8 +397,12 @@ def main() -> int:
 
     # full command
     full_parser = subparsers.add_parser("full", help="Full hardening (P0-P4)")
-    full_parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no modifications)")
-    full_parser.add_argument("--apply", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
+    full_parser.add_argument(
+        "--report", "-r", action="store_true", help="Report-only mode (no modifications)"
+    )
+    full_parser.add_argument(
+        "--apply", action="store_true", help=argparse.SUPPRESS
+    )  # Deprecated, use --report
     full_parser.add_argument("--micro-wave", action="store_true", help="Micro-wave mode (15 modules)")
     full_parser.add_argument("--limit", type=int, default=15, help="Modules per wave")
 
@@ -408,9 +413,9 @@ def main() -> int:
         return 1
 
     # Handle --report flag for apply mode (default is execute)
-    if hasattr(args, 'report') and args.report:
+    if hasattr(args, "report") and args.report:
         args.apply = False
-    elif not hasattr(args, 'apply'):
+    elif not hasattr(args, "apply"):
         args.apply = True
 
     commands = {

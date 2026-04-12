@@ -199,6 +199,28 @@ UWG_WRITES_TOTAL = Counter(
 )
 
 # =============================================================================
+# L4 Semantic Cache Metrics
+# =============================================================================
+
+SEMANTIC_CACHE_EVENTS_TOTAL = Counter(
+    "agentic_workflow_l4_semantic_cache_events_total",
+    "Total semantic cache events (hit/miss/bypass/eviction/invalidation)",
+    ["event", "namespace"],
+    registry=AGENTIC_REGISTRY,
+)
+
+
+def record_semantic_cache_event(event: str, namespace: str = "") -> None:
+    """Record a semantic cache event to the Prometheus AGENTIC_REGISTRY.
+
+    Args:
+        event: Event type — one of: hit, miss, bypass, eviction, invalidation
+        namespace: Cache namespace (agent class name or empty string for global events)
+    """
+    SEMANTIC_CACHE_EVENTS_TOTAL.labels(event=event, namespace=namespace).inc()
+
+
+# =============================================================================
 # L5 Safety Metrics
 # =============================================================================
 
@@ -329,16 +351,19 @@ def set_build_info(version: str, commit: str, branch: str) -> None:
         commit: Git commit hash
         branch: Git branch name
     """
-    BUILD_INFO.info({
-        "version": version,
-        "commit": commit,
-        "branch": branch,
-    })
+    BUILD_INFO.info(
+        {
+            "version": version,
+            "commit": commit,
+            "branch": branch,
+        }
+    )
 
 
 # =============================================================================
 # Convenience Functions
 # =============================================================================
+
 
 def record_routing_decision(destination: str, outcome: str) -> None:
     """Record a routing decision.

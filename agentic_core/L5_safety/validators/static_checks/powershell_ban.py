@@ -190,7 +190,9 @@ class PowerShellBanVisitor(ast.NodeVisitor):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "PowerShellBanVisitor.visit_Constant",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "PowerShellBanVisitor.visit_Constant",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -270,7 +272,7 @@ def scan_file_for_powershell(file_path: Path) -> list[tuple[int, str, str]]:
                 line_lower = stripped.lower()
                 if "pwsh" in line_lower or "powershell" in line_lower:
                     violations.append((lineno, "PS_STRING_LITERAL", stripped[:60]))
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         violations.append((e.lineno or 0, "PS_SYNTAX_ERROR", f"Syntax error: {e.msg}"))
     # guardian: allow-silent-swallower
     except (ValueError, TypeError) as e:

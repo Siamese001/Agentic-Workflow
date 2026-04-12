@@ -13,30 +13,30 @@ ROOT = r"C:\Git\Agentic-Workflow"
 # Map: symbol_regex -> import_statement
 # We match at word boundary to avoid false positives
 SYMBOL_IMPORTS = {
-    r'\bAny\b': 'from typing import Any',
-    r'\bOptional\b': 'from typing import Optional',
-    r'\bList\b(?!\s*=)': 'from typing import List',
-    r'\bDict\b(?!\s*=)': 'from typing import Dict',
-    r'\bTuple\b(?!\s*=)': 'from typing import Tuple',
-    r'\bUnion\b': 'from typing import Union',
-    r'\bCallable\b': 'from typing import Callable',
-    r'\b@dataclass\b': 'from dataclasses import dataclass',
-    r'\bdataclass\b': 'from dataclasses import dataclass',
-    r'\bfield\(': 'from dataclasses import field',
-    r'\bEnum\b': 'from enum import Enum',
-    r'\bPath\b(?!\s*=)': 'from pathlib import Path',
-    r'\bBaseModel\b': 'from pydantic import BaseModel',
-    r'\bConfigDict\b': 'from pydantic import ConfigDict',
-    r'\bField\b': 'from pydantic import Field',
+    r"\bAny\b": "from typing import Any",
+    r"\bOptional\b": "from typing import Optional",
+    r"\bList\b(?!\s*=)": "from typing import List",
+    r"\bDict\b(?!\s*=)": "from typing import Dict",
+    r"\bTuple\b(?!\s*=)": "from typing import Tuple",
+    r"\bUnion\b": "from typing import Union",
+    r"\bCallable\b": "from typing import Callable",
+    r"\b@dataclass\b": "from dataclasses import dataclass",
+    r"\bdataclass\b": "from dataclasses import dataclass",
+    r"\bfield\(": "from dataclasses import field",
+    r"\bEnum\b": "from enum import Enum",
+    r"\bPath\b(?!\s*=)": "from pathlib import Path",
+    r"\bBaseModel\b": "from pydantic import BaseModel",
+    r"\bConfigDict\b": "from pydantic import ConfigDict",
+    r"\bField\b": "from pydantic import Field",
 }
 
 # Group by module for cleaner imports
 MODULE_SYMBOLS = {
-    'typing': ['Any', 'Optional', 'List', 'Dict', 'Tuple', 'Union', 'Callable'],
-    'dataclasses': ['dataclass', 'field'],
-    'enum': ['Enum'],
-    'pathlib': ['Path'],
-    'pydantic': ['BaseModel', 'ConfigDict', 'Field'],
+    "typing": ["Any", "Optional", "List", "Dict", "Tuple", "Union", "Callable"],
+    "dataclasses": ["dataclass", "field"],
+    "enum": ["Enum"],
+    "pathlib": ["Path"],
+    "pydantic": ["BaseModel", "ConfigDict", "Field"],
 }
 
 fixed = 0
@@ -64,15 +64,15 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                 for sym in symbols:
                     # Check if symbol is used in the file (not just in strings/comments)
                     # Simple heuristic: appears as a word boundary
-                    if sym == 'field':
-                        pattern = r'\bfield\s*\('
-                    elif sym == 'Path':
+                    if sym == "field":
+                        pattern = r"\bfield\s*\("
+                    elif sym == "Path":
                         # Avoid matching PathConstants etc
-                        pattern = r'\bPath\b(?![A-Za-z])'
-                    elif sym == 'Field':
-                        pattern = r'\bField\s*\('
+                        pattern = r"\bPath\b(?![A-Za-z])"
+                    elif sym == "Field":
+                        pattern = r"\bField\s*\("
                     else:
-                        pattern = r'\b' + re.escape(sym) + r'\b'
+                        pattern = r"\b" + re.escape(sym) + r"\b"
 
                     if not re.search(pattern, content):
                         continue
@@ -84,10 +84,10 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                         if s.startswith("#"):
                             continue
                         # Direct import checks
-                        if re.search(r'import\s+' + re.escape(sym) + r'\b', s):
+                        if re.search(r"import\s+" + re.escape(sym) + r"\b", s):
                             already_imported = True
                             break
-                        if re.search(r'import\s+\(', s):
+                        if re.search(r"import\s+\(", s):
                             # Will be caught in multiline check
                             continue
                         if f"import {sym}," in s or f"import {sym}" in s.rstrip(")"):
@@ -98,9 +98,9 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                     in_block = False
                     for line in lines:
                         s = line.strip()
-                        if re.match(r'^from\s+\S+\s+import\s+\(', s):
+                        if re.match(r"^from\s+\S+\s+import\s+\(", s):
                             in_block = True
-                            if re.search(r'\b' + re.escape(sym) + r'\b', s):
+                            if re.search(r"\b" + re.escape(sym) + r"\b", s):
                                 already_imported = True
                                 break
                             continue
@@ -108,15 +108,25 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                             if s == ")":
                                 in_block = False
                                 continue
-                            if re.search(r'\b' + re.escape(sym) + r'\b', s):
+                            if re.search(r"\b" + re.escape(sym) + r"\b", s):
                                 already_imported = True
                                 break
 
                     # Check for local definitions
                     if not already_imported:
                         if f"class {sym}" in content or f"def {sym}" in content or f"{sym} =" in content:
-                            if sym not in ('Any', 'Optional', 'List', 'Dict', 'Tuple',
-                                           'Union', 'Callable', 'dataclass', 'Enum', 'BaseModel'):
+                            if sym not in (
+                                "Any",
+                                "Optional",
+                                "List",
+                                "Dict",
+                                "Tuple",
+                                "Union",
+                                "Callable",
+                                "dataclass",
+                                "Enum",
+                                "BaseModel",
+                            ):
                                 already_imported = True
 
                     if not already_imported:
@@ -156,7 +166,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                 merged = False
                 for i, line in enumerate(lines):
                     s = line.strip()
-                    if re.match(r'^from\s+' + re.escape(module) + r'\s+import\s+', s) and '(' not in s:
+                    if re.match(r"^from\s+" + re.escape(module) + r"\s+import\s+", s) and "(" not in s:
                         # Single-line import - extend it
                         existing = s.rstrip()
                         for sym in sorted(syms):
@@ -164,7 +174,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                         lines[i] = existing
                         merged = True
                         break
-                    elif re.match(r'^from\s+' + re.escape(module) + r'\s+import\s+\(', s):
+                    elif re.match(r"^from\s+" + re.escape(module) + r"\s+import\s+\(", s):
                         # Multi-line import - add before closing ')'
                         j = i + 1
                         while j < len(lines):

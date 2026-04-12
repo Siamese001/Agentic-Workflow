@@ -139,7 +139,8 @@ def write_agent_2x2_inventory(path: Path = INVENTORY_ARTIFACT_PATH) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     inventory = build_agent_2x2_inventory()
     path.write_text(  # guardian: allow-direct-write
-        json.dumps(inventory, indent=2, sort_keys=True, ensure_ascii=True) + "\n", encoding="utf-8",
+        json.dumps(inventory, indent=2, sort_keys=True, ensure_ascii=True) + "\n",
+        encoding="utf-8",
     )
     return path
 

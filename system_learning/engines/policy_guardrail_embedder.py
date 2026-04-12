@@ -225,8 +225,11 @@ class PolicyGuardrailEmbedder:
         """
         _emit_verifies_policy(str(uuid.uuid4()), "PolicyGuardrailEmbedder.ingest", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyGuardrailEmbedder.ingest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyGuardrailEmbedder.ingest"
+        )
 
         text = case.to_embedding_text()
         content_hash = compute_content_hash(text.encode("utf-8"))

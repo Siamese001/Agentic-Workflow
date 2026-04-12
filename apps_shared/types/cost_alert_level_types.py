@@ -279,6 +279,7 @@ class CostTracker:
             cost: Cost incurred
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CostTracker.record_cost")
 

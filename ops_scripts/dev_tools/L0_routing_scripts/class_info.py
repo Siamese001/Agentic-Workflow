@@ -346,7 +346,7 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
             # Top-level functions
             elif isinstance(node, ast.FunctionDef) and hasattr(node, "col_offset") and node.col_offset == 0:
                 functions.append(node.name)
-# guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow - acceptable exception handling
 
         return classes, imports, functions, module_docstring
 

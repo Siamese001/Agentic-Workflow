@@ -203,8 +203,11 @@ class DefaultHealingPatternAdvisor:
         - Only provides metadata for audit
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultHealingPatternAdvisor.advise")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DefaultHealingPatternAdvisor.advise"
+        )
 
         if self._ml_client is None:
             return NullHealingPatternAdvisor().advise(healing_input)
@@ -234,23 +237,29 @@ class DefaultHealingPatternAdvisor:
             }
 
         # Check if failing module is an ADG hotspot
-        module_name = getattr(healing_input, 'module_name', None)
+        module_name = getattr(healing_input, "module_name", None)
         if module_name:
             try:
                 from agentic_core.adg.adapters.ADGMemoryAdapter import get_adapter
+
                 adapter = get_adapter()
                 hotspots = adapter.get_hotspot_modules(limit=20)
                 if module_name in hotspots:
                     # Add hotspot boost
-                    patterns.append({
-                        "pattern_name": "adg_hotspot",
-                        "confidence_boost": 0.1,  # 10% boost for hotspots
-                        "description": f"Module {module_name} is in top-20 fan-out hotspots",
-                    })
+                    patterns.append(
+                        {
+                            "pattern_name": "adg_hotspot",
+                            "confidence_boost": 0.1,  # 10% boost for hotspots
+                            "description": f"Module {module_name} is in top-20 fan-out hotspots",
+                        }
+                    )
             except Exception as e:
-
                 # ADG unavailable - continue without hotspot boost
-                import logging; logging.getLogger(__name__).debug("default_healing_pattern_advisor: Exception swallowed at L250: %s", e)
+                import logging
+
+                logging.getLogger(__name__).debug(
+                    "default_healing_pattern_advisor: Exception swallowed at L250: %s", e
+                )
 
         # Take the highest-confidence pattern (advisory only)
         best = max(patterns, key=lambda p: p.get("confidence_boost", 0.0))

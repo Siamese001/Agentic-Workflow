@@ -16,14 +16,17 @@ class TestDetectionSignal:
     def test_detection_signal_imports(self):
         """Test detection_signal module imports."""
         from agentic_core import detection_signal
+
         assert detection_signal is not None
 
     def test_detection_signal_class(self):
         """Test DetectionSignal class exists."""
         from agentic_core import DetectionSignal
+
         assert DetectionSignal is not None
 
     def test_detection_signal_callable(self):
         """Test detection_signal functions are callable."""
         from agentic_core import validate_detection_signal
+
         assert callable(validate_detection_signal)

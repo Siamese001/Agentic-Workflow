@@ -17,11 +17,11 @@ class SurgicalSyntaxFixer:
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
         self.stats = {
-            'total_files': 0,
-            'syntax_errors_fixed': 0,
-            'legacy_comment_blocks_removed': 0,
-            'orphaned_import_content_removed': 0,
-            'files_with_errors': 0,
+            "total_files": 0,
+            "syntax_errors_fixed": 0,
+            "legacy_comment_blocks_removed": 0,
+            "orphaned_import_content_removed": 0,
+            "files_with_errors": 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 
@@ -41,16 +41,16 @@ class SurgicalSyntaxFixer:
         print(f"Found {len(active_test_files)} active test files to check...")
 
         for test_file in active_test_files:
-            self.stats['total_files'] += 1
+            self.stats["total_files"] += 1
             if self.fix_file(test_file):
-                self.stats['files_with_errors'] += 1
+                self.stats["files_with_errors"] += 1
 
         return self.stats
 
     def fix_file(self, file_path: pathlib.Path) -> bool:
         """Fix syntax errors in a single file using surgical approach."""
         try:
-            original_content = file_path.read_text(encoding='utf-8')
+            original_content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
@@ -69,8 +69,8 @@ class SurgicalSyntaxFixer:
         try:
             ast.parse(fixed_content)
             # If successful, write back
-            file_path.write_text(fixed_content, encoding='utf-8')
-            self.stats['syntax_errors_fixed'] += 1
+            file_path.write_text(fixed_content, encoding="utf-8")
+            self.stats["syntax_errors_fixed"] += 1
             return True
         except SyntaxError as e:
             self.failed_files.append((str(file_path), f"Syntax error after fix: {e}"))
@@ -93,35 +93,48 @@ class SurgicalSyntaxFixer:
                 continue
 
             # Pattern 1: Remove legacy comment blocks and their content
-            if re.match(r'^\s*#\s*#\s*MOVED:\s*from\s+\S+.*$', line):
+            if re.match(r"^\s*#\s*#\s*MOVED:\s*from\s+\S+.*$", line):
                 # This is the start of a legacy comment block
                 # Remove this line and all subsequent indented content until we hit something else
-                self.stats['legacy_comment_blocks_removed'] += 1
+                self.stats["legacy_comment_blocks_removed"] += 1
                 i += 1
 
                 # Skip all following indented lines (the orphaned import content)
                 while i < len(lines):
                     next_line = lines[i]
-                    if next_line.strip() and not next_line.startswith(' ') and not next_line.startswith('\t'):
+                    if next_line.strip() and not next_line.startswith(" ") and not next_line.startswith("\t"):
                         # We've reached the end of the orphaned content
                         break
-                    self.stats['orphaned_import_content_removed'] += 1
+                    self.stats["orphaned_import_content_removed"] += 1
                     i += 1
 
                 continue
 
             # Pattern 2: Remove standalone orphaned import content
-            if (any(keyword in stripped for keyword in ['_emit_', 'MAX_', 'BATCH_', 'BUFFER_', 'DEFAULT_', 'MAX_', 'RETRIES_', 'THRESHOLD']) and
-                not stripped.startswith('#') and
-                not stripped.startswith(('from ', 'import ', 'def ', 'class ', '@'))):
-
+            if (
+                any(
+                    keyword in stripped
+                    for keyword in [
+                        "_emit_",
+                        "MAX_",
+                        "BATCH_",
+                        "BUFFER_",
+                        "DEFAULT_",
+                        "MAX_",
+                        "RETRIES_",
+                        "THRESHOLD",
+                    ]
+                )
+                and not stripped.startswith("#")
+                and not stripped.startswith(("from ", "import ", "def ", "class ", "@"))
+            ):
                 # This looks like orphaned import content, remove it
-                self.stats['orphaned_import_content_removed'] += 1
+                self.stats["orphaned_import_content_removed"] += 1
                 i += 1
                 continue
 
             # Pattern 3: Remove unmatched closing parentheses
-            if re.match(r'^\s*\)\s*$', line):
+            if re.match(r"^\s*\)\s*$", line):
                 i += 1
                 continue
 
@@ -141,13 +154,13 @@ class SurgicalSyntaxFixer:
                 cleaned_lines.append(line)
                 prev_empty = False
 
-        return '\n'.join(cleaned_lines)
+        return "\n".join(cleaned_lines)
 
     def print_summary(self):
         """Print fixing summary."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("SURGICAL SYNTAX FIX SUMMARY")
-        print("="*60)
+        print("=" * 60)
         print(f"Total files checked: {self.stats['total_files']}")
         print(f"Files with errors fixed: {self.stats['files_with_errors']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
@@ -162,7 +175,7 @@ class SurgicalSyntaxFixer:
             if len(self.failed_files) > 10:
                 print(f"  ... and {len(self.failed_files) - 10} more")
 
-        print("="*60)
+        print("=" * 60)
 
 
 def main():
@@ -189,7 +202,7 @@ def main():
 
     for test_file in active_test_files:
         try:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
             ast.parse(content)
         except SyntaxError:
             syntax_errors += 1

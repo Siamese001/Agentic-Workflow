@@ -153,10 +153,15 @@ class EnterpriseBriefOrchestrator:
             )
             result.decompositions = decompositions
             result.production_plan = production_plan
-            self._log_step(trace_id, "DECOMPOSE", "complete", details={
-                "personas": len(decompositions),
-                "total_sections": production_plan.get("total_sections", 0),
-            })
+            self._log_step(
+                trace_id,
+                "DECOMPOSE",
+                "complete",
+                details={
+                    "personas": len(decompositions),
+                    "total_sections": production_plan.get("total_sections", 0),
+                },
+            )
 
             # === STEP 2: RETRIEVE (L2 Execution/RAG) ===
             if request.enable_retrieval:
@@ -164,21 +169,31 @@ class EnterpriseBriefOrchestrator:
                 similar, benchmarks = await self._step_retrieve(request.target_personas)
                 result.similar_briefs = similar
                 result.style_benchmarks = benchmarks
-                self._log_step(trace_id, "RETRIEVE", "complete", details={
-                    "similar_found": len(similar),
-                    "benchmarks": list(benchmarks.keys()),
-                })
+                self._log_step(
+                    trace_id,
+                    "RETRIEVE",
+                    "complete",
+                    details={
+                        "similar_found": len(similar),
+                        "benchmarks": list(benchmarks.keys()),
+                    },
+                )
 
             # === STEP 2B: CONTEXT ENRICHMENT (Repo Signals) ===
             if request.enable_repo_signals:
                 self._log_step(trace_id, "ENRICH", "start")
                 repo_signals = await self._step_collect_repo_signals()
                 result.repo_signals = repo_signals
-                self._log_step(trace_id, "ENRICH", "complete", details={
-                    "adg_available": bool(repo_signals.get("adg", {}).get("available")),
-                    "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
-                    "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
-                })
+                self._log_step(
+                    trace_id,
+                    "ENRICH",
+                    "complete",
+                    details={
+                        "adg_available": bool(repo_signals.get("adg", {}).get("available")),
+                        "workflow_count": repo_signals.get("ci", {}).get("workflow_count", 0),
+                        "test_inventory_entries": repo_signals.get("tests", {}).get("inventory_entries", 0),
+                    },
+                )
 
             # === STEP 3: GENERATE (L3 Orchestration) ===
             self._log_step(trace_id, "GENERATE", "start")
@@ -187,10 +202,15 @@ class EnterpriseBriefOrchestrator:
                 request.source_dirs,
             )
             result.generation_results = gen_results
-            self._log_step(trace_id, "GENERATE", "complete", details={
-                "agents_executed": gen_results.get("agents_executed", 0),
-                "quality_score": gen_results.get("quality_score", 0),
-            })
+            self._log_step(
+                trace_id,
+                "GENERATE",
+                "complete",
+                details={
+                    "agents_executed": gen_results.get("agents_executed", 0),
+                    "quality_score": gen_results.get("quality_score", 0),
+                },
+            )
 
             # === STEP 4: VALIDATE (L5 Safety) ===
             if request.enable_validation:
@@ -201,10 +221,15 @@ class EnterpriseBriefOrchestrator:
                 )
                 result.validation_results = validations
                 result.gate_results = gates
-                self._log_step(trace_id, "VALIDATE", "complete", details={
-                    "validations_run": len(validations),
-                    "gates_passed": sum(1 for g in gates if g.get("gates_passed")),
-                })
+                self._log_step(
+                    trace_id,
+                    "VALIDATE",
+                    "complete",
+                    details={
+                        "validations_run": len(validations),
+                        "gates_passed": sum(1 for g in gates if g.get("gates_passed")),
+                    },
+                )
 
             # === STEP 5: EMIT ===
             self._log_step(trace_id, "EMIT", "start")
@@ -232,7 +257,9 @@ class EnterpriseBriefOrchestrator:
 
             result.execution_log = self._execution_log
 
-            _log.info(f"[EnterpriseBriefOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms")
+            _log.info(
+                f"[EnterpriseBriefOrchestrator] Complete trace={trace_id} status={result.status} time={elapsed_ms}ms"
+            )
             _emit_captures_pattern("enterprise", "EnterpriseBriefOrchestrator", "process_complete")
 
         except Exception as exc:
@@ -251,7 +278,8 @@ class EnterpriseBriefOrchestrator:
         _emit_dispatches_agent("enterprise", "step_decompose", "L1")
 
         decompositions, summary = self.decomposition_agent.analyze_brief_requirements(
-            personas, source_content,
+            personas,
+            source_content,
         )
         production_plan = self.decomposition_agent.get_brief_production_plan(decompositions)
 
@@ -277,12 +305,14 @@ class EnterpriseBriefOrchestrator:
             )
 
             for brief in similar:
-                all_similar.append({
-                    "id": brief.brief_id,
-                    "persona": brief.audience_persona,
-                    "quality_score": brief.quality_score,
-                    "similarity": brief.similarity_score,
-                })
+                all_similar.append(
+                    {
+                        "id": brief.brief_id,
+                        "persona": brief.audience_persona,
+                        "quality_score": brief.quality_score,
+                        "similarity": brief.similarity_score,
+                    }
+                )
 
             # Get style benchmark
             benchmark = self.retrieval_engine.get_style_benchmark(persona)
@@ -330,7 +360,9 @@ class EnterpriseBriefOrchestrator:
 
         for content, metadata, persona in briefs_to_validate:
             validation, gates = self.validation_agent.validate_brief(
-                content, metadata, persona,
+                content,
+                metadata,
+                persona,
             )
             validation_results.append(asdict(validation))
             gate_results.append(gates)
@@ -422,7 +454,9 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
         lines.append(f"- **Total Sections:** {result.production_plan.get('total_sections', 0)}")
         lines.append(f"- **Agents Executed:** {result.generation_results.get('agents_executed', 0)}")
         lines.append(f"- **Avg Quality Score:** {result.avg_quality_score:.0%}")
-        lines.append(f"- **Gates Passed:** {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}")
+        lines.append(
+            f"- **Gates Passed:** {sum(1 for g in result.gate_results if g.get('gates_passed'))}/{len(result.gate_results)}"
+        )
         lines.append("")
 
         # Persona breakdown
@@ -452,7 +486,7 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
             lines.append("## Validation Results")
             lines.append("")
             for i, (validation, gates) in enumerate(zip(result.validation_results, result.gate_results)):
-                lines.append(f"**Brief {i+1}:**")
+                lines.append(f"**Brief {i + 1}:**")
                 lines.append(f"- Quality Score: {validation.get('quality_score', 0):.0%}")
                 lines.append(f"- Gates Passed: {'✅' if gates.get('gates_passed') else '❌'}")
                 lines.append("")
@@ -467,7 +501,9 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
             governance = result.repo_signals.get("governance", {})
 
             lines.append(f"- **ADG Available:** {'✅' if adg.get('available') else '❌'}")
-            lines.append(f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}")
+            lines.append(
+                f"- **ADG Nodes/Edges:** {adg.get('nodes_count', 'N/A')} / {adg.get('edges_count', 'N/A')}"
+            )
             lines.append(f"- **Test Inventory Entries:** {tests.get('inventory_entries', 0)}")
             lines.append(f"- **Test Surface Entries:** {tests.get('surface_entries', 0)}")
             lines.append(f"- **Workflow Definitions:** {ci.get('workflow_count', 0)}")
@@ -481,7 +517,9 @@ Deterministic AI differentiator in market dominated by probabilistic systems. Go
         lines.append("## Execution Lineage")
         lines.append("")
         for entry in result.execution_log:
-            status_icon = "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
+            status_icon = (
+                "✅" if entry["status"] == "complete" else "⏳" if entry["status"] == "start" else "⚠️"
+            )
             lines.append(f"{status_icon} **{entry['step']}**: {entry['status']}")
         lines.append("")
 

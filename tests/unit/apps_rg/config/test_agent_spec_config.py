@@ -4,6 +4,7 @@ fan_in=14 — this module is imported by 14 other modules.
 ADG contract: import-hygiene is covered by test_agent_spec_config_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -38,7 +39,7 @@ class TestOrchestrationTopologyContract:
         assert isinstance(OrchestrationTopology, type)
 
     def test_has_method_validate_agents_exist(self):
-        assert callable(getattr(OrchestrationTopology, 'validate_agents_exist', None))
+        assert callable(getattr(OrchestrationTopology, "validate_agents_exist", None))
 
 
 class TestClerkExtractionConfigContract:

@@ -172,8 +172,11 @@ class WritingQualityEngine(BaseRGEngine):
         Evaluate writing quality.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WritingQualityEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "WritingQualityEngine.execute"
+        )
 
         self._mcp_audit("writing_quality_check")
         issues = []

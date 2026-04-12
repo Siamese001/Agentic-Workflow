@@ -15,8 +15,8 @@ def remove_test_function(file_path: str, func_name: str) -> bool:
         return False
 
     try:
-        source = path.read_text(encoding='utf-8')
-        lines = source.split('\n')
+        source = path.read_text(encoding="utf-8")
+        lines = source.split("\n")
     except OSError as e:
         print(f"  Error reading {file_path}: {e}")
         return False
@@ -44,36 +44,36 @@ def remove_test_function(file_path: str, func_name: str) -> bool:
     end_line = target_node.end_lineno
 
     # Remove the function (and following blank lines)
-    new_lines = lines[:start_line - 1] + lines[end_line:]
+    new_lines = lines[: start_line - 1] + lines[end_line:]
 
     # Write back
-    path.write_text('\n'.join(new_lines), encoding='utf-8')
+    path.write_text("\n".join(new_lines), encoding="utf-8")
     print(f"  Removed {func_name} from {file_path} (lines {start_line}-{end_line})")
     return True
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Delete unused test functions')
-    parser.add_argument('--input', required=True, help='JSON file with test functions to delete')
-    parser.add_argument('--report', '-r', action='store_true', help='Report-only mode (no deletions)')
-    parser.add_argument('--dry-run', action='store_true', help=argparse.SUPPRESS)  # Deprecated, use --report
-    parser.add_argument('--limit', type=int, help='Limit number of deletions')
+    parser = argparse.ArgumentParser(description="Delete unused test functions")
+    parser.add_argument("--input", required=True, help="JSON file with test functions to delete")
+    parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no deletions)")
+    parser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
+    parser.add_argument("--limit", type=int, help="Limit number of deletions")
 
     args = parser.parse_args()
 
-    with open(args.input, encoding='utf-8') as f:
+    with open(args.input, encoding="utf-8") as f:
         data = json.load(f)
 
-    tests = data.get('unused_tests', [])
+    tests = data.get("unused_tests", [])
     if args.limit:
-        tests = tests[:args.limit]
+        tests = tests[: args.limit]
 
-    print(f'Processing {len(tests)} unused test functions...')
+    print(f"Processing {len(tests)} unused test functions...")
 
     deleted = 0
     for test in tests:
-        file_path = test['file']
-        func_name = test['name']
+        file_path = test["file"]
+        func_name = test["name"]
 
         if args.report:
             print(f"[REPORT] Would delete {func_name} from {file_path}")
@@ -82,9 +82,9 @@ def main():
             if remove_test_function(file_path, func_name):
                 deleted += 1
 
-    print(f'\n{"Would delete" if args.report else "Deleted"} {deleted} test functions')
+    print(f"\n{'Would delete' if args.report else 'Deleted'} {deleted} test functions")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

@@ -335,11 +335,11 @@ class LayerSovereigntyEnforcer:
         try:
             source = file_path.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(file_path))
-        except SyntaxError as exc:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
             report.parse_errors.append(f"{file_path}: SyntaxError: {exc}")
             report.files_skipped += 1
             return
-        except OSError as exc:    # guardian: Add error context logging
+        except OSError as exc:  # guardian: Add error context logging
             report.parse_errors.append(f"{file_path}: OSError: {exc}")
             report.files_skipped += 1
             return
@@ -428,7 +428,9 @@ class LayerSovereigntyEnforcer:
         A violation occurs when ``imported_layer > importer_layer``.
         """
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "LayerSovereigntyEnforcer.check_upward_mutation", "L5_POLICY",
+            str(uuid.uuid4()),
+            "LayerSovereigntyEnforcer.check_upward_mutation",
+            "L5_POLICY",
         )
         return imported_layer > importer_layer
 
@@ -441,7 +443,10 @@ class LayerSovereigntyEnforcer:
         try:
             source = file_path.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(file_path))
-        except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        except (
+            SyntaxError,
+            OSError,
+        ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
             return violations
 
         importer_module = self._path_to_module(file_path)
@@ -485,7 +490,10 @@ class LayerSovereigntyEnforcer:
                 try:
                     source = py_file.read_text(encoding="utf-8", errors="replace")
                     tree = ast.parse(source)
-                except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+                except (
+                    SyntaxError,
+                    OSError,
+                ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
                     continue
                 mod = self._path_to_module(py_file)
                 import_map[mod] = set(self._collect_imports(tree))

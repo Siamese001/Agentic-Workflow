@@ -228,6 +228,7 @@ class BaseDispatchAgent(SovereignBaseAgent):
     def execute(self, action: str, params: dict[str, Any]) -> ExecutionResult:
         """Execute action with parameters, returning a timed ExecutionResult."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseDispatchAgent.execute")
 
@@ -235,7 +236,9 @@ class BaseDispatchAgent(SovereignBaseAgent):
         try:
             with self.start_span("agent.execute", {"agent": self.__class__.__name__, "action": action}):
                 output = self._perform_action(action, params)
-                result = ExecutionResult(SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000)
+                result = ExecutionResult(
+                    SUCCESS=True, OUTPUT=output, duration_ms=(time.time() - start) * 1000
+                )
                 self._persist_outcome(action, result)
                 return result
         except (ValueError, TypeError, RuntimeError, KeyError) as e:
@@ -251,7 +254,9 @@ class BaseDispatchAgent(SovereignBaseAgent):
             task_desc = f"{self.__class__.__name__}:{action}"
             if result.SUCCESS and score >= 0.8:
                 bridge.create_mastered_task_relation(
-                    agent_name=self.__class__.__name__, task_description=task_desc, feedback_score=score,
+                    agent_name=self.__class__.__name__,
+                    task_description=task_desc,
+                    feedback_score=score,
                 )
             elif not result.SUCCESS:
                 bridge.create_relation(

@@ -24,6 +24,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 @pytest.fixture(autouse=True)
 def mock_external_services():
     """Mock all external services to prevent network calls."""
@@ -40,7 +41,6 @@ class TestDispatchResumeToolsAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
-
 
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""

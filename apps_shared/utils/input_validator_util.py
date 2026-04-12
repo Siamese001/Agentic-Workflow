@@ -251,6 +251,7 @@ class InputValidator:
             rule: Validation rule
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InputValidator.add_rule")
 
@@ -291,7 +292,9 @@ class InputValidator:
                     continue
                 validated_value = self._validate_field(field, value, rule)
                 validated[field] = validated_value
-            except InputValidationError as e:    # guardian: InputValidationError should be handled with specific context
+            except (
+                InputValidationError
+            ) as e:  # guardian: InputValidationError should be handled with specific context
                 errors.append(e)
         if strict:
             for field in data:
@@ -516,10 +519,17 @@ COMMON_RULES = {
         pattern="^[a-zA-Z0-9_-]+$",
     ),
     "context_data": ValidationRule(
-        "context_data", ValidationType.DICT, required=False, max_length=CONTEXT_DATA_MAX_KEYS,
+        "context_data",
+        ValidationType.DICT,
+        required=False,
+        max_length=CONTEXT_DATA_MAX_KEYS,
     ),
     "retry_count": ValidationRule(
-        "retry_count", ValidationType.INTEGER, required=False, min_value=0, max_value=RETRY_COUNT_MAX,
+        "retry_count",
+        ValidationType.INTEGER,
+        required=False,
+        min_value=0,
+        max_value=RETRY_COUNT_MAX,
     ),
     "timeout": ValidationRule(
         "timeout",
@@ -529,10 +539,16 @@ COMMON_RULES = {
         max_value=TIMEOUT_MAX_SECONDS,
     ),
     "json_payload": ValidationRule(
-        "json_payload", ValidationType.JSON, required=False, max_length=JSON_PAYLOAD_MAX_LENGTH,
+        "json_payload",
+        ValidationType.JSON,
+        required=False,
+        max_length=JSON_PAYLOAD_MAX_LENGTH,
     ),
     "xml_content": ValidationRule(
-        "xml_content", ValidationType.XML, required=False, max_length=XML_CONTENT_MAX_LENGTH,
+        "xml_content",
+        ValidationType.XML,
+        required=False,
+        max_length=XML_CONTENT_MAX_LENGTH,
     ),
 }
 
@@ -561,8 +577,11 @@ class ValidatedInput(BaseModel):
     def sanitize_strings(cls, v):
         """Sanitize string fields."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidatedInput.sanitize_strings")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ValidatedInput.sanitize_strings"
+        )
 
         if isinstance(v, str):
             v = "".join(char for char in v if ord(char) >= 32 or char in "\n\r\t")
@@ -594,7 +613,7 @@ def validate_with_pydantic(data: dict[str, Any], model_class: type[ValidatedInpu
     """
     try:
         return model_class(**data)
-    except ValidationError as e:    # guardian: ValidationError should be handled with specific context
+    except ValidationError as e:  # guardian: ValidationError should be handled with specific context
         errors = []
         for error in e.errors():
             field = ".".join(str(x) for x in error["loc"])

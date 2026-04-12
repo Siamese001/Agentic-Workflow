@@ -217,7 +217,9 @@ class L1MetaAdapter:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "L1MetaAdapter.extract_telemetry",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "L1MetaAdapter.extract_telemetry",
         )
 
         events: list[L1TelemetryEvent] = []
@@ -226,7 +228,9 @@ class L1MetaAdapter:
                 continue
             ts = outcome.get("timestamp_utc", now_utc)
             payload = json.dumps(
-                {"source": "l1_recall", "outcome": outcome}, separators=(",", ":"), sort_keys=True,
+                {"source": "l1_recall", "outcome": outcome},
+                separators=(",", ":"),
+                sort_keys=True,
             ).encode("utf-8")
             events.append(
                 L1TelemetryEvent(timestamp_utc=ts, event_type="l1_recall_outcome", payload_bytes=payload),
@@ -236,7 +240,9 @@ class L1MetaAdapter:
                 continue
             ts = outcome.get("timestamp_utc", now_utc)
             payload = json.dumps(
-                {"source": "l1_learn", "outcome": outcome}, separators=(",", ":"), sort_keys=True,
+                {"source": "l1_learn", "outcome": outcome},
+                separators=(",", ":"),
+                sort_keys=True,
             ).encode("utf-8")
             events.append(
                 L1TelemetryEvent(timestamp_utc=ts, event_type="l1_learn_outcome", payload_bytes=payload),
@@ -244,7 +250,9 @@ class L1MetaAdapter:
         cache_stats = l1_state.get("cache_stats")
         if isinstance(cache_stats, dict):
             payload = json.dumps(
-                {"source": "l1_cache", "stats": cache_stats}, separators=(",", ":"), sort_keys=True,
+                {"source": "l1_cache", "stats": cache_stats},
+                separators=(",", ":"),
+                sort_keys=True,
             ).encode("utf-8")
             events.append(
                 L1TelemetryEvent(timestamp_utc=now_utc, event_type="l1_cache_stats", payload_bytes=payload),

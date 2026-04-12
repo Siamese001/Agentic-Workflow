@@ -74,14 +74,16 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
             # Check if any of these symbols are dead
             dead_symbols_in_import = [s for s in symbols if s in dead_imports]
             if dead_symbols_in_import:
-                end_lineno = getattr(node, 'end_lineno', None) or node.lineno
-                import_nodes.append({
-                    'lineno': node.lineno,
-                    'module': node.module,
-                    'all_symbols': symbols,
-                    'dead_symbols': dead_symbols_in_import,
-                    'end_lineno': end_lineno,
-                })
+                end_lineno = getattr(node, "end_lineno", None) or node.lineno
+                import_nodes.append(
+                    {
+                        "lineno": node.lineno,
+                        "module": node.module,
+                        "all_symbols": symbols,
+                        "dead_symbols": dead_symbols_in_import,
+                        "end_lineno": end_lineno,
+                    }
+                )
 
     if not import_nodes:
         return False
@@ -93,8 +95,8 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
 
     # Process each import node
     for imp in import_nodes:
-        start_line = imp['lineno'] - 1  # 0-indexed
-        end_line = imp['end_lineno'] - 1
+        start_line = imp["lineno"] - 1  # 0-indexed
+        end_line = imp["end_lineno"] - 1
 
         # For multi-line imports, use AST end_lineno (not paren heuristic)
         if start_line != end_line:
@@ -102,8 +104,8 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
             kept_symbols = []
             removed_symbols = []
 
-            for symbol in imp['all_symbols']:
-                if symbol in imp['dead_symbols']:
+            for symbol in imp["all_symbols"]:
+                if symbol in imp["dead_symbols"]:
                     removed_symbols.append(symbol)
                 else:
                     kept_symbols.append(symbol)
@@ -122,14 +124,14 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
                 removed_any = True
         else:
             # Single-line import
-            if len(imp['dead_symbols']) == len(imp['all_symbols']):
+            if len(imp["dead_symbols"]) == len(imp["all_symbols"]):
                 # All symbols removed - delete the line
                 skip_indices.add(start_line)
                 removed_any = True
             else:
                 # Some symbols remain - rebuild the import
-                kept_symbols = [s for s in imp['all_symbols'] if s not in imp['dead_symbols']]
-                module = imp['module']
+                kept_symbols = [s for s in imp["all_symbols"] if s not in imp["dead_symbols"]]
+                module = imp["module"]
                 if module:
                     new_import = f"from {module} import {', '.join(kept_symbols)}\n"
                 else:
@@ -148,8 +150,8 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
     skip_all = False
     all_bracket_depth = 0
     for line in final_lines:
-        if removed_any and not skip_all and '__all__' in line:
-            depth = line.count('[') - line.count(']')
+        if removed_any and not skip_all and "__all__" in line:
+            depth = line.count("[") - line.count("]")
             if depth <= 0:
                 # Single-line __all__ = [...] — skip this line and move on
                 continue
@@ -157,7 +159,7 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
             all_bracket_depth = depth
             continue
         if skip_all:
-            all_bracket_depth += line.count('[') - line.count(']')
+            all_bracket_depth += line.count("[") - line.count("]")
             if all_bracket_depth <= 0:
                 skip_all = False
             continue
@@ -184,7 +186,9 @@ def strip_dead_reexports_from_init(init_path: str, dead_imports: set[str], dry_r
 def main() -> int:
     parser = argparse.ArgumentParser(description="Strip dead re-exports from __init__.py files")
     parser.add_argument("--reports", nargs="+", required=True, help="ADG analysis JSON reports")
-    parser.add_argument("--dry-run", action="store_true", help="Print what would be done without modifying files")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Print what would be done without modifying files"
+    )
     args = parser.parse_args()
 
     # Collect all __init__.py files with dead imports

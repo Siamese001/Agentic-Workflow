@@ -6,8 +6,7 @@ import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 
-dirs_with_errors = ["adg", "ci", "e2e", "guardian", "integration", "misc",
-                     "performance", "unit_min_deps"]
+dirs_with_errors = ["adg", "ci", "e2e", "guardian", "integration", "misc", "performance", "unit_min_deps"]
 
 categories = {}
 source_files = {}
@@ -15,7 +14,10 @@ source_files = {}
 for d in dirs_with_errors:
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")
@@ -24,16 +26,16 @@ for d in dirs_with_errors:
         if "ERROR collecting" not in line:
             continue
         # Get the E   error line
-        for j in range(i+1, min(i+20, len(lines))):
+        for j in range(i + 1, min(i + 20, len(lines))):
             s = lines[j].strip()
             if s.startswith("E   ") and len(s) > 6:
                 msg = s[4:].strip()
                 if msg.startswith("File "):
                     continue
                 # Also find the source .py file
-                for k in range(j-1, j+5):
+                for k in range(j - 1, j + 5):
                     if k < len(lines):
-                        m = re.search(r'(\S+\.py):\d+', lines[k])
+                        m = re.search(r"(\S+\.py):\d+", lines[k])
                         if m:
                             src = m.group(1)
                             break
@@ -68,7 +70,10 @@ for sd in sorted(os.listdir(unit_dir)):
         continue
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/unit/{sd}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")
@@ -76,15 +81,15 @@ for sd in sorted(os.listdir(unit_dir)):
     for i, line in enumerate(lines):
         if "ERROR collecting" not in line:
             continue
-        for j in range(i+1, min(i+20, len(lines))):
+        for j in range(i + 1, min(i + 20, len(lines))):
             s = lines[j].strip()
             if s.startswith("E   ") and len(s) > 6:
                 msg = s[4:].strip()
                 if msg.startswith("File "):
                     continue
-                for k in range(j-1, j+5):
+                for k in range(j - 1, j + 5):
                     if k < len(lines):
-                        m = re.search(r'(\S+\.py):\d+', lines[k])
+                        m = re.search(r"(\S+\.py):\d+", lines[k])
                         if m:
                             src = m.group(1)
                             break
@@ -119,4 +124,4 @@ for key, count in sorted(categories.items(), key=lambda x: -x[1]):
     for s in srcs[:3]:
         print(f"       src: {s}")
     if len(srcs) > 3:
-        print(f"       ... +{len(srcs)-3} more")
+        print(f"       ... +{len(srcs) - 3} more")

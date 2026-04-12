@@ -4,6 +4,7 @@ Each file gets:
   - a smoke import test (importlib.import_module)
   - 1-2 structural assertions about the public API
 """
+
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent

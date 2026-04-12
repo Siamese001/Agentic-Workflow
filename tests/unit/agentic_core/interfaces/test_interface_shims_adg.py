@@ -16,14 +16,17 @@ class TestInterfaceShimsAdg:
     def test_interface_shims_adg_imports(self):
         """Test interface_shims_adg module imports."""
         from agentic_core import interface_shims_adg
+
         assert interface_shims_adg is not None
 
     def test_interface_shims_adg_class(self):
         """Test InterfaceShimsAdg class exists."""
         from agentic_core import InterfaceShimsAdg
+
         assert InterfaceShimsAdg is not None
 
     def test_interface_shims_adg_callable(self):
         """Test interface_shims_adg functions are callable."""
         from agentic_core import validate_interface_shims_adg
+
         assert callable(validate_interface_shims_adg)

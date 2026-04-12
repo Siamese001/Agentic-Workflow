@@ -1,4 +1,5 @@
 """Fix MCP hardening smart - Stub implementation for test compatibility."""
+
 from typing import Any
 
 

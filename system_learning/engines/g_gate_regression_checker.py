@@ -130,13 +130,15 @@ class GGateRegressionChecker:
         rubric_consistency_pass = self._validate_rubric_consistency(execution_trace)
 
         # Determine overall pass
-        overall_pass = all([
-            exact_match_pass,
-            schema_state_pass,
-            trajectory_invariant_pass,
-            not api_drift_detected,
-            rubric_consistency_pass,
-        ])
+        overall_pass = all(
+            [
+                exact_match_pass,
+                schema_state_pass,
+                trajectory_invariant_pass,
+                not api_drift_detected,
+                rubric_consistency_pass,
+            ]
+        )
 
         # Collect drift details
         drift_details = self._collect_drift_details(
@@ -164,13 +166,15 @@ class GGateRegressionChecker:
 
         result = GGateValidationResult(
             artifact_type="G_GATE_VALIDATION_RESULT",
-            result_id=stable_sha256_json({
-                "trace_id": trace_id,
-                "baseline_digest": baseline_digest,
-                "current_digest": current_digest,
-                "overall_pass": overall_pass,
-                "timestamp_utc": timestamp_utc,
-            }),
+            result_id=stable_sha256_json(
+                {
+                    "trace_id": trace_id,
+                    "baseline_digest": baseline_digest,
+                    "current_digest": current_digest,
+                    "overall_pass": overall_pass,
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             trace_id=trace_id,
             exact_match_pass=exact_match_pass,
             schema_state_pass=schema_state_pass,

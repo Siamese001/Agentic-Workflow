@@ -1,4 +1,5 @@
 """MCP Health Diagnostics — Exposed as adg_health tool."""
+
 import logging
 from typing import Any
 

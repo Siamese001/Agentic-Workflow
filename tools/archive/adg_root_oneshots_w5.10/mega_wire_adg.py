@@ -98,31 +98,68 @@ SCAN_ROOTS = [
 ]
 
 # Skip these method names (trivial, dunder, or infrastructure)
-SKIP_METHODS = frozenset({
-    "__init__", "__repr__", "__str__", "__eq__", "__hash__",
-    "__lt__", "__le__", "__gt__", "__ge__", "__ne__",
-    "__enter__", "__exit__", "__aenter__", "__aexit__",
-    "__len__", "__iter__", "__next__", "__getitem__", "__setitem__",
-    "__contains__", "__bool__", "__call__", "__post_init__",
-    "__del__", "__new__", "__init_subclass__", "__class_getitem__",
-    "__get__", "__set__", "__delete__",
-    "to_dict", "from_dict", "as_dict", "to_json", "from_json",
-    "model_dump", "model_validate", "dict", "json",
-    # lifecycle_trace_contract.py internals - don't wire recursively
-    "_emit_records_execution_trace", "_emit_signs_execution_trace",
-    "emit_replay_key", "emit_determinism_digest",
-    "_emit_transcripts_response", "_emit_hard_fails_untranscripted",
-    "_record_contract",
-})
+SKIP_METHODS = frozenset(
+    {
+        "__init__",
+        "__repr__",
+        "__str__",
+        "__eq__",
+        "__hash__",
+        "__lt__",
+        "__le__",
+        "__gt__",
+        "__ge__",
+        "__ne__",
+        "__enter__",
+        "__exit__",
+        "__aenter__",
+        "__aexit__",
+        "__len__",
+        "__iter__",
+        "__next__",
+        "__getitem__",
+        "__setitem__",
+        "__contains__",
+        "__bool__",
+        "__call__",
+        "__post_init__",
+        "__del__",
+        "__new__",
+        "__init_subclass__",
+        "__class_getitem__",
+        "__get__",
+        "__set__",
+        "__delete__",
+        "to_dict",
+        "from_dict",
+        "as_dict",
+        "to_json",
+        "from_json",
+        "model_dump",
+        "model_validate",
+        "dict",
+        "json",
+        # lifecycle_trace_contract.py internals - don't wire recursively
+        "_emit_records_execution_trace",
+        "_emit_signs_execution_trace",
+        "emit_replay_key",
+        "emit_determinism_digest",
+        "_emit_transcripts_response",
+        "_emit_hard_fails_untranscripted",
+        "_record_contract",
+    }
+)
 
 # Skip files that are part of the wiring infrastructure itself
-SKIP_FILES = frozenset({
-    "lifecycle_trace_contract.py",
-    "execution_trace.py",
-    "mega_wire_adg.py",
-    "__init__.py",
-    "conftest.py",
-})
+SKIP_FILES = frozenset(
+    {
+        "lifecycle_trace_contract.py",
+        "execution_trace.py",
+        "mega_wire_adg.py",
+        "__init__.py",
+        "conftest.py",
+    }
+)
 
 # Minimum body lines (excluding docstring) for a method to be worth wiring
 MIN_BODY_LINES = 2
@@ -175,15 +212,21 @@ def get_import_line(extras: list[str]) -> str:
     return f"from agentic_core.runtime.contracts.lifecycle_trace_contract import {', '.join(symbols)}"
 
 
-def build_emit_block(class_name: str, method_name: str, layer_seg: str, extras: list[str], indent: str) -> str:
+def build_emit_block(
+    class_name: str, method_name: str, layer_seg: str, extras: list[str], indent: str
+) -> str:
     """Build the emit code block to insert after docstring."""
     lines = []
     lines.append(f"{indent}import uuid as _uuid  # noqa: PLC0415")
     lines.append(f"{indent}_trace_id = str(_uuid.uuid4())")
-    lines.append(f'{indent}_emit_records_execution_trace(_trace_id, {layer_seg}, "{class_name}.{method_name}")')
+    lines.append(
+        f'{indent}_emit_records_execution_trace(_trace_id, {layer_seg}, "{class_name}.{method_name}")'
+    )
     if "signs_trace" in extras:
         lines.append(f"{indent}import hashlib as _hashlib  # noqa: PLC0415")
-        lines.append(f'{indent}_seg_hash = _hashlib.sha256(f"{{_trace_id}}:{class_name}.{method_name}".encode()).hexdigest()[:24]')
+        lines.append(
+            f'{indent}_seg_hash = _hashlib.sha256(f"{{_trace_id}}:{class_name}.{method_name}".encode()).hexdigest()[:24]'
+        )
         lines.append(f"{indent}_emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)")
     if "replay_key" in extras:
         lines.append(f'{indent}emit_replay_key(_trace_id, f"rk:{{_trace_id[:16]}}")')
@@ -223,7 +266,13 @@ def find_methods_in_file(filepath: str) -> list[dict]:
                 continue
             if method_name.startswith("_") and method_name != "_run":
                 # Skip private methods except _run
-                if not method_name.startswith("_emit") and method_name not in ("_run", "_execute", "_process", "_handle", "_validate"):
+                if not method_name.startswith("_emit") and method_name not in (
+                    "_run",
+                    "_execute",
+                    "_process",
+                    "_handle",
+                    "_validate",
+                ):
                     continue
 
             # Check body size (excluding docstring)
@@ -251,14 +300,16 @@ def find_methods_in_file(filepath: str) -> list[dict]:
             else:
                 first_stmt_line = insert_after_line + 1
 
-            methods.append({
-                "class_name": class_name,
-                "method_name": method_name,
-                "insert_after_line": insert_after_line,
-                "first_stmt_line": first_stmt_line,
-                "is_async": isinstance(item, ast.AsyncFunctionDef),
-                "lineno": item.lineno,
-            })
+            methods.append(
+                {
+                    "class_name": class_name,
+                    "method_name": method_name,
+                    "insert_after_line": insert_after_line,
+                    "first_stmt_line": first_stmt_line,
+                    "is_async": isinstance(item, ast.AsyncFunctionDef),
+                    "lineno": item.lineno,
+                }
+            )
 
     # Return only the FIRST suitable method per class to avoid over-wiring
     seen_classes = set()
@@ -404,7 +455,9 @@ def main():
             continue
         for dirpath, dirnames, filenames in os.walk(abs_root):
             # Skip excluded dirs
-            dirnames[:] = [d for d in dirnames if d not in {"__pycache__", ".git", "node_modules", "archives"}]
+            dirnames[:] = [
+                d for d in dirnames if d not in {"__pycache__", ".git", "node_modules", "archives"}
+            ]
             for fname in filenames:
                 if not fname.endswith(".py"):
                     continue

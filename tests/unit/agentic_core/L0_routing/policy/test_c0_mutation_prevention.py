@@ -16,14 +16,17 @@ class TestC0MutationPrevention:
     def test_c0_mutation_prevention_imports(self):
         """Test c0_mutation_prevention module imports."""
         from agentic_core import c0_mutation_prevention
+
         assert c0_mutation_prevention is not None
 
     def test_c0_mutation_prevention_class(self):
         """Test C0MutationPrevention class exists."""
         from agentic_core import C0MutationPrevention
+
         assert C0MutationPrevention is not None
 
     def test_c0_mutation_prevention_callable(self):
         """Test c0_mutation_prevention functions are callable."""
         from agentic_core import validate_c0_mutation_prevention
+
         assert callable(validate_c0_mutation_prevention)

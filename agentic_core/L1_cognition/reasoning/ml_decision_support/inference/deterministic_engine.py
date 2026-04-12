@@ -20,6 +20,7 @@ from ..models.base_model import BaseMLModel, ModelPrediction
 @dataclass
 class InferenceRequest:
     """Request for ML inference."""
+
     model_name: str
     model_version: str
     context: dict[str, Any]
@@ -35,6 +36,7 @@ class InferenceRequest:
 @dataclass
 class InferenceResult:
     """Result of ML inference."""
+
     prediction: ModelPrediction
     inference_metadata: dict[str, Any]
     success: bool
@@ -67,12 +69,12 @@ class DeterministicInferenceEngine:
 
         # Inference statistics
         self.stats = {
-            'total_inferences': 0,
-            'successful_inferences': 0,
-            'failed_inferences': 0,
-            'shadow_inferences': 0,
-            'production_inferences': 0,
-            'average_inference_time_ms': 0.0,
+            "total_inferences": 0,
+            "successful_inferences": 0,
+            "failed_inferences": 0,
+            "shadow_inferences": 0,
+            "production_inferences": 0,
+            "average_inference_time_ms": 0.0,
         }
 
     def infer(
@@ -89,7 +91,7 @@ class DeterministicInferenceEngine:
             Inference result with prediction and metadata
         """
         start_time = time.time()
-        self.stats['total_inferences'] += 1
+        self.stats["total_inferences"] += 1
 
         try:
             # Get the requested model
@@ -135,7 +137,7 @@ class DeterministicInferenceEngine:
 
             result = InferenceResult(
                 prediction=None,
-                inference_metadata={'error': error_message},
+                inference_metadata={"error": error_message},
                 success=False,
                 error_message=error_message,
                 inference_time_ms=inference_time,
@@ -197,11 +199,11 @@ class DeterministicInferenceEngine:
             request = InferenceRequest(
                 model_name=model_name,
                 model_version=model_version,
-                context=case.get('context', {}),
-                trace_id=case.get('trace_id', f"det_test_{i}"),
-                replay_key=case.get('replay_key', f"det_replay_{i}"),
-                policy_hash=case.get('policy_hash', "det_policy"),
-                semantic_clock=case.get('semantic_clock'),
+                context=case.get("context", {}),
+                trace_id=case.get("trace_id", f"det_test_{i}"),
+                replay_key=case.get("replay_key", f"det_replay_{i}"),
+                policy_hash=case.get("policy_hash", "det_policy"),
+                semantic_clock=case.get("semantic_clock"),
                 decision_mode=DecisionMode.SHADOW_ONLY,
             )
 
@@ -209,12 +211,12 @@ class DeterministicInferenceEngine:
             original_result = self.infer(request)
 
             replay_case = {
-                'context': case.get('context', {}),
-                'trace_id': request.trace_id,
-                'replay_key': request.replay_key,
-                'policy_hash': request.policy_hash,
-                'semantic_clock': request.semantic_clock,
-                'original_prediction': original_result.prediction,
+                "context": case.get("context", {}),
+                "trace_id": request.trace_id,
+                "replay_key": request.replay_key,
+                "policy_hash": request.policy_hash,
+                "semantic_clock": request.semantic_clock,
+                "original_prediction": original_result.prediction,
             }
 
             replay_cases.append(replay_case)
@@ -229,12 +231,12 @@ class DeterministicInferenceEngine:
         if model_name:
             # Return statistics for specific model
             model_stats = {
-                'model_name': model_name,
-                'total_inferences': self.stats['total_inferences'],
-                'successful_inferences': self.stats['successful_inferences'],
-                'failed_inferences': self.stats['failed_inferences'],
-                'success_rate': self.stats['successful_inferences'] / max(1, self.stats['total_inferences']),
-                'average_inference_time_ms': self.stats['average_inference_time_ms'],
+                "model_name": model_name,
+                "total_inferences": self.stats["total_inferences"],
+                "successful_inferences": self.stats["successful_inferences"],
+                "failed_inferences": self.stats["failed_inferences"],
+                "success_rate": self.stats["successful_inferences"] / max(1, self.stats["total_inferences"]),
+                "average_inference_time_ms": self.stats["average_inference_time_ms"],
             }
 
             # Add model-specific statistics if available
@@ -248,9 +250,9 @@ class DeterministicInferenceEngine:
             # Return overall statistics
             return {
                 **self.stats,
-                'available_models': list(self.models.keys()),
-                'shadow_statistics': self.shadow_logger.get_shadow_statistics(),
-                'replay_statistics': self.replay_harness.get_replay_statistics(),
+                "available_models": list(self.models.keys()),
+                "shadow_statistics": self.shadow_logger.get_shadow_statistics(),
+                "replay_statistics": self.replay_harness.get_replay_statistics(),
             }
 
     def _validate_request(self, request: InferenceRequest) -> None:
@@ -283,7 +285,7 @@ class DeterministicInferenceEngine:
     def _execute_inference(self, model: BaseMLModel, request: InferenceRequest) -> ModelPrediction:
         """Execute model inference."""
         # Extract features if model has feature extractor
-        if hasattr(model, 'feature_extractor'):
+        if hasattr(model, "feature_extractor"):
             extraction_result = model.feature_extractor.extract_features(
                 context=request.context,
                 trace_id=request.trace_id,
@@ -316,11 +318,13 @@ class DeterministicInferenceEngine:
 
         return prediction
 
-    def _log_shadow_prediction(self, model: BaseMLModel, request: InferenceRequest, prediction: ModelPrediction) -> None:
+    def _log_shadow_prediction(
+        self, model: BaseMLModel, request: InferenceRequest, prediction: ModelPrediction
+    ) -> None:
         """Log prediction in shadow mode."""
         try:
             # Create model input for logging
-            if hasattr(model, 'feature_extractor'):
+            if hasattr(model, "feature_extractor"):
                 extraction_result = model.feature_extractor.extract_features(
                     context=request.context,
                     trace_id=request.trace_id,
@@ -347,54 +351,56 @@ class DeterministicInferenceEngine:
             # Log failure but don't fail the inference
             print(f"Failed to log shadow prediction: {e}")
 
-    def _create_inference_metadata(self, request: InferenceRequest, prediction: ModelPrediction) -> dict[str, Any]:
+    def _create_inference_metadata(
+        self, request: InferenceRequest, prediction: ModelPrediction
+    ) -> dict[str, Any]:
         """Create inference metadata."""
         return {
-            'model_name': request.model_name,
-            'model_version': request.model_version,
-            'decision_mode': request.decision_mode.value,
-            'shadow_mode': request.shadow_mode,
-            'validation_required': request.validation_required,
-            'prediction_confidence': prediction.confidence,
-            'prediction_timestamp': prediction.prediction_timestamp.isoformat(),
-            'feature_digest': prediction.feature_digest,
-            'training_data_digest': prediction.training_data_digest,
-            'threshold_used': prediction.threshold_used,
+            "model_name": request.model_name,
+            "model_version": request.model_version,
+            "decision_mode": request.decision_mode.value,
+            "shadow_mode": request.shadow_mode,
+            "validation_required": request.validation_required,
+            "prediction_confidence": prediction.confidence,
+            "prediction_timestamp": prediction.prediction_timestamp.isoformat(),
+            "feature_digest": prediction.feature_digest,
+            "training_data_digest": prediction.training_data_digest,
+            "threshold_used": prediction.threshold_used,
         }
 
     def _update_stats(self, inference_time: float, is_shadow: bool, success: bool) -> None:
         """Update inference statistics."""
         if success:
-            self.stats['successful_inferences'] += 1
+            self.stats["successful_inferences"] += 1
         else:
-            self.stats['failed_inferences'] += 1
+            self.stats["failed_inferences"] += 1
 
         if is_shadow:
-            self.stats['shadow_inferences'] += 1
+            self.stats["shadow_inferences"] += 1
         else:
-            self.stats['production_inferences'] += 1
+            self.stats["production_inferences"] += 1
 
         # Update average inference time
-        total_successful = self.stats['successful_inferences']
+        total_successful = self.stats["successful_inferences"]
         if total_successful > 0:
-            current_avg = self.stats['average_inference_time_ms']
-            self.stats['average_inference_time_ms'] = (
-                (current_avg * (total_successful - 1) + inference_time) / total_successful
-            )
+            current_avg = self.stats["average_inference_time_ms"]
+            self.stats["average_inference_time_ms"] = (
+                current_avg * (total_successful - 1) + inference_time
+            ) / total_successful
 
     def _log_inference_completion(self, request: InferenceRequest, result: InferenceResult) -> None:
         """Log successful inference completion."""
         try:
             event_data = {
-                'model_name': request.model_name,
-                'model_version': request.model_version,
-                'trace_id': request.trace_id,
-                'decision_mode': request.decision_mode.value,
-                'shadow_mode': request.shadow_mode,
-                'prediction': result.prediction.prediction if result.prediction else None,
-                'confidence': result.prediction.confidence if result.prediction else None,
-                'inference_time_ms': result.inference_time_ms,
-                'success': result.success,
+                "model_name": request.model_name,
+                "model_version": request.model_version,
+                "trace_id": request.trace_id,
+                "decision_mode": request.decision_mode.value,
+                "shadow_mode": request.shadow_mode,
+                "prediction": result.prediction.prediction if result.prediction else None,
+                "confidence": result.prediction.confidence if result.prediction else None,
+                "inference_time_ms": result.inference_time_ms,
+                "success": result.success,
             }
 
             _emit_records_execution_trace(
@@ -410,14 +416,14 @@ class DeterministicInferenceEngine:
         """Log inference failure."""
         try:
             event_data = {
-                'model_name': request.model_name,
-                'model_version': request.model_version,
-                'trace_id': request.trace_id,
-                'decision_mode': request.decision_mode.value,
-                'shadow_mode': request.shadow_mode,
-                'error_message': result.error_message,
-                'inference_time_ms': result.inference_time_ms,
-                'success': result.success,
+                "model_name": request.model_name,
+                "model_version": request.model_version,
+                "trace_id": request.trace_id,
+                "decision_mode": request.decision_mode.value,
+                "shadow_mode": request.shadow_mode,
+                "error_message": result.error_message,
+                "inference_time_ms": result.inference_time_ms,
+                "success": result.success,
             }
 
             _emit_records_execution_trace(

@@ -7,6 +7,7 @@ Checks:
   4. Sample documents are non-empty
   5. Metadata keys are present
   6. hnsw:space and embedding_model declared in collection metadata
+  7. Sparse sidecar DB present (for Phase-A target collections)
 
 Usage:
     python tools/generate/ingestion/validate_collection.py \
@@ -27,6 +28,12 @@ DEFAULT_SAMPLE = 10
 REQUIRED_META_KEYS = {
     "code_chunks": {"artifact_type", "file_path", "layer", "canonical_digest", "entity_type"},
     "symbols": {"artifact_type", "symbol_name", "entity_type", "file_path", "layer", "canonical_digest"},
+    "arch_docs": {"artifact_type", "doc_type", "file_path", "layer", "canonical_digest"},
+    "runtime_evidence": {"artifact_type", "evidence_type", "file_path", "layer", "canonical_digest"},
+    "process_docs": {"artifact_type", "doc_type", "file_path", "layer", "canonical_digest"},
+    "ext_knowledge": {"artifact_type", "doc_type", "domain", "layer", "canonical_digest"},
+    "incidents_rca": {"artifact_type", "doc_type", "file_path", "layer", "canonical_digest"},
+    "tests_guardrails": {"artifact_type", "doc_type", "file_path", "layer", "canonical_digest"},
 }
 
 
@@ -88,7 +95,9 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
     n = min(sample_size, count)
     result = collection.get(limit=n, include=["embeddings", "documents", "metadatas"])
 
-    embeddings = result.get("embeddings") or []
+    embeddings = result.get("embeddings")
+    if embeddings is None:
+        embeddings = []
     documents = result.get("documents") or []
     metadatas = result.get("metadatas") or []
 
@@ -135,6 +144,25 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
     else:
         print(f"  [FAIL] {meta_errors}/{n} documents have missing required metadata keys")
         ok = False
+
+    # 7. Sparse sidecar check (Phase-A target collections only)
+    _SPARSE_TARGET_COLLECTIONS = {
+        "code_chunks",
+        "symbols",
+        "arch_docs",
+        "tests_guardrails",
+        "runtime_evidence",
+        "process_docs",
+        "ext_knowledge",
+        "incidents_rca",
+    }
+    if collection_name in _SPARSE_TARGET_COLLECTIONS:
+        sparse_dir = REPO_ROOT / "data" / "cache" / "sparse"
+        sidecar = sparse_dir / f"{collection_name}.db"
+        if sidecar.exists():
+            print(f"  [OK]   Sparse sidecar present: {sidecar.name}")
+        else:
+            print(f"  [WARN] Sparse sidecar missing: {sidecar} — run build_sparse_index.py")
 
     # Show one sample metadata for reference
     if metadatas:

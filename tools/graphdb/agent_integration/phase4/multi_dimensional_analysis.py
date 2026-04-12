@@ -379,8 +379,18 @@ class MultiDimensionalAnalyzer:
         }
 
         # Identify strong and weak correlations
-        for i, dim1 in tqdm(enumerate(self.dimensional_config["active_dimensions"]), desc="dim correlations", unit="dim", leave=False):
-            for j, dim2 in tqdm(enumerate(self.dimensional_config["active_dimensions"]), desc="  dim2", unit="dim", leave=False):
+        for i, dim1 in tqdm(
+            enumerate(self.dimensional_config["active_dimensions"]),
+            desc="dim correlations",
+            unit="dim",
+            leave=False,
+        ):
+            for j, dim2 in tqdm(
+                enumerate(self.dimensional_config["active_dimensions"]),
+                desc="  dim2",
+                unit="dim",
+                leave=False,
+            ):
                 if i < j:
                     correlation = correlation_matrix[i, j]
                     correlation_pair = {
@@ -404,7 +414,9 @@ class MultiDimensionalAnalyzer:
         """Create dimensional points from architectural context."""
         points = {}
 
-        for i, module in tqdm(enumerate(context.target_modules), desc="project modules", unit="module", leave=False):
+        for i, module in tqdm(
+            enumerate(context.target_modules), desc="project modules", unit="module", leave=False
+        ):
             coordinates = {}
 
             # Calculate coordinates for each dimension

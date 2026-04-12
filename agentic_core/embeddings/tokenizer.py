@@ -12,6 +12,7 @@ from typing import Any
 @dataclass
 class TokenizedOutput:
     """Output from tokenization."""
+
     input_ids: list[int]
     attention_mask: list[int]
     token_count: int
@@ -39,6 +40,7 @@ class TokenizerStage:
         """Load tokenizer from HuggingFace."""
         try:
             from transformers import AutoTokenizer
+
             self._tokenizer = AutoTokenizer.from_pretrained(self._model_name)
             return True
         except ImportError:

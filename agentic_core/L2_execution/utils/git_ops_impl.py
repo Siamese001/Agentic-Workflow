@@ -217,7 +217,10 @@ class GitTools:
             if "Error" in add_result:
                 return f"Commit Error (Add): {add_result}"
             commit_result: Any = mcp0_git_add_or_commit(
-                directory=".", action="commit", files=[file_path], message=message,
+                directory=".",
+                action="commit",
+                files=[file_path],
+                message=message,
             )
             if "Error" in commit_result:
                 return f"Commit Error (Commit): {commit_result}"

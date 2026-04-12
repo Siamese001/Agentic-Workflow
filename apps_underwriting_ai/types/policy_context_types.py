@@ -24,15 +24,20 @@ class PolicyContext(BaseModel):
     min_fico: int | None = Field(None, ge=300, le=850, description="Minimum FICO requirement")
     restricted_industries: list[str] = Field(default_factory=list, description="NAICS codes restricted")
     prohibited_jurisdictions: list[str] = Field(
-        default_factory=list, description="Prohibited states/countries",
+        default_factory=list,
+        description="Prohibited states/countries",
     )
     max_single_customer_concentration_pct: float | None = Field(
-        None, ge=0, le=100, description="Max customer concentration",
+        None,
+        ge=0,
+        le=100,
+        description="Max customer concentration",
     )
     collateral_rules: CollateralRules = Field(default_factory=CollateralRules)
     exception_rules: list[str] = Field(default_factory=list, description="Exception categories")
     human_review_triggers: list[str] = Field(
-        default_factory=list, description="Auto-trigger for human review",
+        default_factory=list,
+        description="Auto-trigger for human review",
     )
 
     class Config:

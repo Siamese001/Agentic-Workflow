@@ -44,6 +44,7 @@ Logger = logging.getLogger(__name__)
 
 class ScalingPolicy(Enum):
     """Auto-scaling policy types."""
+
     CPU_BASED = "cpu_based"
     MEMORY_BASED = "memory_based"
     CUSTOM_METRIC = "custom_metric"
@@ -53,6 +54,7 @@ class ScalingPolicy(Enum):
 
 class HealthStatus(Enum):
     """Health status levels."""
+
     HEALTHY = "healthy"
     WARNING = "warning"
     DEGRADED = "degraded"
@@ -62,6 +64,7 @@ class HealthStatus(Enum):
 
 class ResourceType(Enum):
     """Kubernetes resource types."""
+
     POD = "pod"
     DEPLOYMENT = "deployment"
     SERVICE = "service"
@@ -202,11 +205,11 @@ class CloudNativeManager:
 
             # Initialize clients
             self._k8s_client = {
-                'apps_v1': client.AppsV1Api(),
-                'core_v1': client.CoreV1Api(),
-                'autoscaling_v1': client.AutoscalingV1Api(),
-                'networking_v1': client.NetworkingV1Api(),
-                'custom_objects': client.CustomObjectsApi(),
+                "apps_v1": client.AppsV1Api(),
+                "core_v1": client.CoreV1Api(),
+                "autoscaling_v1": client.AutoscalingV1Api(),
+                "networking_v1": client.NetworkingV1Api(),
+                "custom_objects": client.CustomObjectsApi(),
             }
 
             self._initialized = True
@@ -261,7 +264,7 @@ class CloudNativeManager:
                 return False
 
             # Try to list nodes
-            self._k8s_client['core_v1'].list_node()
+            self._k8s_client["core_v1"].list_node()
             return True
 
         except (ConnectionError, OSError, TimeoutError) as e:
@@ -332,15 +335,20 @@ class CloudNativeManager:
                 return
 
             # Get node information
-            nodes = self._k8s_client['core_v1'].list_node()
+            nodes = self._k8s_client["core_v1"].list_node()
 
             total_nodes = len(nodes.items)
-            ready_nodes = sum(1 for node in nodes.items if
-                            any(condition.type == "Ready" and condition.status == "True"
-                               for condition in node.status.conditions))
+            ready_nodes = sum(
+                1
+                for node in nodes.items
+                if any(
+                    condition.type == "Ready" and condition.status == "True"
+                    for condition in node.status.conditions
+                )
+            )
 
             # Get pod information
-            pods = self._k8s_client['core_v1'].list_pod_for_all_namespaces()
+            pods = self._k8s_client["core_v1"].list_pod_for_all_namespaces()
 
             total_pods = len(pods.items)
             running_pods = sum(1 for pod in pods.items if pod.status.phase == "Running")
@@ -388,7 +396,7 @@ class CloudNativeManager:
                 return
 
             # Collect deployment metrics
-            deployments = self._k8s_client['apps_v1'].list_namespaced_deployment(self._current_namespace)
+            deployments = self._k8s_client["apps_v1"].list_namespaced_deployment(self._current_namespace)
 
             for deployment in deployments.items:
                 metrics = ResourceMetrics(
@@ -405,7 +413,7 @@ class CloudNativeManager:
                 self._resources[f"{deployment.metadata.namespace}/{deployment.metadata.name}"] = metrics
 
             # Collect pod metrics
-            pods = self._k8s_client['core_v1'].list_namespaced_pod(self._current_namespace)
+            pods = self._k8s_client["core_v1"].list_namespaced_pod(self._current_namespace)
 
             for pod in pods.items:
                 if pod.metadata.owner_references:
@@ -417,7 +425,9 @@ class CloudNativeManager:
                     namespace=pod.metadata.namespace,
                     resource_type=ResourceType.POD,
                     status=self._determine_pod_status(pod),
-                    restart_count=pod.status.container_statuses[0].restart_count if pod.status.container_statuses else 0,
+                    restart_count=pod.status.container_statuses[0].restart_count
+                    if pod.status.container_statuses
+                    else 0,
                     labels=pod.metadata.labels or {},
                     annotations=pod.metadata.annotations or {},
                 )
@@ -521,12 +531,15 @@ class CloudNativeManager:
 
             # Check if HPA already exists
             try:
-                self._k8s_client['autoscaling_v1'].read_namespaced_horizontal_pod_autoscaler(name, namespace)
+                self._k8s_client["autoscaling_v1"].read_namespaced_horizontal_pod_autoscaler(name, namespace)
                 Logger.info(f"[CLOUD_NATIVE] HPA already exists for {resource_name}")
                 return True
             except (AttributeError, KeyError, ValueError) as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("cloud_native_manager: HPA read check failed at L527: %s", e)
+                logging.getLogger(__name__).debug(
+                    "cloud_native_manager: HPA read check failed at L527: %s", e
+                )
 
             # Create HPA spec
             hpa_spec = {
@@ -549,7 +562,7 @@ class CloudNativeManager:
             }
 
             # Create HPA
-            self._k8s_client['autoscaling_v1'].create_namespaced_horizontal_pod_autoscaler(
+            self._k8s_client["autoscaling_v1"].create_namespaced_horizontal_pod_autoscaler(
                 namespace=namespace,
                 body=hpa_spec,
             )
@@ -587,7 +600,9 @@ class CloudNativeManager:
             except (AttributeError, TypeError, ValueError, KeyError) as e:
                 Logger.error(f"[CLOUD_NATIVE] Auto-scaling check failed for {resource_name}: {e}")
 
-    def _evaluate_scaling_conditions(self, metrics: ResourceMetrics, config: AutoScalingConfig) -> tuple[bool, bool]:
+    def _evaluate_scaling_conditions(
+        self, metrics: ResourceMetrics, config: AutoScalingConfig
+    ) -> tuple[bool, bool]:
         """Evaluate if scaling is needed."""
         should_scale_up = False
         should_scale_down = False
@@ -606,7 +621,9 @@ class CloudNativeManager:
 
         return should_scale_up, should_scale_down
 
-    def _scale_resource(self, resource_name: str, scaling_type: str, config: AutoScalingConfig, metrics: ResourceMetrics) -> None:
+    def _scale_resource(
+        self, resource_name: str, scaling_type: str, config: AutoScalingConfig, metrics: ResourceMetrics
+    ) -> None:
         """Scale a resource up or down."""
         try:
             if not self._k8s_client:
@@ -615,7 +632,7 @@ class CloudNativeManager:
             namespace, name = resource_name.split("/", 1)
 
             # Get current deployment
-            deployment = self._k8s_client['apps_v1'].read_namespaced_deployment(name, namespace)
+            deployment = self._k8s_client["apps_v1"].read_namespaced_deployment(name, namespace)
             current_replicas = deployment.spec.replicas or 1
 
             # Calculate new replica count
@@ -629,7 +646,7 @@ class CloudNativeManager:
 
             # Update deployment
             deployment.spec.replicas = new_replicas
-            self._k8s_client['apps_v1'].patch_namespaced_deployment(
+            self._k8s_client["apps_v1"].patch_namespaced_deployment(
                 name=name,
                 namespace=namespace,
                 body=deployment,
@@ -644,13 +661,17 @@ class CloudNativeManager:
                 to_replicas=new_replicas,
                 reason=f"Auto-scaling {scaling_type}",
                 metric_value=metrics.cpu_usage,
-                threshold=config.scale_up_threshold if scaling_type == "scale_up" else config.scale_down_threshold,
+                threshold=config.scale_up_threshold
+                if scaling_type == "scale_up"
+                else config.scale_down_threshold,
             )
 
             self._scaling_events.append(event)
             self._last_scale_time[resource_name] = time.time()
 
-            Logger.info(f"[CLOUD_NATIVE] {scaling_type} {resource_name}: {current_replicas} -> {new_replicas}")
+            Logger.info(
+                f"[CLOUD_NATIVE] {scaling_type} {resource_name}: {current_replicas} -> {new_replicas}"
+            )
 
         except (AttributeError, TypeError, KeyError, ValueError) as e:
             Logger.error(f"[CLOUD_NATIVE] Failed to scale {resource_name}: {e}")
@@ -704,7 +725,9 @@ class CloudNativeManager:
                 "overall_status": overall_status.value,
                 "health_score": overall_score,
                 "total_resources": len(self._resources),
-                "healthy_resources": sum(1 for s in self._health_checks.values() if s == HealthStatus.HEALTHY),
+                "healthy_resources": sum(
+                    1 for s in self._health_checks.values() if s == HealthStatus.HEALTHY
+                ),
                 "cluster_metrics": {
                     "total_nodes": self._cluster_metrics.total_nodes,
                     "ready_nodes": self._cluster_metrics.ready_nodes,
@@ -720,15 +743,20 @@ class CloudNativeManager:
             Logger.error(f"[CLOUD_NATIVE] Failed to get cluster health: {e}")
             return {"error": str(e)}
 
-    def get_resource_metrics(self, resource_name: str | None = None) -> ResourceMetrics | dict[str, ResourceMetrics]:
+    def get_resource_metrics(
+        self, resource_name: str | None = None
+    ) -> ResourceMetrics | dict[str, ResourceMetrics]:
         """Get metrics for specific resource or all resources."""
         if resource_name:
-            return self._resources.get(resource_name, ResourceMetrics(
-                name=resource_name,
-                namespace="unknown",
-                resource_type=ResourceType.POD,
-                status=HealthStatus.UNKNOWN,
-            ))
+            return self._resources.get(
+                resource_name,
+                ResourceMetrics(
+                    name=resource_name,
+                    namespace="unknown",
+                    resource_type=ResourceType.POD,
+                    status=HealthStatus.UNKNOWN,
+                ),
+            )
         else:
             return self._resources.copy()
 

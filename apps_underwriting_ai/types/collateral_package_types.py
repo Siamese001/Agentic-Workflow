@@ -1,6 +1,7 @@
 """
 Collateral Package Types - Domain contracts for collateral information.
 """
+
 from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field
@@ -26,6 +27,7 @@ class CollateralPackage(BaseModel):
     """
     Collateral information for credit underwriting.
     """
+
     collateral_type: CollateralType = Field(..., description="Primary collateral type")
     estimated_value: Optional[float] = Field(None, ge=0, description="Estimated collateral value")
     advance_rate_pct: Optional[float] = Field(None, ge=0, le=100, description="Advance rate percentage")

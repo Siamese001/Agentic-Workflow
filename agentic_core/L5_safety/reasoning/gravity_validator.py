@@ -227,7 +227,8 @@ class GravityValidatorAgent:
 
         def _in_sovereign_scope(v: object) -> bool:
             fp = str(getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")).replace(
-                "\\", "/",
+                "\\",
+                "/",
             )
             # guardian: allow-path-string
             rel = fp.replace(root_str + "/", "", 1)
@@ -243,7 +244,8 @@ class GravityValidatorAgent:
 
         def _not_excluded(v: object) -> bool:
             fp = str(getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")).replace(
-                "\\", "/",
+                "\\",
+                "/",
             )
             return not any(ex in fp for ex in _EXCLUDED_PATHS)
 

@@ -53,6 +53,7 @@ class TestSubatomicTestingMixinInMRO:
         """Test subatomic_in_mro contract compliance."""
         cls = _import_class(module_path, class_name)
         from agentic_core.L5_safety.testing.subatomic_testing_mixin import SubatomicTestingMixin
+
         assert SubatomicTestingMixin in cls.__mro__, f"{class_name} missing SubatomicTestingMixin"
 
     @pytest.mark.parametrize("module_path,class_name", INSPECTOR_SPECS, ids=[s[1] for s in INSPECTOR_SPECS])
@@ -60,7 +61,10 @@ class TestSubatomicTestingMixinInMRO:
         """Test subatomic_not_direct_base contract compliance."""
         cls = _import_class(module_path, class_name)
         from agentic_core.L5_safety.testing.subatomic_testing_mixin import SubatomicTestingMixin
-        assert SubatomicTestingMixin not in cls.__bases__, f"{class_name} should not list SubatomicTestingMixin as direct base"
+
+        assert SubatomicTestingMixin not in cls.__bases__, (
+            f"{class_name} should not list SubatomicTestingMixin as direct base"
+        )
 
 
 class TestNoDuplicatesInMRO:
@@ -81,10 +85,14 @@ class TestSovereignBaseAgentMRO:
         """Test that SovereignBaseAgent has SubatomicTestingMixin in MRO."""
         from agentic_core.L5_safety.enforcement.governance.sovereign_base_agent import SovereignBaseAgent
         from agentic_core.L5_safety.testing.subatomic_testing_mixin import SubatomicTestingMixin
-        assert SubatomicTestingMixin in SovereignBaseAgent.__mro__, "SovereignBaseAgent missing SubatomicTestingMixin"
+
+        assert SubatomicTestingMixin in SovereignBaseAgent.__mro__, (
+            "SovereignBaseAgent missing SubatomicTestingMixin"
+        )
 
     def test_sovereign_has_config_mixin(self) -> None:
         """Test that SovereignBaseAgent has ConfigMixin in MRO."""
         from agentic_core.L5_safety.config.config_mixin import ConfigMixin
         from agentic_core.L5_safety.enforcement.governance.sovereign_base_agent import SovereignBaseAgent
+
         assert ConfigMixin in SovereignBaseAgent.__mro__, "SovereignBaseAgent missing ConfigMixin"

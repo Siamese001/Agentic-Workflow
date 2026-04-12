@@ -127,10 +127,15 @@ def cmd_explain_violation(args: argparse.Namespace) -> int:
         violation = next((u for u in unresolved if u.edge_id == args.edge_id), None)
 
         if not violation:
-            print(json.dumps({
-                "error": f"Edge {args.edge_id} not found in unresolved imports",
-                "hint": "Use find-unresolved to list all unresolved imports",
-            }, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "error": f"Edge {args.edge_id} not found in unresolved imports",
+                        "hint": "Use find-unresolved to list all unresolved imports",
+                    },
+                    indent=2,
+                )
+            )
             return 1
 
         # Get destination node details
@@ -201,7 +206,15 @@ def cmd_run_invariants(args: argparse.Namespace) -> int:
     policy_pack = {
         "name": args.policy or "default",
         "forbidden_patterns": ["archives."],
-        "protected_scopes": ["apps_lic", "apps_rg", "apps_eval", "apps_exec", "apps_research", "apps_rfp", "apps_shared"],
+        "protected_scopes": [
+            "apps_lic",
+            "apps_rg",
+            "apps_eval",
+            "apps_exec",
+            "apps_research",
+            "apps_rfp",
+            "apps_shared",
+        ],
     }
 
     with ADGQueryService(adg_dir=args.adg_dir) as service:

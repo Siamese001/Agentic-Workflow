@@ -174,7 +174,9 @@ def aggregate_runtime_observability(
     )
 
     _emit_records_execution_trace(
-        str(uuid.uuid4()), LayerSegment.L6_OBSERVABILITY, "aggregate_runtime_observability",
+        str(uuid.uuid4()),
+        LayerSegment.L6_OBSERVABILITY,
+        "aggregate_runtime_observability",
     )
     _registry = registry or get_dashboard_registry()
 
@@ -226,7 +228,9 @@ def aggregate_runtime_observability(
     metrics_collected("routing_throughput", snapshot.routing_throughput, snapshot.dashboard_snapshot_id)
     metrics_collected("reasoning_throughput", snapshot.reasoning_throughput, snapshot.dashboard_snapshot_id)
     metrics_collected(
-        "execution_success_rate", snapshot.execution_success_rate, snapshot.dashboard_snapshot_id,
+        "execution_success_rate",
+        snapshot.execution_success_rate,
+        snapshot.dashboard_snapshot_id,
     )
 
     snapshot_persisted(snapshot.dashboard_snapshot_id, snapshot.snapshot_tick)
@@ -273,7 +277,8 @@ def _gather_lifecycle_telemetry(telemetry_window: TelemetryWindow) -> dict[str, 
 
 
 def _compute_aggregate_metrics(
-    telemetry_data: dict[str, Any], dashboard_policy: DashboardPolicy,
+    telemetry_data: dict[str, Any],
+    dashboard_policy: DashboardPolicy,
 ) -> dict[str, Any]:
     """Compute aggregate metrics from telemetry data."""
     # This would normally compute real metrics from telemetry
@@ -323,7 +328,8 @@ def _compute_aggregate_metrics(
 
 
 def _compute_health_flags(
-    aggregate_metrics: dict[str, Any], dashboard_policy: DashboardPolicy,
+    aggregate_metrics: dict[str, Any],
+    dashboard_policy: DashboardPolicy,
 ) -> dict[str, HealthFlag]:
     """Compute health flags from aggregate metrics."""
     _emit_observes_runtime_state(str(uuid.uuid4()), "Module._compute_health_flags", "L6_OBSERVABILITY")

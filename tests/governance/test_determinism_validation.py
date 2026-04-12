@@ -24,6 +24,7 @@ class TestTimeDependenceElimination:
 
             try:
                 import tempfile
+
                 result = tempfile.gettempdir()
                 results.append(result)
             except ImportError:
@@ -34,20 +35,21 @@ class TestTimeDependenceElimination:
 
     def test_time_dependent_code_isolation(self):
         """Time-dependent code should be isolated from test results."""
+
         def get_time_dependent_result():
             # This would normally be non-deterministic
             current_time = time.time()
             return f"timestamp_{current_time}"
 
         # Mock time to make it deterministic
-        with patch('time.time', return_value=1234567890.123):
+        with patch("time.time", return_value=1234567890.123):
             result1 = get_time_dependent_result()
             result2 = get_time_dependent_result()
 
         # With mocked time, results should be identical
         assert result1 == result2
 
-    @patch('time.time')
+    @patch("time.time")
     def test_deterministic_time_behavior(self, mock_time):
         """Time-dependent behavior should be deterministic when mocked."""
         # Set up deterministic time values
@@ -89,6 +91,7 @@ class TestRandomnessElimination:
 
     def test_random_code_isolation(self):
         """Random code should be isolated from test results."""
+
         def get_random_result():
             return random.random()
 
@@ -101,7 +104,7 @@ class TestRandomnessElimination:
 
         assert result1 == result2
 
-    @patch('random.random')
+    @patch("random.random")
     def test_deterministic_random_behavior(self, mock_random):
         """Random behavior should be deterministic when mocked."""
         # Set up predetermined random values
@@ -170,8 +173,8 @@ class TestProcessExecutionDeterminism:
         import subprocess
 
         # Use a deterministic command
-        result1 = subprocess.run(['echo', 'test'], capture_output=True, text=True)
-        result2 = subprocess.run(['echo', 'test'], capture_output=True, text=True)
+        result1 = subprocess.run(["echo", "test"], capture_output=True, text=True)
+        result2 = subprocess.run(["echo", "test"], capture_output=True, text=True)
 
         # Results should be identical
         assert result1.stdout == result2.stdout
@@ -186,11 +189,11 @@ class TestProcessExecutionDeterminism:
 
         try:
             # Set test environment variable
-            os.environ['TEST_DETERMINISM'] = 'test_value'
+            os.environ["TEST_DETERMINISM"] = "test_value"
 
             # Get environment variable
-            value = os.environ['TEST_DETERMINISM']
-            assert value == 'test_value'
+            value = os.environ["TEST_DETERMINISM"]
+            assert value == "test_value"
 
         finally:
             # Restore original environment
@@ -208,6 +211,7 @@ class TestConsistentOutputs:
         for _ in range(5):
             try:
                 from agentic_core.L2_execution.utils.write_gateway import MAX_GROWTH_RATIO
+
                 results.append(MAX_GROWTH_RATIO)
             except ImportError:
                 results.append("import_failed")
@@ -217,6 +221,7 @@ class TestConsistentOutputs:
 
     def test_consistent_function_results(self):
         """Same function calls should produce consistent results."""
+
         def deterministic_function(x):
             return x * 2 + 1
 
@@ -268,7 +273,7 @@ class TestHashConsistency:
 
     def test_file_hash_consistency(self):
         """File hashes should be consistent."""
-        with tempfile.NamedTemporaryFile(mode='w', delete=False) as f:
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
             test_content = "deterministic file content"
             f.write(test_content)
             temp_file_path = f.name
@@ -276,7 +281,7 @@ class TestHashConsistency:
         try:
             hashes = []
             for _ in range(3):
-                with open(temp_file_path, 'rb') as f:
+                with open(temp_file_path, "rb") as f:
                     content = f.read()
                     hash_value = hashlib.md5(content).hexdigest()
                     hashes.append(hash_value)
@@ -296,7 +301,7 @@ class TestCacheConsistency:
         import sys
 
         # Clear module from cache if present
-        module_name = 'tempfile'
+        module_name = "tempfile"
         if module_name in sys.modules:
             original_module = sys.modules[module_name]
             del sys.modules[module_name]

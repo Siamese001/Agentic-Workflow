@@ -99,71 +99,85 @@ class PrecisionHardeningOrchestrator:
 
         # 1. Export precision metrics
         metrics_path = output_dir / "adg_precision_metrics.json"
-        with open(metrics_path, 'w') as f:
+        with open(metrics_path, "w") as f:
             if report.metrics:
-                json.dump({
-                    "block_level_coverage_ratio": report.metrics.block_level_coverage_ratio,
-                    "lineage_completeness_score": report.metrics.lineage_completeness_score,
-                    "control_path_coverage": report.metrics.control_path_coverage,
-                    "side_effect_coverage": report.metrics.side_effect_coverage,
-                    "call_resolution_rate": report.metrics.call_resolution_rate,
-                    "type_annotation_coverage": report.metrics.type_annotation_coverage,
-                    "test_to_execution_link_rate": report.metrics.test_to_execution_link_rate,
-                    "violation_trace_completeness": report.metrics.violation_trace_completeness,
-                    "generic_edge_ratio": report.metrics.generic_edge_ratio,
-                    "semantic_edge_density": report.metrics.semantic_edge_density,
-                    "ordering_completeness": report.metrics.ordering_completeness,
-                    "graph_hash": report.metrics.graph_hash,
-                    "replay_signature": report.metrics.replay_signature,
-                }, f, indent=2)
+                json.dump(
+                    {
+                        "block_level_coverage_ratio": report.metrics.block_level_coverage_ratio,
+                        "lineage_completeness_score": report.metrics.lineage_completeness_score,
+                        "control_path_coverage": report.metrics.control_path_coverage,
+                        "side_effect_coverage": report.metrics.side_effect_coverage,
+                        "call_resolution_rate": report.metrics.call_resolution_rate,
+                        "type_annotation_coverage": report.metrics.type_annotation_coverage,
+                        "test_to_execution_link_rate": report.metrics.test_to_execution_link_rate,
+                        "violation_trace_completeness": report.metrics.violation_trace_completeness,
+                        "generic_edge_ratio": report.metrics.generic_edge_ratio,
+                        "semantic_edge_density": report.metrics.semantic_edge_density,
+                        "ordering_completeness": report.metrics.ordering_completeness,
+                        "graph_hash": report.metrics.graph_hash,
+                        "replay_signature": report.metrics.replay_signature,
+                    },
+                    f,
+                    indent=2,
+                )
         print(f"  📈 Precision metrics: {metrics_path}")
 
         # 2. Export validation report
         validation_path = output_dir / "adg_precision_validation_report.json"
-        with open(validation_path, 'w') as f:
-            json.dump({
-                "passed": report.passed,
-                "error_message": report.error_message,
-                "hard_gates_passed": report.hard_gates_passed,
-                "hard_gate_failures": report.hard_gate_failures,
-                "backward_compatibility_check": report.backward_compatibility_check,
-                "existing_queries_functional": report.existing_queries_functional,
-                "violation_count_preserved": report.violation_count_preserved,
-            }, f, indent=2)
+        with open(validation_path, "w") as f:
+            json.dump(
+                {
+                    "passed": report.passed,
+                    "error_message": report.error_message,
+                    "hard_gates_passed": report.hard_gates_passed,
+                    "hard_gate_failures": report.hard_gate_failures,
+                    "backward_compatibility_check": report.backward_compatibility_check,
+                    "existing_queries_functional": report.existing_queries_functional,
+                    "violation_count_preserved": report.violation_count_preserved,
+                },
+                f,
+                indent=2,
+            )
         print(f"  📋 Validation report: {validation_path}")
 
         # 3. Export precision graphs (simplified for demo)
         block_path = output_dir / "adg_block_level_graph.json"
-        with open(block_path, 'w') as f:
-            json.dump({
-                "metadata": {
-                    "graph_type": "block_level",
-                    "description": "Function decomposition into code blocks",
-                    "timestamp": time.time(),
+        with open(block_path, "w") as f:
+            json.dump(
+                {
+                    "metadata": {
+                        "graph_type": "block_level",
+                        "description": "Function decomposition into code blocks",
+                        "timestamp": time.time(),
+                    },
+                    "graphs": {
+                        path: {"nodes": len(graph.nodes), "edges": len(graph.edges)}
+                        for path, graph in precision_graphs.items()
+                    },
                 },
-                "graphs": {path: {"nodes": len(graph.nodes), "edges": len(graph.edges)}
-                        for path, graph in precision_graphs.items()},
-            }, f, indent=2)
+                f,
+                indent=2,
+            )
         print(f"  🧱 Block-level graph: {block_path}")
 
         # Generate other graph artifacts
         lineage_path = output_dir / "adg_data_lineage_graph.json"
-        with open(lineage_path, 'w') as f:
+        with open(lineage_path, "w") as f:
             json.dump({"metadata": {"graph_type": "data_lineage"}}, f, indent=2)
         print(f"  🔗 Data lineage graph: {lineage_path}")
 
         control_path = output_dir / "adg_control_flow_graph.json"
-        with open(control_path, 'w') as f:
+        with open(control_path, "w") as f:
             json.dump({"metadata": {"graph_type": "control_flow"}}, f, indent=2)
         print(f"  🎯 Control flow graph: {control_path}")
 
         side_effect_path = output_dir / "adg_side_effect_graph.json"
-        with open(side_effect_path, 'w') as f:
+        with open(side_effect_path, "w") as f:
             json.dump({"metadata": {"graph_type": "side_effect"}}, f, indent=2)
         print(f"  ⚡ Side effect graph: {side_effect_path}")
 
         call_resolution_path = output_dir / "adg_call_resolution_graph.json"
-        with open(call_resolution_path, 'w') as f:
+        with open(call_resolution_path, "w") as f:
             json.dump({"metadata": {"graph_type": "call_resolution"}}, f, indent=2)
         print(f"  📞 Call resolution graph: {call_resolution_path}")
 
@@ -177,7 +191,7 @@ class PrecisionHardeningOrchestrator:
     def _generate_summary_report(self, report: Any, output_path: Path) -> None:
         """Generate markdown summary report"""
 
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             f.write("# ADG Precision Hardening Summary Report\n\n")
             f.write(f"**Generated:** {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
 
@@ -217,9 +231,15 @@ class PrecisionHardeningOrchestrator:
             f.write("- `adg_call_resolution_graph.json`\n\n")
 
             f.write("## Non-Regression Guarantees\n\n")
-            f.write(f"- Backward Compatibility: {'[OK]' if report.backward_compatibility_check else '[FAIL]'}\n")
-            f.write(f"- Existing Queries Functional: {'[OK]' if report.existing_queries_functional else '[FAIL]'}\n")
-            f.write(f"- Violation Count Preserved: {'[OK]' if report.violation_count_preserved else '[FAIL]'}\n\n")
+            f.write(
+                f"- Backward Compatibility: {'[OK]' if report.backward_compatibility_check else '[FAIL]'}\n"
+            )
+            f.write(
+                f"- Existing Queries Functional: {'[OK]' if report.existing_queries_functional else '[FAIL]'}\n"
+            )
+            f.write(
+                f"- Violation Count Preserved: {'[OK]' if report.violation_count_preserved else '[FAIL]'}\n\n"
+            )
 
     def run_complete_hardening(self, target_dir: str = ".") -> bool:
         """Run complete precision hardening process"""
@@ -255,8 +275,10 @@ class PrecisionHardeningOrchestrator:
         except Exception as e:
             print(f"\n💥 Precision hardening failed with error: {e}")
             import traceback
+
             traceback.print_exc()
             return False
+
 
 def main():
     """Main entry point"""
@@ -300,6 +322,7 @@ Examples:
 
     # Exit with appropriate code
     sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     main()

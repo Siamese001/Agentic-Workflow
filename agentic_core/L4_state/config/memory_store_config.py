@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "memory_store_config")
 MAX_RETRIES = 3

@@ -247,7 +247,9 @@ class BriefDecomposer:
 
         summary.total_components = len(all_components)
         summary.total_word_count_target = sum(c.word_count_target for c in all_components)
-        summary.critical_sections = len([c for c in all_components if c.priority == AudiencePriority.CRITICAL])
+        summary.critical_sections = len(
+            [c for c in all_components if c.priority == AudiencePriority.CRITICAL]
+        )
         summary.optional_sections = len([c for c in all_components if c.priority == AudiencePriority.LOW])
 
         # Calculate evidence coverage
@@ -320,7 +322,9 @@ class BriefDecomposer:
         }
 
         persona_title_map = persona_titles.get(persona, {})
-        return persona_title_map.get(section_type, default_titles.get(section_type, section_type.value.replace("_", " ").title()))
+        return persona_title_map.get(
+            section_type, default_titles.get(section_type, section_type.value.replace("_", " ").title())
+        )
 
     def _generate_section_description(self, section_type: SectionType) -> str:
         """Generate a description for a section type."""
@@ -350,7 +354,9 @@ class BriefDecomposer:
 
         # Technical depth depends on architecture overview
         if section_type == SectionType.TECHNICAL_DEPTH:
-            arch_comp = next((c for c in existing_components if c.section_type == SectionType.ARCHITECTURE_OVERVIEW), None)
+            arch_comp = next(
+                (c for c in existing_components if c.section_type == SectionType.ARCHITECTURE_OVERVIEW), None
+            )
             if arch_comp:
                 return [arch_comp.component_id]
 
@@ -404,7 +410,9 @@ class BriefDecomposer:
         }
 
         persona_msg_map = persona_messages.get(persona, {})
-        return persona_msg_map.get(section_type, default_messages.get(section_type, ["Key point 1", "Key point 2"]))
+        return persona_msg_map.get(
+            section_type, default_messages.get(section_type, ["Key point 1", "Key point 2"])
+        )
 
     def _determine_narrative_flow(self, components: list[BriefComponent]) -> list[str]:
         """Determine optimal section ordering for narrative flow."""
@@ -492,9 +500,7 @@ class BriefDecompositionAgent:
             "total_word_count_target": total_word_count,
             "critical_sections": critical_count,
             "sections_by_persona": by_persona,
-            "evidence_gaps": list(set(
-                gap for d in decompositions for gap in d.evidence_gaps
-            )),
+            "evidence_gaps": list(set(gap for d in decompositions for gap in d.evidence_gaps)),
             "production_sequence": [
                 "ingest_source_material",
                 "extract_evidence",

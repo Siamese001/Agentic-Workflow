@@ -293,7 +293,9 @@ class SystemLearningPolicyValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningPolicyValidator._validate_operation",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SystemLearningPolicyValidator._validate_operation",
         )
 
         self._metrics["validations_performed"] += 1
@@ -338,7 +340,9 @@ class SystemLearningPolicyValidator:
             if result.is_compliant:
                 self._metrics["compliant_operations"] += 1
                 _emit_records_learning_event(
-                    "p3lm", self.component_name, f"policy_compliant:{validation_type.value}",
+                    "p3lm",
+                    self.component_name,
+                    f"policy_compliant:{validation_type.value}",
                 )
             else:
                 self._metrics["non_compliant_operations"] += 1
@@ -348,10 +352,14 @@ class SystemLearningPolicyValidator:
                 )
 
                 _emit_captures_pattern(
-                    "p3lm", self.component_name, f"policy_violation:{validation_type.value}",
+                    "p3lm",
+                    self.component_name,
+                    f"policy_violation:{validation_type.value}",
                 )
                 _emit_triggers_alert(
-                    "p4obs", self.component_name, f"policy_violation:{validation_type.value}",
+                    "p4obs",
+                    self.component_name,
+                    f"policy_violation:{validation_type.value}",
                 )
 
             # Emit policy telemetry
@@ -362,7 +370,9 @@ class SystemLearningPolicyValidator:
         except Exception as e:
             logger.error(f"Policy validation failed: {e}")
             _emit_captures_runtime_anomaly(
-                "p4obs", self.component_name, f"policy_validation_error:{validation_type.value}",
+                "p4obs",
+                self.component_name,
+                f"policy_validation_error:{validation_type.value}",
             )
 
             return PolicyValidationResult(
@@ -654,7 +664,9 @@ class SystemLearningPolicyValidator:
         """Emit policy validation telemetry."""
         # Emit telemetry event
         _emit_records_telemetry_event(
-            "p4", self.component_name, f"policy_validation:{result.validation_type.value}",
+            "p4",
+            self.component_name,
+            f"policy_validation:{result.validation_type.value}",
         )
 
         # Update monitoring state

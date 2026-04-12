@@ -57,7 +57,7 @@ class OrchestrationHandshakeAgent(SovereignBaseAgent):
             task=task,
             min_confidence=min_confidence,
             use_cache=True,
-            redis_client=getattr(self, 'redis', None),
+            redis_client=getattr(self, "redis", None),
         )
 
     def delegate_task(

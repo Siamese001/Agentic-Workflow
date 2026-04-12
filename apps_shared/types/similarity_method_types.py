@@ -373,7 +373,11 @@ class SchemaSimilarityRetriever:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SchemaSimilarityRetriever.retrieve_similarity:{request.similarity_method}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"SchemaSimilarityRetriever.retrieve_similarity:{request.similarity_method}",
+        )
         self.logger.info(f"Computing schema similarity using method: {request.method.value}")
         try:
             source_fields = self._extract_fields_with_types(request.source_schema)
@@ -448,7 +452,9 @@ class SchemaSimilarityRetriever:
         method = method or self.config.default_method
         for target_schema in target_schemas:
             request = SchemaSimilarityRequest(
-                source_schema=source_schema, target_schema=target_schema, method=method,
+                source_schema=source_schema,
+                target_schema=target_schema,
+                method=method,
             )
             result = self.retrieve_similarity(request)
             results.append(result)
@@ -481,7 +487,9 @@ class SchemaSimilarityRetriever:
         min_threshold = compatibility_order.index(min_compatibility)
         for schema_id, candidate_schema in schema_candidates:
             request = SchemaSimilarityRequest(
-                source_schema=schema, target_schema=candidate_schema, method=self.config.default_method,
+                source_schema=schema,
+                target_schema=candidate_schema,
+                method=self.config.default_method,
             )
             result = self.retrieve_similarity(request)
             result_threshold = compatibility_order.index(result.compatibility_level)
@@ -535,7 +543,9 @@ class SchemaSimilarityRetriever:
         return fields
 
     def _compute_structural_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str],
+        self,
+        source_fields: dict[str, str],
+        target_fields: dict[str, str],
     ) -> float:
         """Compute structural similarity based on field hierarchy."""
         source_paths = set(source_fields.keys())
@@ -553,7 +563,9 @@ class SchemaSimilarityRetriever:
         return path_similarity * 0.6 + type_similarity * 0.4
 
     def _compute_semantic_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str],
+        self,
+        source_fields: dict[str, str],
+        target_fields: dict[str, str],
     ) -> float:
         """Compute semantic similarity based on field names."""
         source_names = {path.split(".")[-1] for path in source_fields.keys()}
@@ -565,7 +577,9 @@ class SchemaSimilarityRetriever:
         return len(intersection) / len(union)
 
     def _compute_field_overlap_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str],
+        self,
+        source_fields: dict[str, str],
+        target_fields: dict[str, str],
     ) -> float:
         """Compute similarity based on field overlap."""
         source_paths = set(source_fields.keys())
@@ -577,7 +591,9 @@ class SchemaSimilarityRetriever:
         return len(intersection) / min_size
 
     def _compute_type_compatibility_similarity(
-        self, source_fields: dict[str, str], target_fields: dict[str, str],
+        self,
+        source_fields: dict[str, str],
+        target_fields: dict[str, str],
     ) -> float:
         """Compute similarity based on type compatibility."""
         source_paths = set(source_fields.keys())
@@ -626,7 +642,9 @@ class SchemaSimilarityRetriever:
             return CompatibilityLevel.INCOMPATIBLE
 
     def _analyze_field_differences(
-        self, source_fields: dict[str, str], target_fields: dict[str, str],
+        self,
+        source_fields: dict[str, str],
+        target_fields: dict[str, str],
     ) -> dict[str, list[str]]:
         """Analyze differences between schemas."""
         source_paths = set(source_fields.keys())
@@ -641,7 +659,9 @@ class SchemaSimilarityRetriever:
         return {"missing": missing, "extra": extra, "conflicts": conflicts}
 
     def _create_field_matches(
-        self, source_fields: dict[str, str], target_fields: dict[str, str],
+        self,
+        source_fields: dict[str, str],
+        target_fields: dict[str, str],
     ) -> list[FieldMatch]:
         """Create detailed field match information."""
         matches = []
@@ -672,7 +692,8 @@ class SchemaSimilarityRetriever:
 
 
 def create_schema_similarity_retriever(
-    default_method: str = "hybrid", **kwargs: object,
+    default_method: str = "hybrid",
+    **kwargs: object,
 ) -> SchemaSimilarityRetriever:
     """Create a configured schema similarity retriever."""
     config = SchemaSimilarityConfig(default_method=SimilarityMethod(default_method), **kwargs)

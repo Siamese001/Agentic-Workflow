@@ -28,6 +28,7 @@ from tests.e2e.conftest import (
 # Path A: Read-Only Response Tests
 # =============================================================================
 
+
 class TestPathAReadOnly:
     """Test Path A: Read-only response path.
 
@@ -49,10 +50,8 @@ class TestPathAReadOnly:
             execution_context.layer_states[layer] = {"active": True}
 
         # Verify L2 was never reached
-        assert Layer.L2 not in execution_context.layer_states, \
-            "Path A should never reach L2 execution"
-        assert Layer.L3 not in execution_context.layer_states, \
-            "Path A should never reach L3 orchestration"
+        assert Layer.L2 not in execution_context.layer_states, "Path A should never reach L2 execution"
+        assert Layer.L3 not in execution_context.layer_states, "Path A should never reach L3 orchestration"
 
         # Record result
         result = RobustnessResult(
@@ -93,7 +92,9 @@ class TestPathAReadOnly:
         )
         record_test_result(result)
 
-    def test_path_a_telemetry_only_bus(self, execution_context: TestExecutionContext, bus_monitor: BusCommunicationMonitor) -> None:
+    def test_path_a_telemetry_only_bus(
+        self, execution_context: TestExecutionContext, bus_monitor: BusCommunicationMonitor
+    ) -> None:
         """Verify Path A only uses BUS T (telemetry, read-only)."""
         execution_context.path = ExecutionPath.PATH_A
 
@@ -162,6 +163,7 @@ class TestPathAReadOnly:
 # =============================================================================
 # Path B: Policy Check First Tests
 # =============================================================================
+
 
 class TestPathBPolicyCheck:
     """Test Path B: Policy check first execution path.
@@ -301,6 +303,7 @@ class TestPathBPolicyCheck:
 # Path C: Execute Script Direct Tests
 # =============================================================================
 
+
 class TestPathCExecuteDirect:
     """Test Path C: Execute script direct path.
 
@@ -423,6 +426,7 @@ class TestPathCExecuteDirect:
 # =============================================================================
 # Path D: Human Review First Tests
 # =============================================================================
+
 
 class TestPathDHumanReview:
     """Test Path D: Human review first (HITL) path.
@@ -636,6 +640,7 @@ class TestPathDHumanReview:
 # =============================================================================
 # Cross-Path Tests
 # =============================================================================
+
 
 class TestCrossPathValidation:
     """Validate cross-path behavior and path selection logic."""

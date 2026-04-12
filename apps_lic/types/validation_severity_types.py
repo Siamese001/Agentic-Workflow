@@ -471,8 +471,11 @@ class LICValidator:
     def check_forbidden_verbs(self, text: str) -> list:
         """Check for forbidden corporate verbs in text."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICValidator.check_forbidden_verbs")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LICValidator.check_forbidden_verbs"
+        )
 
         found = []
         text_lower = text.lower()

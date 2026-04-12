@@ -177,7 +177,9 @@ def run_llm_google(
         use_interactions_api: Force use of new v1beta Interactions API
     """
     _emit_records_execution_trace(
-        str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "run_llm_google",
+        str(uuid.uuid4()),
+        LayerSegment.L3_ORCHESTRATION,
+        "run_llm_google",
     )
     if use_interactions_api:
         try:

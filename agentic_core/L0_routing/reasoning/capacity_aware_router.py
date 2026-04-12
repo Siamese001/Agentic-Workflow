@@ -46,7 +46,11 @@ _CAPACITY_LOG = logging.getLogger("adg.capacity_aware_routing")
 
 
 def capacity_aware_routing(
-    snapshot_id: str, router_id: str, candidates: int, chosen: str, reason: str,
+    snapshot_id: str,
+    router_id: str,
+    candidates: int,
+    chosen: str,
+    reason: str,
 ) -> None:
     """ADG edge emitter for capacity_aware_routing."""
     import hashlib as _hashlib  # noqa: PLC0415
@@ -65,14 +69,22 @@ def capacity_aware_routing(
 
 
 def route_chosen_with_capacity(
-    snapshot_id: str, chosen_route: str, capacity_score: float, degradation: str,
+    snapshot_id: str,
+    chosen_route: str,
+    capacity_score: float,
+    degradation: str,
 ) -> None:
     """ADG edge emitter for route_chosen_with_capacity."""
     pass
 
 
 def capacity_snapshot_emitted(
-    snapshot_id: str, run_id: str, trace_id: str, router_id: str, candidates: int, chosen: str,
+    snapshot_id: str,
+    run_id: str,
+    trace_id: str,
+    router_id: str,
+    candidates: int,
+    chosen: str,
 ) -> None:
     """ADG edge emitter for capacity_snapshot_emitted."""
     import uuid  # noqa: PLC0415
@@ -231,13 +243,20 @@ def choose_route_with_capacity(
 
     # Explicit ADG edge emission for static scanner detection
     def capacity_aware_routing(
-        snapshot_id: str, router_id: str, candidates: int, chosen: str, reason: str,
+        snapshot_id: str,
+        router_id: str,
+        candidates: int,
+        chosen: str,
+        reason: str,
     ) -> None:
         """ADG edge emitter for capacity_aware_routing."""
         pass
 
     def route_chosen_with_capacity(
-        snapshot_id: str, chosen_route: str, capacity_score: float, degradation: str,
+        snapshot_id: str,
+        chosen_route: str,
+        capacity_score: float,
+        degradation: str,
     ) -> None:
         """ADG edge emitter for route_chosen_with_capacity."""
         pass

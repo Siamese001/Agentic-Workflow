@@ -262,7 +262,9 @@ class DepthScorer:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "PersonalizationDepthCalculator.calculate_depth")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "PersonalizationDepthCalculator.calculate_depth"
+        )
         try:
             level = 0
             score = 0.1
@@ -348,7 +350,9 @@ class MicroHookGenerator:
             if company_news and isinstance(company_news, str) and (len(company_news) > 10):
                 topic = company_news[:50] + "..." if len(company_news) > 50 else company_news
                 hook = MicroHook(
-                    phrase=f"I saw the news about {topic}", trigger_type="company_news", relevance=0.9,
+                    phrase=f"I saw the news about {topic}",
+                    trigger_type="company_news",
+                    relevance=0.9,
                 )
                 hooks.append(hook)
             if recent_posts and isinstance(recent_posts, list) and (len(recent_posts) > 0):
@@ -471,7 +475,9 @@ class SentimentAnalyzer:
         try:
             if not text_samples or not isinstance(text_samples, list):
                 return SentimentProfile(
-                    mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=[],
+                    mood=SentimentMood.NEUTRAL,
+                    risk_level=RiskLevel.LOW,
+                    keywords_detected=[],
                 )
             combined_text = " ".join(str(s) for s in text_samples if s).lower()
             words = re.findall("\\b\\w+\\b", combined_text)
@@ -503,7 +509,9 @@ class SentimentAnalyzer:
         except Exception as e:
             logger.error(f"Error assessing sentiment: {str(e)}")
             return SentimentProfile(
-                mood=SentimentMood.NEUTRAL, risk_level=RiskLevel.LOW, keywords_detected=["error"],
+                mood=SentimentMood.NEUTRAL,
+                risk_level=RiskLevel.LOW,
+                keywords_detected=["error"],
             )
 
 
@@ -528,7 +536,10 @@ class WarmthManager:
         logger.info("Initialized WarmthManager with formality mappings")
 
     def determine_warmth(
-        self, archetype: str, relationship_stage: str, sentiment: SentimentMood,
+        self,
+        archetype: str,
+        relationship_stage: str,
+        sentiment: SentimentMood,
     ) -> WarmthSetting:
         """Determine warmth settings based on context.
 
@@ -566,7 +577,9 @@ class WarmthManager:
                 strategy = "Professional Connect"
                 max_emojis = 1
             warmth = WarmthSetting(
-                formality_level=base_formality, strategy_name=strategy, max_emojis=max_emojis,
+                formality_level=base_formality,
+                strategy_name=strategy,
+                max_emojis=max_emojis,
             )
             logger.debug(f"Determined warmth: {strategy} (formality: {base_formality:.2f})")
             return warmth
@@ -626,7 +639,9 @@ class TemperatureEngine:
             depth_score = self.depth_scorer.calculate_depth(profile)
             hooks = self.hook_generator.generate_hooks(profile)
             warmth_setting = self.warmth_manager.determine_warmth(
-                archetype, relationship_stage, sentiment_profile.mood,
+                archetype,
+                relationship_stage,
+                sentiment_profile.mood,
             )
             results = {
                 "depth_score": depth_score.dict(),
@@ -634,7 +649,9 @@ class TemperatureEngine:
                 "sentiment": sentiment_profile.dict(),
                 "warmth": warmth_setting.dict(),
                 "recommendations": self._generate_recommendations(
-                    depth_score, sentiment_profile, warmth_setting,
+                    depth_score,
+                    sentiment_profile,
+                    warmth_setting,
                 ),
                 "abort": False,
             }
@@ -654,7 +671,10 @@ class TemperatureEngine:
             }
 
     def _generate_recommendations(
-        self, depth: DepthScore, sentiment: SentimentProfile, warmth: WarmthSetting,
+        self,
+        depth: DepthScore,
+        sentiment: SentimentProfile,
+        warmth: WarmthSetting,
     ) -> list[str]:
         """Generate recommendations based on analysis.
 
@@ -685,7 +705,8 @@ class TemperatureEngine:
 
 
 def create_temperature_engine(
-    target_keywords: list[str] | None = None, my_education: dict[str, str] | None = None,
+    target_keywords: list[str] | None = None,
+    my_education: dict[str, str] | None = None,
 ) -> TemperatureEngine:
     """Create a TemperatureEngine instance."""
     return TemperatureEngine(target_keywords, my_education)

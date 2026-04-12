@@ -1,4 +1,5 @@
 """ADG-driven tests for apps_lic/utils/lic_engine_validation_capability_util.py — fan_in=1."""
+
 from __future__ import annotations
 
 import pytest

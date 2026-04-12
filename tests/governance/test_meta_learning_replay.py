@@ -203,7 +203,10 @@ def test_meta_learning_change_package_immutability():
     # Given
     changes = [{"type": "add", "target": "test.py", "content": "content"}]
     package = ChangePackage(
-        package_id="test_pkg", changes=changes, timestamp=1234567890.0, semantic_clock_tick=1,
+        package_id="test_pkg",
+        changes=changes,
+        timestamp=1234567890.0,
+        semantic_clock_tick=1,
     )
 
     # When/Then - Attempting to modify should fail
@@ -222,7 +225,10 @@ def test_meta_learning_proposal_immutability():
     # Given
     packages = [ChangePackage("pkg1", [], 0.0, 1)]
     proposal = Stage6Proposal(
-        proposal_id="test_prop", change_packages=packages, proposer_confidence=0.9, semantic_clock_tick=1,
+        proposal_id="test_prop",
+        change_packages=packages,
+        proposer_confidence=0.9,
+        semantic_clock_tick=1,
     )
 
     # When/Then - Attempting to modify should fail

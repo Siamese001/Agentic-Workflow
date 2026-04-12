@@ -11,7 +11,9 @@ from typing import Any
 # Lazy import to avoid L_SL->L3 gravity violation
 def _get_workflow_outcome():
     from agentic_core.L3_orchestration.reasoning.learning.workflow_learning_bridge import WorkflowOutcome
+
     return WorkflowOutcome
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,7 @@ class WorkflowOutcomeSLAdapter:
         """
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             # Persist as telemetry event
@@ -46,7 +49,9 @@ class WorkflowOutcomeSLAdapter:
                 agent_sequence=list(outcome.agent_sequence),
                 quality_score=outcome.quality_score,
                 outcome_hash=outcome.outcome_hash,
-                timestamp_utc=int(outcome.metadata.get('timestamp_utc', 0) * 1000) if outcome.metadata.get('timestamp_utc') else 0,
+                timestamp_utc=int(outcome.metadata.get("timestamp_utc", 0) * 1000)
+                if outcome.metadata.get("timestamp_utc")
+                else 0,
             )
 
             if success:

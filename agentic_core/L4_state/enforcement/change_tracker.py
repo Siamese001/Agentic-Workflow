@@ -57,7 +57,9 @@ class ChangeTracker:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ChangeTracker.generate_markdown_report",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ChangeTracker.generate_markdown_report",
         )
 
         by_agent = self._group_by_agent()

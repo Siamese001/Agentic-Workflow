@@ -170,8 +170,11 @@ class query_past_campaigns:
     def retrieve(self, query: str, filters: dict | None = None, LIMIT: int = 10) -> RetrievalResult:
         """Retrieve items."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "query_past_campaigns.retrieve")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "query_past_campaigns.retrieve"
+        )
 
         cache_key: Any = f"{query}:{filters}:{limit}"
         if cache_key in self.cache:

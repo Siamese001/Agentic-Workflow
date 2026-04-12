@@ -187,7 +187,10 @@ class NDCG(RetrievalMetric):
         return idcg
 
     def compute(
-        self, prediction: list[str], ground_truth: list[str], context: dict[str, float] | None = None,
+        self,
+        prediction: list[str],
+        ground_truth: list[str],
+        context: dict[str, float] | None = None,
     ) -> float:
         """Compute NDCG@k.
 
@@ -201,6 +204,7 @@ class NDCG(RetrievalMetric):
             NDCG score in [0, 1]
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "NDCG.compute")
 

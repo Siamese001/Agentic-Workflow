@@ -183,8 +183,11 @@ class MathProcessor:
             Percentage value
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MathProcessor.calculate_percentage")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MathProcessor.calculate_percentage"
+        )
 
         if total == 0:
             return 0.0
@@ -369,7 +372,8 @@ class MathProcessor:
 
     @staticmethod
     def calculate_score_with_breakdown(
-        components: dict[str, float], weights: dict[str, float] | None = None,
+        components: dict[str, float],
+        weights: dict[str, float] | None = None,
     ) -> ScoreResult:
         """
         Calculate weighted score with breakdown.
@@ -388,7 +392,10 @@ class MathProcessor:
         total_weight = sum(weights.get(key, 0.0) for key in components.keys())
         if total_weight == 0:
             return ScoreResult(
-                score=0.0, normalized_score=0.0, breakdown=components, metadata={"total_weight": 0.0},
+                score=0.0,
+                normalized_score=0.0,
+                breakdown=components,
+                metadata={"total_weight": 0.0},
             )
         weighted_sum = sum(components[key] * weights.get(key, 0.0) for key in components.keys())
         score = weighted_sum / total_weight

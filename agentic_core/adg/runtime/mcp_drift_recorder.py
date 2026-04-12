@@ -338,7 +338,9 @@ class MCPDriftRecorder:
         # Emit runtime ADG edge: this recorder captures MCP state
         _trace_id = str(uuid.uuid4())
         _emit_records_telemetry_event(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.capture_snapshot",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "MCPDriftRecorder.capture_snapshot",
         )
 
         if not config_file.exists():
@@ -460,7 +462,9 @@ class MCPDriftRecorder:
         """
         _trace_id = str(uuid.uuid4())
         _emit_records_telemetry_event(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftRecorder.detect_drift",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "MCPDriftRecorder.detect_drift",
         )
 
         events: list[MCPDriftEvent] = []

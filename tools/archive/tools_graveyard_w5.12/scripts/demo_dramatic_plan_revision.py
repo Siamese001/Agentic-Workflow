@@ -139,45 +139,57 @@ class DramaticPlanRevisor:
                     print(f"      📊 Tokens: {estimate.total_projected_tokens:,}")
                     print(f"      🚦 Status: {estimate.status} ({estimate.action})")
 
-                    if estimate.status == 'red':
-                        results["issues"].append({
-                            "step": step["step_name"],
-                            "issue": "BUDGET_EXCEEDED",
-                            "tokens": estimate.total_projected_tokens,
-                            "severity": "CRITICAL",
-                        })
+                    if estimate.status == "red":
+                        results["issues"].append(
+                            {
+                                "step": step["step_name"],
+                                "issue": "BUDGET_EXCEEDED",
+                                "tokens": estimate.total_projected_tokens,
+                                "severity": "CRITICAL",
+                            }
+                        )
                         results["critical_failures"] += 1
-                        print(f"      ❌ CRITICAL: Budget exceeded! ({estimate.total_projected_tokens:,} > 200,000)")
+                        print(
+                            f"      ❌ CRITICAL: Budget exceeded! ({estimate.total_projected_tokens:,} > 200,000)"
+                        )
 
-                    elif estimate.status == 'yellow':
-                        results["issues"].append({
-                            "step": step["step_name"],
-                            "issue": "COMPRESSION_NEEDED",
-                            "tokens": estimate.total_projected_tokens,
-                            "severity": "WARNING",
-                        })
-                        print(f"      ⚠️  WARNING: Compression needed ({estimate.total_projected_tokens:,} tokens)")
+                    elif estimate.status == "yellow":
+                        results["issues"].append(
+                            {
+                                "step": step["step_name"],
+                                "issue": "COMPRESSION_NEEDED",
+                                "tokens": estimate.total_projected_tokens,
+                                "severity": "WARNING",
+                            }
+                        )
+                        print(
+                            f"      ⚠️  WARNING: Compression needed ({estimate.total_projected_tokens:,} tokens)"
+                        )
 
                     else:
                         print(f"      ✅ OK: Within budget ({estimate.total_projected_tokens:,} tokens)")
 
                 except TokenBudgetExceededError as e:
-                    results["issues"].append({
-                        "step": step["step_name"],
-                        "issue": "BUDGET_EXCEEDED",
-                        "error": str(e),
-                        "severity": "CRITICAL",
-                    })
+                    results["issues"].append(
+                        {
+                            "step": step["step_name"],
+                            "issue": "BUDGET_EXCEEDED",
+                            "error": str(e),
+                            "severity": "CRITICAL",
+                        }
+                    )
                     results["critical_failures"] += 1
                     print(f"      ❌ CRITICAL EXECUTION BLOCKED: {str(e)[:60]}...")
 
                 except Exception as e:
-                    results["issues"].append({
-                        "step": step["step_name"],
-                        "issue": "ERROR",
-                        "error": str(e),
-                        "severity": "ERROR",
-                    })
+                    results["issues"].append(
+                        {
+                            "step": step["step_name"],
+                            "issue": "ERROR",
+                            "error": str(e),
+                            "severity": "ERROR",
+                        }
+                    )
                     print(f"      ❌ ERROR: {e}")
 
         print("\n📊 PROBLEMATIC EXECUTION SUMMARY:")
@@ -195,8 +207,9 @@ class DramaticPlanRevisor:
 
         return results
 
-    def create_optimized_plan(self, problematic_plan: dict[str, Any],
-                            problematic_results: dict[str, Any]) -> dict[str, Any]:
+    def create_optimized_plan(
+        self, problematic_plan: dict[str, Any], problematic_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Create optimized plan based on token analysis"""
         print("\n🔧 CREATING OPTIMIZED PLAN")
         print("=" * 60)
@@ -229,7 +242,9 @@ class DramaticPlanRevisor:
                         "minimize_context": True,
                         "use_structured_format": True,
                     }
-                    optimized_plan["optimization_strategy"].append(f"Split {step['step_name']} into 3 substeps")
+                    optimized_plan["optimization_strategy"].append(
+                        f"Split {step['step_name']} into 3 substeps"
+                    )
                     optimized_plan["optimization_notes"].append(
                         f"Applied aggressive splitting to {step['step_name']} due to budget exceed",
                     )
@@ -318,43 +333,51 @@ class DramaticPlanRevisor:
                     print(f"      🚦 Status: {estimate.status} ({estimate.action})")
                     print(f"      🔧 Optimization: {step_result['optimization']}")
 
-                    if estimate.status == 'red':
-                        results["issues"].append({
-                            "step": step["step_name"],
-                            "issue": "STILL_BUDGET_EXCEEDED",
-                            "tokens": estimate.total_projected_tokens,
-                            "severity": "CRITICAL",
-                        })
+                    if estimate.status == "red":
+                        results["issues"].append(
+                            {
+                                "step": step["step_name"],
+                                "issue": "STILL_BUDGET_EXCEEDED",
+                                "tokens": estimate.total_projected_tokens,
+                                "severity": "CRITICAL",
+                            }
+                        )
                         print("      ❌ STILL CRITICAL: Budget exceeded!")
 
-                    elif estimate.status == 'yellow':
-                        results["issues"].append({
-                            "step": step["step_name"],
-                            "issue": "STILL_COMPRESSION_NEEDED",
-                            "tokens": estimate.total_projected_tokens,
-                            "severity": "WARNING",
-                        })
+                    elif estimate.status == "yellow":
+                        results["issues"].append(
+                            {
+                                "step": step["step_name"],
+                                "issue": "STILL_COMPRESSION_NEEDED",
+                                "tokens": estimate.total_projected_tokens,
+                                "severity": "WARNING",
+                            }
+                        )
                         print("      ⚠️  STILL WARNING: Compression needed")
 
                     else:
                         print("      ✅ SUCCESS: Within budget!")
 
                 except TokenBudgetExceededError as e:
-                    results["issues"].append({
-                        "step": step["step_name"],
-                        "issue": "STILL_BUDGET_EXCEEDED",
-                        "error": str(e),
-                        "severity": "CRITICAL",
-                    })
+                    results["issues"].append(
+                        {
+                            "step": step["step_name"],
+                            "issue": "STILL_BUDGET_EXCEEDED",
+                            "error": str(e),
+                            "severity": "CRITICAL",
+                        }
+                    )
                     print(f"      ❌ STILL CRITICAL: {str(e)[:60]}...")
 
                 except Exception as e:
-                    results["issues"].append({
-                        "step": step["step_name"],
-                        "issue": "ERROR",
-                        "error": str(e),
-                        "severity": "ERROR",
-                    })
+                    results["issues"].append(
+                        {
+                            "step": step["step_name"],
+                            "issue": "ERROR",
+                            "error": str(e),
+                            "severity": "ERROR",
+                        }
+                    )
                     print(f"      ❌ ERROR: {e}")
 
         print("\n📊 OPTIMIZED EXECUTION SUMMARY:")
@@ -365,8 +388,9 @@ class DramaticPlanRevisor:
 
         return results
 
-    def compare_dramatic_results(self, problematic_results: dict[str, Any],
-                                optimized_results: dict[str, Any]) -> dict[str, Any]:
+    def compare_dramatic_results(
+        self, problematic_results: dict[str, Any], optimized_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Compare problematic vs optimized results"""
         print("\n📊 DRAMATIC COMPARISON")
         print("=" * 60)
@@ -381,7 +405,9 @@ class DramaticPlanRevisor:
             "problematic_issues": len(problematic_results["issues"]),
             "optimized_issues": len(optimized_results["issues"]),
             "problematic_critical": problematic_results["critical_failures"],
-            "optimized_critical": len([i for i in optimized_results["issues"] if i.get("severity") == "CRITICAL"]),
+            "optimized_critical": len(
+                [i for i in optimized_results["issues"] if i.get("severity") == "CRITICAL"]
+            ),
             "problematic_steps_succeeded": prob_steps_succeeded,
             "optimized_steps_succeeded": opt_steps_succeeded,
             "total_steps_attempted": prob_steps_attempted,
@@ -391,19 +417,29 @@ class DramaticPlanRevisor:
         critical_reduction = comparison["problematic_critical"] - comparison["optimized_critical"]
 
         # Success rates based on steps attempted vs succeeded
-        prob_success_rate = (prob_steps_succeeded / prob_steps_attempted * 100) if prob_steps_attempted > 0 else 0
-        opt_success_rate = (opt_steps_succeeded / prob_steps_attempted * 100) if prob_steps_attempted > 0 else 0
+        prob_success_rate = (
+            (prob_steps_succeeded / prob_steps_attempted * 100) if prob_steps_attempted > 0 else 0
+        )
+        opt_success_rate = (
+            (opt_steps_succeeded / prob_steps_attempted * 100) if prob_steps_attempted > 0 else 0
+        )
 
         print("🎯 DRAMATIC IMPROVEMENTS:")
         print(f"   - Issues resolved: {issue_reduction} of {comparison['problematic_issues']}")
-        print(f"   - Critical failures resolved: {critical_reduction} of {comparison['problematic_critical']}")
+        print(
+            f"   - Critical failures resolved: {critical_reduction} of {comparison['problematic_critical']}"
+        )
         print(f"   - Success rate: {prob_success_rate:.0f}% → {opt_success_rate:.0f}%")
         print(f"   - Optimized total tokens: {comparison['optimized_tokens']:,}")
 
         # Show before/after status
         print("\n📈 BEFORE vs AFTER:")
-        print(f"   BEFORE: {prob_steps_succeeded}/{prob_steps_attempted} steps succeeded, {comparison['problematic_issues']} issues ({comparison['problematic_critical']} critical)")
-        print(f"   AFTER:  {opt_steps_succeeded}/{prob_steps_attempted} steps succeeded, {comparison['optimized_issues']} issues ({comparison['optimized_critical']} critical)")
+        print(
+            f"   BEFORE: {prob_steps_succeeded}/{prob_steps_attempted} steps succeeded, {comparison['problematic_issues']} issues ({comparison['problematic_critical']} critical)"
+        )
+        print(
+            f"   AFTER:  {opt_steps_succeeded}/{prob_steps_attempted} steps succeeded, {comparison['optimized_issues']} issues ({comparison['optimized_critical']} critical)"
+        )
 
         comparison["issue_reduction"] = issue_reduction
         comparison["critical_reduction"] = critical_reduction
@@ -420,7 +456,9 @@ class DramaticPlanRevisor:
 
         if strategy == "AGGRESSIVE_SPLITTING":
             # Dramatically reduce ALL content categories
-            optimized_inputs["system_prompt"] = optimized_inputs.get("system_prompt", "")[:1000] + " [OPTIMIZED]"
+            optimized_inputs["system_prompt"] = (
+                optimized_inputs.get("system_prompt", "")[:1000] + " [OPTIMIZED]"
+            )
             optimized_inputs["user_prompt"] = optimized_inputs.get("user_prompt", "")[:800] + " [OPTIMIZED]"
 
             # Reduce files to 2 most important, truncated
@@ -450,7 +488,9 @@ class DramaticPlanRevisor:
 
         elif strategy == "CONTENT_OPTIMIZATION":
             # Moderate reduction across all categories
-            optimized_inputs["system_prompt"] = optimized_inputs.get("system_prompt", "")[:3000] + " [OPTIMIZED]"
+            optimized_inputs["system_prompt"] = (
+                optimized_inputs.get("system_prompt", "")[:3000] + " [OPTIMIZED]"
+            )
             optimized_inputs["user_prompt"] = optimized_inputs.get("user_prompt", "")[:2000] + " [OPTIMIZED]"
 
             # Keep 4 files, truncated
@@ -480,8 +520,12 @@ class DramaticPlanRevisor:
 
         elif strategy == "LIGHT_OPTIMIZATION":
             # Light reduction — prompts only
-            optimized_inputs["system_prompt"] = optimized_inputs.get("system_prompt", "")[:5000] + " [LIGHTLY_OPTIMIZED]"
-            optimized_inputs["user_prompt"] = optimized_inputs.get("user_prompt", "")[:3000] + " [LIGHTLY_OPTIMIZED]"
+            optimized_inputs["system_prompt"] = (
+                optimized_inputs.get("system_prompt", "")[:5000] + " [LIGHTLY_OPTIMIZED]"
+            )
+            optimized_inputs["user_prompt"] = (
+                optimized_inputs.get("user_prompt", "")[:3000] + " [LIGHTLY_OPTIMIZED]"
+            )
 
         return optimized_inputs
 
@@ -506,30 +550,34 @@ class DramaticPlanRevisor:
 
         return {
             "system_prompt": massive_content * 50,  # Very large
-            "user_prompt": massive_content * 40,   # Very large
+            "user_prompt": massive_content * 40,  # Very large
             "files": [
                 {
                     "path": f"auth_file_{i}.py",
                     "content": massive_content * 20,  # Many large files
-                } for i in range(10)
+                }
+                for i in range(10)
             ],
             "diffs": [
                 {
                     "path": f"auth_diff_{i}.py",
-                    "content": massive_content * 15,   # Many large diffs
-                } for i in range(5)
+                    "content": massive_content * 15,  # Many large diffs
+                }
+                for i in range(5)
             ],
             "logs": [
                 {
                     "source": f"auth_log_{i}.log",
-                    "content": massive_content * 10,   # Many large logs
-                } for i in range(20)
+                    "content": massive_content * 10,  # Many large logs
+                }
+                for i in range(20)
             ],
             "retrieved_context": [
                 {
-                    "content": massive_content * 8,   # Many large context items
+                    "content": massive_content * 8,  # Many large context items
                     "source": f"doc_{i}",
-                } for i in range(15)
+                }
+                for i in range(15)
             ],
             "prior_steps": [massive_content * 5] * 25,  # Many prior steps
         }
@@ -544,25 +592,29 @@ class DramaticPlanRevisor:
                 {
                     "path": f"product_file_{i}.py",
                     "content": massive_content * 18,
-                } for i in range(8)
+                }
+                for i in range(8)
             ],
             "diffs": [
                 {
                     "path": f"product_diff_{i}.py",
                     "content": massive_content * 12,
-                } for i in range(4)
+                }
+                for i in range(4)
             ],
             "logs": [
                 {
                     "source": f"product_log_{i}.log",
                     "content": massive_content * 8,
-                } for i in range(15)
+                }
+                for i in range(15)
             ],
             "retrieved_context": [
                 {
                     "content": massive_content * 6,
                     "source": f"product_doc_{i}",
-                } for i in range(12)
+                }
+                for i in range(12)
             ],
             "prior_steps": [massive_content * 4] * 20,
         }
@@ -577,25 +629,29 @@ class DramaticPlanRevisor:
                 {
                     "path": f"order_file_{i}.py",
                     "content": massive_content * 15,
-                } for i in range(6)
+                }
+                for i in range(6)
             ],
             "diffs": [
                 {
                     "path": f"order_diff_{i}.py",
                     "content": massive_content * 10,
-                } for i in range(3)
+                }
+                for i in range(3)
             ],
             "logs": [
                 {
                     "source": f"order_log_{i}.log",
                     "content": massive_content * 6,
-                } for i in range(10)
+                }
+                for i in range(10)
             ],
             "retrieved_context": [
                 {
                     "content": massive_content * 5,
                     "source": f"order_doc_{i}",
-                } for i in range(8)
+                }
+                for i in range(8)
             ],
             "prior_steps": [massive_content * 3] * 15,
         }
@@ -628,9 +684,15 @@ def main():
     # Step 6: Show final summary
     print("\n🎯 DRAMATIC DEMONSTRATION SUMMARY")
     print("=" * 80)
-    print(f"❌ PROBLEMATIC: {comparison['problematic_steps_succeeded']}/{comparison['total_steps_attempted']} steps succeeded, {comparison['problematic_critical']} CRITICAL FAILURES")
-    print(f"✅ OPTIMIZED:  {comparison['optimized_steps_succeeded']}/{comparison['total_steps_attempted']} steps succeeded, {comparison['optimized_critical']} CRITICAL FAILURES")
-    print(f"📈 IMPROVEMENT: {comparison['prob_success_rate']:.0f}% → {comparison['opt_success_rate']:.0f}% success rate, {comparison['critical_reduction']} critical failures resolved")
+    print(
+        f"❌ PROBLEMATIC: {comparison['problematic_steps_succeeded']}/{comparison['total_steps_attempted']} steps succeeded, {comparison['problematic_critical']} CRITICAL FAILURES"
+    )
+    print(
+        f"✅ OPTIMIZED:  {comparison['optimized_steps_succeeded']}/{comparison['total_steps_attempted']} steps succeeded, {comparison['optimized_critical']} CRITICAL FAILURES"
+    )
+    print(
+        f"📈 IMPROVEMENT: {comparison['prob_success_rate']:.0f}% → {comparison['opt_success_rate']:.0f}% success rate, {comparison['critical_reduction']} critical failures resolved"
+    )
 
     print("\n🎉 DRAMATIC IMPACT OF TOKEN ESTIMATOR:")
     print("• Identified critical budget violations before execution")

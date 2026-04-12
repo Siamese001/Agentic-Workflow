@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class AdvancedRetrievalRequest:
     """Advanced retrieval request with all options."""
+
     query: str
     fusion_strategy: str = "reciprocal_rank_fusion"
     max_results_per_collection: int = 20
@@ -32,6 +33,7 @@ class AdvancedRetrievalRequest:
 @dataclass
 class AdvancedRetrievalResponse:
     """Advanced retrieval response with comprehensive results."""
+
     original_query: str
     query_type: QueryType
     routing_decision: dict[str, Any]
@@ -113,7 +115,9 @@ class AdvancedSemanticRetriever:
             generate_variations=request.generate_query_variations,
         )
 
-        logger.info(f"Fusion search: {fusion_result.total_results} results in {fusion_result.execution_time_ms:.2f}ms")
+        logger.info(
+            f"Fusion search: {fusion_result.total_results} results in {fusion_result.execution_time_ms:.2f}ms"
+        )
 
         # Step 3: Reranking (if enabled)
         reranking_result = None
@@ -127,7 +131,9 @@ class AdvancedSemanticRetriever:
             )
             final_results = reranking_result.reranked_results
 
-            logger.info(f"Reranking completed: {len(final_results)} results in {reranking_result.execution_time_ms:.2f}ms")
+            logger.info(
+                f"Reranking completed: {len(final_results)} results in {reranking_result.execution_time_ms:.2f}ms"
+            )
         else:
             # Apply fusion strategy without reranking
             all_results = []
@@ -147,7 +153,9 @@ class AdvancedSemanticRetriever:
 
         # Generate component breakdown
         component_breakdown = self._generate_component_breakdown(
-            fusion_result, reranking_result, total_time_ms,
+            fusion_result,
+            reranking_result,
+            total_time_ms,
         )
 
         # Create response
@@ -162,7 +170,9 @@ class AdvancedSemanticRetriever:
             component_breakdown=component_breakdown,
         )
 
-        logger.info(f"Advanced retrieval completed: {len(final_results)} final results in {total_time_ms:.2f}ms")
+        logger.info(
+            f"Advanced retrieval completed: {len(final_results)} final results in {total_time_ms:.2f}ms"
+        )
 
         return response
 
@@ -204,27 +214,31 @@ class AdvancedSemanticRetriever:
 
         # Add reranking breakdown if available
         if reranking_result:
-            breakdown.update({
-                "reranking_enabled": True,
-                "reranking_time_ms": reranking_result.execution_time_ms,
-                "reranking_model": reranking_result.model_info,
-                "original_results": len(reranking_result.original_results),
-                "reranked_results": len(reranking_result.reranked_results),
-                "features_used": reranking_result.features_used,
-            })
+            breakdown.update(
+                {
+                    "reranking_enabled": True,
+                    "reranking_time_ms": reranking_result.execution_time_ms,
+                    "reranking_model": reranking_result.model_info,
+                    "original_results": len(reranking_result.original_results),
+                    "reranked_results": len(reranking_result.reranked_results),
+                    "features_used": reranking_result.features_used,
+                }
+            )
         else:
-            breakdown.update({
-                "reranking_enabled": False,
-                "reranking_reason": "Disabled or no results to rerank",
-            })
+            breakdown.update(
+                {
+                    "reranking_enabled": False,
+                    "reranking_reason": "Disabled or no results to rerank",
+                }
+            )
 
         # Add collection-specific breakdown
         collection_stats = {}
         for collection, results in fusion_result.collection_results.items():
             collection_stats[collection] = {
                 "result_count": len(results),
-                "avg_score": np.mean([getattr(r, 'score', 0.5) for r in results]) if results else 0.0,
-                "top_score": max([getattr(r, 'score', 0.5) for r in results]) if results else 0.0,
+                "avg_score": np.mean([getattr(r, "score", 0.5) for r in results]) if results else 0.0,
+                "top_score": max([getattr(r, "score", 0.5) for r in results]) if results else 0.0,
             }
 
         breakdown["collection_stats"] = collection_stats
@@ -236,7 +250,9 @@ class AdvancedSemanticRetriever:
         return {
             "base_retriever": {
                 "collections": list(self.base_retriever.get_collection_stats().keys()),
-                "total_documents": sum(stats['document_count'] for stats in self.base_retriever.get_collection_stats().values()),
+                "total_documents": sum(
+                    stats["document_count"] for stats in self.base_retriever.get_collection_stats().values()
+                ),
             },
             "query_router": self.query_router.get_routing_stats(),
             "fusion_engine": self.fusion_engine.get_fusion_stats(),
@@ -276,26 +292,30 @@ class AdvancedSemanticRetriever:
 
                     response = await self.retrieve(request)
 
-                    strategy_results.append({
-                        "query": query,
-                        "total_results": len(response.final_results),
-                        "execution_time_ms": response.execution_time_ms,
-                        "collections_searched": len(response.fusion_result.collection_results),
-                    })
+                    strategy_results.append(
+                        {
+                            "query": query,
+                            "total_results": len(response.final_results),
+                            "execution_time_ms": response.execution_time_ms,
+                            "collections_searched": len(response.fusion_result.collection_results),
+                        }
+                    )
 
                 except Exception as e:
                     logger.error(f"Benchmark query failed: {query} - {e}")
-                    strategy_results.append({
-                        "query": query,
-                        "error": str(e),
-                    })
+                    strategy_results.append(
+                        {
+                            "query": query,
+                            "error": str(e),
+                        }
+                    )
 
             # Calculate strategy statistics
-            successful_results = [r for r in strategy_results if 'error' not in r]
+            successful_results = [r for r in strategy_results if "error" not in r]
 
             if successful_results:
-                avg_time = np.mean([r['execution_time_ms'] for r in successful_results])
-                avg_results = np.mean([r['total_results'] for r in successful_results])
+                avg_time = np.mean([r["execution_time_ms"] for r in successful_results])
+                avg_results = np.mean([r["total_results"] for r in successful_results])
 
                 benchmark_results[strategy] = {
                     "avg_execution_time_ms": avg_time,
@@ -356,7 +376,7 @@ async def main():
             # Show top results
             for j, result in enumerate(response.final_results[:3], 1):
                 print(f"  {j}. [{result.collection}] {result.content[:60]}...")
-                if hasattr(result, 'score'):
+                if hasattr(result, "score"):
                     print(f"     Score: {result.score:.3f}")
 
         except Exception as e:
@@ -375,4 +395,5 @@ async def main():
 
 if __name__ == "__main__":
     import numpy as np
+
     asyncio.run(main())

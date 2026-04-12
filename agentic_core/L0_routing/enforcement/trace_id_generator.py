@@ -34,7 +34,10 @@ class TraceIdGenerator:
         self._seed_counter = 0
 
     def generate_trace_id(
-        self, semantic_clock: SemanticClockSnapshot, operation: str, additional_context: str | None = None,
+        self,
+        semantic_clock: SemanticClockSnapshot,
+        operation: str,
+        additional_context: str | None = None,
     ) -> str:
         """Generate a deterministic TraceID.
 
@@ -50,7 +53,9 @@ class TraceIdGenerator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "TraceIdGenerator.generate_trace_id",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "TraceIdGenerator.generate_trace_id",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")

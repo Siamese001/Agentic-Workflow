@@ -41,10 +41,7 @@ class DuplicateGroup:
         return {
             "group_id": self.group_id,
             "member_count": len(self.members),
-            "members": [
-                {"file": str(m[0]), "name": m[1], "line": m[2]}
-                for m in self.members
-            ],
+            "members": [{"file": str(m[0]), "name": m[1], "line": m[2]} for m in self.members],
             "hash": self.hash_signature,
         }
 
@@ -64,9 +61,7 @@ class DedupResult:
             "total_files_scanned": self.total_files_scanned,
             "total_blocks_found": self.total_blocks_found,
             "duplicates_detected": self.duplicates_detected,
-            "duplicate_groups": {
-                k: v.to_dict() for k, v in self.duplicate_groups.items()
-            },
+            "duplicate_groups": {k: v.to_dict() for k, v in self.duplicate_groups.items()},
         }
 
 
@@ -231,11 +226,13 @@ class CodeDuplicateDetector:
 
         groups = []
         for group_id, group in self.duplicate_groups.items():
-            groups.append({
-                "group_id": group_id,
-                "copies": len(group.members),
-                "locations": [f"{m[0].name}:{m[2]} ({m[1]})" for m in group.members[:3]],
-            })
+            groups.append(
+                {
+                    "group_id": group_id,
+                    "copies": len(group.members),
+                    "locations": [f"{m[0].name}:{m[2]} ({m[1]})" for m in group.members[:3]],
+                }
+            )
 
         return {
             "status": "duplicates_found",

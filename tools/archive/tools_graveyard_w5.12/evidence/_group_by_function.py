@@ -3,6 +3,7 @@
 Usage:
     python tools/evidence/_group_by_function.py <manifest_path>
 """
+
 from __future__ import annotations
 
 import json
@@ -24,11 +25,13 @@ def main() -> None:
     for file_data in manifest["files"]:
         for entry in file_data["entries"]:
             func_name = entry.get("containing_function") or "<module>"
-            by_function[func_name].append({
-                "file": file_data["path"],
-                "line": entry["line_no"],
-                "layer": entry["layer"],
-            })
+            by_function[func_name].append(
+                {
+                    "file": file_data["path"],
+                    "line": entry["line_no"],
+                    "layer": entry["layer"],
+                }
+            )
 
     # Sort by entry count (descending)
     sorted_funcs = sorted(by_function.items(), key=lambda x: -len(x[1]))
@@ -45,8 +48,10 @@ def main() -> None:
         print(f"Function: {func_name}")
         print(f"  Entry count: {len(entries)}")
         print(f"  Files: {len(set(e['file'] for e in entries))}")
-        print(f"  Lines: {', '.join(str(e['line']) for e in entries[:10])}" +
-              (f" ... ({len(entries) - 10} more)" if len(entries) > 10 else ""))
+        print(
+            f"  Lines: {', '.join(str(e['line']) for e in entries[:10])}"
+            + (f" ... ({len(entries) - 10} more)" if len(entries) > 10 else "")
+        )
         print()
 
 

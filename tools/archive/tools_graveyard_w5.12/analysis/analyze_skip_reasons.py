@@ -82,7 +82,7 @@ for sf in sample_files:
                 end = min(len(lines), i + 2)
                 for j in range(start, end):
                     marker = ">>>" if j == i - 1 else "   "
-                    print(f"  {marker} {j+1:4d}: {lines[j][:100]}")
+                    print(f"  {marker} {j + 1:4d}: {lines[j][:100]}")
                 print()
     else:
         print(f"\n--- {sf} --- NOT FOUND")
@@ -102,7 +102,7 @@ for f in skip_calls:
         source = Path(filepath).read_text(encoding="utf-8")
         lines_list = source.splitlines()
         if line > 0 and line <= len(lines_list):
-            context = "\n".join(lines_list[max(0, line-5):line+1])
+            context = "\n".join(lines_list[max(0, line - 5) : line + 1])
             if "_mod is None" in context or "_mod is not None" in context or "is None" in context:
                 mod_none_skips += 1
             if "guardian: allow-silent-swallow" in source:

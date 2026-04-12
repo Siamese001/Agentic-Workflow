@@ -37,7 +37,7 @@ def create_final_test():
 
     # Test 2: Package Verification
     print("\n2️⃣ Package Installation Verification")
-    package_path = seq_config.get('args', [None])[0]
+    package_path = seq_config.get("args", [None])[0]
 
     if package_path and Path(package_path).exists():
         print("✅ Sequential thinking package installed")
@@ -98,7 +98,7 @@ def create_final_test():
 
     # Save the test scenario
     test_file = Path(__file__).parent / "sequential_thinking_final_test.json"
-    with open(test_file, 'w') as f:
+    with open(test_file, "w") as f:
         json.dump(scenario, f, indent=2)
 
     print("✅ Test scenario created:")
@@ -150,10 +150,12 @@ def create_final_test():
         print("❌ Some checks failed. Please review the errors above.")
         return False
 
+
 def main():
     """Main test execution."""
     success = create_final_test()
     return 0 if success else 1
+
 
 if __name__ == "__main__":
     exit(main())

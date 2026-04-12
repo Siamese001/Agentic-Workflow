@@ -35,7 +35,7 @@ class MinimalRAGPipeline:
         words = text.split()
         chunks = []
         for i in range(0, len(words), chunk_size):
-            chunk = " ".join(words[i:i+chunk_size])
+            chunk = " ".join(words[i : i + chunk_size])
             chunks.append(chunk)
         return chunks
 
@@ -53,16 +53,19 @@ class MinimalRAGPipeline:
             score = overlap / len(query_words) if query_words else 0
 
             if score > 0:
-                scored.append({
-                    "id": doc_id,
-                    "content": doc["content"],
-                    "score": score,
-                    "metadata": doc["metadata"],
-                })
+                scored.append(
+                    {
+                        "id": doc_id,
+                        "content": doc["content"],
+                        "score": score,
+                        "metadata": doc["metadata"],
+                    }
+                )
 
         # Sort by score and return top_k
         scored.sort(key=lambda x: x["score"], reverse=True)
         return scored[:top_k]
+
 
 async def test_minimal_rag():
     """Test minimal RAG pipeline."""
@@ -98,7 +101,7 @@ async def test_minimal_rag():
 
         print(f"[TEST] Retrieved {len(results)} results:")
         for i, result in enumerate(results):
-            print(f"  {i+1}. Score: {result['score']:.3f}")
+            print(f"  {i + 1}. Score: {result['score']:.3f}")
             print(f"     Content: {result['content'][:100]}...")
 
         print("[TEST] Minimal RAG pipeline test completed successfully!")
@@ -111,6 +114,7 @@ async def test_minimal_rag():
         # Cleanup
         if test_doc.exists():
             test_doc.unlink()
+
 
 if __name__ == "__main__":
     asyncio.run(test_minimal_rag())

@@ -215,7 +215,9 @@ class SafetyGateResult:
 
 
 def check_rename_collisions(
-    rename_map: dict[str, str], existing_files: set[str], case_sensitive: bool = False,
+    rename_map: dict[str, str],
+    existing_files: set[str],
+    case_sensitive: bool = False,
 ) -> list[dict[str, Any]]:
     """
     Detect rename collisions in a proposed rename map.
@@ -321,7 +323,10 @@ def build_import_graph(python_files: list[Path], project_root: Path) -> dict[str
         try:
             content = p.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-        except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+        except (
+            SyntaxError,
+            OSError,
+        ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
             continue
         for node in ast.walk(tree):
             mod = None
@@ -364,9 +369,10 @@ def check_init_reexports(path: Path) -> int:
             pattern = f"from\\s+\\.{re.escape(module_stem)}\\s+import\\s+"
             if re.search(pattern, content):
                 bonus += 10
-        except OSError:    # guardian: Add error context logging
+        except OSError:  # guardian: Add error context logging
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("fca_safety_gates_util: OSError swallowed at L367: %s", e)
+            logging.getLogger(__name__).debug("fca_safety_gates_util: OSError swallowed at L367: %s", e)
     return bonus
 
 
@@ -473,7 +479,10 @@ def detect_agent_lineage(path: Path) -> str:
     try:
         content = path.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
-    except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+    except (
+        SyntaxError,
+        OSError,
+    ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
         return "NOT_AGENT"
     for node in ast.walk(tree):
         if not isinstance(node, ast.ClassDef):
@@ -536,7 +545,10 @@ def check_observability_violation(path: Path, parts: tuple[str, ...] | None = No
     try:
         content = path.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
-    except (SyntaxError, OSError):    # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
+    except (
+        SyntaxError,
+        OSError,
+    ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
         return None
     obs_imports_found = []
     for node in ast.walk(tree):
@@ -552,7 +564,8 @@ def check_observability_violation(path: Path, parts: tuple[str, ...] | None = No
                 obs_imports_found.append(mod)
     if obs_imports_found:
         current_layer = next(
-            (p for p in parts if p.startswith("L") and "_" in p and (len(p) > 1) and p[1].isdigit()), None,
+            (p for p in parts if p.startswith("L") and "_" in p and (len(p) > 1) and p[1].isdigit()),
+            None,
         )
         if current_layer:
             return {
@@ -582,7 +595,9 @@ class NestedLCDPolicy:
 
 
 def check_nested_lcd_with_policy(
-    parts: tuple[str, ...], validate_fn, policy: NestedLCDPolicy | None = None,
+    parts: tuple[str, ...],
+    validate_fn,
+    policy: NestedLCDPolicy | None = None,
 ) -> dict[str, Any] | None:
     """
     Wrapper around validate_no_nested_lcd that applies policy.
@@ -704,7 +719,11 @@ def run_all_safety_gates(
     if import_counts is None:
         import_counts = build_import_graph(python_files, project_root)
     high_impact = check_import_impact(
-        rename_map, import_counts, python_files, project_root, max_import_impact,
+        rename_map,
+        import_counts,
+        python_files,
+        project_root,
+        max_import_impact,
     )
     result.high_impact_count = len(high_impact)
     mass_block = check_mass_action(len(rename_map), max_actions, force, wave_id)

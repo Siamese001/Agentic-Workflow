@@ -38,7 +38,9 @@ class ScenarioLoaderService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ScenarioLoaderService.load_from_file",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ScenarioLoaderService.load_from_file",
         )
         _emit_routes_to_capability("p2", "scenario_loader", "json_parse")
 
@@ -68,7 +70,9 @@ class ScenarioLoaderService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ScenarioLoaderService.load_from_directory",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ScenarioLoaderService.load_from_directory",
         )
 
         dir_path = Path(directory)

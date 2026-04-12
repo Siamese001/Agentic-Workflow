@@ -16,14 +16,17 @@ class TestEvaluationReportSchemaAdg:
     def test_evaluation_report_schema_adg_imports(self):
         """Test evaluation_report_schema_adg module imports."""
         from agentic_core import evaluation_report_schema_adg
+
         assert evaluation_report_schema_adg is not None
 
     def test_evaluation_report_schema_adg_class(self):
         """Test EvaluationReportSchemaAdg class exists."""
         from agentic_core import EvaluationReportSchemaAdg
+
         assert EvaluationReportSchemaAdg is not None
 
     def test_evaluation_report_schema_adg_callable(self):
         """Test evaluation_report_schema_adg functions are callable."""
         from agentic_core import validate_evaluation_report_schema_adg
+
         assert callable(validate_evaluation_report_schema_adg)

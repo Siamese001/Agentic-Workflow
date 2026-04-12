@@ -402,7 +402,9 @@ class MemoryEventBus(EventBus):
         """Connect to the event bus."""
         import uuid as _uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(_uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MemoryEventBus.connect")
+        _emit_records_execution_trace(
+            str(_uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MemoryEventBus.connect"
+        )
         self._running = True
         logger.info("MemoryEventBus connected")
 
@@ -513,7 +515,9 @@ class MemoryEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
-        self, callback: Callable[[SystemEvent], Awaitable[None]], event: SystemEvent,
+        self,
+        callback: Callable[[SystemEvent], Awaitable[None]],
+        event: SystemEvent,
     ) -> None:
         """Safely notify a subscriber.
 
@@ -685,7 +689,11 @@ class RedisEventBus(EventBus):
         while self._running:
             try:
                 messages = await self.redis.xreadgroup(
-                    self.consumer_group, self.consumer_name, {channel: ">"}, count=10, block=1000,
+                    self.consumer_group,
+                    self.consumer_name,
+                    {channel: ">"},
+                    count=10,
+                    block=1000,
                 )
                 for _stream, msgs in messages:
                     for msg_id, fields in msgs:
@@ -721,7 +729,9 @@ class RedisEventBus(EventBus):
             await asyncio.gather(*tasks, return_exceptions=True)
 
     async def _safe_notify(
-        self, callback: Callable[[SystemEvent], Awaitable[None]], event: SystemEvent,
+        self,
+        callback: Callable[[SystemEvent], Awaitable[None]],
+        event: SystemEvent,
     ) -> None:
         """Safely notify a subscriber.
 

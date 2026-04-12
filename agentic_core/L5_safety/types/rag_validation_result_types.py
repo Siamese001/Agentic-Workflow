@@ -188,7 +188,8 @@ class ValidationResult(BaseModel):
     message: str = Field(default="", description="Validation message")
     details: dict[str, Any] = Field(default_factory=dict, description="Additional validation details")
     timestamp: datetime.datetime = Field(
-        default_factory=datetime.datetime.utcnow, description="Validation timestamp",
+        default_factory=datetime.datetime.utcnow,
+        description="Validation timestamp",
     )
 
     @field_validator("severity")
@@ -218,7 +219,8 @@ class ThematicAnalysis(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     themes: list[str] = Field(default_factory=list, description="List of identified themes")
     confidence_scores: list[float] = Field(
-        default_factory=list, description="Confidence scores for each theme",
+        default_factory=list,
+        description="Confidence scores for each theme",
     )
     dominant_theme: str | None = Field(default=None, description="Most dominant theme")
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional analysis metadata")
@@ -231,7 +233,9 @@ class ThematicAnalysis(BaseModel):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "ThematicAnalysis.validate_confidence_scores",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "ThematicAnalysis.validate_confidence_scores",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -256,7 +260,10 @@ class RagState(BaseModel):
     response: str = Field(default="", description="Generated response")
     retrieval_score: float = Field(default=0.0, ge=0.0, le=1.0, description="Retrieval relevance score")
     generation_confidence: float = Field(
-        default=0.0, ge=0.0, le=1.0, description="Generation confidence score",
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Generation confidence score",
     )
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional RAG metadata")
 
@@ -268,7 +275,8 @@ class ImmutableStagingBuffer(BaseModel):
     data: dict[str, Any] = Field(default_factory=dict, description="Buffer data")
     version: int = Field(default=1, ge=1, description="Buffer version")
     timestamp: datetime.datetime = Field(
-        default_factory=datetime.datetime.utcnow, description="Buffer timestamp",
+        default_factory=datetime.datetime.utcnow,
+        description="Buffer timestamp",
     )
     checksum: str | None = Field(default=None, description="Data checksum for integrity")
 

@@ -15,6 +15,7 @@ from .failure_signal import FailureSignal
 
 class ContainmentAction(Enum):
     """Containment actions."""
+
     FREEZE = auto()
     LOCK_UWG = auto()
     SUSPEND = auto()
@@ -26,6 +27,7 @@ class ContainmentAction(Enum):
 @dataclass
 class ContainmentResult:
     """Result of zero-loss containment."""
+
     contained: bool
     actions_taken: list[ContainmentAction]
     pending_diffs_locked: bool

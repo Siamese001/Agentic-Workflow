@@ -22,6 +22,7 @@ def test_redis_connection() -> bool:
     """Test if Redis is available."""
     try:
         import redis
+
         r = redis.from_url("redis://localhost:6379/0", decode_responses=True)
         r.ping()
         return True
@@ -39,10 +40,10 @@ def test_adg_mcp_server_import() -> dict[str, Any]:
 
         result = {
             "import_success": True,
-            "server_created": hasattr(adg_mcp_server, 'mcp'),
-            "has_tools": hasattr(adg_mcp_server, 'adg_status'),
-            "has_redis_func": hasattr(adg_mcp_server, '_redis'),
-            "has_cache_meta": hasattr(adg_mcp_server, '_cache_meta'),
+            "server_created": hasattr(adg_mcp_server, "mcp"),
+            "has_tools": hasattr(adg_mcp_server, "adg_status"),
+            "has_redis_func": hasattr(adg_mcp_server, "_redis"),
+            "has_cache_meta": hasattr(adg_mcp_server, "_cache_meta"),
             "error": None,
         }
 
@@ -94,17 +95,17 @@ def test_adg_redis_functions() -> dict[str, Any]:
 
 def test_redis_unavailable_fallback() -> dict[str, Any]:
     """Test behavior when Redis is completely unavailable."""
-    original_url = os.environ.get('ADG_REDIS_URL', 'redis://localhost:6379/0')
+    original_url = os.environ.get("ADG_REDIS_URL", "redis://localhost:6379/0")
 
     try:
         # Set Redis to unavailable port
-        os.environ['ADG_REDIS_URL'] = 'redis://localhost:9999/0'
+        os.environ["ADG_REDIS_URL"] = "redis://localhost:9999/0"
 
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
 
         # Force reimport to test with bad Redis URL
-        if 'adg_mcp_server' in sys.modules:
-            del sys.modules['adg_mcp_server']
+        if "adg_mcp_server" in sys.modules:
+            del sys.modules["adg_mcp_server"]
 
         import adg_mcp_server
 
@@ -117,10 +118,7 @@ def test_redis_unavailable_fallback() -> dict[str, Any]:
         cache_result = adg_mcp_server._cache_meta()
 
         # Should handle Redis unavailability gracefully
-        handles_redis_down = (
-            status_result.get("status") == "error" or
-            status_result.get("is_fresh") == False
-        )
+        handles_redis_down = status_result.get("status") == "error" or status_result.get("is_fresh") == False
 
         cache_handles_down = cache_result.get("available") == False
 
@@ -138,7 +136,7 @@ def test_redis_unavailable_fallback() -> dict[str, Any]:
         }
     finally:
         # Restore original Redis URL
-        os.environ['ADG_REDIS_URL'] = original_url
+        os.environ["ADG_REDIS_URL"] = original_url
 
 
 def test_mcp_server_stdio() -> dict[str, Any]:
@@ -242,7 +240,7 @@ def test_sqlite_fallback_available() -> dict[str, Any]:
             "edge_count": edge_count,
             "table_count": len(tables),
             "tables": tables[:5],  # First 5 tables
-            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2),
+            "file_size_mb": round(latest_sqlite.stat().st_size / (1024 * 1024), 2),
         }
     except Exception as e:
         return {
@@ -320,10 +318,7 @@ def test_mcp_configuration() -> dict[str, Any]:
         env = adg_redis_config.get("env", {})
 
         # Validate Python fallback configuration
-        is_python_fallback = (
-            command == "python" and
-            any("adg_mcp_server.py" in str(arg) for arg in args)
-        )
+        is_python_fallback = command == "python" and any("adg_mcp_server.py" in str(arg) for arg in args)
 
         # Check required environment variables
         required_env_vars = ["ADG_REDIS_URL", "ADG_DIR"]
@@ -413,7 +408,7 @@ def run_comprehensive_test():
     print(f"   Import success: {import_test.get('import_success', False)}")
     print(f"   Server created: {import_test.get('server_created', False)}")
     print(f"   Has functions: {import_test.get('has_tools', False)}")
-    if import_test.get('error'):
+    if import_test.get("error"):
         print(f"   Error: {import_test['error']}")
     print()
 
@@ -422,7 +417,7 @@ def run_comprehensive_test():
     func_test = test_adg_redis_functions()
     print(f"   Functions work: {func_test.get('test_passed', False)}")
     print(f"   Redis connected: {func_test.get('redis_connected', False)}")
-    if func_test.get('error'):
+    if func_test.get("error"):
         print(f"   Error: {func_test['error']}")
     print()
 
@@ -432,7 +427,7 @@ def run_comprehensive_test():
     print(f"   Handles Redis down: {fallback_test.get('test_passed', False)}")
     print(f"   Status handles down: {fallback_test.get('status_handles_down', False)}")
     print(f"   Cache handles down: {fallback_test.get('cache_handles_down', False)}")
-    if fallback_test.get('error'):
+    if fallback_test.get("error"):
         print(f"   Error: {fallback_test['error']}")
     print()
 
@@ -441,7 +436,7 @@ def run_comprehensive_test():
     stdio_test = test_mcp_server_stdio()
     print(f"   Server responds: {stdio_test.get('server_responded', False)}")
     print(f"   Has tools: {stdio_test.get('has_tools', False)}")
-    if stdio_test.get('error'):
+    if stdio_test.get("error"):
         print(f"   Error: {stdio_test['error']}")
     print()
 
@@ -449,11 +444,11 @@ def run_comprehensive_test():
     print("6. Testing SQLite fallback availability...")
     sqlite_test = test_sqlite_fallback_available()
     print(f"   SQLite available: {sqlite_test.get('test_passed', False)}")
-    if sqlite_test.get('node_count'):
+    if sqlite_test.get("node_count"):
         print(f"   Node count: {sqlite_test['node_count']}")
-    if sqlite_test.get('edge_count'):
+    if sqlite_test.get("edge_count"):
         print(f"   Edge count: {sqlite_test['edge_count']}")
-    if sqlite_test.get('error'):
+    if sqlite_test.get("error"):
         print(f"   Error: {sqlite_test['error']}")
     print()
 
@@ -462,7 +457,7 @@ def run_comprehensive_test():
     ingest_test = test_ingest_script_functionality()
     print(f"   Ingest script works: {ingest_test.get('test_passed', False)}")
     print(f"   Script importable: {ingest_test.get('script_importable', False)}")
-    if ingest_test.get('error'):
+    if ingest_test.get("error"):
         print(f"   Error: {ingest_test['error']}")
     print()
 
@@ -472,7 +467,7 @@ def run_comprehensive_test():
     print(f"   MCP config correct: {config_test.get('test_passed', False)}")
     print(f"   Uses Python fallback: {config_test.get('is_python_fallback', False)}")
     print(f"   Server enabled: {config_test.get('server_enabled', False)}")
-    if config_test.get('error'):
+    if config_test.get("error"):
         print(f"   Error: {config_test['error']}")
     print()
 
@@ -481,7 +476,7 @@ def run_comprehensive_test():
     error_test = test_error_handling_robustness()
     print(f"   Handles errors robustly: {error_test.get('test_passed', False)}")
     print(f"   Error count: {error_test.get('error_count', 0)}")
-    if error_test.get('error'):
+    if error_test.get("error"):
         print(f"   Error: {error_test['error']}")
     print()
 
@@ -492,14 +487,14 @@ def run_comprehensive_test():
 
     tests = [
         ("Redis Availability", redis_available),
-        ("Server Import", import_test.get('import_success', False)),
-        ("Functions Work", func_test.get('test_passed', False)),
-        ("Redis Fallback", fallback_test.get('test_passed', False)),
-        ("Server Stdio", stdio_test.get('server_responded', False)),
-        ("SQLite Fallback", sqlite_test.get('test_passed', False)),
-        ("Ingest Script", ingest_test.get('test_passed', False)),
-        ("MCP Config", config_test.get('test_passed', False)),
-        ("Error Handling", error_test.get('test_passed', False)),
+        ("Server Import", import_test.get("import_success", False)),
+        ("Functions Work", func_test.get("test_passed", False)),
+        ("Redis Fallback", fallback_test.get("test_passed", False)),
+        ("Server Stdio", stdio_test.get("server_responded", False)),
+        ("SQLite Fallback", sqlite_test.get("test_passed", False)),
+        ("Ingest Script", ingest_test.get("test_passed", False)),
+        ("MCP Config", config_test.get("test_passed", False)),
+        ("Error Handling", error_test.get("test_passed", False)),
     ]
 
     passed = sum(1 for _, result in tests if result)
@@ -514,11 +509,11 @@ def run_comprehensive_test():
     # Fallback assessment
     print("\nFALLBACK ASSESSMENT:")
     fallback_mechanisms = [
-        ("Redis unavailable handling", fallback_test.get('test_passed', False)),
-        ("SQLite data available", sqlite_test.get('test_passed', False)),
-        ("Ingest script functional", ingest_test.get('test_passed', False)),
-        ("MCP config correct", config_test.get('test_passed', False)),
-        ("Error handling robust", error_test.get('test_passed', False)),
+        ("Redis unavailable handling", fallback_test.get("test_passed", False)),
+        ("SQLite data available", sqlite_test.get("test_passed", False)),
+        ("Ingest script functional", ingest_test.get("test_passed", False)),
+        ("MCP config correct", config_test.get("test_passed", False)),
+        ("Error handling robust", error_test.get("test_passed", False)),
     ]
 
     fallback_passed = sum(1 for _, result in fallback_mechanisms if result)
@@ -527,7 +522,9 @@ def run_comprehensive_test():
     if passed >= 7 and fallback_passed >= 4:
         print("\n🎉 ADG Redis MCP fallback behavior is working correctly!")
     elif passed >= 5:
-        print(f"\n⚠️  ADG Redis MCP has partial fallback capability ({fallback_passed}/{len(fallback_mechanisms)}).")
+        print(
+            f"\n⚠️  ADG Redis MCP has partial fallback capability ({fallback_passed}/{len(fallback_mechanisms)})."
+        )
     else:
         print("\n❌ ADG Redis MCP fallback mechanisms need significant work.")
 
@@ -555,10 +552,10 @@ if __name__ == "__main__":
 
     # Save results to file
     results_file = Path(__file__).parent / "adg_redis_fallback_test_results_fixed.json"
-    with open(results_file, 'w') as f:
+    with open(results_file, "w") as f:
         json.dump(results, f, indent=2, default=str)
 
     print(f"\nDetailed results saved to: {results_file}")
 
     # Exit with appropriate code
-    sys.exit(0 if results['passed_tests'] >= 7 else 1)
+    sys.exit(0 if results["passed_tests"] >= 7 else 1)

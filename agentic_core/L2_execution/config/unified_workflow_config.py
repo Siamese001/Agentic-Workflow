@@ -243,7 +243,9 @@ class Coordinator(ABC):
         """Record mission execution."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowMetrics.record_execution",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "WorkflowMetrics.record_execution",
         )
         self.missions_executed += 1
         if success:

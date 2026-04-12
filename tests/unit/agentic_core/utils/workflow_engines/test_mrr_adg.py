@@ -16,14 +16,17 @@ class TestMrrAdg:
     def test_mrr_adg_imports(self):
         """Test mrr_adg module imports."""
         from agentic_core import mrr_adg
+
         assert mrr_adg is not None
 
     def test_mrr_adg_class(self):
         """Test MrrAdg class exists."""
         from agentic_core import MrrAdg
+
         assert MrrAdg is not None
 
     def test_mrr_adg_callable(self):
         """Test mrr_adg functions are callable."""
         from agentic_core import validate_mrr_adg
+
         assert callable(validate_mrr_adg)

@@ -3,6 +3,7 @@
 Excludes __init__.py, config-only, data, and test files from risk classification.
 Produces the definitive list of modules that are genuine convergence blockers.
 """
+
 from __future__ import annotations
 
 import json
@@ -25,17 +26,27 @@ def find_latest_sqlite():
 
 # --- Exclusion predicates ---
 
+
 def is_init_file(path: str) -> bool:
     return path.endswith("__init__.py")
 
 
 def is_config_only(path: str) -> bool:
     pl = path.lower()
-    return any(x in pl for x in [
-        "/config/", "\\config\\", "_config.py", "_constants.py",
-        "constants.py", "_settings.py", "settings.py",
-        "/data/", "\\data\\",
-    ])
+    return any(
+        x in pl
+        for x in [
+            "/config/",
+            "\\config\\",
+            "_config.py",
+            "_constants.py",
+            "constants.py",
+            "_settings.py",
+            "settings.py",
+            "/data/",
+            "\\data\\",
+        ]
+    )
 
 
 def is_test_file(path: str) -> bool:
@@ -44,10 +55,19 @@ def is_test_file(path: str) -> bool:
 
 def is_data_or_artifact(path: str) -> bool:
     pl = path.lower()
-    return any(x in pl for x in [
-        "artifacts/", "data/golden", "/golden/",
-        ".json", ".yaml", ".yml", ".csv", ".txt",
-    ])
+    return any(
+        x in pl
+        for x in [
+            "artifacts/",
+            "data/golden",
+            "/golden/",
+            ".json",
+            ".yaml",
+            ".yml",
+            ".csv",
+            ".txt",
+        ]
+    )
 
 
 def should_exclude(path: str) -> bool:
@@ -115,7 +135,9 @@ def main():
     c = conn.cursor()
 
     # Build edges by source file
-    c.execute("SELECT source_file, relation_type FROM edges WHERE source_file IS NOT NULL AND source_file != ''")
+    c.execute(
+        "SELECT source_file, relation_type FROM edges WHERE source_file IS NOT NULL AND source_file != ''"
+    )
     edges_by_src = defaultdict(set)
     for sf, rt in c.fetchall():
         edges_by_src[sf].add(rt)
@@ -143,17 +165,19 @@ def main():
             for req_rel in required:
                 if req_rel not in present_rels:
                     severity = SEVERITY_MAP.get(rt, "Low")
-                    gaps.append({
-                        "module": sf,
-                        "risk_type": rt,
-                        "missing": req_rel,
-                        "severity": severity,
-                    })
+                    gaps.append(
+                        {
+                            "module": sf,
+                            "risk_type": rt,
+                            "missing": req_rel,
+                            "severity": severity,
+                        }
+                    )
 
     # Phase 3: Analyze results
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("REFINED GAP ANALYSIS")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total refined gaps: {len(gaps)}")
 
     by_severity = Counter(g["severity"] for g in gaps)
@@ -170,9 +194,9 @@ def main():
         print(f"  {k}: {v}")
 
     # Phase 4: Build hard target list for trace/determinism blockers
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("HARD TARGET LIST — TRACE/DETERMINISM BLOCKERS")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     trace_gaps = [g for g in gaps if g["risk_type"] == "trace_producer"]
     trace_modules = sorted(set(g["module"] for g in trace_gaps))
@@ -188,9 +212,9 @@ def main():
         target_list.append({"module": mod, "missing": missing})
 
     # Phase 5: Build full gap table for other risk types
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("ROUTING/EXECUTION GAPS (non-trace)")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     non_trace = [g for g in gaps if g["risk_type"] != "trace_producer"]
     non_trace_modules = sorted(set(g["module"] for g in non_trace))
@@ -208,18 +232,28 @@ def main():
     conn.close()
 
     # Phase 6: Verify against existing ADG edge counts
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("ADG EDGE COUNTS FOR BLOCKER RELATIONS")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     conn2 = sqlite3.connect(str(db_path))
     c2 = conn2.cursor()
-    for rel in ["records_execution_trace", "emits_determinism_digest", "calls",
-                 "writes_to", "writes_through", "reads_from", "reads_through",
-                 "agent_executes_agent"]:
+    for rel in [
+        "records_execution_trace",
+        "emits_determinism_digest",
+        "calls",
+        "writes_to",
+        "writes_through",
+        "reads_from",
+        "reads_through",
+        "agent_executes_agent",
+    ]:
         c2.execute("SELECT COUNT(*) FROM edges WHERE relation_type = ?", (rel,))
         count = c2.fetchone()[0]
-        c2.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = ? AND source_file IS NOT NULL", (rel,))
+        c2.execute(
+            "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = ? AND source_file IS NOT NULL",
+            (rel,),
+        )
         modules = c2.fetchone()[0]
         print(f"  {rel:<35} {count:>8} edges in {modules:>6} modules")
     conn2.close()
@@ -243,12 +277,12 @@ def main():
     print(f"\nTarget list saved: {out_path.name}")
 
     # Summary verdict
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("BURN-DOWN SUMMARY")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print("Original raw gaps:           10,916")
     print(f"After exclusion refinement:  {len(gaps)}")
-    print(f"Reduction:                   {(1 - len(gaps)/10916)*100:.1f}%")
+    print(f"Reduction:                   {(1 - len(gaps) / 10916) * 100:.1f}%")
     print("")
     print(f"TRACE/DETERMINISM BLOCKERS:  {len(trace_modules)} modules (Critical)")
     print(f"ROUTING/EXECUTION GAPS:      {len(non_trace_modules)} modules (High/Moderate)")

@@ -185,14 +185,19 @@ class TwoPhaseGenerationNode:
         self.word_enforcer = WordCountEnforcementEngine(config)
 
     def generate_bullets_phase_a(
-        self, thematic_output: ThematicAnalysisOutput, role_data: dict[str, Any],
+        self,
+        thematic_output: ThematicAnalysisOutput,
+        role_data: dict[str, Any],
     ) -> BulletGenerationOutput:
         """
         Phase A: Generate provenance-backed bullets based on themes.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TwoPhaseGenerationNode.generate_bullets_phase_a")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TwoPhaseGenerationNode.generate_bullets_phase_a"
+        )
 
         themes = thematic_output.secondary_themes
         patterns = thematic_output.authenticity_patterns.achievement_verb_patterns
@@ -203,7 +208,9 @@ class TwoPhaseGenerationNode:
             theme = themes[i % len(themes)] if themes else "Efficiency"
             bullets.append(f"{verb} {theme} initiatives resulting in 20% growth.")
         return BulletGenerationOutput(
-            bullets=bullets, provenance_counts={"3V": 3, "3T": 3, "1S": 1}, thematic_alignment_score=0.95,
+            bullets=bullets,
+            provenance_counts={"3V": 3, "3T": 3, "1S": 1},
+            thematic_alignment_score=0.95,
         )
 
     def synthesize_overview_phase_b(
@@ -217,7 +224,8 @@ class TwoPhaseGenerationNode:
         """
         overview_text = f"Strategic leader driving {thematic_output.primary_theme} through {len(bullet_output.bullets)} key initiatives."
         enforcement_result = self.word_enforcer.enforce_with_regeneration(
-            overview_text, content_type=target_section,
+            overview_text,
+            content_type=target_section,
         )
         return OverviewSynthesisOutput(
             overview=enforcement_result["content"],

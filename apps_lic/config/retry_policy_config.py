@@ -225,7 +225,9 @@ class RetryConfig:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RetryPolicy.should_retry")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RetryPolicy.should_retry"
+        )
         # Check attempt limit
         if attempt >= self.max_attempts:
             return False

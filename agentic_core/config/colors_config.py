@@ -243,7 +243,9 @@ def _ensure_utf8():
             sys.stdout.reconfigure(encoding="utf-8", errors="replace")
         # guardian: allow-silent-swallow
         except Exception as e:
-            import logging; logging.getLogger(__name__).debug("colors_config: Exception swallowed at L245: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("colors_config: Exception swallowed at L245: %s", e)
 
 
 _ensure_utf8()

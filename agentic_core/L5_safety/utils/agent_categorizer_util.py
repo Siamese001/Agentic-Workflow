@@ -275,7 +275,10 @@ class AgentCategorizer:
                 continue
             try:
                 self._analyze_file(py_file)
-            except (SyntaxError, UnicodeDecodeError):    # guardian: Parsing and encoding errors need separate handling strategies
+            except (
+                SyntaxError,
+                UnicodeDecodeError,
+            ):  # guardian: Parsing and encoding errors need separate handling strategies
                 continue
         return dict(self.categories)
 

@@ -364,7 +364,10 @@ class JudgeEvaluator:
             )
 
     async def evaluate(
-        self, output: str, expected: str | None = None, context: dict[str, Any] | None = None,
+        self,
+        output: str,
+        expected: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> JudgeEvaluationResult:
         """Evaluate output quality.
 
@@ -378,7 +381,9 @@ class JudgeEvaluator:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "JudgeEvaluator.evaluate")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "JudgeEvaluator.evaluate"
+        )
         if self.enable_logging:
             logger.info(
                 "evaluation_started",
@@ -387,7 +392,10 @@ class JudgeEvaluator:
         verdicts: list[JudgeVerdict] = []
         for criterion in self.criteria:
             verdict = await self._evaluate_criterion(
-                output=output, expected=expected, context=context, criterion=criterion,
+                output=output,
+                expected=expected,
+                context=context,
+                criterion=criterion,
             )
             verdicts.append(verdict)
         overall_score = sum(v.score_value for v in verdicts) / len(verdicts)
@@ -451,7 +459,11 @@ class JudgeEvaluator:
         return result
 
     async def _evaluate_criterion(
-        self, output: str, expected: str | None, context: dict[str, Any] | None, criterion: JudgmentCriterion,
+        self,
+        output: str,
+        expected: str | None,
+        context: dict[str, Any] | None,
+        criterion: JudgmentCriterion,
     ) -> JudgeVerdict:
         """Evaluate a single criterion.
 
@@ -465,7 +477,10 @@ class JudgeEvaluator:
             JudgeVerdict for this criterion
         """
         prompt = self._build_evaluation_prompt(
-            output=output, expected=expected, context=context, criterion=criterion,
+            output=output,
+            expected=expected,
+            context=context,
+            criterion=criterion,
         )
         if self.llm_client:
             try:
@@ -515,7 +530,11 @@ class JudgeEvaluator:
         return (length_score + density_score) / 2.0
 
     def _build_evaluation_prompt(
-        self, output: str, expected: str | None, context: dict[str, Any] | None, criterion: JudgmentCriterion,
+        self,
+        output: str,
+        expected: str | None,
+        context: dict[str, Any] | None,
+        criterion: JudgmentCriterion,
     ) -> str:
         """Build evaluation prompt for LLM.
 
@@ -575,7 +594,12 @@ class JudgeEvaluator:
         for line in lines:
             line = line.strip()
             score_value, reasoning, current_section = self._parse_line(
-                line, score_value, reasoning, current_section, evidence, suggestions,
+                line,
+                score_value,
+                reasoning,
+                current_section,
+                evidence,
+                suggestions,
             )
         return self._create_verdict(score_value, reasoning, evidence, suggestions, criterion)
 
@@ -612,7 +636,11 @@ class JudgeEvaluator:
             return default
 
     def _parse_list_item(
-        self, line: str, section: str | None, evidence: list[str], suggestions: list[str],
+        self,
+        line: str,
+        section: str | None,
+        evidence: list[str],
+        suggestions: list[str],
     ) -> None:
         """Parse list item into appropriate list."""
         item = line.lstrip("-•").strip()
@@ -650,7 +678,10 @@ class JudgeEvaluator:
         )
 
     def _heuristic_evaluation(
-        self, output: str, expected: str | None, criterion: JudgmentCriterion,
+        self,
+        output: str,
+        expected: str | None,
+        criterion: JudgmentCriterion,
     ) -> JudgeVerdict:
         """Heuristic evaluation when LLM unavailable.
 
@@ -744,7 +775,8 @@ class JudgeEvaluator:
 
 # guardian: allow-magic-config
 def create_judge_evaluator(
-    llm_client: Callable[[str], Awaitable[str]] | None = None, pass_threshold: float = 0.7,
+    llm_client: Callable[[str], Awaitable[str]] | None = None,
+    pass_threshold: float = 0.7,
 ) -> JudgeEvaluator:
     """Factory function to create judge evaluator.
 

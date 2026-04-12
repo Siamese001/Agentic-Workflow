@@ -178,8 +178,11 @@ class SemanticCacheMixin:
     def semantic_cache(self):
         """Return canonical SemanticCacheManager singleton (no instance caching)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticCacheMixin.semantic_cache")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SemanticCacheMixin.semantic_cache"
+        )
 
         from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
 
@@ -190,13 +193,21 @@ class SemanticCacheMixin:
         return self.semantic_cache.recall(context, namespace)
 
     def semantic_learn(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float | None = None,
+        self,
+        context: str,
+        namespace: str,
+        result: dict[str, Any],
+        feedback_score: float | None = None,
     ) -> None:
         """Store in semantic cache working memory (Redis, 24h TTL)."""
         self.semantic_cache.learn(context, namespace, result, feedback_score)
 
     def semantic_promote(
-        self, context: str, namespace: str, result: dict[str, Any], feedback_score: float,
+        self,
+        context: str,
+        namespace: str,
+        result: dict[str, Any],
+        feedback_score: float,
     ) -> bool:
         """Promote high-value memory to long-term vector store."""
         return self.semantic_cache.promote_to_long_term(context, namespace, result, feedback_score)

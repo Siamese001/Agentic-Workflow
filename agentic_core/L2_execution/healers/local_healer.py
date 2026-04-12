@@ -15,6 +15,7 @@ from .failure_signal import FailureSignal
 @dataclass
 class HealResult:
     """Result of local healing attempt."""
+
     success: bool
     repair_applied: str
     original_error: str
@@ -160,10 +161,6 @@ class LocalHealer:
             reason=f"no_default_for_field:{field}",
         )
 
-    def register_rule(
-        self,
-        error_pattern: str,
-        handler: Callable[[FailureSignal], HealResult]
-    ) -> None:
+    def register_rule(self, error_pattern: str, handler: Callable[[FailureSignal], HealResult]) -> None:
         """Register a healing rule."""
         self._rules.append((error_pattern, handler))

@@ -91,13 +91,13 @@ class L4PerformanceOptimizer(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.pipeline = model_data.get('pipeline')
-            self.feature_names = model_data.get('feature_names', [])
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.pipeline = model_data.get("pipeline")
+            self.feature_names = model_data.get("feature_names", [])
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             self.is_loaded = True
 
@@ -107,22 +107,22 @@ class L4PerformanceOptimizer(BaseMLModel):
     def save_model(self, model_file_path: Path) -> None:
         """Save the model to file."""
         model_data = {
-            'pipeline': self.pipeline,
-            'feature_names': self.feature_names,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'class_names': self.class_names,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
+            "pipeline": self.pipeline,
+            "feature_names": self.feature_names,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "class_names": self.class_names,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -181,10 +181,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             predicted_action = self.OPTIMIZATION_MAPPING.get(int(predicted_class), "No_Action")
 
             # Create probability distribution
-            prob_distribution = {
-                self.class_names[i]: float(prob)
-                for i, prob in enumerate(probabilities)
-            }
+            prob_distribution = {self.class_names[i]: float(prob) for i, prob in enumerate(probabilities)}
 
             # Calculate confidence (max probability)
             confidence = float(np.max(probabilities))
@@ -217,16 +214,18 @@ class L4PerformanceOptimizer(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction_class': predicted_class,
-                'class_probabilities': [float(p) for p in probabilities],
-                'thresholds_passed': passes_threshold,
-                'optimization_action': predicted_action,
-                'requires_implementation': predicted_action != "No_Action",
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction_class": predicted_class,
+                    "class_probabilities": [float(p) for p in probabilities],
+                    "thresholds_passed": passes_threshold,
+                    "optimization_action": predicted_action,
+                    "requires_implementation": predicted_action != "No_Action",
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -273,10 +272,10 @@ class L4PerformanceOptimizer(BaseMLModel):
 
         if not extraction_result.success:
             return {
-                'optimization_action': 'No_Action',
-                'confidence': 0.0,
-                'reason': 'Feature extraction failed',
-                'recommendations': ['Check performance data availability'],
+                "optimization_action": "No_Action",
+                "confidence": 0.0,
+                "reason": "Feature extraction failed",
+                "recommendations": ["Check performance data availability"],
             }
 
         # Validate input
@@ -305,15 +304,17 @@ class L4PerformanceOptimizer(BaseMLModel):
         )
 
         return {
-            'optimization_action': prediction.prediction,
-            'confidence': prediction.confidence,
-            'probability_distribution': prediction.probability_distribution,
-            'top_factors': prediction.top_features,
-            'recommendations': recommendations,
-            'expected_impact': expected_impact,
-            'implementation_priority': self._get_implementation_priority(prediction.prediction, prediction.confidence),
-            'estimated_effort': self._estimate_implementation_effort(prediction.prediction),
-            'risk_level': self._assess_implementation_risk(prediction.prediction, performance_context),
+            "optimization_action": prediction.prediction,
+            "confidence": prediction.confidence,
+            "probability_distribution": prediction.probability_distribution,
+            "top_factors": prediction.top_features,
+            "recommendations": recommendations,
+            "expected_impact": expected_impact,
+            "implementation_priority": self._get_implementation_priority(
+                prediction.prediction, prediction.confidence
+            ),
+            "estimated_effort": self._estimate_implementation_effort(prediction.prediction),
+            "risk_level": self._assess_implementation_risk(prediction.prediction, performance_context),
         }
 
     def get_performance_insights(
@@ -345,9 +346,9 @@ class L4PerformanceOptimizer(BaseMLModel):
 
         if not extraction_result.success:
             return {
-                'insights': [],
-                'analysis': 'Feature extraction failed',
-                'recommendations': [],
+                "insights": [],
+                "analysis": "Feature extraction failed",
+                "recommendations": [],
             }
 
         features = extraction_result.features
@@ -356,87 +357,103 @@ class L4PerformanceOptimizer(BaseMLModel):
         insights = []
 
         # Response time trend insight
-        response_trend = features.get('response_time_trend', 0)
+        response_trend = features.get("response_time_trend", 0)
         if response_trend > 0.2:
-            insights.append({
-                'type': 'performance_degradation',
-                'severity': 'high',
-                'description': 'Response times are increasing significantly',
-                'impact': 'User experience and SLA compliance',
-            })
+            insights.append(
+                {
+                    "type": "performance_degradation",
+                    "severity": "high",
+                    "description": "Response times are increasing significantly",
+                    "impact": "User experience and SLA compliance",
+                }
+            )
         elif response_trend < -0.2:
-            insights.append({
-                'type': 'performance_improvement',
-                'severity': 'low',
-                'description': 'Response times are improving',
-                'impact': 'Positive trend in performance',
-            })
+            insights.append(
+                {
+                    "type": "performance_improvement",
+                    "severity": "low",
+                    "description": "Response times are improving",
+                    "impact": "Positive trend in performance",
+                }
+            )
 
         # Resource utilization insight
-        cpu_util = features.get('cpu_utilization_avg', 0)
-        memory_util = features.get('memory_utilization_avg', 0)
+        cpu_util = features.get("cpu_utilization_avg", 0)
+        memory_util = features.get("memory_utilization_avg", 0)
 
         if cpu_util > 80:
-            insights.append({
-                'type': 'resource_bottleneck',
-                'severity': 'high',
-                'description': f'High CPU utilization ({cpu_util:.1f}%)',
-                'impact': 'System performance and scalability',
-            })
+            insights.append(
+                {
+                    "type": "resource_bottleneck",
+                    "severity": "high",
+                    "description": f"High CPU utilization ({cpu_util:.1f}%)",
+                    "impact": "System performance and scalability",
+                }
+            )
 
         if memory_util > 80:
-            insights.append({
-                'type': 'resource_bottleneck',
-                'severity': 'high',
-                'description': f'High memory utilization ({memory_util:.1f}%)',
-                'impact': 'System stability and performance',
-            })
+            insights.append(
+                {
+                    "type": "resource_bottleneck",
+                    "severity": "high",
+                    "description": f"High memory utilization ({memory_util:.1f}%)",
+                    "impact": "System stability and performance",
+                }
+            )
 
         # SLA compliance insight
-        sla_compliance = features.get('sla_compliance_rate', 1.0)
+        sla_compliance = features.get("sla_compliance_rate", 1.0)
         if sla_compliance < 0.95:
-            insights.append({
-                'type': 'sla_violation',
-                'severity': 'high' if sla_compliance < 0.9 else 'medium',
-                'description': f'SLA compliance rate is {sla_compliance:.1%}',
-                'impact': 'Service level agreement compliance',
-            })
+            insights.append(
+                {
+                    "type": "sla_violation",
+                    "severity": "high" if sla_compliance < 0.9 else "medium",
+                    "description": f"SLA compliance rate is {sla_compliance:.1%}",
+                    "impact": "Service level agreement compliance",
+                }
+            )
 
         # Optimization potential insight
-        optimization_potential = features.get('optimization_potential', 0)
+        optimization_potential = features.get("optimization_potential", 0)
         if optimization_potential > 0.7:
-            insights.append({
-                'type': 'optimization_opportunity',
-                'severity': 'medium',
-                'description': 'High optimization potential detected',
-                'impact': 'Significant performance improvements possible',
-            })
+            insights.append(
+                {
+                    "type": "optimization_opportunity",
+                    "severity": "medium",
+                    "description": "High optimization potential detected",
+                    "impact": "Significant performance improvements possible",
+                }
+            )
 
         # Cost efficiency insight
-        cost_efficiency = features.get('cost_efficiency_score', 0.5)
+        cost_efficiency = features.get("cost_efficiency_score", 0.5)
         if cost_efficiency < 0.5:
-            insights.append({
-                'type': 'cost_inefficiency',
-                'severity': 'medium',
-                'description': 'Low cost efficiency detected',
-                'impact': 'Operational costs and resource utilization',
-            })
+            insights.append(
+                {
+                    "type": "cost_inefficiency",
+                    "severity": "medium",
+                    "description": "Low cost efficiency detected",
+                    "impact": "Operational costs and resource utilization",
+                }
+            )
 
         # Generate analysis summary
         analysis = self._generate_performance_analysis(features, insights)
 
         return {
-            'insights': insights,
-            'analysis': analysis,
-            'feature_analysis': {
-                'response_time_trend': response_trend,
-                'cpu_utilization': cpu_util,
-                'memory_utilization': memory_util,
-                'sla_compliance': sla_compliance,
-                'optimization_potential': optimization_potential,
-                'cost_efficiency': cost_efficiency,
+            "insights": insights,
+            "analysis": analysis,
+            "feature_analysis": {
+                "response_time_trend": response_trend,
+                "cpu_utilization": cpu_util,
+                "memory_utilization": memory_util,
+                "sla_compliance": sla_compliance,
+                "optimization_potential": optimization_potential,
+                "cost_efficiency": cost_efficiency,
             },
-            'recommendations': [insight['description'] for insight in insights if insight['severity'] in ['high', 'medium']],
+            "recommendations": [
+                insight["description"] for insight in insights if insight["severity"] in ["high", "medium"]
+            ],
         }
 
     def _generate_optimization_recommendations(
@@ -449,57 +466,71 @@ class L4PerformanceOptimizer(BaseMLModel):
         recommendations = []
 
         if action == "Scale_Up":
-            recommendations.extend([
-                "Increase CPU and memory resources",
-                "Consider vertical scaling for better performance",
-                "Monitor resource utilization after scaling",
-                "Update capacity planning forecasts",
-            ])
+            recommendations.extend(
+                [
+                    "Increase CPU and memory resources",
+                    "Consider vertical scaling for better performance",
+                    "Monitor resource utilization after scaling",
+                    "Update capacity planning forecasts",
+                ]
+            )
         elif action == "Scale_Down":
-            recommendations.extend([
-                "Reduce allocated resources to save costs",
-                "Implement auto-scaling policies",
-                "Monitor performance after scaling down",
-                "Ensure SLA compliance is maintained",
-            ])
+            recommendations.extend(
+                [
+                    "Reduce allocated resources to save costs",
+                    "Implement auto-scaling policies",
+                    "Monitor performance after scaling down",
+                    "Ensure SLA compliance is maintained",
+                ]
+            )
         elif action == "Optimize_Resources":
-            recommendations.extend([
-                "Analyze resource utilization patterns",
-                "Implement resource pooling",
-                "Optimize container configurations",
-                "Consider right-sizing instances",
-            ])
+            recommendations.extend(
+                [
+                    "Analyze resource utilization patterns",
+                    "Implement resource pooling",
+                    "Optimize container configurations",
+                    "Consider right-sizing instances",
+                ]
+            )
         elif action == "Tune_Configuration":
-            recommendations.extend([
-                "Review and optimize system configurations",
-                "Adjust timeout and retry policies",
-                "Optimize database connection pools",
-                "Fine-tune caching parameters",
-            ])
+            recommendations.extend(
+                [
+                    "Review and optimize system configurations",
+                    "Adjust timeout and retry policies",
+                    "Optimize database connection pools",
+                    "Fine-tune caching parameters",
+                ]
+            )
         elif action == "Add_Caching":
-            recommendations.extend([
-                "Implement application-level caching",
-                "Add CDN for static content",
-                "Optimize cache hit rates",
-                "Consider distributed caching",
-            ])
+            recommendations.extend(
+                [
+                    "Implement application-level caching",
+                    "Add CDN for static content",
+                    "Optimize cache hit rates",
+                    "Consider distributed caching",
+                ]
+            )
         elif action == "Load_Balance":
-            recommendations.extend([
-                "Implement load balancing across instances",
-                "Configure health checks",
-                "Optimize load balancing algorithms",
-                "Consider geographic load distribution",
-            ])
+            recommendations.extend(
+                [
+                    "Implement load balancing across instances",
+                    "Configure health checks",
+                    "Optimize load balancing algorithms",
+                    "Consider geographic load distribution",
+                ]
+            )
         else:  # No_Action
-            recommendations.extend([
-                "Current performance is optimal",
-                "Continue monitoring for changes",
-                "Maintain current configuration",
-                "Regular performance reviews recommended",
-            ])
+            recommendations.extend(
+                [
+                    "Current performance is optimal",
+                    "Continue monitoring for changes",
+                    "Maintain current configuration",
+                    "Regular performance reviews recommended",
+                ]
+            )
 
         # Add context-specific recommendations
-        bottleneck_severity = features.get('bottleneck_severity', 0)
+        bottleneck_severity = features.get("bottleneck_severity", 0)
         if bottleneck_severity > 0.7:
             recommendations.append("Address identified bottlenecks immediately")
 
@@ -624,12 +655,14 @@ class L4PerformanceOptimizer(BaseMLModel):
 
         return base_risk
 
-    def _generate_performance_analysis(self, features: dict[str, float], insights: list[dict[str, Any]]) -> str:
+    def _generate_performance_analysis(
+        self, features: dict[str, float], insights: list[dict[str, Any]]
+    ) -> str:
         """Generate performance analysis summary."""
         analysis_parts = []
 
         # Overall performance status
-        sla_compliance = features.get('sla_compliance_rate', 1.0)
+        sla_compliance = features.get("sla_compliance_rate", 1.0)
         if sla_compliance >= 0.95:
             analysis_parts.append("System performance is healthy with good SLA compliance.")
         elif sla_compliance >= 0.9:
@@ -638,8 +671,8 @@ class L4PerformanceOptimizer(BaseMLModel):
             analysis_parts.append("System performance requires attention due to SLA violations.")
 
         # Resource utilization
-        cpu_util = features.get('cpu_utilization_avg', 0)
-        memory_util = features.get('memory_utilization_avg', 0)
+        cpu_util = features.get("cpu_utilization_avg", 0)
+        memory_util = features.get("memory_utilization_avg", 0)
 
         if cpu_util > 80 or memory_util > 80:
             analysis_parts.append("High resource utilization detected, potential bottlenecks present.")
@@ -649,7 +682,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             analysis_parts.append("Resource utilization is within optimal range.")
 
         # Optimization opportunities
-        optimization_potential = features.get('optimization_potential', 0)
+        optimization_potential = features.get("optimization_potential", 0)
         if optimization_potential > 0.7:
             analysis_parts.append("Significant optimization opportunities available.")
         elif optimization_potential > 0.4:
@@ -658,7 +691,7 @@ class L4PerformanceOptimizer(BaseMLModel):
             analysis_parts.append("System is well-optimized.")
 
         # Cost efficiency
-        cost_efficiency = features.get('cost_efficiency_score', 0.5)
+        cost_efficiency = features.get("cost_efficiency_score", 0.5)
         if cost_efficiency < 0.5:
             analysis_parts.append("Cost efficiency could be improved.")
         else:
@@ -673,7 +706,7 @@ class L4PerformanceOptimizer(BaseMLModel):
 
         try:
             # Get feature importances from Random Forest
-            rf_model = self.pipeline.named_steps['classifier']
+            rf_model = self.pipeline.named_steps["classifier"]
             importances = rf_model.feature_importances_
 
             # Get feature names
@@ -682,20 +715,24 @@ class L4PerformanceOptimizer(BaseMLModel):
             # Create feature importance list
             feature_importance = []
             for i, (name, importance) in enumerate(zip(feature_names, importances)):
-                feature_importance.append({
-                    'feature_name': name,
-                    'importance_score': float(importance),
-                    'feature_value': model_input.features.get(name),
-                    'rank': i + 1,
-                    'relative_importance': float(importance / max(importances)) if max(importances) > 0 else 0.0,
-                })
+                feature_importance.append(
+                    {
+                        "feature_name": name,
+                        "importance_score": float(importance),
+                        "feature_value": model_input.features.get(name),
+                        "rank": i + 1,
+                        "relative_importance": float(importance / max(importances))
+                        if max(importances) > 0
+                        else 0.0,
+                    }
+                )
 
             # Sort by importance
-            feature_importance.sort(key=lambda x: x['importance_score'], reverse=True)
+            feature_importance.sort(key=lambda x: x["importance_score"], reverse=True)
 
             # Update ranks
             for i, feature in enumerate(feature_importance):
-                feature['rank'] = i + 1
+                feature["rank"] = i + 1
 
             # Return top 10 features
             return feature_importance[:10]
@@ -759,8 +796,8 @@ class L4PerformanceOptimizer(BaseMLModel):
         y = []
 
         for example in training_data:
-            features = example['features']
-            label = example['label']
+            features = example["features"]
+            label = example["label"]
 
             # Convert action type string to class index
             if isinstance(label, str):
@@ -780,17 +817,22 @@ class L4PerformanceOptimizer(BaseMLModel):
         y = np.array(y)
 
         # Create pipeline with scaling and Random Forest
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('classifier', RandomForestClassifier(
-                n_estimators=100,
-                max_depth=10,
-                min_samples_split=5,
-                min_samples_leaf=2,
-                random_state=42,
-                n_jobs=-1,
-            )),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "classifier",
+                    RandomForestClassifier(
+                        n_estimators=100,
+                        max_depth=10,
+                        min_samples_split=5,
+                        min_samples_leaf=2,
+                        random_state=42,
+                        n_jobs=-1,
+                    ),
+                ),
+            ]
+        )
 
         # Train model
         self.pipeline.fit(X, y)

@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class RateLimitConfig:
     """Rate limiting configuration."""
+
     requests_per_second: float = 10.0
     burst_size: int = 20
     cooldown_seconds: float = 1.0
@@ -63,7 +64,9 @@ class RateLimiter:
         """
         trace_id = f"rate_{client_id}_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "RateLimiter.is_allowed",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "RateLimiter.is_allowed",
         )
 
         bucket = self._buckets[client_id]

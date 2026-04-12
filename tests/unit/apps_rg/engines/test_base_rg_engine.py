@@ -1,4 +1,5 @@
 """Foundational behavioral tests for apps_rg/engines/base_rg_engine.py."""
+
 from __future__ import annotations
 
 import pytest
@@ -9,6 +10,7 @@ from pydantic import BaseModel
 @pytest.fixture
 def base_rg_engine():
     from apps_rg.engines.base_rg_engine import BaseRGEngine
+
     return BaseRGEngine
 
 
@@ -21,6 +23,7 @@ class _DummyInput(BaseModel):
 
 class _DummyEngine:
     """Dummy engine for testing - avoids BaseRGEngine import at module level."""
+
     AGENT_ID = "dummy"
 
     def __init__(self):

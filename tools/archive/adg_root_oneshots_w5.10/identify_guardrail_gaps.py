@@ -134,8 +134,7 @@ def identify_guardrail_gaps():
     )
     d0_files = cur.fetchone()[0]
     cur.execute(
-        "SELECT COUNT(DISTINCT source_file) FROM edges "
-        "WHERE relation_type = 'generates_prompt'",
+        "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = 'generates_prompt'",
     )
     total_prompt_files = cur.fetchone()[0]
     if total_prompt_files > 0:
@@ -179,8 +178,7 @@ def identify_guardrail_gaps():
     print(f"\nInstruction injection sources tracked: {inj_count}")
     if inj_count < 5:
         print(
-            "  WARNING: Very low injection source tracking — "
-            "scanner may need wider symbol coverage",
+            "  WARNING: Very low injection source tracking — scanner may need wider symbol coverage",
         )
 
     # Summary

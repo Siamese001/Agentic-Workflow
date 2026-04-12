@@ -30,7 +30,7 @@ from agentic_core.core.test_quality_framework import (
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -72,7 +72,7 @@ def enhance_test_assertions(test_path: Path) -> bool:
 
     try:
         # Read original content
-        with open(test_path, encoding='utf-8') as f:
+        with open(test_path, encoding="utf-8") as f:
             original_content = f.read()
 
         # Enhance assertions
@@ -80,7 +80,7 @@ def enhance_test_assertions(test_path: Path) -> bool:
 
         # Write enhanced content
         enhanced_path = test_path.parent / f"{test_path.stem}_enhanced.py"
-        with open(enhanced_path, 'w', encoding='utf-8') as f:
+        with open(enhanced_path, "w", encoding="utf-8") as f:
             f.write(enhanced_content)
 
         logger.info(f"Enhanced test saved to: {enhanced_path}")
@@ -126,15 +126,15 @@ def create_enhanced_test_template(source_path: Path, output_path: Path | None = 
 
     try:
         # Extract class and method information from source
-        with open(source_path, encoding='utf-8') as f:
+        with open(source_path, encoding="utf-8") as f:
             source_content = f.read()
 
         # Simple parsing to extract class and method names
         # In a real implementation, this would use AST parsing
         import re
 
-        class_pattern = r'class\s+(\w+)'
-        method_pattern = r'def\s+(\w+)\s*\('
+        class_pattern = r"class\s+(\w+)"
+        method_pattern = r"def\s+(\w+)\s*\("
 
         classes = re.findall(class_pattern, source_content)
         methods = re.findall(method_pattern, source_content)
@@ -153,11 +153,11 @@ def create_enhanced_test_template(source_path: Path, output_path: Path | None = 
 
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(output_path, 'w', encoding='utf-8') as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(f'"""Enhanced test for {source_path.name} with comprehensive validation.\n\n')
-            f.write(f'Generated automatically from: {source_path.name}\n')
-            f.write(f'Classes found: {classes}\n')
-            f.write(f'Methods found: {methods[:10]}...\n')
+            f.write(f"Generated automatically from: {source_path.name}\n")
+            f.write(f"Classes found: {classes}\n")
+            f.write(f"Methods found: {methods[:10]}...\n")
             f.write('"""\n\n')
             f.write(template)
 
@@ -200,9 +200,9 @@ def improve_test_directory(test_dir: Path, recursive: bool = True) -> bool:
     total_files = len(test_files)
     files_with_issues = len(set(issue.file_path for issue in all_issues))
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("TEST QUALITY ANALYSIS REPORT")
-    print("="*80)
+    print("=" * 80)
     print(f"Total test files analyzed: {total_files}")
     print(f"Files with quality issues: {files_with_issues}")
     print(f"Total quality issues found: {len(all_issues)}")
@@ -228,7 +228,7 @@ def improve_test_directory(test_dir: Path, recursive: bool = True) -> bool:
         for file_path, count in sorted(file_issue_counts.items(), key=lambda x: x[1], reverse=True)[:5]:
             print(f"  {Path(file_path).name}: {count} issues")
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
 
     return len(all_issues) == 0
 
@@ -239,31 +239,31 @@ def main():
         description="Test Quality Improvement Tool - Phase 3 Implementation",
     )
 
-    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # Analyze command
-    analyze_parser = subparsers.add_parser('analyze', help='Analyze test quality')
-    analyze_parser.add_argument('paths', nargs='+', help='Test files or directories to analyze')
-    analyze_parser.add_argument('--recursive', action='store_true', help='Analyze directories recursively')
+    analyze_parser = subparsers.add_parser("analyze", help="Analyze test quality")
+    analyze_parser.add_argument("paths", nargs="+", help="Test files or directories to analyze")
+    analyze_parser.add_argument("--recursive", action="store_true", help="Analyze directories recursively")
 
     # Enhance command
-    enhance_parser = subparsers.add_parser('enhance', help='Enhance test assertions')
-    enhance_parser.add_argument('test_file', help='Test file to enhance')
+    enhance_parser = subparsers.add_parser("enhance", help="Enhance test assertions")
+    enhance_parser.add_argument("test_file", help="Test file to enhance")
 
     # Coverage command
-    coverage_parser = subparsers.add_parser('coverage', help='Analyze coverage gaps')
-    coverage_parser.add_argument('source_file', help='Source file to analyze')
-    coverage_parser.add_argument('test_file', help='Test file to analyze')
+    coverage_parser = subparsers.add_parser("coverage", help="Analyze coverage gaps")
+    coverage_parser.add_argument("source_file", help="Source file to analyze")
+    coverage_parser.add_argument("test_file", help="Test file to analyze")
 
     # Template command
-    template_parser = subparsers.add_parser('template', help='Create enhanced test template')
-    template_parser.add_argument('source_file', help='Source file to create template for')
-    template_parser.add_argument('--output', help='Output path for template')
+    template_parser = subparsers.add_parser("template", help="Create enhanced test template")
+    template_parser.add_argument("source_file", help="Source file to create template for")
+    template_parser.add_argument("--output", help="Output path for template")
 
     # Improve directory command
-    improve_parser = subparsers.add_parser('improve', help='Improve test directory')
-    improve_parser.add_argument('test_dir', help='Test directory to improve')
-    improve_parser.add_argument('--recursive', action='store_true', default=True, help='Analyze recursively')
+    improve_parser = subparsers.add_parser("improve", help="Improve test directory")
+    improve_parser.add_argument("test_dir", help="Test directory to improve")
+    improve_parser.add_argument("--recursive", action="store_true", default=True, help="Analyze recursively")
 
     args = parser.parse_args()
 
@@ -273,7 +273,7 @@ def main():
 
     success = True
 
-    if args.command == 'analyze':
+    if args.command == "analyze":
         paths = [Path(p) for p in args.paths]
         for path in paths:
             if path.is_dir():
@@ -282,17 +282,17 @@ def main():
             else:
                 success &= analyze_test_quality([path])
 
-    elif args.command == 'enhance':
+    elif args.command == "enhance":
         success = enhance_test_assertions(Path(args.test_file))
 
-    elif args.command == 'coverage':
+    elif args.command == "coverage":
         success = analyze_coverage_gaps(Path(args.source_file), Path(args.test_file))
 
-    elif args.command == 'template':
+    elif args.command == "template":
         output_path = Path(args.output) if args.output else None
         success = create_enhanced_test_template(Path(args.source_file), output_path)
 
-    elif args.command == 'improve':
+    elif args.command == "improve":
         success = improve_test_directory(Path(args.test_dir), args.recursive)
 
     return 0 if success else 1

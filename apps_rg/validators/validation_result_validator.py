@@ -187,8 +187,11 @@ class WordCountEnforcementEngine:
 
     def validate_content(self, content: str, content_type: str) -> ValidationResult:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "WordCountEnforcementEngine.validate_content")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "WordCountEnforcementEngine.validate_content"
+        )
 
         constraints = self.constraints.get(content_type)
         if not constraints:
@@ -204,7 +207,10 @@ class WordCountEnforcementEngine:
 
     # guardian: allow-magic-config
     def enforce_with_regeneration(
-        self, content: str, content_type: str, max_attempts: int = 3,
+        self,
+        content: str,
+        content_type: str,
+        max_attempts: int = 3,
     ) -> dict[str, Any]:
         """
         Attempt to enforce constraints and return signed result.

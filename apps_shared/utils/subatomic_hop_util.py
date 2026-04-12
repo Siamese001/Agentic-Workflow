@@ -90,66 +90,87 @@ _emit_links_execution_to_snapshot("p4", "subatomic_hop_util", "exec_snapshot_lin
 # from .service_container import ServiceContainer, get_default_container
 # from .shared_models import HopState, MicroCheckpoint, MicroStage, RetryPolicy, StageTransition
 
+
 # Stub classes for missing imports
 class QualityThresholds:
     MIN_QUALITY_SCORE = 0.7
 
+
 class SignalQuality:
     pass
+
 
 class MutationRequest:
     pass
 
+
 class ReflectionConfig:
     pass
+
 
 class ReflectionEngine:
     pass
 
+
 class CircuitBreakerConfig:
     pass
+
 
 class CircuitBreakerFactory:
     pass
 
+
 class CircuitOpenError(Exception):
     pass
+
 
 class CriticalServiceFailure(Exception):
     pass
 
+
 class CheckpointIntegrityError(Exception):
     pass
+
 
 class CheckpointManagerFactory:
     pass
 
+
 class ServiceContainer:
     pass
+
 
 def get_default_container():
     return ServiceContainer()
 
+
 def get_signal_enhancer():
     return SignalQuality()
+
 
 def get_reflection_engine():
     return ReflectionEngine()
 
+
 class HopState:
     pass
+
 
 class MicroCheckpoint:
     pass
 
+
 class MicroStage:
     pass
+
 
 class RetryPolicy:
     pass
 
+
 class StageTransition:
     pass
+
 
 STANDARD_CRITERIA = {}
 
@@ -740,7 +761,7 @@ class SubatomicHop:
 
                     # Apply injections
                     enhanced_prompt = loader.apply_injections(base_prompt, matches)
-    # guardian: CircuitOpenError should be handled with specific context
+                    # guardian: CircuitOpenError should be handled with specific context
                     # Parse back (for stages that use structured prompts)
                     try:
                         # Extract just the prompt part (before injection metadata)
@@ -794,7 +815,7 @@ class SubatomicHop:
 
             return {"output": result}
 
-        except CircuitOpenError:    # guardian: CircuitOpenError should be handled with specific context
+        except CircuitOpenError:  # guardian: CircuitOpenError should be handled with specific context
             # Circuit is open - generation is failing
             logger.critical("Generation Circuit OPEN. Node failed.")
             # No fallback possible for generation - raise critical failure
@@ -983,7 +1004,9 @@ class SubatomicHop:
 
     def _transition_to(self, stage: MicroStage) -> None:
         """Transition to a new stage and log the event."""
-        from_stage = self.current_stage    # guardian: CheckpointIntegrityError should be handled with specific context
+        from_stage = (
+            self.current_stage
+        )  # guardian: CheckpointIntegrityError should be handled with specific context
         self.current_stage = stage
 
         # Log structured event
@@ -1037,7 +1060,9 @@ class SubatomicHop:
                 logger.info(
                     f"Resumed hop {self.config.hop_id} from stage {latest_checkpoint.stage.value}",
                 )
-        except CheckpointIntegrityError as e:    # guardian: CheckpointIntegrityError should be handled with specific context
+        except (
+            CheckpointIntegrityError
+        ) as e:  # guardian: CheckpointIntegrityError should be handled with specific context
             logger.error(f"Checkpoint integrity validation failed: {e}")
             # Quarantine all checkpoints and start fresh
             self.checkpoint_manager.quarantine_all_checkpoints()

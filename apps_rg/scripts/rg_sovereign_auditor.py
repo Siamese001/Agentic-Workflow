@@ -179,13 +179,17 @@ class RGSovereignAuditor:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             try:
                 tree = ast.parse(content)
-            except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
                 return {"error": "Syntax error - cannot analyze"}
             classes = self._extract_classes(tree)
             imports = self._extract_imports(tree)
             functions = self._extract_functions(tree)
             classification, details = self._classify_file_logic(
-                file_path.name, content, classes, imports, functions,
+                file_path.name,
+                content,
+                classes,
+                imports,
+                functions,
             )
             return {
                 "classification": classification,
@@ -269,7 +273,12 @@ class RGSovereignAuditor:
         return functions
 
     def _classify_file_logic(
-        self, filename: str, content: str, classes: list[dict], imports: list[str], functions: list[dict],
+        self,
+        filename: str,
+        content: str,
+        classes: list[dict],
+        imports: list[str],
+        functions: list[dict],
     ) -> tuple[str, dict]:
         """Classify file based on actual logic and structure."""
         legacy_indicators = ["v1", "v2", "v3", "_old", "_deprecated", "_legacy", "old_", "deprecated"]
@@ -386,8 +395,11 @@ class RGSovereignAuditor:
     def audit_directory(self) -> dict:
         """Perform comprehensive audit of apps_rg directory."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RGSovereignAuditor.audit_directory")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RGSovereignAuditor.audit_directory"
+        )
 
         if not self.base_path.exists():
             return {"error": f"Directory {self.base_path} does not exist"}

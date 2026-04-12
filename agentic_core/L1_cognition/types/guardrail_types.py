@@ -36,7 +36,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
     emit_determinism_digest,  # noqa: E402
-    )
+)
 
 _emit_emits_metric_event("guardrail_types", "p4obs", "metric_1")
 _emit_emits_metric_event("guardrail_types", "p4obs", "metric_2")
@@ -89,6 +89,7 @@ emit_determinism_digest("trace_guardrail_types", "guardrail_types_policy_verify"
 
 class GuardrailAction(Enum):
     """Actions that can be taken when a guardrail is triggered."""
+
     ALLOW = "allow"
     WARN = "warn"
     BLOCK = "block"
@@ -98,6 +99,7 @@ class GuardrailAction(Enum):
 
 class GuardrailSeverity(Enum):
     """Severity levels for guardrail violations."""
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -106,6 +108,7 @@ class GuardrailSeverity(Enum):
 
 class ContentType(Enum):
     """Types of content that can be filtered."""
+
     TEXT = "text"
     CODE = "code"
     URL = "url"
@@ -209,6 +212,7 @@ class ContentFilter:
         # Check pattern
         if self.pattern:
             import re
+
             if re.search(self.pattern, content, re.IGNORECASE):
                 confidence = max(confidence, 0.8)
 

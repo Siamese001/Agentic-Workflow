@@ -2,6 +2,7 @@
 
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
+
 from __future__ import annotations
 
 import ast
@@ -11,10 +12,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-_SRC = (
-    pathlib.Path(__file__).parents[5]
-    / "agentic_core" / "L5_safety" / "reasoning" / "GovernanceAgent.py"
-)
+_SRC = pathlib.Path(__file__).parents[5] / "agentic_core" / "L5_safety" / "reasoning" / "GovernanceAgent.py"
 
 
 def _tree():
@@ -56,6 +54,7 @@ class TestGovernanceAgentSource:
 
     def test_has_module_level_heal_function(self):
         pass
+
     """Test has_module_level_heal_function runtime behavior."""
     # Arrange
     # TODO: Set up test data for has_module_level_heal_function
@@ -70,6 +69,7 @@ class TestGovernanceAgentSource:
     # Assert
     assert result is not None, "Function should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+
     # TODO: Add specific runtime behavior assertions
     def test_heal_references_manual_required(self):
         assert "manual_required" in _src_text()

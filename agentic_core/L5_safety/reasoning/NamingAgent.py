@@ -210,7 +210,11 @@ class NamingAgent(PromptRenderingMixin, SovereignBaseAgent):
 
     # guardian: allow-type-erasure -- return dict has dynamic keys for orchestration compatibility
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, depth: int = 0, **kwargs: Any,
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """Autonomous healing method (Canon Key 51 compliance)."""
         import uuid as _uuid  # noqa: PLC0415

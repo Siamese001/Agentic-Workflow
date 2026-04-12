@@ -25,7 +25,7 @@ from hollow_file_cleanup import (
 def test_analyze_file_hollow():
     """Test analysis of a hollow file."""
     # Create temporary hollow file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 import os
 import sys
@@ -50,7 +50,7 @@ _emit_applies_guardrail("test", "test", "test")
 def test_analyze_file_healthy():
     """Test analysis of a healthy file."""
     # Create temporary healthy file
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("""
 import os
 
@@ -153,7 +153,7 @@ def test_try_adg_enhancement_no_adg():
     assert len(enhanced.tier1_safe_delete) == 1
 
 
-@patch('hollow_file_cleanup.HollowFileCleanupAnalyzer.analyze_file')
+@patch("hollow_file_cleanup.HollowFileCleanupAnalyzer.analyze_file")
 def test_scan_repository(mock_analyze):
     """Test repository scanning."""
     # Mock analyze_file to return hollow files
@@ -182,13 +182,13 @@ def test_scan_repository(mock_analyze):
         ),
     ]
 
-    with patch('pathlib.Path.rglob') as mock_rglob:
+    with patch("pathlib.Path.rglob") as mock_rglob:
         mock_rglob.return_value = [Path("hollow1.py"), Path("hollow2.py"), Path("healthy.py")]
 
         analyzer = HollowFileCleanupAnalyzer(Path("."))
 
         # Mock file existence check
-        with patch('pathlib.Path.exists', return_value=True):
+        with patch("pathlib.Path.exists", return_value=True):
             results = analyzer.scan_repository()
 
     assert len(results) == 2  # Only hollow files returned
@@ -198,7 +198,7 @@ def test_scan_repository(mock_analyze):
 def test_analyze_file_syntax_error():
     """Test analysis of file with syntax error."""
     # Create temporary file with syntax error
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as f:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write("def broken(\n")  # Missing closing parenthesis
         temp_path = Path(f.name)
 

@@ -38,6 +38,7 @@ from agentic_core.L2_execution.utils.cpu_optimizer import (
 @dataclass
 class BenchmarkResult:
     """Single benchmark run result."""
+
     workers: int
     mode: str
     wall_s: float
@@ -429,8 +430,10 @@ def run_worker_matrix_benchmark(files: list[str]) -> dict[str, Any]:
     print("RECOMMENDED CONFIGURATIONS")
     print("=" * 70)
     for mode_name, rec in recommendations.items():
-        print(f"  {mode_name:12s}: {rec['optimal_workers']} workers  "
-              f"({rec['wall_s']:.3f}s, {rec['temperature_c']:.1f}°C)")
+        print(
+            f"  {mode_name:12s}: {rec['optimal_workers']} workers  "
+            f"({rec['wall_s']:.3f}s, {rec['temperature_c']:.1f}°C)"
+        )
 
     # Safe baseline per optimization plan
     defaults = get_recommended_defaults()
@@ -444,10 +447,7 @@ def run_worker_matrix_benchmark(files: list[str]) -> dict[str, Any]:
     print(f"  network_io:           {defaults['network_io']:2d} workers")
 
     return {
-        "matrix": {
-            mode: [asdict(r) for r in results]
-            for mode, results in matrix_results.items()
-        },
+        "matrix": {mode: [asdict(r) for r in results] for mode, results in matrix_results.items()},
         "recommendations": recommendations,
         "safe_baseline": defaults,
     }
@@ -497,8 +497,10 @@ if __name__ == "__main__":
 
     # Optionally run worker matrix (can be slow)
     import os
+
     if os.environ.get("CPU_BENCHMARK_MATRIX"):
         from agentic_core.adg.extraction.static_scanner import _iter_python_files
+
         files = [str(p) for p in _iter_python_files(ROOT)]
         matrix_results = run_worker_matrix_benchmark(files)
         results["worker_matrix"] = matrix_results

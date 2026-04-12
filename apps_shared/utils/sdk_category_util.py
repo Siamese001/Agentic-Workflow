@@ -199,6 +199,7 @@ class SDKEntry:
     def has_api_key(self) -> bool:
         """Check if required API key is set."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SDKEntry.has_api_key")
 
@@ -352,7 +353,10 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         description="Lightweight PDF text extraction",
     ),
     "mcp": SDKEntry(
-        name="mcp", category=SDKCategory.MCP, module="mcp", description="MCP SDK for building tool servers",
+        name="mcp",
+        category=SDKCategory.MCP,
+        module="mcp",
+        description="MCP SDK for building tool servers",
     ),
     "fastmcp": SDKEntry(
         name="fastmcp",
@@ -464,6 +468,7 @@ def get_vector_store(config: dict[str, Any] | None = None) -> Any:
 
         def add(self, documents: list, ids: list = None):
             import uuid as _uuid  # noqa: PLC0415
+
             _trace_id = str(_uuid.uuid4())
             _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MockCollection.add")
 
@@ -480,8 +485,11 @@ def get_vector_store(config: dict[str, Any] | None = None) -> Any:
 
         def add_documents(self, collection_name: str, documents: list, ids: list = None):
             import uuid as _uuid  # noqa: PLC0415
+
             _trace_id = str(_uuid.uuid4())
-            _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MockVectorStore.add_documents")
+            _emit_records_execution_trace(
+                _trace_id, LayerSegment.L3_ORCHESTRATION, "MockVectorStore.add_documents"
+            )
 
             if collection_name not in self.collections:
                 self.collections[collection_name] = []

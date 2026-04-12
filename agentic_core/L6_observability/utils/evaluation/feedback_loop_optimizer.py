@@ -176,7 +176,11 @@ class FeedbackLoopOptimizer:
         # Apply adaptive sampling
         if not self._should_sample(priority, backpressure):
             self._signals_dropped += 1
-            logger.debug("SIGNAL_DROPPED: backpressure=%s sampling_rate=%.2f", backpressure.value, self._current_sampling_rate)
+            logger.debug(
+                "SIGNAL_DROPPED: backpressure=%s sampling_rate=%.2f",
+                backpressure.value,
+                self._current_sampling_rate,
+            )
             return False
 
         # Check queue capacity
@@ -233,7 +237,12 @@ class FeedbackLoopOptimizer:
             self._processing_times.append(processing_time)
             self._last_process_time = time.time()
 
-            logger.info("BATCH_PROCESSED: count=%d time_ms=%.2f queue_remaining=%d", len(processed), processing_time, len(self._queue))
+            logger.info(
+                "BATCH_PROCESSED: count=%d time_ms=%.2f queue_remaining=%d",
+                len(processed),
+                processing_time,
+                len(self._queue),
+            )
 
         # Update adaptive sampling rate
         self._update_sampling_rate()
@@ -243,9 +252,7 @@ class FeedbackLoopOptimizer:
     def get_metrics(self) -> FeedbackLoopMetrics:
         """Get feedback loop metrics."""
         avg_processing_time = (
-            sum(self._processing_times) / len(self._processing_times)
-            if self._processing_times
-            else 0.0
+            sum(self._processing_times) / len(self._processing_times) if self._processing_times else 0.0
         )
 
         # Calculate throughput

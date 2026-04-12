@@ -162,7 +162,10 @@ class HealingAgentProtocol(Protocol):
     """Protocol for any agent that can heal a repository."""
 
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, **kwargs: Any,
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        **kwargs: Any,
     ) -> dict[str, Any]: ...
 
 
@@ -180,6 +183,7 @@ class SafetyAgentFactory:
     def get(self, agent_name: str) -> HealingAgentProtocol | None:
         """Return an agent instance by name, or None if unavailable."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyAgentFactory.get")
 

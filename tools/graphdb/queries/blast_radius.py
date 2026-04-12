@@ -273,7 +273,9 @@ class BlastRadiusQueries:
 
         # Find broken dependencies
         broken_dependencies = []
-        for neighbor in tqdm(list(self.graph.neighbors(removed_node)), desc="broken deps", unit="node", leave=False):
+        for neighbor in tqdm(
+            list(self.graph.neighbors(removed_node)), desc="broken deps", unit="node", leave=False
+        ):
             neighbor_attrs = self.graph.nodes[neighbor]
             edge_attrs = self.graph.edges[removed_node, neighbor]
 

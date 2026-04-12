@@ -6,6 +6,7 @@ already in the file, and append the missing names right after it.
 If no such line exists, append individual from-import lines after find_last_import().
 Does NOT touch any existing import blocks.
 """
+
 import ast
 import csv
 import sys
@@ -28,8 +29,12 @@ ALL_EMIT_FUNCS = [
 ]
 
 SKIP_PATTERNS = {
-    "_constants.py", "conftest.py", "structure_blueprint_config.py",
-    "ssot_tier_constants.py", "path_constants.py", "lifecycle_trace_contract.py",
+    "_constants.py",
+    "conftest.py",
+    "structure_blueprint_config.py",
+    "ssot_tier_constants.py",
+    "path_constants.py",
+    "lifecycle_trace_contract.py",
 }
 
 
@@ -73,9 +78,12 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
     lines = src.split("\n")
 
     # Find which funcs are called but not imported
-    missing = [f for f in ALL_EMIT_FUNCS
-               if f"({f}(" in src or src.startswith(f"{f}(") or f"\n{f}(" in src
-               if not is_func_imported(f, lines)]
+    missing = [
+        f
+        for f in ALL_EMIT_FUNCS
+        if f"({f}(" in src or src.startswith(f"{f}(") or f"\n{f}(" in src
+        if not is_func_imported(f, lines)
+    ]
 
     # More precise call detection
     missing = []
@@ -108,7 +116,7 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
     # Build import lines to insert
     import_lines = [f"from {CONTRACT} import {func}  # noqa: E402" for func in missing]
 
-    result = lines[:insert_after + 1] + import_lines + lines[insert_after + 1:]
+    result = lines[: insert_after + 1] + import_lines + lines[insert_after + 1 :]
     new_src = "\n".join(result)
 
     try:
@@ -126,9 +134,12 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
 def main():
     # Collect all Python files that were wired (from deficit CSV + git diff)
     import subprocess
+
     result = subprocess.run(
         ["git", "diff", "--name-only"],
-        cwd=str(PROJECT_ROOT), capture_output=True, text=True,
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
     )
     changed = {l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")}
 

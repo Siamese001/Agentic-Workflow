@@ -13,7 +13,9 @@ def _get_registry():
     from agentic_core.L3_orchestration.utils.registry.agent_dispatch_registry import (
         get_agent_dispatch_registry,
     )
+
     return get_agent_dispatch_registry()
+
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -176,7 +178,6 @@ except ImportError:  # guardian: allow-silent-swallow
 
     class Colors:
         RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = DIM = ""
-
 
 
 try:
@@ -353,7 +354,8 @@ def _update_redis_state(operation: str, key: str, hit: bool = None):
         total = redis["cache_hits"] + redis["cache_misses"]
         redis["hit_rate"] = redis["cache_hits"] / total if total > 0 else 0.0
     redis["recent_operations"].insert(
-        0, {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()},
+        0,
+        {"operation": operation, "key": key, "hit": hit, "timestamp": datetime.now().isoformat()},
     )
     redis["recent_operations"] = redis["recent_operations"][:20]
 
@@ -456,11 +458,16 @@ def main():
     global _mission_executed
     parser = argparse.ArgumentParser(description="Canon Validator One-File Runner (Thin Wrapper)")
     parser.add_argument(
-        "--target", type=str, default=".", help="Target folder for validation (default: entire repo)",
+        "--target",
+        type=str,
+        default=".",
+        help="Target folder for validation (default: entire repo)",
     )
     parser.add_argument("--reset", action="store_true", help="Reset sovereign state before validation")
     parser.add_argument(
-        "--heal", action="store_true", help="Run autonomous domain healing (default: execute mode)",
+        "--heal",
+        action="store_true",
+        help="Run autonomous domain healing (default: execute mode)",
     )
     parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no mutations)")
     parser.add_argument("--execute-heal", action="store_true", help=argparse.SUPPRESS)
@@ -470,11 +477,16 @@ def main():
         help="Run a specific agent directly (e.g., 'naming', 'location', 'hierarchy', 'filesystem', 'governance', 'guardian')",
     )
     parser.add_argument(
-        "--execute", action="store_true", help="Execute changes (use with --agent, same as --execute-heal)",
+        "--execute",
+        action="store_true",
+        help="Execute changes (use with --agent, same as --execute-heal)",
     )
     parser.add_argument("--list-agents", action="store_true", help="List all discoverable agents")
     parser.add_argument(
-        "--yes", "-y", action="store_true", help="Automatic yes to all prompts (non-interactive mode)",
+        "--yes",
+        "-y",
+        action="store_true",
+        help="Automatic yes to all prompts (non-interactive mode)",
     )
     parser.add_argument("--report", action="store_true", help="Run autonomy compliance report")
     parser.add_argument(
@@ -518,7 +530,11 @@ def main():
             purge_volatile_state()
             print("   [OK] Volatile state purged - SSL fixes will take effect on clean slate")
         # guardian: allow-silent-swallow
-        except (OSError, ImportError, RuntimeError) as e:  # guardian: allow-specific -- state reset failure non-critical
+        except (
+            OSError,
+            ImportError,
+            RuntimeError,
+        ) as e:  # guardian: allow-specific -- state reset failure non-critical
             print(f"   [!] Reset failed: {e}")
 
     def process_discovery_data(data):
@@ -546,7 +562,11 @@ def main():
             agents = process_discovery_data(discovery_data)
             print(f"   [OK] SSOT Verified: {len(agents)} agents discovered")
         # guardian: allow-silent-swallow
-        except (OSError, ImportError, RuntimeError) as e:  # guardian: allow-specific -- discovery failure returns empty
+        except (
+            OSError,
+            ImportError,
+            RuntimeError,
+        ) as e:  # guardian: allow-specific -- discovery failure returns empty
             print(f"   [!] Live discovery failed: {e}")
             traceback.print_exc()
             return []
@@ -577,7 +597,11 @@ def main():
             print("   [TARGETS] Exceptions config loaded from agentic_core/config/autonomy_targets.py")
             guardian.generate_compliance_report(context={"target_resolver": get_target})
         # guardian: allow-silent-swallow
-        except (ImportError, OSError, RuntimeError) as e:  # guardian: allow-specific -- report generation failure non-critical
+        except (
+            ImportError,
+            OSError,
+            RuntimeError,
+        ) as e:  # guardian: allow-specific -- report generation failure non-critical
             print(f"   [!] Report failed: {e}")
             traceback.print_exc()
         return
@@ -661,7 +685,11 @@ def main():
                 if result:
                     print(f"   Result: {result}")
         # guardian: allow-silent-swallow
-        except (ImportError, AttributeError, RuntimeError) as e:  # guardian: allow-specific -- agent invocation failure exits
+        except (
+            ImportError,
+            AttributeError,
+            RuntimeError,
+        ) as e:  # guardian: allow-specific -- agent invocation failure exits
             print(f"   [!] Agent invocation failed: {e}")
             traceback.print_exc()
             sys.exit(1)
@@ -673,7 +701,9 @@ def main():
         Orchestrator = _get_orchestrator_class()
         HealingStrategy = load_healing_strategy().HealingStrategy
         report_only = args.report
-        execute_heal = getattr(args, "execute_heal", False) or getattr(args, "execute", False) or not report_only
+        execute_heal = (
+            getattr(args, "execute_heal", False) or getattr(args, "execute", False) or not report_only
+        )
         mode_str = "EXECUTE" if execute_heal else "DRY-RUN"
         if args.preflight_only:
             print("\n[*] PREFLIGHT MODE - Running mandatory checks only")
@@ -752,7 +782,9 @@ def main():
             else:
                 print("\n   [TIER FILTER] Running ALL tiers (0-4)")
             orchestrator = Orchestrator(
-                strategy=strategy, project_root=project_root, name="SovereignHealOrchestrator",
+                strategy=strategy,
+                project_root=project_root,
+                name="SovereignHealOrchestrator",
             )
             checkpoint_manager = get_checkpoint_manager(project_root)
             performance_analyst = get_performance_analyst_safe(project_root)

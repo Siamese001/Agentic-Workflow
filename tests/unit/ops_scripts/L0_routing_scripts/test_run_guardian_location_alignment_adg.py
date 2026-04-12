@@ -16,14 +16,17 @@ class TestRunGuardianLocationAlignmentAdg:
     def test_run_guardian_location_alignment_adg_imports(self):
         """Test run_guardian_location_alignment_adg module imports."""
         from agentic_core import run_guardian_location_alignment_adg
+
         assert run_guardian_location_alignment_adg is not None
 
     def test_run_guardian_location_alignment_adg_class(self):
         """Test RunGuardianLocationAlignmentAdg class exists."""
         from agentic_core import RunGuardianLocationAlignmentAdg
+
         assert RunGuardianLocationAlignmentAdg is not None
 
     def test_run_guardian_location_alignment_adg_callable(self):
         """Test run_guardian_location_alignment_adg functions are callable."""
         from agentic_core import validate_run_guardian_location_alignment_adg
+
         assert callable(validate_run_guardian_location_alignment_adg)

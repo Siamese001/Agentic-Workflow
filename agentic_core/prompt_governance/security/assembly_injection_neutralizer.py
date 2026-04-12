@@ -25,7 +25,8 @@ DEFAULT_PATTERNS: Sequence[InjectionPattern] = [
     InjectionPattern(
         name="IGNORE_INSTRUCTIONS_ATTACK",
         regex=re.compile(
-            "(ignore|disregard|override|forget) (all|any|previous|prior) instructions", re.IGNORECASE,
+            "(ignore|disregard|override|forget) (all|any|previous|prior) instructions",
+            re.IGNORECASE,
         ),
     ),
     InjectionPattern(
@@ -40,7 +41,8 @@ DEFAULT_PATTERNS: Sequence[InjectionPattern] = [
 
 
 def neutralize_prompt(
-    prompt: str, patterns: Sequence[InjectionPattern] = DEFAULT_PATTERNS,
+    prompt: str,
+    patterns: Sequence[InjectionPattern] = DEFAULT_PATTERNS,
 ) -> NeutralizationResult:
     """
     Detects and neutralizes prompt injection attacks in a given prompt string.
@@ -79,7 +81,8 @@ class AssemblyInjectionNeutralizer:
     """
 
     def __init__(
-        self, patterns: Sequence[InjectionPattern] | None = None,
+        self,
+        patterns: Sequence[InjectionPattern] | None = None,
     ) -> None:
         """Initialize with optional custom patterns.
 

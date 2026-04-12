@@ -13,6 +13,7 @@ from typing import Any, Protocol
 @dataclass
 class HealingContext:
     """Simplified context for healing operations."""
+
     heal: bool  # If True, apply mutations. If False, dry-run only.
     project_root: Path
     verbose: bool = False
@@ -24,6 +25,7 @@ class HealingContext:
 @dataclass
 class Violation:
     """Standardized violation representation."""
+
     type: str
     path: str
     message: str
@@ -34,6 +36,7 @@ class Violation:
 @dataclass
 class ScanResult:
     """Result from scanning a territory for violations."""
+
     territory: str
     violations_found: int
     violations: list[Violation]
@@ -43,6 +46,7 @@ class ScanResult:
 @dataclass
 class HealingResult:
     """Result from healing a territory."""
+
     territory: str
     agent_name: str
     violations_found: int

@@ -223,7 +223,9 @@ async def run_hardened_orchestrator(
     Logger.info(f"   Type: {WorkflowType}")
     # guardian: allow-magic-config
     config: Any = OrchestratorConfig(
-        max_cycles=5, enable_checkpointing=True, checkpoint_dir=storage_path or "./checkpoints",
+        max_cycles=5,
+        enable_checkpointing=True,
+        checkpoint_dir=storage_path or "./checkpoints",
     )
     context: Any = _get_ValidationContext()()
     orchestrator: Any = create_orchestrator(config=config, context=context)
@@ -250,6 +252,8 @@ if __name__ == "__main__":
     args: Any = parser.parse_args()
     asyncio.run(
         run_hardened_orchestrator(
-            workflow_id=args.workflow_id, WorkflowType=args.WorkflowType, storage_path=args.storage_path,
+            workflow_id=args.workflow_id,
+            WorkflowType=args.WorkflowType,
+            storage_path=args.storage_path,
         ),
     )

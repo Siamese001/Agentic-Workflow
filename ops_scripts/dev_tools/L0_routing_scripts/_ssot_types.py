@@ -109,7 +109,9 @@ class ConfidenceScore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "ConfidenceScore.is_high_confidence",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "ConfidenceScore.is_high_confidence",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -263,7 +265,9 @@ class ReconciliationManifest:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "ReconciliationManifest.add_modification",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "ReconciliationManifest.add_modification",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -329,7 +333,10 @@ class ASTCodeQualityValidator:
             with open(fp, encoding="utf-8") as f:
                 tree = ast.parse(f.read(), filename=fp)
                 return (tree, None)
-        except (OSError, SyntaxError) as e:    # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
+        except (
+            OSError,
+            SyntaxError,
+        ) as e:  # guardian: Multiple exceptions (OSError, SyntaxError) need specific handling
             return (None, f"Error parsing {fp}: {str(e)}")
 
     # guardian: allow-type-erasure
@@ -339,7 +346,9 @@ class ASTCodeQualityValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "ASTCodeQualityValidator.check_file_quality",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "ASTCodeQualityValidator.check_file_quality",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -419,11 +428,15 @@ class HealContext:
 
         if getattr(args, "dry_run", False):
             warnings.warn(
-                "--dry-run is deprecated. Omit --heal for scan-only mode.", DeprecationWarning, stacklevel=2,
+                "--dry-run is deprecated. Omit --heal for scan-only mode.",
+                DeprecationWarning,
+                stacklevel=2,
             )
         if getattr(args, "manual", False):
             warnings.warn(
-                "--manual is deprecated. Autonomous mode is always active.", DeprecationWarning, stacklevel=2,
+                "--manual is deprecated. Autonomous mode is always active.",
+                DeprecationWarning,
+                stacklevel=2,
             )
         if getattr(args, "interactive", False):
             warnings.warn(

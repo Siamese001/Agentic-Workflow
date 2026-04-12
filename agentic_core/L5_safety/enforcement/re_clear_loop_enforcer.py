@@ -226,7 +226,9 @@ class ReClearTicket:
             )
 
     def re_evaluate(
-        self, constraint_fn: Callable[[], bool], evidence: dict[str, Any] | None = None,
+        self,
+        constraint_fn: Callable[[], bool],
+        evidence: dict[str, Any] | None = None,
     ) -> ReClearTicket:
         """Re-evaluate the original constraint after remediation.
 
@@ -289,7 +291,9 @@ class ReClearTicket:
 def open_ticket(ticket_id: str, constraint_id: str, violation_summary: str) -> ReClearTicket:
     """Open a new Path D re-clear ticket for a detected violation."""
     return ReClearTicket(
-        ticket_id=ticket_id, constraint_id=constraint_id, violation_summary=violation_summary,
+        ticket_id=ticket_id,
+        constraint_id=constraint_id,
+        violation_summary=violation_summary,
     )
 
 

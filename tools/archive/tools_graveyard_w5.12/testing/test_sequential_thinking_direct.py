@@ -115,6 +115,7 @@ def test_mcp_config():
         print(f"✅ MCP config found at: {config_path}")
         try:
             import json
+
             with open(config_path) as f:
                 config = json.load(f)
 
@@ -147,11 +148,13 @@ def create_simple_sequential_thinking_test():
 
         def add_thought(self, thought, thought_number, total_thoughts):
             """Add a thought to the sequence."""
-            self.thoughts.append({
-                "thought": thought,
-                "thought_number": thought_number,
-                "total_thoughts": total_thoughts,
-            })
+            self.thoughts.append(
+                {
+                    "thought": thought,
+                    "thought_number": thought_number,
+                    "total_thoughts": total_thoughts,
+                }
+            )
 
         def execute(self, problem):
             """Execute sequential thinking on a problem."""
@@ -161,35 +164,40 @@ def create_simple_sequential_thinking_test():
             # Thought 1: Problem understanding
             self.add_thought(
                 "Understanding the problem: Need to analyze the current state and identify key components",
-                1, 5,
+                1,
+                5,
             )
             print(f"\nThought 1/5: {self.thoughts[-1]['thought']}")
 
             # Thought 2: Information gathering
             self.add_thought(
                 "Gathering information: Reviewing documentation, configuration, and test results",
-                2, 5,
+                2,
+                5,
             )
             print(f"Thought 2/5: {self.thoughts[-1]['thought']}")
 
             # Thought 3: Analysis
             self.add_thought(
                 "Analysis: Node.js is installed, npx may have path issues, MCP config exists at repo root",
-                3, 5,
+                3,
+                5,
             )
             print(f"Thought 3/5: {self.thoughts[-1]['thought']}")
 
             # Thought 4: Solution development
             self.add_thought(
                 "Solution: Use full path to npx or add to PATH; ensure MCP config is correctly referenced",
-                4, 5,
+                4,
+                5,
             )
             print(f"Thought 4/5: {self.thoughts[-1]['thought']}")
 
             # Thought 5: Conclusion
             self.add_thought(
                 "Conclusion: Sequential thinking concept works; MCP integration needs path configuration fix",
-                5, 5,
+                5,
+                5,
             )
             print(f"Thought 5/5: {self.thoughts[-1]['thought']}")
 

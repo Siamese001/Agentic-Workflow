@@ -16,14 +16,17 @@ class TestParentChildAdg:
     def test_parent_child_adg_imports(self):
         """Test parent_child_adg module imports."""
         from agentic_core import parent_child_adg
+
         assert parent_child_adg is not None
 
     def test_parent_child_adg_class(self):
         """Test ParentChildAdg class exists."""
         from agentic_core import ParentChildAdg
+
         assert ParentChildAdg is not None
 
     def test_parent_child_adg_callable(self):
         """Test parent_child_adg functions are callable."""
         from agentic_core import validate_parent_child_adg
+
         assert callable(validate_parent_child_adg)

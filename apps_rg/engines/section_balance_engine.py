@@ -172,8 +172,11 @@ class SectionBalanceEngine(BaseRGEngine):
         Validate section balance and ratios.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SectionBalanceEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SectionBalanceEngine.execute"
+        )
 
         self._mcp_audit("balance_check")
         section_lengths = {}

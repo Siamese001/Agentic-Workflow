@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L0_routing.seams.safety_kernel_seam."""
+
 from __future__ import annotations
 
 import importlib

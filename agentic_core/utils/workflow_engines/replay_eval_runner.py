@@ -290,8 +290,9 @@ class ReplayEvaluationRunner:
             self.l4_store.put(artifact)
         # guardian: allow-silent-swallow -- L4 persistence failure is non-critical; evaluation already completed
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("replay_eval_runner: Exception swallowed at L292: %s", e)
+            logging.getLogger(__name__).debug("replay_eval_runner: Exception swallowed at L292: %s", e)
 
 
 __all__ = [

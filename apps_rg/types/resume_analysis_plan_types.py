@@ -412,12 +412,16 @@ class RGPlanner:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumePlanner.plan_resume_processing")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ResumePlanner.plan_resume_processing"
+        )
         processing_options = processing_options or {}
         job_analysis = self._analyze_job_requirements(job_input)
         resume_analysis = self._analyze_resume_structure(resume_input)
         processing_strategy = self._determine_processing_strategy(
-            job_analysis, resume_analysis, processing_options,
+            job_analysis,
+            resume_analysis,
+            processing_options,
         )
         analysis_plan = self._create_analysis_plan(job_analysis, processing_strategy)
         section_configs = self._configure_section_processing(resume_analysis, processing_strategy)
@@ -474,7 +478,10 @@ class RGPlanner:
         }
 
     def _determine_processing_strategy(
-        self, job_analysis: dict[str, object], resume_analysis: dict[str, object], options: dict[str, object],
+        self,
+        job_analysis: dict[str, object],
+        resume_analysis: dict[str, object],
+        options: dict[str, object],
     ) -> dict[str, object]:
         """Determine optimal processing strategy based on analysis."""
         job_complexity = job_analysis.get("complexity_score", 0.5)
@@ -504,7 +511,9 @@ class RGPlanner:
         }
 
     def _create_analysis_plan(
-        self, job_analysis: dict[str, object], strategy: dict[str, object],
+        self,
+        job_analysis: dict[str, object],
+        strategy: dict[str, object],
     ) -> ResumeAnalysisPlan:
         """Create detailed resume analysis plan."""
         return ResumeAnalysisPlan(
@@ -524,7 +533,9 @@ class RGPlanner:
         )
 
     def _configure_section_processing(
-        self, resume_analysis: dict[str, object], strategy: dict[str, object],
+        self,
+        resume_analysis: dict[str, object],
+        strategy: dict[str, object],
     ) -> list[ResumeSectionConfig]:
         """Configure processing for each resume section."""
         section_configs = []

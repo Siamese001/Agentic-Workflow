@@ -320,7 +320,8 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             _hc_bge = _ghc_bge()
             _cs = _hc_bge.get_stats()
             _bge_arch_counts["semantic_cache"] = _cs.get(
-                "embed_calls", _cs.get("hits", 0) + _cs.get("misses", 0),
+                "embed_calls",
+                _cs.get("hits", 0) + _cs.get("misses", 0),
             )
         except (ImportError, AttributeError, KeyError):
             pass
@@ -346,10 +347,12 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         if cognitive_dispositions:
             try:
                 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
                 bridge = get_sl_memory_bridge()
 
                 # Serialize cognitive dispositions as JSON for RCA analysis
                 import json as _cog_json
+
                 cog_json = _cog_json.dumps(cognitive_dispositions)
 
                 bridge.persist_cognitive_dispositions(
@@ -545,7 +548,10 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                     embedding_model_checksum=_vec_source_str,
                 )
                 _faiss_writer.persist_to_disk(
-                    _faiss_idx, _faiss_disk_dir, embedder_id=_vec_source_str, model_version=_model_ver,
+                    _faiss_idx,
+                    _faiss_disk_dir,
+                    embedder_id=_vec_source_str,
+                    model_version=_model_ver,
                 )
                 logging.debug(
                     "[MetaLearning] FAISS persist: %d new + %d prior = %d total -> %s",
@@ -577,7 +583,8 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             },
         )
         logging.info(
-            "[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.", store.count(),
+            "[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.",
+            store.count(),
         )
     except ImportError:  # guardian: allow-silent-swallow
         logging.debug("[MetaLearning] Intake adapter not yet available (pre-Wave 0B). Skipping.")
@@ -635,15 +642,15 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
 
         # Collect phase outcomes from state manager
         phase_outcomes = {
-            "total_experiences": store.count() if 'store' in locals() else 0,
-            "healing_actions": len(healing_actions) if 'healing_actions' in locals() else 0,
-            "faiss_vectors": len(_faiss_vectors) if '_faiss_vectors' in locals() else 0,
-            "proposals_generated": len(_ml_proposals) if '_ml_proposals' in locals() else 0,
-            "backup_events": len(_backup_events) if '_backup_events' in locals() else 0,
+            "total_experiences": store.count() if "store" in locals() else 0,
+            "healing_actions": len(healing_actions) if "healing_actions" in locals() else 0,
+            "faiss_vectors": len(_faiss_vectors) if "_faiss_vectors" in locals() else 0,
+            "proposals_generated": len(_ml_proposals) if "_ml_proposals" in locals() else 0,
+            "backup_events": len(_backup_events) if "_backup_events" in locals() else 0,
             "adg_territory_score": state_mgr.state.get("adg_territory_score", 0.0),
             "meta_learning_schema": 1,
             "timestamp_utc": now_utc,
-            "trace_id": _tid if '_tid' in locals() else "unknown",
+            "trace_id": _tid if "_tid" in locals() else "unknown",
         }
 
         # Persist phase outcomes
@@ -651,7 +658,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             phase_name="execute_ssot",
             outcomes_json=json.dumps(phase_outcomes, sort_keys=True),
             timestamp_utc=now_utc,
-            trace_id=_tid if '_tid' in locals() else "unknown",
+            trace_id=_tid if "_tid" in locals() else "unknown",
         )
 
         logging.debug("[MetaLearning] Execute_SSOT phase outcomes persisted to system learning")
@@ -664,13 +671,14 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         if repair_routes:
             # Serialize repair routes as JSON for optimization proposal engine
             import json as _repair_json
+
             repair_routes_json = _repair_json.dumps(repair_routes)
 
             bridge = get_sl_memory_bridge()
             bridge.persist_repair_routes(
                 repair_routes_json=repair_routes_json,
                 timestamp_utc=now_utc,
-                trace_id=_tid if '_tid' in locals() else "unknown",
+                trace_id=_tid if "_tid" in locals() else "unknown",
             )
             logging.debug("[MetaLearning] Repair routes serialized for optimization proposals")
     except (OSError, TypeError, ValueError) as e:

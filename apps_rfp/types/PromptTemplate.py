@@ -26,8 +26,10 @@ _emit_snapshots_state("p0", "rfp_PromptTemplate", "state_snapshot")
 # RFP/PROPOSAL PROMPT DEFINITIONS
 # -----------------------------------------------------------------------------
 
+
 class RfpPromptEntry(BaseModel):
     """Single immutable prompt definition for RFP/proposal generation."""
+
     prompt_id: str
     description: str
     system_prompt: str
@@ -42,6 +44,7 @@ class RfpPromptEntry(BaseModel):
 
 class RfpNodeEntry(BaseModel):
     """K-node configuration for RFP pipeline stages."""
+
     node_id: str
     description: str
     stage: str  # analysis, drafting, review, compliance
@@ -53,6 +56,7 @@ class RfpNodeEntry(BaseModel):
 
 class RfpGlobalRule(BaseModel):
     """Cross-cutting governance rule for all RFP operations."""
+
     rule_id: str
     description: str
     severity: str  # info, warning, error, fatal
@@ -262,6 +266,7 @@ _RFP_RULES: dict[str, RfpGlobalRule] = {
 
 class RfpSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of RFP/proposal domain knowledge."""
+
     version: str = "1.0"
     prompts: dict[str, RfpPromptEntry]
     nodes: dict[str, RfpNodeEntry]
@@ -283,6 +288,7 @@ FROZEN_SNAPSHOT = RfpSovereignKnowledge(
 # -----------------------------------------------------------------------------
 # PUBLIC API (Read-Only Access)
 # -----------------------------------------------------------------------------
+
 
 def get_prompt(prompt_id: str) -> str:
     """Retrieve prompt template by ID.

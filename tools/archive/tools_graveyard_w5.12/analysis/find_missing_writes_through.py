@@ -6,8 +6,14 @@ import re
 
 ROOT = r"C:\Git\Agentic-Workflow"
 
-TARGETS = ["_emit_writes_through", "_emit_pulls_context", "_emit_validated_by_safety_plane",
-           "_emit_execution_terminates_at_uwg", "_emit_invokes_eval", "_emit_proposal_commits_routing"]
+TARGETS = [
+    "_emit_writes_through",
+    "_emit_pulls_context",
+    "_emit_validated_by_safety_plane",
+    "_emit_execution_terminates_at_uwg",
+    "_emit_invokes_eval",
+    "_emit_proposal_commits_routing",
+]
 
 results = []
 
@@ -28,7 +34,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
 
             for sym in TARGETS:
                 # Check if symbol is called
-                if not re.search(r'\b' + re.escape(sym) + r'\s*\(', content):
+                if not re.search(r"\b" + re.escape(sym) + r"\s*\(", content):
                     continue
                 # Check if symbol is imported (word boundary match in import context)
                 imported = False
@@ -37,9 +43,9 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                     s = line.strip()
                     if s.startswith("#"):
                         continue
-                    if re.match(r'^from\s+\S+\s+import\s+\(', s):
+                    if re.match(r"^from\s+\S+\s+import\s+\(", s):
                         in_block = True
-                        if re.search(r'\b' + re.escape(sym) + r'\b', s):
+                        if re.search(r"\b" + re.escape(sym) + r"\b", s):
                             imported = True
                             break
                         continue
@@ -47,11 +53,13 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                         if s == ")":
                             in_block = False
                             continue
-                        if re.search(r'\b' + re.escape(sym) + r'\b', s):
+                        if re.search(r"\b" + re.escape(sym) + r"\b", s):
                             imported = True
                             break
                         continue
-                    if re.match(r'^from\s+\S+\s+import\s+', s) and re.search(r'\b' + re.escape(sym) + r'\b', s):
+                    if re.match(r"^from\s+\S+\s+import\s+", s) and re.search(
+                        r"\b" + re.escape(sym) + r"\b", s
+                    ):
                         imported = True
                         break
                     if f"def {sym}" in s:

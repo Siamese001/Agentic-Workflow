@@ -1,4 +1,5 @@
 """Analyze the test inventory JSON for detailed breakdown."""
+
 import collections
 import json
 

@@ -151,8 +151,10 @@ _emit_links_execution_to_snapshot("p4", "PilotOrchestrator", "exec_snapshot_link
 
 def _passthrough_decorator(*args, **kwargs):
     """No-op decorator factory."""
+
     def wrapper(fn):
         return fn
+
     if args and callable(args[0]):
         return args[0]
     return wrapper
@@ -160,6 +162,7 @@ def _passthrough_decorator(*args, **kwargs):
 
 class RateLimitMixin:
     """Rate limiting mixin stub."""
+
     _rate_limits = {}
 
     @staticmethod
@@ -190,6 +193,7 @@ class ContextPropagationMixin:
     def trace_context(fn):
         return fn
 
+
 class PilotOrchestrator(
     RateLimitMixin,
     StateValidationMixin,
@@ -217,6 +221,7 @@ class PilotOrchestrator(
     async def run_pilot(self, goal: str, executor_agent):
         """Standardizes a delegation flow with full hardening."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PilotOrchestrator.run_pilot")
 

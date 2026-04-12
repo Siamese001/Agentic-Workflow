@@ -363,7 +363,9 @@ class TemporalIntelligenceEngine:
         # Check current state against baselines
         current_metrics = self._calculate_default_metrics(context)
 
-        for metric_name, current_value in tqdm(current_metrics.items(), desc="baseline check", unit="metric", leave=False):
+        for metric_name, current_value in tqdm(
+            current_metrics.items(), desc="baseline check", unit="metric", leave=False
+        ):
             if metric_name in baselines:
                 baseline = baselines[metric_name]
 
@@ -490,12 +492,19 @@ class TemporalIntelligenceEngine:
             weekly_patterns[point.timestamp.weekday()].append(point)
 
         # Check for significant seasonal patterns
-        for period, grouped_data in tqdm([
-            ("hourly", hourly_patterns),
-            ("daily", daily_patterns),
-            ("weekly", weekly_patterns),
-        ], desc="seasonal periods", unit="period", leave=False):
-            for key, points in tqdm(grouped_data.items(), desc=f"  {period} groups", unit="group", leave=False):
+        for period, grouped_data in tqdm(
+            [
+                ("hourly", hourly_patterns),
+                ("daily", daily_patterns),
+                ("weekly", weekly_patterns),
+            ],
+            desc="seasonal periods",
+            unit="period",
+            leave=False,
+        ):
+            for key, points in tqdm(
+                grouped_data.items(), desc=f"  {period} groups", unit="group", leave=False
+            ):
                 if len(points) >= 5:  # Minimum points for pattern detection
                     # Calculate pattern strength
                     strength = self._calculate_pattern_strength(points)
@@ -525,7 +534,12 @@ class TemporalIntelligenceEngine:
         patterns = {}
 
         # Analyze trends for each metric
-        for metric_name in tqdm(["complexity_score", "activity_level", "risk_score"], desc="trend analysis", unit="metric", leave=False):
+        for metric_name in tqdm(
+            ["complexity_score", "activity_level", "risk_score"],
+            desc="trend analysis",
+            unit="metric",
+            leave=False,
+        ):
             values = [point.metrics.get(metric_name, 0.0) for point in data if metric_name in point.metrics]
 
             if len(values) >= 10:
@@ -553,7 +567,9 @@ class TemporalIntelligenceEngine:
         patterns = {}
 
         # Simple cyclical pattern detection using autocorrelation
-        for metric_name in tqdm(["activity_level", "performance_score"], desc="cyclical analysis", unit="metric", leave=False):
+        for metric_name in tqdm(
+            ["activity_level", "performance_score"], desc="cyclical analysis", unit="metric", leave=False
+        ):
             values = [point.metrics.get(metric_name, 0.0) for point in data if metric_name in point.metrics]
 
             if len(values) >= 20:
@@ -594,7 +610,9 @@ class TemporalIntelligenceEngine:
             # Calculate moving average and standard deviation
             window_size = min(5, len(activity_values) // 3)
 
-            for i in tqdm(range(window_size, len(activity_values)), desc="anomaly window", unit="step", leave=False):
+            for i in tqdm(
+                range(window_size, len(activity_values)), desc="anomaly window", unit="step", leave=False
+            ):
                 window_values = activity_values[i - window_size : i]
                 current_value = activity_values[i]
 
@@ -774,7 +792,9 @@ class TemporalIntelligenceEngine:
         for day in tqdm(range(1, forecast_horizon_days + 1), desc="linear forecast", unit="day", leave=False):
             prediction = {"timestamp": (datetime.now() + timedelta(days=day)).isoformat(), "metrics": {}}
 
-            for metric_name, values in tqdm(time_series.items(), desc="  metrics", unit="metric", leave=False):
+            for metric_name, values in tqdm(
+                time_series.items(), desc="  metrics", unit="metric", leave=False
+            ):
                 if len(values) >= 2:
                     # Simple linear extrapolation
                     trend = self._calculate_simple_trend(values)
@@ -797,10 +817,14 @@ class TemporalIntelligenceEngine:
         """Generate forecast using exponential smoothing."""
         predictions = []
 
-        for day in tqdm(range(1, forecast_horizon_days + 1), desc="exp smoothing forecast", unit="day", leave=False):
+        for day in tqdm(
+            range(1, forecast_horizon_days + 1), desc="exp smoothing forecast", unit="day", leave=False
+        ):
             prediction = {"timestamp": (datetime.now() + timedelta(days=day)).isoformat(), "metrics": {}}
 
-            for metric_name, values in tqdm(time_series.items(), desc="  metrics", unit="metric", leave=False):
+            for metric_name, values in tqdm(
+                time_series.items(), desc="  metrics", unit="metric", leave=False
+            ):
                 if len(values) >= 2:
                     # Simple exponential smoothing
                     alpha = 0.3  # Smoothing factor
@@ -847,7 +871,9 @@ class TemporalIntelligenceEngine:
         """Calculate confidence intervals for predictions."""
         confidence_intervals = {}
 
-        for metric_name in tqdm(historical_data.keys(), desc="confidence intervals", unit="metric", leave=False):
+        for metric_name in tqdm(
+            historical_data.keys(), desc="confidence intervals", unit="metric", leave=False
+        ):
             values = historical_data[metric_name]
 
             if len(values) >= 3:
@@ -942,7 +968,9 @@ class TemporalIntelligenceEngine:
         anomalies = []
 
         # Check for deviations from detected patterns
-        for pattern in tqdm(self.temporal_patterns.values(), desc="pattern anomaly scan", unit="pattern", leave=False):
+        for pattern in tqdm(
+            self.temporal_patterns.values(), desc="pattern anomaly scan", unit="pattern", leave=False
+        ):
             if pattern.strength > 0.7:  # Strong patterns
                 # Check if recent data follows the pattern
                 recent_points = data[-5:]  # Last 5 points

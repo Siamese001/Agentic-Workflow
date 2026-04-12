@@ -1,6 +1,7 @@
 """
 Document Ingestion - Registers and hashes underwriting documents.
 """
+
 import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -13,6 +14,7 @@ from ..types import DocumentPackage, DocumentRef
 @dataclass
 class DocumentManifest:
     """Manifest of ingested documents."""
+
     documents: List[DocumentRef] = field(default_factory=list)
     total_count: int = 0
     by_type: Dict[str, int] = field(default_factory=dict)
@@ -123,25 +125,25 @@ class DocumentIngestion:
 
         for doc in manifest.documents:
             # Categorize by doc_type
-            if doc.doc_type in ['financial_statement', 'financials']:
+            if doc.doc_type in ["financial_statement", "financials"]:
                 package.financial_statements.append(doc)
-            elif doc.doc_type in ['tax_return', 'tax_returns']:
+            elif doc.doc_type in ["tax_return", "tax_returns"]:
                 package.tax_returns.append(doc)
-            elif doc.doc_type in ['bank_statement', 'bank_statements']:
+            elif doc.doc_type in ["bank_statement", "bank_statements"]:
                 package.bank_statements.append(doc)
-            elif doc.doc_type == 'ar_aging':
+            elif doc.doc_type == "ar_aging":
                 package.ar_aging.append(doc)
-            elif doc.doc_type == 'ap_aging':
+            elif doc.doc_type == "ap_aging":
                 package.ap_aging.append(doc)
-            elif doc.doc_type in ['debt_schedule', 'debt_schedules']:
+            elif doc.doc_type in ["debt_schedule", "debt_schedules"]:
                 package.debt_schedule.append(doc)
-            elif doc.doc_type in ['entity_doc', 'entity_docs', 'formation']:
+            elif doc.doc_type in ["entity_doc", "entity_docs", "formation"]:
                 package.entity_docs.append(doc)
-            elif doc.doc_type in ['insurance', 'insurance_certificate']:
+            elif doc.doc_type in ["insurance", "insurance_certificate"]:
                 package.insurance_certificates.append(doc)
-            elif doc.doc_type in ['appraisal', 'appraisals']:
+            elif doc.doc_type in ["appraisal", "appraisals"]:
                 package.appraisals.append(doc)
-            elif doc.doc_type in ['management_comment', 'management_comments']:
+            elif doc.doc_type in ["management_comment", "management_comments"]:
                 package.management_comments.append(doc)
 
         return package
@@ -149,8 +151,8 @@ class DocumentIngestion:
     def _compute_file_hash(self, path: Path) -> str:
         """Compute SHA256 hash of file."""
         h = hashlib.sha256()
-        with open(path, 'rb') as f:
-            for chunk in iter(lambda: f.read(8192), b''):
+        with open(path, "rb") as f:
+            for chunk in iter(lambda: f.read(8192), b""):
                 h.update(chunk)
         return h.hexdigest()[:32]
 
@@ -165,28 +167,28 @@ class DocumentIngestion:
                     return doc_type
 
         # Infer from filename
-        if 'financial' in filename or 'fs' in filename:
-            return 'financial_statement'
-        elif 'tax' in filename:
-            return 'tax_return'
-        elif 'bank' in filename:
-            return 'bank_statement'
-        elif 'ar' in filename and 'aging' in filename:
-            return 'ar_aging'
-        elif 'ap' in filename and 'aging' in filename:
-            return 'ap_aging'
-        elif 'debt' in filename and 'schedule' in filename:
-            return 'debt_schedule'
-        elif 'appraisal' in filename:
-            return 'appraisal'
-        elif 'insurance' in filename:
-            return 'insurance'
-        elif 'entity' in filename or 'operating' in filename or 'articles' in filename:
-            return 'entity_doc'
-        elif 'management' in filename or 'comments' in filename:
-            return 'management_comment'
+        if "financial" in filename or "fs" in filename:
+            return "financial_statement"
+        elif "tax" in filename:
+            return "tax_return"
+        elif "bank" in filename:
+            return "bank_statement"
+        elif "ar" in filename and "aging" in filename:
+            return "ar_aging"
+        elif "ap" in filename and "aging" in filename:
+            return "ap_aging"
+        elif "debt" in filename and "schedule" in filename:
+            return "debt_schedule"
+        elif "appraisal" in filename:
+            return "appraisal"
+        elif "insurance" in filename:
+            return "insurance"
+        elif "entity" in filename or "operating" in filename or "articles" in filename:
+            return "entity_doc"
+        elif "management" in filename or "comments" in filename:
+            return "management_comment"
 
-        return 'unknown'
+        return "unknown"
 
     def _extract_document_fields(
         self,

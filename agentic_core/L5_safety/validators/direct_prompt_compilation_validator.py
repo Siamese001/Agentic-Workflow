@@ -241,7 +241,9 @@ class DirectPromptCompilationDetector(AntiPatternDetector):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "DirectPromptCompilationDetector.detect",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "DirectPromptCompilationDetector.detect",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

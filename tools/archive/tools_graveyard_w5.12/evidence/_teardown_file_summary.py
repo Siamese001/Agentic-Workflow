@@ -1,4 +1,5 @@
 """Summarize teardown guardian-exempt candidates by file."""
+
 from __future__ import annotations
 
 import json

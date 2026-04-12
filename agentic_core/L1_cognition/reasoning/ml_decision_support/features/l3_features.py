@@ -122,14 +122,18 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         """Register L3-specific feature extraction functions."""
         self.register_extraction_function("branch_complexity_score", self._extract_branch_complexity_score)
         self.register_extraction_function("execution_probability", self._extract_execution_probability)
-        self.register_extraction_function("resource_requirement_score", self._extract_resource_requirement_score)
+        self.register_extraction_function(
+            "resource_requirement_score", self._extract_resource_requirement_score
+        )
         self.register_extraction_function("conflict_indicator", self._extract_conflict_indicator)
         self.register_extraction_function("escalation_priority", self._extract_escalation_priority)
         self.register_extraction_function("workflow_depth", self._extract_workflow_depth)
         self.register_extraction_function("dependency_count", self._extract_dependency_count)
         self.register_extraction_function("historical_success_rate", self._extract_historical_success_rate)
         self.register_extraction_function("timing_criticality", self._extract_timing_criticality)
-        self.register_extraction_function("parallel_execution_potential", self._extract_parallel_execution_potential)
+        self.register_extraction_function(
+            "parallel_execution_potential", self._extract_parallel_execution_potential
+        )
 
     def _extract_branch_complexity_score(self, context: dict[str, Any]) -> float:
         """Extract branch complexity score (0.0-1.0)."""
@@ -198,7 +202,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         if preconditions:
             satisfied_preconditions = sum(1 for pc in preconditions if pc.get("satisfied", False))
             precondition_factor = satisfied_preconditions / len(preconditions)
-            base_probability *= (0.5 + 0.5 * precondition_factor)  # Scale between 0.5-1.0
+            base_probability *= 0.5 + 0.5 * precondition_factor  # Scale between 0.5-1.0
 
         # Adjust for branch guards
         guards = branch.get("guards", [])
@@ -299,14 +303,18 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
             for resource, amount in required_resources.items():
                 if resource in other_resources:
                     # Check if resources overlap significantly
-                    overlap_ratio = min(amount, other_resources[resource]) / max(amount, other_resources[resource])
+                    overlap_ratio = min(amount, other_resources[resource]) / max(
+                        amount, other_resources[resource]
+                    )
                     if overlap_ratio > 0.5:  # 50% overlap threshold
-                        conflicts.append({
-                            "type": "resource",
-                            "resource": resource,
-                            "overlap": overlap_ratio,
-                            "branch": other_branch.get("id", "unknown"),
-                        })
+                        conflicts.append(
+                            {
+                                "type": "resource",
+                                "resource": resource,
+                                "overlap": overlap_ratio,
+                                "branch": other_branch.get("id", "unknown"),
+                            }
+                        )
 
         # Data dependency conflicts
         data_dependencies = branch.get("data_dependencies", [])
@@ -317,13 +325,16 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
                 for other_dep in other_data_deps:
                     if dep.get("data_id") == other_dep.get("data_id"):
                         # Check for conflicting access patterns
-                        if (dep.get("access_type") == "write" and other_dep.get("access_type") == "write") or \
-                           (dep.get("access_type") == "write" and other_dep.get("access_type") == "read"):
-                            conflicts.append({
-                                "type": "data_dependency",
-                                "data_id": dep.get("data_id"),
-                                "branch": other_branch.get("id", "unknown"),
-                            })
+                        if (
+                            dep.get("access_type") == "write" and other_dep.get("access_type") == "write"
+                        ) or (dep.get("access_type") == "write" and other_dep.get("access_type") == "read"):
+                            conflicts.append(
+                                {
+                                    "type": "data_dependency",
+                                    "data_id": dep.get("data_id"),
+                                    "branch": other_branch.get("id", "unknown"),
+                                }
+                            )
 
         # Calculate conflict score
         if not conflicts:
@@ -380,7 +391,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         if deadline:
             try:
                 if isinstance(deadline, str):
-                    deadline = datetime.fromisoformat(deadline.replace('Z', '+00:00'))
+                    deadline = datetime.fromisoformat(deadline.replace("Z", "+00:00"))
 
                 time_to_deadline = (deadline - datetime.now()).total_seconds()
                 if time_to_deadline < 0:

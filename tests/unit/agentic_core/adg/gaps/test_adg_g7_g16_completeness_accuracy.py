@@ -1,4 +1,5 @@
 """Test ADG G7 G16 completeness accuracy functionality."""
+
 """Test ADG gap remediation novel functionality."""
 
 import sys

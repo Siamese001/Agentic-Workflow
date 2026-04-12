@@ -11,8 +11,8 @@ from pathlib import Path
 
 # Emitter patterns to strip (top-level calls only)
 EMITTER_PATTERNS = [
-    r'^_emit_.*\(.*\)$',
-    r'^emit_.*\(.*\)$',
+    r"^_emit_.*\(.*\)$",
+    r"^emit_.*\(.*\)$",
 ]
 
 # Files known to import lifecycle_trace_contract (from ADG analysis)
@@ -35,12 +35,13 @@ TARGET_FILES = [
     # Additional files will be discovered via pattern matching
 ]
 
+
 def find_emitter_calls(file_path: Path) -> list[tuple[int, str]]:
     """Find top-level emitter calls in a Python file."""
     emitter_calls = []
 
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             lines = f.readlines()
     except Exception as e:
         print(f"Error reading {file_path}: {e}")
@@ -50,7 +51,7 @@ def find_emitter_calls(file_path: Path) -> list[tuple[int, str]]:
         stripped = line.strip()
 
         # Skip comments and docstrings
-        if stripped.startswith('#') or not stripped:
+        if stripped.startswith("#") or not stripped:
             continue
 
         # Check for emitter patterns
@@ -61,12 +62,13 @@ def find_emitter_calls(file_path: Path) -> list[tuple[int, str]]:
 
     return emitter_calls
 
+
 def strip_emitters_from_file(file_path: Path, dry_run: bool = True) -> tuple[int, list[str]]:
     """Strip emitter calls from a file. Return (lines_changed, changed_lines)."""
     if not file_path.exists():
         return 0, []
 
-    with open(file_path, encoding='utf-8') as f:
+    with open(file_path, encoding="utf-8") as f:
         lines = f.readlines()
 
     changed_lines = []
@@ -86,17 +88,18 @@ def strip_emitters_from_file(file_path: Path, dry_run: bool = True) -> tuple[int
             # Replace with comment
             new_line = f"# REMOVED: {line.rstrip()}\n"
             if dry_run:
-                changed_lines.append(f"  Line {i+1}: {line.rstrip()} -> {new_line.strip()}")
+                changed_lines.append(f"  Line {i + 1}: {line.rstrip()} -> {new_line.strip()}")
             else:
                 lines[i] = new_line
-                changed_lines.append(f"  Line {i+1}: REMOVED {line.rstrip()}")
+                changed_lines.append(f"  Line {i + 1}: REMOVED {line.rstrip()}")
             lines_changed += 1
 
     if not dry_run and lines_changed > 0:
-        with open(file_path, 'w', encoding='utf-8') as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
     return lines_changed, changed_lines
+
 
 def find_all_test_files_with_emitters() -> list[Path]:
     """Find all test files that contain emitter calls."""
@@ -113,6 +116,7 @@ def find_all_test_files_with_emitters() -> list[Path]:
             test_files.append(py_file)
 
     return test_files
+
 
 def main():
     import argparse
@@ -194,6 +198,7 @@ def main():
         print()
         print("CHANGES APPLIED")
         print("Run pytest --collect-only to verify performance improvement")
+
 
 if __name__ == "__main__":
     main()

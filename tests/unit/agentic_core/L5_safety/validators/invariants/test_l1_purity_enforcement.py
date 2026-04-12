@@ -45,9 +45,9 @@ def parse_file_for_forbidden_imports(file_path: Path) -> list[str]:
             content = f.read()
         tree = ast.parse(content)
     except SyntaxError:
-        return ["SYNTAX_ERROR"]    # guardian: Syntax errors should be caught at parser level, not runtime
+        return ["SYNTAX_ERROR"]  # guardian: Syntax errors should be caught at parser level, not runtime
 
-    for node in ast.walk(tree):    # guardian: Syntax errors should be caught at parser level, not runtime
+    for node in ast.walk(tree):  # guardian: Syntax errors should be caught at parser level, not runtime
         if isinstance(node, ast.Import):
             for alias in node.names:
                 if alias.name in FORBIDDEN_IMPORTS:

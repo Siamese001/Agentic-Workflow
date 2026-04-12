@@ -3,6 +3,7 @@ Test Shared Infrastructure Validators.
 
 SVP Infrastructure Testing - Core utilities and validators.
 """
+
 import unittest
 
 from apps_shared.validators.cache_validator import (
@@ -34,7 +35,9 @@ class TestCacheValidator(unittest.TestCase):
     def test_generate_llm_cache_key_with_fingerprint(self):
         """Test cache key with fingerprint."""
         key = generate_llm_cache_key_with_fingerprint(
-            "gpt-4o", [{"role": "user", "content": "Hello"}], "fp-123",
+            "gpt-4o",
+            [{"role": "user", "content": "Hello"}],
+            "fp-123",
         )
         self.assertEqual(len(key), 64)
 

@@ -24,7 +24,7 @@ async def test_failure_clustering():
     stats = retriever.get_collection_stats()
     print("Collection Statistics:")
     for collection, info in stats.items():
-        if collection in ['repo_runtime_evidence', 'repo_incidents_rca']:
+        if collection in ["repo_runtime_evidence", "repo_incidents_rca"]:
             print(f"  {collection}: {info['document_count']} documents")
 
     # Test failure clustering scenarios
@@ -66,8 +66,8 @@ async def test_failure_clustering():
 
         # Create query
         query = RetrievalQuery(
-            text=scenario['query'],
-            collections=scenario['collections'],
+            text=scenario["query"],
+            collections=scenario["collections"],
             max_results=20,
         )
 
@@ -87,19 +87,19 @@ async def test_failure_clustering():
             for result in results:
                 metadata = result.metadata
 
-                if 'evidence_type' in metadata:
-                    failure_types.add(metadata['evidence_type'])
-                if 'incident_type' in metadata:
-                    failure_types.add(metadata['incident_type'])
+                if "evidence_type" in metadata:
+                    failure_types.add(metadata["evidence_type"])
+                if "incident_type" in metadata:
+                    failure_types.add(metadata["incident_type"])
 
-                if 'components' in metadata and metadata['components']:
-                    components_affected.update(metadata['components'])
+                if "components" in metadata and metadata["components"]:
+                    components_affected.update(metadata["components"])
 
-                if 'layers' in metadata and metadata['layers']:
-                    layers_affected.update(metadata['layers'])
+                if "layers" in metadata and metadata["layers"]:
+                    layers_affected.update(metadata["layers"])
 
-                if 'severity' in metadata:
-                    severities.add(metadata['severity'])
+                if "severity" in metadata:
+                    severities.add(metadata["severity"])
 
                 print(f"  - [{result.collection}] {result.content[:80]}...")
 
@@ -148,7 +148,7 @@ async def test_temporal_patterns():
         print(f"Found {len(results)} temporal patterns")
 
         for i, result in enumerate(results[:3]):
-            print(f"  {i+1}. {result.content[:60]}...")
+            print(f"  {i + 1}. {result.content[:60]}...")
 
 
 async def test_cross_collection_analysis():
@@ -175,8 +175,8 @@ async def test_cross_collection_analysis():
         print(f"\n--- {query_info['name']} ---")
 
         req = RetrievalQuery(
-            text=query_info['query'],
-            collections=query_info['collections'],
+            text=query_info["query"],
+            collections=query_info["collections"],
             max_results=15,
         )
 

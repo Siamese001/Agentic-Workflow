@@ -16,14 +16,17 @@ class TestCapabilityContracts:
     def test_capability_contracts_imports(self):
         """Test capability contracts module imports."""
         from agentic_core import capability_contracts
+
         assert capability_contracts is not None
 
     def test_capability_contract_class(self):
         """Test capability contract class exists."""
         from agentic_core.capability_contracts import CapabilityContract
+
         assert CapabilityContract is not None
 
     def test_validate_capability(self):
         """Test validate capability function."""
         from agentic_core.capability_contracts import validate_capability
+
         assert callable(validate_capability)

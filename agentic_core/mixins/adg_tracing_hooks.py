@@ -69,14 +69,14 @@ def with_adg_tracing(cls: type) -> type:
         decorated_cls = cls
 
     # Wrap key methods with tracing hooks
-    if hasattr(decorated_cls, '__init__'):
+    if hasattr(decorated_cls, "__init__"):
         decorated_cls.__init__ = _trace_agent_init(decorated_cls.__init__)
 
-    if hasattr(decorated_cls, 'execute'):
+    if hasattr(decorated_cls, "execute"):
         decorated_cls.execute = _trace_agent_execute(decorated_cls.execute)
 
     # Wrap common agent methods
-    for method_name in ['run', 'process', 'handle', 'invoke']:
+    for method_name in ["run", "process", "handle", "invoke"]:
         if hasattr(decorated_cls, method_name):
             original_method = getattr(decorated_cls, method_name)
             wrapped_method = _trace_agent_method(original_method, method_name)
@@ -87,16 +87,17 @@ def with_adg_tracing(cls: type) -> type:
 
 def _trace_agent_init(func: Callable) -> Callable:
     """Decorator to trace agent initialization."""
+
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         class_name = self.__class__.__name__
 
         # Initialize tracing if not already done
-        if hasattr(self, '_tracing_service_name'):
+        if hasattr(self, "_tracing_service_name"):
             service_name = self._tracing_service_name
         else:
             service_name = class_name
-            if hasattr(self, '__init__'):
+            if hasattr(self, "__init__"):
                 # Try to initialize IntegratedTracingMixin if not already done
                 try:
                     IntegratedTracingMixin.__init__(self, service_name=service_name)
@@ -104,8 +105,10 @@ def _trace_agent_init(func: Callable) -> Callable:
                     Logger.warning(f"[ADG_HOOKS] Failed to initialize tracing for {class_name}: {e}")
 
         # Trace initialization
-        if hasattr(self, 'start_span'):
-            with self.start_span("agent_init", {"class": class_name, "args_count": len(args), "kwargs_count": len(kwargs)}):
+        if hasattr(self, "start_span"):
+            with self.start_span(
+                "agent_init", {"class": class_name, "args_count": len(args), "kwargs_count": len(kwargs)}
+            ):
                 try:
                     result = func(self, *args, **kwargs)
                     return result
@@ -120,21 +123,25 @@ def _trace_agent_init(func: Callable) -> Callable:
 
 def _trace_agent_execute(func: Callable) -> Callable:
     """Decorator to trace agent execute method."""
+
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         class_name = self.__class__.__name__
 
         # Extract mission from arguments if available
-        mission = kwargs.get('mission', args[0] if args else 'unknown')
+        mission = kwargs.get("mission", args[0] if args else "unknown")
 
         # Trace execution with orchestrator span
-        if hasattr(self, 'start_span'):
-            with self.start_span("agent_execute", {
-                "class": class_name,
-                "mission": str(mission),
-                "args_count": len(args),
-                "kwargs_count": len(kwargs),
-            }) as span:
+        if hasattr(self, "start_span"):
+            with self.start_span(
+                "agent_execute",
+                {
+                    "class": class_name,
+                    "mission": str(mission),
+                    "args_count": len(args),
+                    "kwargs_count": len(kwargs),
+                },
+            ) as span:
                 try:
                     start_time = time.time()
                     result = func(self, *args, **kwargs)
@@ -160,18 +167,22 @@ def _trace_agent_execute(func: Callable) -> Callable:
 
 def _trace_agent_method(func: Callable, method_name: str) -> Callable:
     """Decorator to trace general agent methods."""
+
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
         class_name = self.__class__.__name__
 
         # Trace method execution
-        if hasattr(self, 'start_span'):
-            with self.start_span(f"agent_{method_name}", {
-                "class": class_name,
-                "method": method_name,
-                "args_count": len(args),
-                "kwargs_count": len(kwargs),
-            }) as span:
+        if hasattr(self, "start_span"):
+            with self.start_span(
+                f"agent_{method_name}",
+                {
+                    "class": class_name,
+                    "method": method_name,
+                    "args_count": len(args),
+                    "kwargs_count": len(kwargs),
+                },
+            ) as span:
                 try:
                     start_time = time.time()
                     result = func(self, *args, **kwargs)
@@ -293,6 +304,7 @@ def trace_agent_method(method_name: str | None = None):
     Returns:
         Decorator function
     """
+
     def decorator(func: Callable) -> Callable:
         trace_name = method_name or func.__name__
         return _trace_agent_method(func, trace_name)
@@ -310,18 +322,22 @@ def trace_cognitive_operation(reasoning_mode: str = "react"):
     Returns:
         Decorator function
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
             class_name = self.__class__.__name__
 
-            if hasattr(self, 'start_span'):
-                with self.start_span(f"cognitive_{func.__name__}", {
-                    "class": class_name,
-                    "operation": func.__name__,
-                    "reasoning_mode": reasoning_mode,
-                    "cognitive_operation": True,
-                }) as span:
+            if hasattr(self, "start_span"):
+                with self.start_span(
+                    f"cognitive_{func.__name__}",
+                    {
+                        "class": class_name,
+                        "operation": func.__name__,
+                        "reasoning_mode": reasoning_mode,
+                        "cognitive_operation": True,
+                    },
+                ) as span:
                     try:
                         result = func(self, *args, **kwargs)
                         span.set_attribute("cognitive_success", True)
@@ -348,6 +364,7 @@ def trace_tool_operation(tool_name: str | None = None):
     Returns:
         Decorator function
     """
+
     def decorator(func: Callable) -> Callable:
         tool = tool_name or func.__name__
 
@@ -355,14 +372,17 @@ def trace_tool_operation(tool_name: str | None = None):
         def wrapper(self, *args, **kwargs):
             class_name = self.__class__.__name__
 
-            if hasattr(self, 'start_span'):
-                with self.start_span(f"tool_{tool}", {
-                    "class": class_name,
-                    "tool_name": tool,
-                    "tool_operation": True,
-                    "args_count": len(args),
-                    "kwargs_count": len(kwargs),
-                }) as span:
+            if hasattr(self, "start_span"):
+                with self.start_span(
+                    f"tool_{tool}",
+                    {
+                        "class": class_name,
+                        "tool_name": tool,
+                        "tool_operation": True,
+                        "args_count": len(args),
+                        "kwargs_count": len(kwargs),
+                    },
+                ) as span:
                     try:
                         result = func(self, *args, **kwargs)
                         span.set_attribute("tool_success", True)

@@ -20,6 +20,7 @@ from typing import Any
 # Try to import ADG Query Bridge
 try:
     from adg_query_bridge import ADGQueryBridge, FileMatch, Node
+
     ADG_AVAILABLE = True
 except ImportError as e:
     warnings.warn(f"ADG Query Bridge unavailable: {e}")
@@ -29,9 +30,16 @@ except ImportError as e:
 class LayerViolation:
     """Represents a layer boundary violation found by the checker."""
 
-    def __init__(self, file_path: str, line_number: int, source_layer: str,
-                 target_layer: str, import_module: str, violation_type: str,
-                 message: str = ""):
+    def __init__(
+        self,
+        file_path: str,
+        line_number: int,
+        source_layer: str,
+        target_layer: str,
+        import_module: str,
+        violation_type: str,
+        message: str = "",
+    ):
         self.file_path = file_path
         self.line_number = line_number
         self.source_layer = source_layer
@@ -62,7 +70,15 @@ class ADGLayerBoundaryChecker:
         }
 
         # Apps layers that should not import directly from L* layers
-        self.apps_prefixes = ["apps_lic", "apps_rg", "apps_shared", "apps_eval", "apps_exec", "apps_research", "apps_rfp"]
+        self.apps_prefixes = [
+            "apps_lic",
+            "apps_rg",
+            "apps_shared",
+            "apps_eval",
+            "apps_exec",
+            "apps_research",
+            "apps_rfp",
+        ]
         self.l_layer_prefix = "L"
 
     def check_file(self, file_path: str) -> list[LayerViolation]:
@@ -71,7 +87,9 @@ class ADGLayerBoundaryChecker:
         file_path_obj = Path(file_path)
 
         if not file_path_obj.exists():
-            return [LayerViolation(file_path, 0, "", "", "", "file_not_found", f"File not found: {file_path}")]
+            return [
+                LayerViolation(file_path, 0, "", "", "", "file_not_found", f"File not found: {file_path}")
+            ]
 
         try:
             if ADG_AVAILABLE:
@@ -79,15 +97,17 @@ class ADGLayerBoundaryChecker:
             else:
                 violations = self._check_file_with_ast_fallback(file_path_obj)
         except Exception as e:
-            violations.append(LayerViolation(
-                file_path=str(file_path_obj.relative_to(self.repo_root)),
-                line_number=0,
-                source_layer="",
-                target_layer="",
-                import_module="",
-                violation_type="check_error",
-                message=f"Failed to check layer boundaries: {e}",
-            ))
+            violations.append(
+                LayerViolation(
+                    file_path=str(file_path_obj.relative_to(self.repo_root)),
+                    line_number=0,
+                    source_layer="",
+                    target_layer="",
+                    import_module="",
+                    violation_type="check_error",
+                    message=f"Failed to check layer boundaries: {e}",
+                )
+            )
 
         return violations
 
@@ -116,14 +136,25 @@ class ADGLayerBoundaryChecker:
                 target_layer = self._get_module_layer_from_adg(module_name)
 
                 if target_layer:
-                    violations.extend(self._check_layer_violation(
-                        source_layer, target_layer, module_name, line_num, rel_path,
-                    ))
+                    violations.extend(
+                        self._check_layer_violation(
+                            source_layer,
+                            target_layer,
+                            module_name,
+                            line_num,
+                            rel_path,
+                        )
+                    )
                 else:
                     # Module not found in ADG, check if it's a layer violation by pattern
-                    violations.extend(self._check_pattern_violation(
-                        source_layer, module_name, line_num, rel_path,
-                    ))
+                    violations.extend(
+                        self._check_pattern_violation(
+                            source_layer,
+                            module_name,
+                            line_num,
+                            rel_path,
+                        )
+                    )
 
         except Exception as e:
             warnings.warn(f"ADG check failed for {rel_path}, falling back to AST: {e}")
@@ -133,7 +164,7 @@ class ADGLayerBoundaryChecker:
 
     def _determine_layer_from_path(self, file_path: str) -> str | None:
         """Determine the layer from a file path."""
-        parts = file_path.split('/')
+        parts = file_path.split("/")
 
         # Check for L0-L6 layers
         for i, part in enumerate(parts):
@@ -152,7 +183,7 @@ class ADGLayerBoundaryChecker:
         import ast
 
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             tree = ast.parse(content, filename=str(file_path))
@@ -161,22 +192,26 @@ class ADGLayerBoundaryChecker:
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        imports.append({
-                            "type": "import",
-                            "module": alias.name,
-                            "alias": alias.asname,
-                            "line": node.lineno,
-                        })
+                        imports.append(
+                            {
+                                "type": "import",
+                                "module": alias.name,
+                                "alias": alias.asname,
+                                "line": node.lineno,
+                            }
+                        )
                 elif isinstance(node, ast.ImportFrom):
                     module = node.module or ""
                     for alias in node.names:
-                        imports.append({
-                            "type": "from",
-                            "module": module,
-                            "name": alias.name,
-                            "alias": alias.asname,
-                            "line": node.lineno,
-                        })
+                        imports.append(
+                            {
+                                "type": "from",
+                                "module": module,
+                                "name": alias.name,
+                                "alias": alias.asname,
+                                "line": node.lineno,
+                            }
+                        )
 
             return imports
         except SyntaxError:
@@ -192,17 +227,20 @@ class ADGLayerBoundaryChecker:
             for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
                 nodes = self.bridge.nodes_in_layer(layer)
                 for node in nodes:
-                    if (module_name in node.label or
-                        module_name in str(node.file_path) or
-                        node.label.endswith(module_name)):
+                    if (
+                        module_name in node.label
+                        or module_name in str(node.file_path)
+                        or node.label.endswith(module_name)
+                    ):
                         return layer
         except Exception:
             pass
 
         return None
 
-    def _check_layer_violation(self, source_layer: str, target_layer: str,
-                              module_name: str, line_num: int, file_path: str) -> list[LayerViolation]:
+    def _check_layer_violation(
+        self, source_layer: str, target_layer: str, module_name: str, line_num: int, file_path: str
+    ) -> list[LayerViolation]:
         """Check if an import violates layer sovereignty rules."""
         violations = []
 
@@ -210,44 +248,54 @@ class ADGLayerBoundaryChecker:
         if source_layer in self.layer_rules:
             forbidden_layers = self.layer_rules[source_layer]
             for forbidden_layer in forbidden_layers:
-                if (target_layer == forbidden_layer or
-                    target_layer.startswith(forbidden_layer + ".")):
-                    violations.append(LayerViolation(
+                if target_layer == forbidden_layer or target_layer.startswith(forbidden_layer + "."):
+                    violations.append(
+                        LayerViolation(
+                            file_path=file_path,
+                            line_number=line_num,
+                            source_layer=source_layer,
+                            target_layer=target_layer,
+                            import_module=module_name,
+                            violation_type="layer_inversion",
+                            message=f"Layer inversion: {source_layer} imports from {target_layer}",
+                        )
+                    )
+
+        # Check apps_* direct L* imports
+        if source_layer in self.apps_prefixes:
+            if target_layer.startswith(self.l_layer_prefix):
+                violations.append(
+                    LayerViolation(
                         file_path=file_path,
                         line_number=line_num,
                         source_layer=source_layer,
                         target_layer=target_layer,
                         import_module=module_name,
-                        violation_type="layer_inversion",
-                        message=f"Layer inversion: {source_layer} imports from {target_layer}",
-                    ))
-
-        # Check apps_* direct L* imports
-        if source_layer in self.apps_prefixes:
-            if target_layer.startswith(self.l_layer_prefix):
-                violations.append(LayerViolation(
-                    file_path=file_path,
-                    line_number=line_num,
-                    source_layer=source_layer,
-                    target_layer=target_layer,
-                    import_module=module_name,
-                    violation_type="apps_direct_l_import",
-                    message=f"Apps layer {source_layer} directly imports from {target_layer} (use agentic_core.interfaces shims)",
-                ))
+                        violation_type="apps_direct_l_import",
+                        message=f"Apps layer {source_layer} directly imports from {target_layer} (use agentic_core.interfaces shims)",
+                    )
+                )
 
         return violations
 
-    def _check_pattern_violation(self, source_layer: str, module_name: str,
-                                line_num: int, file_path: str) -> list[LayerViolation]:
+    def _check_pattern_violation(
+        self, source_layer: str, module_name: str, line_num: int, file_path: str
+    ) -> list[LayerViolation]:
         """Check for violations based on module name patterns when ADG lookup fails."""
         violations = []
 
         # Check if module name suggests a layer
         for layer in ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]:
             if module_name.startswith(layer + "."):
-                violations.extend(self._check_layer_violation(
-                    source_layer, layer, module_name, line_num, file_path,
-                ))
+                violations.extend(
+                    self._check_layer_violation(
+                        source_layer,
+                        layer,
+                        module_name,
+                        line_num,
+                        file_path,
+                    )
+                )
                 break
 
         return violations
@@ -272,20 +320,27 @@ class ADGLayerBoundaryChecker:
                     continue
 
                 # Check violations based on patterns only
-                violations.extend(self._check_pattern_violation(
-                    source_layer, module_name, line_num, rel_path,
-                ))
+                violations.extend(
+                    self._check_pattern_violation(
+                        source_layer,
+                        module_name,
+                        line_num,
+                        rel_path,
+                    )
+                )
 
         except Exception as e:
-            violations.append(LayerViolation(
-                file_path=rel_path,
-                line_number=0,
-                source_layer="",
-                target_layer="",
-                import_module="",
-                violation_type="check_error",
-                message=f"Failed to check layer boundaries: {e}",
-            ))
+            violations.append(
+                LayerViolation(
+                    file_path=rel_path,
+                    line_number=0,
+                    source_layer="",
+                    target_layer="",
+                    import_module="",
+                    violation_type="check_error",
+                    message=f"Failed to check layer boundaries: {e}",
+                )
+            )
 
         return violations
 
@@ -295,7 +350,11 @@ class ADGLayerBoundaryChecker:
         dir_path = self.repo_root / directory
 
         if not dir_path.exists():
-            return [LayerViolation(directory, 0, "", "", "", "directory_not_found", f"Directory not found: {directory}")]
+            return [
+                LayerViolation(
+                    directory, 0, "", "", "", "directory_not_found", f"Directory not found: {directory}"
+                )
+            ]
 
         for py_file in dir_path.rglob("*.py"):
             file_violations = self.check_file(str(py_file))
@@ -308,7 +367,11 @@ class ADGLayerBoundaryChecker:
         violations = []
 
         if not ADG_AVAILABLE:
-            return [LayerViolation(layer, 0, "", "", "", "adg_unavailable", "ADG not available for layer checking")]
+            return [
+                LayerViolation(
+                    layer, 0, "", "", "", "adg_unavailable", "ADG not available for layer checking"
+                )
+            ]
 
         try:
             # Get all nodes in the specified layer
@@ -322,15 +385,17 @@ class ADGLayerBoundaryChecker:
                     violations.extend(layer_violations)
 
         except Exception as e:
-            violations.append(LayerViolation(
-                file_path=layer,
-                line_number=0,
-                source_layer=layer,
-                target_layer="",
-                import_module="",
-                violation_type="check_error",
-                message=f"Failed to check layer {layer}: {e}",
-            ))
+            violations.append(
+                LayerViolation(
+                    file_path=layer,
+                    line_number=0,
+                    source_layer=layer,
+                    target_layer="",
+                    import_module="",
+                    violation_type="check_error",
+                    message=f"Failed to check layer {layer}: {e}",
+                )
+            )
 
         return violations
 
@@ -378,6 +443,7 @@ def main():
     if args.summary:
         summary = checker.get_layer_summary()
         import json
+
         print(json.dumps(summary, indent=2))
         return
 
@@ -393,6 +459,7 @@ def main():
 
     if args.format == "json":
         import json
+
         output = [
             {
                 "file_path": v.file_path,

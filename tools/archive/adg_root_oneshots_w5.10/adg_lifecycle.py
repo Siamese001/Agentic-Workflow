@@ -58,7 +58,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
         cmd.append("--use-cache")
         _logger.info("Using scan cache")
 
-    _logger.info("Running: %s", ' '.join(cmd))
+    _logger.info("Running: %s", " ".join(cmd))
     result = subprocess.run(cmd, cwd=REPO_ROOT, check=False)
 
     if result.returncode == 0:
@@ -108,7 +108,7 @@ def cmd_update(args: argparse.Namespace) -> int:
     _logger.info("Incremental update for %d files", len(valid_files))
 
     cmd = [sys.executable, "tools/adg_incremental_update.py"] + valid_files
-    _logger.info("Running: %s", ' '.join(cmd))
+    _logger.info("Running: %s", " ".join(cmd))
 
     result = subprocess.run(cmd, cwd=REPO_ROOT, check=False)
 
@@ -134,7 +134,7 @@ def cmd_sync(args: argparse.Namespace) -> int:
         cmd = [c for c in cmd if c]  # Remove empty
 
         try:
-            result = subprocess.run(cmd, cwd=REPO_ROOT, check=False, encoding='utf-8')
+            result = subprocess.run(cmd, cwd=REPO_ROOT, check=False, encoding="utf-8")
             return result.returncode
         except FileNotFoundError as e:
             _logger.error("Error running command: %s", e)
@@ -169,8 +169,11 @@ def cmd_status(args: argparse.Namespace) -> int:
         "is_fresh": age_hours < 24,
         "cache_exists": CACHE_FILE.exists(),
         "cache_size_mb": round(
-            CACHE_FILE.stat().st_size / (1024*1024), 2,
-        ) if CACHE_FILE.exists() else 0,
+            CACHE_FILE.stat().st_size / (1024 * 1024),
+            2,
+        )
+        if CACHE_FILE.exists()
+        else 0,
     }
 
     # Get node/edge counts
@@ -188,13 +191,16 @@ def cmd_status(args: argparse.Namespace) -> int:
 
     if args.json:
         Path(args.json).write_text(
-            json.dumps(result, indent=2), encoding="utf-8",
+            json.dumps(result, indent=2),
+            encoding="utf-8",
         )
 
     # Print summary
     status = "✓ FRESH" if result["is_fresh"] else "✗ STALE"
     _logger.info(
-        "Status: %s (%.1f hours old)", status, result["age_hours"],
+        "Status: %s (%.1f hours old)",
+        status,
+        result["age_hours"],
     )
     _logger.info(
         "Nodes: %s, Edges: %s",
@@ -230,10 +236,12 @@ def cmd_maintain(args: argparse.Namespace) -> int:
         # Get changed files from git
         result = subprocess.run(
             ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
-            capture_output=True, text=True, cwd=REPO_ROOT, check=False,
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+            check=False,
         )
-        changed_files = [f.strip() for f in result.stdout.split("\n")
-                        if f.strip().endswith(".py")]
+        changed_files = [f.strip() for f in result.stdout.split("\n") if f.strip().endswith(".py")]
         _logger.info("2. Git changed files: %d", len(changed_files))
 
     # 3. Update if needed

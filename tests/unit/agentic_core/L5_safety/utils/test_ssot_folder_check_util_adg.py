@@ -16,14 +16,17 @@ class TestSsotFolderCheckUtilAdg:
     def test_ssot_folder_check_util_adg_imports(self):
         """Test ssot_folder_check_util_adg module imports."""
         from agentic_core import ssot_folder_check_util_adg
+
         assert ssot_folder_check_util_adg is not None
 
     def test_ssot_folder_check_util_adg_class(self):
         """Test SsotFolderCheckUtilAdg class exists."""
         from agentic_core import SsotFolderCheckUtilAdg
+
         assert SsotFolderCheckUtilAdg is not None
 
     def test_ssot_folder_check_util_adg_callable(self):
         """Test ssot_folder_check_util_adg functions are callable."""
         from agentic_core import validate_ssot_folder_check_util_adg
+
         assert callable(validate_ssot_folder_check_util_adg)

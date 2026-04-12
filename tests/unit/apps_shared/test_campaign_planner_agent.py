@@ -26,6 +26,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 @pytest.fixture(autouse=True)
 def mock_external_services():
     """Mock all external services to prevent network calls."""
@@ -59,7 +60,6 @@ class TestCampaignPlannerAgent:
     def test_has_generate_strategy_method(self, agent_class):
         """Verify agent has generate_strategy method."""
         assert hasattr(agent_class, "generate_strategy"), "Should have generate_strategy method"
-
 
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""

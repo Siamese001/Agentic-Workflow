@@ -190,7 +190,9 @@ class ConvergenceEngine:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ConvergenceEngine.get_file_hash",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ConvergenceEngine.get_file_hash",
         )
 
         hasher = hashlib.sha256()
@@ -214,7 +216,9 @@ class ConvergenceEngine:
         while len(current_violations) > 0 and round_num <= self.max_rounds:
             print(f"🌀 Convergence Round {round_num}: {len(current_violations)} remaining")
             prioritized_violations = sorted(
-                current_violations, key=lambda v: v.get("impact_score", 0), reverse=True,
+                current_violations,
+                key=lambda v: v.get("impact_score", 0),
+                reverse=True,
             )
             for violation in prioritized_violations:
                 if violation.get("audit_fail_count", 0) > 3:

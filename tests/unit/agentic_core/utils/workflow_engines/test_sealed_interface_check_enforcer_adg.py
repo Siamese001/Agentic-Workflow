@@ -16,14 +16,17 @@ class TestSealedInterfaceCheckEnforcerAdg:
     def test_sealed_interface_check_enforcer_adg_imports(self):
         """Test sealed_interface_check_enforcer_adg module imports."""
         from agentic_core import sealed_interface_check_enforcer_adg
+
         assert sealed_interface_check_enforcer_adg is not None
 
     def test_sealed_interface_check_enforcer_adg_class(self):
         """Test SealedInterfaceCheckEnforcerAdg class exists."""
         from agentic_core import SealedInterfaceCheckEnforcerAdg
+
         assert SealedInterfaceCheckEnforcerAdg is not None
 
     def test_sealed_interface_check_enforcer_adg_callable(self):
         """Test sealed_interface_check_enforcer_adg functions are callable."""
         from agentic_core import validate_sealed_interface_check_enforcer_adg
+
         assert callable(validate_sealed_interface_check_enforcer_adg)

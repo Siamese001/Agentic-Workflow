@@ -172,8 +172,11 @@ class TalentMetrics(BaseModel):
     def validate_pedigree(cls, v):
         """Ensure pedigree keywords are prestigious markers."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TalentMetrics.validate_pedigree")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TalentMetrics.validate_pedigree"
+        )
 
         prestigious_terms = {
             "phd",
@@ -282,11 +285,13 @@ class TalentSignalEnhancer:
                 if pedigree:
                     pedigree_str = ", ".join(pedigree[:3])
                     enhanced = enhanced.replace(
-                        f"team of {team_size}", f"team of {team_size} (including **{pedigree_str}**)",
+                        f"team of {team_size}",
+                        f"team of {team_size} (including **{pedigree_str}**)",
                     )
                 else:
                     enhanced = enhanced.replace(
-                        f"team of {team_size}", f"high-performance team of {team_size}",
+                        f"team of {team_size}",
+                        f"high-performance team of {team_size}",
                     )
             if hiring_metric:
                 if "hired" in enhanced.lower():
@@ -482,15 +487,18 @@ class TalentSignalEnhancer:
             if team_size > 0:
                 if team_size >= 20:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **senior engineers**",
+                        f"team of {team_size}",
+                        f"team of {team_size} **senior engineers**",
                     )
                 elif team_size >= 10:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **high-caliber engineers**",
+                        f"team of {team_size}",
+                        f"team of {team_size} **high-caliber engineers**",
                     )
                 else:
                     bullet = bullet.replace(
-                        f"team of {team_size}", f"team of {team_size} **specialized engineers**",
+                        f"team of {team_size}",
+                        f"team of {team_size} **specialized engineers**",
                     )
             if "managed" in bullet.lower():
                 bullet = bullet.replace("managed", "built and led")
@@ -514,7 +522,8 @@ def create_talent_signal_enhancer(candidate_background: dict[str, Any]) -> Talen
 
 
 def enhance_talent_signals(
-    bullets: list[str], candidate_background: dict[str, Any],
+    bullets: list[str],
+    candidate_background: dict[str, Any],
 ) -> tuple[list[str], str | None]:
     """Quickly enhance talent signals in bullets.
 

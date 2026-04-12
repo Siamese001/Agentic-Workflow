@@ -183,7 +183,10 @@ class IContextCompletenessScorer(ABC):
 
     @abstractmethod
     def score(
-        self, query_id: str, query: str, chunk: Document | GroundedDocument,
+        self,
+        query_id: str,
+        query: str,
+        chunk: Document | GroundedDocument,
     ) -> ContextCompletenessScore:
         """Score the completeness of a chunk relative to the query.
 
@@ -199,7 +202,10 @@ class IContextCompletenessScorer(ABC):
 
     @abstractmethod
     def score_batch(
-        self, query_id: str, query: str, chunks: list[Document | GroundedDocument],
+        self,
+        query_id: str,
+        query: str,
+        chunks: list[Document | GroundedDocument],
     ) -> list[ContextCompletenessScore]:
         """Score a batch of chunks for a single query.
 

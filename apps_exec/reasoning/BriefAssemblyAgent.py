@@ -50,14 +50,18 @@ class BriefAssemblyAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "BriefAssemblyAgent.assemble_brief",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "BriefAssemblyAgent.assemble_brief",
         )
         _emit_orchestrates_workflow("p3", "brief_assembly_agent", "assembly_workflow")
         _emit_dispatches_agent("p3", "brief_assembly_agent", "assembly_dispatch")
         _emit_records_telemetry_event("p4", "brief_assembly_agent", "assembly_start")
 
         brief = self._assembler_service.assemble_brief(
-            content_sections, persona_id, target_word_count,
+            content_sections,
+            persona_id,
+            target_word_count,
         )
 
         _log.info("Assembled brief %s (%d words)", brief.get("brief_id"), brief.get("word_count"))

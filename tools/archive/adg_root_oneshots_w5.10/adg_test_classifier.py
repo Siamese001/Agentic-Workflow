@@ -78,36 +78,76 @@ OUT_PATH = REPO / "artifacts" / "adg_test_classification.json"
 # ── infra seam rules ─────────────────────────────────────────────────────────
 # Each rule: (flag_name, list_of_patterns_to_match_in_module_dotted_name_or_source)
 INFRA_SEAM_RULES: list[tuple[str, list[str]]] = [
-    ("REDIS", [
-        "redis", "aioredis",
-        "semantic_cache_manager",   # only the network path — detected below
-        "hivemind",
-    ]),
-    ("EMBEDDING_MODEL", [
-        "sentence_transformers", "SentenceTransformer",
-        "FlagModel", "BAAI", "bge",
-        "bmg_embedding", "BGEEmbedder",
-    ]),
-    ("NETWORK", [
-        "httpx", "huggingface_hub", "huggingface",
-        "requests", "urllib3", "aiohttp",
-    ]),
-    ("GPU", [
-        "torch.cuda", "torch.device", ".cuda(", "cuda",
-        "accelerate", "bitsandbytes",
-    ]),
-    ("SUBPROCESS", [
-        "subprocess", "vllm", "wsl", "_get_qwen_vllm_arbiter",
-        "qwen_vllm",
-    ]),
-    ("PERSISTENCE", [
-        # runtime state / persistent write outside tmp
-        "RuntimeStateManager", "assert_no_persistent_write",
-        "mutation_prohibition",
-    ]),
-    ("KEYSOURCE", [
-        "KeySource", "inject_key_source", "PyCryptodomex",
-    ]),
+    (
+        "REDIS",
+        [
+            "redis",
+            "aioredis",
+            "semantic_cache_manager",  # only the network path — detected below
+            "hivemind",
+        ],
+    ),
+    (
+        "EMBEDDING_MODEL",
+        [
+            "sentence_transformers",
+            "SentenceTransformer",
+            "FlagModel",
+            "BAAI",
+            "bge",
+            "bmg_embedding",
+            "BGEEmbedder",
+        ],
+    ),
+    (
+        "NETWORK",
+        [
+            "httpx",
+            "huggingface_hub",
+            "huggingface",
+            "requests",
+            "urllib3",
+            "aiohttp",
+        ],
+    ),
+    (
+        "GPU",
+        [
+            "torch.cuda",
+            "torch.device",
+            ".cuda(",
+            "cuda",
+            "accelerate",
+            "bitsandbytes",
+        ],
+    ),
+    (
+        "SUBPROCESS",
+        [
+            "subprocess",
+            "vllm",
+            "wsl",
+            "_get_qwen_vllm_arbiter",
+            "qwen_vllm",
+        ],
+    ),
+    (
+        "PERSISTENCE",
+        [
+            # runtime state / persistent write outside tmp
+            "RuntimeStateManager",
+            "assert_no_persistent_write",
+            "mutation_prohibition",
+        ],
+    ),
+    (
+        "KEYSOURCE",
+        [
+            "KeySource",
+            "inject_key_source",
+            "PyCryptodomex",
+        ],
+    ),
 ]
 
 # Patterns that indicate fallback/degraded-mode assertions
@@ -131,6 +171,7 @@ FALLBACK_ASSERT_PATTERNS = [
 _FALLBACK_RE = re.compile("|".join(FALLBACK_ASSERT_PATTERNS), re.IGNORECASE)
 
 # ── load ADG ─────────────────────────────────────────────────────────────────
+
 
 def load_adg() -> dict:
     return json.loads(ADG_PATH.read_text(encoding="utf-8"))
@@ -161,6 +202,7 @@ def build_import_graph(adg: dict) -> dict[str, set[str]]:
 
 # ── infra seam detection ─────────────────────────────────────────────────────
 
+
 def _module_text(resolved_path: str) -> str:
     p = REPO / resolved_path
     if p.exists() and p.suffix == ".py":
@@ -187,10 +229,11 @@ def detect_infra_flags(resolved_paths: set[str]) -> dict[str, list[str]]:
 
 # ── fallback assertion detection ─────────────────────────────────────────────
 
+
 def has_fallback_assertions(test_path: Path) -> bool:
     """Return True if the test body contains degraded/fallback assertion patterns."""
     try:
-        src = test_path.read_text(encoding="utf-8", errors="ignore")    # guardian: Add error context logging
+        src = test_path.read_text(encoding="utf-8", errors="ignore")  # guardian: Add error context logging
     # guardian: allow-silent-swallow - acceptable exception handling
     except OSError:
         return False
@@ -198,6 +241,7 @@ def has_fallback_assertions(test_path: Path) -> bool:
 
 
 # ── BFS reachability ─────────────────────────────────────────────────────────
+
 
 # guardian: allow-magic-config
 def reachable_from(start: str, adj: dict[str, set[str]], max_depth: int = 6) -> set[str]:
@@ -217,16 +261,14 @@ def reachable_from(start: str, adj: dict[str, set[str]], max_depth: int = 6) -> 
 
 # ── test node id collection ───────────────────────────────────────────────────
 
+
 def collect_test_files(root: Path) -> list[Path]:
-    return sorted(
-        p for p in root.rglob("test_*.py")
-        if ".pytest_cache" not in str(p)
-    )
+    return sorted(p for p in root.rglob("test_*.py") if ".pytest_cache" not in str(p))
 
 
 def collect_nodeids(test_file: Path) -> list[str]:
     """Extract test function / method node IDs from a file via AST."""
-    try:    # guardian: Syntax errors should be caught at parser level, not runtime
+    try:  # guardian: Syntax errors should be caught at parser level, not runtime
         # guardian: allow-silent-swallow - acceptable exception handling
         tree = ast.parse(test_file.read_text(encoding="utf-8", errors="ignore"))
     except SyntaxError:
@@ -245,6 +287,7 @@ def collect_nodeids(test_file: Path) -> list[str]:
 
 # ── classify one test file ────────────────────────────────────────────────────
 
+
 def classify_file(
     test_file: Path,
     adj: dict[str, set[str]],
@@ -260,7 +303,15 @@ def classify_file(
     if not has_flags:
         classification = "UNIT_STRICT"
         reason = "No infra seam reachable"
-    elif is_fallback and set(flags.keys()) <= {"REDIS", "EMBEDDING_MODEL", "NETWORK", "GPU", "SUBPROCESS", "PERSISTENCE", "KEYSOURCE"}:
+    elif is_fallback and set(flags.keys()) <= {
+        "REDIS",
+        "EMBEDDING_MODEL",
+        "NETWORK",
+        "GPU",
+        "SUBPROCESS",
+        "PERSISTENCE",
+        "KEYSOURCE",
+    }:
         # Has infra in graph but assertions are degraded-path style
         classification = "DEGRADED_PATH"
         reason = f"Reaches infra ({', '.join(sorted(flags))}) but asserts fallback/degraded behavior"
@@ -277,15 +328,16 @@ def classify_file(
         "file": rel,
         "classification": classification,
         "infra_flags": sorted(flags.keys()),
-        "reachable_infra_nodes": sorted({
-            rp for flag_rps in flags.values() for rp in flag_rps
-        })[:20],  # cap for readability
+        "reachable_infra_nodes": sorted({rp for flag_rps in flags.values() for rp in flag_rps})[
+            :20
+        ],  # cap for readability
         "reason": reason,
         "test_count": len(collect_nodeids(test_file)),
     }
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     print("Loading ADG...", flush=True)
@@ -315,17 +367,18 @@ def main() -> None:
     for r in results:
         cls = r["classification"]
         for nid in collect_nodeids(REPO / r["file"]):
-            test_id_rows.append({
-                "test": nid,
-                "classification": cls,
-                "infra_flags": r["infra_flags"],
-                "reason": r["reason"],
-            })
+            test_id_rows.append(
+                {
+                    "test": nid,
+                    "classification": cls,
+                    "infra_flags": r["infra_flags"],
+                    "reason": r["reason"],
+                }
+            )
 
     # Violations: files in tests/unit/ that are NOT UNIT_STRICT
     unit_violations = [
-        r for r in results
-        if r["file"].startswith("tests/unit/") and r["classification"] != "UNIT_STRICT"
+        r for r in results if r["file"].startswith("tests/unit/") and r["classification"] != "UNIT_STRICT"
     ]
 
     artifact = {
@@ -344,7 +397,12 @@ def main() -> None:
             "integration_infra": sorted(buckets["INTEGRATION_INFRA"]),
         },
         "unit_violations": [
-            {"file": v["file"], "classification": v["classification"], "infra_flags": v["infra_flags"], "reason": v["reason"]}
+            {
+                "file": v["file"],
+                "classification": v["classification"],
+                "infra_flags": v["infra_flags"],
+                "reason": v["reason"],
+            }
             for v in unit_violations
         ],
         "per_file": results,
@@ -355,12 +413,12 @@ def main() -> None:
     print(f"\nArtifact written → {OUT_PATH.relative_to(REPO)}")
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"  UNIT_STRICT       : {artifact['summary']['unit_strict']} files")
     print(f"  DEGRADED_PATH     : {artifact['summary']['degraded_path']} files")
     print(f"  INTEGRATION_INFRA : {artifact['summary']['integration_infra']} files")
     print(f"  unit/ violations  : {artifact['summary']['unit_violations']} files")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     if unit_violations:
         print("\nCI VIOLATIONS — these files are in tests/unit/ but NOT UNIT_STRICT:")

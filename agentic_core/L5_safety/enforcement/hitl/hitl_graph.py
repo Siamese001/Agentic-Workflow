@@ -275,6 +275,7 @@ class HITLGraph:
 
     def checkpoint_by_id(self, checkpoint_id: str) -> HITLCheckpoint | None:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HITLGraph.checkpoint_by_id")
 
@@ -328,8 +329,11 @@ class HITLRuntimeRecorder(RuntimeGraphCollector):
         Returns the generated checkpoint_id.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HITLRuntimeRecorder.checkpoint")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HITLRuntimeRecorder.checkpoint"
+        )
 
         cp_id = _make_checkpoint_id(self._agent_id, violation_id)
         cp = HITLCheckpoint(

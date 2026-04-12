@@ -108,7 +108,11 @@ class TestSlotSecurityInvariants:
         """Test that U0 slot cannot carry safety_threshold."""
         with pytest.raises(ValueError, match="cannot carry safety_threshold"):
             AuthoritySlot(
-                "U0", "user intent", AuthorityLevel.ZERO, "L1", metadata={"safety_threshold": "low"},
+                "U0",
+                "user intent",
+                AuthorityLevel.ZERO,
+                "L1",
+                metadata={"safety_threshold": "low"},
             )
 
     def test_s0_can_carry_any_metadata(self):
@@ -125,7 +129,11 @@ class TestSlotSecurityInvariants:
     def test_i0_can_carry_any_metadata(self):
         """Test that I0 slot can carry routing/safety metadata."""
         slot = AuthoritySlot(
-            "I0", "identity", AuthorityLevel.GOVERNED, "L4", metadata={"execution_tier": "high"},
+            "I0",
+            "identity",
+            AuthorityLevel.GOVERNED,
+            "L4",
+            metadata={"execution_tier": "high"},
         )
         assert slot.metadata["execution_tier"] == "high"
 

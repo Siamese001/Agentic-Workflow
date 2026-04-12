@@ -7,24 +7,6 @@ ADG = REPO / "artifacts" / "adg"
 TS = "0427"
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def size_summary():
     print(f"\n{'=' * 80}")
     print("SIZE SUMMARY")

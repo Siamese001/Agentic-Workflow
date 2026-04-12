@@ -19,7 +19,6 @@ No state-bearing namespace may exist without lifecycle policy once governance is
 """
 # guardian: allow-config_with_logic - ADG violation exemption
 
-
 from __future__ import annotations
 
 import logging
@@ -416,19 +415,35 @@ def _resolve_lifecycle_policy(
 
     if retention_class == RetentionClass.SHORT_TERM:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 3600, 7200, 8640,
+            policy_id,
+            retention_class,
+            3600,
+            7200,
+            8640,
         )  # 1h, 2h, 2.4h
     elif retention_class == RetentionClass.MEDIUM_TERM:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 86400, 604800, 2592000,
+            policy_id,
+            retention_class,
+            86400,
+            604800,
+            2592000,
         )  # 1d, 1w, 30d
     elif retention_class == RetentionClass.LONG_TERM:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 2592000, 7776000, 31536000,
+            policy_id,
+            retention_class,
+            2592000,
+            7776000,
+            31536000,
         )  # 30d, 90d, 365d
     elif retention_class == RetentionClass.PERMANENT:
         return registry.get_policy(policy_id) or _create_default_policy(
-            policy_id, retention_class, 31536000, 63072000, 126144000,
+            policy_id,
+            retention_class,
+            31536000,
+            63072000,
+            126144000,
         )  # 365d, 730d, 1460d
     else:
         return None
@@ -473,11 +488,13 @@ def _determine_status_transition(
         if current_status == LifecycleStatus.ACTIVE:
             return LifecycleStatus.EXPIRED.value
         elif current_status == LifecycleStatus.EXPIRED and policy.should_archive(
-            record.created_at_tick, current_time,
+            record.created_at_tick,
+            current_time,
         ):
             return LifecycleStatus.ARCHIVED.value
         elif current_status == LifecycleStatus.ARCHIVED and policy.should_delete(
-            record.created_at_tick, current_time,
+            record.created_at_tick,
+            current_time,
         ):
             return LifecycleStatus.PENDING_DELETION.value
 

@@ -16,14 +16,17 @@ class TestVerifyBaseAgentNamesUtilAdg:
     def test_verify_base_agent_names_util_adg_imports(self):
         """Test verify_base_agent_names_util_adg module imports."""
         from agentic_core import verify_base_agent_names_util_adg
+
         assert verify_base_agent_names_util_adg is not None
 
     def test_verify_base_agent_names_util_adg_class(self):
         """Test VerifyBaseAgentNamesUtilAdg class exists."""
         from agentic_core import VerifyBaseAgentNamesUtilAdg
+
         assert VerifyBaseAgentNamesUtilAdg is not None
 
     def test_verify_base_agent_names_util_adg_callable(self):
         """Test verify_base_agent_names_util_adg functions are callable."""
         from agentic_core import validate_verify_base_agent_names_util_adg
+
         assert callable(validate_verify_base_agent_names_util_adg)

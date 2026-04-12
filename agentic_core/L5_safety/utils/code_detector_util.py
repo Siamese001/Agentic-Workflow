@@ -32,6 +32,7 @@ Logger = logging.getLogger(__name__)
 
 class DetectionType(Enum):
     """Types of code quality detections."""
+
     DEAD_CODE = "DEAD_CODE"
     DRIFT = "DRIFT"
     METHOD_CHANGE = "METHOD_CHANGE"
@@ -41,6 +42,7 @@ class DetectionType(Enum):
 
 class Severity(Enum):
     """Severity levels for detections."""
+
     INFO = 0
     WARNING = 1
     ERROR = 2
@@ -221,8 +223,9 @@ class CodeDetector:
                     ),
                 )
         except SyntaxError as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("code_detector_util: SyntaxError swallowed at L223: %s", e)
+            logging.getLogger(__name__).debug("code_detector_util: SyntaxError swallowed at L223: %s", e)
 
         return detections
 

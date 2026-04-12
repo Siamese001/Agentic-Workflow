@@ -288,7 +288,9 @@ class tool_registry:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolRegistry.register:{name}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ToolRegistry.register:{name}",
         )
         _ectx = _make_execution_context(name, "tool_registry.register")
         _invoke_authorize_and_execute(
@@ -500,7 +502,7 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> dict[str, Any]:
 
     try:
         tree = ast.parse(code)
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         return {"error": "syntax_error", "message": f"Invalid Python syntax: {e}"}
     if mode == "audit_classes":
         snake_classes = sum(

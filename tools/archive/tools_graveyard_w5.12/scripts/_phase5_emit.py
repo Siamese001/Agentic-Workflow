@@ -40,8 +40,8 @@ repairs = [
         "file": "agentic_core/L0_routing/scripts/execute_ssot.py",
         "line": "1902-1918",
         "change": "Inject PYTHONPATH={repo_root_wsl}:$PYTHONPATH into WSL bash command",
-        "old": "f\"{WSL_PYTHON} {script_wsl}...\"",
-        "new": "f\"PYTHONPATH={repo_root_wsl}:$PYTHONPATH {WSL_PYTHON} {script_wsl}...\"",
+        "old": 'f"{WSL_PYTHON} {script_wsl}..."',
+        "new": 'f"PYTHONPATH={repo_root_wsl}:$PYTHONPATH {WSL_PYTHON} {script_wsl}..."',
         "adg_justification": "_arbiter launches qwen_vllm_inference.py in WSL without PYTHONPATH; agentic_core not importable",
         "tests_fixed": 1,
         "category": "IMPORT_PATH_ERROR",
@@ -83,5 +83,16 @@ repairs = [
 
 total_fixed = sum(r["tests_fixed"] for r in repairs)
 out = Path("artifacts/execute_ssot_repair_log.json")
-out.write_text(json.dumps({"repairs": repairs, "total_fixed": total_fixed, "total_failures_before": 15, "remaining": 15 - total_fixed}, indent=2), encoding="utf-8")
+out.write_text(
+    json.dumps(
+        {
+            "repairs": repairs,
+            "total_fixed": total_fixed,
+            "total_failures_before": 15,
+            "remaining": 15 - total_fixed,
+        },
+        indent=2,
+    ),
+    encoding="utf-8",
+)
 print(f"PHASE 5 artifact written. {total_fixed} tests fixed across {len(repairs)} repairs.")

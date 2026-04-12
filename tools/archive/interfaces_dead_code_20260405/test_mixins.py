@@ -16,14 +16,17 @@ class TestMixins:
     def test_mixins_imports(self):
         """Test mixins module imports."""
         from agentic_core import mixins
+
         assert mixins is not None
 
     def test_mixins_class(self):
         """Test Mixins class exists."""
         from agentic_core import Mixins
+
         assert Mixins is not None
 
     def test_mixins_callable(self):
         """Test mixins functions are callable."""
         from agentic_core import validate_mixins
+
         assert callable(validate_mixins)

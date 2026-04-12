@@ -98,7 +98,11 @@ class ExecutionOrchestrator:
         if self.l3_orchestrator is not None:
             try:
                 result = self.l3_orchestrator.orchestrate(
-                    payload, route_mode=path.value, trace_id=cycle.cid, policy_hash="", allowed_tools=(),
+                    payload,
+                    route_mode=path.value,
+                    trace_id=cycle.cid,
+                    policy_hash="",
+                    allowed_tools=(),
                 )
                 _completed = result.completed if isinstance(result.completed, bool) else False  # type: ignore[union-attr]
                 _stage = result.stage if isinstance(result.stage, str) else "unknown"  # type: ignore[union-attr]
@@ -188,6 +192,32 @@ class ExecutionOrchestrator:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "retry"}
             else:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "blocked"}
+        # D2 semantic cache gate — at Path D only, before D3 retrieval starts
+        if path.value == "D":
+            _tenant_id = intent_input.get("tenant_id", "")
+            _flow_class = intent_input.get("flow_class", None)
+            _replay_mode = bool(intent_input.get("replay_mode", False))
+            _namespace = intent_input.get("namespace", "default")
+            try:
+                from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager  # noqa: PLC0415
+
+                _d2_hit = SemanticCacheManager.get_instance().recall(
+                    repr(payload),
+                    _namespace,
+                    tenant_id=_tenant_id,
+                    flow_class=_flow_class,
+                    replay_mode=_replay_mode,
+                )
+                if _d2_hit is not None:
+                    return {
+                        "path": path,
+                        "risk": risk,
+                        "cycle": cycle,
+                        "state": "d2_cache_hit",
+                        "result": _d2_hit,
+                    }
+            except (ImportError, RuntimeError) as _e:
+                Logger.debug("[L0-ORCH] D2 semantic cache check skipped: %s", _e)
         if path.value in self._L3_PATHS:
             return self._delegate_to_l3(path, payload, cycle, risk)
         return {"path": path, "risk": risk, "cycle": cycle, "state": "success"}

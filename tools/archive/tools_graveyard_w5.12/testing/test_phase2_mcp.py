@@ -30,7 +30,7 @@ async def test_guardian_mcp():
         return False
 
     # Check FastMCP instance
-    if not hasattr(server_module, 'mcp'):
+    if not hasattr(server_module, "mcp"):
         print("❌ FastMCP instance 'mcp' not found")
         return False
 
@@ -44,7 +44,7 @@ async def test_guardian_mcp():
         print(f"✅ Found {len(tool_names)} tools: {', '.join(tool_names)}")
     except Exception as e:
         print(f"❌ Failed to list tools: {e}")
-        if hasattr(mcp_instance, '_tools'):
+        if hasattr(mcp_instance, "_tools"):
             tool_names = list(mcp_instance._tools.keys())
             print(f"✅ Found {len(tool_names)} tools (via _tools): {', '.join(tool_names)}")
         else:
@@ -100,6 +100,7 @@ async def test_guardian_mcp():
     print("✅ Guardian Governance MCP Server test passed!")
     return True
 
+
 async def test_pytest_mcp():
     """Test Pytest Test Orchestration MCP server."""
     print("\nTesting Pytest Test Orchestration MCP Server...")
@@ -120,7 +121,7 @@ async def test_pytest_mcp():
         return False
 
     # Check FastMCP instance
-    if not hasattr(server_module, 'mcp'):
+    if not hasattr(server_module, "mcp"):
         print("❌ FastMCP instance 'mcp' not found")
         return False
 
@@ -134,7 +135,7 @@ async def test_pytest_mcp():
         print(f"✅ Found {len(tool_names)} tools: {', '.join(tool_names)}")
     except Exception as e:
         print(f"❌ Failed to list tools: {e}")
-        if hasattr(mcp_instance, '_tools'):
+        if hasattr(mcp_instance, "_tools"):
             tool_names = list(mcp_instance._tools.keys())
             print(f"✅ Found {len(tool_names)} tools (via _tools): {', '.join(tool_names)}")
         else:
@@ -177,6 +178,7 @@ async def test_pytest_mcp():
     print("✅ Pytest Test Orchestration MCP Server test passed!")
     return True
 
+
 async def test_phase2_mcp_servers():
     """Test both Phase 2 MCP servers."""
     print("=== Phase 2 MCP Servers Test Suite ===\n")
@@ -189,9 +191,12 @@ async def test_phase2_mcp_servers():
     print(f"Pytest Test Orchestration MCP: {'✅ PASS' if pytest_success else '❌ FAIL'}")
 
     overall_success = guardian_success and pytest_success
-    print(f"Overall Phase 2 MCP Status: {'✅ ALL TESTS PASSED' if overall_success else '❌ SOME TESTS FAILED'}")
+    print(
+        f"Overall Phase 2 MCP Status: {'✅ ALL TESTS PASSED' if overall_success else '❌ SOME TESTS FAILED'}"
+    )
 
     return overall_success
+
 
 if __name__ == "__main__":
     success = asyncio.run(test_phase2_mcp_servers())

@@ -182,8 +182,11 @@ class ReplayValidator:
             DeterminismViolationError: If any validation fails
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayValidator.validate_seed_pack")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReplayValidator.validate_seed_pack"
+        )
 
         base = Path(base_path)
         pack_dir = base / "seed_packs" / namespace / seed_index_version_hash

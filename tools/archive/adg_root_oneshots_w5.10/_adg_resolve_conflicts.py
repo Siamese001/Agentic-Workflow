@@ -5,6 +5,7 @@ Resolve rebase conflicts by accepting both sides:
 - Keep all content from THEIRS
 Strategy: strip conflict markers, merge both sides.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,12 +25,6 @@ CONFLICT_FILES = [
     "ops_scripts/general/quick_hang_finder.py",
     "ops_scripts/hooks/landmine_baseline.txt",
 ]
-
-
-
-
-
-
 
 
 if __name__ == "__main__":

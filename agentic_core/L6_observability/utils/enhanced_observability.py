@@ -43,6 +43,7 @@ Logger = logging.getLogger(__name__)
 
 class AlertSeverity(Enum):
     """Alert severity levels."""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -52,6 +53,7 @@ class AlertSeverity(Enum):
 
 class HealthStatus(Enum):
     """System health status."""
+
     HEALTHY = "healthy"
     WARNING = "warning"
     DEGRADED = "degraded"
@@ -259,7 +261,7 @@ class EnhancedObservability:
             # System metrics
             cpu_percent = psutil.cpu_percent(interval=1)
             memory = psutil.virtual_memory()
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
 
             # Process metrics
             process = psutil.Process()
@@ -269,10 +271,18 @@ class EnhancedObservability:
             # Store metrics
             metrics = {
                 "system_cpu_percent": SystemMetric("system_cpu_percent", cpu_percent, "percent", timestamp),
-                "system_memory_percent": SystemMetric("system_memory_percent", memory.percent, "percent", timestamp),
-                "system_memory_used_gb": SystemMetric("system_memory_used_gb", memory.used / 1024**3, "GB", timestamp),
-                "system_disk_percent": SystemMetric("system_disk_percent", disk.percent, "percent", timestamp),
-                "process_memory_mb": SystemMetric("process_memory_mb", process_memory.rss / 1024**2, "MB", timestamp),
+                "system_memory_percent": SystemMetric(
+                    "system_memory_percent", memory.percent, "percent", timestamp
+                ),
+                "system_memory_used_gb": SystemMetric(
+                    "system_memory_used_gb", memory.used / 1024**3, "GB", timestamp
+                ),
+                "system_disk_percent": SystemMetric(
+                    "system_disk_percent", disk.percent, "percent", timestamp
+                ),
+                "process_memory_mb": SystemMetric(
+                    "process_memory_mb", process_memory.rss / 1024**2, "MB", timestamp
+                ),
                 "process_cpu_percent": SystemMetric("process_cpu_percent", process_cpu, "percent", timestamp),
                 "process_threads": SystemMetric("process_threads", process.num_threads(), "count", timestamp),
             }
@@ -300,11 +310,24 @@ class EnhancedObservability:
             stats = collector.get_collection_stats()
 
             tracing_metrics = {
-                "tracing_spans_collected": SystemMetric("tracing_spans_collected", stats.get("total_spans_collected", 0), "count", timestamp),
-                "tracing_agents_registered": SystemMetric("tracing_agents_registered", stats.get("agents_registered", 0), "count", timestamp),
-                "tracing_buffer_size": SystemMetric("tracing_buffer_size", stats.get("buffer_size", 0), "count", timestamp),
-                "tracing_collection_errors": SystemMetric("tracing_collection_errors", stats.get("collection_errors", 0), "count", timestamp),
-                "tracing_runtime_adg_enabled": SystemMetric("tracing_runtime_adg_enabled", 1.0 if stats.get("runtime_adg_enabled") else 0.0, "boolean", timestamp),
+                "tracing_spans_collected": SystemMetric(
+                    "tracing_spans_collected", stats.get("total_spans_collected", 0), "count", timestamp
+                ),
+                "tracing_agents_registered": SystemMetric(
+                    "tracing_agents_registered", stats.get("agents_registered", 0), "count", timestamp
+                ),
+                "tracing_buffer_size": SystemMetric(
+                    "tracing_buffer_size", stats.get("buffer_size", 0), "count", timestamp
+                ),
+                "tracing_collection_errors": SystemMetric(
+                    "tracing_collection_errors", stats.get("collection_errors", 0), "count", timestamp
+                ),
+                "tracing_runtime_adg_enabled": SystemMetric(
+                    "tracing_runtime_adg_enabled",
+                    1.0 if stats.get("runtime_adg_enabled") else 0.0,
+                    "boolean",
+                    timestamp,
+                ),
             }
 
             self._current_metrics.update(tracing_metrics)
@@ -325,12 +348,36 @@ class EnhancedObservability:
             perf_metrics = perf_stats.get("performance_metrics", {})
 
             optimized_metrics = {
-                "optimized_spans_per_second": SystemMetric("optimized_spans_per_second", perf_metrics.get("spans_per_second", 0), "rate", timestamp),
-                "optimized_avg_processing_time_ms": SystemMetric("optimized_avg_processing_time_ms", perf_metrics.get("avg_processing_time_ms", 0), "ms", timestamp),
-                "optimized_memory_usage_mb": SystemMetric("optimized_memory_usage_mb", perf_metrics.get("memory_usage_mb", 0), "MB", timestamp),
-                "optimized_cpu_usage_percent": SystemMetric("optimized_cpu_usage_percent", perf_metrics.get("cpu_usage_percent", 0), "percent", timestamp),
-                "optimized_buffer_utilization": SystemMetric("optimized_buffer_utilization", perf_metrics.get("buffer_utilization", 0), "ratio", timestamp),
-                "optimized_compression_ratio": SystemMetric("optimized_compression_ratio", perf_metrics.get("compression_ratio", 0), "ratio", timestamp),
+                "optimized_spans_per_second": SystemMetric(
+                    "optimized_spans_per_second", perf_metrics.get("spans_per_second", 0), "rate", timestamp
+                ),
+                "optimized_avg_processing_time_ms": SystemMetric(
+                    "optimized_avg_processing_time_ms",
+                    perf_metrics.get("avg_processing_time_ms", 0),
+                    "ms",
+                    timestamp,
+                ),
+                "optimized_memory_usage_mb": SystemMetric(
+                    "optimized_memory_usage_mb", perf_metrics.get("memory_usage_mb", 0), "MB", timestamp
+                ),
+                "optimized_cpu_usage_percent": SystemMetric(
+                    "optimized_cpu_usage_percent",
+                    perf_metrics.get("cpu_usage_percent", 0),
+                    "percent",
+                    timestamp,
+                ),
+                "optimized_buffer_utilization": SystemMetric(
+                    "optimized_buffer_utilization",
+                    perf_metrics.get("buffer_utilization", 0),
+                    "ratio",
+                    timestamp,
+                ),
+                "optimized_compression_ratio": SystemMetric(
+                    "optimized_compression_ratio",
+                    perf_metrics.get("compression_ratio", 0),
+                    "ratio",
+                    timestamp,
+                ),
             }
 
             self._current_metrics.update(optimized_metrics)
@@ -452,7 +499,7 @@ class EnhancedObservability:
     def _check_disk_usage(self) -> dict[str, Any]:
         """Check disk usage health."""
         try:
-            disk = psutil.disk_usage('/')
+            disk = psutil.disk_usage("/")
             usage_percent = (disk.used / disk.total) * 100
 
             if usage_percent > 95:
@@ -630,7 +677,7 @@ class EnhancedObservability:
                 "status": status,
                 "message": message,
                 "metadata": {
-                    "recent_score": recent_avg if 'recent_avg' in locals() else 0,
+                    "recent_score": recent_avg if "recent_avg" in locals() else 0,
                     "trend_samples": len(scores),
                 },
             }
@@ -700,7 +747,10 @@ class EnhancedObservability:
 
             # Check for critical alert
             if critical_threshold and value >= critical_threshold:
-                if alert_id not in self._active_alerts or self._active_alerts[alert_id].severity != AlertSeverity.CRITICAL:
+                if (
+                    alert_id not in self._active_alerts
+                    or self._active_alerts[alert_id].severity != AlertSeverity.CRITICAL
+                ):
                     alert = Alert(
                         id=alert_id,
                         name=f"Critical {metric_name}",
@@ -796,7 +846,9 @@ class EnhancedObservability:
             if len(values) >= 2:
                 # Calculate trend
                 recent_avg = sum(values[-10:]) / min(10, len(values))
-                older_avg = sum(values[-20:-10]) / min(10, len(values) - 10) if len(values) > 10 else values[0]
+                older_avg = (
+                    sum(values[-20:-10]) / min(10, len(values) - 10) if len(values) > 10 else values[0]
+                )
 
                 trend = "stable"
                 if recent_avg > older_avg * 1.1:

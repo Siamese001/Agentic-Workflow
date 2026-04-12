@@ -1,6 +1,7 @@
 """
 Observability Adapter - Emits app-specific telemetry fields.
 """
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -11,6 +12,7 @@ from ..types import DecisionMemo, UnderwritingRequest
 @dataclass
 class UnderwritingTelemetry:
     """Telemetry data for underwriting request."""
+
     request_id: str = ""
     product_type: str = ""
     decision_type: str = ""

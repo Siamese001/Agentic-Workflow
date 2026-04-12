@@ -4,17 +4,21 @@ Source: tests\unit\prompt_governance\test_template_rendering_e2e.py
 Extracted: 2026-03-27T06:50:34.045419
 """
 
+
 def renderer() -> SovereignPromptRenderer:
     r"""Real renderer pointed at the canonical templates/ directory."""
     return SovereignPromptRenderer(template_root=TEMPLATES_DIR)
+
 
 def meta_renderer() -> SovereignPromptRenderer:
     """Renderer pointed at meta_prompts/ for deprecated template tests."""
     return SovereignPromptRenderer(template_root=META_PROMPTS_DIR)
 
+
 def adversarial_renderer() -> SovereignPromptRenderer:
     """Renderer pointed at security/adversarial/ for red-team payloads."""
     return SovereignPromptRenderer(template_root=ADVERSARIAL_DIR)
+
 
 class TestInstructionalTemplateRendering:
     """Every template in templates/ must render without error."""
@@ -217,6 +221,7 @@ class TestInstructionalTemplateRendering:
         assert "predictive" in result.lower() or "failure" in result.lower()
         assert "GravityLeakRepairAgent" in result
 
+
 class TestMetaPromptTemplateRendering:
     """Deprecated meta-prompts should still render (they're documentation-only but structurally valid)."""
 
@@ -255,6 +260,7 @@ class TestMetaPromptTemplateRendering:
         }
         result = meta_renderer.render("convergence_planning.jinja", context=ctx, validate=False)
         assert "convergence" in result.lower() or "planner" in result.lower()
+
 
 class TestAdversarialTemplateRendering:
     """All 11 adversarial payloads must render for red-team testing."""
@@ -314,6 +320,7 @@ class TestAdversarialTemplateRendering:
         result = adversarial_renderer.render("recursive_override_staged.jinja", context=ctx, validate=False)
         assert len(result) > 30
 
+
 class TestIncludeChains:
     """Templates using {% include %} must resolve the include correctly."""
 
@@ -343,6 +350,7 @@ class TestIncludeChains:
             "the include content was not found in rendered output"
         )
         assert len(result) > 200
+
 
 class TestCatalogRendererIntegration:
     """Templates discovered via catalog must be renderable by the renderer."""
@@ -444,6 +452,7 @@ class TestCatalogRendererIntegration:
                 except Exception as e:
                     pytest.fail(f"{agent} → {entry.template_name}: {e}")
 
+
 class TestSchemaValidation:
     """Template schema headers must be parseable and enforced."""
 
@@ -477,6 +486,7 @@ class TestSchemaValidation:
             except Exception as e:
                 failures.append(f"{jinja.name}: {e}")
         assert not failures, "Schema parse failures:\n" + "\n".join(failures)
+
 
 class TestRendererPathCorrectness:
     """The renderer default path must point to the real templates directory."""

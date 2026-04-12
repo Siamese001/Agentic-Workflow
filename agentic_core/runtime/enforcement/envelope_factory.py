@@ -177,8 +177,11 @@ class envelope:
     def mark_stage_complete(self, stage_name: str) -> None:
         """Mark stage as completed."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "envelope.mark_stage_complete")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "envelope.mark_stage_complete"
+        )
 
         self.completed_stages.add(stage_name)
         Logger.debug(f"Stage completed: {stage_name}")
@@ -193,12 +196,17 @@ class EnvelopeFactory:
 
     @staticmethod
     def create_envelope(
-        data: Any, metadata: dict[str, Any] | None = None, envelope_id: str | None = None,
+        data: Any,
+        metadata: dict[str, Any] | None = None,
+        envelope_id: str | None = None,
     ) -> envelope:
         """Create a new envelope."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnvelopeFactory.create_envelope")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnvelopeFactory.create_envelope"
+        )
 
         import uuid
 

@@ -51,7 +51,12 @@ class MissionResult:
     """Mission result model."""
 
     def __init__(
-        self, mission_id: str, success: bool, result: Any = None, output: Any = None, error: str | None = None,
+        self,
+        mission_id: str,
+        success: bool,
+        result: Any = None,
+        output: Any = None,
+        error: str | None = None,
     ):
         self.mission_id = mission_id
         self.success = success

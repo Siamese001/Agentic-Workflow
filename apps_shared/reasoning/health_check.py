@@ -1,4 +1,5 @@
 """Health Check - Stub implementation for reasoning compatibility."""
+
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
@@ -6,6 +7,7 @@ from typing import Any
 
 class HealthStatus(Enum):
     """Health status."""
+
     HEALTHY = "healthy"
     DEGRADED = "degraded"
     UNHEALTHY = "unhealthy"
@@ -14,6 +16,7 @@ class HealthStatus(Enum):
 
 class ComponentType(Enum):
     """Component type."""
+
     DATABASE = "database"
     SERVICE = "service"
     CUSTOM = "custom"
@@ -22,6 +25,7 @@ class ComponentType(Enum):
 @dataclass
 class HealthCheckResult:
     """Health check result."""
+
     component_name: str
     component_type: ComponentType
     status: HealthStatus

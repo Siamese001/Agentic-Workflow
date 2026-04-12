@@ -1,6 +1,7 @@
 """
 Feature Interpreter - Converts numeric features into underwriter-readable prose.
 """
+
 from typing import List
 
 from ..types import RiskFeatures, UnderwritingRequest
@@ -121,9 +122,13 @@ class FeatureInterpreter:
             elif ratio >= 1.5:
                 interpretations.append(f"Adequate liquidity with current ratio of {ratio:.2f}x")
             elif ratio >= 1.2:
-                interpretations.append(f"Tight liquidity with current ratio of {ratio:.2f}x - monitoring recommended")
+                interpretations.append(
+                    f"Tight liquidity with current ratio of {ratio:.2f}x - monitoring recommended"
+                )
             else:
-                interpretations.append(f"Concerning liquidity at {ratio:.2f}x current ratio - structure accordingly")
+                interpretations.append(
+                    f"Concerning liquidity at {ratio:.2f}x current ratio - structure accordingly"
+                )
 
         if features.liquidity.deposit_stability_score:
             score = features.liquidity.deposit_stability_score
@@ -151,7 +156,9 @@ class FeatureInterpreter:
             elif ltv <= 0.85:
                 interpretations.append(f"Higher LTV of {ltv:.1%} requires careful monitoring")
             else:
-                interpretations.append(f"Elevated LTV of {ltv:.1%} - consider additional collateral or guaranty")
+                interpretations.append(
+                    f"Elevated LTV of {ltv:.1%} - consider additional collateral or guaranty"
+                )
 
         if features.collateral.borrowing_base_coverage:
             coverage = features.collateral.borrowing_base_coverage
@@ -160,7 +167,9 @@ class FeatureInterpreter:
             elif coverage >= 1.2:
                 interpretations.append(f"Adequate borrowing base coverage at {coverage:.2f}x")
             else:
-                interpretations.append(f"Tight borrowing base coverage at {coverage:.2f}x - consider amount reduction")
+                interpretations.append(
+                    f"Tight borrowing base coverage at {coverage:.2f}x - consider amount reduction"
+                )
 
         return interpretations
 
@@ -179,7 +188,9 @@ class FeatureInterpreter:
                 if fico >= policy.min_fico + 50:
                     interpretations.append(f"Strong personal credit with FICO of {fico}, well above minimum")
                 elif fico >= policy.min_fico:
-                    interpretations.append(f"Personal FICO of {fico} meets policy minimum of {policy.min_fico}")
+                    interpretations.append(
+                        f"Personal FICO of {fico} meets policy minimum of {policy.min_fico}"
+                    )
                 else:
                     interpretations.append(
                         f"Personal FICO of {fico} falls below policy minimum of {policy.min_fico}",
@@ -215,7 +226,9 @@ class FeatureInterpreter:
             score = features.operating_risk.years_in_business_score
             years = borrower.years_in_business
             if score >= 0.8:
-                interpretations.append(f"Established {years:.1f}-year operating history reduces business risk")
+                interpretations.append(
+                    f"Established {years:.1f}-year operating history reduces business risk"
+                )
             elif score <= 0.4:
                 interpretations.append(f"Limited {years:.1f}-year operating history increases business risk")
 

@@ -218,6 +218,7 @@ class FaithfulnessMetric(EvaluationMetric):
 
     def compute(self, prediction: str, ground_truth: Any = None, context: list[str] | None = None) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FaithfulnessMetric.compute")
 
@@ -256,8 +257,11 @@ class AnswerRelevancyMetric(EvaluationMetric):
             context: Ignored.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AnswerRelevancyMetric.compute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AnswerRelevancyMetric.compute"
+        )
 
         if not prediction or not ground_truth:
             return 0.0
@@ -279,7 +283,10 @@ class ContextPrecisionMetric(EvaluationMetric):
         return "context_precision"
 
     def compute(
-        self, prediction: list[str], ground_truth: set[str] | list[str], context: Any = None,
+        self,
+        prediction: list[str],
+        ground_truth: set[str] | list[str],
+        context: Any = None,
     ) -> float:
         """
         Args:
@@ -288,8 +295,11 @@ class ContextPrecisionMetric(EvaluationMetric):
             context: Ignored.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ContextPrecisionMetric.compute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ContextPrecisionMetric.compute"
+        )
 
         if not prediction:
             return 0.0
@@ -318,6 +328,7 @@ class GroundednessMetric(EvaluationMetric):
 
     def compute(self, prediction: str, ground_truth: Any = None, context: list[str] | None = None) -> float:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GroundednessMetric.compute")
 

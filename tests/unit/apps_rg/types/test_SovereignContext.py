@@ -1,4 +1,5 @@
 """Foundational behavioral tests for apps_rg/types/SovereignContext.py."""
+
 from __future__ import annotations
 
 import pytest

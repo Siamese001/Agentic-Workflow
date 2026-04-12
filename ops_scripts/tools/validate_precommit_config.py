@@ -21,14 +21,20 @@ def check_auto_stage_hook_present(config):
     all_t0_hooks = []
 
     # Find all T0 hooks in order
-    for repo in config.get('repos', []):
-        hooks = repo.get('hooks', [])
+    for repo in config.get("repos", []):
+        hooks = repo.get("hooks", [])
         for i, hook in enumerate(hooks):
-            hook_id = hook.get('id')
+            hook_id = hook.get("id")
             # Add all T0 hooks in order
-            if hook_id in ['trailing-whitespace', 'end-of-file-fixer', 'mixed-line-ending', 'check-merge-conflict', 'auto-stage-hook-fixes']:
+            if hook_id in [
+                "trailing-whitespace",
+                "end-of-file-fixer",
+                "mixed-line-ending",
+                "check-merge-conflict",
+                "auto-stage-hook-fixes",
+            ]:
                 all_t0_hooks.append(hook_id)
-                if hook_id == 'auto-stage-hook-fixes':
+                if hook_id == "auto-stage-hook-fixes":
                     auto_stage_found = True
                     auto_stage_position = len(all_t0_hooks) - 1
 
@@ -53,20 +59,20 @@ def check_hook_ordering(config):
 
     # T0 hooks should be in specific order
     t0_order = [
-        'trailing-whitespace',
-        'end-of-file-fixer',
-        'mixed-line-ending',
-        'check-merge-conflict',
-        'auto-stage-hook-fixes',
+        "trailing-whitespace",
+        "end-of-file-fixer",
+        "mixed-line-ending",
+        "check-merge-conflict",
+        "auto-stage-hook-fixes",
     ]
 
-    for repo in config.get('repos', []):
-        if 'https://github.com/pre-commit/pre-commit-hooks' in str(repo.get('rev', '')):
-            hooks = [h['id'] for h in repo.get('hooks', [])]
+    for repo in config.get("repos", []):
+        if "https://github.com/pre-commit/pre-commit-hooks" in str(repo.get("rev", "")):
+            hooks = [h["id"] for h in repo.get("hooks", [])]
 
             # Check if T0 hooks are in correct order
             t0_in_config = [h for h in hooks if h in t0_order]
-            if t0_in_config != t0_order[:len(t0_in_config)]:
+            if t0_in_config != t0_order[: len(t0_in_config)]:
                 issues.append("T0 hooks not in recommended order")
 
     if issues:
@@ -80,10 +86,10 @@ def check_hook_ordering(config):
 
 def check_exclude_patterns(config):
     """Check for exclude patterns that might cause issues."""
-    global_exclude = config.get('exclude', '')
+    global_exclude = config.get("exclude", "")
 
     # Should exclude .md files from formatting hooks
-    if r'.*\.md$' not in global_exclude:
+    if r".*\.md$" not in global_exclude:
         print("⚠️  Consider excluding .md files from formatting hooks")
 
     print("✅ Exclude patterns look reasonable")
@@ -92,7 +98,7 @@ def check_exclude_patterns(config):
 
 def main():
     """Validate pre-commit configuration."""
-    config_path = Path('.pre-commit-config.yaml')
+    config_path = Path(".pre-commit-config.yaml")
 
     if not config_path.exists():
         print("❌ .pre-commit-config.yaml not found")

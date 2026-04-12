@@ -21,6 +21,7 @@ from ..config.feature_schemas import FeatureDefinition, FeatureSchema, NullHandl
 @dataclass
 class FeatureProvenance:
     """Provenance information for a feature."""
+
     feature_name: str
     source: str  # Where the feature came from
     extraction_function: str  # Function that extracted it
@@ -34,6 +35,7 @@ class FeatureProvenance:
 @dataclass
 class FeatureExtractionResult:
     """Result of feature extraction with full provenance."""
+
     features: dict[str, Any]
     provenance: dict[str, FeatureProvenance]
     extraction_metadata: dict[str, Any]
@@ -100,7 +102,10 @@ class DeterministicFeatureExtractor(ABC):
             for feature_def in self.schema.features:
                 try:
                     feature_value, feature_provenance = self._extract_single_feature(
-                        feature_def, context, context_hash, extraction_id,
+                        feature_def,
+                        context,
+                        context_hash,
+                        extraction_id,
                     )
 
                     if feature_value is not None:
@@ -129,18 +134,18 @@ class DeterministicFeatureExtractor(ABC):
 
             # Create extraction metadata
             extraction_metadata = {
-                'extraction_id': extraction_id,
-                'trace_id': trace_id,
-                'replay_key': replay_key,
-                'policy_hash': policy_hash,
-                'semantic_clock': semantic_clock,
-                'context_hash': context_hash,
-                'extraction_timestamp': datetime.now().isoformat(),
-                'extraction_duration_ms': (time.time() - start_time) * 1000,
-                'schema_version': self.schema.schema_version,
-                'schema_digest': self.schema.schema_digest,
-                'feature_count': len(features),
-                'extraction_success': is_valid and len(errors) == 0,
+                "extraction_id": extraction_id,
+                "trace_id": trace_id,
+                "replay_key": replay_key,
+                "policy_hash": policy_hash,
+                "semantic_clock": semantic_clock,
+                "context_hash": context_hash,
+                "extraction_timestamp": datetime.now().isoformat(),
+                "extraction_duration_ms": (time.time() - start_time) * 1000,
+                "schema_version": self.schema.schema_version,
+                "schema_digest": self.schema.schema_digest,
+                "feature_count": len(features),
+                "extraction_success": is_valid and len(errors) == 0,
             }
 
             # Log extraction trace
@@ -166,14 +171,14 @@ class DeterministicFeatureExtractor(ABC):
             errors.append(error_msg)
 
             extraction_metadata = {
-                'extraction_id': extraction_id,
-                'trace_id': trace_id,
-                'replay_key': replay_key,
-                'policy_hash': policy_hash,
-                'extraction_timestamp': datetime.now().isoformat(),
-                'extraction_duration_ms': (time.time() - start_time) * 1000,
-                'extraction_success': False,
-                'catastrophic_error': error_msg,
+                "extraction_id": extraction_id,
+                "trace_id": trace_id,
+                "replay_key": replay_key,
+                "policy_hash": policy_hash,
+                "extraction_timestamp": datetime.now().isoformat(),
+                "extraction_duration_ms": (time.time() - start_time) * 1000,
+                "extraction_success": False,
+                "catastrophic_error": error_msg,
             }
 
             return FeatureExtractionResult(
@@ -306,11 +311,11 @@ class DeterministicFeatureExtractor(ABC):
         """Compute deterministic hash of extraction context."""
         # Create deterministic context representation
         context_dict = {
-            'trace_id': trace_id,
-            'replay_key': replay_key,
-            'policy_hash': policy_hash,
-            'semantic_clock': semantic_clock,
-            'context': self._normalize_context(context),
+            "trace_id": trace_id,
+            "replay_key": replay_key,
+            "policy_hash": policy_hash,
+            "semantic_clock": semantic_clock,
+            "context": self._normalize_context(context),
         }
 
         context_str = json.dumps(context_dict, sort_keys=True, default=str)
@@ -336,9 +341,9 @@ class DeterministicFeatureExtractor(ABC):
     def _compute_extraction_hash(self, features: dict[str, Any], context_hash: str) -> str:
         """Compute deterministic hash of extraction result."""
         extraction_data = {
-            'context_hash': context_hash,
-            'schema_digest': self.schema.schema_digest,
-            'features': {k: str(v) for k, v in sorted(features.items())},
+            "context_hash": context_hash,
+            "schema_digest": self.schema.schema_digest,
+            "features": {k: str(v) for k, v in sorted(features.items())},
         }
 
         extraction_str = json.dumps(extraction_data, sort_keys=True)
@@ -377,11 +382,13 @@ class DeterministicFeatureExtractor(ABC):
         )
 
         # Add replay metadata
-        result.extraction_metadata.update({
-            'is_replay': True,
-            'original_extraction_id': extraction_id,
-            'replay_timestamp': datetime.now().isoformat(),
-        })
+        result.extraction_metadata.update(
+            {
+                "is_replay": True,
+                "original_extraction_id": extraction_id,
+                "replay_timestamp": datetime.now().isoformat(),
+            }
+        )
 
         return result
 

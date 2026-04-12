@@ -190,7 +190,9 @@ def choose_execution_strategy(
         ExecutionAdaptationError: If strategy selection fails (Gate A/D)
     """
     _emit_records_execution_trace(
-        execution_context.trace_id, LayerSegment.L2_EXECUTION, "choose_execution_strategy",
+        execution_context.trace_id,
+        LayerSegment.L2_EXECUTION,
+        "choose_execution_strategy",
     )
     _registry = registry or get_execution_adaptation_registry()
     _gw = get_routing_gateway(execution_context.trace_id if hasattr(execution_context, "trace_id") else "")
@@ -201,7 +203,7 @@ def choose_execution_strategy(
             actor_id="adaptation_orchestrator",
             run_id=execution_context.run_id if hasattr(execution_context, "run_id") else "",
         )
-    except PolicyEnforcementError:    # guardian: PolicyEnforcementError should be handled with specific context
+    except PolicyEnforcementError:  # guardian: PolicyEnforcementError should be handled with specific context
         raise
 
     # --- Step 1: analyze candidate strategies ---
@@ -241,7 +243,8 @@ def choose_execution_strategy(
 
 
 def _analyze_candidate_strategies(
-    strategies: list[ExecutionStrategy], execution_context: ExecutionContext,
+    strategies: list[ExecutionStrategy],
+    execution_context: ExecutionContext,
 ) -> list[ExecutionStrategy]:
     """Analyze candidate strategies for compatibility."""
     # This would normally analyze strategies against execution context
@@ -265,7 +268,8 @@ def _analyze_candidate_strategies(
 
 
 def _evaluate_historical_metrics(
-    strategies: list[ExecutionStrategy], historical_metrics: HistoricalMetrics,
+    strategies: list[ExecutionStrategy],
+    historical_metrics: HistoricalMetrics,
 ) -> list[tuple[ExecutionStrategy, float]]:
     """Evaluate strategies against historical metrics."""
     evaluated = []
@@ -306,7 +310,8 @@ def _rank_strategies_by_criteria(
 
 
 def _apply_governance_guard(
-    strategies: list[ExecutionStrategy], execution_context: ExecutionContext,
+    strategies: list[ExecutionStrategy],
+    execution_context: ExecutionContext,
 ) -> list[ExecutionStrategy]:
     """Apply governance guard to ensure safety and policy compliance."""
     safe_strategies = []

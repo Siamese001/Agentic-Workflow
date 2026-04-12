@@ -196,6 +196,7 @@ class DynamicLoader:
             Class type or None if loading fails
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DynamicLoader.load_class")
 
@@ -233,7 +234,11 @@ class DynamicLoader:
 
     @classmethod
     def create_instance(
-        cls, protocol_name: str, *args: Any, singleton: bool = True, **kwargs: Any,
+        cls,
+        protocol_name: str,
+        *args: Any,
+        singleton: bool = True,
+        **kwargs: Any,
     ) -> T | None:
         """Create instance of implementation.
 

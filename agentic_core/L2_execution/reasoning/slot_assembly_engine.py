@@ -247,7 +247,10 @@ class SlotAssemblyEngine:
         blocked = risk_score >= 0.8
 
         return InjectionScanResult(
-            detected=detected, override_attempts=override_attempts, risk_score=risk_score, blocked=blocked,
+            detected=detected,
+            override_attempts=override_attempts,
+            risk_score=risk_score,
+            blocked=blocked,
         )
 
     def _extract_keywords(self, content: str) -> list[str]:

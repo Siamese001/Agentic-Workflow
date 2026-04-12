@@ -171,8 +171,11 @@ class CreateExperienceBullets:
     def execute(self, action: str, params: dict[str, object]) -> ExecutionResult:
         """Execute action."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CreateExperienceBullets.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CreateExperienceBullets.execute"
+        )
 
         time.time()
         try:

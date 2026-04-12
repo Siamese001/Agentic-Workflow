@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Add System Learning classes to execute_ssot.py"""
 
-with open('agentic_core/L0_routing/scripts/execute_ssot.py', encoding='utf-8') as f:
+with open("agentic_core/L0_routing/scripts/execute_ssot.py", encoding="utf-8") as f:
     content = f.read()
 
 # Check if classes already exist
-if 'class HealingOutcomeAggregator' in content:
+if "class HealingOutcomeAggregator" in content:
     print("HealingOutcomeAggregator already exists")
 else:
     # Add the classes at the end
@@ -172,7 +172,7 @@ class HealingOutcomeIntakeAdapter:
         }
 '''
 
-    with open('agentic_core/L0_routing/scripts/execute_ssot.py', 'a', encoding='utf-8') as f:
+    with open("agentic_core/L0_routing/scripts/execute_ssot.py", "a", encoding="utf-8") as f:
         f.write(classes_to_add)
 
     print("Added System Learning infrastructure classes to execute_ssot.py")

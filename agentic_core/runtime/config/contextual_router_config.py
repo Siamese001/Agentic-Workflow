@@ -289,7 +289,9 @@ class GuardianSignalBus:
     ) -> list[dict[str, Any]]:
         """Get active signals, optionally filtered."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GuardianSignalBus.get_active_signals")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GuardianSignalBus.get_active_signals"
+        )
         severity_order = {"info": 0, "warning": 1, "error": 2, "critical": 3}
         min_level = severity_order.get(min_severity, 1)
 

@@ -24,6 +24,7 @@ class VisitorContext:
         source_file: Absolute path to the source file being scanned
         repo_root: Repository root path for relative path calculations
     """
+
     module_adg_name: str
     source_file: str
     repo_root: str = ""
@@ -190,9 +191,11 @@ def register_visitor(name: str) -> callable:
         class _InheritanceVisitor(BaseStructuralVisitor):
             ...
     """
+
     def decorator(cls: type[BaseADGVisitor]) -> type[BaseADGVisitor]:
         _VISITOR_REGISTRY[name] = cls
         return cls
+
     return decorator
 
 

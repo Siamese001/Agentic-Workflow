@@ -22,6 +22,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 @dataclass
 class QueryIntent:
     """Parsed query intent."""
+
     original_query: str
     intent_type: str  # factual, exploratory, comparative, procedural
     expanded_query: str
@@ -144,7 +145,7 @@ class QueryIntentExpander:
         # Remove extra whitespace
         cleaned = " ".join(query.split())
         # Remove special characters but keep basic punctuation
-        cleaned = re.sub(r'[^\w\s\-\'\?\.]', ' ', cleaned)
+        cleaned = re.sub(r"[^\w\s\-\'\?\.]", " ", cleaned)
         return cleaned.strip().lower()
 
     def _detect_intent(self, query: str) -> str:
@@ -169,26 +170,30 @@ class QueryIntentExpander:
 
         # Technical terms (camelCase, snake_case, kebab-case)
         patterns = [
-            r'\b[a-z]+(?:[A-Z][a-z]+)+\b',  # camelCase
-            r'\b[a-z]+(?:_[a-z]+)+\b',       # snake_case
-            r'\b[a-z]+(?:-[a-z]+)+\b',       # kebab-case
+            r"\b[a-z]+(?:[A-Z][a-z]+)+\b",  # camelCase
+            r"\b[a-z]+(?:_[a-z]+)+\b",  # snake_case
+            r"\b[a-z]+(?:-[a-z]+)+\b",  # kebab-case
         ]
 
         for pattern in patterns:
             for match in re.finditer(pattern, query):
-                entities.append({
-                    "text": match.group(),
-                    "type": "technical_term",
-                    "position": match.start(),
-                })
+                entities.append(
+                    {
+                        "text": match.group(),
+                        "type": "technical_term",
+                        "position": match.start(),
+                    }
+                )
 
         # Layer references (L0, L1, etc.)
-        for match in re.finditer(r'\bL[0-6]\b', query, re.IGNORECASE):
-            entities.append({
-                "text": match.group(),
-                "type": "architecture_layer",
-                "position": match.start(),
-            })
+        for match in re.finditer(r"\bL[0-6]\b", query, re.IGNORECASE):
+            entities.append(
+                {
+                    "text": match.group(),
+                    "type": "architecture_layer",
+                    "position": match.start(),
+                }
+            )
 
         return entities
 
@@ -202,10 +207,7 @@ class QueryIntentExpander:
                 expansion_terms.extend(synonyms)
 
         # Remove duplicates and terms already in query
-        expansion_terms = [
-            t for t in set(expansion_terms)
-            if t.lower() not in query
-        ]
+        expansion_terms = [t for t in set(expansion_terms) if t.lower() not in query]
 
         return expansion_terms[:5]  # Limit expansions
 
@@ -224,7 +226,7 @@ class QueryIntentExpander:
 
         if intent_type == "comparative":
             # Split comparisons
-            parts = re.split(r'\s+(?:vs|versus|compared to)\s+', query, flags=re.IGNORECASE)
+            parts = re.split(r"\s+(?:vs|versus|compared to)\s+", query, flags=re.IGNORECASE)
             if len(parts) == 2:
                 reformulated.append(f"what is {parts[0]}")
                 reformulated.append(f"what is {parts[1]}")

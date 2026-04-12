@@ -8,6 +8,7 @@ For each deficit module where emit calls are inside docstrings (not real AST nod
 
 Never modifies existing multi-line import blocks.
 """
+
 import ast
 import csv
 import sys
@@ -58,8 +59,12 @@ DIM_CONFIG = {
 }
 
 SKIP_PATTERNS = {
-    "_constants.py", "conftest.py", "structure_blueprint_config.py",
-    "ssot_tier_constants.py", "path_constants.py", "lifecycle_trace_contract.py",
+    "_constants.py",
+    "conftest.py",
+    "structure_blueprint_config.py",
+    "ssot_tier_constants.py",
+    "path_constants.py",
+    "lifecycle_trace_contract.py",
 }
 
 
@@ -177,16 +182,16 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
     # Step 1: Remove spurious emit lines from inside the module docstring
     doc_start, doc_end = find_module_docstring_span(lines)
     if doc_start >= 0 and doc_end >= doc_start:
-        interior = lines[doc_start: doc_end + 1]
+        interior = lines[doc_start : doc_end + 1]
         cleaned_interior = []
         i = 0
         while i < len(interior):
             s = interior[i].strip()
-            is_emit_import = (CONTRACT in s and "import" in s and
-                              any(cfg["emit_func"] in s for cfg in DIM_CONFIG.values()))
+            is_emit_import = (
+                CONTRACT in s and "import" in s and any(cfg["emit_func"] in s for cfg in DIM_CONFIG.values())
+            )
             is_emit_call = any(
-                s.startswith(cfg["emit_func"] + "(") or s == cfg["emit_func"]
-                for cfg in DIM_CONFIG.values()
+                s.startswith(cfg["emit_func"] + "(") or s == cfg["emit_func"] for cfg in DIM_CONFIG.values()
             )
             if is_emit_import or is_emit_call:
                 # Skip this line and any adjacent blank line
@@ -202,7 +207,7 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
         while cleaned_interior and cleaned_interior[-1].strip() == "":
             cleaned_interior.pop()
 
-        lines = lines[:doc_start] + cleaned_interior + lines[doc_end + 1:]
+        lines = lines[:doc_start] + cleaned_interior + lines[doc_end + 1 :]
 
     # Step 2: Also remove any orphaned emit import/call lines outside the docstring
     # that may have been inserted without proper context (no-op duplicates)
@@ -211,14 +216,13 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
     for line in lines:
         s = line.strip()
         is_our_import = (
-            s.startswith(f"from {CONTRACT} import") and
-            "# noqa: E402" in line and
-            any(cfg["emit_func"] in s for cfg in DIM_CONFIG.values())
+            s.startswith(f"from {CONTRACT} import")
+            and "# noqa: E402" in line
+            and any(cfg["emit_func"] in s for cfg in DIM_CONFIG.values())
         )
         is_our_call = any(
-            s == cfg["call_line"].format(basename=basename) or
-            (s.startswith(cfg["emit_func"] + "(") and s.endswith(")") and
-             '"p0"' in s)
+            s == cfg["call_line"].format(basename=basename)
+            or (s.startswith(cfg["emit_func"] + "(") and s.endswith(")") and '"p0"' in s)
             for dim, cfg in DIM_CONFIG.items()
             if dim in dims_to_fix
         )

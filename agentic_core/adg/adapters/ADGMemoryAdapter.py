@@ -224,7 +224,9 @@ class ADGMemoryAdapter:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MemoryMCPAdapter.ingest_snapshot:{ts}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"MemoryMCPAdapter.ingest_snapshot:{ts}",
         )
         snapshot_name = f"ADGSnapshot_{ts}"
         violation_edges = [e for e in result.edges if getattr(e, "relation_type", "") == "violates"]

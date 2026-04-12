@@ -359,13 +359,18 @@ class SchemaContextMatcher:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextSchemaMatchEngine.match_context")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextSchemaMatchEngine.match_context"
+        )
         self.logger.info(f"Matching context for {len(request.candidate_schemas)} candidates")
         try:
             matches = []
             for _schema_id, schema_def, schema_context in request.candidate_schemas:
                 match_result = self._compute_match_score(
-                    request.query_context, schema_def, schema_context, request.match_types,
+                    request.query_context,
+                    schema_def,
+                    schema_context,
+                    request.match_types,
                 )
                 if match_result.match_score >= request.min_score:
                     matches.append(match_result)
@@ -374,7 +379,9 @@ class SchemaContextMatcher:
             if request.include_explanations:
                 for match in top_matches:
                     match.explanation = self._generate_explanation(
-                        request.query_context, match, request.match_types,
+                        request.query_context,
+                        match,
+                        request.match_types,
                     )
             result = SchemaContextMatchResult(
                 query_context=request.query_context,
@@ -400,7 +407,10 @@ class SchemaContextMatcher:
 
     # guardian: allow-magic-config
     def find_similar_contexts(
-        self, schema_context: SchemaContext, context_database: list[SchemaContext], top_k: int = 10,
+        self,
+        schema_context: SchemaContext,
+        context_database: list[SchemaContext],
+        top_k: int = 10,
     ) -> list[tuple[str, float]]:
         """Find schemas with similar contexts.
 
@@ -468,7 +478,8 @@ class SchemaContextMatcher:
             total_weight += self.config.structural_weight
         if ContextMatchType.USAGE in match_types:
             usage_score = self._match_usage_patterns(
-                query_context.usage_patterns, schema_context.usage_patterns,
+                query_context.usage_patterns,
+                schema_context.usage_patterns,
             )
             match_details["usage"] = usage_score
             total_score += usage_score * self.config.usage_weight
@@ -621,11 +632,17 @@ class SchemaContextMatcher:
 
 
 def create_schema_context_matcher(
-    domain_weight: float = 0.3, purpose_weight: float = 0.25, semantic_weight: float = 0.2, **kwargs: object,
+    domain_weight: float = 0.3,
+    purpose_weight: float = 0.25,
+    semantic_weight: float = 0.2,
+    **kwargs: object,
 ) -> SchemaContextMatcher:
     """Create a configured schema context matcher."""
     config = SchemaContextConfig(
-        domain_weight=domain_weight, purpose_weight=purpose_weight, semantic_weight=semantic_weight, **kwargs,
+        domain_weight=domain_weight,
+        purpose_weight=purpose_weight,
+        semantic_weight=semantic_weight,
+        **kwargs,
     )
     return SchemaContextMatcher(config)
 

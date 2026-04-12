@@ -195,7 +195,9 @@ class FileClassificationValidatorAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "FileClassificationValidatorAgent.scan",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "FileClassificationValidatorAgent.scan",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

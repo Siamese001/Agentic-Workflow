@@ -190,8 +190,11 @@ class L4MetaPriorProvider:
         - store raises any exception
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L4MetaPriorProvider.get_prior")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L4MetaPriorProvider.get_prior"
+        )
 
         if self._store is None:
             return _NEUTRAL_PRIOR

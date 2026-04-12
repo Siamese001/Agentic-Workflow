@@ -120,7 +120,7 @@ def analyze_file_with_ast(content: str, file_path: str) -> dict[str, Any]:
             result["reasons"].append("No test classes or functions found")
             result["confidence"] = max(result["confidence"], 0.4)
 
-    except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         result["reasons"].append(f"Syntax error: {e}")
         result["confidence"] = 0.7
     except (OSError, UnicodeDecodeError, AttributeError) as e:

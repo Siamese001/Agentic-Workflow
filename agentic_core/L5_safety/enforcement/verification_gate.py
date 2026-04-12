@@ -243,7 +243,11 @@ class VerificationGate(HallucinationDetectionMixin, SovereignBaseAgent):
             self.verification_cache[cache_key] = result
             return result
 
-        except (SyntaxError, UnicodeDecodeError, OSError):    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+            OSError,
+        ):  # guardian: Parsing and encoding errors need separate handling strategies
             # File cannot be parsed or read
             return False
 
@@ -363,7 +367,11 @@ class VerificationGate(HallucinationDetectionMixin, SovereignBaseAgent):
             with open(context.file_path, encoding="utf-8") as f:
                 content = f.read()
             tree = ast.parse(content)
-        except (SyntaxError, UnicodeDecodeError, OSError) as e:    # guardian: Parsing and encoding errors need separate handling strategies
+        except (
+            SyntaxError,
+            UnicodeDecodeError,
+            OSError,
+        ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
             Logger.error(f"Failed to parse {context.file_path}: {e}")
             return False
 

@@ -31,21 +31,29 @@ class ScorecardRenderer:
         writer = csv.writer(output)
 
         # Header
-        writer.writerow([
-            "dimension_id", "display_name", "score", "weight",
-            "weighted_score", "verdict",
-        ])
+        writer.writerow(
+            [
+                "dimension_id",
+                "display_name",
+                "score",
+                "weight",
+                "weighted_score",
+                "verdict",
+            ]
+        )
 
         # Rows
         for row in rows:
-            writer.writerow([
-                row.dimension_id,
-                row.display_name,
-                f"{row.score:.4f}",
-                f"{row.weight:.2f}",
-                f"{row.weighted_score:.4f}",
-                row.verdict,
-            ])
+            writer.writerow(
+                [
+                    row.dimension_id,
+                    row.display_name,
+                    f"{row.score:.4f}",
+                    f"{row.weight:.2f}",
+                    f"{row.weighted_score:.4f}",
+                    row.verdict,
+                ]
+            )
 
         return output.getvalue()
 

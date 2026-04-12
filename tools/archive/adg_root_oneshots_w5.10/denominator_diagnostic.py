@@ -1,4 +1,5 @@
 """Diagnostic: quantify synthetic vs real base edges in the ADG."""
+
 import glob
 import os
 import sqlite3
@@ -36,7 +37,9 @@ for sym, cnt in rows:
 
 # 2. records_execution_trace: synthetic _emit_* vs real
 print("\n=== RECORDS_EXECUTION_TRACE EDGES: synthetic vs real ===")
-total_ret = conn.execute("SELECT COUNT(*) FROM edges WHERE relation_type='records_execution_trace'").fetchone()[0]
+total_ret = conn.execute(
+    "SELECT COUNT(*) FROM edges WHERE relation_type='records_execution_trace'"
+).fetchone()[0]
 emit_ret = conn.execute(
     "SELECT COUNT(*) FROM edges WHERE relation_type='records_execution_trace' AND symbol LIKE '%_emit_%'",
 ).fetchone()[0]

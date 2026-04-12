@@ -1,4 +1,5 @@
 """Sample nodes and edges to understand actual id/path formats."""
+
 import sqlite3
 
 SQLITE_PATH = r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03312026_1808.sqlite"
@@ -11,7 +12,9 @@ for r in cur.fetchall():
     print(r)
 
 print("\n=== SAMPLE EDGES (5) ===")
-cur.execute("SELECT src_id, dst_id, relation_type, source_file FROM edges WHERE relation_type='reads_from' LIMIT 5")
+cur.execute(
+    "SELECT src_id, dst_id, relation_type, source_file FROM edges WHERE relation_type='reads_from' LIMIT 5"
+)
 for r in cur.fetchall():
     print(r)
 
@@ -26,12 +29,16 @@ for r in cur.fetchall():
     print(r)
 
 print("\n=== EDGES with source_file containing 'L1_cognition' (5) ===")
-cur.execute("SELECT src_id, dst_id, relation_type, source_file FROM edges WHERE source_file LIKE '%L1_cognition%' LIMIT 5")
+cur.execute(
+    "SELECT src_id, dst_id, relation_type, source_file FROM edges WHERE source_file LIKE '%L1_cognition%' LIMIT 5"
+)
 for r in cur.fetchall():
     print(r)
 
 print("\n=== EDGES with source_file containing 'apps_lic' (5) ===")
-cur.execute("SELECT src_id, dst_id, relation_type, source_file FROM edges WHERE source_file LIKE '%apps_lic%' LIMIT 5")
+cur.execute(
+    "SELECT src_id, dst_id, relation_type, source_file FROM edges WHERE source_file LIKE '%apps_lic%' LIMIT 5"
+)
 for r in cur.fetchall():
     print(r)
 

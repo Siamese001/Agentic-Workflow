@@ -211,7 +211,12 @@ def classify_line(line: str) -> tuple[str, str] | None:
 
 
 def analyze_failures(
-    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int, *, violation_file_set: frozenset[str] | None = None,
+    snapshot_id: str,
+    audit_slice: bytes,
+    window_start_utc: int,
+    window_end_utc: int,
+    *,
+    violation_file_set: frozenset[str] | None = None,
 ) -> object:
     """Analyze failures from audit slice and produce RCA report.
 
@@ -250,7 +255,7 @@ def analyze_failures(
         audit_slice = "\n".join(str(item) for item in audit_slice).encode("utf-8")
     elif not isinstance(audit_slice, (bytes, bytearray)):
         audit_slice = b""
-    try:    # guardian: Encoding errors should specify fallback encoding strategy
+    try:  # guardian: Encoding errors should specify fallback encoding strategy
         audit_text = audit_slice.decode("utf-8")
     except UnicodeDecodeError as e:
         raise RCAAnalysisError(f"Failed to decode audit_slice as UTF-8: {e}") from e
@@ -290,7 +295,9 @@ def analyze_failures(
                 break
 
     findings = []
-    for (category, signature), evidence_lines in tqdm(findings_dict.items(), desc="findings", unit="finding", leave=False):
+    for (category, signature), evidence_lines in tqdm(
+        findings_dict.items(), desc="findings", unit="finding", leave=False
+    ):
         count = len(evidence_lines)
         canonical_evidence = "\n".join(sorted(evidence_lines)).encode("utf-8")
         evidence_hash = hashlib.sha256(canonical_evidence).hexdigest()
@@ -312,7 +319,11 @@ def analyze_failures(
 
 
 def analyze_failures_and_persist(
-    snapshot_id: str, audit_slice: bytes, window_start_utc: int, window_end_utc: int, violation_file_set: set[str] | None = None,
+    snapshot_id: str,
+    audit_slice: bytes,
+    window_start_utc: int,
+    window_end_utc: int,
+    violation_file_set: set[str] | None = None,
 ) -> object:
     """Analyze failures and persist findings to Memory MCP.
 
@@ -327,10 +338,14 @@ def analyze_failures_and_persist(
         from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
         get_sl_memory_bridge().persist_rca_findings(
-            snapshot_id, report, window_start=window_start_utc, window_end=window_end_utc,
+            snapshot_id,
+            report,
+            window_start=window_start_utc,
+            window_end=window_end_utc,
         )
     # guardian: allow-silent-swallow
     except Exception as e:
+        import logging
 
-        import logging; logging.getLogger(__name__).debug("rca_engine: Exception swallowed at L332: %s", e)
+        logging.getLogger(__name__).debug("rca_engine: Exception swallowed at L332: %s", e)
     return report

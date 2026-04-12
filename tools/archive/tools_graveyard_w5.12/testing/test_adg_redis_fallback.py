@@ -22,6 +22,7 @@ def test_redis_connection() -> bool:
     """Test if Redis is available."""
     try:
         import redis
+
         r = redis.from_url("redis://localhost:6379/0", decode_responses=True)
         r.ping()
         return True
@@ -40,13 +41,13 @@ def test_adg_mcp_server_direct() -> dict[str, Any]:
         # Test basic functionality
         result = {
             "import_success": True,
-            "server_created": hasattr(adg_mcp_server, 'mcp'),
+            "server_created": hasattr(adg_mcp_server, "mcp"),
             "tools_available": False,
             "error": None,
         }
 
         # Check if tools are registered
-        if hasattr(adg_mcp_server, 'mcp'):
+        if hasattr(adg_mcp_server, "mcp"):
             tools = adg_mcp_server.mcp.list_tools()
             result["tools_available"] = len(tools) > 0
             result["tool_count"] = len(tools)
@@ -98,7 +99,7 @@ def test_adg_status_with_redis_down() -> dict[str, Any]:
     """Test adg_status tool behavior when Redis is down."""
     try:
         # Simulate Redis being unavailable by using wrong port
-        os.environ['ADG_REDIS_URL'] = 'redis://localhost:6380/0'  # Wrong port
+        os.environ["ADG_REDIS_URL"] = "redis://localhost:6380/0"  # Wrong port
 
         # Import and test
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
@@ -123,14 +124,14 @@ def test_adg_status_with_redis_down() -> dict[str, Any]:
         }
     finally:
         # Restore original Redis URL
-        os.environ['ADG_REDIS_URL'] = 'redis://localhost:6379/0'
+        os.environ["ADG_REDIS_URL"] = "redis://localhost:6379/0"
 
 
 def test_adg_cache_meta_with_redis_down() -> dict[str, Any]:
     """Test _cache_meta function when Redis is down."""
     try:
         # Simulate Redis being unavailable
-        os.environ['ADG_REDIS_URL'] = 'redis://localhost:6380/0'
+        os.environ["ADG_REDIS_URL"] = "redis://localhost:6380/0"
 
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
         import adg_mcp_server
@@ -153,7 +154,7 @@ def test_adg_cache_meta_with_redis_down() -> dict[str, Any]:
             "error": str(e),
         }
     finally:
-        os.environ['ADG_REDIS_URL'] = 'redis://localhost:6379/0'
+        os.environ["ADG_REDIS_URL"] = "redis://localhost:6379/0"
 
 
 def test_adg_sqlite_fallback() -> dict[str, Any]:
@@ -191,7 +192,7 @@ def test_adg_sqlite_fallback() -> dict[str, Any]:
             "sqlite_file": str(latest_sqlite),
             "node_count": node_count,
             "edge_count": edge_count,
-            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2),
+            "file_size_mb": round(latest_sqlite.stat().st_size / (1024 * 1024), 2),
         }
     except Exception as e:
         return {
@@ -253,10 +254,7 @@ def test_mcp_config_fallback() -> dict[str, Any]:
         command = adg_redis_config.get("command", "")
         args = adg_redis_config.get("args", [])
 
-        is_python_fallback = (
-            command == "python" and
-            any("adg_mcp_server.py" in arg for arg in args)
-        )
+        is_python_fallback = command == "python" and any("adg_mcp_server.py" in arg for arg in args)
 
         return {
             "test_passed": is_python_fallback,
@@ -291,9 +289,9 @@ def run_comprehensive_test():
     print(f"   Import success: {direct_test.get('import_success', False)}")
     print(f"   Server created: {direct_test.get('server_created', False)}")
     print(f"   Tools available: {direct_test.get('tools_available', False)}")
-    if direct_test.get('tool_count'):
+    if direct_test.get("tool_count"):
         print(f"   Tool count: {direct_test['tool_count']}")
-    if direct_test.get('error'):
+    if direct_test.get("error"):
         print(f"   Error: {direct_test['error']}")
     print()
 
@@ -302,7 +300,7 @@ def run_comprehensive_test():
     subprocess_test = test_adg_mcp_server_subprocess()
     print(f"   Subprocess success: {subprocess_test.get('subprocess_success', False)}")
     print(f"   Return code: {subprocess_test.get('returncode', -1)}")
-    if subprocess_test.get('error'):
+    if subprocess_test.get("error"):
         print(f"   Error: {subprocess_test['error']}")
     print()
 
@@ -310,7 +308,7 @@ def run_comprehensive_test():
     print("4. Testing behavior when Redis is down...")
     redis_down_test = test_adg_status_with_redis_down()
     print(f"   Handles Redis down: {redis_down_test.get('test_passed', False)}")
-    if redis_down_test.get('error'):
+    if redis_down_test.get("error"):
         print(f"   Error: {redis_down_test['error']}")
     print()
 
@@ -318,7 +316,7 @@ def run_comprehensive_test():
     print("5. Testing cache meta when Redis is down...")
     cache_meta_test = test_adg_cache_meta_with_redis_down()
     print(f"   Cache meta handles Redis down: {cache_meta_test.get('test_passed', False)}")
-    if cache_meta_test.get('error'):
+    if cache_meta_test.get("error"):
         print(f"   Error: {cache_meta_test['error']}")
     print()
 
@@ -326,11 +324,11 @@ def run_comprehensive_test():
     print("6. Testing SQLite fallback availability...")
     sqlite_test = test_adg_sqlite_fallback()
     print(f"   SQLite fallback available: {sqlite_test.get('test_passed', False)}")
-    if sqlite_test.get('node_count'):
+    if sqlite_test.get("node_count"):
         print(f"   Node count: {sqlite_test['node_count']}")
-    if sqlite_test.get('edge_count'):
+    if sqlite_test.get("edge_count"):
         print(f"   Edge count: {sqlite_test['edge_count']}")
-    if sqlite_test.get('error'):
+    if sqlite_test.get("error"):
         print(f"   Error: {sqlite_test['error']}")
     print()
 
@@ -338,7 +336,7 @@ def run_comprehensive_test():
     print("7. Testing ingest script fallback...")
     ingest_test = test_ingest_script_fallback()
     print(f"   Ingest script available: {ingest_test.get('test_passed', False)}")
-    if ingest_test.get('error'):
+    if ingest_test.get("error"):
         print(f"   Error: {ingest_test['error']}")
     print()
 
@@ -346,7 +344,7 @@ def run_comprehensive_test():
     print("8. Testing MCP configuration...")
     mcp_config_test = test_mcp_config_fallback()
     print(f"   MCP config uses Python fallback: {mcp_config_test.get('test_passed', False)}")
-    if mcp_config_test.get('error'):
+    if mcp_config_test.get("error"):
         print(f"   Error: {mcp_config_test['error']}")
     print()
 
@@ -357,13 +355,13 @@ def run_comprehensive_test():
 
     tests = [
         ("Redis Availability", redis_available),
-        ("Direct Import", direct_test.get('import_success', False)),
-        ("Subprocess", subprocess_test.get('subprocess_success', False)),
-        ("Handles Redis Down", redis_down_test.get('test_passed', False)),
-        ("Cache Meta Fallback", cache_meta_test.get('test_passed', False)),
-        ("SQLite Fallback", sqlite_test.get('test_passed', False)),
-        ("Ingest Script", ingest_test.get('test_passed', False)),
-        ("MCP Config", mcp_config_test.get('test_passed', False)),
+        ("Direct Import", direct_test.get("import_success", False)),
+        ("Subprocess", subprocess_test.get("subprocess_success", False)),
+        ("Handles Redis Down", redis_down_test.get("test_passed", False)),
+        ("Cache Meta Fallback", cache_meta_test.get("test_passed", False)),
+        ("SQLite Fallback", sqlite_test.get("test_passed", False)),
+        ("Ingest Script", ingest_test.get("test_passed", False)),
+        ("MCP Config", mcp_config_test.get("test_passed", False)),
     ]
 
     passed = sum(1 for _, result in tests if result)
@@ -401,10 +399,10 @@ if __name__ == "__main__":
 
     # Save results to file
     results_file = Path(__file__).parent / "adg_redis_fallback_test_results.json"
-    with open(results_file, 'w') as f:
+    with open(results_file, "w") as f:
         json.dump(results, f, indent=2, default=str)
 
     print(f"\nDetailed results saved to: {results_file}")
 
     # Exit with appropriate code
-    sys.exit(0 if results['passed_tests'] == results['total_tests'] else 1)
+    sys.exit(0 if results["passed_tests"] == results["total_tests"] else 1)

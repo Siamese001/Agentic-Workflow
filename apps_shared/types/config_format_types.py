@@ -378,7 +378,11 @@ class ConfigModelConverter:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ConfigFormatConverter.convert_to_model:{model.value}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ConfigFormatConverter.convert_to_model:{model.value}",
+        )
         self.logger.info(f"Converting {source_format.value} to config model: {model.name}")
 
         try:

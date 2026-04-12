@@ -37,5 +37,6 @@ def test_cache_preservation():
     else:
         print("ℹ️  Cache not archived (expected for keep_runs=0)")
 
+
 if __name__ == "__main__":
     test_cache_preservation()

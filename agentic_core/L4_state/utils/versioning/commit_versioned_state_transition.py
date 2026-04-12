@@ -198,7 +198,13 @@ _SNAPSHOT_LOG = logging.getLogger("adg.snapshots_state")
 
 
 def state_transition_committed(
-    transition_id: str, namespace: str, key: str, version: int, run_id: str, trace_id: str, actor_id: str,
+    transition_id: str,
+    namespace: str,
+    key: str,
+    version: int,
+    run_id: str,
+    trace_id: str,
+    actor_id: str,
 ) -> None:
     """ADG edge emitter for state_transition_committed."""
     import hashlib as _hashlib  # noqa: PLC0415
@@ -316,14 +322,18 @@ def commit_versioned_state_transition(
     # --- Step 2: load previous version ---
     try:
         previous_version = _registry.load_previous_version(state_context.state_namespace, state_context.key)
-    except StateVersionMissingError:    # guardian: StateVersionMissingError should be handled with specific context
+    except (
+        StateVersionMissingError
+    ):  # guardian: StateVersionMissingError should be handled with specific context
         # First write to this key is allowed
         previous_version = 0
 
     # Conflict detection (Gate D)
     if expected_previous_version >= 0:
         if _registry.detect_conflict(
-            state_context.state_namespace, state_context.key, expected_previous_version,
+            state_context.state_namespace,
+            state_context.key,
+            expected_previous_version,
         ):
             raise StateConflictError(
                 f"commit_versioned_state_transition: conflict detected for "

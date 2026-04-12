@@ -59,7 +59,7 @@ class ContentFilterEngine:
             name="PII Detection",
             description="Detects personally identifiable information",
             content_type=ContentType.PII,
-            pattern=r'\b(?:\d{3}[-.]?\d{3}[-.]?\d{4}|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)',
+            pattern=r"\b(?:\d{3}[-.]?\d{3}[-.]?\d{4}|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)",
             keywords=["social security", "credit card", "driver's license", "passport"],
             action=GuardrailAction.BLOCK,
             severity=GuardrailSeverity.HIGH,
@@ -74,7 +74,7 @@ class ContentFilterEngine:
             name="Email Detection",
             description="Detects email addresses",
             content_type=ContentType.EMAIL,
-            pattern=r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
+            pattern=r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
             action=GuardrailAction.MODIFY,
             severity=GuardrailSeverity.MEDIUM,
             confidence_threshold=0.8,
@@ -88,7 +88,7 @@ class ContentFilterEngine:
             name="Phone Detection",
             description="Detects phone numbers",
             content_type=ContentType.PHONE,
-            pattern=r'\b(?:\+?1[-.]?)?\(?([0-9]{3})\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\b',
+            pattern=r"\b(?:\+?1[-.]?)?\(?([0-9]{3})\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\b",
             action=GuardrailAction.MODIFY,
             severity=GuardrailSeverity.MEDIUM,
             confidence_threshold=0.7,
@@ -102,7 +102,7 @@ class ContentFilterEngine:
             name="URL Detection",
             description="Detects URLs",
             content_type=ContentType.URL,
-            pattern=r'https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?',
+            pattern=r"https?://(?:[-\w.])+(?:[:\d]+)?(?:/(?:[\w/_.])*(?:\?(?:[\w&=%.])*)?(?:#(?:\w*))?)?",
             action=GuardrailAction.WARN,
             severity=GuardrailSeverity.LOW,
             confidence_threshold=0.8,
@@ -244,7 +244,10 @@ class ContentFilterEngine:
 
             # Create report
             report = self._create_report(
-                content_id, content_type, checks, start_time,
+                content_id,
+                content_type,
+                checks,
+                start_time,
             )
 
             # Update statistics
@@ -340,22 +343,22 @@ class ContentFilterEngine:
         if filter.content_type == ContentType.EMAIL:
             # Replace emails with [EMAIL_REDACTED]
             return re.sub(
-                r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-                '[EMAIL_REDACTED]',
+                r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+                "[EMAIL_REDACTED]",
                 content,
             )
         elif filter.content_type == ContentType.PHONE:
             # Replace phone numbers with [PHONE_REDACTED]
             return re.sub(
-                r'\b(?:\+?1[-.]?)?\(?([0-9]{3})\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\b',
-                '[PHONE_REDACTED]',
+                r"\b(?:\+?1[-.]?)?\(?([0-9]{3})\)?[-.]?([0-9]{3})[-.]?([0-9]{4})\b",
+                "[PHONE_REDACTED]",
                 content,
             )
         elif filter.content_type == ContentType.PII:
             # Replace PII patterns with [PII_REDACTED]
             return re.sub(
-                r'\b(?:\d{3}[-.]?\d{3}[-.]?\d{4}|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)',
-                '[PII_REDACTED]',
+                r"\b(?:\d{3}[-.]?\d{3}[-.]?\d{4}|\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b)",
+                "[PII_REDACTED]",
                 content,
             )
         else:
@@ -420,8 +423,9 @@ class ContentFilterEngine:
             passed = failed_checks == 0
         else:
             # In non-strict mode, allow warnings
-            critical_failures = sum(1 for check in checks
-                                 if not check.passed and check.severity == GuardrailSeverity.CRITICAL)
+            critical_failures = sum(
+                1 for check in checks if not check.passed and check.severity == GuardrailSeverity.CRITICAL
+            )
             passed = critical_failures == 0
 
         # Calculate overall score

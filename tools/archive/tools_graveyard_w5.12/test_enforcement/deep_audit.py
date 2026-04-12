@@ -23,6 +23,7 @@ Goes beyond AST pattern matching with 8 audit dimensions:
 Outputs: artifacts/test_enforcement/deep_audit_results.json
 Exit code 0 = clean, 1 = issues found.
 """
+
 from __future__ import annotations
 
 import ast
@@ -35,26 +36,73 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 
 REGISTERED_MARKERS = {
-    "core", "optional", "platform", "external", "experimental",
-    "architecture", "asyncio", "autonomy", "boot", "ci", "compliance",
-    "constitutional", "dashboard", "determinism", "e2e", "functional",
-    "governance", "guardian", "import_safety", "integration",
-    "integration_full_deps", "manual", "mro", "negative_control",
-    "playwright", "security", "slow", "sovereign_hardening", "sovereignty",
-    "ssot", "system_learning", "tool_use", "unit", "unit_min_deps",
+    "core",
+    "optional",
+    "platform",
+    "external",
+    "experimental",
+    "architecture",
+    "asyncio",
+    "autonomy",
+    "boot",
+    "ci",
+    "compliance",
+    "constitutional",
+    "dashboard",
+    "determinism",
+    "e2e",
+    "functional",
+    "governance",
+    "guardian",
+    "import_safety",
+    "integration",
+    "integration_full_deps",
+    "manual",
+    "mro",
+    "negative_control",
+    "playwright",
+    "security",
+    "slow",
+    "sovereign_hardening",
+    "sovereignty",
+    "ssot",
+    "system_learning",
+    "tool_use",
+    "unit",
+    "unit_min_deps",
     # pytest builtins
-    "parametrize", "skip", "skipif", "xfail", "usefixtures", "filterwarnings",
-    "timeout", "tryfirst", "trylast",
+    "parametrize",
+    "skip",
+    "skipif",
+    "xfail",
+    "usefixtures",
+    "filterwarnings",
+    "timeout",
+    "tryfirst",
+    "trylast",
 }
 
-FIRST_PARTY_TOPS = frozenset({
-    "agentic_core", "apps_lic", "apps_rg", "apps_shared", "apps_exec",
-    "apps_rfp", "apps_research", "apps_eval", "system_learning",
-    "infrastructure", "tools", "ops_scripts", "data",
-})
+FIRST_PARTY_TOPS = frozenset(
+    {
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "apps_exec",
+        "apps_rfp",
+        "apps_research",
+        "apps_eval",
+        "system_learning",
+        "infrastructure",
+        "tools",
+        "ops_scripts",
+        "data",
+    }
+)
 
 
 # ── helpers ──────────────────────────────────────────────────────────────
+
 
 def _rel(fp: pathlib.Path) -> str:
     return str(fp.relative_to(ROOT)).replace("\\", "/")
@@ -100,23 +148,46 @@ def _collect_defined_names(tree: ast.Module) -> set[str]:
     # builtins
     names.update(dir(__builtins__) if isinstance(__builtins__, dict) else dir(__builtins__))
     # module-level dunders (always available at runtime)
-    names.update({"__file__", "__name__", "__doc__", "__package__",
-                  "__loader__", "__spec__", "__builtins__", "__cached__"})
+    names.update(
+        {
+            "__file__",
+            "__name__",
+            "__doc__",
+            "__package__",
+            "__loader__",
+            "__spec__",
+            "__builtins__",
+            "__cached__",
+        }
+    )
     # common pytest names
-    names.update({"pytest", "self", "cls", "request", "tmp_path", "tmpdir",
-                  "capsys", "capfd", "monkeypatch", "pytestmark"})
+    names.update(
+        {
+            "pytest",
+            "self",
+            "cls",
+            "request",
+            "tmp_path",
+            "tmpdir",
+            "capsys",
+            "capfd",
+            "monkeypatch",
+            "pytestmark",
+        }
+    )
     return names
 
 
 def _extract_markers(source: str) -> list[str]:
     """Extract pytest marker names from source text."""
     markers = []
-    for m in re.finditer(r'pytest\.mark\.(\w+)', source):
+    for m in re.finditer(r"pytest\.mark\.(\w+)", source):
         markers.append(m.group(1))
     return markers
 
 
 # ── Audit 1: Runtime Import Smoke Test ───────────────────────────────────
+
 
 def _runtime_smoke_one(fp_str: str) -> dict | None:
     """Try to compile (not execute) a test file; report errors."""
@@ -126,14 +197,23 @@ def _runtime_smoke_one(fp_str: str) -> dict | None:
         compile(source, str(fp), "exec")
         return None
     except SyntaxError as e:
-        return {"file": _rel(fp), "audit": "runtime_smoke", "severity": "error",
-                "detail": f"SyntaxError at line {e.lineno}: {e.msg}"}
+        return {
+            "file": _rel(fp),
+            "audit": "runtime_smoke",
+            "severity": "error",
+            "detail": f"SyntaxError at line {e.lineno}: {e.msg}",
+        }
     except Exception as e:
-        return {"file": _rel(fp), "audit": "runtime_smoke", "severity": "error",
-                "detail": f"{type(e).__name__}: {e}"}
+        return {
+            "file": _rel(fp),
+            "audit": "runtime_smoke",
+            "severity": "error",
+            "detail": f"{type(e).__name__}: {e}",
+        }
 
 
 # ── Audit 2: NameError Traps ────────────────────────────────────────────
+
 
 def _nameerror_traps(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
     """Find references to undefined names in skipif conditions and assertions."""
@@ -145,18 +225,25 @@ def _nameerror_traps(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
         # Check skipif conditions
         if isinstance(node, ast.Call):
             func = node.func
-            if (isinstance(func, ast.Attribute) and func.attr == "skipif" and
-                    isinstance(func.value, ast.Attribute) and
-                    isinstance(func.value.value, ast.Name)):
+            if (
+                isinstance(func, ast.Attribute)
+                and func.attr == "skipif"
+                and isinstance(func.value, ast.Attribute)
+                and isinstance(func.value.value, ast.Name)
+            ):
                 # pytest.mark.skipif(CONDITION, ...)
                 if node.args:
                     for name_node in ast.walk(node.args[0]):
                         if isinstance(name_node, ast.Name) and name_node.id not in defined:
-                            issues.append({
-                                "file": rel, "audit": "nameerror_trap",
-                                "severity": "error", "line": node.lineno,
-                                "detail": f"skipif references undefined name '{name_node.id}'",
-                            })
+                            issues.append(
+                                {
+                                    "file": rel,
+                                    "audit": "nameerror_trap",
+                                    "severity": "error",
+                                    "line": node.lineno,
+                                    "detail": f"skipif references undefined name '{name_node.id}'",
+                                }
+                            )
 
         # Check pytestmark = pytest.mark.skipif(not X, ...)
         if isinstance(node, ast.Assign):
@@ -165,16 +252,21 @@ def _nameerror_traps(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                     for sub in ast.walk(node.value):
                         if isinstance(sub, ast.Name) and sub.id not in defined:
                             if sub.id.startswith("_") or sub.id == "CAN_IMPORT":
-                                issues.append({
-                                    "file": rel, "audit": "nameerror_trap",
-                                    "severity": "error", "line": node.lineno,
-                                    "detail": f"pytestmark references undefined '{sub.id}'",
-                                })
+                                issues.append(
+                                    {
+                                        "file": rel,
+                                        "audit": "nameerror_trap",
+                                        "severity": "error",
+                                        "line": node.lineno,
+                                        "detail": f"pytestmark references undefined '{sub.id}'",
+                                    }
+                                )
 
     return issues
 
 
 # ── Audit 3: Dead Marker Detection ──────────────────────────────────────
+
 
 def _dead_markers(fp: pathlib.Path, source: str) -> list[dict]:
     """Find markers not in the registered set."""
@@ -183,14 +275,19 @@ def _dead_markers(fp: pathlib.Path, source: str) -> list[dict]:
     markers = _extract_markers(source)
     for m in markers:
         if m not in REGISTERED_MARKERS:
-            issues.append({
-                "file": rel, "audit": "dead_marker", "severity": "warning",
-                "detail": f"Unregistered marker '@pytest.mark.{m}'",
-            })
+            issues.append(
+                {
+                    "file": rel,
+                    "audit": "dead_marker",
+                    "severity": "warning",
+                    "detail": f"Unregistered marker '@pytest.mark.{m}'",
+                }
+            )
     return issues
 
 
 # ── Audit 4: Orphan skipif ──────────────────────────────────────────────
+
 
 def _orphan_skipif(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
     """skipif decorators whose condition references names not in module scope."""
@@ -204,7 +301,7 @@ def _orphan_skipif(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
         for dec in node.decorator_list:
             if not isinstance(dec, ast.Call):
                 continue
-            func = dec.func if hasattr(dec, 'func') else None
+            func = dec.func if hasattr(dec, "func") else None
             if func is None:
                 continue
             if not (isinstance(func, ast.Attribute) and func.attr == "skipif"):
@@ -212,15 +309,20 @@ def _orphan_skipif(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
             if dec.args:
                 for name_node in ast.walk(dec.args[0]):
                     if isinstance(name_node, ast.Name) and name_node.id not in defined:
-                        issues.append({
-                            "file": rel, "audit": "orphan_skipif",
-                            "severity": "error", "line": dec.lineno,
-                            "detail": f"@skipif references undefined '{name_node.id}'",
-                        })
+                        issues.append(
+                            {
+                                "file": rel,
+                                "audit": "orphan_skipif",
+                                "severity": "error",
+                                "line": dec.lineno,
+                                "detail": f"@skipif references undefined '{name_node.id}'",
+                            }
+                        )
     return issues
 
 
 # ── Audit 5: Vacuous Tests ──────────────────────────────────────────────
+
 
 def _vacuous_tests(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
     """Tests whose body is only pass / assert True / docstring."""
@@ -237,33 +339,57 @@ def _vacuous_tests(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
             continue
         body = node.body
         # Filter out docstrings
-        real_stmts = [s for s in body if not (isinstance(s, ast.Expr) and isinstance(s.value, ast.Constant) and isinstance(s.value.value, str))]
+        real_stmts = [
+            s
+            for s in body
+            if not (
+                isinstance(s, ast.Expr)
+                and isinstance(s.value, ast.Constant)
+                and isinstance(s.value.value, str)
+            )
+        ]
         if not real_stmts:
-            issues.append({
-                "file": rel, "audit": "vacuous_test", "severity": "info",
-                "line": node.lineno,
-                "detail": f"'{node.name}' has only a docstring (no assertions)",
-            })
+            issues.append(
+                {
+                    "file": rel,
+                    "audit": "vacuous_test",
+                    "severity": "info",
+                    "line": node.lineno,
+                    "detail": f"'{node.name}' has only a docstring (no assertions)",
+                }
+            )
             continue
         if len(real_stmts) == 1:
             stmt = real_stmts[0]
             if isinstance(stmt, ast.Pass):
-                issues.append({
-                    "file": rel, "audit": "vacuous_test", "severity": "info",
-                    "line": node.lineno,
-                    "detail": f"'{node.name}' body is only 'pass'",
-                })
-            elif (isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Constant)
-                  and stmt.value.value is True):
-                issues.append({
-                    "file": rel, "audit": "vacuous_test", "severity": "info",
-                    "line": node.lineno,
-                    "detail": f"'{node.name}' body is only 'True'",
-                })
+                issues.append(
+                    {
+                        "file": rel,
+                        "audit": "vacuous_test",
+                        "severity": "info",
+                        "line": node.lineno,
+                        "detail": f"'{node.name}' body is only 'pass'",
+                    }
+                )
+            elif (
+                isinstance(stmt, ast.Expr)
+                and isinstance(stmt.value, ast.Constant)
+                and stmt.value.value is True
+            ):
+                issues.append(
+                    {
+                        "file": rel,
+                        "audit": "vacuous_test",
+                        "severity": "info",
+                        "line": node.lineno,
+                        "detail": f"'{node.name}' body is only 'True'",
+                    }
+                )
     return issues
 
 
 # ── Audit 6: Duplicate Test Names ───────────────────────────────────────
+
 
 def _duplicate_test_names(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
     """Same test function name defined twice in the same scope."""
@@ -278,11 +404,14 @@ def _duplicate_test_names(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                     names[node.name] += 1
         for name, count in names.items():
             if count > 1:
-                issues.append({
-                    "file": rel, "audit": "duplicate_test_name",
-                    "severity": "error",
-                    "detail": f"'{name}' defined {count}x in {scope_name} — pytest shadows earlier definitions",
-                })
+                issues.append(
+                    {
+                        "file": rel,
+                        "audit": "duplicate_test_name",
+                        "severity": "error",
+                        "detail": f"'{name}' defined {count}x in {scope_name} — pytest shadows earlier definitions",
+                    }
+                )
 
     # Module-level functions
     _check_scope(ast.iter_child_nodes(tree), "module")
@@ -296,6 +425,7 @@ def _duplicate_test_names(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
 
 
 # ── Audit 7: Import Side-Effects ────────────────────────────────────────
+
 
 def _import_side_effects(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
     """Module-level calls that are not assignments/decorators/markers.
@@ -329,16 +459,21 @@ def _import_side_effects(fp: pathlib.Path, tree: ast.Module) -> list[dict]:
                     continue
 
         # Only flag if it looks suspicious (not a simple constant)
-        issues.append({
-            "file": rel, "audit": "import_side_effect", "severity": "info",
-            "line": node.lineno,
-            "detail": f"Module-level call: {name}()",
-        })
+        issues.append(
+            {
+                "file": rel,
+                "audit": "import_side_effect",
+                "severity": "info",
+                "line": node.lineno,
+                "detail": f"Module-level call: {name}()",
+            }
+        )
 
     return issues
 
 
 # ── Audit 8: Marker-Category Consistency ────────────────────────────────
+
 
 def _marker_category_consistency(fp: pathlib.Path, source: str, classification: dict | None) -> list[dict]:
     """Check that markers match the classified category."""
@@ -351,24 +486,31 @@ def _marker_category_consistency(fp: pathlib.Path, source: str, classification: 
 
     # core file should not have @pytest.mark.optional
     if category == "core" and "optional" in markers:
-        issues.append({
-            "file": rel, "audit": "marker_category_mismatch",
-            "severity": "warning",
-            "detail": "Classified as 'core' but has @pytest.mark.optional",
-        })
+        issues.append(
+            {
+                "file": rel,
+                "audit": "marker_category_mismatch",
+                "severity": "warning",
+                "detail": "Classified as 'core' but has @pytest.mark.optional",
+            }
+        )
 
     # optional file should have @pytest.mark.optional
     if category == "optional" and "optional" not in markers:
-        issues.append({
-            "file": rel, "audit": "marker_category_mismatch",
-            "severity": "info",
-            "detail": "Classified as 'optional' but missing @pytest.mark.optional marker",
-        })
+        issues.append(
+            {
+                "file": rel,
+                "audit": "marker_category_mismatch",
+                "severity": "info",
+                "detail": "Classified as 'optional' but missing @pytest.mark.optional marker",
+            }
+        )
 
     return issues
 
 
 # ── Main ─────────────────────────────────────────────────────────────────
+
 
 def main():
     test_dir = ROOT / "tests"
@@ -433,9 +575,9 @@ def main():
     warnings = [i for i in all_issues if i["severity"] == "warning"]
     infos = [i for i in all_issues if i["severity"] == "info"]
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("DEEP AUDIT RESULTS")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
     print(f"Total issues: {len(all_issues)}")
     print(f"  Errors:   {len(errors)}")
     print(f"  Warnings: {len(warnings)}")
@@ -447,7 +589,7 @@ def main():
     if errors:
         print("\n--- ERRORS (must fix) ---")
         for e in errors[:50]:
-            print(f"  {e['file']}:{e.get('line','')} [{e['audit']}] {e['detail']}")
+            print(f"  {e['file']}:{e.get('line', '')} [{e['audit']}] {e['detail']}")
         if len(errors) > 50:
             print(f"  ... and {len(errors) - 50} more errors")
 

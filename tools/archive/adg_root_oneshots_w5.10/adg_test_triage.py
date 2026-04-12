@@ -38,7 +38,8 @@ class ADGQuerier:
                 if entities:
                     # Get relationships
                     relationships = self.graph_store.get_relationships(
-                        entities[0].id, direction="incoming",
+                        entities[0].id,
+                        direction="incoming",
                     )
                     return [{"id": r.target_id} for r in relationships]
             except Exception:
@@ -90,55 +91,62 @@ class ADGQuerier:
 
                 # Check if node has test coverage via 'covers' edges
                 relationships = self.graph_store.get_relationships(
-                    node.id, direction="incoming",
+                    node.id,
+                    direction="incoming",
                 )
                 if not relationships:
                     # Calculate centrality for priority scoring
                     centrality = self.graph_store.get_centrality(node.id)
                     if isinstance(centrality, float) and centrality > 0.3:
-                        uncovered_nodes.append({
-                            'id': node.id,
-                            'name': node.name,
-                            'entity_type': node.entity_type,
-                            'file_path': node.metadata.get('file_path', ''),
-                            'layer': node.metadata.get('layer', 'unknown'),
-                            'centrality': centrality,
-                        })
+                        uncovered_nodes.append(
+                            {
+                                "id": node.id,
+                                "name": node.name,
+                                "entity_type": node.entity_type,
+                                "file_path": node.metadata.get("file_path", ""),
+                                "layer": node.metadata.get("layer", "unknown"),
+                                "centrality": centrality,
+                            }
+                        )
 
             # Sort by centrality (descending) for priority
-            uncovered_nodes.sort(key=lambda x: x['centrality'], reverse=True)
+            uncovered_nodes.sort(key=lambda x: x["centrality"], reverse=True)
 
             # Detect communities of uncovered nodes
             communities = []
             if uncovered_nodes:
                 detected_communities = self.graph_store.detect_communities()
                 for community in detected_communities:
-                    community_uncovered = [
-                        n for n in uncovered_nodes if n['id'] in community.entities
-                    ]
+                    community_uncovered = [n for n in uncovered_nodes if n["id"] in community.entities]
                     if community_uncovered:
-                        communities.append({
-                            'community_id': community.id,
-                            'description': community.description,
-                            'size': len(community.entities),
-                            'uncovered_count': len(community_uncovered),
-                            'avg_centrality': sum(n['centrality'] for n in community_uncovered) / len(community_uncovered),
-                            'nodes': community_uncovered[:10],  # Top 10 in this community
-                        })
+                        communities.append(
+                            {
+                                "community_id": community.id,
+                                "description": community.description,
+                                "size": len(community.entities),
+                                "uncovered_count": len(community_uncovered),
+                                "avg_centrality": sum(n["centrality"] for n in community_uncovered)
+                                / len(community_uncovered),
+                                "nodes": community_uncovered[:10],  # Top 10 in this community
+                            }
+                        )
 
             return {
-                'method': 'graph_store',
-                'total_uncovered': len(uncovered_nodes),
-                'uncovered_nodes': uncovered_nodes[:50],  # Top 50
-                'communities': communities[:10],  # Top 10 communities
-                'summary': {
-                    'high_priority_count': len([n for n in uncovered_nodes if n['centrality'] > 0.7]),
-                    'medium_priority_count': len([n for n in uncovered_nodes if 0.3 < n['centrality'] <= 0.7]),
+                "method": "graph_store",
+                "total_uncovered": len(uncovered_nodes),
+                "uncovered_nodes": uncovered_nodes[:50],  # Top 50
+                "communities": communities[:10],  # Top 10 communities
+                "summary": {
+                    "high_priority_count": len([n for n in uncovered_nodes if n["centrality"] > 0.7]),
+                    "medium_priority_count": len(
+                        [n for n in uncovered_nodes if 0.3 < n["centrality"] <= 0.7]
+                    ),
                 },
             }
 
         except Exception as e:
             return {"method": "fallback", "message": f"Gap analysis failed: {e}"}
+
 
 def classify_file(adg_querier, file_path):
     fanin_edges = adg_querier.get_edge_fanin(str(file_path), "tests")
@@ -147,6 +155,7 @@ def classify_file(adg_querier, file_path):
     if len(fanin_edges) <= 2 and node_count <= 2:
         return "stub"
     return "non-stub"
+
 
 def handle_classify(args):
     adg = ADGQuerier(use_graph_store=True)
@@ -157,12 +166,13 @@ def handle_classify(args):
             results[str(file_path)] = classification
 
     if args.json:
-        with open(args.json, 'w', encoding='utf-8') as f:
+        with open(args.json, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
         print(f"Classification report written to {args.json}")
     else:
         for path, classification in results.items():
             print(f"{path}: {classification}")
+
 
 def handle_verify(args):
     adg = ADGQuerier(use_graph_store=True)
@@ -173,6 +183,7 @@ def handle_verify(args):
         print(f"❌ Verification failed: {args.file} is a {classification}, expected {args.expected}")
         sys.exit(1)
 
+
 def handle_deletion_candidates(args):
     adg = ADGQuerier(use_graph_store=True)
     candidates = []
@@ -182,12 +193,13 @@ def handle_deletion_candidates(args):
             candidates.append(str(file_path))
 
     if args.output:
-        with open(args.output, 'w', encoding='utf-8') as f:
+        with open(args.output, "w", encoding="utf-8") as f:
             json.dump(candidates, f, indent=2)
         print(f"Deletion candidates written to {args.output}")
     else:
         for candidate in candidates:
             print(candidate)
+
 
 def handle_coverage_gaps(args):
     """Analyze test coverage gaps using graph store."""
@@ -195,11 +207,12 @@ def handle_coverage_gaps(args):
     result = adg.analyze_coverage_gaps(layer=args.layer)
 
     if args.output:
-        with open(args.output, 'w', encoding='utf-8') as f:
+        with open(args.output, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2)
         print(f"Coverage gap analysis written to {args.output}")
     else:
         print(json.dumps(result, indent=2))
+
 
 def main():
     parser = argparse.ArgumentParser(description="ADG Test Triage Accelerator")
@@ -207,12 +220,16 @@ def main():
 
     # classify command
     classify_parser = subparsers.add_parser("classify", help="Batch triage all _adg.py files")
-    classify_parser.add_argument("--pattern", default="**/*_adg.py", help="Glob pattern for files to classify")
+    classify_parser.add_argument(
+        "--pattern", default="**/*_adg.py", help="Glob pattern for files to classify"
+    )
     classify_parser.add_argument("--json", help="Output classification report to a JSON file")
     classify_parser.set_defaults(func=handle_classify)
 
     # coverage-gaps command (new - graph store enhanced)
-    coverage_parser = subparsers.add_parser("coverage-gaps", help="Analyze test coverage gaps using graph store")
+    coverage_parser = subparsers.add_parser(
+        "coverage-gaps", help="Analyze test coverage gaps using graph store"
+    )
     coverage_parser.add_argument("--layer", help="Filter by layer (e.g., L4, L5)")
     coverage_parser.add_argument("--output", help="Output gap analysis to a JSON file")
     coverage_parser.set_defaults(func=handle_coverage_gaps)
@@ -220,17 +237,22 @@ def main():
     # verify command
     verify_parser = subparsers.add_parser("verify", help="Validate specific file classification")
     verify_parser.add_argument("--file", required=True, help="File to verify")
-    verify_parser.add_argument("--expected", choices=["stub", "non-stub"], required=True, help="Expected classification")
+    verify_parser.add_argument(
+        "--expected", choices=["stub", "non-stub"], required=True, help="Expected classification"
+    )
     verify_parser.set_defaults(func=handle_verify)
 
     # deletion-candidates command
     deletion_parser = subparsers.add_parser("deletion-candidates", help="Generate deletion candidates")
-    deletion_parser.add_argument("--min-fan-in", type=int, default=1, help="Minimum fan-in to be considered for deletion")
+    deletion_parser.add_argument(
+        "--min-fan-in", type=int, default=1, help="Minimum fan-in to be considered for deletion"
+    )
     deletion_parser.add_argument("--output", help="Output candidates to a JSON file")
     deletion_parser.set_defaults(func=handle_deletion_candidates)
 
     args = parser.parse_args()
     args.func(args)
+
 
 if __name__ == "__main__":
     main()

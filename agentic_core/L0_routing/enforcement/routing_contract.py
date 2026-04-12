@@ -47,6 +47,7 @@ from agentic_core.L0_routing.reasoning.optimization_orchestrator import (
     RoutingHistory,
     optimize_simple_routing,
 )
+from agentic_core.utils.runners.providers import get_clock  # noqa: PLC0415
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
@@ -72,6 +73,14 @@ _TRACE_LOG = logging.getLogger("adg.records_execution_trace")
 
 class UngovernnedRouteError(RuntimeError):
     """Raised when a route is executed without a committed RoutingContract."""
+
+
+class RoutingContractError(RuntimeError):
+    """Raised when routing contract creation fails (covers all contract errors)."""
+
+
+class RoutingOptimizationError(RuntimeError):
+    """Raised when routing optimization fails (non-blocking)."""
 
 
 class StaleRoutingContractError(RuntimeError):
@@ -417,9 +426,8 @@ def create_and_commit_routing_contract(
         # Run routing optimization
         optimization = optimize_simple_routing(window_duration_seconds=3600)
         _LOG.debug(
-            "ROUTING_OPTIMIZATION_TRIGGERED router_id=%s contract_id=%s optimization_id=%s",
+            "ROUTING_OPTIMIZATION_TRIGGERED router_id=%s optimization_id=%s",
             routing_context.router_id,
-            routing_contract_id,
             optimization.routing_optimization_id,
         )
     except RoutingOptimizationError as _optimization_exc:  # optimization failure non-blocking
@@ -497,7 +505,9 @@ def create_and_commit_routing_contract(
     emit_replay_key(routing_contract_id, replay_key)
     emit_determinism_digest(routing_contract_id, determinism_digest)
     _emit_records_execution_trace(
-        routing_contract_id, routing_context.router_id, routing_context.chosen_route,
+        routing_contract_id,
+        routing_context.router_id,
+        routing_context.chosen_route,
     )
 
     _LOG.info(
@@ -544,6 +554,8 @@ __all__ = [
     "commit_proposal",
     "execute_route",
     "UngovernnedRouteError",
+    "RoutingContractError",
+    "RoutingOptimizationError",
     "StaleRoutingContractError",
     "RoutingContractValidationError",
     "CONTRACT_VERSION",

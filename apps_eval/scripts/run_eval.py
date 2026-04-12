@@ -19,7 +19,9 @@ _log = logging.getLogger("apps_eval.run_eval")
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="apps_eval", description="Evaluation Lab — agentic_core platform")
     parser.add_argument(
-        "--suites", default="", help="Comma-separated suite IDs to run. Leave empty to run all.",
+        "--suites",
+        default="",
+        help="Comma-separated suite IDs to run. Leave empty to run all.",
     )
     parser.add_argument("--all", action="store_true", help="Run all configured suites")
     parser.add_argument("--out", default="eval", help="Output directory for artifacts")

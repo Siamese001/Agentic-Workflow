@@ -29,6 +29,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class CacheHit:
     """L1 Cache hit data contract [1]."""
+
     cache_key: str
     query_hash: str
     response: str
@@ -97,7 +98,7 @@ class L1ExactCache:
         _emit_records_execution_trace(_trace_id, LayerSegment.L1_REASONING, "L1ExactCache.get")
 
         cache_key = self._generate_key(query)
-        query_hash = cache_key[len(self.key_prefix):]
+        query_hash = cache_key[len(self.key_prefix) :]
 
         try:
             if self._use_local:
@@ -162,6 +163,7 @@ class L1ExactCache:
         ttl = ttl or self.default_ttl
 
         from datetime import datetime
+
         entry = {
             "response": response,
             "timestamp": datetime.utcnow().isoformat(),

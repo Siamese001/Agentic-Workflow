@@ -1,4 +1,5 @@
 """Foundational behavioral tests for apps_rg/engines/resume_orchestrator_engine.py."""
+
 from __future__ import annotations
 
 import pytest

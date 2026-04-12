@@ -31,9 +31,11 @@ def _find_mixin_classes_outside_canonical() -> list[str]:
         try:
             tree = ast.parse(py.read_text(encoding="utf-8"), filename=str(py))
         except (SyntaxError, UnicodeDecodeError, OSError):
-            continue    # guardian: Parsing and encoding errors need separate handling strategies
+            continue  # guardian: Parsing and encoding errors need separate handling strategies
         for node in ast.iter_child_nodes(tree):
-            if isinstance(node, ast.ClassDef) and node.name.endswith("Mixin"):    # guardian: Parsing and encoding errors need separate handling strategies
+            if isinstance(node, ast.ClassDef) and node.name.endswith(
+                "Mixin"
+            ):  # guardian: Parsing and encoding errors need separate handling strategies
                 rel = str(py.relative_to(REPO_ROOT)).replace("\\", "/")
                 violations.append(f"{rel}:{node.lineno} class {node.name}")
     return violations

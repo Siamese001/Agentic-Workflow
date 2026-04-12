@@ -1,6 +1,7 @@
 """
 Financial Package Types - Domain contracts for financial statement data.
 """
+
 from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field, validator
@@ -10,6 +11,7 @@ FiscalType = Literal["annual", "quarterly", "ttm"]
 
 class FinancialPeriod(BaseModel):
     """Single period financial statement data."""
+
     period_end: str = Field(..., description="Period end date (YYYY-MM-DD)")
     fiscal_type: FiscalType = Field(..., description="Annual, quarterly, or trailing twelve months")
     revenue: float = Field(..., description="Revenue for period")
@@ -30,6 +32,7 @@ class FinancialPeriod(BaseModel):
 
 class CalculatedMetrics(BaseModel):
     """Derived financial metrics calculated from periods."""
+
     revenue_cagr_2y: Optional[float] = Field(None, description="2-year revenue CAGR")
     ebitda_margin_ttm: Optional[float] = Field(None, description="TTM EBITDA margin")
     debt_to_ebitda_ttm: Optional[float] = Field(None, description="TTM Debt/EBITDA")
@@ -43,11 +46,14 @@ class FinancialPackage(BaseModel):
     """
     Complete financial package with periods and calculated metrics.
     """
+
     periods: List[FinancialPeriod] = Field(default_factory=list, description="Financial periods")
-    calculated_metrics: CalculatedMetrics = Field(default_factory=CalculatedMetrics, description="Derived metrics")
+    calculated_metrics: CalculatedMetrics = Field(
+        default_factory=CalculatedMetrics, description="Derived metrics"
+    )
     quality_flags: List[str] = Field(default_factory=list, description="Data quality flags")
 
-    @validator('periods')
+    @validator("periods")
     def validate_periods(cls, v):
         """Ensure at least one period if not empty."""
         if not v:

@@ -174,7 +174,9 @@ _REQUIRED_STEP_COUNT = 10
 
 
 def enforce_healer_pipe_order(
-    expected_steps: tuple[str, ...], observed_steps: Sequence[str], trace_id: str | None = None,
+    expected_steps: tuple[str, ...],
+    observed_steps: Sequence[str],
+    trace_id: str | None = None,
 ) -> None:
     """Validate that observed_steps exactly matches expected_steps.
 

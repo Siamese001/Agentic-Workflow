@@ -169,8 +169,11 @@ class EvaluateResumeEffectiveness:
     def score(self, data: dict[str, object]) -> ScoreResult:
         """Compute score for data."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluateResumeEffectiveness.score")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluateResumeEffectiveness.score"
+        )
 
         factors = self._extract_factors(data)
         raw_score = self._compute_weighted(factors)

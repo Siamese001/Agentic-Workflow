@@ -83,6 +83,7 @@ try:
         emit_determinism_digest,
         emit_replay_key,
     )
+
     PTC_AVAILABLE = True
 except ImportError:
     PTC_AVAILABLE = False
@@ -99,14 +100,20 @@ def ptc_contract():
         PTCUnsignedEnvelopeError,
         redact_output,
     )
-    return type('PTCContract', (), {
-        'PTCBytesCapExceeded': PTCBytesCapExceeded,
-        'PTCContractEnforcer': PTCContractEnforcer,
-        'PTCContractViolation': PTCContractViolation,
-        'PTCUnsignedEnvelopeError': PTCUnsignedEnvelopeError,
-        'PTC_STDOUT_BYTE_CAP': PTC_STDOUT_BYTE_CAP,
-        'redact_output': redact_output,
-    })
+
+    return type(
+        "PTCContract",
+        (),
+        {
+            "PTCBytesCapExceeded": PTCBytesCapExceeded,
+            "PTCContractEnforcer": PTCContractEnforcer,
+            "PTCContractViolation": PTCContractViolation,
+            "PTCUnsignedEnvelopeError": PTCUnsignedEnvelopeError,
+            "PTC_STDOUT_BYTE_CAP": PTC_STDOUT_BYTE_CAP,
+            "redact_output": redact_output,
+        },
+    )
+
 
 @pytest.fixture
 def ptc_types():
@@ -116,12 +123,18 @@ def ptc_types():
         ToolResult,
     )
     from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-    return type('PTCTypes', (), {
-        'ToolCall': ToolCall,
-        'ToolResult': ToolResult,
-        'ToolContractViolation': ToolContractViolation,
-        'SandboxEnvelope': SandboxEnvelope,
-    })
+
+    return type(
+        "PTCTypes",
+        (),
+        {
+            "ToolCall": ToolCall,
+            "ToolResult": ToolResult,
+            "ToolContractViolation": ToolContractViolation,
+            "SandboxEnvelope": SandboxEnvelope,
+        },
+    )
+
 
 @pytest.fixture
 def ptc_orchestration():
@@ -142,19 +155,25 @@ def ptc_orchestration():
         ToolCall as PTCToolCall,
     )
     from agentic_core.L3_orchestration.reasoning.ptc.tool_invoker import ToolInvoker
-    return type('PTCOrchestration', (), {
-        'ToolArg': ToolArg,
-        'PTCToolCall': PTCToolCall,
-        'ToolCallResult': ToolCallResult,
-        'ToolSpec': ToolSpec,
-        'canonical_json': canonical_json,
-        'generate_call_id': generate_call_id,
-        'hash_result_data': hash_result_data,
-        'ToolRegistry': ToolRegistry,
-        'get_global_registry': get_global_registry,
-        'register_tool': register_tool,
-        'ToolInvoker': ToolInvoker,
-    })
+
+    return type(
+        "PTCOrchestration",
+        (),
+        {
+            "ToolArg": ToolArg,
+            "PTCToolCall": PTCToolCall,
+            "ToolCallResult": ToolCallResult,
+            "ToolSpec": ToolSpec,
+            "canonical_json": canonical_json,
+            "generate_call_id": generate_call_id,
+            "hash_result_data": hash_result_data,
+            "ToolRegistry": ToolRegistry,
+            "get_global_registry": get_global_registry,
+            "register_tool": register_tool,
+            "ToolInvoker": ToolInvoker,
+        },
+    )
+
 
 # HITL imports for PTC integration
 
@@ -175,9 +194,11 @@ DEFAULT_TIMEOUT = 300
 # PTC Test Infrastructure
 # =============================================================================
 
+
 @dataclass
 class PTCScript:
     """Represents a PTC Python/Bash script for batch tool execution."""
+
     script_id: str
     code: str
     tools: list[str]
@@ -189,6 +210,7 @@ class PTCScript:
 @dataclass
 class PTCSandboxContext:
     """Context for PTC sandbox execution with isolation."""
+
     context_id: str
     frozen_inputs: dict[str, Any] = field(default_factory=dict)
     stdout_buffer: str = ""
@@ -200,6 +222,7 @@ class PTCSandboxContext:
 @dataclass
 class PTCSafetyGateResult:
     """Result of PTC safety gate evaluation."""
+
     passed: bool
     gate_type: str
     confidence: float
@@ -211,6 +234,7 @@ class PTCSafetyGateResult:
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def temp_ptc_dir(tmp_path: Path) -> Path:
@@ -225,9 +249,11 @@ def ptc_enforcer():
     """Provide PTC contract enforcer with test secret."""
     # Inject key source for SandboxEnvelope - use TestKeySource which has deterministic secret
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+
     inject_key_source(TestKeySource())
     # Use the same secret as TestKeySource for the enforcer
     from agentic_core.L2_execution.utils.ptc_contract import PTCContractEnforcer
+
     return PTCContractEnforcer(secret=TestKeySource.TEST_SECRET)
 
 
@@ -235,6 +261,7 @@ def ptc_enforcer():
 def ptc_registry():
     """Provide fresh PTC tool registry."""
     from agentic_core.L3_orchestration.reasoning.ptc.ptc_registry import ToolRegistry
+
     registry = ToolRegistry()
     # Clear any existing tools
     registry._specs.clear()
@@ -246,6 +273,7 @@ def ptc_registry():
 def ptc_invoker():
     """Provide PTC tool invoker."""
     from agentic_core.L3_orchestration.reasoning.ptc.tool_invoker import ToolInvoker
+
     return ToolInvoker(
         max_stdout_bytes=1024 * 1024,  # 1MB
         max_stderr_bytes=1024 * 1024,
@@ -256,6 +284,7 @@ def ptc_invoker():
 def ptc_store(temp_ptc_dir: Path):
     """Provide PTC tool call store."""
     from agentic_core.L3_orchestration.reasoning.ptc.tool_call_store import ToolCallStore
+
     return ToolCallStore(root_dir=temp_ptc_dir / "store")
 
 
@@ -263,6 +292,7 @@ def ptc_store(temp_ptc_dir: Path):
 def hitl_gate():
     """Provide fresh HITL gate."""
     from pathlib import Path
+
     gate = get_hitl_gate(repo_root=Path("."))
     # Reset state
     gate._pending = {}
@@ -287,6 +317,7 @@ def reset_global_state():
 # =============================================================================
 # Test Class: PTC Core Infrastructure
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCCoreInfrastructure:
@@ -317,6 +348,7 @@ class TestPTCCoreInfrastructure:
         object.__setattr__(envelope, "instruction_packet_id", "test-packet")
         object.__setattr__(envelope, "invocation_metadata", {})
         from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+
         object.__setattr__(envelope, "budget", ToolBudget())
         object.__setattr__(envelope, "signature", "")  # Empty signature = unsigned
 
@@ -397,12 +429,15 @@ class TestPTCCoreInfrastructure:
 # Test Class: PTC Inference Batching
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCInferenceBatching:
     """Tests for PTC inference batching - core value proposition."""
 
     def test_ptc_single_inference_multiple_tools(
-        self, ptc_registry, ptc_invoker,
+        self,
+        ptc_registry,
+        ptc_invoker,
     ) -> None:
         """Test PTC executes multiple tools in single inference pass."""
         # Register test tools
@@ -502,6 +537,7 @@ print(json.dumps(summary))
 # Test Class: PTC Context Isolation
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCContextIsolation:
     """Tests for PTC context isolation - keeping raw tool results in sandbox."""
@@ -528,11 +564,13 @@ class TestPTCContextIsolation:
         }
 
         sandbox.stdout_buffer = json.dumps(summary)
-        sandbox.tool_results.append({
-            "tool": "query_database",
-            "summary": summary,
-            "raw_result_stored": True,  # Raw result stays in sandbox
-        })
+        sandbox.tool_results.append(
+            {
+                "tool": "query_database",
+                "summary": summary,
+                "raw_result_stored": True,  # Raw result stays in sandbox
+            }
+        )
 
         # Verify isolation
         assert sandbox.isolated is True
@@ -564,6 +602,7 @@ class TestPTCContextIsolation:
 # =============================================================================
 # Test Class: PTC Safety Gates
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCSafetyGates:
@@ -606,7 +645,9 @@ class TestPTCSafetyGates:
         assert escalation.resolution == "APPROVE"
 
     def test_ptc_safety_gate_human_review_approve(
-        self, escalation_activator, hitl_gate,
+        self,
+        escalation_activator,
+        hitl_gate,
     ) -> None:
         """Test human review approval flow for PTC script."""
         trace_id = f"ptc-hr-{uuid.uuid4().hex[:8]}"
@@ -633,7 +674,8 @@ class TestPTCSafetyGates:
         assert artifact.reviewer_id == "human:senior_reviewer"
 
     def test_ptc_safety_gate_human_review_reject(
-        self, escalation_activator,
+        self,
+        escalation_activator,
     ) -> None:
         """Test human review rejection flow for PTC script."""
         trace_id = f"ptc-reject-{uuid.uuid4().hex[:8]}"
@@ -647,6 +689,7 @@ class TestPTCSafetyGates:
         from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
             create_rejection_artifact,
         )
+
         artifact = create_rejection_artifact(
             trace_id=trace_id,
             policy_hash="sha256:policy123",
@@ -672,6 +715,7 @@ class TestPTCSafetyGates:
 # =============================================================================
 # Test Class: PTC L5 Re-clear
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCL5Reclear:
@@ -720,6 +764,7 @@ class TestPTCL5Reclear:
 # =============================================================================
 # Test Class: PTC Built-in Tools
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCBuiltinTools:
@@ -774,6 +819,7 @@ class TestPTCBuiltinTools:
 # =============================================================================
 # Test Class: PTC Determinism
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCDeterminism:
@@ -854,6 +900,7 @@ class TestPTCDeterminism:
 # =============================================================================
 # Test Class: PTC Edge Cases and Fail-Closed
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCEdgeCases:
@@ -960,6 +1007,7 @@ class TestPTCEdgeCases:
     def test_ptc_timeout_handling(self) -> None:
         """Test PTC timeout handling in ToolBudget."""
         from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+
         # Create budget with compute time limit
         budget = ToolBudget(compute_ms=10)  # 10ms timeout
 
@@ -970,6 +1018,7 @@ class TestPTCEdgeCases:
 # =============================================================================
 # Test Class: PTC Learning Linkage
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCLearningLinkage:
@@ -1023,6 +1072,7 @@ class TestPTCLearningLinkage:
 # =============================================================================
 # Test Class: PTC Full Lifecycle
 # =============================================================================
+
 
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCFullLifecycle:
@@ -1105,6 +1155,7 @@ class TestPTCFullLifecycle:
         from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
             create_rejection_artifact,
         )
+
         artifact = create_rejection_artifact(
             trace_id=trace_id,
             policy_hash="sha256:policy123",
@@ -1120,6 +1171,7 @@ class TestPTCFullLifecycle:
         from agentic_core.L6_observability.utils.engines.hitl_dpo_pair_generator import (
             DefaultDeterministicDPOPairGenerator,
         )
+
         generator = DefaultDeterministicDPOPairGenerator()
 
         pair = generator.generate(
@@ -1157,12 +1209,15 @@ class TestPTCFullLifecycle:
 # Test Class: PTC Concurrent Execution
 # =============================================================================
 
+
 @pytest.mark.skipif(not PTC_AVAILABLE, reason="PTC modules not available")
 class TestPTCConcurrentExecution:
     """Tests for PTC thread-safe concurrent execution."""
 
     def test_ptc_concurrent_tool_invocation(
-        self, ptc_registry, ptc_invoker,
+        self,
+        ptc_registry,
+        ptc_invoker,
     ) -> None:
         """Test thread-safe concurrent tool invocation."""
         # Register test tool
@@ -1246,6 +1301,7 @@ try:
         emit_determinism_digest,
         emit_replay_key,
     )
+
     emit_replay_key("p0", "test_ptc_e2e")
     emit_determinism_digest("p0", "test_ptc_e2e")
     _emit_records_execution_trace("ptc_e2e", LayerSegment.L2_EXECUTION, "PTCE2ETestSuite")

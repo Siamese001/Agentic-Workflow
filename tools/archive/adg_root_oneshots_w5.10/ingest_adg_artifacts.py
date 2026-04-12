@@ -13,6 +13,7 @@ import chromadb
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def ingest_adg_files():
     """Ingest ADG-related files into ChromaDB"""
 
@@ -54,7 +55,7 @@ def ingest_adg_files():
             continue
 
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
             # Create chunk ID
@@ -62,13 +63,13 @@ def ingest_adg_files():
 
             # Create chunk
             chunk = {
-                'id': chunk_id,
-                'content': content,
-                'metadata': {
-                    'file_path': str(file_path),
-                    'filename': file_path.name,
-                    'artifact_type': 'adg_report',
-                    'type': 'adg_artifact',
+                "id": chunk_id,
+                "content": content,
+                "metadata": {
+                    "file_path": str(file_path),
+                    "filename": file_path.name,
+                    "artifact_type": "adg_report",
+                    "type": "adg_artifact",
                 },
             }
 
@@ -92,9 +93,9 @@ def ingest_adg_files():
     # Ingest into ChromaDB
     logger.info("Ingesting into ChromaDB...")
 
-    ids = [chunk['id'] for chunk in chunks]
-    documents = [chunk['content'] for chunk in chunks]
-    metadatas = [chunk['metadata'] for chunk in chunks]
+    ids = [chunk["id"] for chunk in chunks]
+    documents = [chunk["content"] for chunk in chunks]
+    metadatas = [chunk["metadata"] for chunk in chunks]
 
     collection.add(
         ids=ids,
@@ -114,6 +115,7 @@ def ingest_adg_files():
     }
 
     logger.info(f"Collection stats: {stats}")
+
 
 if __name__ == "__main__":
     ingest_adg_files()

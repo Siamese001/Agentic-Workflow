@@ -1,4 +1,5 @@
 """Summarize scanner violations by file and edge."""
+
 import json
 import subprocess
 import sys

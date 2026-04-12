@@ -1,6 +1,7 @@
 """
 Feature Derivation Engine - Computes all RiskFeatures deterministically.
 """
+
 from typing import List, Optional
 
 from ..engines.document_reconciliation_engine import ReconciliationResult
@@ -99,7 +100,8 @@ class FeatureDerivationEngine:
 
         # Derive documentation features
         features.documentation = self._derive_documentation_features(
-            request, reconciliation,
+            request,
+            reconciliation,
         )
 
         # Derive policy features
@@ -107,7 +109,8 @@ class FeatureDerivationEngine:
 
         # Derive composite features
         features.composite = self._derive_composite_features(
-            features, reconciliation,
+            features,
+            reconciliation,
         )
 
         return features
@@ -221,8 +224,9 @@ class FeatureDerivationEngine:
         # Adjust by appraisal recency
         if collateral.appraisal_date:
             from datetime import datetime
+
             try:
-                appraisal_dt = datetime.fromisoformat(collateral.appraisal_date.replace('Z', '+00:00'))
+                appraisal_dt = datetime.fromisoformat(collateral.appraisal_date.replace("Z", "+00:00"))
                 days_old = (datetime.now() - appraisal_dt).days
                 if days_old > 365:
                     quality_score -= 0.1
@@ -248,10 +252,10 @@ class FeatureDerivationEngine:
 
         # Derogatory event score (0 = clean, 1 = many issues)
         derogatory_count = (
-            credit.delinquencies_24m +
-            credit.defaults_ever * 5 +
-            credit.bankruptcies_ever * 10 +
-            credit.judgments_or_liens * 3
+            credit.delinquencies_24m
+            + credit.defaults_ever * 5
+            + credit.bankruptcies_ever * 10
+            + credit.judgments_or_liens * 3
         )
         features.derogatory_event_score = min(1.0, derogatory_count / 10)
 
@@ -391,12 +395,12 @@ class FeatureDerivationEngine:
         # Calculate raw risk score (weighted average of components)
         # Lower score = lower risk
         weights = {
-            'capacity': 0.25,
-            'liquidity': 0.20,
-            'collateral': 0.15,
-            'credit': 0.15,
-            'operating': 0.15,
-            'documentation': 0.10,
+            "capacity": 0.25,
+            "liquidity": 0.20,
+            "collateral": 0.15,
+            "credit": 0.15,
+            "operating": 0.15,
+            "documentation": 0.10,
         }
 
         # Capacity risk (inverse of DSCR, higher leverage = more risk)
@@ -439,12 +443,12 @@ class FeatureDerivationEngine:
 
         # Weighted average
         composite.raw_risk_score = (
-            capacity_risk * weights['capacity'] +
-            (1 - features.liquidity.deposit_stability_score) * weights['liquidity'] +
-            (1 - features.collateral.collateral_quality_score) * weights['collateral'] +
-            credit_risk * weights['credit'] +
-            features.operating_risk.industry_risk_score * weights['operating'] +
-            doc_risk * weights['documentation']
+            capacity_risk * weights["capacity"]
+            + (1 - features.liquidity.deposit_stability_score) * weights["liquidity"]
+            + (1 - features.collateral.collateral_quality_score) * weights["collateral"]
+            + credit_risk * weights["credit"]
+            + features.operating_risk.industry_risk_score * weights["operating"]
+            + doc_risk * weights["documentation"]
         )
 
         # Normalize to 1-10 grade
@@ -489,8 +493,8 @@ class FeatureDerivationEngine:
         # Calculate growth rates
         growth_rates = []
         for i in range(1, len(revenues)):
-            if revenues[i-1] > 0:
-                growth_rates.append((revenues[i] - revenues[i-1]) / revenues[i-1])
+            if revenues[i - 1] > 0:
+                growth_rates.append((revenues[i] - revenues[i - 1]) / revenues[i - 1])
 
         if not growth_rates:
             return 0.5
@@ -524,6 +528,7 @@ class FeatureDerivationEngine:
 
         # Calculate coefficient of variation
         import statistics
+
         try:
             mean_ebitda = statistics.mean(ebitdas)
             if mean_ebitda == 0:

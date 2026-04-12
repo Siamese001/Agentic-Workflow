@@ -26,8 +26,10 @@ _emit_snapshots_state("p0", "research_PromptTemplate", "state_snapshot")
 # RESEARCH PROMPT DEFINITIONS
 # -----------------------------------------------------------------------------
 
+
 class ResearchPromptEntry(BaseModel):
     """Single immutable prompt definition for autonomous research."""
+
     prompt_id: str
     description: str
     system_prompt: str
@@ -42,6 +44,7 @@ class ResearchPromptEntry(BaseModel):
 
 class ResearchNodeEntry(BaseModel):
     """K-node configuration for research pipeline stages."""
+
     node_id: str
     description: str
     stage: str  # discovery, analysis, synthesis, validation
@@ -53,6 +56,7 @@ class ResearchNodeEntry(BaseModel):
 
 class ResearchGlobalRule(BaseModel):
     """Cross-cutting governance rule for all research operations."""
+
     rule_id: str
     description: str
     severity: str  # info, warning, error, fatal
@@ -246,6 +250,7 @@ _RESEARCH_RULES: dict[str, ResearchGlobalRule] = {
 
 class ResearchSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of research domain knowledge."""
+
     version: str = "1.0"
     prompts: dict[str, ResearchPromptEntry]
     nodes: dict[str, ResearchNodeEntry]
@@ -267,6 +272,7 @@ FROZEN_SNAPSHOT = ResearchSovereignKnowledge(
 # -----------------------------------------------------------------------------
 # PUBLIC API (Read-Only Access)
 # -----------------------------------------------------------------------------
+
 
 def get_prompt(prompt_id: str) -> str:
     """Retrieve prompt template by ID.

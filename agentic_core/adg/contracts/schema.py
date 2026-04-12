@@ -2593,20 +2593,42 @@ _emit_reads_through("l4", "schema", "urg_read_246")
 _emit_reads_through("l4", "schema", "urg_read_247")
 
 # Public exports for testing
-EDGE_TYPES = frozenset({
-    "imports", "exports", "calls", "contains", "inherits", "implements",
-    "reads_from", "writes_to", "records_execution_trace", "applies_guardrail",
-    "signs_execution_trace", "snapshots_state", "emits_replay_key",
-    "emits_determinism_digest", "validated_by_safety_plane", "violates",
-})
+EDGE_TYPES = frozenset(
+    {
+        "imports",
+        "exports",
+        "calls",
+        "contains",
+        "inherits",
+        "implements",
+        "reads_from",
+        "writes_to",
+        "records_execution_trace",
+        "applies_guardrail",
+        "signs_execution_trace",
+        "snapshots_state",
+        "emits_replay_key",
+        "emits_determinism_digest",
+        "validated_by_safety_plane",
+        "violates",
+    }
+)
 
-NODE_TYPES = frozenset({
-    "module", "class", "function", "method", "variable", "import",
-})
+NODE_TYPES = frozenset(
+    {
+        "module",
+        "class",
+        "function",
+        "method",
+        "variable",
+        "import",
+    }
+)
 
 
 class NodeType:
     """ADG node type enumeration."""
+
     MODULE = "module"
     CLASS = "class"
     FUNCTION = "function"

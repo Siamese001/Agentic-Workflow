@@ -5,13 +5,13 @@ import json
 from pathlib import Path
 
 # Load wave assignments
-with open('wave_assignments.json', 'r', encoding='utf-8') as f:
+with open("wave_assignments.json", "r", encoding="utf-8") as f:
     waves = json.load(f)
 
-wave_13_files = waves['13']['files']
+wave_13_files = waves["13"]["files"]
 
 # Template for real tests
-TEMPLATE = '''\"\"\"Test {class_name} functionality.\"\"\"\n
+TEMPLATE = """\"\"\"Test {class_name} functionality.\"\"\"\n
 import sys
 from pathlib import Path
 
@@ -26,34 +26,35 @@ class Test{class_name}:
     \"\"\"Test {class_name} functionality.\"\"\"\n
     def test_{module_snake}_imports(self):\n        \"\"\"Test {module_name} module imports.\"\"\"\n        from {import_path} import {module_name}\n        assert {module_name} is not None\n
     def test_{module_snake}_class(self):\n        \"\"\"Test {class_name} class exists.\"\"\"\n        from {import_path} import {class_name}\n        assert {class_name} is not None\n
-    def test_{module_snake}_callable(self):\n        \"\"\"Test {module_name} functions are callable.\"\"\"\n        from {import_path} import validate_{module_snake}\n        assert callable(validate_{module_snake})\n'''
+    def test_{module_snake}_callable(self):\n        \"\"\"Test {module_name} functions are callable.\"\"\"\n        from {import_path} import validate_{module_snake}\n        assert callable(validate_{module_snake})\n"""
+
 
 def convert_file(file_path):
     """Convert a single placeholder test file."""
     path = Path(file_path)
 
     # Extract class name from filename
-    file_stem = path.stem.replace('test_', '')
-    class_name = ''.join(word.capitalize() for word in file_stem.split('_'))
+    file_stem = path.stem.replace("test_", "")
+    class_name = "".join(word.capitalize() for word in file_stem.split("_"))
     module_snake = file_stem
 
     # Determine import path based on file location
     parts = path.parts
-    if 'unit' in parts:
-        if 'apps_' in file_stem:
+    if "unit" in parts:
+        if "apps_" in file_stem:
             # apps files
-            app_name = file_stem.split('_')[0] if '_' in file_stem else 'shared'
-            import_path = f'apps_{app_name}'
+            app_name = file_stem.split("_")[0] if "_" in file_stem else "shared"
+            import_path = f"apps_{app_name}"
             module_name = file_stem
-        elif 'agentic_core' in parts:
+        elif "agentic_core" in parts:
             # agentic_core files
-            import_path = 'agentic_core'
+            import_path = "agentic_core"
             module_name = file_stem
         else:
-            import_path = 'agentic_core'
+            import_path = "agentic_core"
             module_name = file_stem
     else:
-        import_path = 'agentic_core'
+        import_path = "agentic_core"
         module_name = file_stem
 
     # Generate new content
@@ -65,10 +66,11 @@ def convert_file(file_path):
     )
 
     # Write new content
-    with open(path, 'w', encoding='utf-8') as f:
+    with open(path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
     return True
+
 
 # Convert all Wave 13 files
 converted = 0

@@ -66,7 +66,7 @@ def main():
     # Filter to Python files only (grep ban only applies to .py)
     py_files = []
     for f in files:
-        if f.endswith('.py'):
+        if f.endswith(".py"):
             py_files.append(f)
 
     if not py_files:

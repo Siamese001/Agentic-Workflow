@@ -7,6 +7,7 @@ Usage:
     python tools/l4_wave_patcher.py --wave 1 --dry-run
     python tools/l4_wave_patcher.py --wave 1
 """
+
 import argparse
 import re
 import sqlite3
@@ -76,7 +77,8 @@ def get_wave_targets(conn, wave: int, limit: int = 15):
         pattern, desc = "%", f"remaining uncovered (wave {wave})"
 
     # Over-query to account for already-patched modules
-    rows = conn.execute("""
+    rows = conn.execute(
+        """
         SELECT e.source_file,
                SUM(CASE WHEN e.relation_type='writes_to' THEN 1 ELSE 0 END) as wt,
                SUM(CASE WHEN e.relation_type='writes_through' THEN 1 ELSE 0 END) as wth
@@ -88,7 +90,9 @@ def get_wave_targets(conn, wave: int, limit: int = 15):
         HAVING wt > wth
         ORDER BY (wt - wth) DESC
         LIMIT 200
-    """, (pattern,)).fetchall()
+    """,
+        (pattern,),
+    ).fetchall()
 
     # Filter out modules already covered on disk
     filtered = []
@@ -108,7 +112,7 @@ def count_existing_writes_through_calls(filepath: Path) -> int:
     if not filepath.exists():
         return 0
     text = filepath.read_text(encoding="utf-8", errors="replace")
-    return len(re.findall(r'_emit_writes_through\(', text))
+    return len(re.findall(r"_emit_writes_through\(", text))
 
 
 def has_writes_through_import(text: str) -> bool:
@@ -116,8 +120,9 @@ def has_writes_through_import(text: str) -> bool:
     return "_emit_writes_through" in text
 
 
-def patch_module(filepath: Path, module_name: str, target_wt: int,
-                 existing_wth: int, dry_run: bool = False) -> int:
+def patch_module(
+    filepath: Path, module_name: str, target_wt: int, existing_wth: int, dry_run: bool = False
+) -> int:
     """Add _emit_writes_through calls to match writes_to count.
 
     Returns number of calls added.
@@ -138,7 +143,9 @@ def patch_module(filepath: Path, module_name: str, target_wt: int,
     # Ensure import exists
     if not has_writes_through_import(text):
         # Add import
-        import_line = "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through\n"
+        import_line = (
+            "from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_writes_through\n"
+        )
         # Insert after existing imports or at top
         if "from agentic_core.runtime.contracts.lifecycle_trace_contract import" in text:
             # Add to existing import block
@@ -181,7 +188,7 @@ def patch_module(filepath: Path, module_name: str, target_wt: int,
     # Strategy 2: If no existing calls, find end of module-level emit block
     if insert_idx is None:
         for i in range(len(lines) - 1, -1, -1):
-            if re.match(r'^_emit_|^emit_', lines[i]):
+            if re.match(r"^_emit_|^emit_", lines[i]):
                 insert_idx = i + 1
                 break
 
@@ -202,10 +209,14 @@ def patch_module(filepath: Path, module_name: str, target_wt: int,
     new_text = "\n".join(lines)
 
     if dry_run:
-        print(f"  DRY-RUN: {module_name} — would add {needed} calls (existing={existing_calls}, target={target_wt})")
+        print(
+            f"  DRY-RUN: {module_name} — would add {needed} calls (existing={existing_calls}, target={target_wt})"
+        )
     else:
         filepath.write_text(new_text, encoding="utf-8")
-        print(f"  PATCHED: {module_name} — added {needed} calls (existing={existing_calls}, now={existing_calls + needed}, target={target_wt})")
+        print(
+            f"  PATCHED: {module_name} — added {needed} calls (existing={existing_calls}, now={existing_calls + needed}, target={target_wt})"
+        )
 
     return needed
 

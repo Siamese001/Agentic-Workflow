@@ -103,8 +103,7 @@ def main():
     check(
         "init_response",
         init_resp,
-        lambda r: r.get("result", {}).get("serverInfo", {}).get("name")
-        == "sequential-thinking-server",
+        lambda r: r.get("result", {}).get("serverInfo", {}).get("name") == "sequential-thinking-server",
     )
     check(
         "init_protocol",
@@ -123,14 +122,12 @@ def main():
     rid = next_id()
     send({"jsonrpc": "2.0", "id": rid, "method": "tools/list", "params": {}})
     list_resp = read(5)
-    tools = (
-        [t["name"] for t in list_resp.get("result", {}).get("tools", [])]
-        if list_resp
-        else []
-    )
+    tools = [t["name"] for t in list_resp.get("result", {}).get("tools", [])] if list_resp else []
     check("tools_list_returns", list_resp, lambda r: "_error" not in r)
     check(
-        "tool_sequentialthinking_present", tools, lambda t: "sequentialthinking" in t,
+        "tool_sequentialthinking_present",
+        tools,
+        lambda t: "sequentialthinking" in t,
     )
 
     # ========== TIER 1: Single thought ==========
@@ -207,18 +204,18 @@ def main():
             pass
         expected_history = 1 + (i + 1)  # 1 from tier1 + current
         check(
-            f"tier2_step{i+1}_num",
+            f"tier2_step{i + 1}_num",
             content,
             lambda c, exp=i + 1: c.get("thoughtNumber") == exp,
         )
         check(
-            f"tier2_step{i+1}_history",
+            f"tier2_step{i + 1}_history",
             content,
             lambda c, exp=expected_history: c.get("thoughtHistoryLength") == exp,
         )
         hl = content.get("thoughtHistoryLength")
         nn = content.get("nextThoughtNeeded")
-        print(f"  Step {i+1}: historyLen={hl}, nextNeeded={nn}")
+        print(f"  Step {i + 1}: historyLen={hl}, nextNeeded={nn}")
 
     # ========== TIER 3: Branch + Revision ==========
     print()
@@ -306,7 +303,7 @@ def main():
     # ========== SUMMARY ==========
     print()
     print("=" * 60)
-    print(f"SUMMARY: {PASS} PASSED, {FAIL} FAILED out of {PASS+FAIL} checks")
+    print(f"SUMMARY: {PASS} PASSED, {FAIL} FAILED out of {PASS + FAIL} checks")
     print("=" * 60)
     for name, status in results.items():
         print(f"  {status:6s} | {name}")

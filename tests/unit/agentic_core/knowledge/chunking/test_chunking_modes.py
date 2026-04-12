@@ -15,7 +15,16 @@ def chunking_classes():
         SemanticObjectChunker,
         chunk_document,
     )
-    return Chunk, ChunkingEngine, FixedTokenChunker, OverlapWindowChunker, SectionAwareChunker, SemanticObjectChunker, chunk_document
+
+    return (
+        Chunk,
+        ChunkingEngine,
+        FixedTokenChunker,
+        OverlapWindowChunker,
+        SectionAwareChunker,
+        SemanticObjectChunker,
+        chunk_document,
+    )
 
 
 class TestChunkingModes:

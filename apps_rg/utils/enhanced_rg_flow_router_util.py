@@ -4,6 +4,7 @@ Integration Plan: Historical K-Node Patterns into apps_rg
 Step-by-step integration guide for incorporating proven patterns from 60+ legacy versions
 into the current apps_rg architecture.
 """
+
 from typing import Any
 
 # ============================================================================
@@ -75,11 +76,14 @@ Add K.0 thematic analysis as foundational dependency:
 
 class RGFlowRouter:
     """Stub base class."""
-    def __init__(self, config=None): self.config = config or {}
+
+    def __init__(self, config=None):
+        self.config = config or {}
 
 
 class RGFlowOutput:
     """Stub output type for flow router."""
+
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -138,6 +142,7 @@ CompetencyItem = namedtuple("CompetencyItem", ["title", "description", "word_cou
 
 class ThematicAnalysisOutput:
     """Stub output type for thematic analysis."""
+
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -145,7 +150,9 @@ class ThematicAnalysisOutput:
 
 class ResumeSectionNode:
     """Stub base class for resume section nodes."""
-    def __init__(self, config=None): self.config = config or {}
+
+    def __init__(self, config=None):
+        self.config = config or {}
 
 
 class EnhancedResumeSectionNode(ResumeSectionNode):
@@ -175,8 +182,11 @@ class EnhancedResumeSectionNode(ResumeSectionNode):
         Returns structured output with bullets and overviews.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedResumeSectionNode.generate_experience_section")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedResumeSectionNode.generate_experience_section"
+        )
 
         # Phase A: Generate bullets
         bullet_output = self.two_phase_node.generate_unify_bullets_phase_a(
@@ -216,7 +226,9 @@ Integrate K.0 thematic analysis for better competency generation:
 
 class GapClosureEngine:
     """Stub base class for gap closure engine."""
-    def __init__(self, ctx=None): self.ctx = ctx
+
+    def __init__(self, ctx=None):
+        self.ctx = ctx
 
 
 class EnhancedGapClosureEngine(GapClosureEngine):
@@ -234,8 +246,11 @@ class EnhancedGapClosureEngine(GapClosureEngine):
         Generate gap-closing competencies with thematic analysis.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedGapClosureEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedGapClosureEngine.execute"
+        )
 
         # Read dependencies
         enrichment = self.ctx.buffer.read("hop2_enrichment")
@@ -329,7 +344,9 @@ Update to use enhanced validation and thematic analysis:
 
 class ResumePlanningEngine:
     """Stub base class for resume planning engine."""
-    def __init__(self, ctx=None): self.ctx = ctx
+
+    def __init__(self, ctx=None):
+        self.ctx = ctx
 
 
 class EnhancedResumePlanningEngine(ResumePlanningEngine):
@@ -352,8 +369,11 @@ class EnhancedResumePlanningEngine(ResumePlanningEngine):
         Enhanced planning with thematic analysis and validation.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedResumePlanningEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnhancedResumePlanningEngine.execute"
+        )
 
         # Step 1: K.0 thematic analysis
         company_name = candidate_profile.get("target_company", "Unknown")
@@ -513,8 +533,11 @@ class ComprehensiveValidationSuite:
         - Content quality
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ComprehensiveValidationSuite.validate_resume_output")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ComprehensiveValidationSuite.validate_resume_output"
+        )
 
         validation_results = {}
 

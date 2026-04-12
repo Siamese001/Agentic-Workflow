@@ -40,6 +40,7 @@ Logger = logging.getLogger(__name__)
 
 class NodeType(Enum):
     """Types of nodes in the trace graph."""
+
     COGNITIVE = "cognitive"
     TOOL = "tool"
     ORCHESTRATOR = "orchestrator"
@@ -50,6 +51,7 @@ class NodeType(Enum):
 
 class EdgeType(Enum):
     """Types of edges in the trace graph."""
+
     CALLS = "calls"
     INVOKES = "invokes"
     DEPENDS_ON = "depends_on"
@@ -156,11 +158,13 @@ class TraceGraph3D:
 class PhysicsEngine:
     """Physics engine for 3D graph layout simulation."""
 
-    def __init__(self,
-                 attraction_strength: float = 0.1,
-                 repulsion_strength: float = 100.0,
-                 damping: float = 0.9,
-                 time_step: float = 0.01) -> None:
+    def __init__(
+        self,
+        attraction_strength: float = 0.1,
+        repulsion_strength: float = 100.0,
+        damping: float = 0.9,
+        time_step: float = 0.01,
+    ) -> None:
         """Initialize physics engine."""
         self.attraction_strength = attraction_strength
         self.repulsion_strength = repulsion_strength
@@ -192,12 +196,12 @@ class PhysicsEngine:
         nodes = list(graph.nodes.values())
 
         for i, node1 in enumerate(nodes):
-            for node2 in nodes[i+1:]:
+            for node2 in nodes[i + 1 :]:
                 dx = node2.position[0] - node1.position[0]
                 dy = node2.position[1] - node1.position[1]
                 dz = node2.position[2] - node1.position[2]
 
-                distance_sq = dx*dx + dy*dy + dz*dz
+                distance_sq = dx * dx + dy * dy + dz * dz
 
                 if distance_sq < 0.01:  # Prevent division by zero
                     distance_sq = 0.01
@@ -235,7 +239,7 @@ class PhysicsEngine:
                 dy = target.position[1] - source.position[1]
                 dz = target.position[2] - source.position[2]
 
-                distance = math.sqrt(dx*dx + dy*dy + dz*dz)
+                distance = math.sqrt(dx * dx + dy * dy + dz * dz)
 
                 if distance > 0.01:  # Prevent division by zero
                     # Calculate attraction force (spring-like)
@@ -435,6 +439,7 @@ class Trace3DVisualizer:
 
                 # Calculate initial position (random sphere)
                 import random
+
                 theta = random.random() * 2 * math.pi
                 phi = random.random() * math.pi
                 r = random.random() * 30 + 10
@@ -485,7 +490,9 @@ class Trace3DVisualizer:
             self._stats["total_edges"] = sum(len(g.edges) for g in self._graphs.values())
             self._stats["last_update"] = time.time()
 
-            Logger.info(f"[3D_VIZ] Added trace graph {trace_id} with {len(nodes)} nodes and {len(edges)} edges")
+            Logger.info(
+                f"[3D_VIZ] Added trace graph {trace_id} with {len(nodes)} nodes and {len(edges)} edges"
+            )
 
             return trace_id
 
@@ -621,10 +628,7 @@ class Trace3DVisualizer:
             elif format_type == "positions":
                 return {
                     "trace_id": graph.trace_id,
-                    "positions": {
-                        node_id: node.position
-                        for node_id, node in graph.nodes.items()
-                    },
+                    "positions": {node_id: node.position for node_id, node in graph.nodes.items()},
                 }
             else:
                 return None
@@ -673,7 +677,9 @@ class Trace3DVisualizer:
             "edge_types": dict(edge_types),
             "avg_node_duration_ms": avg_duration,
             "avg_edge_weight": avg_weight,
-            "graph_density": len(graph.edges) / (len(graph.nodes) * (len(graph.nodes) - 1)) if len(graph.nodes) > 1 else 0,
+            "graph_density": len(graph.edges) / (len(graph.nodes) * (len(graph.nodes) - 1))
+            if len(graph.nodes) > 1
+            else 0,
             "timestamp": graph.timestamp,
         }
 
@@ -727,7 +733,9 @@ def stop_3d_visualization() -> None:
     visualizer.stop_visualization_server()
 
 
-def add_trace_to_3d_visualization(trace_id: str, nodes: list[dict[str, Any]], edges: list[dict[str, Any]]) -> str:
+def add_trace_to_3d_visualization(
+    trace_id: str, nodes: list[dict[str, Any]], edges: list[dict[str, Any]]
+) -> str:
     """
     Add a trace to 3D visualization.
 

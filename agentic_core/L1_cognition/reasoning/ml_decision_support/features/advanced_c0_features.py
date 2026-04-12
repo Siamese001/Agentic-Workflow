@@ -352,7 +352,7 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
         document_date = temporal_data.get("document_date")
         if document_date:
             try:
-                doc_datetime = datetime.fromisoformat(document_date.replace('Z', '+00:00'))
+                doc_datetime = datetime.fromisoformat(document_date.replace("Z", "+00:00"))
                 days_old = (datetime.now() - doc_datetime).days
                 recency_score = max(0.0, 1.0 - (days_old / 365))  # Decay over 1 year
             except:
@@ -449,8 +449,8 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
         }
 
         precision_score = (
-            precision_factors["historical"] * historical_precision +
-            precision_factors["current"] * retrieval_score
+            precision_factors["historical"] * historical_precision
+            + precision_factors["current"] * retrieval_score
         )
 
         return round(max(0.0, min(1.0, precision_score)), 3)
@@ -535,15 +535,15 @@ class AdvancedC0FeatureExtractor(DeterministicFeatureExtractor):
 
         # Weighted combination
         reranking_confidence = (
-            confidence_factors["embedding_similarity"] * embedding_confidence +
-            confidence_factors["attention_score"] * attention_confidence +
-            confidence_factors["document_authority"] * authority_confidence +
-            confidence_factors["relevance_confidence"] * relevance_confidence +
-            confidence_factors["user_engagement"] * engagement_confidence +
-            confidence_factors["temporal_relevance"] * temporal_confidence +
-            confidence_factors["semantic_density"] * density_confidence +
-            confidence_factors["retrieval_precision"] * precision_confidence +
-            confidence_factors["context_alignment"] * alignment_confidence
+            confidence_factors["embedding_similarity"] * embedding_confidence
+            + confidence_factors["attention_score"] * attention_confidence
+            + confidence_factors["document_authority"] * authority_confidence
+            + confidence_factors["relevance_confidence"] * relevance_confidence
+            + confidence_factors["user_engagement"] * engagement_confidence
+            + confidence_factors["temporal_relevance"] * temporal_confidence
+            + confidence_factors["semantic_density"] * density_confidence
+            + confidence_factors["retrieval_precision"] * precision_confidence
+            + confidence_factors["context_alignment"] * alignment_confidence
         )
 
         return round(max(0.0, min(1.0, reranking_confidence)), 3)

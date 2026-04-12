@@ -15,14 +15,16 @@ import queue
 
 class BusType(Enum):
     """Telemetry bus types."""
-    DEVIATION = auto()   # BUS D - Real-time control
-    ANOMALY = auto()     # BUS E - Real-time control
-    TELEMETRY = auto()   # BUS T - Async learning data
+
+    DEVIATION = auto()  # BUS D - Real-time control
+    ANOMALY = auto()  # BUS E - Real-time control
+    TELEMETRY = auto()  # BUS T - Async learning data
 
 
 @dataclass
 class BusMessage:
     """Message on telemetry bus."""
+
     bus_type: BusType
     signal_type: str
     payload: dict[str, Any]
@@ -42,9 +44,7 @@ class TelemetryBus:
         self._queues: dict[BusType, queue.Queue[BusMessage]] = {
             bus: queue.Queue(maxsize=10000) for bus in BusType
         }
-        self._handlers: dict[BusType, list[Callable[[BusMessage], None]]] = {
-            bus: [] for bus in BusType
-        }
+        self._handlers: dict[BusType, list[Callable[[BusMessage], None]]] = {bus: [] for bus in BusType}
         self._drop_counts: dict[BusType, int] = {bus: 0 for bus in BusType}
 
     def publish(
@@ -111,13 +111,22 @@ class TelemetryBus:
     def get_stats(self) -> dict[str, Any]:
         """Get bus statistics."""
         return {
-            "queue_sizes": {
-                bus.name: q.qsize() for bus, q in self._queues.items()
-            },
-            "drop_counts": {
-                bus.name: count for bus, count in self._drop_counts.items()
-            },
-            "handler_counts": {
-                bus.name: len(handlers) for bus, handlers in self._handlers.items()
-            },
+            "queue_sizes": {bus.name: q.qsize() for bus, q in self._queues.items()},
+            "drop_counts": {bus.name: count for bus, count in self._drop_counts.items()},
+            "handler_counts": {bus.name: len(handlers) for bus, handlers in self._handlers.items()},
         }
+
+
+_TELEMETRY_BUS: "TelemetryBus | None" = None
+
+
+def get_telemetry_bus() -> "TelemetryBus":
+    """Return the process-level TelemetryBus singleton (BUS D, BUS E, BUS T).
+
+    BUS T (BusType.TELEMETRY) is the 10C-REQ-134 async channel used for
+    future-run grading and RCA.  All evidence telemetry is published here.
+    """
+    global _TELEMETRY_BUS
+    if _TELEMETRY_BUS is None:
+        _TELEMETRY_BUS = TelemetryBus()
+    return _TELEMETRY_BUS

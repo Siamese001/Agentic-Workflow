@@ -165,7 +165,10 @@ class GeminiLLMClient:
         _trace_id = str(uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GeminiLLMClient.generate")
         request = GenerationRequest(
-            agent_id=self._AGENT_ID, provider="google", model=self._MODEL, prompt=prompt,
+            agent_id=self._AGENT_ID,
+            provider="google",
+            model=self._MODEL,
+            prompt=prompt,
         )
         _clk = get_clock()
         _clk.emit_replay_key(context=f"lic:gemini:{self._AGENT_ID}:{self._MODEL}")

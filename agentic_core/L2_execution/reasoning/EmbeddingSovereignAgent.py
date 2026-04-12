@@ -329,7 +329,10 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         return hashlib.sha256(content.encode()).hexdigest()[:16]
 
     async def get_embedding(
-        self, content: str, provider: EmbeddingProvider = "bge-m3", use_cache: bool = True,
+        self,
+        content: str,
+        provider: EmbeddingProvider = "bge-m3",
+        use_cache: bool = True,
     ) -> list[float]:
         """
         Get embedding vector with optional caching.
@@ -340,7 +343,9 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "EmbeddingSovereignAgent.get_embedding",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "EmbeddingSovereignAgent.get_embedding",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -357,7 +362,9 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             content,
             target_name="EmbeddingSovereignAgent.get_embedding",
         )
-        start = get_clock().now_epoch()    # guardian: Too many exception types - consider refactoring into separate handlers
+        start = (
+            get_clock().now_epoch()
+        )  # guardian: Too many exception types - consider refactoring into separate handlers
         cache_key = f"{self._cache_prefix}:{provider}:{self._content_hash(content)}"
         if use_cache:
             try:
@@ -366,7 +373,12 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                     latency = (get_clock().now_epoch() - start) * 1000
                     self._audit(provider, True, True, latency)
                     return cached
-            except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:    # guardian: Too many exception types - consider refactoring into separate handlers
+            except (
+                ConnectionError,
+                TimeoutError,
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: Too many exception types - consider refactoring into separate handlers
                 Logger.warning(f"Redis cache lookup failed: {e}")
         try:
             if provider == "gemini":
@@ -374,7 +386,9 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             elif provider == "openai":
                 embedding = await self._get_openai_embedding(content)
             elif provider == "bge-m3":
-                embedding = await self._get_bge_m3_embedding(content)    # guardian: Too many exception types - consider refactoring into separate handlers
+                embedding = await self._get_bge_m3_embedding(
+                    content
+                )  # guardian: Too many exception types - consider refactoring into separate handlers
             else:
                 raise ValueError(f"Unknown provider: {provider}")
             expected_dim = self.EXPECTED_DIMENSIONS.get(provider)
@@ -383,7 +397,12 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             if use_cache:
                 try:
                     await self.cache_set(cache_key, embedding, ttl=self._default_ttl)
-                except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:    # guardian: Too many exception types - consider refactoring into separate handlers
+                except (
+                    ConnectionError,
+                    TimeoutError,
+                    RuntimeError,
+                    OSError,
+                ) as e:  # guardian: Too many exception types - consider refactoring into separate handlers
                     Logger.warning(f"Redis cache set failed: {e}")
             latency = (get_clock().now_epoch() - start) * 1000
             self._audit(provider, True, False, latency)
@@ -395,7 +414,10 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
             raise
 
     async def get_embeddings_batch(
-        self, contents: list[str], provider: EmbeddingProvider = "bge-m3", use_cache: bool = True,
+        self,
+        contents: list[str],
+        provider: EmbeddingProvider = "bge-m3",
+        use_cache: bool = True,
     ) -> list[list[float]]:
         """
         Get embeddings for multiple contents.
@@ -414,7 +436,9 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
         client = create_vertex_client()
         result = client.embed_content(
-            model="models/text-embedding-004", content=content, task_type="retrieval_document",
+            model="models/text-embedding-004",
+            content=content,
+            task_type="retrieval_document",
         )
         return result["embedding"]
 
@@ -478,7 +502,9 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 Logger.warning("OPENAI_API_KEY missing for OpenAI embeddings")
             try:
                 test_key = f"{self._cache_prefix}:test"
-                if hasattr(self, "cache_set") and hasattr(self, "cache_get"):    # guardian: Too many exception types - consider refactoring into separate handlers
+                if hasattr(self, "cache_set") and hasattr(
+                    self, "cache_get"
+                ):  # guardian: Too many exception types - consider refactoring into separate handlers
                     self.cache_set(test_key, "test_value", ttl=60)
                     cached = self.cache_get(test_key)
                     if cached != "test_value":
@@ -487,7 +513,12 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 else:
                     metrics["violations"] += 1
                     Logger.warning("Redis cache methods not available")
-            except (ConnectionError, TimeoutError, RuntimeError, OSError) as e:    # guardian: Too many exception types - consider refactoring into separate handlers
+            except (
+                ConnectionError,
+                TimeoutError,
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: Too many exception types - consider refactoring into separate handlers
                 metrics["violations"] += 1
                 Logger.warning(f"Redis cache connectivity test failed: {e}")
             try:

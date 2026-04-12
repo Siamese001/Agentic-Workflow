@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai additional validator components."""
 
-
 from apps_underwriting_ai.validators.authority_limit_validator import (
     AuthorityLimitValidator,
 )
@@ -38,5 +37,6 @@ class TestStaleDataValidator:
         validator = StaleDataValidator()
         # Test with fresh data
         import time
+
         result = validator.validate({"timestamp": time.time()})
         assert result is not None

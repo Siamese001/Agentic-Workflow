@@ -2,6 +2,7 @@
 
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
+
 from __future__ import annotations
 
 import ast
@@ -13,7 +14,10 @@ pytestmark = pytest.mark.unit
 
 _SRC = (
     pathlib.Path(__file__).parents[5]
-    / "agentic_core" / "L3_orchestration" / "reasoning" / "StateManagementAgent.py"
+    / "agentic_core"
+    / "L3_orchestration"
+    / "reasoning"
+    / "StateManagementAgent.py"
 )
 
 
@@ -58,6 +62,7 @@ class TestStateManagementAgentSource:
 
     def test_state_management_agent_has_run_or_execute(self):
         pass
+
     """Test state_management_agent_has_run_or_execute runtime behavior."""
     # Arrange
     input_data = {}  # Replace with actual test data

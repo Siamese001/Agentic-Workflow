@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Analyze L_UNKNOWN nodes to find missing layer mappings."""
+
 import sqlite3
 from collections import Counter
 from pathlib import Path
@@ -53,7 +54,7 @@ if external_symbols:
 print()
 
 # Check for actual file paths that should be mapped
-file_paths = [n for n in unknown_nodes if n[2] and n[2].endswith('.py')]
+file_paths = [n for n in unknown_nodes if n[2] and n[2].endswith(".py")]
 print(f"Python file paths in L_UNKNOWN: {len(file_paths)}")
 if file_paths:
     print("Sample Python file paths:")

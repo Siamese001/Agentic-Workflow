@@ -16,14 +16,17 @@ class TestVllmInvariantContractTypesAdg:
     def test_vllm_invariant_contract_types_adg_imports(self):
         """Test vllm_invariant_contract_types_adg module imports."""
         from agentic_core import vllm_invariant_contract_types_adg
+
         assert vllm_invariant_contract_types_adg is not None
 
     def test_vllm_invariant_contract_types_adg_class(self):
         """Test VllmInvariantContractTypesAdg class exists."""
         from agentic_core import VllmInvariantContractTypesAdg
+
         assert VllmInvariantContractTypesAdg is not None
 
     def test_vllm_invariant_contract_types_adg_callable(self):
         """Test vllm_invariant_contract_types_adg functions are callable."""
         from agentic_core import validate_vllm_invariant_contract_types_adg
+
         assert callable(validate_vllm_invariant_contract_types_adg)

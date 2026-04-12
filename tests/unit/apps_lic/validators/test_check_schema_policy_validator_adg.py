@@ -16,14 +16,17 @@ class TestCheckSchemaPolicyValidatorAdg:
     def test_check_schema_policy_validator_adg_imports(self):
         """Test check_schema_policy_validator_adg module imports."""
         from agentic_core import check_schema_policy_validator_adg
+
         assert check_schema_policy_validator_adg is not None
 
     def test_check_schema_policy_validator_adg_class(self):
         """Test CheckSchemaPolicyValidatorAdg class exists."""
         from agentic_core import CheckSchemaPolicyValidatorAdg
+
         assert CheckSchemaPolicyValidatorAdg is not None
 
     def test_check_schema_policy_validator_adg_callable(self):
         """Test check_schema_policy_validator_adg functions are callable."""
         from agentic_core import validate_check_schema_policy_validator_adg
+
         assert callable(validate_check_schema_policy_validator_adg)

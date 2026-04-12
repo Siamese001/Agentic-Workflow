@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from agentic_core.L4_state.config.memory_store_config import MemoryStoreConfig
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 Logger = logging.getLogger(__name__)
 
 
@@ -41,7 +41,7 @@ class TraceChunker:
         chunks = []
 
         try:
-            with open(file_path, encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 for line_num, line in enumerate(f, 1):
                     line = line.strip()
                     if not line:
@@ -70,33 +70,33 @@ class TraceChunker:
     def _process_trace(self, trace_data: dict, line_num: int) -> dict | None:
         """Process a single trace and convert to chunk format."""
         # Extract key fields with fallbacks
-        trace_id = trace_data.get('trace_id', f'trace_{line_num}')
-        namespace = trace_data.get('namespace', 'unknown')
-        created_utc = trace_data.get('created_utc', '')
-        content_hash = trace_data.get('content_hash', '')
+        trace_id = trace_data.get("trace_id", f"trace_{line_num}")
+        namespace = trace_data.get("namespace", "unknown")
+        created_utc = trace_data.get("created_utc", "")
+        content_hash = trace_data.get("content_hash", "")
 
         # Build trace content for embedding
         content_parts = []
 
         # Add trace context
-        if 'context' in trace_data:
-            context = trace_data['context']
+        if "context" in trace_data:
+            context = trace_data["context"]
             if isinstance(context, dict):
                 content_parts.append(f"Context: {json.dumps(context, separators=(',', ':'))}")
             else:
                 content_parts.append(f"Context: {context}")
 
         # Add trace data
-        if 'trace' in trace_data:
-            trace = trace_data['trace']
+        if "trace" in trace_data:
+            trace = trace_data["trace"]
             if isinstance(trace, dict):
                 content_parts.append(f"Trace: {json.dumps(trace, separators=(',', ':'))}")
             else:
                 content_parts.append(f"Trace: {trace}")
 
         # Add outcome if present
-        if 'outcome' in trace_data:
-            outcome = trace_data['outcome']
+        if "outcome" in trace_data:
+            outcome = trace_data["outcome"]
             if isinstance(outcome, dict):
                 content_parts.append(f"Outcome: {json.dumps(outcome, separators=(',', ':'))}")
             else:
@@ -104,70 +104,78 @@ class TraceChunker:
 
         # Add any other fields
         for key, value in trace_data.items():
-            if key not in ['trace_id', 'namespace', 'created_utc', 'content_hash', 'context', 'trace', 'outcome']:
+            if key not in [
+                "trace_id",
+                "namespace",
+                "created_utc",
+                "content_hash",
+                "context",
+                "trace",
+                "outcome",
+            ]:
                 content_parts.append(f"{key}: {value}")
 
-        content = '\n'.join(content_parts)
+        content = "\n".join(content_parts)
 
         # Truncate if too long
         if len(content) > self.max_trace_length:
-            content = content[:self.max_trace_length] + "..."
+            content = content[: self.max_trace_length] + "..."
 
         # Determine trace type from content or structure
         trace_type = self._determine_trace_type(trace_data, content)
 
         # Create metadata
         metadata = {
-            'trace_id': trace_id,
-            'namespace': namespace,
-            'created_utc': created_utc,
-            'content_hash': content_hash,
-            'trace_type': trace_type,
-            'line_number': line_num,
-            'chunk_type': 'trace',
+            "trace_id": trace_id,
+            "namespace": namespace,
+            "created_utc": created_utc,
+            "content_hash": content_hash,
+            "trace_type": trace_type,
+            "line_number": line_num,
+            "chunk_type": "trace",
         }
 
         # Add additional metadata if available
-        if 'error_type' in trace_data:
-            metadata['error_type'] = trace_data['error_type']
-        if 'healing_action' in trace_data:
-            metadata['healing_action'] = trace_data['healing_action']
-        if 'agent_name' in trace_data:
-            metadata['agent_name'] = trace_data['agent_name']
-        if 'layer' in trace_data:
-            metadata['layer'] = trace_data['layer']
+        if "error_type" in trace_data:
+            metadata["error_type"] = trace_data["error_type"]
+        if "healing_action" in trace_data:
+            metadata["healing_action"] = trace_data["healing_action"]
+        if "agent_name" in trace_data:
+            metadata["agent_name"] = trace_data["agent_name"]
+        if "layer" in trace_data:
+            metadata["layer"] = trace_data["layer"]
 
         return {
-            'content': content,
-            'metadata': metadata,
+            "content": content,
+            "metadata": metadata,
         }
 
     def _determine_trace_type(self, trace_data: dict, content: str) -> str:
         """Determine the type of trace based on content and structure."""
         # Check for explicit type field
-        if 'type' in trace_data:
-            return str(trace_data['type'])
+        if "type" in trace_data:
+            return str(trace_data["type"])
 
         # Check for error-related traces
-        if any(key in trace_data for key in ['error', 'exception', 'failure']):
-            if 'healing' in content.lower():
-                return 'healing_error'
-            return 'error'
+        if any(key in trace_data for key in ["error", "exception", "failure"]):
+            if "healing" in content.lower():
+                return "healing_error"
+            return "error"
 
         # Check for healing-related traces
-        if any(key in trace_data for key in ['healing', 'repair', 'fix', 'recover']):
-            return 'healing_action'
+        if any(key in trace_data for key in ["healing", "repair", "fix", "recover"]):
+            return "healing_action"
 
         # Check for execution traces
-        if any(key in trace_data for key in ['execution', 'run', 'invoke', 'call']):
-            return 'execution_trace'
+        if any(key in trace_data for key in ["execution", "run", "invoke", "call"]):
+            return "execution_trace"
 
         # Check for validation traces
-        if any(key in trace_data for key in ['validate', 'check', 'verify', 'test']):
-            return 'validation_trace'
+        if any(key in trace_data for key in ["validate", "check", "verify", "test"]):
+            return "validation_trace"
 
         # Default type
-        return 'general_trace'
+        return "general_trace"
 
 
 class EmbeddingGenerator:
@@ -197,6 +205,7 @@ class EmbeddingGenerator:
             # Generate mock embeddings (1536-dimensional vectors)
             Logger.info(f"Generating {len(texts)} mock embeddings")
             import random
+
             return [[random.uniform(-1, 1) for _ in range(1536)] for _ in texts]
 
         embeddings = []
@@ -204,7 +213,7 @@ class EmbeddingGenerator:
         # Process in batches to handle rate limits
         batch_size = 100
         for i in range(0, len(texts), batch_size):
-            batch = texts[i:i + batch_size]
+            batch = texts[i : i + batch_size]
             try:
                 response = self.client.embeddings.create(
                     model=self.model,
@@ -212,9 +221,9 @@ class EmbeddingGenerator:
                 )
                 batch_embeddings = [item.embedding for item in response.data]
                 embeddings.extend(batch_embeddings)
-                Logger.info(f"Generated embeddings for batch {i//batch_size + 1}")
+                Logger.info(f"Generated embeddings for batch {i // batch_size + 1}")
             except Exception as e:
-                Logger.error(f"Failed to generate embeddings for batch {i//batch_size + 1}: {e}")
+                Logger.error(f"Failed to generate embeddings for batch {i // batch_size + 1}: {e}")
                 # Add zero embeddings as fallback
                 embeddings.extend([[0.0] * 1536] * len(batch))
 
@@ -256,7 +265,7 @@ class VectorDBIngestor:
 
         for i, chunk in enumerate(chunks):
             # Generate unique ID
-            trace_id = chunk['metadata'].get('trace_id', f'trace_{i}')
+            trace_id = chunk["metadata"].get("trace_id", f"trace_{i}")
             content_hash = hashlib.sha256(chunk["content"].encode()).hexdigest()[:16]
             chunk_id = f"{trace_id}_{content_hash}"
 
@@ -269,10 +278,10 @@ class VectorDBIngestor:
         total_ingested = 0
 
         for i in range(0, len(chunks), batch_size):
-            batch_ids = ids[i:i + batch_size]
-            batch_documents = documents[i:i + batch_size]
-            batch_metadatas = metadatas[i:i + batch_size]
-            batch_embeddings = embeddings[i:i + batch_size]
+            batch_ids = ids[i : i + batch_size]
+            batch_documents = documents[i : i + batch_size]
+            batch_metadatas = metadatas[i : i + batch_size]
+            batch_embeddings = embeddings[i : i + batch_size]
 
             try:
                 self.collection.add(
@@ -283,9 +292,9 @@ class VectorDBIngestor:
                 )
                 batch_count = len(batch_ids)
                 total_ingested += batch_count
-                Logger.info(f"Successfully ingested batch {i//batch_size + 1}: {batch_count} traces")
+                Logger.info(f"Successfully ingested batch {i // batch_size + 1}: {batch_count} traces")
             except Exception as e:
-                Logger.error(f"Failed to ingest batch {i//batch_size + 1}: {e}")
+                Logger.error(f"Failed to ingest batch {i // batch_size + 1}: {e}")
                 # Continue with next batch instead of failing completely
 
         Logger.info(f"Successfully ingested {total_ingested} traces into ChromaDB")
@@ -310,7 +319,7 @@ def count_traces_in_file(file_path: Path) -> int:
     """Count the number of traces in a JSONL file."""
     count = 0
     try:
-        with open(file_path, encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             for line in f:
                 if line.strip():
                     count += 1
@@ -323,8 +332,11 @@ def count_traces_in_file(file_path: Path) -> int:
 
 def main():
     parser = argparse.ArgumentParser(description="Ingest healing traces into ChromaDB")
-    parser.add_argument("--source-file", default="data/corpus/healing_contexts_corpus.jsonl",
-                       help="Source JSONL file containing healing traces")
+    parser.add_argument(
+        "--source-file",
+        default="data/corpus/healing_contexts_corpus.jsonl",
+        help="Source JSONL file containing healing traces",
+    )
     parser.add_argument("--collection-name", default="traces", help="ChromaDB collection name")
     parser.add_argument("--dry-run", action="store_true", help="Preview without ingesting")
     parser.add_argument("--mock-embeddings", action="store_true", help="Use mock embeddings for testing")
@@ -351,7 +363,7 @@ def main():
     chunks = chunker.chunk_trace_file(source_file)
 
     if args.limit:
-        chunks = chunks[:args.limit]
+        chunks = chunks[: args.limit]
         Logger.info(f"Limited to {len(chunks)} traces for testing")
 
     if args.dry_run:

@@ -158,6 +158,7 @@ _emit_links_execution_to_snapshot("p4", "registry_config", "exec_snapshot_link")
 
 # Configuration constants
 
+
 def _derive_registry() -> dict:
     """Build SOVEREIGN_REGISTRY from SSOT subsets (DEPTH_RULES + subfolder maps).
 

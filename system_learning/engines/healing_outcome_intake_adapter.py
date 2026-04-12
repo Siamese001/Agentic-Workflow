@@ -167,7 +167,10 @@ class HealingOutcomeIntakeAdapter:
         self._store = store
 
     def build_record(
-        self, aggregator: HealingOutcomeAggregator, created_utc: int, source: str = "L2.3-healing",
+        self,
+        aggregator: HealingOutcomeAggregator,
+        created_utc: int,
+        source: str = "L2.3-healing",
     ) -> HealingOutcomeIntakeRecord:
         """Build an intake record from aggregator state.
 
@@ -180,8 +183,11 @@ class HealingOutcomeIntakeAdapter:
             Immutable intake record with deterministically sorted snapshot
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeIntakeAdapter.build_record")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeIntakeAdapter.build_record"
+        )
 
         snapshot_tuple = aggregator.snapshot()
         proposal = aggregator.build_proposal()
@@ -204,7 +210,9 @@ class HealingOutcomeIntakeAdapter:
         self._store.write(record)
 
     def get_recent_records(
-        self, window_start_utc: int, window_end_utc: int,
+        self,
+        window_start_utc: int,
+        window_end_utc: int,
     ) -> list[HealingOutcomeIntakeRecord]:
         """Return records whose created_utc falls within [window_start_utc, window_end_utc].
 

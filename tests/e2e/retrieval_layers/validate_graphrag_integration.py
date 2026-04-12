@@ -30,6 +30,7 @@ def validate_imports() -> dict[str, bool]:
             ADGEdgeExtractor,
             GraphAwareIndexer,
         )
+
         results["pipeline_b.graph_aware_indexer"] = True
     except ImportError as e:
         results["pipeline_b.graph_aware_indexer"] = False
@@ -42,6 +43,7 @@ def validate_imports() -> dict[str, bool]:
             GraphRetrievalContext,
             GraphRetrievalEngine,
         )
+
         results["pipeline_c.l4e_retrieval"] = True
     except ImportError as e:
         results["pipeline_c.l4e_retrieval"] = False
@@ -55,6 +57,7 @@ def validate_imports() -> dict[str, bool]:
             EvaluationRunner,
             FeedbackTrigger,
         )
+
         results["pipeline_d.meta_learning"] = True
     except ImportError as e:
         results["pipeline_d.meta_learning"] = False
@@ -66,6 +69,7 @@ def validate_imports() -> dict[str, bool]:
             ADGQueryClient,
             GraphRAGADGIntegration,
         )
+
         results["adg_integration"] = True
     except ImportError as e:
         results["adg_integration"] = False
@@ -79,6 +83,7 @@ def validate_imports() -> dict[str, bool]:
             ParentChildIndexRegistry,
             ParentChildLink,
         )
+
         results["l4_registries"] = True
     except ImportError as e:
         results["l4_registries"] = False
@@ -91,6 +96,7 @@ def validate_imports() -> dict[str, bool]:
             L4ERetrievalIntegrator,
             ParentChildExpander,
         )
+
         results["parent_child_expansion"] = True
     except ImportError as e:
         results["parent_child_expansion"] = False
@@ -116,6 +122,7 @@ def validate_lifecycle_contracts() -> dict[str, bool]:
             _emit_updates_routing_strategy,
             _emit_writes_through,
         )
+
         results["lifecycle_contracts"] = True
     except ImportError as e:
         results["lifecycle_contracts"] = False
@@ -183,6 +190,7 @@ def validate_pipeline_c_functionality() -> dict[str, bool]:
 
         # Mock L4E registry
         from unittest.mock import MagicMock
+
         mock_l4e = MagicMock()
         mock_l4e.get_parents.return_value = []
         mock_l4e.get_children.return_value = []

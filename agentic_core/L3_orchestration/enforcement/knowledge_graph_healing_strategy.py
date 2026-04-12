@@ -68,7 +68,9 @@ class KnowledgeGraphHealingStrategy:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "KnowledgeGraphHealingStrategy.diagnose",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "KnowledgeGraphHealingStrategy.diagnose",
         )
 
         fixes: Any = []
@@ -231,7 +233,7 @@ class KnowledgeGraphHealingStrategy:
                                 "confidence": 0.85,
                             },
                         )
-            except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
                 for match in re.finditer("(?m)^class (\\w+)", text):
                     entities.append(
                         {
@@ -291,7 +293,9 @@ class KnowledgeGraphHealingStrategy:
                 )
             for rel in relations:
                 self._bridge.create_relation(
-                    from_entity=rel["from"], to_entity=rel["to"], relation_type=rel["relationType"],
+                    from_entity=rel["from"],
+                    to_entity=rel["to"],
+                    relation_type=rel["relationType"],
                 )
             Logger.info(
                 f"[L0 KG HEALING] Persistence complete for {source_id}: {len(entities)} entities, {len(relations)} relations",

@@ -24,6 +24,7 @@ import pytest
 # Lazy import fixtures - avoid collection-time import errors
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture(scope="session")
 def graphrag_indexer_imports():
     from agentic_core.L3_orchestration.reasoning.engines.graph_aware_indexer import (
@@ -33,6 +34,7 @@ def graphrag_indexer_imports():
         get_global_indexer,
         index_document,
     )
+
     return {
         "GraphAwareIndexer": GraphAwareIndexer,
         "ADGEdgeExtractor": ADGEdgeExtractor,
@@ -48,6 +50,7 @@ def chunk_registry_imports():
         ChunkManifestRegistry,
         EnrichedChunkManifest,
     )
+
     return {
         "ChunkManifestRegistry": ChunkManifestRegistry,
         "EnrichedChunkManifest": EnrichedChunkManifest,
@@ -63,6 +66,7 @@ def l4_registries_imports():
         ParentChildIndexRegistry,
         ParentChildLink,
     )
+
     return {
         "InMemoryChunkRegistry": InMemoryChunkRegistry,
         "ParentChildIndexRegistry": ParentChildIndexRegistry,
@@ -80,6 +84,7 @@ def retrieval_integration_imports():
         get_global_engine,
         search,
     )
+
     return {
         "GraphRetrievalEngine": GraphRetrievalEngine,
         "ADGEdgeHydrator": ADGEdgeHydrator,
@@ -97,6 +102,7 @@ def parent_child_imports():
         L4ERetrievalIntegrator,
         ParentChildExpander,
     )
+
     return {
         "ParentChildExpander": ParentChildExpander,
         "L4ERetrievalIntegrator": L4ERetrievalIntegrator,
@@ -115,6 +121,7 @@ def meta_learning_imports():
         FeedbackTrigger,
         get_global_proposer,
     )
+
     return {
         "CompletenessRAGProposer": CompletenessRAGProposer,
         "EvaluationRunner": EvaluationRunner,
@@ -129,6 +136,7 @@ def meta_learning_imports():
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def temp_dir(tmp_path: Path) -> Path:
@@ -206,16 +214,15 @@ def sample_adg_edges(graphrag_indexer_imports) -> Any:
 def sample_embeddings() -> list[list[float]]:
     """Provide sample embeddings for chunks."""
     import random
+
     random.seed(42)
-    return [
-        [random.uniform(-1, 1) for _ in range(768)]
-        for _ in range(3)
-    ]
+    return [[random.uniform(-1, 1) for _ in range(768)] for _ in range(3)]
 
 
 # =============================================================================
 # Test Class: Pipeline B - Graph Ingestion & Indexing
 # =============================================================================
+
 
 @pytest.mark.timeout(120)
 class TestPipelineBGraphIngestion:
@@ -354,6 +361,7 @@ class TestPipelineBGraphIngestion:
 # =============================================================================
 # Test Class: Pipeline C - Inference & Graph Hydration
 # =============================================================================
+
 
 @pytest.mark.timeout(120)
 class TestPipelineCGraphHydration:
@@ -501,6 +509,7 @@ class TestPipelineCGraphHydration:
 # Test Class: Pipeline D - Meta-Learning Feedback
 # =============================================================================
 
+
 @pytest.mark.timeout(120)
 class TestPipelineDMetaLearning:
     """End-to-end tests for Pipeline D: Meta-Learning Feedback.
@@ -609,6 +618,7 @@ class TestPipelineDMetaLearning:
 # Test Class: Integration - Full Pipeline Flow
 # =============================================================================
 
+
 @pytest.mark.timeout(300)
 class TestFullPipelineIntegration:
     """Integration tests covering full Pipeline B to C to D flow.
@@ -675,13 +685,15 @@ class TestFullPipelineIntegration:
             )
         query_batch = []
         for i in range(5):
-            query_batch.append({
-                "query": f"test query {i}",
-                "retrieved_chunks": ["chunk_1"] if i < 3 else ["chunk_1", "chunk_2"],
-                "relevant_chunks": ["chunk_1", "chunk_2", "chunk_3"],
-                "groundedness_scores": [0.4] if i < 3 else [0.8, 0.7],
-                "contexts": [],
-            })
+            query_batch.append(
+                {
+                    "query": f"test query {i}",
+                    "retrieved_chunks": ["chunk_1"] if i < 3 else ["chunk_1", "chunk_2"],
+                    "relevant_chunks": ["chunk_1", "chunk_2", "chunk_3"],
+                    "groundedness_scores": [0.4] if i < 3 else [0.8, 0.7],
+                    "contexts": [],
+                }
+            )
         change_package = proposer.analyze_and_propose(query_batch)
         assert change_package.query_count == 5
         assert change_package.aggregate_metrics is not None
@@ -729,6 +741,7 @@ class TestFullPipelineIntegration:
 # =============================================================================
 # Test Utilities
 # =============================================================================
+
 
 def test_global_instances(
     graphrag_indexer_imports,

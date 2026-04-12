@@ -190,8 +190,11 @@ class OfflineHealingOutcomeEvaluator:
             Deterministic scoring report with sorted recommendations
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OfflineHealingOutcomeEvaluator.evaluate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OfflineHealingOutcomeEvaluator.evaluate"
+        )
 
         # Compute aggregate success rate from intake snapshot
         total_success = sum(stat.success_count for stat in intake.snapshot)

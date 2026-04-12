@@ -46,6 +46,7 @@ class ADGEdgeBinding:
     Represents the reads_from and writes_to edges from ADG
     that are bound to a document chunk during ingestion.
     """
+
     chunk_id: str
     source_file: str
     reads_from: list[str] = field(default_factory=list)  # Source entities
@@ -65,6 +66,7 @@ class ADGEdgeBinding:
 @dataclass
 class GraphEnrichmentContext:
     """Context for graph-aware enrichment during ingestion."""
+
     doc_id: str
     source_path: str
     adg_edges: ADGEdgeBinding
@@ -145,7 +147,9 @@ class GraphAwareIndexer:
                 "chunks_indexed": 0,
                 "manifests_created": [],
                 "parent_child_links": [],
-                "adg_edges_bound": (adg_edges or ADGEdgeBinding(chunk_id=f"{doc_id}_doc", source_file=source_path)).to_dict(),
+                "adg_edges_bound": (
+                    adg_edges or ADGEdgeBinding(chunk_id=f"{doc_id}_doc", source_file=source_path)
+                ).to_dict(),
             }
 
         # Validate embeddings length matches chunks
@@ -158,7 +162,9 @@ class GraphAwareIndexer:
 
         _trace_id = f"graph_index_{doc_id}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "GraphAwareIndexer.index_document",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "GraphAwareIndexer.index_document",
         )
 
         results = {
@@ -233,7 +239,9 @@ class GraphAwareIndexer:
         results["adg_edges_bound"] = edges.to_dict()
 
         _emit_records_learning_event(
-            _trace_id, "document_indexed", f"chunks:{results['chunks_indexed']}",
+            _trace_id,
+            "document_indexed",
+            f"chunks:{results['chunks_indexed']}",
         )
 
         Logger.info(f"Indexed document {doc_id}: {results['chunks_indexed']} chunks")
@@ -291,7 +299,9 @@ class GraphAwareIndexer:
                 enrichment_source = "semantic_enricher"
                 Logger.debug(f"Enriched chunk {chunk_id} via SemanticEnricher")
             else:
-                Logger.warning(f"Semantic enrichment produced empty fields for chunk {chunk_id}; using metadata fallback")
+                Logger.warning(
+                    f"Semantic enrichment produced empty fields for chunk {chunk_id}; using metadata fallback"
+                )
         except Exception as e:
             Logger.warning(f"Semantic enrichment failed for chunk {chunk_id}: {e}; using metadata fallback")
 
@@ -341,14 +351,16 @@ class GraphAwareIndexer:
                 ids=[manifest.chunk_id],
                 embeddings=[manifest.fact_vec],
                 documents=[manifest.raw_content],
-                metadatas=[{
-                    "doc_id": manifest.doc_id,
-                    "source_file": manifest.source_file,
-                    "chunk_index": manifest.chunk_index,
-                    "title": manifest.title,
-                    "key_concepts": json.dumps(manifest.key_concepts),
-                    "adg_edges": json.dumps(manifest.adg_edges),
-                }],
+                metadatas=[
+                    {
+                        "doc_id": manifest.doc_id,
+                        "source_file": manifest.source_file,
+                        "chunk_index": manifest.chunk_index,
+                        "title": manifest.title,
+                        "key_concepts": json.dumps(manifest.key_concepts),
+                        "adg_edges": json.dumps(manifest.adg_edges),
+                    }
+                ],
             )
             return True
         except (ValueError, TypeError) as e:

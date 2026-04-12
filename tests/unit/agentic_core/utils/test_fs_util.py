@@ -1,4 +1,5 @@
 """Foundational behavioral tests for agentic_core/utils/fs_util.py."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -7,6 +8,7 @@ from pathlib import Path
 def test_module_importable():
     """Module fs_util must be importable."""
     from agentic_core.utils import fs_util
+
     assert fs_util is not None
 
 
@@ -34,6 +36,7 @@ def test_get_python_files_fast_edge_case():
     import tempfile
 
     from agentic_core.utils import fs_util
+
     with tempfile.TemporaryDirectory() as tmpdir:
         files = list(fs_util.get_python_files_fast(Path(tmpdir), exclude_dirs=[]))
         assert len(files) == 0

@@ -24,6 +24,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 class TestScriptsGatePatterns:
     """Tests for scripts gate pattern matching."""
 

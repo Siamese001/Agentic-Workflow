@@ -37,7 +37,9 @@ def main() -> int:
 
         # Get test selection from ADG
         selector_cmd = [
-            sys.executable, "-m", "tools.adg.adg_test_selector",
+            sys.executable,
+            "-m",
+            "tools.adg.adg_test_selector",
             "--from-diff",
         ]
 
@@ -67,8 +69,11 @@ def main() -> int:
 
     # Build pytest command
     pytest_cmd = [
-        sys.executable, "-m", "pytest",
-        "-c", str(PYTEST_FAST_INI),
+        sys.executable,
+        "-m",
+        "pytest",
+        "-c",
+        str(PYTEST_FAST_INI),
     ]
 
     # Add verbosity if requested

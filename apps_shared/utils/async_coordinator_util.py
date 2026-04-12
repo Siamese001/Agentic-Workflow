@@ -218,6 +218,7 @@ class AsyncCoordinator:
     async def start(self) -> None:
         """Start the coordinator and cleanup task."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AsyncCoordinator.start")
 
@@ -473,7 +474,10 @@ class AsyncCoordinator:
 
     @asynccontextmanager
     async def managed_task(
-        self, coro: Awaitable, timeout: float | None = None, cleanup_callback: Callable | None = None,
+        self,
+        coro: Awaitable,
+        timeout: float | None = None,
+        cleanup_callback: Callable | None = None,
     ):
         """Context manager for a managed task.
 
@@ -524,7 +528,9 @@ async def shutdown_all_coordinators() -> None:
 
 
 def managed(
-    coordinator_name: str = "default", timeout: float | None = None, cleanup_callback: Callable | None = None,
+    coordinator_name: str = "default",
+    timeout: float | None = None,
+    cleanup_callback: Callable | None = None,
 ):
     """Decorator to run functions in a managed async context.
 
@@ -541,7 +547,9 @@ def managed(
         async def wrapper(*args, **kwargs):
             coordinator = await get_coordinator(coordinator_name)
             async with coordinator.managed_task(
-                func(*args, **kwargs), timeout=timeout, cleanup_callback=cleanup_callback,
+                func(*args, **kwargs),
+                timeout=timeout,
+                cleanup_callback=cleanup_callback,
             ) as task_id:
                 return await coordinator.wait_for_task(task_id)
 
@@ -551,7 +559,9 @@ def managed(
 
 
 async def safe_wait_for(
-    coro: Awaitable, timeout: float, coordinator_name: str = "timeout_coordinator",
+    coro: Awaitable,
+    timeout: float,
+    coordinator_name: str = "timeout_coordinator",
 ) -> Any:
     """Wait for a coroutine with timeout, preventing orphaned tasks.
 

@@ -42,13 +42,23 @@ class ResearchRenderer:
             lines.extend(["## Sections", ""])
             for section in result.sections:
                 lines.extend([f"### {section.heading}", "", section.body, ""])
-                lines.append(f"*Word count: {section.word_count} | Sources: {len(section.sources)} | Claim: {section.claim_type}*")
+                lines.append(
+                    f"*Word count: {section.word_count} | Sources: {len(section.sources)} | Claim: {section.claim_type}*"
+                )
                 lines.append("")
 
         if result.source_register:
             lines.extend(["## Source Register", ""])
             for source in result.source_register:
-                lines.extend([f"### {source.title}", f"**Confidence:** {source.confidence:.0%}", f"**Type:** {source.claim_type}", f"**URL:** {source.url}", ""])
+                lines.extend(
+                    [
+                        f"### {source.title}",
+                        f"**Confidence:** {source.confidence:.0%}",
+                        f"**Type:** {source.claim_type}",
+                        f"**URL:** {source.url}",
+                        "",
+                    ]
+                )
 
         if result.comparison_matrix:
             lines.extend(["## Comparison Matrix", ""])
@@ -127,7 +137,14 @@ class ResearchSummaryRenderer:
         if summary.error:
             lines.extend(["## Error", "", f"```\n{summary.error}\n```", ""])
 
-        lines.extend(["## Provenance", "", f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```", ""])
+        lines.extend(
+            [
+                "## Provenance",
+                "",
+                f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 

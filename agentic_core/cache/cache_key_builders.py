@@ -95,7 +95,11 @@ def build_cap_registry_key(cap_registry_hash: str) -> str:
 
 
 def build_compiled_prompt_key(
-    prompt_bom_hash: str, s0_hash: str, i0_hash: str, d0_hash: str, c0_hash: str,
+    prompt_bom_hash: str,
+    s0_hash: str,
+    i0_hash: str,
+    d0_hash: str,
+    c0_hash: str,
 ) -> str:
     """Key for a ``CompiledPromptArtifact`` (final assembled strings + token
     estimate + allowed tool schema + signature).
@@ -196,7 +200,11 @@ def build_tool_result_key(tool_call_hash: str) -> str:
 
 
 def build_rag_topk_key(
-    u0_hash: str, embedder_version: str, seed_pack_manifest_hash: str, k: int, cutoff: float,
+    u0_hash: str,
+    embedder_version: str,
+    seed_pack_manifest_hash: str,
+    k: int,
+    cutoff: float,
 ) -> str:
     """Key for a top-k retrieval result set (C0 informational payload only).
 
@@ -329,6 +337,39 @@ def build_agent_performance_key(agent_id: str, route_hash: str, policy_hash: str
     _require_hash_segment("route_hash", route_hash)
     _require_hash_segment("policy_hash", policy_hash)
     return f"agent_perf:{agent_id}:{route_hash}:{policy_hash}"
+
+
+def build_semantic_cache_d2_key(
+    tenant_id: str,
+    namespace: str,
+    embedding_model_id: str,
+    corpus_version: str,
+    query_hash: str,
+) -> str:
+    """Deterministic composite key for the D2 semantic-cache gate entry.
+
+    Schema::
+        d2_scache:{tenant_id}:{namespace}:{embedding_model_id}:{corpus_version}:{query_hash}
+
+    Segments:
+        tenant_id          — verified tenant/workspace scope (non-empty slug, no colons)
+        namespace          — logical domain within the tenant (non-empty slug)
+        embedding_model_id — embedding model version slug (e.g. ``bge-m3-v1``)
+        corpus_version     — SHA-256 of the active knowledge corpus manifest
+        query_hash         — SHA-256 of the normalised query text
+
+    All segments are validated at construction time.  Identical inputs always
+    produce identical keys (no wall-clock, no random nonce).
+
+    NOTE: Not yet wired to any callers (Phase A stub — wired in Phase B).
+    """
+    _require_safe_segment("tenant_id", tenant_id)
+    _require_safe_segment("namespace", namespace)
+    _require_safe_segment("embedding_model_id", embedding_model_id)
+    _require_hash_segment("corpus_version", corpus_version)
+    _require_hash_segment("query_hash", query_hash)
+    return f"d2_scache:{tenant_id}:{namespace}:{embedding_model_id}:{corpus_version}:{query_hash}"
+
 
 _emit_reads_through("l4", "cache_key_builders", "urg_read_1")
 _emit_reads_through("l4", "cache_key_builders", "urg_read_2")

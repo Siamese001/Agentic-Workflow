@@ -77,7 +77,9 @@ class DomainContextManager:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(
-            str(_uuid.uuid4()), "DomainContextManager._initialize_default_contexts", "state_snapshot",
+            str(_uuid.uuid4()),
+            "DomainContextManager._initialize_default_contexts",
+            "state_snapshot",
         )
         import hashlib as _hashlib  # noqa: PLC0415
         import uuid as _uuid  # noqa: PLC0415
@@ -87,7 +89,9 @@ class DomainContextManager:
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "DomainContextManager._initialize_default_contexts", "p0_governance",
+            str(_uuid.uuid4()),
+            "DomainContextManager._initialize_default_contexts",
+            "p0_governance",
         )
         # agentic_core is the root domain
         self._contexts[AGENTIC_CORE_DIR] = DomainContext(
@@ -131,7 +135,9 @@ class DomainContextManager:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "DomainContextManager.get_context",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "DomainContextManager.get_context",
         )
 
         self.stats["context_lookups"] += 1

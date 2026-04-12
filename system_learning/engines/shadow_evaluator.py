@@ -13,6 +13,7 @@ from typing import Any
 
 class DivergenceType(Enum):
     """Types of execution divergence."""
+
     OUTPUT_MISMATCH = auto()
     TIMING_DRIFT = auto()
     STATE_CORRUPTION = auto()
@@ -22,6 +23,7 @@ class DivergenceType(Enum):
 
 class AnomalySignal(Enum):
     """Anomaly aggregation signals."""
+
     PROMOTE = auto()
     DEMOTE = auto()
     INVESTIGATE = auto()
@@ -31,6 +33,7 @@ class AnomalySignal(Enum):
 @dataclass
 class Divergence:
     """Detected divergence between expected and actual."""
+
     divergence_type: DivergenceType
     severity: float
     expected: Any
@@ -42,6 +45,7 @@ class Divergence:
 @dataclass
 class AggregatedSignal:
     """Aggregated anomaly signal."""
+
     signal: AnomalySignal
     burst_count: int
     confidence: float
@@ -69,14 +73,16 @@ class ShadowEvaluator:
 
         # Check output mismatch
         if expected.get("output") != actual.get("output"):
-            divergences.append(Divergence(
-                divergence_type=DivergenceType.OUTPUT_MISMATCH,
-                severity=0.8,
-                expected=expected.get("output"),
-                actual=actual.get("output"),
-                root_cause_tags=["output_diff", "logic_error"],
-                trace_id=trace_id,
-            ))
+            divergences.append(
+                Divergence(
+                    divergence_type=DivergenceType.OUTPUT_MISMATCH,
+                    severity=0.8,
+                    expected=expected.get("output"),
+                    actual=actual.get("output"),
+                    root_cause_tags=["output_diff", "logic_error"],
+                    trace_id=trace_id,
+                )
+            )
 
         # Check timing drift
         expected_time = expected.get("execution_time", 0)
@@ -84,25 +90,29 @@ class ShadowEvaluator:
         if expected_time > 0:
             drift = abs(actual_time - expected_time) / expected_time
             if drift > 0.2:  # 20% threshold
-                divergences.append(Divergence(
-                    divergence_type=DivergenceType.TIMING_DRIFT,
-                    severity=min(1.0, drift),
-                    expected=expected_time,
-                    actual=actual_time,
-                    root_cause_tags=["performance_drift", "resource_contention"],
-                    trace_id=trace_id,
-                ))
+                divergences.append(
+                    Divergence(
+                        divergence_type=DivergenceType.TIMING_DRIFT,
+                        severity=min(1.0, drift),
+                        expected=expected_time,
+                        actual=actual_time,
+                        root_cause_tags=["performance_drift", "resource_contention"],
+                        trace_id=trace_id,
+                    )
+                )
 
         # Check determinism
         if actual.get("determinism_digest") != expected.get("determinism_digest"):
-            divergences.append(Divergence(
-                divergence_type=DivergenceType.DETERMINISM_FAILURE,
-                severity=1.0,
-                expected=expected.get("determinism_digest"),
-                actual=actual.get("determinism_digest"),
-                root_cause_tags=["nondeterminism", "entropy_leak", "clock_drift"],
-                trace_id=trace_id,
-            ))
+            divergences.append(
+                Divergence(
+                    divergence_type=DivergenceType.DETERMINISM_FAILURE,
+                    severity=1.0,
+                    expected=expected.get("determinism_digest"),
+                    actual=actual.get("determinism_digest"),
+                    root_cause_tags=["nondeterminism", "entropy_leak", "clock_drift"],
+                    trace_id=trace_id,
+                )
+            )
 
         self._divergences.extend(divergences)
         return divergences

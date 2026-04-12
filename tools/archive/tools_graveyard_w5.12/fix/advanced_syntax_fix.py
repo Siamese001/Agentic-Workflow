@@ -17,12 +17,12 @@ class AdvancedSyntaxFixer:
         self.repo_root = repo_root
         self.tests_dir = repo_root / "tests"
         self.stats = {
-            'total_files': 0,
-            'syntax_errors_fixed': 0,
-            'legacy_comments_removed': 0,
-            'imports_moved_to_functions': 0,
-            'unmatched_parens_removed': 0,
-            'files_with_errors': 0,
+            "total_files": 0,
+            "syntax_errors_fixed": 0,
+            "legacy_comments_removed": 0,
+            "imports_moved_to_functions": 0,
+            "unmatched_parens_removed": 0,
+            "files_with_errors": 0,
         }
         self.failed_files: list[tuple[str, str]] = []
 
@@ -42,16 +42,16 @@ class AdvancedSyntaxFixer:
         print(f"Found {len(active_test_files)} active test files to check...")
 
         for test_file in active_test_files:
-            self.stats['total_files'] += 1
+            self.stats["total_files"] += 1
             if self.fix_file(test_file):
-                self.stats['files_with_errors'] += 1
+                self.stats["files_with_errors"] += 1
 
         return self.stats
 
     def fix_file(self, file_path: pathlib.Path) -> bool:
         """Fix syntax errors in a single file using advanced techniques."""
         try:
-            original_content = file_path.read_text(encoding='utf-8')
+            original_content = file_path.read_text(encoding="utf-8")
         except Exception as e:
             self.failed_files.append((str(file_path), f"Read error: {e}"))
             return False
@@ -70,8 +70,8 @@ class AdvancedSyntaxFixer:
         try:
             ast.parse(fixed_content)
             # If successful, write back
-            file_path.write_text(fixed_content, encoding='utf-8')
-            self.stats['syntax_errors_fixed'] += 1
+            file_path.write_text(fixed_content, encoding="utf-8")
+            self.stats["syntax_errors_fixed"] += 1
             return True
         except SyntaxError as e:
             self.failed_files.append((str(file_path), f"Syntax error after fix: {e}"))
@@ -97,23 +97,23 @@ class AdvancedSyntaxFixer:
                 continue
 
             # Remove legacy comment lines
-            if re.match(r'^\s*#\s*#\s*MOVED:.*$', line):
-                self.stats['legacy_comments_removed'] += 1
+            if re.match(r"^\s*#\s*#\s*MOVED:.*$", line):
+                self.stats["legacy_comments_removed"] += 1
                 i += 1
                 continue
 
             # Remove lines that are just closing parentheses
-            if re.match(r'^\s*\)\s*$', line):
-                self.stats['unmatched_parens_removed'] += 1
+            if re.match(r"^\s*\)\s*$", line):
+                self.stats["unmatched_parens_removed"] += 1
                 i += 1
                 continue
 
             # Check for orphaned import lines (imports at module level that should be in functions)
-            if (stripped.startswith(('from ', 'import ')) and
-                any(prefix in stripped for prefix in ['agentic_core', 'apps_', 'system_learning'])):
-
+            if stripped.startswith(("from ", "import ")) and any(
+                prefix in stripped for prefix in ["agentic_core", "apps_", "system_learning"]
+            ):
                 # If this import is at module level (no indentation), collect it
-                if not line.startswith(' ') and not line.startswith('\t'):
+                if not line.startswith(" ") and not line.startswith("\t"):
                     orphaned_imports.append(stripped)
                     i += 1
                     continue
@@ -129,7 +129,7 @@ class AdvancedSyntaxFixer:
         if orphaned_imports:
             fixed_lines = self._move_imports_to_first_test_function(fixed_lines, orphaned_imports)
 
-        return '\n'.join(fixed_lines)
+        return "\n".join(fixed_lines)
 
     def _move_imports_to_first_test_function(self, lines: list[str], imports: list[str]) -> list[str]:
         """Move orphaned imports to the first test function."""
@@ -138,14 +138,14 @@ class AdvancedSyntaxFixer:
 
         for i, line in enumerate(lines):
             # Check if this is the start of a test function
-            if re.match(r'^\s*def\s+test_\w+', line):
+            if re.match(r"^\s*def\s+test_\w+", line):
                 # Add the imports before this function
                 if not imports_moved:
                     # Add imports with proper indentation
-                    indent_match = re.match(r'^(\s*)def\s+test_\w+', line)
+                    indent_match = re.match(r"^(\s*)def\s+test_\w+", line)
                     if indent_match:
                         base_indent = indent_match.group(1)
-                        import_indent = base_indent + '    '
+                        import_indent = base_indent + "    "
 
                         for import_line in imports:
                             result_lines.append(f"{import_indent}{import_line}")
@@ -153,7 +153,7 @@ class AdvancedSyntaxFixer:
                         # Add blank line after imports
                         result_lines.append("")
                         imports_moved = True
-                        self.stats['imports_moved_to_functions'] += 1
+                        self.stats["imports_moved_to_functions"] += 1
 
             result_lines.append(line)
 
@@ -165,9 +165,9 @@ class AdvancedSyntaxFixer:
 
     def print_summary(self):
         """Print fixing summary."""
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("ADVANCED SYNTAX FIX SUMMARY")
-        print("="*60)
+        print("=" * 60)
         print(f"Total files checked: {self.stats['total_files']}")
         print(f"Files with errors fixed: {self.stats['files_with_errors']}")
         print(f"Syntax errors fixed: {self.stats['syntax_errors_fixed']}")
@@ -183,7 +183,7 @@ class AdvancedSyntaxFixer:
             if len(self.failed_files) > 10:
                 print(f"  ... and {len(self.failed_files) - 10} more")
 
-        print("="*60)
+        print("=" * 60)
 
 
 def main():
@@ -210,7 +210,7 @@ def main():
 
     for test_file in active_test_files:
         try:
-            content = test_file.read_text(encoding='utf-8')
+            content = test_file.read_text(encoding="utf-8")
             ast.parse(content)
         except SyntaxError:
             syntax_errors += 1

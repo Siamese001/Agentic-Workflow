@@ -82,7 +82,9 @@ def main():
 
     parser = argparse.ArgumentParser(description="Fix encoding issues in plan files")
     parser.add_argument(
-        "--dry-run", action="store_true", help="Show what would be fixed without making changes",
+        "--dry-run",
+        action="store_true",
+        help="Show what would be fixed without making changes",
     )
     parser.add_argument("--execute", action="store_true", help="Actually fix the encoding issues")
     args = parser.parse_args()

@@ -199,8 +199,11 @@ class SystemEvaluationSummary:
     def from_report(cls, report: EvaluationReport) -> SystemEvaluationSummary:
         """Build summary from aggregate scores in an EvaluationReport."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SystemEvaluationSummary.from_report")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemEvaluationSummary.from_report"
+        )
 
         scores = report.aggregate_scores
         return cls(
@@ -244,12 +247,18 @@ class ComparativeEvaluationSummary:
 
     @classmethod
     def from_delta_report(
-        cls, delta: DeltaReport, baseline_version: str, candidate_version: str,
+        cls,
+        delta: DeltaReport,
+        baseline_version: str,
+        candidate_version: str,
     ) -> ComparativeEvaluationSummary:
         """Build comparative summary from a DeltaReport."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ComparativeEvaluationSummary.from_delta_report")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ComparativeEvaluationSummary.from_delta_report"
+        )
 
         improvements = {k: v for k, v in delta.metric_deltas.items() if v > 0}
         regressions = {k: v for k, v in delta.metric_deltas.items() if v < 0}

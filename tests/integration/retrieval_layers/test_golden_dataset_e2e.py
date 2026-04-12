@@ -56,8 +56,7 @@ class TestEndToEndGoldenEvaluation:
         # Use an actual test case from the dataset
         query = "Find the current weather in San Francisco"
         actual_output = (
-            "The current weather in San Francisco shows a temperature of 72°F "
-            "with partly cloudy conditions."
+            "The current weather in San Francisco shows a temperature of 72°F with partly cloudy conditions."
         )
 
         future = integration.evaluate_query_async(query, actual_output)

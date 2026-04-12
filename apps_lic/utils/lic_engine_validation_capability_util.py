@@ -214,8 +214,11 @@ class LICEngineValidationCapability:
             The list of issues (empty on pass).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICEngineValidationCapability.run_validation")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LICEngineValidationCapability.run_validation"
+        )
 
         agent_name = getattr(self, "name", self.__class__.__name__)
         if not self.SIGNAL_NAME:

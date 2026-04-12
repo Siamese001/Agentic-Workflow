@@ -16,14 +16,17 @@ class TestSummaryAdg:
     def test_summary_adg_imports(self):
         """Test summary_adg module imports."""
         from agentic_core import summary_adg
+
         assert summary_adg is not None
 
     def test_summary_adg_class(self):
         """Test SummaryAdg class exists."""
         from agentic_core import SummaryAdg
+
         assert SummaryAdg is not None
 
     def test_summary_adg_callable(self):
         """Test summary_adg functions are callable."""
         from agentic_core import validate_summary_adg
+
         assert callable(validate_summary_adg)

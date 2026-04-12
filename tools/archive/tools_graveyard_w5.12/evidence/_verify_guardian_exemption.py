@@ -1,4 +1,5 @@
 """Verify guardian exemption logic against existing ADG snapshot."""
+
 import sqlite3
 from pathlib import Path
 
@@ -19,7 +20,7 @@ for source_file, line_no in violation_rows:
         src_path = ROOT / source_file
         if src_path.exists() and line_no and line_no > 0:
             lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
-            check_lines = lines[max(0, line_no - 2):line_no]
+            check_lines = lines[max(0, line_no - 2) : line_no]
             exempted = any("guardian: allow-layer-violation" in ln for ln in check_lines)
             if not exempted:
                 unapproved.append((source_file, line_no))

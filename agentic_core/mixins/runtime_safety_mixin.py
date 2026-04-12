@@ -92,6 +92,7 @@ def _get_process_guardrail():
 
     return ProcessGuard, SecurityViolation
 
+
 try:
     from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
         safe_communicate,
@@ -109,6 +110,8 @@ except ImportError:
 
     def safe_run(*args, **kwargs):
         return None
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -281,8 +284,11 @@ class RuntimeSafetyMixin:
             Dict with 'terminated' and 'failed' PID lists.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyMixin.cleanup_processes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RuntimeSafetyMixin.cleanup_processes"
+        )
 
         result = self._process_guard.cleanup()
         if result["terminated"]:

@@ -1,10 +1,12 @@
 """Execution interfaces - Stub implementation for test compatibility."""
+
 from enum import Enum
 from typing import Any
 
 
 class ExecutionStatus(Enum):
     """Execution status."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"

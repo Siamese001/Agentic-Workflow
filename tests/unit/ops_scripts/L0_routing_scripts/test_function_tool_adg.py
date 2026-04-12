@@ -31,5 +31,5 @@ class GeneratedTest(unittest.TestCase):
         self.assertIsNotNone(tool_registry)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

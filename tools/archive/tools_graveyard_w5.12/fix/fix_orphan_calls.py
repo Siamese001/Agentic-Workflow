@@ -6,6 +6,7 @@ This happens when:
 
 Fix: add standalone import lines right before each orphan call line.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -26,8 +27,12 @@ EMIT_FUNCS = {
 }
 
 SKIP_PATTERNS = {
-    "_constants.py", "conftest.py", "structure_blueprint_config.py",
-    "ssot_tier_constants.py", "path_constants.py", "lifecycle_trace_contract.py",
+    "_constants.py",
+    "conftest.py",
+    "structure_blueprint_config.py",
+    "ssot_tier_constants.py",
+    "path_constants.py",
+    "lifecycle_trace_contract.py",
 }
 
 
@@ -103,9 +108,12 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
 def main():
     # Scan all py files that have been recently modified (in git diff)
     import subprocess
+
     result = subprocess.run(
         ["git", "diff", "--name-only"],
-        cwd=str(PROJECT_ROOT), capture_output=True, text=True,
+        cwd=str(PROJECT_ROOT),
+        capture_output=True,
+        text=True,
     )
     changed = [l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")]
 

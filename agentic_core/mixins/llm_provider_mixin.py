@@ -185,8 +185,11 @@ class LLMProviderMixin:
     def llm_gateway(self) -> SovereignLLMGateway:
         """Lazy-load LLM gateway singleton."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LLMProviderMixin.llm_gateway")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "LLMProviderMixin.llm_gateway"
+        )
 
         if self._llm_gateway is None:
             self._llm_gateway = _get_llm_gateway()

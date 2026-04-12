@@ -248,7 +248,9 @@ class SwarmIntelligenceEngine:
         fitness_history = []
 
         # Run optimization iterations
-        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="swarm optim", unit="iter", leave=False):
+        for iteration in tqdm(
+            range(self.swarm_config["max_iterations"]), desc="swarm optim", unit="iter", leave=False
+        ):
             # Update agent positions
             for agent in tqdm(swarm_state.agents.values(), desc="  agents", unit="agent", leave=False):
                 # PSO update equations
@@ -412,7 +414,9 @@ class SwarmIntelligenceEngine:
         """Initialize swarm for optimization."""
         agents = {}
 
-        for i in tqdm(range(self.swarm_config["swarm_size"]), desc="init PSO agents", unit="agent", leave=False):
+        for i in tqdm(
+            range(self.swarm_config["swarm_size"]), desc="init PSO agents", unit="agent", leave=False
+        ):
             position = np.random.uniform(-1, 1, dimensions)
             velocity = np.random.uniform(-0.1, 0.1, dimensions)
 
@@ -450,7 +454,9 @@ class SwarmIntelligenceEngine:
         self, swarm_state: SwarmState, context: ArchitecturalContext
     ) -> SwarmState:
         """Run Particle Swarm Optimization algorithm."""
-        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="PSO iters", unit="iter", leave=False):
+        for iteration in tqdm(
+            range(self.swarm_config["max_iterations"]), desc="PSO iters", unit="iter", leave=False
+        ):
             # Update neighbors
             self._update_neighbors(swarm_state)
 
@@ -496,7 +502,9 @@ class SwarmIntelligenceEngine:
         # Simplified ACO for architectural optimization
         pheromone_trails = np.ones((len(context.target_modules), len(context.target_modules))) * 0.1
 
-        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="ACO iters", unit="iter", leave=False):
+        for iteration in tqdm(
+            range(self.swarm_config["max_iterations"]), desc="ACO iters", unit="iter", leave=False
+        ):
             for agent in tqdm(swarm_state.agents.values(), desc="  ACO agents", unit="agent", leave=False):
                 if agent.role == SwarmRole.EXPLORER:
                     # Ant explores solution space
@@ -521,7 +529,9 @@ class SwarmIntelligenceEngine:
     def _bee_algorithm(self, swarm_state: SwarmState, context: ArchitecturalContext) -> SwarmState:
         """Run Bee Algorithm for task allocation."""
         # Simplified bee algorithm
-        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="bee iters", unit="iter", leave=False):
+        for iteration in tqdm(
+            range(self.swarm_config["max_iterations"]), desc="bee iters", unit="iter", leave=False
+        ):
             # Employed bee phase
             for agent in tqdm(swarm_state.agents.values(), desc="  bee agents", unit="agent", leave=False):
                 if agent.role == SwarmRole.EXPLOITER:
@@ -563,7 +573,9 @@ class SwarmIntelligenceEngine:
 
     def _consensus_algorithm(self, swarm_state: SwarmState, context: ArchitecturalContext) -> SwarmState:
         """Run consensus algorithm for collective decision."""
-        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="consensus iters", unit="iter", leave=False):
+        for iteration in tqdm(
+            range(self.swarm_config["max_iterations"]), desc="consensus iters", unit="iter", leave=False
+        ):
             # Agents share information and move toward consensus
             consensus_position = np.zeros_like(swarm_state.global_best)
 
@@ -593,7 +605,9 @@ class SwarmIntelligenceEngine:
 
     def _adaptive_swarm_algorithm(self, swarm_state: SwarmState, context: ArchitecturalContext) -> SwarmState:
         """Run adaptive swarm algorithm."""
-        for iteration in tqdm(range(self.swarm_config["max_iterations"]), desc="adaptive iters", unit="iter", leave=False):
+        for iteration in tqdm(
+            range(self.swarm_config["max_iterations"]), desc="adaptive iters", unit="iter", leave=False
+        ):
             # Adaptive behavior based on swarm state
             if swarm_state.swarm_diversity > 0.5:
                 # High diversity - explore more
@@ -602,7 +616,9 @@ class SwarmIntelligenceEngine:
                 # Low diversity - exploit more
                 exploration_rate = 0.2
 
-            for agent in tqdm(swarm_state.agents.values(), desc="  adaptive agents", unit="agent", leave=False):
+            for agent in tqdm(
+                swarm_state.agents.values(), desc="  adaptive agents", unit="agent", leave=False
+            ):
                 # Adaptive movement
                 if random.random() < exploration_rate:
                     # Explore

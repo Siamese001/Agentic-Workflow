@@ -232,5 +232,5 @@ class TestL2ExecutionTypes(unittest.TestCase):
         self.assertIn(CanonicalAgentRole.OBSERVER, roles)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -117,6 +117,7 @@ def test_semantic_edge_extraction() -> bool:
     except Exception as e:
         print(f"✗ Semantic edge extraction test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -186,6 +187,7 @@ def test_materializer_with_semantic_edges() -> bool:
     except Exception as e:
         print(f"✗ Materializer with semantic edges test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -238,6 +240,7 @@ def test_snapshot_validation() -> bool:
     except Exception as e:
         print(f"✗ Snapshot validation test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -310,10 +313,19 @@ def test_all_13_edge_types() -> bool:
 
         # Expected edge types (13 semantic types)
         expected_semantic = {
-            "actor", "target", "dependency", "read_edge", "write_edge",
-            "tool_invocation_edge", "orchestration_handoff_edge", "retry_edge",
-            "evaluation_edge", "policy_validation_edge", "human_escalation_edge",
-            "failure_propagation_edge", "outcome_edge",
+            "actor",
+            "target",
+            "dependency",
+            "read_edge",
+            "write_edge",
+            "tool_invocation_edge",
+            "orchestration_handoff_edge",
+            "retry_edge",
+            "evaluation_edge",
+            "policy_validation_edge",
+            "human_escalation_edge",
+            "failure_propagation_edge",
+            "outcome_edge",
         }
 
         # Check which expected types were found
@@ -333,6 +345,7 @@ def test_all_13_edge_types() -> bool:
     except Exception as e:
         print(f"✗ All 13 edge types test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -360,6 +373,7 @@ def test_empty_snapshot_validation() -> bool:
     except Exception as e:
         print(f"✗ Empty snapshot validation test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -401,6 +415,7 @@ def test_hash_consistency_validation() -> bool:
     except Exception as e:
         print(f"✗ Hash consistency test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -429,6 +444,7 @@ def main() -> int:
         except Exception as e:
             print(f"✗ Test crashed: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((name, False))
 

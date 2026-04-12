@@ -227,7 +227,9 @@ class EvaluatorOptimizerEngine:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluatorOptimizerEngine.run",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "EvaluatorOptimizerEngine.run",
         )
 
         content = await self.generator_fn(task, context)

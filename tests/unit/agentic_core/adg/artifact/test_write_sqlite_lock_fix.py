@@ -21,6 +21,7 @@ class TestWriteSqliteLockFix:
 
         # Create minimal NormalizedGraph structure
         from agentic_core.adg.artifact.normalizer import NormalizedGraph
+
         ng_full = NormalizedGraph(
             schema_version="4.0.0",
             commit_sha="abc123",
@@ -51,6 +52,7 @@ class TestWriteSqliteLockFix:
 
         # Create minimal NormalizedGraph structure
         from agentic_core.adg.artifact.normalizer import NormalizedGraph
+
         ng_full = NormalizedGraph(
             schema_version="4.0.0",
             commit_sha="abc123",

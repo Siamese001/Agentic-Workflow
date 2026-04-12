@@ -395,7 +395,9 @@ class WorkflowVisualizationRegistry:
     def persist_record(self, record: WorkflowVisualizationRecord) -> None:
         """Persist a workflow visualization record."""
         _emit_records_execution_trace(
-            record.run_id, LayerSegment.L3_ORCHESTRATION, f"workflow_viz:{record.workflow_id}",
+            record.run_id,
+            LayerSegment.L3_ORCHESTRATION,
+            f"workflow_viz:{record.workflow_id}",
         )
         with self._lock:
             self._records[record.workflow_visualization_id] = record
@@ -479,7 +481,9 @@ class WorkflowVisualizationRegistry:
     def query_by_status(self, status: WorkflowStatus) -> list[WorkflowVisualizationRecord]:
         """Query workflow visualization records by status."""
         _emit_observes_runtime_state(
-            str(uuid.uuid4()), "WorkflowVisualizationRegistry.query_by_status", "L3_ORCHESTRATION",
+            str(uuid.uuid4()),
+            "WorkflowVisualizationRegistry.query_by_status",
+            "L3_ORCHESTRATION",
         )
         with self._lock:
             record_ids = self._status_index.get(status.value, [])

@@ -1,4 +1,5 @@
 """Full scanner violation dump for all buckets."""
+
 from pathlib import Path
 
 from agentic_core.L5_safety.validators.static_checks.system_invariant_scanner import (
@@ -148,12 +149,12 @@ _emit_stores_embedding("p4", "check_scanner_full", "embedding_store")
 _emit_updates_meta_learning_state("p4", "check_scanner_full", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "check_scanner_full", "exec_snapshot_link")
 root = Path(__file__).resolve().parents[2]
-for bucket_rel in [L2_EXECUTION_DIR, L5_SAFETY_DIR, 'tests/sovereign_hardening']:
+for bucket_rel in [L2_EXECUTION_DIR, L5_SAFETY_DIR, "tests/sovereign_hardening"]:
     bucket = (root / bucket_rel).resolve()
     violations = scan_repository_for_bypasses(bucket)
     prefix = str(bucket)
     filtered = [v for v in violations if str(Path(v.file_path).resolve()).startswith(prefix)]
-    py_files = [f for f in bucket.rglob('*.py') if '__pycache__' not in f.parts]
-    print(f'\n=== {bucket_rel}: {len(py_files)} files, {len(filtered)} violations ===')
+    py_files = [f for f in bucket.rglob("*.py") if "__pycache__" not in f.parts]
+    print(f"\n=== {bucket_rel}: {len(py_files)} files, {len(filtered)} violations ===")
     for v in filtered:
-        print(f'  {Path(v.file_path).name}:{v.line} [{v.rule_id}]')
+        print(f"  {Path(v.file_path).name}:{v.line} [{v.rule_id}]")

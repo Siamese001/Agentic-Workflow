@@ -1,6 +1,5 @@
 """Tests for apps_eval service components."""
 
-
 from apps_eval.services.benchmark_runner_service import (
     BenchmarkRunnerService,
 )

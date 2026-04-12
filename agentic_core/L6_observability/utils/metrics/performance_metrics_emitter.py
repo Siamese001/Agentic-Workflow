@@ -269,7 +269,9 @@ class PerformanceMetricsEmitter:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "PerformanceMetricsEmitter.emit",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "PerformanceMetricsEmitter.emit",
         )
 
         sample = MetricSample(
@@ -294,7 +296,11 @@ class PerformanceMetricsEmitter:
         return sample
 
     def record_latency(
-        self, layer: str, module: str, elapsed_ms: float, metadata: dict[str, Any] | None = None,
+        self,
+        layer: str,
+        module: str,
+        elapsed_ms: float,
+        metadata: dict[str, Any] | None = None,
     ) -> MetricSample:
         """Record latency for a module operation.
 
@@ -303,12 +309,20 @@ class PerformanceMetricsEmitter:
         return self.emit(layer, module, MetricKind.LATENCY_MS, elapsed_ms, "ms", metadata)
 
     def record_token_count(
-        self, layer: str, module: str, tokens: int, metadata: dict[str, Any] | None = None,
+        self,
+        layer: str,
+        module: str,
+        tokens: int,
+        metadata: dict[str, Any] | None = None,
     ) -> MetricSample:
         return self.emit(layer, module, MetricKind.TOKEN_COUNT, float(tokens), "tokens", metadata)
 
     def record_quality(
-        self, layer: str, module: str, score: float, metadata: dict[str, Any] | None = None,
+        self,
+        layer: str,
+        module: str,
+        score: float,
+        metadata: dict[str, Any] | None = None,
     ) -> MetricSample:
         """Emit a quality score that feeds back as eval signal.
 

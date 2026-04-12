@@ -1,5 +1,5 @@
-"""ADG-driven tests for thin app-layer __init__.py packages — fan_in batch.
-"""
+"""ADG-driven tests for thin app-layer __init__.py packages — fan_in batch."""
+
 from __future__ import annotations
 
 import importlib
@@ -47,7 +47,6 @@ class TestL4StateUtilsPackage:
 
     def test_package_in_l4(self):
         assert Path("agentic_core/L4_state/utils/__init__.py").exists()
-
 
     def test_utils_modules_discoverable(self):
         assert Path("agentic_core/L4_state/utils").exists()

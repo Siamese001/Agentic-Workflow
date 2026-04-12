@@ -219,7 +219,9 @@ def initialise_coordination_ledger(
     Emits ``observes_runtime_state`` ADG edge.
     """
     _emit_observes_runtime_state(
-        str(uuid.uuid4()), "Module.initialise_coordination_ledger", "L3_ORCHESTRATION",
+        str(uuid.uuid4()),
+        "Module.initialise_coordination_ledger",
+        "L3_ORCHESTRATION",
     )
     ledger = CoordinationLedger(
         run_id=run_id,
@@ -439,7 +441,8 @@ def update_coordination_ledger(
 
 
 def complete_coordination_ledger(
-    run_id: str, final_status: WorkflowStatus = WorkflowStatus.COMPLETED,
+    run_id: str,
+    final_status: WorkflowStatus = WorkflowStatus.COMPLETED,
 ) -> CoordinationLedger:
     """Mark a run's CoordinationLedger as complete.
 

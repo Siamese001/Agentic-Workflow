@@ -221,8 +221,11 @@ class MetaLearningReplayBinding:
     def to_line(self) -> str:
         """Serialise to the canonical ``REPLAY-BINDING: <json>`` log line."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningReplayBinding.to_line")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningReplayBinding.to_line"
+        )
 
         payload = json.dumps(self.to_dict(), separators=(",", ":"), sort_keys=True, ensure_ascii=True)
         return f"REPLAY-BINDING: {payload}"
@@ -254,7 +257,11 @@ class MetaLearningReplayBinding:
 
 
 def compute_replay_key(
-    *, trace_id: str, transcript_hash: str, strategy_weights_digest: str, faiss_index_digests: dict[str, str],
+    *,
+    trace_id: str,
+    transcript_hash: str,
+    strategy_weights_digest: str,
+    faiss_index_digests: dict[str, str],
 ) -> str:
     """Compute a deterministic replay key binding all execution-state digests.
 

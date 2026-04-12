@@ -76,14 +76,14 @@ class L6AnomalyDetector(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, 'rb') as f:
+            with open(self.model_file_path, "rb") as f:
                 model_data = pickle.load(f)
 
-            self.pipeline = model_data.get('pipeline')
-            self.feature_names = model_data.get('feature_names', [])
-            self.contamination_rate = model_data.get('contamination_rate', 0.1)
-            self.threshold_config = model_data.get('threshold_config', self.threshold_config)
-            self._training_data_digest = model_data.get('training_data_digest', '')
+            self.pipeline = model_data.get("pipeline")
+            self.feature_names = model_data.get("feature_names", [])
+            self.contamination_rate = model_data.get("contamination_rate", 0.1)
+            self.threshold_config = model_data.get("threshold_config", self.threshold_config)
+            self._training_data_digest = model_data.get("training_data_digest", "")
 
             if self.pipeline is None:
                 raise ValueError("No model found in saved file")
@@ -99,23 +99,23 @@ class L6AnomalyDetector(BaseMLModel):
             raise RuntimeError("No model to save")
 
         model_data = {
-            'pipeline': self.pipeline,
-            'feature_names': self.feature_names,
-            'contamination_rate': self.contamination_rate,
-            'threshold_config': self.threshold_config,
-            'training_data_digest': getattr(self, '_training_data_digest', ''),
-            'model_metadata': {
-                'model_name': self.model_name,
-                'model_version': self.model_version,
-                'model_type': self.model_type,
-                'prediction_type': self.prediction_type.value,
-                'feature_schema_digest': self.feature_schema.schema_digest,
-                'saved_at': datetime.now().isoformat(),
-                'isolation_forest_params': self._get_model_params(),
+            "pipeline": self.pipeline,
+            "feature_names": self.feature_names,
+            "contamination_rate": self.contamination_rate,
+            "threshold_config": self.threshold_config,
+            "training_data_digest": getattr(self, "_training_data_digest", ""),
+            "model_metadata": {
+                "model_name": self.model_name,
+                "model_version": self.model_version,
+                "model_type": self.model_type,
+                "prediction_type": self.prediction_type.value,
+                "feature_schema_digest": self.feature_schema.schema_digest,
+                "saved_at": datetime.now().isoformat(),
+                "isolation_forest_params": self._get_model_params(),
             },
         }
 
-        with open(model_file_path, 'wb') as f:
+        with open(model_file_path, "wb") as f:
             pickle.dump(model_data, f)
 
     def predict(
@@ -198,7 +198,9 @@ class L6AnomalyDetector(BaseMLModel):
 
             # Always operate in shadow or escalated mode for anomaly detection
             final_decision_mode = DecisionMode.SHADOW_ONLY
-            if not passes_threshold or normalized_score > self.threshold_config.get("high_anomaly_threshold", 0.05):
+            if not passes_threshold or normalized_score > self.threshold_config.get(
+                "high_anomaly_threshold", 0.05
+            ):
                 final_decision_mode = DecisionMode.ESCALATED
 
             # Create prediction
@@ -214,15 +216,17 @@ class L6AnomalyDetector(BaseMLModel):
             )
 
             # Add prediction metadata
-            prediction.model_metadata.update({
-                'prediction_time_ms': prediction_time * 1000,
-                'feature_vector_length': len(feature_vector),
-                'preprocessing_steps': preprocessing_steps,
-                'raw_prediction': int(raw_prediction),
-                'anomaly_level': anomaly_level,
-                'is_anomaly': normalized_score > threshold_used,
-                'anomaly_indicators': self._get_anomaly_indicators(model_input.features),
-            })
+            prediction.model_metadata.update(
+                {
+                    "prediction_time_ms": prediction_time * 1000,
+                    "feature_vector_length": len(feature_vector),
+                    "preprocessing_steps": preprocessing_steps,
+                    "raw_prediction": int(raw_prediction),
+                    "anomaly_level": anomaly_level,
+                    "is_anomaly": normalized_score > threshold_used,
+                    "anomaly_indicators": self._get_anomaly_indicators(model_input.features),
+                }
+            )
 
             # Log prediction
             self.log_prediction(prediction, model_input)
@@ -290,15 +294,17 @@ class L6AnomalyDetector(BaseMLModel):
             # Get human-readable indicators
             indicators = self.feature_extractor.get_anomaly_indicators_summary(features)
 
-            anomaly_results.append({
-                'context_index': i,
-                'context': context,
-                'features': features,
-                'prediction': prediction,
-                'indicators': indicators,
-                'is_anomaly': prediction.prediction > self.threshold_config.get("anomaly_threshold", 0.1),
-                'anomaly_level': prediction.model_metadata.get('anomaly_level', 'normal'),
-            })
+            anomaly_results.append(
+                {
+                    "context_index": i,
+                    "context": context,
+                    "features": features,
+                    "prediction": prediction,
+                    "indicators": indicators,
+                    "is_anomaly": prediction.prediction > self.threshold_config.get("anomaly_threshold", 0.1),
+                    "anomaly_level": prediction.model_metadata.get("anomaly_level", "normal"),
+                }
+            )
 
         return anomaly_results
 
@@ -333,21 +339,23 @@ class L6AnomalyDetector(BaseMLModel):
                     # Contribution is the difference in scores
                     contribution = abs(base_score - perturbed_score)
 
-                    contributions.append({
-                        'feature_name': feature_name,
-                        'contribution_score': float(contribution),
-                        'feature_value': model_input.features.get(feature_name),
-                        'base_score': float(base_score),
-                        'perturbed_score': float(perturbed_score),
-                        'rank': 0,  # Will be set after sorting
-                    })
+                    contributions.append(
+                        {
+                            "feature_name": feature_name,
+                            "contribution_score": float(contribution),
+                            "feature_value": model_input.features.get(feature_name),
+                            "base_score": float(base_score),
+                            "perturbed_score": float(perturbed_score),
+                            "rank": 0,  # Will be set after sorting
+                        }
+                    )
 
             # Sort by contribution
-            contributions.sort(key=lambda x: x['contribution_score'], reverse=True)
+            contributions.sort(key=lambda x: x["contribution_score"], reverse=True)
 
             # Update ranks
             for i, contrib in enumerate(contributions):
-                contrib['rank'] = i + 1
+                contrib["rank"] = i + 1
 
             # Return top 10 features
             return contributions[:10]
@@ -464,15 +472,15 @@ class L6AnomalyDetector(BaseMLModel):
 
     def _get_model_params(self) -> dict[str, Any]:
         """Get Isolation Forest parameters."""
-        if self.pipeline and hasattr(self.pipeline, 'named_steps'):
-            isolation_forest = self.pipeline.named_steps.get('isolation_forest')
+        if self.pipeline and hasattr(self.pipeline, "named_steps"):
+            isolation_forest = self.pipeline.named_steps.get("isolation_forest")
             if isolation_forest:
                 return {
-                    'n_estimators': isolation_forest.n_estimators,
-                    'max_samples': isolation_forest.max_samples,
-                    'contamination': isolation_forest.contamination,
-                    'max_features': isolation_forest.max_features,
-                    'random_state': isolation_forest.random_state,
+                    "n_estimators": isolation_forest.n_estimators,
+                    "max_samples": isolation_forest.max_samples,
+                    "contamination": isolation_forest.contamination,
+                    "max_features": isolation_forest.max_features,
+                    "random_state": isolation_forest.random_state,
                 }
         return {}
 
@@ -518,7 +526,7 @@ class L6AnomalyDetector(BaseMLModel):
         X = []
 
         for example in training_data:
-            features = example['features']
+            features = example["features"]
 
             feature_vector = []
             for feature_name in feature_names:
@@ -530,16 +538,21 @@ class L6AnomalyDetector(BaseMLModel):
         X = np.array(X)
 
         # Create pipeline with scaling and isolation forest
-        self.pipeline = Pipeline([
-            ('scaler', StandardScaler()),
-            ('isolation_forest', IsolationForest(
-                n_estimators=n_estimators,
-                contamination=contamination,
-                max_features=1.0,
-                random_state=42,
-                n_jobs=-1,
-            )),
-        ])
+        self.pipeline = Pipeline(
+            [
+                ("scaler", StandardScaler()),
+                (
+                    "isolation_forest",
+                    IsolationForest(
+                        n_estimators=n_estimators,
+                        contamination=contamination,
+                        max_features=1.0,
+                        random_state=42,
+                        n_jobs=-1,
+                    ),
+                ),
+            ]
+        )
 
         # Train model
         self.pipeline.fit(X)

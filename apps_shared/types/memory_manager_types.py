@@ -241,7 +241,9 @@ class MemoryManager:
             return
         self._monitoring = True
         self._monitor_thread = threading.Thread(
-            target=self._monitor_loop, args=(interval_seconds,), daemon=True,
+            target=self._monitor_loop,
+            args=(interval_seconds,),
+            daemon=True,
         )
         self._monitor_thread.start()
         logger.info(f"Started memory monitoring for {self.name}")
@@ -250,7 +252,9 @@ class MemoryManager:
         """Stop memory monitoring."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MemoryManager.stop_monitoring")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "MemoryManager.stop_monitoring"
+        )
         self._monitoring = False
         if self._monitor_thread:
             self._monitor_thread.join(timeout=DEFAULT_TIMEOUT)
@@ -327,7 +331,9 @@ class MemoryManager:
             return False
 
     def prune_context(
-        self, strategy: PruningStrategy = PruningStrategy.LRU, target_size: int | None = None,
+        self,
+        strategy: PruningStrategy = PruningStrategy.LRU,
+        target_size: int | None = None,
     ) -> int:
         """Prune context items based on strategy.
 
@@ -450,14 +456,18 @@ class MemoryManager:
                 self._stats["memory_violations"] += 1
                 logger.warning(f"Memory limit exceeded: {memory_mb:.1f}MB > {self.limits.max_memory_mb}MB")
                 self.prune_context(
-                    PruningStrategy.SIZE_BASED, target_size=int(self.limits.max_context_size * 0.5),
+                    PruningStrategy.SIZE_BASED,
+                    target_size=int(self.limits.max_context_size * 0.5),
                 )
                 gc.collect()
                 self._stats["gc_count"] += 1
             elif memory_mb > self.limits.max_memory_mb * self.limits.gc_threshold:
                 gc.collect()
                 self._stats["gc_count"] += 1
-        except (psutil.NoSuchProcess, psutil.AccessDenied):    # guardian:  should be handled with specific context
+        except (
+            psutil.NoSuchProcess,
+            psutil.AccessDenied,
+        ):  # guardian:  should be handled with specific context
             pass
 
     def _monitor_loop(self, interval_seconds: float) -> None:

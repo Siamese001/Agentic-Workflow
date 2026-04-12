@@ -16,14 +16,17 @@ class TestL4statebaseAdg:
     def test_L4StateBase_adg_imports(self):
         """Test L4StateBase_adg module imports."""
         from agentic_core import L4StateBase_adg
+
         assert L4StateBase_adg is not None
 
     def test_L4StateBase_adg_class(self):
         """Test L4statebaseAdg class exists."""
         from agentic_core import L4statebaseAdg
+
         assert L4statebaseAdg is not None
 
     def test_L4StateBase_adg_callable(self):
         """Test L4StateBase_adg functions are callable."""
         from agentic_core import validate_L4StateBase_adg
+
         assert callable(validate_L4StateBase_adg)

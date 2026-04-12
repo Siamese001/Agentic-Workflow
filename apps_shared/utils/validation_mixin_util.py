@@ -174,7 +174,10 @@ class ValidationMixin:
     """
 
     def validate_with_result(
-        self, data: Any, validation_func: callable, context: dict[str, Any] | None = None,
+        self,
+        data: Any,
+        validation_func: callable,
+        context: dict[str, Any] | None = None,
     ) -> ValidationResult:
         """
         Execute validation with standardized result format.
@@ -188,8 +191,11 @@ class ValidationMixin:
             ValidationResult with passed status, issues, and suggestions
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationMixin.validate_with_result")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationMixin.validate_with_result"
+        )
 
         issues = []
         suggestions = []
@@ -205,7 +211,10 @@ class ValidationMixin:
             elif isinstance(result, bool):
                 passed = result
                 return ValidationResult(
-                    passed=passed, issues=issues, suggestions=suggestions, metadata=metadata,
+                    passed=passed,
+                    issues=issues,
+                    suggestions=suggestions,
+                    metadata=metadata,
                 )
             passed = len(issues) == 0
         # guardian: allow-silent-swallow
@@ -235,7 +244,9 @@ class ValidationMixin:
                 self.add_signal(signal_name)
 
     def batch_validate(
-        self, validators: list[tuple[str, callable, Any]], stop_on_first_failure: bool = False,
+        self,
+        validators: list[tuple[str, callable, Any]],
+        stop_on_first_failure: bool = False,
     ) -> dict[str, ValidationResult]:
         """
         Run multiple validators in batch.

@@ -162,6 +162,7 @@ _emit_links_execution_to_snapshot("p4", "agent_defaults_config", "exec_snapshot_
 
 # Configuration constants
 
+
 class AgentDefaults:
     """
     Centralized configuration for agent default values.
@@ -219,6 +220,7 @@ class AgentDefaults:
             Configuration value (env var override takes precedence)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentDefaults.get")
 

@@ -93,9 +93,7 @@ class SourceRetriever:
         content = "\n".join(lines[start:end])
 
         return SourceSnippet(
-            file_path=str(path.relative_to(self._root))
-            if path.is_relative_to(self._root)
-            else str(path),
+            file_path=str(path.relative_to(self._root)) if path.is_relative_to(self._root) else str(path),
             start_line=start + 1,
             end_line=end,
             content=content,
@@ -136,11 +134,7 @@ class SourceRetriever:
                     start = node.lineno - 1
                     end = node.end_lineno or (start + 1)
                     content = "\n".join(lines[start:end])
-                    rel = (
-                        str(path.relative_to(self._root))
-                        if path.is_relative_to(self._root)
-                        else str(path)
-                    )
+                    rel = str(path.relative_to(self._root)) if path.is_relative_to(self._root) else str(path)
                     return SourceSnippet(
                         file_path=rel,
                         start_line=start + 1,
@@ -188,11 +182,7 @@ class SourceRetriever:
                 start = node.lineno - 1
                 end = node.end_lineno or (start + 1)
                 content = "\n".join(lines[start:end])
-                rel = (
-                    str(path.relative_to(self._root))
-                    if path.is_relative_to(self._root)
-                    else str(path)
-                )
+                rel = str(path.relative_to(self._root)) if path.is_relative_to(self._root) else str(path)
                 return SourceSnippet(
                     file_path=rel,
                     start_line=start + 1,
@@ -235,9 +225,7 @@ class SourceRetriever:
         content = "\n".join(lines[s:e])
 
         return SourceSnippet(
-            file_path=str(path.relative_to(self._root))
-            if path.is_relative_to(self._root)
-            else str(path),
+            file_path=str(path.relative_to(self._root)) if path.is_relative_to(self._root) else str(path),
             start_line=s + 1,
             end_line=e,
             content=content,

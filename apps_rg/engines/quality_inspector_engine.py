@@ -172,8 +172,11 @@ class QualityInspectorEngine(BaseRGEngine):
         Perform deep quality inspection.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "QualityInspectorEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "QualityInspectorEngine.execute"
+        )
 
         self._mcp_audit("inspection_start")
         inspection_results = {

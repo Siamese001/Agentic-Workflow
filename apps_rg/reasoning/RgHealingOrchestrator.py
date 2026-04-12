@@ -221,7 +221,9 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgHealingOrchestrator.run")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgHealingOrchestrator.run"
+        )
         start_time: float = time.time()
         print("\n" + "=" * 60)
         print("🧬 SELF-HEALING ORCHESTRATOR STARTED")
@@ -322,7 +324,11 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         return "default"
 
     def ml_record_strategy_success(
-        self, cycle_num: int, signals: set[str], strategy: str, result: dict[str, Any],
+        self,
+        cycle_num: int,
+        signals: set[str],
+        strategy: str,
+        result: dict[str, Any],
     ) -> bool:
         """
         Record a successful strategy for future recall.
@@ -340,7 +346,8 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
             signal_key = ":".join(sorted(signals)) if signals else "no_signals"
             cache_key = f"strategy:{cycle_num}:{signal_key}"
             return self.ml_cache_set(
-                cache_key, {"strategy": strategy, "converged": result.get("converged", False)},
+                cache_key,
+                {"strategy": strategy, "converged": result.get("converged", False)},
             )
         return False
 

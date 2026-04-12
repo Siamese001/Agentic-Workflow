@@ -274,10 +274,12 @@ _emit_reads_through("l4", "metric_type_util", "urg_read_112")
 
 logger = logging.getLogger(__name__)
 
+
 # Stub classes for L5 architecture - defined before use
 @dataclass
 class OrchestrateObservabilityPlanningOrchestratorResult:
     """L5 Result type for observability planning orchestration."""
+
     success: bool
     data: dict[str, Any]
     safety_validated: bool
@@ -288,6 +290,7 @@ class OrchestrateObservabilityPlanningOrchestratorResult:
 @dataclass
 class OrchestrateObservabilityPlanningOrchestratorConstraints:
     """L5 Constraints for observability planning orchestration."""
+
     safety_level: str = "strict"
     max_input_size: int = 1000000
     allowed_patterns: list[str] = field(default_factory=list)
@@ -416,7 +419,9 @@ class ObservabilityPlanningOrchestrator:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityOrchestrator.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ObservabilityOrchestrator.execute"
+        )
         self.logger.info(
             f"Starting observability planning for service: {observability_request.get('service_name', 'unknown')}",
         )
@@ -435,7 +440,9 @@ class ObservabilityPlanningOrchestrator:
             if self.config.enable_alerts:
                 alert_rules = self._plan_alerts(observability_request)
             resource_estimates = self._estimate_resources(
-                metric_definitions, log_configuration, trace_configuration,
+                metric_definitions,
+                log_configuration,
+                trace_configuration,
             )
             result = ObservabilityPlanningResult(
                 success=True,
@@ -638,17 +645,25 @@ class ObservabilityPlanningOrchestrator:
 
 
 def create_observability_planning_orchestrator(
-    enable_metrics: bool = True, enable_logging: bool = True, enable_tracing: bool = True, **kwargs: object,
+    enable_metrics: bool = True,
+    enable_logging: bool = True,
+    enable_tracing: bool = True,
+    **kwargs: object,
 ) -> ObservabilityPlanningOrchestrator:
     """Create a configured observability planning orchestrator."""
     config = ObservabilityPlanningConfig(
-        enable_metrics=enable_metrics, enable_logging=enable_logging, enable_tracing=enable_tracing, **kwargs,
+        enable_metrics=enable_metrics,
+        enable_logging=enable_logging,
+        enable_tracing=enable_tracing,
+        **kwargs,
     )
     return ObservabilityPlanningOrchestrator(config)
 
 
 def plan_observability(
-    service_name: str, service_type: str, config: dict[str, Any] | None = None,
+    service_name: str,
+    service_type: str,
+    config: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Plan observability setup from simple parameters.
 
@@ -867,7 +882,7 @@ if __name__ == "__main__":
         test_data = {"test": True}
         result = orchestrate_observability_planning(test_data)
         logger.info(f"L5 Execution successful: {result}")
-    except SecurityError as e:    # guardian: SecurityError should be handled with specific context
+    except SecurityError as e:  # guardian: SecurityError should be handled with specific context
         logger.error(f"L5 Security error: {e}")
     except (ValueError, TypeError, RuntimeError, KeyError) as e:
         logger.error(f"L5 Unexpected error: {e}")

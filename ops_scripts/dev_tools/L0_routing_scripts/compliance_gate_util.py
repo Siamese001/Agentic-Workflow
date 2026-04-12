@@ -198,8 +198,11 @@ logger = logging.getLogger(__name__)
 try:
     DiscoveredAgent = _get_DiscoveredAgent()
 except (ValueError, TypeError, RuntimeError) as e:
+
     class DiscoveredAgent:  # type: ignore
-        def __init__(self, **kw): self.__dict__.update(kw)
+        def __init__(self, **kw):
+            self.__dict__.update(kw)
+
 
 def check_compliance(discovered_agents: list[DiscoveredAgent]) -> list[str]:
     """

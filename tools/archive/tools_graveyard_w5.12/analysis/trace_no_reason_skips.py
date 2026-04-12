@@ -62,14 +62,18 @@ class SkipCallVisitor(ast.NodeVisitor):
             elif "ImportError" in context:
                 condition = "import_error_catch"
 
-            self.findings.append({
-                "file": self.filepath,
-                "line": line,
-                "func": f"{self.current_class}::{self.current_func}" if self.current_class else self.current_func,
-                "reason": reason,
-                "condition": condition,
-                "context_snippet": context[:200],
-            })
+            self.findings.append(
+                {
+                    "file": self.filepath,
+                    "line": line,
+                    "func": f"{self.current_class}::{self.current_func}"
+                    if self.current_class
+                    else self.current_func,
+                    "reason": reason,
+                    "condition": condition,
+                    "context_snippet": context[:200],
+                }
+            )
 
         self.generic_visit(node)
 

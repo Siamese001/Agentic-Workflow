@@ -274,6 +274,7 @@ class WorkflowLoader:
         self._cached_context_config: dict[str, Any] | None = None
         self._cached_reasoning_config: dict[str, Any] | None = None
         self._load_workflow()
+
     # guardian: File operations should check existence before access
     def _load_workflow(self) -> None:
         """Load the workflow JSON from disk."""
@@ -281,7 +282,7 @@ class WorkflowLoader:
             with open(self.workflow_path, encoding="utf-8") as f:
                 self._workflow_data = json.load(f)
             LOGGER.info(f"Loaded workflow v{self.get_version()} from {self.workflow_path}")
-        except FileNotFoundError:    # guardian: File operations should check existence before access
+        except FileNotFoundError:  # guardian: File operations should check existence before access
             LOGGER.warning(f"Workflow file not found at {self.workflow_path}, using fallback defaults")
             self._workflow_data = self._get_fallback_workflow()
         except json.JSONDecodeError as e:
@@ -366,7 +367,9 @@ class WorkflowLoader:
         """Get the metadata section."""
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "WorkflowLoader.get_metadata",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "WorkflowLoader.get_metadata",
         )
         if self._cached_metadata is None:
             self._cached_metadata = self._workflow_data.get("metadata", {})
@@ -412,7 +415,8 @@ class WorkflowLoader:
                     BRIEF.get("executive_summary", {}).get("word_count", [120, 140]),
                 ),
                 executive_summary_voice=BRIEF.get("executive_summary", {}).get(
-                    "voice", "third_person_implied",
+                    "voice",
+                    "third_person_implied",
                 ),
                 forbidden_patterns=BRIEF.get("executive_summary", {}).get("forbidden_patterns", []),
                 unify_bullet_word_count=WordCountConstraints.from_list(
@@ -474,7 +478,8 @@ class WorkflowLoader:
             REASONING: Any = self.get_reasoning_config()
             creative_brief: Any = REASONING.get("creative_brief", {})
             self._cached_validation_rules = creative_brief.get("deduplication_matrix", {}).get(
-                "thresholds", {},
+                "thresholds",
+                {},
             )
         return self._cached_validation_rules
 
@@ -482,7 +487,8 @@ class WorkflowLoader:
         """Get pre-flight validation tests."""
         if self._cached_pre_flight_tests is None:
             self._cached_pre_flight_tests = self._workflow_data.get("pre_flight_engine_validation", {}).get(
-                TESTS_DIR, [],
+                TESTS_DIR,
+                [],
             )
         return self._cached_pre_flight_tests
 
@@ -491,7 +497,8 @@ class WorkflowLoader:
         if self._cached_file_complexity_thresholds is None:
             CONTEXT: Any = self.get_context_config()
             self._cached_file_complexity_thresholds = CONTEXT.get("pre_flight_file_complexity_gate", {}).get(
-                "thresholds", {},
+                "thresholds",
+                {},
             )
         return self._cached_file_complexity_thresholds
 
@@ -500,7 +507,8 @@ class WorkflowLoader:
         if self._cached_required_files is None:
             CONTEXT: Any = self.get_context_config()
             self._cached_required_files = CONTEXT.get("pre_flight_file_manifest_check", {}).get(
-                "required_file_manifest", [],
+                "required_file_manifest",
+                [],
             )
         return self._cached_required_files
 
@@ -531,6 +539,7 @@ class WorkflowLoader:
 def create_workflow_loader(workflow_path: str | Path | None = None) -> WorkflowLoader:
     """Create a WorkflowLoader instance."""
     return WorkflowLoader(workflow_path)
+
 
 _emit_reads_through("l4", "workflow_loader_types", "urg_read_1")
 _emit_reads_through("l4", "workflow_loader_types", "urg_read_2")

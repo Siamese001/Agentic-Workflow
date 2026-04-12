@@ -26,7 +26,9 @@ class Detection:
     """DEPRECATED: Use code_detector_util.Detection instead."""
 
     def __init__(self, **kwargs):
-        warnings.warn("Detection is deprecated. Use code_detector_util.Detection instead.", DeprecationWarning)
+        warnings.warn(
+            "Detection is deprecated. Use code_detector_util.Detection instead.", DeprecationWarning
+        )
         self._impl = _Detection(**kwargs)
 
 

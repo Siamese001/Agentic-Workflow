@@ -113,7 +113,9 @@ def test_l3_semantic_rag():
 
     if docs_results:
         for i, result in enumerate(docs_results[:2]):
-            print(f"  Doc {i+1}: {result['metadata'].get('doc_type', 'unknown')} - {result['content'][:50]}...")
+            print(
+                f"  Doc {i + 1}: {result['metadata'].get('doc_type', 'unknown')} - {result['content'][:50]}..."
+            )
 
     # Test trace query
     traces_results = rag.query_traces("Similar to trace_000042", n_results=3)
@@ -121,7 +123,9 @@ def test_l3_semantic_rag():
 
     if traces_results:
         for i, result in enumerate(traces_results[:2]):
-            print(f"  Trace {i+1}: {result['metadata'].get('trace_id', 'unknown')} - Line {result['metadata'].get('line_number', 'unknown')}")
+            print(
+                f"  Trace {i + 1}: {result['metadata'].get('trace_id', 'unknown')} - Line {result['metadata'].get('line_number', 'unknown')}"
+            )
 
     # Check stats
     stats = rag.get_stats()
@@ -184,8 +188,8 @@ def test_retrieval_orchestrator():
     print(f"Orchestrator query used layers: {results['layers_used']}")
     print(f"Number of results: {len(results['results'])}")
 
-    if results['results']:
-        for result in results['results'][:2]:
+    if results["results"]:
+        for result in results["results"][:2]:
             print(f"  {result['layer']}: {result.get('content', '')[:50]}...")
 
     # Test action query (should validate with L4)

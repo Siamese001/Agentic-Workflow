@@ -9,6 +9,7 @@ For each entry determines:
 Usage:
     python tools/evidence/_w3_w4_classify.py
 """
+
 from __future__ import annotations
 
 import ast
@@ -49,7 +50,7 @@ def classify_entry(source_file: str, line_no: int, tree: ast.AST) -> str:
 
 def process_kind(kind: str, all_entries: list[dict]) -> dict:
     entries = [e for e in all_entries if e["edge_kind"] == kind]
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"Processing: {kind} ({len(entries)} entries)")
 
     sub_cats: Counter[str] = Counter()
@@ -106,6 +107,7 @@ def process_kind(kind: str, all_entries: list[dict]) -> dict:
 
 def main() -> None:
     import csv
+
     rows = list(csv.DictReader(open(INVENTORY_PATH)))
 
     results = {}

@@ -1,4 +1,5 @@
 """Debug Phase 2 reads_through detection."""
+
 import sqlite3
 from pathlib import Path
 
@@ -27,8 +28,12 @@ for r in conn.execute(
 # Check if reads_from decreased for patched modules
 print("\n--- reads_from for patched modules ---")
 patched = [
-    "sovereign_severity_types", "request_type_util", "schema_type_types",
-    "resume_analysis_plan_types", "metric_type_util", "scenario_runner",
+    "sovereign_severity_types",
+    "request_type_util",
+    "schema_type_types",
+    "resume_analysis_plan_types",
+    "metric_type_util",
+    "scenario_runner",
 ]
 for m in patched:
     rf = conn.execute(

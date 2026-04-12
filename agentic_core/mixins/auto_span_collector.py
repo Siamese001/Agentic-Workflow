@@ -116,12 +116,12 @@ class AutoSpanCollector:
                 return
 
             # Check if agent has tracing capabilities
-            if hasattr(agent_instance, 'flush_traces') and hasattr(agent_instance, '_trace_buffer'):
+            if hasattr(agent_instance, "flush_traces") and hasattr(agent_instance, "_trace_buffer"):
                 self._registered_agents.add(agent_id)
                 self._stats["agents_registered"] += 1
 
                 # Enable OpenTelemetry bridging if available
-                if hasattr(agent_instance, '_otel_bridge_enabled'):
+                if hasattr(agent_instance, "_otel_bridge_enabled"):
                     agent_instance._otel_bridge_enabled = True
 
                 Logger.info(f"[AUTO_COLLECTOR] Registered agent {agent_id}")
@@ -273,18 +273,22 @@ class AutoSpanCollector:
             attributes = span.get("attributes", {})
 
             # Add collection metadata
-            attributes.update({
-                "auto_collected": True,
-                "collection_timestamp": time.time(),
-                "original_service": span.get("service_name", "unknown"),
-                "original_trace_id": span.get("trace_id", "unknown"),
-                "original_span_id": span.get("span_id", "unknown"),
-            })
+            attributes.update(
+                {
+                    "auto_collected": True,
+                    "collection_timestamp": time.time(),
+                    "original_service": span.get("service_name", "unknown"),
+                    "original_trace_id": span.get("trace_id", "unknown"),
+                    "original_span_id": span.get("span_id", "unknown"),
+                }
+            )
 
             # Determine span type and create appropriate OpenTelemetry span
             if "cognitive" in operation_name.lower():
                 reasoning_mode = attributes.get("reasoning_mode", "react")
-                span_context = self._otel_tracer.trace_cognitive(operation_name, reasoning_mode=reasoning_mode, metadata=attributes)
+                span_context = self._otel_tracer.trace_cognitive(
+                    operation_name, reasoning_mode=reasoning_mode, metadata=attributes
+                )
             elif "tool" in operation_name.lower():
                 tool_name = attributes.get("tool_name", operation_name)
                 span_context = self._otel_tracer.trace_tool(tool_name, attributes)
@@ -336,7 +340,9 @@ class AutoSpanCollector:
             Dictionary with collection statistics
         """
         current_time = time.time()
-        uptime = current_time - self._stats["collection_start_time"] if self._stats["collection_start_time"] else 0
+        uptime = (
+            current_time - self._stats["collection_start_time"] if self._stats["collection_start_time"] else 0
+        )
 
         return {
             "collection_active": self._collection_active,

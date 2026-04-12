@@ -16,6 +16,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 class FakeTrivialOutputAgent(SovereignBaseAgent):
     """Agent that returns {"output": None} — no real artifact emission."""
 

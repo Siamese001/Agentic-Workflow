@@ -2,6 +2,7 @@
 
 Tests ConfusionMatrix, BinaryClassificationMetric, and MultiClassF1Metric.
 """
+
 from __future__ import annotations
 
 import pytest

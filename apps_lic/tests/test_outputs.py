@@ -1,6 +1,7 @@
 """
 Test LIC Outputs.
 """
+
 import unittest
 
 from apps_lic.outputs import (
@@ -116,7 +117,9 @@ class TestValidationReportRenderer(unittest.TestCase):
 
     def test_render_markdown_failed(self):
         """Test Markdown rendering for failed validation."""
-        result = ValidationResult(passed=False, reasons=["error"], final_draft="test", attempts=1, qa_result={})
+        result = ValidationResult(
+            passed=False, reasons=["error"], final_draft="test", attempts=1, qa_result={}
+        )
         md_output = self.renderer.render_markdown(result)
         self.assertIn("FAILED", md_output)
         self.assertIn("error", md_output)

@@ -206,7 +206,9 @@ class TruthKeeper:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L1_REASONING, "TruthKeeper.check_file_consistency",
+            _trace_id,
+            LayerSegment.L1_REASONING,
+            "TruthKeeper.check_file_consistency",
         )
 
         violations: Any = []
@@ -231,7 +233,7 @@ class TruthKeeper:
                                 "new_docstring": result["fixed_docstring"],
                             },
                         )
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             violations.append({"type": "syntax", "file": file_path, "message": f"Syntax error: {e}"})
         # guardian: allow-silent-swallow
         except Exception as e:
@@ -239,7 +241,10 @@ class TruthKeeper:
         return {"violations": violations, "fixes": fixes, "file": file_path}
 
     async def _check_function_consistency(
-        self, file_path: str, node: ast.FunctionDef, content: str,
+        self,
+        file_path: str,
+        node: ast.FunctionDef,
+        content: str,
     ) -> dict[str, Any]:
         """
         Check consistency for a single function.

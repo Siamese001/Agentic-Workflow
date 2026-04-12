@@ -186,8 +186,11 @@ class ATSCompatibilityEngine(BaseRGEngine):
         Validate final content against ATS parsing rules.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ATSCompatibilityEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ATSCompatibilityEngine.execute"
+        )
 
         data = (
             self.ctx.buffer.read("ranked_content")

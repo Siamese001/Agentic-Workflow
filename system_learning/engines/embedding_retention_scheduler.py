@@ -185,8 +185,11 @@ class EmbeddingRetentionScheduler:
             Mapping of index_id to rebuilt IndexBuildMetadata for pruned indexes.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingRetentionScheduler.run_once")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingRetentionScheduler.run_once"
+        )
 
         results = {}
         for index_id, store in stores.items():

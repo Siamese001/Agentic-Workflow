@@ -218,7 +218,9 @@ class SovereignHealthMonitor:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignHealthMonitor.log_snapshot",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "SovereignHealthMonitor.log_snapshot",
         )
 
         timestamp = datetime.now().isoformat()
@@ -233,8 +235,9 @@ class SovereignHealthMonitor:
             _adg_trust_score = round(_bp.behavioral_score, 4)
         # guardian: allow-silent-swallow
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("SovereignHealthMonitor: Exception swallowed at L235: %s", e)
+            logging.getLogger(__name__).debug("SovereignHealthMonitor: Exception swallowed at L235: %s", e)
         snapshot = {
             "timestamp": timestamp,
             "domain": domain,

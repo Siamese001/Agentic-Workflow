@@ -17,6 +17,7 @@ class TestVllmInfrastructureFingerprint:
         """Test vllm_infrastructure_fingerprint module imports."""
         try:
             from agentic_core import vllm_infrastructure_fingerprint
+
             assert vllm_infrastructure_fingerprint is not None
         except ImportError:
             pytest.skip("vllm_infrastructure_fingerprint not available")
@@ -25,6 +26,7 @@ class TestVllmInfrastructureFingerprint:
         """Test VllmInfrastructureFingerprint class exists."""
         try:
             from agentic_core import VllmInfrastructureFingerprint
+
             assert VllmInfrastructureFingerprint is not None
         except ImportError:
             pytest.skip("VllmInfrastructureFingerprint not available")
@@ -33,6 +35,7 @@ class TestVllmInfrastructureFingerprint:
         """Test vllm_infrastructure_fingerprint functions are callable."""
         try:
             from agentic_core import validate_vllm_infrastructure_fingerprint
+
             assert callable(validate_vllm_infrastructure_fingerprint)
         except ImportError:
             pytest.skip("validate_vllm_infrastructure_fingerprint not available")

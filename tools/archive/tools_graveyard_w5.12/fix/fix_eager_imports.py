@@ -51,10 +51,10 @@ def create_lazy_fixture(import_stmt: str) -> str:
 
         fixture_name = f"_fixture_{module.replace('.', '_')}"
         names_str = ", ".join(names)
-        return f'''@pytest.fixture
+        return f"""@pytest.fixture
 def {fixture_name}():
     from {module} import {names_str}
-    return type('Fixture', (), {{{', '.join(f'"{n}": {n}' for n in names)}}})'''
+    return type('Fixture', (), {{{", ".join(f'"{n}": {n}' for n in names)}}})"""
 
     return import_stmt
 
@@ -82,10 +82,14 @@ def fix_file(filepath: Path, dry_run: bool = False) -> tuple[int, Optional[str]]
         if re.match(r"^from\s+agentic_core|^import\s+agentic_core", line.strip()):
             # Collect multi-line imports
             import_lines = [line]
-            while i + 1 < len(lines) and (lines[i + 1].strip().startswith("(") or
-                                          (import_lines[0].strip().endswith("(") and
-                                           not lines[i + 1].strip().startswith("from") and
-                                           not lines[i + 1].strip().startswith("import"))):
+            while i + 1 < len(lines) and (
+                lines[i + 1].strip().startswith("(")
+                or (
+                    import_lines[0].strip().endswith("(")
+                    and not lines[i + 1].strip().startswith("from")
+                    and not lines[i + 1].strip().startswith("import")
+                )
+            ):
                 i += 1
                 import_lines.append(lines[i])
 
@@ -158,7 +162,7 @@ def main():
         else:
             print(f"  ℹ️  No eager imports found in {file_path}")
 
-    print(f"\n{'='*50}")
+    print(f"\n{'=' * 50}")
     print(f"Summary: {total_fixes} imports fixed in {files_changed} files")
     if args.dry_run:
         print("Run without --dry-run to apply changes")

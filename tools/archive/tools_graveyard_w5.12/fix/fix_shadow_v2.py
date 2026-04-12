@@ -5,6 +5,7 @@ Then rename all uses of CONST (that aren't imports) after that line to _CONST_PA
 
 Safer approach: only fix the specific known patterns.
 """
+
 import ast
 import os
 import re
@@ -23,7 +24,7 @@ def fix_shadow_in_file(filepath):
     for i, line in enumerate(lines):
         stripped = line.strip()
         # Match: VARNAME = something / VARNAME
-        m = re.match(r'^(\s*)(\w+)\s*=\s*(\w+)\s*/\s*(\2)\s*$', line)
+        m = re.match(r"^(\s*)(\w+)\s*=\s*(\w+)\s*/\s*(\2)\s*$", line)
         if not m:
             continue
         indent, var, prefix, _ = m.groups()
@@ -37,7 +38,7 @@ def fix_shadow_in_file(filepath):
 
         # Now replace subsequent uses of var that refer to this path
         # But only if they're NOT import statements and NOT the original constant
-        for j in range(i+1, len(lines)):
+        for j in range(i + 1, len(lines)):
             lj = lines[j]
             if var not in lj:
                 continue
@@ -48,7 +49,7 @@ def fix_shadow_in_file(filepath):
             if lj.strip().startswith("#"):
                 continue
             # Replace word-boundary matches
-            lines[j] = re.sub(rf'\b{var}\b', new_var, lj)
+            lines[j] = re.sub(rf"\b{var}\b", new_var, lj)
 
         changed = True
 
@@ -70,7 +71,7 @@ def fix_shadow_in_file(filepath):
 
 
 # Scan agentic_core for files with this pattern
-pattern = re.compile(r'^(\w+)\s*=\s*\w+\s*/\s*\1\s*$', re.MULTILINE)
+pattern = re.compile(r"^(\w+)\s*=\s*\w+\s*/\s*\1\s*$", re.MULTILINE)
 
 for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
     for fn in filenames:

@@ -215,7 +215,9 @@ class FissionManagerAgent(SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "FissionManagerAgent.execute_fission",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "FissionManagerAgent.execute_fission",
         )
 
         Logger.info(f"FISSION TRIGGERED: {file_path} ({reason})")

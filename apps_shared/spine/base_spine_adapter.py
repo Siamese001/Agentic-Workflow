@@ -178,7 +178,12 @@ class BaseSpineAdapter:
     _HASH_BODY_LENGTH: int = 16
 
     def __init__(
-        self, cid_registry: CIDRegistry, orchestrator: Any, *, prefix: str, max_reentry_attempts: int = 3,
+        self,
+        cid_registry: CIDRegistry,
+        orchestrator: Any,
+        *,
+        prefix: str,
+        max_reentry_attempts: int = 3,
     ) -> None:
         """Initialize base adapter with dependencies and prefix.
 
@@ -218,7 +223,10 @@ class BaseSpineAdapter:
         return f"{self._prefix}{hash_body}"
 
     def _enrich_intent_input(
-        self, intent_input: dict[str, Any], cid: str, cycle_attempt: int,
+        self,
+        intent_input: dict[str, Any],
+        cid: str,
+        cycle_attempt: int,
     ) -> dict[str, Any]:
         """
         Create enriched intent input without mutating caller's dict.
@@ -248,6 +256,7 @@ class BaseSpineAdapter:
             Result dict from orchestrator augmented with CID
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseSpineAdapter.execute")
 

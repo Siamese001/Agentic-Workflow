@@ -16,14 +16,17 @@ class TestPascalFixerCollisions:
     def test_pascal_fixer_collisions_imports(self):
         """Test pascal_fixer_collisions module imports."""
         from agentic_core import pascal_fixer_collisions
+
         assert pascal_fixer_collisions is not None
 
     def test_pascal_fixer_collisions_class(self):
         """Test PascalFixerCollisions class exists."""
         from agentic_core import PascalFixerCollisions
+
         assert PascalFixerCollisions is not None
 
     def test_pascal_fixer_collisions_callable(self):
         """Test pascal_fixer_collisions functions are callable."""
         from agentic_core import validate_pascal_fixer_collisions
+
         assert callable(validate_pascal_fixer_collisions)

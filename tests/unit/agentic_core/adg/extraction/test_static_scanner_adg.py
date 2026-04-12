@@ -2,6 +2,7 @@
 
 Tests for static_scanner.py structure, imports, and data classes.
 """
+
 import pytest
 
 MAX_RETRIES = 3
@@ -21,21 +22,25 @@ class TestStaticScannerImports:
     def test_import_edge_dataclass(self):
         """Test Edge dataclass can be imported."""
         from agentic_core.adg.extraction.static_scanner import Edge
+
         assert Edge is not None
 
     def test_import_scan_manifest(self):
         """Test ScanManifest can be imported."""
         from agentic_core.adg.extraction.static_scanner import ScanManifest
+
         assert ScanManifest is not None
 
     def test_import_import_visitor(self):
         """Test _ImportVisitor can be imported."""
         from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+
         assert _ImportVisitor is not None
 
     def test_import_call_visitor(self):
         """Test _CallVisitor can be imported."""
         from agentic_core.adg.extraction.static_scanner import _CallVisitor
+
         assert _CallVisitor is not None
 
 
@@ -46,6 +51,7 @@ class TestEdgeDataclass:
     def test_edge_creation(self):
         """Test Edge can be created with required fields."""
         from agentic_core.adg.extraction.static_scanner import Edge
+
         edge = Edge(
             from_name="test_from",
             relation_type="test_relation",
@@ -63,6 +69,7 @@ class TestEdgeDataclass:
     def test_edge_defaults(self):
         """Test Edge field defaults work."""
         from agentic_core.adg.extraction.static_scanner import Edge
+
         edge = Edge(
             from_name="a",
             relation_type="calls",
@@ -83,6 +90,7 @@ class TestScanManifestDataclass:
     def test_scan_manifest_creation(self):
         """Test creation of scan manifest."""
         from agentic_core.adg.extraction.static_scanner import ScanManifest
+
         manifest = ScanManifest(
             discovered_module_count=10,
             parsed_module_count=8,
@@ -95,6 +103,7 @@ class TestScanManifestDataclass:
     def test_scan_manifest_to_dict(self):
         """Test manifest serialization."""
         from agentic_core.adg.extraction.static_scanner import ScanManifest
+
         manifest = ScanManifest(
             discovered_module_count=10,
             parsed_module_count=8,
@@ -102,6 +111,6 @@ class TestScanManifestDataclass:
         )
         data = manifest.to_dict()
         assert isinstance(data, dict)
-        assert 'discovered_module_count' in data
-        assert 'parsed_module_count' in data
-        assert data['discovered_module_count'] == 10
+        assert "discovered_module_count" in data
+        assert "parsed_module_count" in data
+        assert data["discovered_module_count"] == 10

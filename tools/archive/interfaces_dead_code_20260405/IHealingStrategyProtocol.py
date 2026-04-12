@@ -219,8 +219,11 @@ class ChaosResilienceStrategy:
             True if this strategy can handle the violation type
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ChaosResilienceStrategy.can_heal")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ChaosResilienceStrategy.can_heal"
+        )
 
         violation_type = violation.get("type", "")
         return violation_type in self.SUPPORTED_VIOLATIONS

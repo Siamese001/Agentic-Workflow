@@ -6,6 +6,7 @@ assert/raises calls (meaning it has real behavioral depth).
 
 Redundant stubs are DELETED. The `covers` edge is preserved by the foundational test.
 """
+
 from __future__ import annotations
 
 import ast
@@ -200,7 +201,7 @@ def is_prod(p: str) -> bool:
 def adg_to_dotted(name: str) -> str:
     for pfx in ("ADG::Symbol::", "ADG::Module::", "Symbol::", "Module::"):
         if name.startswith(pfx):
-            name = name[len(pfx):]
+            name = name[len(pfx) :]
     return name.removesuffix(".py")
 
 
@@ -209,7 +210,7 @@ def count_assertions(path: Path) -> int:
         return 0
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return 0
     count = 0
     for node in ast.walk(tree):
@@ -234,8 +235,7 @@ print(f"[PRUNE] Done: {len(result.modules)} modules, {len(result.edges)} edges")
 
 prod_set = {m for m in result.modules if is_prod(m)}
 prod_dotted_to_path: dict[str, str] = {
-    m.replace("\\", "/").removesuffix(".py").replace("/", "."): m
-    for m in prod_set
+    m.replace("\\", "/").removesuffix(".py").replace("/", "."): m for m in prod_set
 }
 
 # Build covers map: prod_path -> {adg_test_dotted_names}, {foundational_test_dotted_names}
@@ -289,19 +289,23 @@ for prod_path in sorted(both):
     if foundational_depth >= FOUNDATIONAL_DEPTH_THRESHOLD:
         # Redundant: foundational covers it well enough
         adg_stub.unlink()
-        deleted.append({
-            "module": prod_path,
-            "adg_stub": str(adg_stub.relative_to(ROOT)),
-            "foundational_depth": foundational_depth,
-            "adg_depth": adg_depth,
-        })
+        deleted.append(
+            {
+                "module": prod_path,
+                "adg_stub": str(adg_stub.relative_to(ROOT)),
+                "foundational_depth": foundational_depth,
+                "adg_depth": adg_depth,
+            }
+        )
     else:
-        kept.append({
-            "module": prod_path,
-            "foundational_depth": foundational_depth,
-            "adg_depth": adg_depth,
-            "reason": "foundational too shallow to be sole coverage",
-        })
+        kept.append(
+            {
+                "module": prod_path,
+                "foundational_depth": foundational_depth,
+                "adg_depth": adg_depth,
+                "reason": "foundational too shallow to be sole coverage",
+            }
+        )
 
 print("\n[PRUNE] Results:")
 print(f"  Deleted redundant ADG stubs : {len(deleted)}")

@@ -9,6 +9,7 @@ Usage:
 Without --full-scan: measures all phases except actual _scan_file() calls.
 With --full-scan: runs a complete timed scan (slow, ~60-120s).
 """
+
 from __future__ import annotations
 
 import json
@@ -30,8 +31,8 @@ PROC = psutil.Process()
 class PhaseResult:
     name: str
     wall_s: float = 0.0
-    cpu_s: float = 0.0       # process CPU seconds (user+system)
-    items: int = 0            # files / edges / whatever is counted
+    cpu_s: float = 0.0  # process CPU seconds (user+system)
+    items: int = 0  # files / edges / whatever is counted
     bytes_io: int = 0
     edges_out: int = 0
     peak_rss_mb: float = 0.0
@@ -97,10 +98,10 @@ def main(full_scan: bool = False) -> None:
     ph.items = len(all_files)
     ph.bytes_io = total_bytes
     ph.notes = (
-        f"total={total_bytes/1e6:.1f}MB  "
-        f"p50={size_dist[len(size_dist)//2]/1024:.1f}KB  "
-        f"p99={size_dist[int(len(size_dist)*0.01)]/1024:.1f}KB  "
-        f"max={size_dist[0]/1024:.1f}KB"
+        f"total={total_bytes / 1e6:.1f}MB  "
+        f"p50={size_dist[len(size_dist) // 2] / 1024:.1f}KB  "
+        f"p99={size_dist[int(len(size_dist) * 0.01)] / 1024:.1f}KB  "
+        f"max={size_dist[0] / 1024:.1f}KB"
     )
     phases.append(ph)
     print(f"[P2] stat+size:       wall={ph.wall_s:.3f}s  cpu={ph.cpu_s:.3f}s  {ph.notes}")
@@ -114,7 +115,9 @@ def main(full_scan: bool = False) -> None:
     ph, file_hashes = run_phase("P3_file_hashing", _hash_files)
     ph.items = len(file_hashes)
     ph.bytes_io = total_bytes
-    ph.notes = f"{total_bytes/1e6:.1f}MB hashed  throughput={total_bytes/max(ph.wall_s,0.001)/1e6:.0f}MB/s"
+    ph.notes = (
+        f"{total_bytes / 1e6:.1f}MB hashed  throughput={total_bytes / max(ph.wall_s, 0.001) / 1e6:.0f}MB/s"
+    )
     phases.append(ph)
     print(f"[P3] file_hashing:    wall={ph.wall_s:.3f}s  cpu={ph.cpu_s:.3f}s  {ph.notes}")
 
@@ -125,9 +128,15 @@ def main(full_scan: bool = False) -> None:
         return ScanCache.load(cache_path) if cache_path.exists() else ScanCache()
 
     ph, cache = run_phase("P4_cache_load", _load_cache)
-    ph.notes = f"cache_path_exists={cache_path.exists()}  size_mb={cache_path.stat().st_size/1e6:.1f}" if cache_path.exists() else "no cache"
+    ph.notes = (
+        f"cache_path_exists={cache_path.exists()}  size_mb={cache_path.stat().st_size / 1e6:.1f}"
+        if cache_path.exists()
+        else "no cache"
+    )
     phases.append(ph)
-    print(f"[P4] cache_load:      wall={ph.wall_s:.3f}s  cpu={ph.cpu_s:.3f}s  rss={ph.peak_rss_mb:.0f}MB  {ph.notes}")
+    print(
+        f"[P4] cache_load:      wall={ph.wall_s:.3f}s  cpu={ph.cpu_s:.3f}s  rss={ph.peak_rss_mb:.0f}MB  {ph.notes}"
+    )
 
     # ── P5: Cache hit check (per-file lookup, no actual parse) ───────────────
     def _check_cache_hits():
@@ -149,15 +158,16 @@ def main(full_scan: bool = False) -> None:
     total_miss_bytes = sum(s for _, s in miss_files)
     hit_rate = hits / (hits + misses) if (hits + misses) > 0 else 0
     ph.notes = (
-        f"hits={hits}  misses={misses}  hit_rate={hit_rate:.1%}  "
-        f"miss_bytes={total_miss_bytes/1e6:.1f}MB"
+        f"hits={hits}  misses={misses}  hit_rate={hit_rate:.1%}  miss_bytes={total_miss_bytes / 1e6:.1f}MB"
     )
     phases.append(ph)
     print(f"[P5] cache_check:     wall={ph.wall_s:.3f}s  cpu={ph.cpu_s:.3f}s  {ph.notes}")
 
     # Miss file size distribution
     miss_files.sort(key=lambda x: -x[1])
-    print(f"     miss_files={len(miss_files)}  largest_kb=[{', '.join(str(round(s/1024,1)) for _,s in miss_files[:8])}]")
+    print(
+        f"     miss_files={len(miss_files)}  largest_kb=[{', '.join(str(round(s / 1024, 1)) for _, s in miss_files[:8])}]"
+    )
 
     # ── P6: AST parse cost estimate (sample 100 miss files) ─────────────────
     import ast as _ast
@@ -193,7 +203,9 @@ def main(full_scan: bool = False) -> None:
 
     # Full cache hit path: estimate time to replay cached edges
     cache_hit_files = hits
-    extrap_cache_replay = ph.wall_s * (cache_hit_files / max(len(sample_miss), 1)) * 0.05  # cache replay ~5% of parse
+    extrap_cache_replay = (
+        ph.wall_s * (cache_hit_files / max(len(sample_miss), 1)) * 0.05
+    )  # cache replay ~5% of parse
     print(f"     ESTIMATE: {cache_hit_files} cache-hit files replay ~{extrap_cache_replay:.1f}s (fast path)")
 
     # ── P7: Normalizer warm-up ───────────────────────────────────────────────
@@ -216,7 +228,9 @@ def main(full_scan: bool = False) -> None:
         from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         try:
-            commit_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=str(ROOT), text=True).strip()
+            commit_sha = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=str(ROOT), text=True
+            ).strip()
         except Exception:
             commit_sha = ""
 
@@ -264,7 +278,9 @@ def main(full_scan: bool = False) -> None:
         print(f"  - Cache miss parse (serial):  ~{extrap_s:.1f}s for {len(miss_files)} files")
         print(f"  - Cache hit replay (fast):    ~{extrap_cache_replay:.1f}s for {hits} files")
     print(f"  - File hashing:               {phases[2].wall_s:.3f}s")
-    print(f"  - Cache load:                 {phases[3].wall_s:.3f}s  ({ph.notes if cache_path.exists() else 'no cache'})")
+    print(
+        f"  - Cache load:                 {phases[3].wall_s:.3f}s  ({ph.notes if cache_path.exists() else 'no cache'})"
+    )
 
     print()
     print("CPU UTILIZATION PREDICTION:")
@@ -272,7 +288,9 @@ def main(full_scan: bool = False) -> None:
     physical_cores = psutil.cpu_count(logical=False)
     # If scanner is serial Python, it occupies ~1 thread
     single_thread_cpu_pct = 100.0 / total_cores
-    print(f"  - 1 serial Python thread on {total_cores}-thread machine = ~{single_thread_cpu_pct:.1f}% total CPU")
+    print(
+        f"  - 1 serial Python thread on {total_cores}-thread machine = ~{single_thread_cpu_pct:.1f}% total CPU"
+    )
     print("  - Observed 30-35% suggests 9-11 threads active simultaneously")
     print("  - Likely: cache deserialization + orjson + file I/O + parent/child overlap")
 

@@ -1,6 +1,7 @@
 """
 Human Escalation Selector - Determines when to escalate to human underwriter.
 """
+
 from typing import List
 
 from ..types import RiskFeatures, UnderwritingRequest
@@ -108,7 +109,11 @@ class HumanEscalationSelector:
             unusual = True
 
         # Junior lien with high advance
-        if request.collateral.lien_position == "junior" and request.collateral.ltv and request.collateral.ltv > 0.5:
+        if (
+            request.collateral.lien_position == "junior"
+            and request.collateral.ltv
+            and request.collateral.ltv > 0.5
+        ):
             unusual = True
 
         # Unsecured for larger amounts

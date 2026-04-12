@@ -210,6 +210,7 @@ class IngestionEngine(BaseExecEngine):
             IngestionResult with all ingested documents.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IngestionEngine.execute")
 
@@ -255,7 +256,7 @@ class IngestionEngine(BaseExecEngine):
                             source_dir=src,
                         ),
                     )
-                except OSError as exc:    # guardian: Add error context logging
+                except OSError as exc:  # guardian: Add error context logging
                     _log.warning("[IngestionEngine] Could not read %s: %s", file_path, exc)
                     result.skipped_paths.append(str(file_path))
 

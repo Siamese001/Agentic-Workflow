@@ -35,13 +35,10 @@ class QualityGateValidator:
 
         # Gate 1: Minimum scenarios executed
         min_scenarios = self.config.get("min_scenarios", 1)
-        total_scenarios = sum(
-            len(suite.scenarios) for suite in result.suite_results
-        )
+        total_scenarios = sum(len(suite.scenarios) for suite in result.suite_results)
         if total_scenarios < min_scenarios:
             self._violations.append(
-                f"QUALITY: Only {total_scenarios} scenarios executed, "
-                f"minimum {min_scenarios} required",
+                f"QUALITY: Only {total_scenarios} scenarios executed, minimum {min_scenarios} required",
             )
 
         # Gate 2: Maximum latency

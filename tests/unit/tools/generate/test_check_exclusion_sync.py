@@ -9,6 +9,7 @@ Tests cover:
 - Main function CLI interface
 - Edge cases and error handling
 """
+
 from __future__ import annotations
 
 # Import the module under test
@@ -222,7 +223,9 @@ class TestMain:
         precommit_patterns: list[str] = ["test.json"]
 
         with patch.object(check_exclusion_sync, "load_excluded_paths", return_value=yaml_data):
-            with patch.object(check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns):
+            with patch.object(
+                check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns
+            ):
                 result = check_exclusion_sync.main([])
                 assert result == 0
                 captured = capsys.readouterr()
@@ -234,7 +237,9 @@ class TestMain:
         precommit_patterns: list[str] = ["test.json"]
 
         with patch.object(check_exclusion_sync, "load_excluded_paths", return_value=yaml_data):
-            with patch.object(check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns):
+            with patch.object(
+                check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns
+            ):
                 result = check_exclusion_sync.main([])
                 assert result == 1
                 captured = capsys.readouterr()
@@ -246,7 +251,9 @@ class TestMain:
         precommit_patterns: list[str] = ["test.json"]
 
         with patch.object(check_exclusion_sync, "load_excluded_paths", return_value=yaml_data):
-            with patch.object(check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns):
+            with patch.object(
+                check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns
+            ):
                 result = check_exclusion_sync.main(["--fix"])
                 assert result == 0
 
@@ -256,7 +263,9 @@ class TestMain:
         precommit_patterns: list[str] = ["test.json"]
 
         with patch.object(check_exclusion_sync, "load_excluded_paths", return_value=yaml_data):
-            with patch.object(check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns):
+            with patch.object(
+                check_exclusion_sync, "load_precommit_excludes", return_value=precommit_patterns
+            ):
                 check_exclusion_sync.main([])
                 captured = capsys.readouterr()
                 assert "YAML precommit_excludes" in captured.out

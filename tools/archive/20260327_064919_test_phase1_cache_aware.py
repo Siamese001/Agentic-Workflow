@@ -29,7 +29,9 @@ def test_cache_aware_mode():
 
         # Force mode selection by calling scan (but we'll intercept the mode)
         scanner_no_cache.scan_mode = _get_cache_aware_scan_mode(
-            None, Path("."), include_tests=False,
+            None,
+            Path("."),
+            include_tests=False,
         )
 
         print(f"  Selected mode: {scanner_no_cache.scan_mode}")
@@ -104,7 +106,9 @@ def test_cache_aware_mode():
             print(f"  Cache hit rate: {hit_rate:.2f}")
             print(f"  Total entries: {total_entries}")
             print(f"  Production mode: {'selective' if hit_rate > 0.7 else 'full'}")
-            print(f"  Tests mode: {'structural_only' if hit_rate > 0.9 else 'selective' if hit_rate > 0.7 else 'full'}")
+            print(
+                f"  Tests mode: {'structural_only' if hit_rate > 0.9 else 'selective' if hit_rate > 0.7 else 'full'}"
+            )
             print()
 
         # Analysis
@@ -112,7 +116,13 @@ def test_cache_aware_mode():
 
         # Verify mode selection logic
         expected_prod_mode = "selective" if cache_stats.get("hit_rate", 0) > 0.7 else "full"
-        expected_test_mode = "structural_only" if cache_stats.get("hit_rate", 0) > 0.9 else "selective" if cache_stats.get("hit_rate", 0) > 0.7 else "full"
+        expected_test_mode = (
+            "structural_only"
+            if cache_stats.get("hit_rate", 0) > 0.9
+            else "selective"
+            if cache_stats.get("hit_rate", 0) > 0.7
+            else "full"
+        )
 
         prod_mode_correct = scanner_high_cache.scan_mode == expected_prod_mode
         test_mode_correct = scanner_tests.scan_mode == expected_test_mode
@@ -138,8 +148,10 @@ def test_cache_aware_mode():
     finally:
         # Cleanup
         import shutil
+
         if cache_dir.exists():
             shutil.rmtree(cache_dir)
+
 
 # Import the function for testing
 from agentic_core.adg.extraction.static_scanner import _get_cache_aware_scan_mode
@@ -152,4 +164,6 @@ if __name__ == "__main__":
     print(f"Test mode: {results['test_mode']}")
     print(f"Cache hit rate: {results['cache_hit_rate']:.2f}")
     print(f"Cache speedup: {results['cache_speedup']:.1f}x")
-    print(f"Mode selection correct: {'✓' if results['prod_mode_correct'] and results['test_mode_correct'] else '✗'}")
+    print(
+        f"Mode selection correct: {'✓' if results['prod_mode_correct'] and results['test_mode_correct'] else '✗'}"
+    )

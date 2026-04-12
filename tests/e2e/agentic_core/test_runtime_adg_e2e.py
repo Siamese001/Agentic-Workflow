@@ -48,12 +48,14 @@ try:
         attributes_to_json,
         create_runtime_adg_snapshot,
     )
+
     RUNTIME_ADG_AVAILABLE = True
 except ImportError:
     RUNTIME_ADG_AVAILABLE = False
 
 try:
     from system_learning.runtime_adg.auto_persistence import AutoPersistenceTracingAdapter
+
     AUTO_PERSISTENCE_AVAILABLE = True
 except ImportError:
     AUTO_PERSISTENCE_AVAILABLE = False
@@ -63,7 +65,9 @@ except ImportError:
 @pytest.fixture
 def ssot_project_root():
     from agentic_core.L5_safety.config.structure_blueprint.ssot import get_validated_project_root
+
     return get_validated_project_root()
+
 
 @pytest.fixture
 def runtime_adg_classes():
@@ -78,14 +82,24 @@ def runtime_adg_classes():
         attributes_to_json,
         create_runtime_adg_snapshot,
     )
-    return (FileBackedRuntimeADGStore, InMemoryRuntimeADGStore, L6MetaLearningBridge,
-            RuntimeADGMaterializer, RuntimeADGNode, RuntimeADGEdge, RuntimeADGSnapshot,
-            attributes_to_json, create_runtime_adg_snapshot)
+
+    return (
+        FileBackedRuntimeADGStore,
+        InMemoryRuntimeADGStore,
+        L6MetaLearningBridge,
+        RuntimeADGMaterializer,
+        RuntimeADGNode,
+        RuntimeADGEdge,
+        RuntimeADGSnapshot,
+        attributes_to_json,
+        create_runtime_adg_snapshot,
+    )
 
 
 # =============================================================================
 # Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def temp_runtime_adg_dir(tmp_path: Path) -> Path:
@@ -183,6 +197,7 @@ def l6_bridge(temp_runtime_adg_dir: Path, runtime_adg_classes) -> L6MetaLearning
 # =============================================================================
 # Test Class: Full Pipeline Integration
 # =============================================================================
+
 
 class TestRuntimeADGFullPipeline:
     """End-to-end tests for the complete runtime ADG pipeline."""
@@ -337,6 +352,7 @@ class TestRuntimeADGFullPipeline:
 # Test Class: Edge Cases and Fail-Closed Behavior
 # =============================================================================
 
+
 class TestRuntimeADGEdgeCases:
     """Edge case and error handling tests."""
 
@@ -438,6 +454,7 @@ class TestRuntimeADGEdgeCases:
 # Test Class: Determinism and Replay
 # =============================================================================
 
+
 class TestRuntimeADGDeterminism:
     """Determinism and replay verification tests."""
 
@@ -448,10 +465,7 @@ class TestRuntimeADGDeterminism:
     ) -> None:
         """Test that identical spans produce identical snapshot hashes."""
         # Materialize same spans multiple times
-        snapshots = [
-            materializer.materialize(sample_spans, mission="determinism-test")
-            for _ in range(5)
-        ]
+        snapshots = [materializer.materialize(sample_spans, mission="determinism-test") for _ in range(5)]
 
         # All hashes should be identical
         first_hash = snapshots[0].snapshot_hash
@@ -483,12 +497,56 @@ class TestRuntimeADGDeterminism:
         # Create spans with identical timestamps but different IDs
         base_time = int(time.time() * 1000)
         spans_a = [
-            {"span_id": "a-001", "trace_id": "order-test", "ts_utc": base_time, "duration_ms": 10.0, "status": "ok", "name": "op1", "kind": "tool", "layer": "L2", "component": "Test", "attributes": {}},
-            {"span_id": "a-002", "trace_id": "order-test", "ts_utc": base_time + 10, "duration_ms": 10.0, "status": "ok", "name": "op2", "kind": "tool", "layer": "L2", "component": "Test", "attributes": {}},
+            {
+                "span_id": "a-001",
+                "trace_id": "order-test",
+                "ts_utc": base_time,
+                "duration_ms": 10.0,
+                "status": "ok",
+                "name": "op1",
+                "kind": "tool",
+                "layer": "L2",
+                "component": "Test",
+                "attributes": {},
+            },
+            {
+                "span_id": "a-002",
+                "trace_id": "order-test",
+                "ts_utc": base_time + 10,
+                "duration_ms": 10.0,
+                "status": "ok",
+                "name": "op2",
+                "kind": "tool",
+                "layer": "L2",
+                "component": "Test",
+                "attributes": {},
+            },
         ]
         spans_b = [
-            {"span_id": "a-002", "trace_id": "order-test", "ts_utc": base_time + 10, "duration_ms": 10.0, "status": "ok", "name": "op2", "kind": "tool", "layer": "L2", "component": "Test", "attributes": {}},
-            {"span_id": "a-001", "trace_id": "order-test", "ts_utc": base_time, "duration_ms": 10.0, "status": "ok", "name": "op1", "kind": "tool", "layer": "L2", "component": "Test", "attributes": {}},
+            {
+                "span_id": "a-002",
+                "trace_id": "order-test",
+                "ts_utc": base_time + 10,
+                "duration_ms": 10.0,
+                "status": "ok",
+                "name": "op2",
+                "kind": "tool",
+                "layer": "L2",
+                "component": "Test",
+                "attributes": {},
+            },
+            {
+                "span_id": "a-001",
+                "trace_id": "order-test",
+                "ts_utc": base_time,
+                "duration_ms": 10.0,
+                "status": "ok",
+                "name": "op1",
+                "kind": "tool",
+                "layer": "L2",
+                "component": "Test",
+                "attributes": {},
+            },
         ]
 
         snapshot1 = materializer.materialize(spans_a, mission="order-test")
@@ -501,6 +559,7 @@ class TestRuntimeADGDeterminism:
 # =============================================================================
 # Test Class: Auto-Persistence Integration
 # =============================================================================
+
 
 class TestRuntimeADGAutoPersistence:
     """Auto-persistence adapter integration tests."""
@@ -580,6 +639,7 @@ class TestRuntimeADGAutoPersistence:
 # Test Class: Concurrency and Thread Safety
 # =============================================================================
 
+
 class TestRuntimeADGConcurrency:
     """Concurrency and thread safety tests."""
 
@@ -639,6 +699,7 @@ class TestRuntimeADGConcurrency:
 # =============================================================================
 # Test Class: Pattern Extraction and Analytics
 # =============================================================================
+
 
 class TestRuntimeADGPatternExtraction:
     """Pattern extraction and analytics tests."""
@@ -778,6 +839,7 @@ class TestRuntimeADGPatternExtraction:
 # =============================================================================
 # Test Class: Fail-Closed Behavior
 # =============================================================================
+
 
 class TestRuntimeADGFailClosed:
     """Fail-closed behavior verification tests."""

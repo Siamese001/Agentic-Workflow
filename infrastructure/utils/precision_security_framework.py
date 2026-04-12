@@ -24,11 +24,12 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class PrecisionSecurityLevel(Enum):
     """Precise security level enumeration with mathematical ordering."""
+
     PUBLIC = 1
     INTERNAL = 2
     CONFIDENTIAL = 3
@@ -48,6 +49,7 @@ class PrecisionSecurityLevel(Enum):
 
 class PrecisionComplianceFramework(Enum):
     """Precise compliance framework enumeration."""
+
     GDPR = 1
     HIPAA = 2
     SOX = 3
@@ -63,6 +65,7 @@ class PrecisionComplianceFramework(Enum):
 
 class PrecisionDataClassification(Enum):
     """Precise data classification with total ordering."""
+
     PUBLIC_DATA = 1
     INTERNAL_DATA = 2
     SENSITIVE_DATA = 3
@@ -78,6 +81,7 @@ class PrecisionDataClassification(Enum):
 @dataclass(frozen=True)
 class PrecisionSecurityContext:
     """Immutable security context with cryptographic integrity."""
+
     user_id: str
     session_id: str
     roles: list[str]
@@ -100,31 +104,37 @@ class PrecisionSecurityContext:
             raise ValueError("permissions must be a list")
 
         # Generate deterministic checksum
-        content = json.dumps({
-            "user_id": self.user_id,
-            "session_id": self.session_id,
-            "roles": sorted(self.roles),
-            "permissions": sorted(self.permissions),
-            "security_level": self.security_level.value,
-            "region": self.region,
-            "timestamp": self.timestamp.isoformat(),
-            "metadata": self.metadata,
-        }, sort_keys=True)
+        content = json.dumps(
+            {
+                "user_id": self.user_id,
+                "session_id": self.session_id,
+                "roles": sorted(self.roles),
+                "permissions": sorted(self.permissions),
+                "security_level": self.security_level.value,
+                "region": self.region,
+                "timestamp": self.timestamp.isoformat(),
+                "metadata": self.metadata,
+            },
+            sort_keys=True,
+        )
         checksum = hashlib.sha256(content.encode()).hexdigest()
-        object.__setattr__(self, 'checksum', checksum)
+        object.__setattr__(self, "checksum", checksum)
 
     def verify_integrity(self) -> bool:
         """Verify cryptographic integrity."""
-        content = json.dumps({
-            "user_id": self.user_id,
-            "session_id": self.session_id,
-            "roles": sorted(self.roles),
-            "permissions": sorted(self.permissions),
-            "security_level": self.security_level.value,
-            "region": self.region,
-            "timestamp": self.timestamp.isoformat(),
-            "metadata": self.metadata,
-        }, sort_keys=True)
+        content = json.dumps(
+            {
+                "user_id": self.user_id,
+                "session_id": self.session_id,
+                "roles": sorted(self.roles),
+                "permissions": sorted(self.permissions),
+                "security_level": self.security_level.value,
+                "region": self.region,
+                "timestamp": self.timestamp.isoformat(),
+                "metadata": self.metadata,
+            },
+            sort_keys=True,
+        )
         expected = hashlib.sha256(content.encode()).hexdigest()
         return self.checksum == expected
 
@@ -144,6 +154,7 @@ class PrecisionSecurityContext:
 @dataclass
 class PrecisionAuditLog:
     """Precision audit log with cryptographic chain of custody."""
+
     log_id: str
     timestamp: datetime
     event_type: str
@@ -159,18 +170,22 @@ class PrecisionAuditLog:
 
     def __post_init__(self):
         # Generate log hash
-        content = json.dumps({
-            "log_id": self.log_id,
-            "timestamp": self.timestamp.isoformat(),
-            "event_type": self.event_type,
-            "user_id": self.user_id,
-            "session_id": self.session_id,
-            "action": self.action,
-            "resource": self.resource,
-            "outcome": self.outcome,
-            "details": self.details,
-            "previous_log_hash": self.previous_log_hash,
-        }, sort_keys=True, default=str)
+        content = json.dumps(
+            {
+                "log_id": self.log_id,
+                "timestamp": self.timestamp.isoformat(),
+                "event_type": self.event_type,
+                "user_id": self.user_id,
+                "session_id": self.session_id,
+                "action": self.action,
+                "resource": self.resource,
+                "outcome": self.outcome,
+                "details": self.details,
+                "previous_log_hash": self.previous_log_hash,
+            },
+            sort_keys=True,
+            default=str,
+        )
         self.log_hash = hashlib.sha256(content.encode()).hexdigest()
 
     def verify_chain_integrity(self, previous_hash: str) -> bool:
@@ -367,20 +382,38 @@ class PrecisionAccessController:
         # Define roles and their permissions
         self.role_permissions = {
             "admin": {
-                "read", "write", "delete", "manage_users", "manage_policies",
-                "view_audit_logs", "system_config", "encrypt_data", "decrypt_data",
+                "read",
+                "write",
+                "delete",
+                "manage_users",
+                "manage_policies",
+                "view_audit_logs",
+                "system_config",
+                "encrypt_data",
+                "decrypt_data",
             },
             "developer": {
-                "read", "write", "deploy", "view_logs", "encrypt_data", "decrypt_data",
+                "read",
+                "write",
+                "deploy",
+                "view_logs",
+                "encrypt_data",
+                "decrypt_data",
             },
             "analyst": {
-                "read", "view_reports", "export_data", "decrypt_data",
+                "read",
+                "view_reports",
+                "export_data",
+                "decrypt_data",
             },
             "user": {
-                "read", "view_own_data",
+                "read",
+                "view_own_data",
             },
             "auditor": {
-                "read", "view_audit_logs", "export_audit_logs",
+                "read",
+                "view_audit_logs",
+                "export_audit_logs",
             },
         }
 
@@ -454,7 +487,9 @@ class PrecisionAccessController:
 
             # Check security level requirements
             if not context.meets_security_level(policy["security_level"]):
-                access_log["reason"] = f"Insufficient security level. Required: {policy['security_level'].name}"
+                access_log["reason"] = (
+                    f"Insufficient security level. Required: {policy['security_level'].name}"
+                )
                 self.access_metrics["access_denied"] += 1
                 self.access_logs.append(access_log)
                 return False, "Insufficient security level"
@@ -510,8 +545,13 @@ class PrecisionAccessController:
             "total_resources": len(self.resource_policies),
             "metrics": self.access_metrics,
             "grant_rate": grant_rate,
-            "recent_access_logs": len([log for log in self.access_logs
-                                     if datetime.fromisoformat(log["timestamp"]) > datetime.now() - timedelta(hours=1)]),
+            "recent_access_logs": len(
+                [
+                    log
+                    for log in self.access_logs
+                    if datetime.fromisoformat(log["timestamp"]) > datetime.now() - timedelta(hours=1)
+                ]
+            ),
         }
 
 
@@ -563,7 +603,7 @@ class PrecisionPrivacyEngine:
                 # Hash the identifier with salt
                 salt = secrets.token_bytes(32)
                 value = str(anonymized_data[identifier]).encode()
-                hashed_value = hashlib.pbkdf2_hmac('sha256', value, salt, 100000)
+                hashed_value = hashlib.pbkdf2_hmac("sha256", value, salt, 100000)
                 anonymized_data[identifier] = base64.b64encode(hashed_value).decode()
                 self.privacy_metrics["data_anonymized"] += 1
 
@@ -574,19 +614,19 @@ class PrecisionPrivacyEngine:
         pii_types = []
 
         # Email detection
-        if re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', text):
+        if re.search(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", text):
             pii_types.append("email")
 
         # Phone detection
-        if re.search(r'\b\d{3}-\d{3}-\d{4}\b', text):
+        if re.search(r"\b\d{3}-\d{3}-\d{4}\b", text):
             pii_types.append("phone")
 
         # SSN detection
-        if re.search(r'\b\d{3}-\d{2}-\d{4}\b', text):
+        if re.search(r"\b\d{3}-\d{2}-\d{4}\b", text):
             pii_types.append("ssn")
 
         # Credit card detection
-        if re.search(r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b', text):
+        if re.search(r"\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b", text):
             pii_types.append("credit_card")
 
         return pii_types
@@ -614,9 +654,16 @@ class PrecisionAuditLogger:
             "compliance_violations": 0,
         }
 
-    def log_event(self, event_type: str, user_id: str, session_id: str,
-                   action: str, resource: str, outcome: str,
-                   details: dict[str, Any] = None) -> str:
+    def log_event(
+        self,
+        event_type: str,
+        user_id: str,
+        session_id: str,
+        action: str,
+        resource: str,
+        outcome: str,
+        details: dict[str, Any] = None,
+    ) -> str:
         """Log security event with cryptographic chain."""
         log_id = f"audit_{int(time.time())}_{secrets.token_hex(8)}"
 
@@ -653,7 +700,7 @@ class PrecisionAuditLogger:
         """Verify integrity of audit log chain."""
         for i in range(1, len(self.log_chain)):
             current_log = self.log_chain[i]
-            previous_log = self.log_chain[i-1]
+            previous_log = self.log_chain[i - 1]
 
             if not current_log.verify_chain_integrity(previous_log.log_hash):
                 logger.error(f"Audit chain broken at log {current_log.log_id}")
@@ -764,8 +811,9 @@ class PrecisionComplianceManager:
             "encryption_required": True,
         }
 
-    def check_compliance(self, framework: PrecisionComplianceFramework,
-                        system_data: dict[str, Any]) -> dict[str, Any]:
+    def check_compliance(
+        self, framework: PrecisionComplianceFramework, system_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check compliance against specific framework."""
         if framework not in self.compliance_frameworks:
             raise ValueError(f"Unknown compliance framework: {framework}")
@@ -789,27 +837,33 @@ class PrecisionComplianceManager:
             check_result = self._check_requirement(requirement, required, system_data)
 
             if check_result["compliant"]:
-                compliance_results["requirements_met"].append({
-                    "requirement": requirement,
-                    "details": check_result["details"],
-                })
+                compliance_results["requirements_met"].append(
+                    {
+                        "requirement": requirement,
+                        "details": check_result["details"],
+                    }
+                )
                 met_requirements += 1
             else:
-                compliance_results["requirements_violated"].append({
-                    "requirement": requirement,
-                    "violation": check_result["violation"],
-                    "details": check_result["details"],
-                })
+                compliance_results["requirements_violated"].append(
+                    {
+                        "requirement": requirement,
+                        "violation": check_result["violation"],
+                        "details": check_result["details"],
+                    }
+                )
                 compliance_results["overall_compliant"] = False
 
                 # Track violation
-                self.violation_tracking.append({
-                    "framework": framework.name,
-                    "requirement": requirement,
-                    "violation": check_result["violation"],
-                    "timestamp": datetime.now().isoformat(),
-                    "resolved": False,
-                })
+                self.violation_tracking.append(
+                    {
+                        "framework": framework.name,
+                        "requirement": requirement,
+                        "violation": check_result["violation"],
+                        "timestamp": datetime.now().isoformat(),
+                        "resolved": False,
+                    }
+                )
 
         # Calculate compliance score
         compliance_results["score"] = met_requirements / total_requirements
@@ -822,7 +876,9 @@ class PrecisionComplianceManager:
 
         return compliance_results
 
-    def _check_requirement(self, requirement: str, required: bool, system_data: dict[str, Any]) -> dict[str, Any]:
+    def _check_requirement(
+        self, requirement: str, required: bool, system_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check individual compliance requirement."""
         check_result = {
             "compliant": True,
@@ -1001,8 +1057,9 @@ class PrecisionSecurityGateway:
             )
             return None
 
-    async def authorize_request(self, context: PrecisionSecurityContext,
-                              resource: str, action: str) -> tuple[bool, str]:
+    async def authorize_request(
+        self, context: PrecisionSecurityContext, resource: str, action: str
+    ) -> tuple[bool, str]:
         """Authorize request using zero-trust access control."""
         try:
             # Check access using access controller
@@ -1038,9 +1095,9 @@ class PrecisionSecurityGateway:
             )
             return False, f"Authorization error: {e}"
 
-    async def process_request(self, auth_data: dict[str, Any],
-                            resource: str, action: str,
-                            request_data: dict[str, Any]) -> dict[str, Any]:
+    async def process_request(
+        self, auth_data: dict[str, Any], resource: str, action: str, request_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Process request through complete security pipeline."""
         self.gateway_metrics["total_requests"] += 1
 

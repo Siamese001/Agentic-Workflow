@@ -15,8 +15,9 @@ class TestFolderEnforcement:
             result = agent.classify_file(agent_file)
             compliant = agent.get_compliant_name(agent_file, result)
             # Properly placed AGENT should not need renaming
-            assert compliant is None or "reasoning" in str(agent_file), \
+            assert compliant is None or "reasoning" in str(agent_file), (
                 "AGENT in reasoning/ should not need relocation"
+            )
 
     def test_script_must_be_in_scripts_dirs(self, agent, repo_root):
         """TC-FOLDER-02: SCRIPT files should be in ops_scripts/, tools/, or scripts/."""
@@ -38,8 +39,9 @@ class TestFolderEnforcement:
         if mixins_dir.exists():
             for mixin_file in mixins_dir.glob("*.py"):
                 result = agent.classify_file(mixin_file)
-                assert result in ["MIXIN", "CLASS"], \
+                assert result in ["MIXIN", "CLASS"], (
                     f"{mixin_file}: Files in mixins/ should be MIXIN or CLASS, got {result}"
+                )
 
     def test_engine_must_be_in_engines(self, agent, repo_root):
         """TC-FOLDER-04: ENGINE files should be in engines/ directory."""
@@ -52,8 +54,9 @@ class TestFolderEnforcement:
                     if engine_file.name == "__init__.py":
                         continue
                     result = agent.classify_file(engine_file)
-                    assert result in ["ENGINE", "CLASS", "AGENT", "TYPES", "UTILITY", "ADAPTER"], \
+                    assert result in ["ENGINE", "CLASS", "AGENT", "TYPES", "UTILITY", "ADAPTER"], (
                         f"{engine_file}: Files in engines/ should be ENGINE/CLASS/AGENT/TYPES/UTILITY/ADAPTER, got {result}"
+                    )
 
     def test_validator_must_be_in_validators(self, agent, repo_root):
         """TC-FOLDER-05: VALIDATOR files should be in validators/ directory."""
@@ -65,8 +68,9 @@ class TestFolderEnforcement:
                     if validator_file.name == "__init__.py":
                         continue
                     result = agent.classify_file(validator_file)
-                    assert result in ["VALIDATOR", "CLASS", "TYPES", "AGENT"], \
+                    assert result in ["VALIDATOR", "CLASS", "TYPES", "AGENT"], (
                         f"{validator_file}: Files in validators/ should be VALIDATOR/CLASS/TYPES/AGENT, got {result}"
+                    )
 
 
 @pytest.mark.spec
@@ -112,5 +116,6 @@ class TestNamingConventions:
                         continue
                     name = util_file.stem
                     # Utilities should be snake_case
-                    assert name == name.lower() or name[0].isupper(), \
+                    assert name == name.lower() or name[0].isupper(), (
                         f"Utility {util_file} naming convention unclear"
+                    )

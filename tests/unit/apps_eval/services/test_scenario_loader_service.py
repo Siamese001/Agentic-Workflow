@@ -140,8 +140,12 @@ class TestScenarioLoaderService:
             file1 = Path(tmpdir) / "scenarios1.json"
             file2 = Path(tmpdir) / "scenarios2.json"
 
-            test_data1 = {"scenarios": [{"scenario_id": "test_1", "description": "Test 1", "expected_behavior": "Pass"}]}
-            test_data2 = {"scenarios": [{"scenario_id": "test_2", "description": "Test 2", "expected_behavior": "Pass"}]}
+            test_data1 = {
+                "scenarios": [{"scenario_id": "test_1", "description": "Test 1", "expected_behavior": "Pass"}]
+            }
+            test_data2 = {
+                "scenarios": [{"scenario_id": "test_2", "description": "Test 2", "expected_behavior": "Pass"}]
+            }
 
             file1.write_text(json.dumps(test_data1), encoding="utf-8")
             file2.write_text(json.dumps(test_data2), encoding="utf-8")

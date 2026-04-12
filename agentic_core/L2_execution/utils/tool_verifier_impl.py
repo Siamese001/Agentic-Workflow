@@ -283,7 +283,10 @@ class ToolVerifier:
         }
 
     async def verify_tool_call(
-        self: Any, tool_name: str, tool_args: dict[str, Any], context: dict | None,
+        self: Any,
+        tool_name: str,
+        tool_args: dict[str, Any],
+        context: dict | None,
     ) -> ToolVerificationReport:
         """
         Verify a tool call before execution.
@@ -298,7 +301,9 @@ class ToolVerifier:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ToolVerifierImpl.verify_tool_call",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "ToolVerifierImpl.verify_tool_call",
         )
         _ectx = _make_execution_context(tool_name, "tool_verifier_impl.verify_tool_call")
         _invoke_authorize_and_execute(
@@ -341,7 +346,9 @@ class ToolVerifier:
         )
 
     def _validate_basic_tool_call(
-        self: Any, tool_name: str, tool_args: dict[str, Any],
+        self: Any,
+        tool_name: str,
+        tool_args: dict[str, Any],
     ) -> list[VerificationIssue]:
         """Basic validation of tool call structure."""
         issues = []
@@ -403,7 +410,7 @@ class ToolVerifier:
                                     suggestion="Consider safer alternatives",
                                 ),
                             )
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             issues.append(
                 VerificationIssue(
                     Severity="error",
@@ -431,7 +438,10 @@ class ToolVerifier:
         return issues
 
     async def _verify_tool_specific(
-        self: Any, tool_name: str, tool_args: dict[str, Any], context: dict | None,
+        self: Any,
+        tool_name: str,
+        tool_args: dict[str, Any],
+        context: dict | None,
     ) -> list[VerificationIssue]:
         """Tool-specific verification logic."""
         issues = []

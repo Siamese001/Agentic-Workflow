@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 
 class IntentType(Enum):
     """Types of query intent."""
+
     INFORMATIONAL = "informational"
     ACTION = "action"
     ANALYTICAL = "analytical"
@@ -32,6 +33,7 @@ class IntentType(Enum):
 
 class DomainType(Enum):
     """Types of knowledge domain."""
+
     POLICY = "policy"
     TECHNICAL = "technical"
     OPERATIONAL = "operational"
@@ -48,6 +50,7 @@ class RoutingSignal:
     The RoutingSignal provides lightweight intent and domain assessment
     to guide pre-retrieval gating and cache decisions.
     """
+
     intent: IntentType
     domain: DomainType
     confidence: float
@@ -77,69 +80,69 @@ class RoutingSignalDetector:
         # Intent patterns
         self.intent_patterns = {
             IntentType.ACTION: [
-                r'\b(how\s+(do|can|should)\s+i|steps?\s+(to|for)|guide|tutorial|instructions?)\b',
-                r'\b(create|make|build|setup|configure|install|deploy)\b',
+                r"\b(how\s+(do|can|should)\s+i|steps?\s+(to|for)|guide|tutorial|instructions?)\b",
+                r"\b(create|make|build|setup|configure|install|deploy)\b",
             ],
             IntentType.ANALYTICAL: [
-                r'\b(analyz(?:e|ing)|evaluat(?:e|ing)|assess(?:ing)?|compare|contrast)\b',
-                r'\b(why|what\s+(is|are|causes?)|reason|explain)\b',
+                r"\b(analyz(?:e|ing)|evaluat(?:e|ing)|assess(?:ing)?|compare|contrast)\b",
+                r"\b(why|what\s+(is|are|causes?)|reason|explain)\b",
             ],
             IntentType.COMPARATIVE: [
-                r'\b(compare|versus|vs|difference\s+between|better|best|alternatives?)\b',
-                r'\b(pros?\s+and\s+cons?|advantages?|disadvantages?)\b',
+                r"\b(compare|versus|vs|difference\s+between|better|best|alternatives?)\b",
+                r"\b(pros?\s+and\s+cons?|advantages?|disadvantages?)\b",
             ],
             IntentType.TROUBLESHOOTING: [
-                r'\b(error|issue|problem|bug|fail(?:ed|ure)?|broken|not\s+working)\b',
-                r'\b(troubleshoot|debug|fix|resolve|solve)\b',
-                r'\b(exception|crash|hang|freeze|timeout)\b',
+                r"\b(error|issue|problem|bug|fail(?:ed|ure)?|broken|not\s+working)\b",
+                r"\b(troubleshoot|debug|fix|resolve|solve)\b",
+                r"\b(exception|crash|hang|freeze|timeout)\b",
             ],
             IntentType.PROCEDURAL: [
-                r'\b(process|workflow|procedure|protocol|steps?)\b',
-                r'\b(approv(?:al|e)|review|audit|compliance)\b',
+                r"\b(process|workflow|procedure|protocol|steps?)\b",
+                r"\b(approv(?:al|e)|review|audit|compliance)\b",
             ],
         }
 
         # Domain patterns
         self.domain_patterns = {
             DomainType.POLICY: [
-                r'\b(policy|procedure|guideline|standard|compliance|regulation|legal)\b',
-                r'\b(approv(?:al|e)|authoriz(?:e|ation)|permission)\b',
+                r"\b(policy|procedure|guideline|standard|compliance|regulation|legal)\b",
+                r"\b(approv(?:al|e)|authoriz(?:e|ation)|permission)\b",
             ],
             DomainType.CODE: [
-                r'\b(code|function|class|method|api|library|module|package)\b',
-                r'\b(python|javascript|java|cpp|go|rust|typescript|sql)\b',
-                r'\b(git|commit|branch|merge|repository)\b',
+                r"\b(code|function|class|method|api|library|module|package)\b",
+                r"\b(python|javascript|java|cpp|go|rust|typescript|sql)\b",
+                r"\b(git|commit|branch|merge|repository)\b",
             ],
             DomainType.INCIDENT: [
-                r'\b(incident|outage|disruption|severity|impact|oncall)\b',
-                r'\b(alert|page|escalat(?:e|ion)|war\s+room|postmortem)\b',
+                r"\b(incident|outage|disruption|severity|impact|oncall)\b",
+                r"\b(alert|page|escalat(?:e|ion)|war\s+room|postmortem)\b",
             ],
             DomainType.TECHNICAL: [
-                r'\b(architecture|infrastructure|system|component|service)\b',
-                r'\b(database|cache|queue|api|endpoint|microservice)\b',
-                r'\b(performance|latency|throughput|capacity|scaling)\b',
+                r"\b(architecture|infrastructure|system|component|service)\b",
+                r"\b(database|cache|queue|api|endpoint|microservice)\b",
+                r"\b(performance|latency|throughput|capacity|scaling)\b",
             ],
             DomainType.OPERATIONAL: [
-                r'\b(runbook|playbook|operation|maintenance|deployment)\b',
-                r'\b(monitor(?:ing)?|metric|log|trace|observability)\b',
+                r"\b(runbook|playbook|operation|maintenance|deployment)\b",
+                r"\b(monitor(?:ing)?|metric|log|trace|observability)\b",
             ],
             DomainType.STRATEGIC: [
-                r'\b(strategy|roadmap|planning|vision|goal|objective)\b',
-                r'\b(priorit(?:y|ize)|quarter|yearly|annual|okr|kpi)\b',
+                r"\b(strategy|roadmap|planning|vision|goal|objective)\b",
+                r"\b(priorit(?:y|ize)|quarter|yearly|annual|okr|kpi)\b",
             ],
         }
 
         # Urgency indicators
         self.urgency_patterns = [
-            r'\b(urgent|asap|immediately|critical|emergency|p0|p1)\b',
-            r'\b(blocking|broken|down|outage|sev[0-9])\b',
-            r'\b(deadline|due\s+(today|tomorrow|soon))\b',
+            r"\b(urgent|asap|immediately|critical|emergency|p0|p1)\b",
+            r"\b(blocking|broken|down|outage|sev[0-9])\b",
+            r"\b(deadline|due\s+(today|tomorrow|soon))\b",
         ]
 
         # Authority indicators
         self.authority_patterns = [
-            r'\b(official|authoritative|canonical|source\s+of\s+truth)\b',
-            r'\b(documentation|manual|handbook|standard)\b',
+            r"\b(official|authoritative|canonical|source\s+of\s+truth)\b",
+            r"\b(documentation|manual|handbook|standard)\b",
         ]
 
     def detect(self, query: str) -> RoutingSignal:
@@ -153,7 +156,9 @@ class RoutingSignalDetector:
         """
         trace_id = f"signal_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "RoutingSignalDetector.detect",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "RoutingSignalDetector.detect",
         )
 
         query_lower = query.lower()
@@ -191,7 +196,7 @@ class RoutingSignalDetector:
             domain=best_domain,
             confidence=(intent_confidence + domain_confidence) / 2,
             keywords=keywords[:10],  # Top 10 keywords
-            entities=entities[:5],   # Top 5 entities
+            entities=entities[:5],  # Top 5 entities
             urgency_score=urgency,
             complexity_score=complexity,
             requires_freshness=requires_freshness,
@@ -256,16 +261,62 @@ class RoutingSignalDetector:
         """Extract significant keywords."""
         # Simple keyword extraction (could be enhanced with NLP)
         stop_words = {
-            'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been',
-            'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will',
-            'would', 'could', 'should', 'may', 'might', 'must', 'shall',
-            'can', 'need', 'dare', 'ought', 'used', 'to', 'of', 'in',
-            'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into',
-            'through', 'during', 'before', 'after', 'above', 'below',
-            'between', 'under', 'and', 'but', 'or', 'yet', 'so',
+            "the",
+            "a",
+            "an",
+            "is",
+            "are",
+            "was",
+            "were",
+            "be",
+            "been",
+            "being",
+            "have",
+            "has",
+            "had",
+            "do",
+            "does",
+            "did",
+            "will",
+            "would",
+            "could",
+            "should",
+            "may",
+            "might",
+            "must",
+            "shall",
+            "can",
+            "need",
+            "dare",
+            "ought",
+            "used",
+            "to",
+            "of",
+            "in",
+            "for",
+            "on",
+            "with",
+            "at",
+            "by",
+            "from",
+            "as",
+            "into",
+            "through",
+            "during",
+            "before",
+            "after",
+            "above",
+            "below",
+            "between",
+            "under",
+            "and",
+            "but",
+            "or",
+            "yet",
+            "so",
         }
 
-        words = re.findall(r'\b[a-z]{3,}\b', query.lower())
+        words = re.findall(r"\b[a-z]{3,}\b", query.lower())
         keywords = [w for w in words if w not in stop_words]
 
         # Return unique keywords preserving order
@@ -280,11 +331,11 @@ class RoutingSignalDetector:
     def _extract_entities(self, query: str) -> list[str]:
         """Extract potential entities (capitalized phrases)."""
         # Match capitalized phrases (potential proper nouns)
-        pattern = r'\b[A-Z][a-zA-Z]*(?:\s+[A-Z][a-zA-Z]*)*\b'
+        pattern = r"\b[A-Z][a-zA-Z]*(?:\s+[A-Z][a-zA-Z]*)*\b"
         matches = re.findall(pattern, query)
 
         # Filter out common words
-        common = {'The', 'A', 'An', 'Is', 'Are', 'Was', 'Were', 'Be', 'Been'}
+        common = {"The", "A", "An", "Is", "Are", "Was", "Were", "Be", "Been"}
         entities = [m for m in matches if m not in common and len(m) > 2]
 
         return list(set(entities))  # Deduplicate

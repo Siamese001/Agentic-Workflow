@@ -180,6 +180,7 @@ class GraphAwareCache:
     def get(self, key: str) -> Any | None:
         """Return cached value or None if not present."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphAwareCache.get")
 

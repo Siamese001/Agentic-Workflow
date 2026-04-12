@@ -23,33 +23,33 @@ def debug_system_restructuring():
     workflow = SequentialThinkingEnhancedWorkflow(seq_thinking_enabled=True)
 
     step_config = {
-        'name': 'System Restructuring',
-        'type': 'system_restructuring',
-        'complexity': 'critical',
-        'files': ['legacy.py'],
+        "name": "System Restructuring",
+        "type": "system_restructuring",
+        "complexity": "critical",
+        "files": ["legacy.py"],
     }
 
-    template_content = workflow._get_seq_thinking_template('system_restructuring', step_config)
+    template_content = workflow._get_seq_thinking_template("system_restructuring", step_config)
 
     print("📋 System Restructuring Template Content:")
     print("-" * 50)
 
     # Show first 40 lines
-    lines = template_content.split('\n')
+    lines = template_content.split("\n")
     for i, line in enumerate(lines[:40]):
-        print(f"{i+1:2d}: {line}")
+        print(f"{i + 1:2d}: {line}")
 
     # Check for specific values
     print("\n🔍 Checking for specific values:")
     check_values = [
-        'layer violations',
-        'Layer violations',
-        'layer violations,',
-        'Layer violations,',
-        'identified_issues',
-        'system_size',
-        'complexity_metrics',
-        'restructuring_goals',
+        "layer violations",
+        "Layer violations",
+        "layer violations,",
+        "Layer violations,",
+        "identified_issues",
+        "system_size",
+        "complexity_metrics",
+        "restructuring_goals",
     ]
 
     for value in check_values:
@@ -67,13 +67,14 @@ def debug_system_restructuring():
 
         issues_section = template_content[issues_start:issues_end]
         print("   Content:")
-        for line in issues_section.split('\n')[:10]:
+        for line in issues_section.split("\n")[:10]:
             if line.strip():
                 print(f"      {line}")
     else:
         print("   ❌ Current Issues section not found")
 
     return template_content
+
 
 if __name__ == "__main__":
     debug_system_restructuring()

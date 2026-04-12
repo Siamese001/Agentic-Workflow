@@ -70,12 +70,16 @@ class ContextAssembler:
 
             # Step 4: Apply length constraints
             final_items, truncation_applied = self._apply_length_constraints(
-                filtered_items, query,
+                filtered_items,
+                query,
             )
 
             # Step 5: Calculate statistics
             context = self._create_context(
-                query, final_items, truncation_applied, start_time,
+                query,
+                final_items,
+                truncation_applied,
+                start_time,
             )
 
             # Update statistics
@@ -113,7 +117,7 @@ class ContextAssembler:
     async def _search_for_context(self, query: RAGQuery) -> SearchResponse:
         """Search for relevant context items."""
         # Convert RAG query to search query
-        search_query = query.search_response if hasattr(query, 'search_response') else None
+        search_query = query.search_response if hasattr(query, "search_response") else None
 
         if not search_query:
             # Create search query from RAG query
@@ -161,7 +165,7 @@ class ContextAssembler:
                 title=result.title,
                 relevance_score=result.relevance_score,
                 source_file=result.source_file,
-                line_number=getattr(result, 'line_number', None),
+                line_number=getattr(result, "line_number", None),
                 confidence=result.confidence,
                 context_type=context_type,
                 hierarchy_level=result.metadata.get("community_level"),
@@ -293,7 +297,7 @@ class ContextAssembler:
                 remaining_space = query.max_context_length - current_length
                 if remaining_space > 100:  # Only add if meaningful space remains
                     # Truncate the content
-                    truncated_content = item.content[:remaining_space - 3] + "..."
+                    truncated_content = item.content[: remaining_space - 3] + "..."
                     truncated_item = ContextItem(
                         item_id=item.item_id,
                         content=truncated_content,
@@ -346,7 +350,9 @@ class ContextAssembler:
             warnings.append("Context was truncated to fit length constraints")
 
         if len(items) < query.min_context_items:
-            warnings.append(f"Only {len(items)} context items found, below minimum of {query.min_context_items}")
+            warnings.append(
+                f"Only {len(items)} context items found, below minimum of {query.min_context_items}"
+            )
 
         assembly_time = (datetime.utcnow() - start_time).total_seconds() * 1000
 

@@ -221,7 +221,10 @@ class CircuitBreakerMixin:
 
     # guardian: allow-magic-config
     def configure_circuit_breaker(
-        self, failure_threshold: int = 5, recovery_timeout: int = 30, success_threshold: int = 2,
+        self,
+        failure_threshold: int = 5,
+        recovery_timeout: int = 30,
+        success_threshold: int = 2,
     ) -> None:
         """
         Configure circuit breaker parameters.
@@ -232,15 +235,22 @@ class CircuitBreakerMixin:
             success_threshold: Successes needed to close circuit
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreakerMixin.configure_circuit_breaker")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CircuitBreakerMixin.configure_circuit_breaker"
+        )
 
         self._failure_threshold = failure_threshold
         self._recovery_timeout = recovery_timeout
         self._success_threshold = success_threshold
 
     def circuit_protected(
-        self, operation: Callable[..., T], *args: Any, fallback: Callable[..., T] | None = None, **kwargs: Any,
+        self,
+        operation: Callable[..., T],
+        *args: Any,
+        fallback: Callable[..., T] | None = None,
+        **kwargs: Any,
     ) -> T:
         """
         Execute operation with circuit breaker protection.

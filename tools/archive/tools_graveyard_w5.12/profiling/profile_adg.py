@@ -8,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
+
 class Timer:
     def __init__(self):
         self.start = time.time()
@@ -20,21 +21,25 @@ class Timer:
         print(f"[PROFILE] +{elapsed:.2f}s (total {total:.2f}s) -- {label}", flush=True)
         self.last = now
 
+
 T = Timer()
+
 
 def timeout_handler(signum, frame):
     print(f"\n[PROFILE] *** TIMEOUT at {time.time() - T.start:.1f}s ***", flush=True)
     import traceback
+
     traceback.print_stack(frame)
     sys.exit(1)
+
 
 # Set 120s timeout
 try:
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(120)
 except AttributeError as e:
-        # TODO: Fix programming error - AttributeError should not occur
-        pass  # Windows doesn't have SIGALRM
+    # TODO: Fix programming error - AttributeError should not occur
+    pass  # Windows doesn't have SIGALRM
 
 T.checkpoint("START")
 
@@ -72,6 +77,7 @@ original_scan_file = sm._scan_file
 file_count = [0]
 slow_files = []
 
+
 def timed_scan_file(filepath, repo_root, include_tests=True):
     t0 = time.time()
     result = original_scan_file(filepath, repo_root, include_tests)
@@ -85,13 +91,16 @@ def timed_scan_file(filepath, repo_root, include_tests=True):
         print(f"[PROFILE]   *** SLOW FILE {elapsed:.2f}s: {filepath}", flush=True)
     return result
 
+
 sm._scan_file = timed_scan_file
 
 result = scanner.scan()
 sm._scan_file = original_scan_file
 
 T.checkpoint(f"scanner.scan() complete: {len(result.modules)} modules, {len(result.edges)} edges")
-T.checkpoint(f"cache hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}")
+T.checkpoint(
+    f"cache hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}"
+)
 
 if slow_files:
     print("\n[PROFILE] TOP SLOW FILES:")

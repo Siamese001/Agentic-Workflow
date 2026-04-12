@@ -21,6 +21,7 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
+
 @dataclass
 class IntegrationConfig:
     """Configuration for domain integration."""

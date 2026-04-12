@@ -208,14 +208,18 @@ class HOPPipelineExecutor(HOPStageCapability, LICAgentBase):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"HOPPipelineExecutor._process:stage_{self.stage_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"HOPPipelineExecutor._process:stage_{self.stage_id}",
+        )
 
         # Extract complexity tier from reasoning profile for dynamic path selection
         complexity_tier = "moderate"  # default
         profile_hash = None
         if self.reasoning_profile is not None:
-            complexity_tier = getattr(self.reasoning_profile, 'adg_complexity_tier', 'moderate')
-            profile_hash = getattr(self.reasoning_profile, 'profile_hash', None)
+            complexity_tier = getattr(self.reasoning_profile, "adg_complexity_tier", "moderate")
+            profile_hash = getattr(self.reasoning_profile, "profile_hash", None)
             # Emit telemetry about reasoning path selection
             _emit_records_telemetry_event(
                 str(uuid.uuid4()),
@@ -224,8 +228,8 @@ class HOPPipelineExecutor(HOPStageCapability, LICAgentBase):
                     "stage_name": self.stage_name,
                     "complexity_tier": complexity_tier,
                     "profile_hash": profile_hash,
-                    "adg_node_count": getattr(self.reasoning_profile, 'adg_node_count', 0),
-                    "adg_edge_count": getattr(self.reasoning_profile, 'adg_edge_count', 0),
+                    "adg_node_count": getattr(self.reasoning_profile, "adg_node_count", 0),
+                    "adg_edge_count": getattr(self.reasoning_profile, "adg_edge_count", 0),
                 },
             )
 

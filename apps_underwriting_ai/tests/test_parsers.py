@@ -1,6 +1,5 @@
 """Tests for apps_underwriting_ai parser components."""
 
-
 from apps_underwriting_ai.parsers.bank_statement_parser import (
     BankStatementParser,
 )

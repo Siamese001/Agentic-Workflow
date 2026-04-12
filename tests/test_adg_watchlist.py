@@ -52,9 +52,9 @@ class TestWatchlistGeneration:
         top = watchlist[0]
         assert top.rank == 1
         # Should have either high fan-in, cone risk, or violations
-        assert (
-            top.fan_in > 100 or top.cone_risk > 50 or top.sc1_violation or top.sc5_violation
-        ), f"Top item should have high signal: {top}"
+        assert top.fan_in > 100 or top.cone_risk > 50 or top.sc1_violation or top.sc5_violation, (
+            f"Top item should have high signal: {top}"
+        )
 
     def test_sc1_violations_appear_in_watchlist(self):
         """Files with SC-1 violations should appear in watchlist."""
@@ -81,10 +81,7 @@ class TestWatchlistGeneration:
             watchlist = builder.build_watchlist()
 
         # Find items with multiple signals
-        multi_signal = [
-            item for item in watchlist
-            if item.fan_in > 100 and item.sc1_violation
-        ]
+        multi_signal = [item for item in watchlist if item.fan_in > 100 and item.sc1_violation]
 
         if not multi_signal:
             pytest.skip("No multi-signal items in current data")
@@ -136,9 +133,7 @@ class TestWatchlistArtifact:
         output_dir = tmp_path / "test_output"
         output_dir.mkdir()
 
-        artifact_path = build_and_emit_watchlist(
-            sqlite_path, output_dir, print_summary=False
-        )
+        artifact_path = build_and_emit_watchlist(sqlite_path, output_dir, print_summary=False)
 
         assert artifact_path.exists(), "Artifact should exist"
         assert artifact_path.suffix == ".json"
@@ -152,9 +147,7 @@ class TestWatchlistArtifact:
         output_dir = tmp_path / "test_output"
         output_dir.mkdir()
 
-        artifact_path = build_and_emit_watchlist(
-            sqlite_path, output_dir, print_summary=False
-        )
+        artifact_path = build_and_emit_watchlist(sqlite_path, output_dir, print_summary=False)
 
         with open(artifact_path) as f:
             data = json.load(f)
@@ -183,10 +176,7 @@ class TestTerminalSummary:
 
         # Count lines that look like watchlist items (start with rank number)
         lines = summary.split("\n")
-        item_lines = [
-            line for line in lines
-            if line.strip() and line.split()[0].isdigit()
-        ]
+        item_lines = [line for line in lines if line.strip() and line.split()[0].isdigit()]
 
         # Should have at most 10 items shown
         assert len(item_lines) <= 10, f"Summary should show max 10 items, got {len(item_lines)}"
@@ -226,9 +216,11 @@ class TestAnomalyClassification:
 
         with ADGWatchlistBuilder(sqlite_path) as builder:
             # Get thresholds from builder
-            fi_threshold = int(builder._get_percentile_threshold(
-                "mv_hotspot_centrality", "fan_in", builder.FAN_IN_PERCENTILE
-            ))
+            fi_threshold = int(
+                builder._get_percentile_threshold(
+                    "mv_hotspot_centrality", "fan_in", builder.FAN_IN_PERCENTILE
+                )
+            )
             cone_threshold = builder._get_percentile_threshold(
                 "mv_dependency_cone_risk", "cone_risk_score", builder.CONE_RISK_PERCENTILE
             )
@@ -241,10 +233,14 @@ class TestAnomalyClassification:
 
         for item in multi_signal:
             # Use same thresholds as builder
-            signals = sum([
-                item.fan_in >= fi_threshold,
-                item.cone_risk >= cone_threshold,
-                item.sc1_violation,
-                item.sc5_violation,
-            ])
-            assert signals >= 2, f"multi_signal_hotspot should have >=2 signals, got {signals} for {item.file}"
+            signals = sum(
+                [
+                    item.fan_in >= fi_threshold,
+                    item.cone_risk >= cone_threshold,
+                    item.sc1_violation,
+                    item.sc5_violation,
+                ]
+            )
+            assert signals >= 2, (
+                f"multi_signal_hotspot should have >=2 signals, got {signals} for {item.file}"
+            )

@@ -18,6 +18,7 @@ def test_cache_usage():
     start = time.time()
 
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
     scanner = ADGStaticScanner(
         repo_root=Path("C:/Git/Agentic-Workflow"),
         cache_path=cache_file,
@@ -25,6 +26,7 @@ def test_cache_usage():
 
     # Test just the first 50 files to see cache behavior
     import agentic_core.adg.extraction.static_scanner as scanner_module
+
     original_iter = scanner_module._iter_python_files
 
     def limited_iter(root):
@@ -54,6 +56,7 @@ def test_cache_usage():
     finally:
         # Restore original function
         scanner_module._iter_python_files = original_iter
+
 
 if __name__ == "__main__":
     test_cache_usage()

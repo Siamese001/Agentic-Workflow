@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 class LoadLevel(Enum):
     """System load levels."""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -29,6 +30,7 @@ class LoadLevel(Enum):
 @dataclass
 class LoadMetrics:
     """Current load metrics."""
+
     cpu_percent: float = 0.0
     memory_percent: float = 0.0
     queue_depth: int = 0
@@ -73,7 +75,9 @@ class BackpressureController:
         """
         trace_id = f"backpressure_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "BackpressureController.update_load",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "BackpressureController.update_load",
         )
 
         # Calculate composite load score
@@ -109,6 +113,7 @@ class BackpressureController:
         if self._current_level == LoadLevel.HIGH:
             # Accept with probability based on throttle factor
             import random
+
             return random.random() < self._throttle_factor
 
         return True
@@ -156,10 +161,10 @@ class BackpressureController:
         latency_score = min(metrics.latency_p95_ms / 5000, 1.0)
 
         return (
-            metrics.cpu_percent * cpu_weight +
-            metrics.memory_percent * memory_weight +
-            queue_score * queue_weight +
-            latency_score * latency_weight
+            metrics.cpu_percent * cpu_weight
+            + metrics.memory_percent * memory_weight
+            + queue_score * queue_weight
+            + latency_score * latency_weight
         )
 
     def _determine_load_level(self, load_score: float) -> LoadLevel:

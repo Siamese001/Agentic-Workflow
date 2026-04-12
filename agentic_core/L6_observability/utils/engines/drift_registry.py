@@ -117,7 +117,9 @@ class DriftRegistry:
             )
 
     def query(
-        self, since_iso: str | None = None, source_filter: DriftSource | None = None,
+        self,
+        since_iso: str | None = None,
+        source_filter: DriftSource | None = None,
     ) -> list[DriftRegistryEntry]:
         """Return entries matching the given filters, oldest first."""
         results = list(self._entries)

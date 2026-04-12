@@ -22,30 +22,30 @@ class TestCategoryMarkerAdder:
         # Load test inventory
         with open(PROJECT_ROOT / "tools" / "test_enforcement" / "test_inventory.json") as f:
             inventory = json.load(f)
-            self.test_files = inventory.get('test_files', [])
+            self.test_files = inventory.get("test_files", [])
 
     def add_category_markers_to_all_tests(self):
         """Add category markers to all test functions."""
         print("🔧 Adding category markers to all tests...")
 
         for test_file_info in self.test_files[:500]:  # Process first 500 files as demo
-            file_path = Path(test_file_info['file_path'])
+            file_path = Path(test_file_info["file_path"])
 
             if not file_path.exists():
                 continue
 
             try:
-                content = file_path.read_text(encoding='utf-8')
+                content = file_path.read_text(encoding="utf-8")
                 lines = content.splitlines()
                 modified = False
 
                 # Find all test functions and add markers if missing
                 for i, line in enumerate(lines):
-                    if re.match(r'^\s*def test_', line):
+                    if re.match(r"^\s*def test_", line):
                         # Check if marker already exists above
                         has_marker = False
-                        for j in range(max(0, i-3), i):
-                            if '@pytest.mark.' in lines[j]:
+                        for j in range(max(0, i - 3), i):
+                            if "@pytest.mark." in lines[j]:
                                 has_marker = True
                                 break
 
@@ -53,13 +53,13 @@ class TestCategoryMarkerAdder:
                             # Determine appropriate category
                             category = self._determine_test_category(file_path, line)
                             indent = len(line) - len(line.lstrip())
-                            marker_line = ' ' * indent + category
+                            marker_line = " " * indent + category
                             lines.insert(i, marker_line)
                             modified = True
                             self.markers_added += 1
 
                 if modified:
-                    file_path.write_text('\n'.join(lines), encoding='utf-8')
+                    file_path.write_text("\n".join(lines), encoding="utf-8")
 
                     if self.markers_added % 50 == 0:
                         print(f"    Added {self.markers_added} category markers...")
@@ -75,41 +75,41 @@ class TestCategoryMarkerAdder:
         path_str = str(file_path)
 
         # Determine category based on file path
-        if '/unit_min_deps/' in path_str:
-            return '@pytest.mark.unit_min_deps'
-        elif '/unit/' in path_str:
-            return '@pytest.mark.unit'
-        elif '/integration/' in path_str:
-            return '@pytest.mark.integration'
-        elif '/e2e/' in path_str:
-            return '@pytest.mark.e2e'
-        elif 'performance' in path_str.lower():
-            return '@pytest.mark.performance'
-        elif 'security' in path_str.lower():
-            return '@pytest.mark.security'
-        elif 'adg' in path_str.lower():
-            return '@pytest.mark.adg'
-        elif 'sovereign' in path_str.lower():
-            return '@pytest.mark.sovereign'
-        elif 'guardian' in path_str.lower():
-            return '@pytest.mark.guardian'
+        if "/unit_min_deps/" in path_str:
+            return "@pytest.mark.unit_min_deps"
+        elif "/unit/" in path_str:
+            return "@pytest.mark.unit"
+        elif "/integration/" in path_str:
+            return "@pytest.mark.integration"
+        elif "/e2e/" in path_str:
+            return "@pytest.mark.e2e"
+        elif "performance" in path_str.lower():
+            return "@pytest.mark.performance"
+        elif "security" in path_str.lower():
+            return "@pytest.mark.security"
+        elif "adg" in path_str.lower():
+            return "@pytest.mark.adg"
+        elif "sovereign" in path_str.lower():
+            return "@pytest.mark.sovereign"
+        elif "guardian" in path_str.lower():
+            return "@pytest.mark.guardian"
         else:
-            return '@pytest.mark.unit'  # Default to unit
+            return "@pytest.mark.unit"  # Default to unit
 
     def generate_marker_report(self):
         """Generate a report of markers added."""
         print("📋 Generating category marker report...")
 
         report = {
-            'marker_timestamp': '2026-03-24T19:45:00Z',
-            'total_test_files': len(self.test_files),
-            'markers_added': self.markers_added,
-            'errors': self.errors,
-            'files_processed': min(500, len(self.test_files)),
+            "marker_timestamp": "2026-03-24T19:45:00Z",
+            "total_test_files": len(self.test_files),
+            "markers_added": self.markers_added,
+            "errors": self.errors,
+            "files_processed": min(500, len(self.test_files)),
         }
 
         report_file = PROJECT_ROOT / "tools" / "test_category_markers_report.json"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
 
         print(f"✅ Marker report written to: {report_file}")
@@ -141,7 +141,7 @@ def main():
     print(f"📁 Files processed: {report['files_processed']}")
     print(f"❌ Errors: {report['errors']}")
 
-    if report['files_processed'] < len(adder.test_files):
+    if report["files_processed"] < len(adder.test_files):
         print("\n📝 REMAINING:")
         print(f"   {len(adder.test_files) - report['files_processed']} files to process")
     else:

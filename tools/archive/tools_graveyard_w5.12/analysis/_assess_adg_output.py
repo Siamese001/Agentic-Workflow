@@ -165,7 +165,10 @@ chk("G8  gateway entities", "SELECT COUNT(*) FROM entities WHERE entity_type='ga
 
 # G9 – seam entity_type nodes
 chk(
-    "G9  seam entities", "SELECT COUNT(*) FROM entities WHERE entity_type='seam'", ">=", 0,
+    "G9  seam entities",
+    "SELECT COUNT(*) FROM entities WHERE entity_type='seam'",
+    ">=",
+    0,
 )  # may be 0 if no seam modules scanned
 
 # G10 – provider entity_type nodes
@@ -257,7 +260,8 @@ print("SAMPLE ENTITIES (new types)")
 print("=" * 60)
 for etype in ("layer", "gateway", "seam", "provider", "prompt_slot", "prompt_template"):
     rows = cur.execute(
-        "SELECT adg_name, entity_type, layer FROM entities WHERE entity_type=? LIMIT 3", (etype,),
+        "SELECT adg_name, entity_type, layer FROM entities WHERE entity_type=? LIMIT 3",
+        (etype,),
     ).fetchall()
     if rows:
         print(f"\n  [{etype}]")

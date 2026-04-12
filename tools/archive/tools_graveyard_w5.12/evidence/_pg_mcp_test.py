@@ -1,4 +1,5 @@
 """Test that the postgres MCP server can start and connect to mcp_db."""
+
 import json
 import os
 import subprocess
@@ -25,16 +26,21 @@ if poll is not None:
     sys.exit(1)
 
 # Send a JSON-RPC initialize request
-req = json.dumps({
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "initialize",
-    "params": {
-        "protocolVersion": "2024-11-05",
-        "capabilities": {},
-        "clientInfo": {"name": "test", "version": "1.0"},
-    },
-}) + "\n"
+req = (
+    json.dumps(
+        {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+                "protocolVersion": "2024-11-05",
+                "capabilities": {},
+                "clientInfo": {"name": "test", "version": "1.0"},
+            },
+        }
+    )
+    + "\n"
+)
 
 try:
     proc.stdin.write(req)
@@ -42,6 +48,7 @@ try:
     time.sleep(2)
     # Read response
     import select
+
     ready = select.select([proc.stdout], [], [], 3)
     if ready[0]:
         line = proc.stdout.readline()

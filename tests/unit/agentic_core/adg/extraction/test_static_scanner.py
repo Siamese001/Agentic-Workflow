@@ -16,14 +16,17 @@ class TestStaticScanner:
     def test_static_scanner_imports(self):
         """Test static_scanner module imports."""
         from agentic_core import static_scanner
+
         assert static_scanner is not None
 
     def test_static_scanner_class(self):
         """Test StaticScanner class exists."""
         from agentic_core import StaticScanner
+
         assert StaticScanner is not None
 
     def test_static_scanner_callable(self):
         """Test static_scanner functions are callable."""
         from agentic_core import validate_static_scanner
+
         assert callable(validate_static_scanner)

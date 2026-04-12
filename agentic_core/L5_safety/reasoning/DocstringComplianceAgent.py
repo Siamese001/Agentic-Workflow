@@ -243,7 +243,9 @@ class DocstringComplianceAgent(PromptRenderingMixin, SovereignBaseAgent):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "DocstringComplianceAgent.heal_violation",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "DocstringComplianceAgent.heal_violation",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

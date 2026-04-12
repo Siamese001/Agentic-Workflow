@@ -19,6 +19,7 @@ from typing import Any
 
 class ModelStatus(Enum):
     """Model lifecycle status."""
+
     DEVELOPMENT = "development"
     CANDIDATE = "candidate"
     PRODUCTION = "production"
@@ -28,6 +29,7 @@ class ModelStatus(Enum):
 
 class DecisionMode(Enum):
     """Model decision authority level."""
+
     ADVISORY = "advisory"
     SHADOW_ONLY = "shadow_only"
     BLOCKED = "blocked"
@@ -37,6 +39,7 @@ class DecisionMode(Enum):
 @dataclass
 class ModelMetadata:
     """Complete model metadata for governance."""
+
     model_name: str
     model_version: str
     model_type: str
@@ -58,6 +61,7 @@ class ModelMetadata:
 @dataclass
 class ModelRecord:
     """Registry record for a model."""
+
     metadata: ModelMetadata
     file_path: Path
     is_active: bool
@@ -92,24 +96,23 @@ class ModelRegistry:
         """Load model registry from disk."""
         if self.models_file.exists():
             try:
-                with open(self.models_file, encoding='utf-8') as f:
+                with open(self.models_file, encoding="utf-8") as f:
                     data = json.load(f)
 
                 for model_id, record_data in data.items():
-                    metadata = ModelMetadata(**record_data['metadata'])
+                    metadata = ModelMetadata(**record_data["metadata"])
                     # Convert string timestamps back to datetime
                     metadata.created_at = datetime.fromisoformat(metadata.created_at)
                     metadata.last_used = (
-                        datetime.fromisoformat(metadata.last_used)
-                        if metadata.last_used else None
+                        datetime.fromisoformat(metadata.last_used) if metadata.last_used else None
                     )
 
                     record = ModelRecord(
                         metadata=metadata,
-                        file_path=Path(record_data['file_path']),
-                        is_active=record_data['is_active'],
+                        file_path=Path(record_data["file_path"]),
+                        is_active=record_data["is_active"],
                         last_used=metadata.last_used,
-                        usage_count=record_data['usage_count'],
+                        usage_count=record_data["usage_count"],
                     )
                     self._models[model_id] = record
 
@@ -122,13 +125,13 @@ class ModelRegistry:
         data = {}
         for model_id, record in self._models.items():
             data[model_id] = {
-                'metadata': asdict(record.metadata),
-                'file_path': str(record.file_path),
-                'is_active': record.is_active,
-                'usage_count': record.usage_count,
+                "metadata": asdict(record.metadata),
+                "file_path": str(record.file_path),
+                "is_active": record.is_active,
+                "usage_count": record.usage_count,
             }
 
-        with open(self.models_file, 'w', encoding='utf-8') as f:
+        with open(self.models_file, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, default=str)
 
     def _compute_digest(self, file_path: Path) -> str:
@@ -207,6 +210,7 @@ class ModelRegistry:
         # Copy model to registry
         registry_model_path = self.models_dir / f"{model_id}.pkl"
         import shutil
+
         shutil.copy2(model_file_path, registry_model_path)
 
         # Create record
@@ -264,25 +268,29 @@ class ModelRegistry:
 
         # Add to promotion history
         promotion_event = {
-            'timestamp': datetime.now().isoformat(),
-            'from_status': old_status.value,
-            'to_status': target_status.value,
-            'from_mode': old_mode.value,
-            'to_mode': target_decision_mode.value,
-            'promoted_by': promoted_by,
-            'justification': justification,
+            "timestamp": datetime.now().isoformat(),
+            "from_status": old_status.value,
+            "to_status": target_status.value,
+            "from_mode": old_mode.value,
+            "to_mode": target_decision_mode.value,
+            "promoted_by": promoted_by,
+            "justification": justification,
         }
         record.metadata.promotion_history.append(promotion_event)
 
         # Update active status
-        record.is_active = (target_status == ModelStatus.PRODUCTION)
+        record.is_active = target_status == ModelStatus.PRODUCTION
 
         self._save_registry()
 
         # Log promotion
-        self._log_model_event("model_promoted", model_id, {
-            'promotion_event': promotion_event,
-        })
+        self._log_model_event(
+            "model_promoted",
+            model_id,
+            {
+                "promotion_event": promotion_event,
+            },
+        )
 
         return True
 
@@ -319,20 +327,24 @@ class ModelRegistry:
 
         # Add to rollback history
         rollback_event = {
-            'timestamp': datetime.now().isoformat(),
-            'from_status': old_status.value,
-            'to_status': ModelStatus.ROLLED_BACK.value,
-            'rollback_reason': rollback_reason,
-            'rolled_back_by': rolled_back_by,
+            "timestamp": datetime.now().isoformat(),
+            "from_status": old_status.value,
+            "to_status": ModelStatus.ROLLED_BACK.value,
+            "rollback_reason": rollback_reason,
+            "rolled_back_by": rolled_back_by,
         }
         record.metadata.rollback_history.append(rollback_event)
 
         self._save_registry()
 
         # Log rollback
-        self._log_model_event("model_rolled_back", model_id, {
-            'rollback_event': rollback_event,
-        })
+        self._log_model_event(
+            "model_rolled_back",
+            model_id,
+            {
+                "rollback_event": rollback_event,
+            },
+        )
 
         return True
 
@@ -342,24 +354,17 @@ class ModelRegistry:
 
     def get_active_models(self, model_type: str | None = None) -> list[ModelRecord]:
         """Get all active models, optionally filtered by type."""
-        active_models = [
-            record for record in self._models.values()
-            if record.is_active
-        ]
+        active_models = [record for record in self._models.values() if record.is_active]
 
         if model_type:
-            active_models = [
-                record for record in active_models
-                if record.metadata.model_type == model_type
-            ]
+            active_models = [record for record in active_models if record.metadata.model_type == model_type]
 
         return active_models
 
     def get_production_models(self) -> list[ModelRecord]:
         """Get all production models."""
         return [
-            record for record in self._models.values()
-            if record.metadata.status == ModelStatus.PRODUCTION
+            record for record in self._models.values() if record.metadata.status == ModelStatus.PRODUCTION
         ]
 
     def update_usage(self, model_id: str) -> None:
@@ -408,10 +413,10 @@ class ModelRegistry:
         """Log model events to L4 canonical state."""
         try:
             event = {
-                'event_type': event_type,
-                'model_id': model_id,
-                'timestamp': datetime.now().isoformat(),
-                'data': data,
+                "event_type": event_type,
+                "model_id": model_id,
+                "timestamp": datetime.now().isoformat(),
+                "data": data,
             }
 
             # Store in L4 canonical state
@@ -425,20 +430,20 @@ class ModelRegistry:
     def get_registry_stats(self) -> dict[str, Any]:
         """Get registry statistics."""
         stats = {
-            'total_models': len(self._models),
-            'active_models': len([r for r in self._models.values() if r.is_active]),
-            'production_models': len(self.get_production_models()),
-            'models_by_type': {},
-            'models_by_status': {},
+            "total_models": len(self._models),
+            "active_models": len([r for r in self._models.values() if r.is_active]),
+            "production_models": len(self.get_production_models()),
+            "models_by_type": {},
+            "models_by_status": {},
         }
 
         for record in self._models.values():
             # Count by type
             model_type = record.metadata.model_type
-            stats['models_by_type'][model_type] = stats['models_by_type'].get(model_type, 0) + 1
+            stats["models_by_type"][model_type] = stats["models_by_type"].get(model_type, 0) + 1
 
             # Count by status
             status = record.metadata.status.value
-            stats['models_by_status'][status] = stats['models_by_status'].get(status, 0) + 1
+            stats["models_by_status"][status] = stats["models_by_status"].get(status, 0) + 1
 
         return stats

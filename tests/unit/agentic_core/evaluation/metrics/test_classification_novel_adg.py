@@ -16,14 +16,17 @@ class TestClassificationNovelAdg:
     def test_classification_novel_adg_imports(self):
         """Test classification_novel_adg module imports."""
         from agentic_core import classification_novel_adg
+
         assert classification_novel_adg is not None
 
     def test_classification_novel_adg_class(self):
         """Test ClassificationNovelAdg class exists."""
         from agentic_core import ClassificationNovelAdg
+
         assert ClassificationNovelAdg is not None
 
     def test_classification_novel_adg_callable(self):
         """Test classification_novel_adg functions are callable."""
         from agentic_core import validate_classification_novel_adg
+
         assert callable(validate_classification_novel_adg)

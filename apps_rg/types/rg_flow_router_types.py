@@ -254,7 +254,9 @@ class RGFlowRouter:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgFlowRouter.determine_next_hop")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RgFlowRouter.determine_next_hop"
+        )
         if not state:
             raise ValueError("Routing state cannot be empty")
         result = self.execute_routing(state)
@@ -287,7 +289,9 @@ class RGFlowRouter:
         thematic_analysis = context.get("thematic_analysis")
         if thematic_analysis:
             flow_result = self._classify_flow_with_thematic_analysis(
-                task_description, has_master_resume, thematic_analysis,
+                task_description,
+                has_master_resume,
+                thematic_analysis,
             )
         else:
             flow_result = self._classify_flow(task_description, has_master_resume)
@@ -371,7 +375,10 @@ class RGFlowRouter:
             )
 
     def _classify_flow_with_thematic_analysis(
-        self, task_description: str, has_master_resume: bool, thematic_analysis: ThematicAnalysisOutput,
+        self,
+        task_description: str,
+        has_master_resume: bool,
+        thematic_analysis: ThematicAnalysisOutput,
     ) -> ResumeFlowResult:
         """Enhanced flow classification using K.0 Thematic Analysis insights.
 

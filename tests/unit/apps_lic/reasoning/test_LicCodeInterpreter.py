@@ -16,14 +16,17 @@ class TestLiccodeinterpreter:
     def test_LicCodeInterpreter_imports(self):
         """Test LicCodeInterpreter module imports."""
         from agentic_core import LicCodeInterpreter
+
         assert LicCodeInterpreter is not None
 
     def test_LicCodeInterpreter_class(self):
         """Test Liccodeinterpreter class exists."""
         from agentic_core import Liccodeinterpreter
+
         assert Liccodeinterpreter is not None
 
     def test_LicCodeInterpreter_callable(self):
         """Test LicCodeInterpreter functions are callable."""
         from agentic_core import validate_LicCodeInterpreter
+
         assert callable(validate_LicCodeInterpreter)

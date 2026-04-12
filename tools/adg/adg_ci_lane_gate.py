@@ -127,7 +127,9 @@ def get_files_for_lane(art: dict, lane: str) -> list[str]:
 
 
 def run_pytest(
-    test_files: list[str], extra_args: list[str], extra_env: dict | None = None,
+    test_files: list[str],
+    extra_args: list[str],
+    extra_env: dict | None = None,
 ) -> tuple[int, str]:
     import os
 
@@ -264,7 +266,11 @@ def lane_violations(art: dict) -> int:
 
 
 def _print_and_save(
-    lane: str, rc: int, output: str, files: list[str], extra_counts: dict | None = None,
+    lane: str,
+    rc: int,
+    output: str,
+    files: list[str],
+    extra_counts: dict | None = None,
 ) -> None:
     # Print last N lines of pytest output
     lines = output.splitlines()

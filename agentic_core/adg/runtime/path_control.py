@@ -236,8 +236,11 @@ class PathControlReport:
 
     def path_visit_counts(self) -> dict[str, int]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PathControlReport.path_visit_counts")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PathControlReport.path_visit_counts"
+        )
 
         counts: dict[str, int] = {}
         for t in self.transitions:

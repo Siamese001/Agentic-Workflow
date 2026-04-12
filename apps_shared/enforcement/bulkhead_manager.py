@@ -1,4 +1,5 @@
 """Bulkhead Manager - Stub implementation for test compatibility."""
+
 from enum import Enum
 from typing import Any, Callable
 
@@ -8,6 +9,7 @@ class TaskPriority(Enum):
     MEDIUM = 2
     HIGH = 3
 
+
 class BulkheadManager:
     """Stub bulkhead manager."""
 
@@ -15,7 +17,9 @@ class BulkheadManager:
         self._bulkheads = {}
         self._metrics = {}
 
-    async def create_bulkhead(self, name: str, max_concurrency: int, queue_size: int, priority: TaskPriority) -> None:
+    async def create_bulkhead(
+        self, name: str, max_concurrency: int, queue_size: int, priority: TaskPriority
+    ) -> None:
         """Create a bulkhead."""
         self._bulkheads[name] = {
             "max_concurrency": max_concurrency,
@@ -24,7 +28,14 @@ class BulkheadManager:
         }
         self._metrics[name] = {"executed": 0, "rejected": 0}
 
-    async def execute(self, func: Callable, *args, bulkhead_name: str = "default", priority: TaskPriority = TaskPriority.MEDIUM, **kwargs):
+    async def execute(
+        self,
+        func: Callable,
+        *args,
+        bulkhead_name: str = "default",
+        priority: TaskPriority = TaskPriority.MEDIUM,
+        **kwargs,
+    ):
         """Execute function within bulkhead."""
         if bulkhead_name in self._metrics:
             self._metrics[bulkhead_name]["executed"] += 1

@@ -190,7 +190,9 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "DecompositionOrchestrator._load_agent_registry", "p0_governance",
+            str(_uuid.uuid4()),
+            "DecompositionOrchestrator._load_agent_registry",
+            "p0_governance",
         )
         discovery_path = Path(__file__).resolve().parents[3] / "agent_discovery_full.json"
         if discovery_path.exists():
@@ -384,7 +386,9 @@ class DecompositionOrchestrator(SovereignBaseAgent):
             Execution results dictionary
         """
         _emit_agent_executes_agent(
-            str(uuid.uuid4()), "DecompositionOrchestrator", "DecompositionOrchestrator.execute",
+            str(uuid.uuid4()),
+            "DecompositionOrchestrator",
+            "DecompositionOrchestrator.execute",
         )
         with get_trace_context().run_frame(
             layer="L3",
@@ -541,7 +545,10 @@ class WorkerPool:
             task.status = "completed"
             _logger.info("worker_pool_done", extra={"task": task.task_id, "agent": task.target_agent})
             return WorkerResult(
-                task_id=task.task_id, worker_name=task.target_agent, output=output, success=True,
+                task_id=task.task_id,
+                worker_name=task.target_agent,
+                output=output,
+                success=True,
             )
         except (ValueError, TypeError) as exc:  # guardian: allow-silent-swallower
             task.status = "failed"

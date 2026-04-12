@@ -422,7 +422,11 @@ class InternalSchemaConverter:
                 warnings.append(error_msg)
 
     def _extract_and_transform_value(
-        self, mapping: FieldMapping, external_data: dict[str, object], errors: list[str], warnings: list[str],
+        self,
+        mapping: FieldMapping,
+        external_data: dict[str, object],
+        errors: list[str],
+        warnings: list[str],
     ) -> object:
         """Extract and transform value from external data."""
         external_value = self._extract_nested_value(external_data, mapping.external_path)
@@ -433,7 +437,11 @@ class InternalSchemaConverter:
         return external_value
 
     def _convert_with_error_handling(
-        self, value: Any, mapping: FieldMapping, errors: list[str], warnings: list[str],
+        self,
+        value: Any,
+        mapping: FieldMapping,
+        errors: list[str],
+        warnings: list[str],
     ) -> object:
         """Convert type with error handling."""
         try:
@@ -463,7 +471,11 @@ class InternalSchemaConverter:
             self._handle_missing_required_field(mapping, converted_data, errors, warnings)
 
     def _handle_missing_required_field(
-        self, mapping: FieldMapping, converted_data: dict[str, object], errors: list[str], warnings: list[str],
+        self,
+        mapping: FieldMapping,
+        converted_data: dict[str, object],
+        errors: list[str],
+        warnings: list[str],
     ) -> None:
         """Handle missing required field."""
         if mapping.default_value is not None:
@@ -473,7 +485,10 @@ class InternalSchemaConverter:
             errors.append(f"Missing required field: {mapping.internal_path}")
 
     def _finalize_conversion(
-        self, converted_data: dict[str, object], internal_schema: InternalSchema, errors: list[str],
+        self,
+        converted_data: dict[str, object],
+        internal_schema: InternalSchema,
+        errors: list[str],
     ) -> None:
         """Finalize conversion with validation and cleanup."""
         if not self.config.preserve_unknown:
@@ -492,7 +507,11 @@ class InternalSchemaConverter:
         """Convert external data to internal schema format."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"SchemaConverter.convert_to_internal:{internal_schema.schema_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"SchemaConverter.convert_to_internal:{internal_schema.schema_id}",
+        )
         self.logger.info(f"Converting to internal schema: {internal_schema.name}")
         try:
             converted_data = {}
@@ -529,7 +548,9 @@ class InternalSchemaConverter:
             )
 
     def auto_generate_mappings(
-        self, external_schema: dict[str, object], internal_schema: InternalSchema,
+        self,
+        external_schema: dict[str, object],
+        internal_schema: InternalSchema,
     ) -> list[FieldMapping]:
         """Automatically generate field mappings between schemas.
 
@@ -713,9 +734,9 @@ class InternalSchemaConverter:
             "trim": lambda x: str(x).strip(),
             "abs": abs,
             "round": round,
-            "timestamp_to_iso": lambda x: datetime.fromtimestamp(x).isoformat()
-            if isinstance(x, int | float)
-            else x,
+            "timestamp_to_iso": lambda x: (
+                datetime.fromtimestamp(x).isoformat() if isinstance(x, int | float) else x
+            ),
             "iso_to_timestamp": lambda x: datetime.fromisoformat(x).timestamp() if isinstance(x, str) else x,
         }
 

@@ -81,7 +81,9 @@ class StageOwnershipRecord:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "StageOwnershipRecord.mark_completed",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "StageOwnershipRecord.mark_completed",
         )
 
         self.status = StageStatus.COMPLETED
@@ -131,7 +133,9 @@ class RunScopedOrchestrationLedger:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RunScopedOrchestrationLedger.record_handoff",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "RunScopedOrchestrationLedger.record_handoff",
         )
 
         self._handoffs.append(contract)

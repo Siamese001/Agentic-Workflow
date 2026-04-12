@@ -16,11 +16,12 @@ from typing import Any, Callable, TypeVar
 
 logger = logging.getLogger(__name__)
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 class NovelTestType(Enum):
     """Classification of novel testing methods."""
+
     CHAOS_ENGINEERING = 1
     PROPERTY_BASED = 2
     TEMPORAL_INVARIANT = 3
@@ -32,6 +33,7 @@ class NovelTestType(Enum):
 @dataclass
 class ChaosExperiment:
     """Chaos engineering experiment with controlled failure injection."""
+
     name: str
     description: str
     fault_type: str
@@ -45,6 +47,7 @@ class ChaosExperiment:
 @dataclass
 class PropertyInvariant:
     """Property-based testing invariant with formal specification."""
+
     name: str
     description: str
     property_function: Callable[[Any], bool]
@@ -56,6 +59,7 @@ class PropertyInvariant:
 @dataclass
 class TemporalInvariant:
     """Temporal invariant with time-based guarantees."""
+
     name: str
     description: str
     time_window: timedelta
@@ -119,13 +123,17 @@ class ChaosEngineeringFramework:
 
             # Monitor during experiment
             monitoring_results = self._monitor_during_experiment(
-                experiment, system_under_test, experiment.duration_seconds,
+                experiment,
+                system_under_test,
+                experiment.duration_seconds,
             )
             results["monitoring"] = monitoring_results
 
             # Evaluate success criteria
             success_evaluation = self._evaluate_success_criteria(
-                experiment, results, baseline_metrics,
+                experiment,
+                results,
+                baseline_metrics,
             )
             results["success_evaluation"] = success_evaluation
 
@@ -174,7 +182,7 @@ class ChaosEngineeringFramework:
 
         # In real implementation, this would modify network stack
         # For simulation, we add delay to system calls
-        if hasattr(system, 'add_network_delay'):
+        if hasattr(system, "add_network_delay"):
             system.add_network_delay(latency_ms)
 
         return {
@@ -187,7 +195,7 @@ class ChaosEngineeringFramework:
         """Inject packet loss with controlled probability."""
         loss_rate = experiment.severity  # 0.0 to 1.0
 
-        if hasattr(system, 'set_packet_loss'):
+        if hasattr(system, "set_packet_loss"):
             system.set_packet_loss(loss_rate)
 
         return {
@@ -205,7 +213,7 @@ class ChaosEngineeringFramework:
         selected = self._chaos_rng.sample(experiment.target_components, num_to_crash)
 
         for component in selected:
-            if hasattr(system, 'crash_component'):
+            if hasattr(system, "crash_component"):
                 system.crash_component(component)
                 crashed_components.append(component)
 
@@ -219,7 +227,7 @@ class ChaosEngineeringFramework:
         """Inject resource exhaustion with controlled intensity."""
         exhaustion_level = experiment.severity
 
-        if hasattr(system, 'exhaust_resources'):
+        if hasattr(system, "exhaust_resources"):
             system.exhaust_resources(exhaustion_level)
 
         return {
@@ -232,7 +240,7 @@ class ChaosEngineeringFramework:
         """Inject data corruption with controlled scope."""
         corruption_rate = experiment.severity
 
-        if hasattr(system, 'corrupt_data'):
+        if hasattr(system, "corrupt_data"):
             system.corrupt_data(corruption_rate, experiment.target_components)
 
         return {
@@ -241,7 +249,9 @@ class ChaosEngineeringFramework:
             "affected_components": experiment.target_components,
         }
 
-    def _monitor_during_experiment(self, experiment: ChaosExperiment, system: Any, duration: int) -> dict[str, Any]:
+    def _monitor_during_experiment(
+        self, experiment: ChaosExperiment, system: Any, duration: int
+    ) -> dict[str, Any]:
         """Monitor system during chaos experiment."""
         monitoring_data = {
             "timestamps": [],
@@ -276,19 +286,19 @@ class ChaosEngineeringFramework:
         metrics = {}
 
         # Basic metrics that should be available on any system
-        if hasattr(system, 'get_response_time'):
+        if hasattr(system, "get_response_time"):
             metrics["response_time_ms"] = system.get_response_time()
 
-        if hasattr(system, 'get_error_rate'):
+        if hasattr(system, "get_error_rate"):
             metrics["error_rate"] = system.get_error_rate()
 
-        if hasattr(system, 'get_throughput'):
+        if hasattr(system, "get_throughput"):
             metrics["throughput_rps"] = system.get_throughput()
 
-        if hasattr(system, 'get_cpu_usage'):
+        if hasattr(system, "get_cpu_usage"):
             metrics["cpu_usage_percent"] = system.get_cpu_usage()
 
-        if hasattr(system, 'get_memory_usage'):
+        if hasattr(system, "get_memory_usage"):
             metrics["memory_usage_percent"] = system.get_memory_usage()
 
         # Default values if not available
@@ -315,17 +325,21 @@ class ChaosEngineeringFramework:
             # Detect outliers (3-sigma rule)
             for i, value in enumerate(values):
                 if stdev > 0 and abs(value - mean) > 3 * stdev:
-                    anomalies.append({
-                        "metric": metric_name,
-                        "timestamp_index": i,
-                        "value": value,
-                        "expected_range": [mean - 3 * stdev, mean + 3 * stdev],
-                        "deviation": abs(value - mean) / stdev,
-                    })
+                    anomalies.append(
+                        {
+                            "metric": metric_name,
+                            "timestamp_index": i,
+                            "value": value,
+                            "expected_range": [mean - 3 * stdev, mean + 3 * stdev],
+                            "deviation": abs(value - mean) / stdev,
+                        }
+                    )
 
         return anomalies
 
-    def _evaluate_success_criteria(self, experiment: ChaosExperiment, results: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
+    def _evaluate_success_criteria(
+        self, experiment: ChaosExperiment, results: dict[str, Any], baseline: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate experiment success against criteria."""
         evaluation = {
             "passed": True,
@@ -335,7 +349,10 @@ class ChaosEngineeringFramework:
 
         for criterion_name, criterion_config in experiment.success_criteria.items():
             criterion_result = self._evaluate_single_criterion(
-                criterion_name, criterion_config, results, baseline,
+                criterion_name,
+                criterion_config,
+                results,
+                baseline,
             )
             evaluation["criteria_results"][criterion_name] = criterion_result
 
@@ -345,7 +362,9 @@ class ChaosEngineeringFramework:
         evaluation["summary"] = "All criteria passed" if evaluation["passed"] else "Some criteria failed"
         return evaluation
 
-    def _evaluate_single_criterion(self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
+    def _evaluate_single_criterion(
+        self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate individual success criterion."""
         criterion_type = config.get("type", "threshold")
 
@@ -358,7 +377,9 @@ class ChaosEngineeringFramework:
         else:
             return {"passed": False, "error": f"Unknown criterion type: {criterion_type}"}
 
-    def _evaluate_threshold_criterion(self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
+    def _evaluate_threshold_criterion(
+        self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate threshold-based criterion."""
         metric_name = config["metric"]
         threshold = config["threshold"]
@@ -389,11 +410,17 @@ class ChaosEngineeringFramework:
             "metric": metric_name,
             "threshold": threshold,
             "operator": operator,
-            "actual_value": max(values) if operator.startswith("max") else min(values) if operator.startswith("min") else statistics.mean(values),
+            "actual_value": max(values)
+            if operator.startswith("max")
+            else min(values)
+            if operator.startswith("min")
+            else statistics.mean(values),
             "samples": len(values),
         }
 
-    def _evaluate_availability_criterion(self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
+    def _evaluate_availability_criterion(
+        self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate availability criterion."""
         min_availability = config.get("min_availability", 0.99)
 
@@ -418,7 +445,9 @@ class ChaosEngineeringFramework:
             "samples": len(error_rates),
         }
 
-    def _evaluate_performance_criterion(self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]) -> dict[str, Any]:
+    def _evaluate_performance_criterion(
+        self, name: str, config: dict[str, Any], results: dict[str, Any], baseline: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate performance criterion."""
         max_degradation = config.get("max_degradation", 0.5)  # 50% degradation max
         metric_name = config["metric"]
@@ -460,23 +489,23 @@ class ChaosEngineeringFramework:
         # Rollback based on fault type
         fault_type = experiment.fault_type.lower()
 
-        if fault_type == "network_latency" and hasattr(system, 'remove_network_delay'):
+        if fault_type == "network_latency" and hasattr(system, "remove_network_delay"):
             system.remove_network_delay()
             rollback_result["actions_taken"].append("removed_network_delay")
 
-        elif fault_type == "packet_loss" and hasattr(system, 'set_packet_loss'):
+        elif fault_type == "packet_loss" and hasattr(system, "set_packet_loss"):
             system.set_packet_loss(0.0)
             rollback_result["actions_taken"].append("reset_packet_loss")
 
-        elif fault_type == "service_crash" and hasattr(system, 'recover_components'):
+        elif fault_type == "service_crash" and hasattr(system, "recover_components"):
             recovered = system.recover_components(experiment.target_components)
             rollback_result["actions_taken"].append(f"recovered_components: {recovered}")
 
-        elif fault_type == "resource_exhaustion" and hasattr(system, 'restore_resources'):
+        elif fault_type == "resource_exhaustion" and hasattr(system, "restore_resources"):
             system.restore_resources()
             rollback_result["actions_taken"].append("restored_resources")
 
-        elif fault_type == "data_corruption" and hasattr(system, 'restore_data'):
+        elif fault_type == "data_corruption" and hasattr(system, "restore_data"):
             system.restore_data()
             rollback_result["actions_taken"].append("restored_data")
 
@@ -494,8 +523,16 @@ class ChaosEngineeringFramework:
             "successful": successful_experiments,
             "success_rate": successful_experiments / max(1, total_experiments),
             "active_experiments": list(self.active_experiments),
-            "experiment_types": list(set(e["fault_injection"]["fault_type"] for e in self.experiment_history if "fault_injection" in e)),
-            "average_duration": statistics.mean([e["duration_seconds"] for e in self.experiment_history]) if self.experiment_history else 0.0,
+            "experiment_types": list(
+                set(
+                    e["fault_injection"]["fault_type"]
+                    for e in self.experiment_history
+                    if "fault_injection" in e
+                )
+            ),
+            "average_duration": statistics.mean([e["duration_seconds"] for e in self.experiment_history])
+            if self.experiment_history
+            else 0.0,
         }
 
 
@@ -524,7 +561,7 @@ class PropertyBasedTestingFramework:
         """Generate random string with controlled properties."""
         length = random.randint(1, 100)
         chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-        return ''.join(random.choice(chars) for _ in range(length))
+        return "".join(random.choice(chars) for _ in range(length))
 
     def _generate_integer(self) -> int:
         """Generate random integer with controlled range."""
@@ -545,8 +582,7 @@ class PropertyBasedTestingFramework:
         size = random.randint(0, 10)
         generator_types = ["strings", "integers", "floats", "lists"]
         return {
-            self._generate_string(): self.generators[random.choice(generator_types)]()
-            for _ in range(size)
+            self._generate_string(): self.generators[random.choice(generator_types)]() for _ in range(size)
         }
 
     def _generate_timestamp(self) -> datetime:
@@ -620,26 +656,30 @@ class PropertyBasedTestingFramework:
 
             except Exception as e:
                 failures += 1
-                test_result["results"].append({
-                    "sample_index": i,
-                    "input": test_input,
-                    "status": "error",
-                    "error": str(e),
-                    "timestamp": datetime.now().isoformat(),
-                })
+                test_result["results"].append(
+                    {
+                        "sample_index": i,
+                        "input": test_input,
+                        "status": "error",
+                        "error": str(e),
+                        "timestamp": datetime.now().isoformat(),
+                    }
+                )
 
         # Calculate final results
         failure_rate = failures / invariant.sample_size
         passed = failure_rate <= invariant.failure_threshold
 
-        test_result.update({
-            "end_time": datetime.now().isoformat(),
-            "failures": failures,
-            "failure_rate": failure_rate,
-            "passed": passed,
-            "counterexamples": counterexamples[:5],  # Limit to first 5
-            "summary": f"Passed {invariant.sample_size - failures}/{invariant.sample_size} samples",
-        })
+        test_result.update(
+            {
+                "end_time": datetime.now().isoformat(),
+                "failures": failures,
+                "failure_rate": failure_rate,
+                "passed": passed,
+                "counterexamples": counterexamples[:5],  # Limit to first 5
+                "summary": f"Passed {invariant.sample_size - failures}/{invariant.sample_size} samples",
+            }
+        )
 
         self.test_results.append(test_result)
         return test_result
@@ -741,8 +781,7 @@ class TemporalInvariantTesting:
 
         # Get events within time window
         events_in_window = [
-            (ts, data) for ts, data in self.time_series_data[invariant_name]
-            if ts >= window_start
+            (ts, data) for ts, data in self.time_series_data[invariant_name] if ts >= window_start
         ]
 
         if len(events_in_window) < 2:
@@ -754,7 +793,9 @@ class TemporalInvariantTesting:
             newest_timestamp = max(ts for ts, _ in events_in_window)
 
             invariant_holds = invariant.invariant_function(
-                oldest_timestamp, newest_timestamp, events_in_window,
+                oldest_timestamp,
+                newest_timestamp,
+                events_in_window,
             )
 
             if not invariant_holds:
@@ -766,7 +807,14 @@ class TemporalInvariantTesting:
             self._record_violation(invariant_name, events_in_window, window_start, timestamp, str(e))
             return False
 
-    def _record_violation(self, invariant_name: str, events: list[tuple[datetime, Any]], start_time: datetime, end_time: datetime, error: str = "") -> None:
+    def _record_violation(
+        self,
+        invariant_name: str,
+        events: list[tuple[datetime, Any]],
+        start_time: datetime,
+        end_time: datetime,
+        error: str = "",
+    ) -> None:
         """Record temporal invariant violation."""
         violation = {
             "invariant_name": invariant_name,
@@ -793,9 +841,7 @@ class TemporalInvariantTesting:
             "total_violations": total_violations,
             "violations_by_invariant": dict(violations_by_invariant),
             "invariant_names": list(self.invariants.keys()),
-            "time_series_data_points": {
-                name: len(data) for name, data in self.time_series_data.items()
-            },
+            "time_series_data_points": {name: len(data) for name, data in self.time_series_data.items()},
         }
 
 

@@ -199,8 +199,11 @@ class InstructionalInjectionMixin:
     def inject_pattern(self, prompt: str, pattern_id: int, **kwargs) -> str:
         """Inject a specific pattern into a prompt."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InstructionalInjectionMixin.inject_pattern")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InstructionalInjectionMixin.inject_pattern"
+        )
 
         pattern = self.get_pattern(pattern_id)
         if not pattern or not pattern.enabled:

@@ -205,14 +205,21 @@ class RedisCoordinationFabric:
     # Trace working set (per-trace active request state)
     # -------------------------------------------------------------------------
 
-    def get_trace_working_set(self, trace_id_hash: str, *, replay_mode: bool = False) -> dict[str, Any] | None:
+    def get_trace_working_set(
+        self, trace_id_hash: str, *, replay_mode: bool = False
+    ) -> dict[str, Any] | None:
         """Return per-trace working set dict or None if not found/expired."""
         if replay_mode:
             return None
         return self._cache.get_json(f"trace_ws:{trace_id_hash}", db=_DB_WORKSPACE)
 
     def set_trace_working_set(
-        self, trace_id_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None, replay_mode: bool = False,
+        self,
+        trace_id_hash: str,
+        data: dict[str, Any],
+        *,
+        ttl_seconds: int | None = None,
+        replay_mode: bool = False,
     ) -> None:
         """Store per-trace working set dict (JSON-serialisable only)."""
         if replay_mode:
@@ -224,7 +231,9 @@ class RedisCoordinationFabric:
     # Team lock (duplicate-work prevention)
     # -------------------------------------------------------------------------
 
-    def acquire_team_lock(self, resource_hash: str, holder_id: str, *, ttl_seconds: int | None = None) -> bool:
+    def acquire_team_lock(
+        self, resource_hash: str, holder_id: str, *, ttl_seconds: int | None = None
+    ) -> bool:
         """Try to acquire a team-sync lease. Returns True if acquired."""
         ttl = min(ttl_seconds or _TTL_TEAM_LOCK, _TTL_TEAM_LOCK)
         return self._cache.set_nx(f"team_lock:{resource_hash}", holder_id, ttl_seconds=ttl, db=_DB_WORKSPACE)
@@ -248,7 +257,9 @@ class RedisCoordinationFabric:
             return None
         return self._cache.get_json(f"route_ctx:{intent_hash}", db=_DB_WORKSPACE)
 
-    def set_route_context(self, intent_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None) -> None:
+    def set_route_context(
+        self, intent_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None
+    ) -> None:
         """Store hot routing context."""
         ttl = min(ttl_seconds or _TTL_ROUTE_CTX, _TTL_ROUTE_CTX)
         self._cache.set_json(f"route_ctx:{intent_hash}", data, ttl_seconds=ttl, db=_DB_WORKSPACE)
@@ -257,14 +268,20 @@ class RedisCoordinationFabric:
     # Replay fragment (transcript assist cache)
     # -------------------------------------------------------------------------
 
-    def get_replay_fragment(self, replay_key_hash: str, *, replay_mode: bool = False) -> dict[str, Any] | None:
+    def get_replay_fragment(
+        self, replay_key_hash: str, *, replay_mode: bool = False
+    ) -> dict[str, Any] | None:
         """Return replay assist fragment or None if not found."""
         if replay_mode:
             return None
         return self._cache.get_json(f"replay_frag:{replay_key_hash}", db=_DB_WORKSPACE)
 
     def set_replay_fragment(
-        self, replay_key_hash: str, fragment: dict[str, Any], *, ttl_seconds: int | None = None,
+        self,
+        replay_key_hash: str,
+        fragment: dict[str, Any],
+        *,
+        ttl_seconds: int | None = None,
     ) -> None:
         """Store replay assist fragment."""
         ttl = min(ttl_seconds or _TTL_REPLAY_FRAG, _TTL_REPLAY_FRAG)
@@ -281,7 +298,11 @@ class RedisCoordinationFabric:
         return self._cache.get_json(f"novelty:{cluster_hash}", db=_DB_WORKSPACE)
 
     def set_novelty_cluster(
-        self, cluster_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None,
+        self,
+        cluster_hash: str,
+        data: dict[str, Any],
+        *,
+        ttl_seconds: int | None = None,
     ) -> None:
         """Store novelty/cluster centroid."""
         ttl = min(ttl_seconds or _TTL_NOVELTY, _TTL_NOVELTY)

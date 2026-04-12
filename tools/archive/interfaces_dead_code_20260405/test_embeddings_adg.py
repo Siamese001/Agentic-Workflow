@@ -16,14 +16,17 @@ class TestEmbeddingsAdg:
     def test_embeddings_adg_imports(self):
         """Test embeddings_adg module imports."""
         from agentic_core import embeddings_adg
+
         assert embeddings_adg is not None
 
     def test_embeddings_adg_class(self):
         """Test EmbeddingsAdg class exists."""
         from agentic_core import EmbeddingsAdg
+
         assert EmbeddingsAdg is not None
 
     def test_embeddings_adg_callable(self):
         """Test embeddings_adg functions are callable."""
         from agentic_core import validate_embeddings_adg
+
         assert callable(validate_embeddings_adg)

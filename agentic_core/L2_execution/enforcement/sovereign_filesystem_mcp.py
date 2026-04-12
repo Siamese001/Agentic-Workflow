@@ -229,7 +229,9 @@ class SovereignFilesystemMcp:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "SovereignFilesystemMcp.read_text_file",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "SovereignFilesystemMcp.read_text_file",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -263,8 +265,11 @@ class SovereignFilesystemMcp:
                 get_mcp_authority().record_breach(f"FS Read Failure: {safe_path}")
             # guardian: allow-silent-swallow
             except (RuntimeError, ValueError) as e:
+                import logging
 
-                import logging; logging.getLogger(__name__).debug("sovereign_filesystem_mcp: RuntimeError swallowed at L265: %s", e)
+                logging.getLogger(__name__).debug(
+                    "sovereign_filesystem_mcp: RuntimeError swallowed at L265: %s", e
+                )
             raise
 
     async def atomic_fission_write(self, files: dict[str, str], monolith_path: str) -> dict:

@@ -35,7 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
     emit_determinism_digest,  # noqa: E402
-    )
+)
 
 _emit_emits_metric_event("rag_types", "p4obs", "metric_1")
 _emit_emits_metric_event("rag_types", "p4obs", "metric_2")

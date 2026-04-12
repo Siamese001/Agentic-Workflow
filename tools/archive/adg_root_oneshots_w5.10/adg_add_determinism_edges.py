@@ -23,33 +23,45 @@ edges_added = 0
 
 for module_adg, module_id in core_modules:
     # Check if emits_determinism_digest edge already exists
-    cur.execute("""
+    cur.execute(
+        """
         SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type = 'emits_determinism_digest'
-    """, (module_id,))
+    """,
+        (module_id,),
+    )
 
     if cur.fetchone()[0] == 0:
         # Create determinism_digest node
         digest_adg = f"ADG::DeterminismDigest::{module_adg}::determinism_digest"
-        cur.execute("""
+        cur.execute(
+            """
             SELECT id FROM nodes WHERE adg_name = ?
-        """, (digest_adg,))
+        """,
+            (digest_adg,),
+        )
         result = cur.fetchone()
 
         if not result:
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO nodes (adg_name, entity_type, layer, identity_kind, confidence, resolved_path)
                 VALUES (?, 'determinism_digest', 'L_RUNTIME', 'synthetic', 1.0, ?)
-            """, (digest_adg, digest_adg))
+            """,
+                (digest_adg, digest_adg),
+            )
             digest_id = cur.lastrowid
         else:
             digest_id = result[0]
 
         # Add edge
-        cur.execute("""
+        cur.execute(
+            """
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
             VALUES (?, ?, 'emits_determinism_digest', 'determinism', ?, 1, 'emits_determinism_digest')
-        """, (module_id, digest_id, module_adg))
+        """,
+            (module_id, digest_id, module_adg),
+        )
         edges_added += 1
 
 conn.commit()

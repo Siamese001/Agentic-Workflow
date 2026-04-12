@@ -161,6 +161,7 @@ _emit_links_execution_to_snapshot("p4", "autonomous_sovereign_core_util", "exec_
 
 class FileSystemEventHandler:
     """Stub for watchdog FileSystemEventHandler."""
+
     pass
 
 
@@ -173,13 +174,17 @@ class TerritoryWatcher(FileSystemEventHandler):
 
     def on_modified(self, event):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TerritoryWatcher.on_modified")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TerritoryWatcher.on_modified"
+        )
 
         if event.is_directory or any(x in event.src_path for x in ["pycache", ".git", ".idx"]):
             return
         self.core.loop.call_soon_threadsafe(
-            self.core.event_queue.put_nowait, {"path": event.src_path, "type": "modify"},
+            self.core.event_queue.put_nowait,
+            {"path": event.src_path, "type": "modify"},
         )
 
 
@@ -273,7 +278,8 @@ class AutonomousSovereignCore:
                     if detection.detected:
                         print(f"   [L5] Threat detected: {detection.ThreatLevel}")
                 await self.l4_checkpoint.auto_checkpoint_if_needed(
-                    state={"event": event["type"], "path": path}, files_to_track=[path],
+                    state={"event": event["type"], "path": path},
+                    files_to_track=[path],
                 )
                 status = self.l2_resource.get_resource_status()
                 if status["global_budget_remaining"] < 10:
@@ -287,8 +293,11 @@ class AutonomousSovereignCore:
     async def eternal_watch(self):
         """L3: Eternal monitoring loop"""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomousSovereignCore.eternal_watch")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AutonomousSovereignCore.eternal_watch"
+        )
 
         asyncio.create_task(self.sovereign_executive_worker())
         observer = Observer()
@@ -298,7 +307,9 @@ class AutonomousSovereignCore:
         print(f"   [L3] Territory watcher active on: {Path.cwd()}")
         try:
             while self.running:
-                await asyncio.sleep(DEFAULT_SLEEP)    # guardian: KeyboardInterrupt should be handled with specific context
+                await asyncio.sleep(
+                    DEFAULT_SLEEP
+                )  # guardian: KeyboardInterrupt should be handled with specific context
         except KeyboardInterrupt:
             print("\n[L3] Sovereign Core shutting down...")
             observer.stop()

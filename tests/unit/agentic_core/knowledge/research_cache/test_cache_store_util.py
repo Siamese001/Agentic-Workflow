@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.knowledge.research_cache.cache_store_util."""
+
 from __future__ import annotations
 
 import importlib

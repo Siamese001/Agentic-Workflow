@@ -6,6 +6,7 @@ B) emit funcs in docstring text only (wirer placed inside docstring)
 C) emit funcs as truncated/damaged import lines (wirer broke the file)
 D) emit funcs completely absent (never wired)
 """
+
 import ast
 import csv
 from pathlib import Path
@@ -15,9 +16,12 @@ GAPS_CSV = PROJECT_ROOT / "runtime_gaps" / "trace_deficit_modules.csv"
 
 CONTRACT = "agentic_core.runtime.lifecycle_trace_contract"
 EMIT_FUNCS = [
-    "emit_replay_key", "emit_determinism_digest",
-    "_emit_applies_guardrail", "_emit_snapshots_state",
-    "_emit_signs_execution_trace", "_emit_records_execution_trace",
+    "emit_replay_key",
+    "emit_determinism_digest",
+    "_emit_applies_guardrail",
+    "_emit_snapshots_state",
+    "_emit_signs_execution_trace",
+    "_emit_records_execution_trace",
     "_emit_reads_policy_state",
 ]
 

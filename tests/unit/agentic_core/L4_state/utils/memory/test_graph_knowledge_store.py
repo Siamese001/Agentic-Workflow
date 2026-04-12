@@ -104,7 +104,9 @@ def test_sqlite_graph_store_search_entities_returns_empty_list() -> None:
     try:
         # Create a minimal valid SQLite database with ADG schema
         conn = sqlite3.connect(tmp_path)
-        conn.execute("CREATE TABLE IF NOT EXISTS nodes (id INTEGER PRIMARY KEY, name TEXT, adg_name TEXT, resolved_path TEXT)")
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS nodes (id INTEGER PRIMARY KEY, name TEXT, adg_name TEXT, resolved_path TEXT)"
+        )
         conn.execute("CREATE TABLE IF NOT EXISTS edges (src INTEGER, tgt INTEGER, relation TEXT)")
         conn.commit()
         conn.close()

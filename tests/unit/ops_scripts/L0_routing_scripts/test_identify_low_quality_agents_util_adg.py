@@ -16,14 +16,17 @@ class TestIdentifyLowQualityAgentsUtilAdg:
     def test_identify_low_quality_agents_util_adg_imports(self):
         """Test identify_low_quality_agents_util_adg module imports."""
         from agentic_core import identify_low_quality_agents_util_adg
+
         assert identify_low_quality_agents_util_adg is not None
 
     def test_identify_low_quality_agents_util_adg_class(self):
         """Test IdentifyLowQualityAgentsUtilAdg class exists."""
         from agentic_core import IdentifyLowQualityAgentsUtilAdg
+
         assert IdentifyLowQualityAgentsUtilAdg is not None
 
     def test_identify_low_quality_agents_util_adg_callable(self):
         """Test identify_low_quality_agents_util_adg functions are callable."""
         from agentic_core import validate_identify_low_quality_agents_util_adg
+
         assert callable(validate_identify_low_quality_agents_util_adg)

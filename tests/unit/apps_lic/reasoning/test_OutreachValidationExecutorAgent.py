@@ -4,6 +4,7 @@ fan_in=11 — this module is imported by 11 other modules.
 ADG contract: import-hygiene is covered by test_OutreachValidationExecutorAgent_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -31,12 +32,14 @@ class TestValidationGateExecutorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ValidationGateExecutor, type)
 
+
 class TestRuleFailureContract:
     def test_is_class(self):
         assert isinstance(RuleFailure, type)
 
     def test_instantiable_or_abstract(self):
         assert isinstance(RuleFailure, type)
+
 
 class TestMCPHardenedMixinContract:
     def test_is_class(self):
@@ -45,6 +48,7 @@ class TestMCPHardenedMixinContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(MCPHardenedMixin, type)
 
+
 class TestHealerMixinContract:
     def test_is_class(self):
         assert isinstance(HealerMixin, type)
@@ -52,26 +56,33 @@ class TestHealerMixinContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(HealerMixin, type)
 
+
 class TestOutreachValidationExecutorAgentContract:
     def test_is_dataclass(self):
         import dataclasses
+
         assert dataclasses.is_dataclass(OutreachValidationExecutorAgent)
+
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
+
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
+
 
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
+
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
+
 
 class TestBatchSizeConstant:
     def test_is_not_none(self):

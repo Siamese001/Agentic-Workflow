@@ -1,4 +1,5 @@
 """Health tool tests — adg_health returns correct diagnostics."""
+
 from tools.adg.core.service import ADGService
 from tools.adg.mcp.health import HealthDiagnostics
 

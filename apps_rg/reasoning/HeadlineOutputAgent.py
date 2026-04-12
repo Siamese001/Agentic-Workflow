@@ -255,7 +255,9 @@ class Executive_Title_Composer(Agent):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HeadlineOutputAgent.execute")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HeadlineOutputAgent.execute"
+        )
         logger.info("Executing Executive_Title_Composer (Industry-First)")
         target_industry = context.get("target_industry", "Technology")
         target_role = context.get("target_role", "Engineering Leader")
@@ -266,7 +268,10 @@ class Executive_Title_Composer(Agent):
             prompt = self._build_regeneration_prompt(context, regeneration_feedback)
         else:
             prompt = self._build_initial_prompt(
-                target_industry, target_role, value_propositions, job_description,
+                target_industry,
+                target_role,
+                value_propositions,
+                job_description,
             )
         response = await self._call_llm(prompt)
         headline = response.strip()
@@ -301,7 +306,11 @@ class Executive_Title_Composer(Agent):
         return output
 
     def _build_initial_prompt(
-        self, target_industry: str, target_role: str, value_propositions: list[str], job_description: str,
+        self,
+        target_industry: str,
+        target_role: str,
+        value_propositions: list[str],
+        job_description: str,
     ) -> str:
         """Build initial generation prompt with Industry-First enforcement.
 

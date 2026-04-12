@@ -64,6 +64,7 @@ async def test_production_hardening():
                 self.log_info("  Testing invalid file path...")
                 try:
                     from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
+
                     orchestrator = SovereignRagOrchestrator(Path.cwd())
                     orchestrator.ingest(Path("nonexistent_file.txt"))
                 except (FileNotFoundError, ValueError) as e:
@@ -76,7 +77,7 @@ async def test_production_hardening():
                 self.log_info("  Testing corrupted file...")
                 corrupted_file = Path("test_corrupted.json")
                 try:
-                    corrupted_file.write_bytes(b'\x00\x01\x02\x03\x04\x05')
+                    corrupted_file.write_bytes(b"\x00\x01\x02\x03\x04\x05")
                     orchestrator.ingest(corrupted_file)
                     # If it doesn't fail, that's okay (some loaders are resilient)
                     error_tests["corrupted_file"] = True
@@ -141,7 +142,7 @@ async def test_production_hardening():
                     • Quotes: "single" 'double' "curly"
                     • Brackets: [ ] { } ( )
                     """
-                    special_file.write_text(special_content, encoding='utf-8')
+                    special_file.write_text(special_content, encoding="utf-8")
                     result = orchestrator.ingest(special_file)
                     if result and len(result) > 0:
                         error_tests["special_characters"] = True
@@ -207,6 +208,7 @@ async def test_production_hardening():
 
                 try:
                     from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
+
                     orchestrator = SovereignRagOrchestrator(Path.cwd())
 
                     start_time = time.time()
@@ -221,7 +223,9 @@ async def test_production_hardening():
                         "passed": throughput >= 1.0,  # Should handle at least 1 file/sec
                     }
 
-                    self.log_info(f"    ✓ Ingested {len(test_files)} files in {elapsed:.2f}s ({throughput:.1f} files/sec)")
+                    self.log_info(
+                        f"    ✓ Ingested {len(test_files)} files in {elapsed:.2f}s ({throughput:.1f} files/sec)"
+                    )
 
                 except Exception as e:
                     self.log_error("    ✗ Ingestion throughput test failed", e)
@@ -252,7 +256,9 @@ async def test_production_hardening():
                         "passed": avg_latency <= 2.0,  # Should respond within 2 seconds
                     }
 
-                    self.log_info(f"    ✓ Average retrieval latency: {avg_latency:.3f}s (max: {max_latency:.3f}s)")
+                    self.log_info(
+                        f"    ✓ Average retrieval latency: {avg_latency:.3f}s (max: {max_latency:.3f}s)"
+                    )
 
                 except Exception as e:
                     self.log_error("    ✗ Retrieval latency test failed", e)
@@ -261,6 +267,7 @@ async def test_production_hardening():
                 self.log_info("  Testing memory usage...")
                 try:
                     import psutil
+
                     process = psutil.Process()
 
                     # Baseline memory
@@ -309,6 +316,7 @@ async def test_production_hardening():
 
             try:
                 from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
+
                 orchestrator = SovereignRagOrchestrator(Path.cwd())
 
                 # Test 1: Path traversal attempt
@@ -369,7 +377,9 @@ async def test_production_hardening():
 
                     if blocked >= len(injection_payloads) * 0.8:  # 80% success rate
                         security_tests["injection_attempts"] = True
-                        self.log_info(f"    ✓ Injection payloads handled ({blocked}/{len(injection_payloads)})")
+                        self.log_info(
+                            f"    ✓ Injection payloads handled ({blocked}/{len(injection_payloads)})"
+                        )
                     else:
                         self.log_warning(f"    ⚠ Only {blocked}/{len(injection_payloads)} payloads handled")
 
@@ -381,7 +391,7 @@ async def test_production_hardening():
                 try:
                     # Test with executable files
                     exe_file = Path("test.exe")
-                    exe_file.write_bytes(b'MZ\x90\x00')  # PE header
+                    exe_file.write_bytes(b"MZ\x90\x00")  # PE header
 
                     try:
                         orchestrator.ingest(exe_file)
@@ -497,7 +507,7 @@ async def test_production_hardening():
                 passed = sum(1 for v in tests.values() if v is True)
                 total = sum(1 for v in tests.values() if v is not None)
                 if total > 0:
-                    print(f"  - {category}: {passed}/{total} ({passed/total:.1%})")
+                    print(f"  - {category}: {passed}/{total} ({passed / total:.1%})")
 
         # Warnings and errors
         if report["warnings"]:
@@ -512,14 +522,14 @@ async def test_production_hardening():
 
         # Save report
         report_file = Path("production_hardening_report.json")
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             json.dump(report, f, indent=2)
         print(f"\n[PROD HARDENING] Report saved to: {report_file}")
 
         # Determine success
         success = (
-            report["summary"]["success_rate"] >= 0.8 and  # 80% of tests pass
-            report["summary"]["errors"] == 0  # No critical errors
+            report["summary"]["success_rate"] >= 0.8  # 80% of tests pass
+            and report["summary"]["errors"] == 0  # No critical errors
         )
 
         if success:

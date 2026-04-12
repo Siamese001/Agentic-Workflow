@@ -64,7 +64,9 @@ class RequirementParserService:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "RequirementParserService.parse_document",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "RequirementParserService.parse_document",
         )
         _emit_routes_to_capability("p2", "req_parser", "document_parsing")
         _emit_validates_capability("p2", "req_parser", "content_analysis")

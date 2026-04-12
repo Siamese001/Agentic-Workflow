@@ -16,6 +16,7 @@ from .uwg_clerk import WriteRequest
 @dataclass(frozen=True)
 class VerificationResult:
     """Result of UWG verification."""
+
     is_valid: bool
     actor_authorized: bool
     compliance_valid: bool

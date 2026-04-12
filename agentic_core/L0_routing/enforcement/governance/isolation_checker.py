@@ -12,18 +12,20 @@ from typing import Any
 
 class LayerViolation(Enum):
     """Types of layer boundary violations."""
-    L0_ROUTING_RETRIEVAL = auto()   # L0 performing C0 retrieval
-    L1_REASONING_EXECUTION = auto() # L1 performing L2 execution
-    L1_REASONING_ROUTING = auto()   # L1 performing L0 routing
-    L2_EXECUTION_ROUTING = auto()   # L2 performing L0 routing
-    L2_EXECUTION_WRITE = auto()     # L2 direct write (bypass UWG)
-    L3_HEALING_UNBOUND = auto()     # L3 healing without context
-    L6_LEARNING_MUTATION = auto()   # L6 mutating current run
+
+    L0_ROUTING_RETRIEVAL = auto()  # L0 performing C0 retrieval
+    L1_REASONING_EXECUTION = auto()  # L1 performing L2 execution
+    L1_REASONING_ROUTING = auto()  # L1 performing L0 routing
+    L2_EXECUTION_ROUTING = auto()  # L2 performing L0 routing
+    L2_EXECUTION_WRITE = auto()  # L2 direct write (bypass UWG)
+    L3_HEALING_UNBOUND = auto()  # L3 healing without context
+    L6_LEARNING_MUTATION = auto()  # L6 mutating current run
 
 
 @dataclass
 class BoundaryCheck:
     """Result of layer isolation check."""
+
     is_valid: bool
     layer: str
     attempted_operation: str

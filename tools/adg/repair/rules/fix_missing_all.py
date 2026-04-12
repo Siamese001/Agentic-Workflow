@@ -42,10 +42,7 @@ class FixMissingAllRule(BaseRepairRule):
 
         Matches deficiencies related to module structure.
         """
-        return (
-            deficiency.category == FixCategory.AUTO_FIX
-            and deficiency.issue_type in self.HANDLED_ISSUES
-        )
+        return deficiency.category == FixCategory.AUTO_FIX and deficiency.issue_type in self.HANDLED_ISSUES
 
     def can_fix(self, deficiency: Deficiency) -> tuple[bool, str]:
         """Determine if the fix can be safely applied.
@@ -118,9 +115,7 @@ class FixMissingAllRule(BaseRepairRule):
 
             # Insert __all__
             new_content = (
-                original_content[:insertion_point]
-                + all_declaration
-                + original_content[insertion_point:]
+                original_content[:insertion_point] + all_declaration + original_content[insertion_point:]
             )
 
             # Write the fixed content

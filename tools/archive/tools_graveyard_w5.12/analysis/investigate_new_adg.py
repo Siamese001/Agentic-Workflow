@@ -22,7 +22,7 @@ layer_dist = cursor.fetchall()
 print(f"Layer distribution: {layer_dist}")
 
 # Check critical layers
-critical_layers = ['L0_FOUNDATION', 'L2_COORDINATION', 'L5_EXECUTION']
+critical_layers = ["L0_FOUNDATION", "L2_COORDINATION", "L5_EXECUTION"]
 for layer in critical_layers:
     cursor.execute("SELECT COUNT(*) FROM nodes WHERE layer = ?", (layer,))
     count = cursor.fetchone()[0]

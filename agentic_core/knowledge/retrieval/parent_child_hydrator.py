@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class HydrationResult:
     """Result of hydration."""
+
     doc_id: str
     content: str
     parent_content: str | None = None
@@ -64,7 +65,9 @@ class ParentChildHydrator:
         """
         trace_id = f"hydrate_{doc_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "ParentChildHydrator.hydrate",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "ParentChildHydrator.hydrate",
         )
 
         parent_content = None

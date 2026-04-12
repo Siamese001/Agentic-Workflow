@@ -17,6 +17,7 @@ class TestHealDepthViolationExhaustive:
         """Test heal_depth_violation_exhaustive module imports."""
         try:
             from agentic_core import heal_depth_violation_exhaustive
+
             assert heal_depth_violation_exhaustive is not None
         except ImportError:
             pytest.skip("heal_depth_violation_exhaustive not available")
@@ -25,6 +26,7 @@ class TestHealDepthViolationExhaustive:
         """Test HealDepthViolationExhaustive class exists."""
         try:
             from agentic_core import HealDepthViolationExhaustive
+
             assert HealDepthViolationExhaustive is not None
         except ImportError:
             pytest.skip("HealDepthViolationExhaustive not available")
@@ -33,6 +35,7 @@ class TestHealDepthViolationExhaustive:
         """Test heal_depth_violation_exhaustive functions are callable."""
         try:
             from agentic_core import validate_heal_depth_violation_exhaustive
+
             assert callable(validate_heal_depth_violation_exhaustive)
         except ImportError:
             pytest.skip("validate_heal_depth_violation_exhaustive not available")

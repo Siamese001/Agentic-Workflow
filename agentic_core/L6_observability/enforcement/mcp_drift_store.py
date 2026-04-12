@@ -37,7 +37,16 @@ def _get_mcp_drift_recorder():
         MCPDriftSeverity,
         MCPServerState,
     )
-    return MCPServerState, MCPConfigSnapshot, MCPDriftEvent, MCPDriftRecorder, MCPDriftReport, MCPDriftSeverity
+
+    return (
+        MCPServerState,
+        MCPConfigSnapshot,
+        MCPDriftEvent,
+        MCPDriftRecorder,
+        MCPDriftReport,
+        MCPDriftSeverity,
+    )
+
 
 # Bind at module scope for type annotations and direct usage throughout this file
 (
@@ -61,7 +70,7 @@ class MCPL6PersistenceConfig:
     reports_dir: Path | None = None
     base_dir: Path | None = None  # Alternative: set both dirs from base
     max_snapshots: int = 100  # Keep last N snapshots
-    max_reports: int = 50     # Keep last N reports
+    max_reports: int = 50  # Keep last N reports
     enable_compression: bool = True
 
     def __post_init__(self):
@@ -79,23 +88,23 @@ class MCPL6PersistenceConfig:
 class MCPL6ObservabilityStore:
     """Layer 6 observability store for MCP configuration snapshots.
 
-    Persists runtime ADG snapshots to L6 storage and provides
-drift alerting integration.
+        Persists runtime ADG snapshots to L6 storage and provides
+    drift alerting integration.
 
-    Usage:
-        store = MCPL6ObservabilityStore()
+        Usage:
+            store = MCPL6ObservabilityStore()
 
-        # Save snapshot to L6
-        store.save_snapshot(snapshot)
+            # Save snapshot to L6
+            store.save_snapshot(snapshot)
 
-        # Save drift report
-        store.save_drift_report(report)
+            # Save drift report
+            store.save_drift_report(report)
 
-        # Load historical snapshots
-        snapshots = store.list_snapshots()
+            # Load historical snapshots
+            snapshots = store.list_snapshots()
 
-        # Get latest for comparison
-        latest = store.get_latest_snapshot()
+            # Get latest for comparison
+            latest = store.get_latest_snapshot()
     """
 
     def __init__(self, config: MCPL6PersistenceConfig | None = None) -> None:
@@ -119,7 +128,9 @@ drift alerting integration.
         import uuid  # noqa: PLC0415
 
         _trace_id = str(uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "MCPL6ObservabilityStore.save_snapshot")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPL6ObservabilityStore.save_snapshot"
+        )
 
         # Create timestamp-based directory
         timestamp_str = time.strftime("%Y%m%d_%H%M%S", time.localtime(snapshot.timestamp))
@@ -164,10 +175,14 @@ drift alerting integration.
         import uuid  # noqa: PLC0415
 
         _trace_id = str(uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "MCPL6ObservabilityStore.save_drift_report")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPL6ObservabilityStore.save_drift_report"
+        )
 
         timestamp_str = time.strftime("%Y%m%d_%H%M%S", time.localtime(report.detected_at))
-        report_file = self._config.reports_dir / f"drift_report_{timestamp_str}_{report.current_snapshot_id}.json"
+        report_file = (
+            self._config.reports_dir / f"drift_report_{timestamp_str}_{report.current_snapshot_id}.json"
+        )
 
         with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report.to_dict(), f, indent=2, default=str)
@@ -233,10 +248,7 @@ drift alerting integration.
                 snapshot_id=data["snapshot_id"],
                 timestamp=data["timestamp"],
                 source_file=data["source_file"],
-                servers={
-                    name: MCPServerState.from_dict(state)
-                    for name, state in data["servers"].items()
-                },
+                servers={name: MCPServerState.from_dict(state) for name, state in data["servers"].items()},
                 metadata=data.get("metadata", {}),
             )
         return None
@@ -261,8 +273,7 @@ drift alerting integration.
                         timestamp=data["timestamp"],
                         source_file=data["source_file"],
                         servers={
-                            name: MCPServerState.from_dict(state)
-                            for name, state in data["servers"].items()
+                            name: MCPServerState.from_dict(state) for name, state in data["servers"].items()
                         },
                         metadata=data.get("metadata", {}),
                     )
@@ -279,7 +290,7 @@ drift alerting integration.
             return 0
 
         removed = 0
-        for old_dir in all_dirs[:-self._config.max_snapshots]:
+        for old_dir in all_dirs[: -self._config.max_snapshots]:
             if old_dir.is_dir():
                 for file in old_dir.iterdir():
                     file.unlink()
@@ -299,7 +310,7 @@ drift alerting integration.
             return 0
 
         removed = 0
-        for old_report in all_reports[:-self._config.max_reports]:
+        for old_report in all_reports[: -self._config.max_reports]:
             old_report.unlink()
             removed += 1
 
@@ -342,24 +353,24 @@ drift alerting integration.
 class MCPDriftMonitor:
     """Active monitor for MCP configuration drift.
 
-    Continuously monitors MCP configuration and alerts on drift.
-Integrates with Layer 6 observability for comprehensive monitoring.
+        Continuously monitors MCP configuration and alerts on drift.
+    Integrates with Layer 6 observability for comprehensive monitoring.
 
-    Usage:
-        monitor = MCPDriftMonitor(config_path=".windsurf/mcp_config.json")
+        Usage:
+            monitor = MCPDriftMonitor(config_path=".windsurf/mcp_config.json")
 
-        # Start monitoring (captures baseline)
-        monitor.start_monitoring()
+            # Start monitoring (captures baseline)
+            monitor.start_monitoring()
 
-        # Check for drift (call periodically)
-        report = monitor.check_drift()
-        if report.has_drift:
-            handle_drift(report)
+            # Check for drift (call periodically)
+            report = monitor.check_drift()
+            if report.has_drift:
+                handle_drift(report)
 
-        # Or use as context manager
-        with MCPDriftMonitor(config_path) as monitor:
-            # Monitoring active
-            pass
+            # Or use as context manager
+            with MCPDriftMonitor(config_path) as monitor:
+                # Monitoring active
+                pass
     """
 
     def __init__(
@@ -383,7 +394,9 @@ Integrates with Layer 6 observability for comprehensive monitoring.
         import uuid  # noqa: PLC0415
 
         _trace_id = str(uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftMonitor.start_monitoring")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPDriftMonitor.start_monitoring"
+        )
 
         # Try to load previous baseline from store
         self._baseline = self._store.get_latest_snapshot()
@@ -462,7 +475,9 @@ Integrates with Layer 6 observability for comprehensive monitoring.
         if self._started:
             final_report = self.check_drift()
             if final_report and final_report.has_drift:
-                _emit_emits_metric_event("mcp_monitor", "l6_obs", f"final_drift_{len(final_report.drift_events)}")
+                _emit_emits_metric_event(
+                    "mcp_monitor", "l6_obs", f"final_drift_{len(final_report.drift_events)}"
+                )
 
 
 __all__ = [

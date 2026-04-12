@@ -427,7 +427,11 @@ class RedSentinelAgent(SovereignBaseAgent):
         This is an operational agent - no repository healing required.
         """
         super().heal_repository(
-            dry_run=dry_run, execute=execute, depth=depth, max_depth=max_depth, _call_path=_call_path,
+            dry_run=dry_run,
+            execute=execute,
+            depth=depth,
+            max_depth=max_depth,
+            _call_path=_call_path,
         )
         if _call_path is None:
             _call_path = set()

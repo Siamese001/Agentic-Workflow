@@ -37,10 +37,7 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
 
     def match(self, deficiency: Deficiency) -> bool:
         """Check if this rule applies."""
-        return (
-            deficiency.category == FixCategory.AUTO_FIX
-            and deficiency.issue_type in self.HANDLED_ISSUES
-        )
+        return deficiency.category == FixCategory.AUTO_FIX and deficiency.issue_type in self.HANDLED_ISSUES
 
     def can_fix(self, deficiency: Deficiency) -> tuple[bool, str]:
         """Determine if fix can be applied."""
@@ -103,9 +100,9 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
                 if element_type == "module":
                     docstring = f'{indent}"""{node.get("name", "Module")}."""\n'
                 elif element_type == "class":
-                    docstring = f'{indent}\'\'\'{node.name}.\'\'\'\n'
+                    docstring = f"{indent}'''{node.name}.'''\n"
                 else:  # function
-                    docstring = f'{indent}\'\'\'{node.name}().\'\'\'\n'
+                    docstring = f"{indent}'''{node.name}().'''\n"
 
                 # Insert after the definition line
                 insert_idx = line_idx + 1

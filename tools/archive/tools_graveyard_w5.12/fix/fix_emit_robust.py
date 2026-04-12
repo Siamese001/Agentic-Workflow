@@ -44,7 +44,7 @@ for base_dir in ["agentic_core", "tests", "system_learning", "apps_shared"]:
             missing = []
             for emitter in TARGET_EMITTERS:
                 # Check if emitter is CALLED (not just substring-mentioned)
-                call_pattern = re.compile(r'\b' + re.escape(emitter) + r'\s*\(')
+                call_pattern = re.compile(r"\b" + re.escape(emitter) + r"\s*\(")
                 if not call_pattern.search(content):
                     continue
 
@@ -59,10 +59,10 @@ for base_dir in ["agentic_core", "tests", "system_learning", "apps_shared"]:
                         continue
 
                     # Multi-line import start
-                    if re.match(r'^from\s+\S+\s+import\s+\(', s):
+                    if re.match(r"^from\s+\S+\s+import\s+\(", s):
                         in_import_block = True
                         # Check this line too
-                        if re.search(r'\b' + re.escape(emitter) + r'\b', s):
+                        if re.search(r"\b" + re.escape(emitter) + r"\b", s):
                             imported = True
                             break
                         continue
@@ -71,14 +71,14 @@ for base_dir in ["agentic_core", "tests", "system_learning", "apps_shared"]:
                         if s == ")":
                             in_import_block = False
                             continue
-                        if re.search(r'\b' + re.escape(emitter) + r'\b', s):
+                        if re.search(r"\b" + re.escape(emitter) + r"\b", s):
                             imported = True
                             break
                         continue
 
                     # Single-line import
-                    if re.match(r'^from\s+\S+\s+import\s+', s):
-                        if re.search(r'\b' + re.escape(emitter) + r'\b', s):
+                    if re.match(r"^from\s+\S+\s+import\s+", s):
+                        if re.search(r"\b" + re.escape(emitter) + r"\b", s):
                             imported = True
                             break
 

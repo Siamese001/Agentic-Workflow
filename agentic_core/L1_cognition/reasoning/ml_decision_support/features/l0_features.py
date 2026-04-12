@@ -39,7 +39,9 @@ class L0FeatureExtractor(DeterministicFeatureExtractor):
         self.register_extraction_function("user_confidence_score", self._extract_user_confidence_score)
         self.register_extraction_function("path_success_history", self._extract_path_success_history)
         self.register_extraction_function("current_load_ratio", self._extract_current_load_ratio)
-        self.register_extraction_function("semantic_similarity_score", self._extract_semantic_similarity_score)
+        self.register_extraction_function(
+            "semantic_similarity_score", self._extract_semantic_similarity_score
+        )
         self.register_extraction_function("policy_hash_version", self._extract_policy_hash_version)
         self.register_extraction_function("trace_id_hash", self._extract_trace_id_hash)
 

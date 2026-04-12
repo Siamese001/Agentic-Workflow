@@ -1,6 +1,7 @@
 """
 Decision Memo Types - Domain contracts for underwriting decision outputs.
 """
+
 from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field
@@ -10,9 +11,12 @@ from .underwriting_request_types import DecisionState
 
 class EvidenceItem(BaseModel):
     """Single evidence item supporting a claim."""
+
     claim_id: str = Field(..., description="Unique claim identifier")
     claim_text: str = Field(..., description="Claim text")
-    evidence_type: Literal["document", "structured_metric", "policy_rule"] = Field(..., description="Evidence type")
+    evidence_type: Literal["document", "structured_metric", "policy_rule"] = Field(
+        ..., description="Evidence type"
+    )
     source_ref: str = Field(..., description="Source reference (doc_id or field)")
     source_excerpt: Optional[str] = Field(None, description="Relevant excerpt from source")
     confidence: float = Field(0.8, ge=0, le=1, description="Confidence in evidence")
@@ -22,6 +26,7 @@ class DecisionMemo(BaseModel):
     """
     Complete underwriting decision memo.
     """
+
     request_id: str = Field(..., description="Reference to underwriting request")
     recommended_decision: DecisionState = Field(..., description="Recommended decision")
     recommended_amount: Optional[float] = Field(None, description="Recommended loan amount")

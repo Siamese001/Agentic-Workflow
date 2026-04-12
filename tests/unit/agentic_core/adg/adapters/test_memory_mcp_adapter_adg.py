@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.adg.adapters.ADGMemoryAdapter."""
+
 from __future__ import annotations
 
 import importlib
@@ -67,6 +68,7 @@ def test_get_adapter_is_callable(mod):
 
     # Test function signature accepts expected parameters
     import inspect
+
     sig = inspect.signature(func)
     params = list(sig.parameters.keys())
     assert len(params) >= 1, "get_adapter should accept at least one parameter"

@@ -16,14 +16,17 @@ class TestUwgHardBlock:
     def test_uwg_hard_block_imports(self):
         """Test uwg_hard_block module imports."""
         from agentic_core import uwg_hard_block
+
         assert uwg_hard_block is not None
 
     def test_uwg_hard_block_class(self):
         """Test UwgHardBlock class exists."""
         from agentic_core import UwgHardBlock
+
         assert UwgHardBlock is not None
 
     def test_uwg_hard_block_callable(self):
         """Test uwg_hard_block functions are callable."""
         from agentic_core import validate_uwg_hard_block
+
         assert callable(validate_uwg_hard_block)

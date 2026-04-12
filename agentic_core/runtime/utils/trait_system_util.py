@@ -216,6 +216,7 @@ class CachingTrait(Trait):
     def apply(cls, target_cls: type) -> type:
         """Apply caching capabilities to target class."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CachingTrait.apply")
 
@@ -254,7 +255,8 @@ class CachingTrait(Trait):
                 while len(self._cache_store) >= self._cache_config.max_size:
                     self._cache_store.popitem(last=False)
                 self._cache_store[key] = CacheEntry(
-                    value=value, ttl_seconds=ttl or self._cache_config.default_ttl,
+                    value=value,
+                    ttl_seconds=ttl or self._cache_config.default_ttl,
                 )
 
         def cache_clear(self) -> int:
@@ -284,6 +286,7 @@ class MetricsTrait(Trait):
     def apply(cls, target_cls: type) -> type:
         """Apply metrics capabilities to target class."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetricsTrait.apply")
 
@@ -347,6 +350,7 @@ class BatchingTrait(Trait):
     def apply(cls, target_cls: type) -> type:
         """Apply batching capabilities to target class."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BatchingTrait.apply")
 

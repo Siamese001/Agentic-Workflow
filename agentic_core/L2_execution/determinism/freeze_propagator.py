@@ -15,6 +15,7 @@ from typing import Callable
 
 class FreezeState(Enum):
     """Freeze state enumeration."""
+
     UNFROZEN = auto()
     FREEZING = auto()
     FROZEN = auto()
@@ -24,6 +25,7 @@ class FreezeState(Enum):
 @dataclass
 class FreezeSignal:
     """Freeze signal for layer propagation."""
+
     source_layer: str
     target_layers: list[str]
     freeze_state: FreezeState
@@ -85,10 +87,7 @@ class FreezePropagator:
                     handler(signal)
                 self._layer_states[layer] = FreezeState.FROZEN
 
-            return all(
-                state == FreezeState.FROZEN
-                for state in self._layer_states.values()
-            )
+            return all(state == FreezeState.FROZEN for state in self._layer_states.values())
 
     def thaw(self, source: str) -> bool:
         """Thaw (unfreeze) all layers."""
@@ -119,10 +118,7 @@ class FreezePropagator:
         """Check if frozen (globally or for specific layer)."""
         with self._lock:
             if layer is None:
-                return any(
-                    state == FreezeState.FROZEN
-                    for state in self._layer_states.values()
-                )
+                return any(state == FreezeState.FROZEN for state in self._layer_states.values())
             return self._layer_states.get(layer) == FreezeState.FROZEN
 
     def get_frozen_timestamp(self) -> float | None:

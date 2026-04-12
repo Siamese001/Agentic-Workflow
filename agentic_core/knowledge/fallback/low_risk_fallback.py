@@ -19,6 +19,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class FallbackResult:
     """Result of fallback generation."""
+
     response: str
     is_fallback: bool
     risk_level: str  # "low", "medium", "high"
@@ -57,7 +58,9 @@ class LowRiskFallback:
         """
         trace_id = f"fallback_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "LowRiskFallback.generate",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "LowRiskFallback.generate",
         )
 
         # Determine risk level

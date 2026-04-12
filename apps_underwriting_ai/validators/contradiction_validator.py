@@ -1,6 +1,7 @@
 """
 Contradiction Validator - Inspects reconciliation findings.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
@@ -10,6 +11,7 @@ from ..engines.document_reconciliation_engine import ContradictionSeverity, Reco
 @dataclass
 class ContradictionValidationResult:
     """Result of contradiction validation."""
+
     acceptable: bool = True
     critical_count: int = 0
     major_count: int = 0
@@ -53,12 +55,14 @@ class ContradictionValidator:
                 result.major_count += 1
 
             # Add to findings
-            result.findings.append({
-                "field": contradiction.field_name,
-                "variance_pct": contradiction.variance_pct,
-                "severity": contradiction.severity.value,
-                "explanation": contradiction.explanation,
-            })
+            result.findings.append(
+                {
+                    "field": contradiction.field_name,
+                    "variance_pct": contradiction.variance_pct,
+                    "severity": contradiction.severity.value,
+                    "explanation": contradiction.explanation,
+                }
+            )
 
         # Determine acceptability
         if result.critical_count > 0:

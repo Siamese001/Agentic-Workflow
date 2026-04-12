@@ -198,7 +198,8 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
     issues: Any = []
     file_str: Any = str(filepath).replace("\\", "/")
     current_context: Any = next(
-        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str), None,
+        (ctx for ctx, info in BOUNDED_CONTEXTS.items() if info.get("path") in file_str),
+        None,
     )
     if not current_context:
         return []
@@ -237,16 +238,21 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
                     if ctx == current_context:
                         continue
                     if ctx == "SharedContracts":
-                        continue    # guardian: Parsing and encoding errors need separate handling strategies
+                        continue  # guardian: Parsing and encoding errors need separate handling strategies
                     target_path: Any = info.get("path", "")
                     if target_path.replace("/", ".") in node.module:
                         if "contracts" not in node.module and "interfaces" not in node.module:
                             issues.append(
                                 f"Potential Context Violation: Importing {ctx} logic ({node.module}) into {current_context}",
                             )
-    except (OSError, UnicodeDecodeError, SyntaxError):    # guardian: Parsing and encoding errors need separate handling strategies
+    except (
+        OSError,
+        UnicodeDecodeError,
+        SyntaxError,
+    ):  # guardian: Parsing and encoding errors need separate handling strategies
+        import logging
 
-        import logging; logging.getLogger(__name__).debug("ddd_alignment_validator: OSError swallowed at L247: %s", e)
+        logging.getLogger(__name__).debug("ddd_alignment_validator: OSError swallowed at L247: %s", e)
     return issues
 
 

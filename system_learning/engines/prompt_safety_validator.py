@@ -304,8 +304,11 @@ class PromptSafetyValidator:
         (PromptSafetyDecision, list of ADG relation tuples)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptSafetyValidator.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptSafetyValidator.validate"
+        )
 
         cfg = self._config
         denial_reasons: list[str] = []
@@ -318,8 +321,9 @@ class PromptSafetyValidator:
         except Exception as exc:
             logger.warning("prompt_safety_validator: policy gate exception: %s", exc)
             p_pass, p_reason = False, "POLICY_GATE_EXCEPTION"
-        relations.append((an, SAFETY_VALIDATED_BY_POLICY,
-                          f"ADG::Policy::{(artifact.policy_hash or 'NONE')[:16]}"))
+        relations.append(
+            (an, SAFETY_VALIDATED_BY_POLICY, f"ADG::Policy::{(artifact.policy_hash or 'NONE')[:16]}")
+        )
         if not p_pass and cfg.block_on_policy_mismatch:
             denial_reasons.append(p_reason or GATE_POLICY)
 
@@ -330,8 +334,9 @@ class PromptSafetyValidator:
             logger.warning("prompt_safety_validator: guardrail gate exception: %s", exc)
             g_pass, g_reason = False, "GUARDRAIL_GATE_EXCEPTION"
         guardrail_set = tuple(sorted(cfg.active_guardrails))
-        relations.append((an, SAFETY_CHECKED_BY_GUARDRAIL,
-                          f"ADG::GuardrailSet::{_hash_set(guardrail_set)[:16]}"))
+        relations.append(
+            (an, SAFETY_CHECKED_BY_GUARDRAIL, f"ADG::GuardrailSet::{_hash_set(guardrail_set)[:16]}")
+        )
         if not g_pass:
             denial_reasons.append(g_reason or GATE_GUARDRAIL)
 
@@ -341,8 +346,9 @@ class PromptSafetyValidator:
         except Exception as exc:
             logger.warning("prompt_safety_validator: budget gate exception: %s", exc)
             b_pass, b_reason = False, "BUDGET_GATE_EXCEPTION"
-        relations.append((an, SAFETY_BUDGET_CHECKED,
-                          f"ADG::BudgetClass::{artifact.slot_manifest.budget_class}"))
+        relations.append(
+            (an, SAFETY_BUDGET_CHECKED, f"ADG::BudgetClass::{artifact.slot_manifest.budget_class}")
+        )
         if not b_pass:
             denial_reasons.append(b_reason or GATE_BUDGET)
 
@@ -350,21 +356,25 @@ class PromptSafetyValidator:
         adg_relation = SAFETY_ALLOWED if allowed else SAFETY_BLOCKED
 
         # Final allowed/blocked relation
-        relations.append((
-            an,
-            adg_relation,
-            f"ADG::SafetyDecision::{artifact.prompt_hash[:16]}",
-        ))
+        relations.append(
+            (
+                an,
+                adg_relation,
+                f"ADG::SafetyDecision::{artifact.prompt_hash[:16]}",
+            )
+        )
 
         # Build decision_id
-        canonical = deterministic_json({
-            "allowed": allowed,
-            "denial_reasons": sorted(denial_reasons),
-            "guardrail_set": sorted(guardrail_set),
-            "policy_hash": cfg.active_policy_hash,
-            "prompt_hash": artifact.prompt_hash,
-            "timestamp_utc": timestamp_utc,
-        })
+        canonical = deterministic_json(
+            {
+                "allowed": allowed,
+                "denial_reasons": sorted(denial_reasons),
+                "guardrail_set": sorted(guardrail_set),
+                "policy_hash": cfg.active_policy_hash,
+                "prompt_hash": artifact.prompt_hash,
+                "timestamp_utc": timestamp_utc,
+            }
+        )
         decision_id = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
         decision = PromptSafetyDecision(

@@ -428,7 +428,9 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "SelfUpdatingSafetyEngineAgent.detect_threats",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "SelfUpdatingSafetyEngineAgent.detect_threats",
         )
         matched_rules: Any = []
         max_threat_level: Any = ThreatLevel.LOW
@@ -559,7 +561,8 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
                 "auto_generated": rule.auto_generated,
             }
             rule_recommendations = SafetyAnalysisMixin._generate_recommendations(
-                rule.ThreatLevel.value, context,
+                rule.ThreatLevel.value,
+                context,
             )
             recommendations.extend(
                 [

@@ -257,7 +257,9 @@ class HardenedOpenAIExecutor(HardeningMixin):
         )
 
     def _build_messages(
-        self, messages: list[AgentMessage], system_prompt: str | None = None,
+        self,
+        messages: list[AgentMessage],
+        system_prompt: str | None = None,
     ) -> list[dict[str, str]]:
         """Build OpenAI message format.
 
@@ -298,7 +300,9 @@ class HardenedOpenAIExecutor(HardeningMixin):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HardenedOpenAIExecutorStrategy.run_llm")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "HardenedOpenAIExecutorStrategy.run_llm"
+        )
         if messages:
             openai_messages = self._build_messages(messages, system_prompt)
             combined_prompt = "\n".join(msg.content for msg in messages)
@@ -448,7 +452,9 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
 # guardian: allow-magic-config
 def create_hardened_openai_executor(
-    model: str = "gpt-4o-2024-08-06", temperature: float = 0.7, **kwargs,
+    model: str = "gpt-4o-2024-08-06",
+    temperature: float = 0.7,
+    **kwargs,
 ) -> HardenedOpenAIExecutor:
     """Create a hardened OpenAI executor.
 

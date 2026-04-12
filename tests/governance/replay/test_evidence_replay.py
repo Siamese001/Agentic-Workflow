@@ -106,7 +106,10 @@ class TestEvidenceReplay:
         # Hash should be influenced by transcript hashes (different transcripts -> different pack hash)
         # Verify by creating a pack with different transcripts and comparing
         other_transcript = ToolTranscript(
-            tool_name="other_tool", inputs={"x": "y"}, outputs="Other output", timestamp=9999.0,
+            tool_name="other_tool",
+            inputs={"x": "y"},
+            outputs="Other output",
+            timestamp=9999.0,
         )
         other_pack = EvidencePack(
             pack_id="evidence_001",
@@ -120,7 +123,10 @@ class TestEvidenceReplay:
         """Test detection of missing ToolTranscript hash."""
         # Given - Create transcript without hash by setting it to empty after creation
         transcript = ToolTranscript(
-            tool_name="test_tool", inputs={"param": "value"}, outputs="Success", timestamp=1234567890.0,
+            tool_name="test_tool",
+            inputs={"param": "value"},
+            outputs="Success",
+            timestamp=1234567890.0,
         )
 
         # Manually set hash to empty to simulate missing hash
@@ -131,7 +137,10 @@ class TestEvidenceReplay:
 
         # Evidence pack with missing transcript hash should be invalid
         evidence_pack = EvidencePack(
-            pack_id="invalid_pack", wave_id=16, artifacts=["test.txt"], tool_transcripts=[transcript],
+            pack_id="invalid_pack",
+            wave_id=16,
+            artifacts=["test.txt"],
+            tool_transcripts=[transcript],
         )
 
         # Should detect gap
@@ -142,7 +151,10 @@ class TestEvidenceReplay:
         """Test that evidence replay is consistent."""
         # Given - Create identical evidence packs
         transcript = ToolTranscript(
-            tool_name="replay_test", inputs={"test": "data"}, outputs="Test result", timestamp=1234567890.0,
+            tool_name="replay_test",
+            inputs={"test": "data"},
+            outputs="Test result",
+            timestamp=1234567890.0,
         )
 
         pack1 = EvidencePack(
@@ -166,11 +178,17 @@ class TestEvidenceReplay:
         """Test detection of tampered evidence."""
         # Given - Create original evidence pack
         transcript = ToolTranscript(
-            tool_name="secure_tool", inputs={"secret": "data"}, outputs="Processed", timestamp=1234567890.0,
+            tool_name="secure_tool",
+            inputs={"secret": "data"},
+            outputs="Processed",
+            timestamp=1234567890.0,
         )
 
         original_pack = EvidencePack(
-            pack_id="secure_pack", wave_id=16, artifacts=["secret.txt"], tool_transcripts=[transcript],
+            pack_id="secure_pack",
+            wave_id=16,
+            artifacts=["secret.txt"],
+            tool_transcripts=[transcript],
         )
 
         # When - Tamper with evidence

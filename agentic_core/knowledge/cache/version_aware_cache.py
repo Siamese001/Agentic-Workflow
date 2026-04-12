@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class CacheEntry:
     """Cache entry with metadata."""
+
     key: str
     data: dict[str, Any]
     query_vector: list[float] | None = None
@@ -34,6 +35,7 @@ class CacheEntry:
 @dataclass
 class CacheLookupResult:
     """Result of cache lookup."""
+
     found: bool
     entry: CacheEntry | None = None
     match_type: str = "none"  # exact, semantic, none
@@ -94,7 +96,9 @@ class VersionAwareCache:
         """
         trace_id = f"cache_lookup_{hash(query) % 10000}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "VersionAwareCache.lookup",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "VersionAwareCache.lookup",
         )
 
         # Generate cache key

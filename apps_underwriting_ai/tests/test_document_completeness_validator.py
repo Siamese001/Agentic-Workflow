@@ -1,6 +1,7 @@
 """
 Test Document Completeness Validator.
 """
+
 import unittest
 
 from apps_underwriting_ai.types import DocumentPackage, DocumentRef

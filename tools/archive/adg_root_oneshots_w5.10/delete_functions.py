@@ -15,8 +15,8 @@ def remove_function(file_path: str, func_name: str) -> bool:
         return False
 
     try:
-        source = path.read_text(encoding='utf-8')
-        lines = source.split('\n')
+        source = path.read_text(encoding="utf-8")
+        lines = source.split("\n")
     except Exception:
         return False
 
@@ -39,34 +39,34 @@ def remove_function(file_path: str, func_name: str) -> bool:
     end_line = target_node.end_lineno
 
     # Remove the function
-    new_lines = lines[:start_line - 1] + lines[end_line:]
-    path.write_text('\n'.join(new_lines), encoding='utf-8')
+    new_lines = lines[: start_line - 1] + lines[end_line:]
+    path.write_text("\n".join(new_lines), encoding="utf-8")
     print(f"  Removed {func_name} from {file_path} (lines {start_line}-{end_line})")
     return True
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Delete unused functions from Python files')
-    parser.add_argument('--input', required=True, help='JSON file with functions to delete')
-    parser.add_argument('--report', '-r', action='store_true', help='Report-only mode (no deletions)')
-    parser.add_argument('--dry-run', action='store_true', help=argparse.SUPPRESS)  # Deprecated, use --report
-    parser.add_argument('--limit', type=int, help='Limit number of deletions')
+    parser = argparse.ArgumentParser(description="Delete unused functions from Python files")
+    parser.add_argument("--input", required=True, help="JSON file with functions to delete")
+    parser.add_argument("--report", "-r", action="store_true", help="Report-only mode (no deletions)")
+    parser.add_argument("--dry-run", action="store_true", help=argparse.SUPPRESS)  # Deprecated, use --report
+    parser.add_argument("--limit", type=int, help="Limit number of deletions")
 
     args = parser.parse_args()
 
-    with open(args.input, encoding='utf-8') as f:
+    with open(args.input, encoding="utf-8") as f:
         data = json.load(f)
 
-    funcs = data.get('unused_functions', [])
+    funcs = data.get("unused_functions", [])
     if args.limit:
-        funcs = funcs[:args.limit]
+        funcs = funcs[: args.limit]
 
-    print(f'Processing {len(funcs)} unused functions...')
+    print(f"Processing {len(funcs)} unused functions...")
 
     deleted = 0
     for func in funcs:
-        file_path = func['file']
-        func_name = func['name']
+        file_path = func["file"]
+        func_name = func["name"]
 
         if args.report:
             print(f"[REPORT] Would delete {func_name} from {file_path}")
@@ -75,9 +75,9 @@ def main():
             if remove_function(file_path, func_name):
                 deleted += 1
 
-    print(f'\n{"Would delete" if args.report else "Deleted"} {deleted} functions')
+    print(f"\n{'Would delete' if args.report else 'Deleted'} {deleted} functions")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

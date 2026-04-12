@@ -245,6 +245,7 @@ class SovereignRagConfig:
     def from_env(cls) -> SovereignRagConfig:
         """Load configuration from environment variables."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignRagConfig.from_env")
 

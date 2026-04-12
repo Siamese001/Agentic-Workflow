@@ -1,4 +1,5 @@
 """L4 Memory Authority baseline check - writes_through vs writes_to."""
+
 import pathlib
 import sqlite3
 import sys
@@ -9,7 +10,8 @@ if not db.exists():
     adg_dir = pathlib.Path(r"C:\Git\Agentic-Workflow\artifacts\adg")
     dbs = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
     if not dbs:
-        print("No ADG SQLite found"); sys.exit(1)
+        print("No ADG SQLite found")
+        sys.exit(1)
     db = dbs[-1]
 
 print(f"Using: {db.name}")

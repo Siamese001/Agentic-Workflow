@@ -1,4 +1,5 @@
 """ADG-guided MCP usage audit."""
+
 import sqlite3
 from pathlib import Path
 
@@ -56,21 +57,24 @@ print(SEP)
 print("3. PLAYWRIGHT / FETCH / BRAVE / DEEPWIKI REFERENCE AUDIT")
 print(SEP)
 terms = [
-    ("mcp9_playwright",  "mcp9 Playwright"),
-    ("mcp1_brave",       "mcp1 Brave Search"),
-    ("mcp4_fetch",       "mcp4 Fetch"),
-    ("mcp3_deepwiki",    "mcp3 DeepWiki"),
-    ("playwright",       "playwright (any)"),
-    ("brave_search",     "brave_search (logical)"),
-    ("deepwiki",         "deepwiki (logical)"),
+    ("mcp9_playwright", "mcp9 Playwright"),
+    ("mcp1_brave", "mcp1 Brave Search"),
+    ("mcp4_fetch", "mcp4 Fetch"),
+    ("mcp3_deepwiki", "mcp3 DeepWiki"),
+    ("playwright", "playwright (any)"),
+    ("brave_search", "brave_search (logical)"),
+    ("deepwiki", "deepwiki (logical)"),
 ]
 for term, label in terms:
-    cur.execute("""
+    cur.execute(
+        """
         SELECT DISTINCT n.resolved_path, e.symbol, e.line_no
         FROM nodes n JOIN edges e ON n.id = e.src_id
         WHERE e.symbol LIKE ?
         ORDER BY n.resolved_path LIMIT 10
-    """, (f"%{term}%",))
+    """,
+        (f"%{term}%",),
+    )
     rows = cur.fetchall()
     if rows:
         print(f"\n  [{label}] {len(rows)} reference(s)")

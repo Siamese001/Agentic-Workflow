@@ -213,7 +213,9 @@ class DefaultDeterministicRollbackRefiner:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "DefaultDeterministicRollbackRefiner.refine",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "DefaultDeterministicRollbackRefiner.refine",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -227,7 +229,9 @@ class DefaultDeterministicRollbackRefiner:
 
         # Score all candidate strategies
         scored_candidates = self._score_candidates(
-            request.candidates, strategy_stats, request.failure_signature,
+            request.candidates,
+            strategy_stats,
+            request.failure_signature,
         )
 
         # Sort by score (descending), then by name for deterministic tie-breaking
@@ -391,6 +395,7 @@ class DefaultDeterministicRollbackRefiner:
         """
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             bridge.persist_rollback_strategy_outcome(

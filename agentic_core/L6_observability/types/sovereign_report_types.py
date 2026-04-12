@@ -202,7 +202,9 @@ class SovereignReport:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "SovereignReport.get_overall_score",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "SovereignReport.get_overall_score",
         )
 
         if not self.scores:
@@ -232,7 +234,10 @@ class SovereignReport:
             self._report_id = f"audit-{datetime.utcnow().strftime('%Y%m%d-%H%M%S')}"
 
         def with_dimension(
-            self, name: str, score: float, issues: list[str] = None,
+            self,
+            name: str,
+            score: float,
+            issues: list[str] = None,
         ) -> SovereignReport.Builder:
             """Sets a validated dimension score."""
             import uuid as _uuid  # noqa: PLC0415

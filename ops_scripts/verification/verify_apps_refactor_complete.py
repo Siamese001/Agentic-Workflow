@@ -142,7 +142,10 @@ class AppsRefactorVerifier:
                 check_id="P1-F401-001",
                 description="Zero F401 violations in apps_* (excluding __init__.py re-exports)",
                 passed=len(non_init) == 0,
-                evidence={"f401_count": len(non_init), "files_with_violations": len(set(v["filename"] for v in non_init))},
+                evidence={
+                    "f401_count": len(non_init),
+                    "files_with_violations": len(set(v["filename"] for v in non_init)),
+                },
                 failure_reason="" if len(non_init) == 0 else f"{len(non_init)} F401 violations remain",
             ),
         )
@@ -184,7 +187,9 @@ class AppsRefactorVerifier:
                 description="Test files updated to canonical import",
                 passed=len(canonical_imports) == 2,
                 evidence={"files_with_canonical_import": canonical_imports},
-                failure_reason="" if len(canonical_imports) == 2 else f"Only {len(canonical_imports)}/2 test files updated",
+                failure_reason=""
+                if len(canonical_imports) == 2
+                else f"Only {len(canonical_imports)}/2 test files updated",
             ),
         )
 
@@ -236,8 +241,13 @@ class AppsRefactorVerifier:
                     check_id=f"P3-DEDUP-{file_path.stem}",
                     description=f"No unconditional duplicate stubs in {file_path.name}",
                     passed=len(unconditional_dupes) == 0,
-                    evidence={"duplicate_classes": unconditional_dupes, "all_classes": list(set(class_names))},
-                    failure_reason="" if len(unconditional_dupes) == 0 else f"Unconditional duplicates: {unconditional_dupes}",
+                    evidence={
+                        "duplicate_classes": unconditional_dupes,
+                        "all_classes": list(set(class_names)),
+                    },
+                    failure_reason=""
+                    if len(unconditional_dupes) == 0
+                    else f"Unconditional duplicates: {unconditional_dupes}",
                 ),
             )
 
@@ -310,7 +320,9 @@ class AppsRefactorVerifier:
                 description="No inline MAX_RETRIES=3 definitions in apps_* (all use SSOT)",
                 passed=len(inline_violations) == 0,
                 evidence={"files_with_inline_defs": inline_violations},
-                failure_reason="" if len(inline_violations) == 0 else f"{len(inline_violations)} files still define inline",
+                failure_reason=""
+                if len(inline_violations) == 0
+                else f"{len(inline_violations)} files still define inline",
             ),
         )
 
@@ -329,7 +341,9 @@ class AppsRefactorVerifier:
                     description="LicHealingOrchestrator uses field(default_factory=dict) for active_incidents",
                     passed=has_field_factory,
                     evidence={"pattern_found": has_field_factory},
-                    failure_reason="" if has_field_factory else "field(default_factory=dict) pattern not found",
+                    failure_reason=""
+                    if has_field_factory
+                    else "field(default_factory=dict) pattern not found",
                 ),
             )
 
@@ -469,8 +483,13 @@ class AppsRefactorVerifier:
                 check_id="P8-RELOC-001",
                 description="No test_*.py files in apps_rg/scripts/",
                 passed=len(misplaced_tests) == 0,
-                evidence={"misplaced_count": len(misplaced_tests), "files": [f.name for f in misplaced_tests]},
-                failure_reason="" if len(misplaced_tests) == 0 else f"{len(misplaced_tests)} test files still in apps_rg/scripts/",
+                evidence={
+                    "misplaced_count": len(misplaced_tests),
+                    "files": [f.name for f in misplaced_tests],
+                },
+                failure_reason=""
+                if len(misplaced_tests) == 0
+                else f"{len(misplaced_tests)} test files still in apps_rg/scripts/",
             ),
         )
 
@@ -489,7 +508,9 @@ class AppsRefactorVerifier:
                 description="Test files relocated to tests/apps_rg/scripts/",
                 passed=len(relocated_tests) == 3,
                 evidence={"relocated_count": len(relocated_tests), "expected": 3},
-                failure_reason="" if len(relocated_tests) == 3 else f"Only {len(relocated_tests)}/3 test files relocated",
+                failure_reason=""
+                if len(relocated_tests) == 3
+                else f"Only {len(relocated_tests)}/3 test files relocated",
             ),
         )
 
@@ -559,7 +580,10 @@ class AppsRefactorVerifier:
                     check_id=f"P9-CB-{executor_path.stem}",
                     description=f"{executor_path.name} inherits from HardeningMixin",
                     passed=inherits_hardening,
-                    evidence={"executor_classes": [c.name for c in executor_classes], "inherits_hardening": inherits_hardening},
+                    evidence={
+                        "executor_classes": [c.name for c in executor_classes],
+                        "inherits_hardening": inherits_hardening,
+                    },
                     failure_reason="" if inherits_hardening else "Does not inherit from HardeningMixin",
                 ),
             )
@@ -580,7 +604,9 @@ class AppsRefactorVerifier:
                     description="AppGuardianSpec registry exists with >= 4 entries",
                     passed=spec_count >= 4 and has_registry_tuple,
                     evidence={"spec_count": spec_count, "has_registry": has_registry_tuple},
-                    failure_reason="" if (spec_count >= 4 and has_registry_tuple) else f"Only {spec_count} specs found",
+                    failure_reason=""
+                    if (spec_count >= 4 and has_registry_tuple)
+                    else f"Only {spec_count} specs found",
                 ),
             )
         else:
@@ -608,7 +634,9 @@ class AppsRefactorVerifier:
                     description="AppHealResult contract exists with AppHealStatus enum",
                     passed=has_heal_result and has_heal_status,
                     evidence={"has_result": has_heal_result, "has_status": has_heal_status},
-                    failure_reason="" if (has_heal_result and has_heal_status) else "Missing AppHealResult or AppHealStatus",
+                    failure_reason=""
+                    if (has_heal_result and has_heal_status)
+                    else "Missing AppHealResult or AppHealStatus",
                 ),
             )
         else:
@@ -693,7 +721,12 @@ class AppsRefactorVerifier:
 
         if json_path:
             report = {
-                "summary": {"total": total, "passed": passed, "failed": total - passed, "success_rate": 100 * passed / total},
+                "summary": {
+                    "total": total,
+                    "passed": passed,
+                    "failed": total - passed,
+                    "success_rate": 100 * passed / total,
+                },
                 "results": [r.to_dict() for r in self.results],
             }
             json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")

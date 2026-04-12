@@ -284,7 +284,9 @@ class CredentialAccessGuard:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "CredentialAccessGuard.guarded_get_secret",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "CredentialAccessGuard.guarded_get_secret",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -385,7 +387,8 @@ class CredentialAccessGuard:
             outcome=outcome,
         )
         Logger.debug(
-            "[CredentialAccessGuard] accesses_credential validated_by_safety_plane: %s", credential_name,
+            "[CredentialAccessGuard] accesses_credential validated_by_safety_plane: %s",
+            credential_name,
         )
         return value
 

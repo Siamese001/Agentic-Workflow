@@ -5,7 +5,6 @@ W4-E Retrieval Profile Proposal Manager
 Manages deterministic proposal creation and approval tracking.
 """
 
-
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -179,8 +178,11 @@ class RetrievalProfileProposalManager:
             RetrievalProfileProposal with deterministic digest
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileProposalManager.create_proposal")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RetrievalProfileProposalManager.create_proposal"
+        )
 
         # Apply recommended changes to create proposed profile
         proposed_profile = self._apply_recommendation_to_profile(
@@ -307,5 +309,5 @@ class RetrievalProfileProposalManager:
 
 # Export public interface
 __all__ = [
-    'RetrievalProfileProposalManager',
+    "RetrievalProfileProposalManager",
 ]

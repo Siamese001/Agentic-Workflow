@@ -232,10 +232,19 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     genai_available = False
         self.change_detector = MethodChangeDetectorAgent(self.ctx)
         self.test_generator = RegressionTestGenerator(
-            self.ctx, self.test_dir, pinecone_available, pinecone_index, genai_available, genai_client,
+            self.ctx,
+            self.test_dir,
+            pinecone_available,
+            pinecone_index,
+            genai_available,
+            genai_client,
         )
         self.test_runner = RegressionTestRunner(
-            self.ctx, self.test_dir, genai_available, genai_client, self._emit_regression_check_pass,
+            self.ctx,
+            self.test_dir,
+            genai_available,
+            genai_client,
+            self._emit_regression_check_pass,
         )
         self.generated_tests: list[GeneratedTest] = []
 
@@ -248,7 +257,9 @@ class RegressionOracleAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "RegressionOracleAgent.execute",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "RegressionOracleAgent.execute",
         )
         Logger.info("🔮 Regression Oracle: Monitoring for FILE_MODIFIED signals...")
         modified_files_to_process: Any = []
@@ -279,15 +290,17 @@ class RegressionOracleAgent(SovereignBaseAgent):
         Returns a list of violation descriptions (empty = safe).
         """
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "RegressionOracleAgent._ast_safety_check", "L5_POLICY",
-        )    # guardian: Syntax errors should be caught at parser level, not runtime
+            str(uuid.uuid4()),
+            "RegressionOracleAgent._ast_safety_check",
+            "L5_POLICY",
+        )  # guardian: Syntax errors should be caught at parser level, not runtime
         import ast as _ast
 
         DANGEROUS_CALLS = {"os.system", "subprocess", "exec", "eval", "__import__", "compile"}
         violations: list[str] = []
         try:
             tree = _ast.parse(test_code)
-        except SyntaxError as e:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             return [f"SyntaxError in generated code: {e}"]
         for node in _ast.walk(tree):
             if isinstance(node, _ast.Call):
@@ -333,7 +346,10 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     )
                     continue
                 passed, error_msg = await self.test_runner.run_and_correct_test(
-                    change, test_file, test_code, max_iterations=self.MAX_CORRECTION_ITERATIONS,
+                    change,
+                    test_file,
+                    test_code,
+                    max_iterations=self.MAX_CORRECTION_ITERATIONS,
                 )
                 self.generated_tests.append(
                     GeneratedTest(
@@ -383,7 +399,9 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     def post_heal_validation(
-        self, generated_tests: list[GeneratedTest], dry_run: bool = True,
+        self,
+        generated_tests: list[GeneratedTest],
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
@@ -431,7 +449,10 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
     # guardian: allow-magic-config
     def cleanup_violations(
-        self, violations: list[RegressionViolation], dry_run: bool = True, max_actions: int = 50,
+        self,
+        violations: list[RegressionViolation],
+        dry_run: bool = True,
+        max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.
@@ -474,7 +495,10 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     )
                     action["applied"] = not dry_run
             # guardian: allow-silent-swallow
-            except (RuntimeError, OSError) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+            except (
+                RuntimeError,
+                OSError,
+            ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 action["error"] = str(e)
                 Logger.error(f"[RegressionOracleAgent] Cleanup error: {e}")
             actions.append(action)

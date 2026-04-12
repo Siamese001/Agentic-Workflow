@@ -16,14 +16,17 @@ class TestGlobalCandidateVacuum:
     def test_global_candidate_vacuum_imports(self):
         """Test global_candidate_vacuum module imports."""
         from agentic_core import global_candidate_vacuum
+
         assert global_candidate_vacuum is not None
 
     def test_global_candidate_vacuum_class(self):
         """Test GlobalCandidateVacuum class exists."""
         from agentic_core import GlobalCandidateVacuum
+
         assert GlobalCandidateVacuum is not None
 
     def test_global_candidate_vacuum_callable(self):
         """Test global_candidate_vacuum functions are callable."""
         from agentic_core import validate_global_candidate_vacuum
+
         assert callable(validate_global_candidate_vacuum)

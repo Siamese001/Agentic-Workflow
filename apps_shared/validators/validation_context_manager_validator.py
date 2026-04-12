@@ -156,6 +156,7 @@ _emit_links_execution_to_snapshot("p4", "validation_context_manager_validator", 
 
 class CachedStateLedger:
     """Stub base class for cached state ledger."""
+
     pass
 
 
@@ -174,8 +175,11 @@ class ValidationContextManager(CachedStateLedger):
         Returns cached context if available, computes and caches otherwise.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationContextManager.get_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ValidationContextManager.get_context"
+        )
 
         cached: Any = self.get_cached_validation_context(key)
         if cached:
@@ -218,7 +222,12 @@ class ValidationContextManager(CachedStateLedger):
 
     # guardian: allow-magic-config
     def heal_repository(
-        self, dry_run: bool = True, execute: bool = False, depth: int = 0, max_depth: int = 3, _call_path=None,
+        self,
+        dry_run: bool = True,
+        execute: bool = False,
+        depth: int = 0,
+        max_depth: int = 3,
+        _call_path=None,
     ):
         """L4 state/ValidationContext - operational only."""
         if _call_path is None:

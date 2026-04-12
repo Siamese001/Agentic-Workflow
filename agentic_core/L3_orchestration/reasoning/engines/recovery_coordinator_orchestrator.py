@@ -194,16 +194,22 @@ class RecoveryCoordinatorOrchestrator(WorkflowCoordinator):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "RecoveryCoordinatorOrchestrator.coordinate", "p0_governance",
+            str(_uuid.uuid4()),
+            "RecoveryCoordinatorOrchestrator.coordinate",
+            "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "RecoveryCoordinatorOrchestrator.coordinate",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "RecoveryCoordinatorOrchestrator.coordinate",
         )
         _emit_agent_executes_agent(
-            str(uuid.uuid4()), "RecoveryCoordinatorOrchestrator", "RecoveryCoordinatorOrchestrator.coordinate",
+            str(uuid.uuid4()),
+            "RecoveryCoordinatorOrchestrator",
+            "RecoveryCoordinatorOrchestrator.coordinate",
         )
         with get_trace_context().run_frame(
             layer="L3",

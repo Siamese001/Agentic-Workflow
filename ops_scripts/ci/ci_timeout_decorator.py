@@ -30,6 +30,7 @@ RCA_DIR = PROJECT_ROOT / "docs" / "reports" / "plans"
 
 class TimeoutError(Exception):
     """Raised when a CI operation times out."""
+
     pass
 
 
@@ -49,6 +50,7 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
     Returns:
         Decorated function with timeout protection
     """
+
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> Any:
@@ -72,7 +74,7 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
 
                 return result
 
-            except TimeoutError as e:    # guardian: TimeoutError should be handled with specific context
+            except TimeoutError as e:  # guardian: TimeoutError should be handled with specific context
                 elapsed = time.time() - start_time
 
                 # Generate RCA for timeout
@@ -127,6 +129,7 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
                 raise
 
         return wrapper
+
     return decorator
 
 
@@ -257,7 +260,7 @@ def generate_rca(
 """
 
     # Write RCA file
-    rca_path.write_text(rca_content, encoding='utf-8')
+    rca_path.write_text(rca_content, encoding="utf-8")
 
     return rca_path
 
@@ -272,6 +275,7 @@ def ci_progress_reporter(total: int, operation_name: str = "Processing"):
                 reporter.update(i)
                 # process item
     """
+
     class ProgressReporter:
         def __init__(self, total: int, operation_name: str):
             self.total = total
@@ -292,8 +296,10 @@ def ci_progress_reporter(total: int, operation_name: str = "Processing"):
                 rate = current / elapsed if elapsed > 0 else 0
                 eta = (self.total - current) / rate if rate > 0 else 0
 
-                print(f"📊 {self.operation_name}: {current}/{self.total} ({percent:.1f}%) - "
-                      f"{rate:.1f} items/s - ETA: {eta:.1f}s")
+                print(
+                    f"📊 {self.operation_name}: {current}/{self.total} ({percent:.1f}%) - "
+                    f"{rate:.1f} items/s - ETA: {eta:.1f}s"
+                )
 
                 self.last_report = int(percent / 10) * 10
 

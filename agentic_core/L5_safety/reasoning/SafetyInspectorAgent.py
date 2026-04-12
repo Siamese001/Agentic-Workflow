@@ -487,7 +487,8 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                 code_snippet = "<unreadable>"
             prompt = f"Role: Socratic Judge - Expert Code Security Reviewer\n\nContext: {file_path}\nIssue: {issue}\nQuestion: {question}\n\nCode Snippet (sanitized, 500 chars):\n{code_snippet}\n\nAnswer ONLY 'YES' (real violation) or 'NO' (false positive)."
             result_dict = await asyncio.wait_for(
-                llm_router.validate_content(prompt=prompt), timeout=DEFAULT_TIMEOUT,
+                llm_router.validate_content(prompt=prompt),
+                timeout=DEFAULT_TIMEOUT,
             )
             if isinstance(result_dict, dict):
                 response_text = result_dict.get("response", result_dict.get("reason", ""))

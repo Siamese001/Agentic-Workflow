@@ -4,6 +4,7 @@ Verifies that the 4 newly wired antipattern edge_kinds produce repair routes
 with severity=high and ci_lane=governance, and that route_violations() correctly
 picks them up via the edge_kind fallback lookup.
 """
+
 from __future__ import annotations
 
 import pytest

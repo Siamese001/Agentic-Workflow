@@ -36,11 +36,15 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 # Lazy imports to avoid L_SHARED->L_SL/L_APP gravity violations
 def _get_tracer():
     from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
+
     return get_tracer()
+
 
 def _get_auto_persistence_adapter():
     from system_learning.runtime_adg.auto_persistence import AutoPersistenceTracingAdapter
+
     return AutoPersistenceTracingAdapter
+
 
 emit_determinism_digest("integrated_tracing_mixin", "integrated_tracing_mixin_digest")
 record_execution_trace("integrated_tracing_mixin", "integrated_tracing_mixin_trace")
@@ -155,7 +159,9 @@ class IntegratedTracingMixin(TracingMixin):
             return self._otel_tracer.trace_orchestrator(operation_name, attributes or {})
         elif "cognitive" in operation_name.lower() or "reasoning" in operation_name.lower():
             reasoning_mode = attributes.get("reasoning_mode", "react") if attributes else "react"
-            return self._otel_tracer.trace_cognitive(operation_name, reasoning_mode=reasoning_mode, metadata=attributes)
+            return self._otel_tracer.trace_cognitive(
+                operation_name, reasoning_mode=reasoning_mode, metadata=attributes
+            )
         elif "action" in operation_name.lower():
             action_count = attributes.get("action_count", 1) if attributes else 1
             return self._otel_tracer.trace_action(action_count=action_count, metadata=attributes)

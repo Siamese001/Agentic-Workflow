@@ -285,7 +285,9 @@ class ContextManagementMixin:
             summary_target_tokens: Target size for summaries
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextManagementMixin.configure_context")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContextManagementMixin.configure_context"
+        )
         with self._context_lock:
             if max_context_tokens is not None:
                 self._context_config.max_context_tokens = max_context_tokens
@@ -342,7 +344,10 @@ class ContextManagementMixin:
             if projected_total > self._context_config.max_context_tokens:
                 self._manage_context_overflow(token_count)
             item = ContextItem(
-                content=content, priority=priority, token_count=token_count, metadata=metadata or {},
+                content=content,
+                priority=priority,
+                token_count=token_count,
+                metadata=metadata or {},
             )
             self._context_items.append(item)
             self._total_context_tokens += token_count
@@ -378,7 +383,8 @@ class ContextManagementMixin:
             self._prune_by_priority(ContextPriority.HIGH, target_tokens=target)
         if self._total_context_tokens + required_tokens > self._context_config.max_context_tokens:
             raise ContextOverflowError(
-                self._total_context_tokens + required_tokens, self._context_config.max_context_tokens,
+                self._total_context_tokens + required_tokens,
+                self._context_config.max_context_tokens,
             )
 
     def _prune_low_priority_context(self, target_tokens: int | None = None) -> int:

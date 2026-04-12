@@ -1,4 +1,5 @@
 """MCP integration tests — Server responds correctly to tool calls."""
+
 import json
 import subprocess
 import threading

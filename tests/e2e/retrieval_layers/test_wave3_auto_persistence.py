@@ -12,16 +12,15 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 
-
 def test_adapter_imports() -> bool:
     """Test that AutoPersistenceTracingAdapter can be imported."""
     try:
-
         print("✓ AutoPersistenceTracingAdapter imports successfully")
         return True
     except Exception as e:
         print(f"✗ Import failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -48,6 +47,7 @@ def test_adapter_initialization() -> bool:
     except Exception as e:
         print(f"✗ Adapter initialization failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -72,18 +72,20 @@ def test_drain_with_auto_persist() -> bool:
             )
 
             # Create some test spans manually
-            adapter._completed_spans.append({
-                "span_id": "test-span-001",
-                "trace_id": "test-trace-001",
-                "name": "test_operation",
-                "kind": "action",
-                "layer": "L2",
-                "component": "TestComponent",
-                "ts_utc": 1000,
-                "duration_ms": 50.0,
-                "status": "ok",
-                "attributes": {"tool_name": "test_tool"},
-            })
+            adapter._completed_spans.append(
+                {
+                    "span_id": "test-span-001",
+                    "trace_id": "test-trace-001",
+                    "name": "test_operation",
+                    "kind": "action",
+                    "layer": "L2",
+                    "component": "TestComponent",
+                    "ts_utc": 1000,
+                    "duration_ms": 50.0,
+                    "status": "ok",
+                    "attributes": {"tool_name": "test_tool"},
+                }
+            )
 
             # Drain with auto-persist
             spans = adapter.drain_completed_spans(mission="test-mission")
@@ -95,7 +97,9 @@ def test_drain_with_auto_persist() -> bool:
             assert len(adapter._persisted_snapshots) == 1
             assert adapter._current_snapshot_id is not None
 
-            print(f"✓ Auto-persistence works: {len(spans)} spans → snapshot {adapter._current_snapshot_id[:16]}...")
+            print(
+                f"✓ Auto-persistence works: {len(spans)} spans → snapshot {adapter._current_snapshot_id[:16]}..."
+            )
             return True
 
         finally:
@@ -104,6 +108,7 @@ def test_drain_with_auto_persist() -> bool:
     except Exception as e:
         print(f"✗ Drain with auto-persist failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -123,18 +128,20 @@ def test_snapshot_id_propagation() -> bool:
         adapter.set_trace_id("test-trace-001")
 
         # Create test spans
-        adapter._completed_spans.append({
-            "span_id": "test-span-001",
-            "trace_id": "test-trace-001",
-            "name": "test_operation",
-            "kind": "action",
-            "layer": "L2",
-            "component": "TestComponent",
-            "ts_utc": 1000,
-            "duration_ms": 50.0,
-            "status": "ok",
-            "attributes": {},
-        })
+        adapter._completed_spans.append(
+            {
+                "span_id": "test-span-001",
+                "trace_id": "test-trace-001",
+                "name": "test_operation",
+                "kind": "action",
+                "layer": "L2",
+                "component": "TestComponent",
+                "ts_utc": 1000,
+                "duration_ms": 50.0,
+                "status": "ok",
+                "attributes": {},
+            }
+        )
 
         # Drain and persist
         spans = adapter.drain_completed_spans(mission="propagation-test")
@@ -150,6 +157,7 @@ def test_snapshot_id_propagation() -> bool:
     except Exception as e:
         print(f"✗ Snapshot ID propagation failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -185,6 +193,7 @@ def test_get_persistence_status() -> bool:
     except Exception as e:
         print(f"✗ Persistence status test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -202,18 +211,20 @@ def test_graceful_degradation() -> bool:
         )
 
         # Create test spans
-        adapter._completed_spans.append({
-            "span_id": "test-span-001",
-            "trace_id": "test-trace-001",
-            "name": "test_operation",
-            "kind": "action",
-            "layer": "L2",
-            "component": "TestComponent",
-            "ts_utc": 1000,
-            "duration_ms": 50.0,
-            "status": "ok",
-            "attributes": {},
-        })
+        adapter._completed_spans.append(
+            {
+                "span_id": "test-span-001",
+                "trace_id": "test-trace-001",
+                "name": "test_operation",
+                "kind": "action",
+                "layer": "L2",
+                "component": "TestComponent",
+                "ts_utc": 1000,
+                "duration_ms": 50.0,
+                "status": "ok",
+                "attributes": {},
+            }
+        )
 
         # Drain without auto-persist
         spans = adapter.drain_completed_spans(mission="degradation-test", persist=False)
@@ -230,6 +241,7 @@ def test_graceful_degradation() -> bool:
     except Exception as e:
         print(f"✗ Graceful degradation test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -256,18 +268,20 @@ def test_local_persistence_fallback() -> bool:
             )
 
             # Create test spans
-            adapter._completed_spans.append({
-                "span_id": "test-span-001",
-                "trace_id": "test-trace-001",
-                "name": "test_operation",
-                "kind": "action",
-                "layer": "L2",
-                "component": "TestComponent",
-                "ts_utc": 1000,
-                "duration_ms": 50.0,
-                "status": "ok",
-                "attributes": {"test": "value"},
-            })
+            adapter._completed_spans.append(
+                {
+                    "span_id": "test-span-001",
+                    "trace_id": "test-trace-001",
+                    "name": "test_operation",
+                    "kind": "action",
+                    "layer": "L2",
+                    "component": "TestComponent",
+                    "ts_utc": 1000,
+                    "duration_ms": 50.0,
+                    "status": "ok",
+                    "attributes": {"test": "value"},
+                }
+            )
 
             # Drain and persist locally
             spans = adapter.drain_completed_spans(mission="local-test")
@@ -295,6 +309,7 @@ def test_local_persistence_fallback() -> bool:
     except Exception as e:
         print(f"✗ Local persistence test failed: {e}")
         import traceback
+
         traceback.print_exc()
         return False
 
@@ -324,6 +339,7 @@ def main() -> int:
         except Exception as e:
             print(f"✗ Test crashed: {e}")
             import traceback
+
             traceback.print_exc()
             results.append((name, False))
 

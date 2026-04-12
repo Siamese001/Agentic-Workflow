@@ -182,17 +182,23 @@ class AgentThoughtProcess(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
     reasoning_trace: list[str] = Field(
-        ..., description="Step-by-step logic leading to the decision. Each step should be clear and atomic.",
+        ...,
+        description="Step-by-step logic leading to the decision. Each step should be clear and atomic.",
     )
     relevant_context_keys: list[str] = Field(
-        ..., description="Keys from the SignalContext that were utilized in this thought process.",
+        ...,
+        description="Keys from the SignalContext that were utilized in this thought process.",
     )
     tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
-        ..., description="The action type to take",
+        ...,
+        description="The action type to take",
     )
     tool_arguments: dict[str, Any] = Field(default_factory=dict, description="Arguments for the chosen tool")
     confidence_score: float = Field(
-        ..., ge=0.0, le=1.0, description="Confidence in this decision (0.0 to 1.0)",
+        ...,
+        ge=0.0,
+        le=1.0,
+        description="Confidence in this decision (0.0 to 1.0)",
     )
 
     @field_validator("tool_arguments")
@@ -229,7 +235,8 @@ class CodeGenerationResult(BaseModel):
     dependencies: list[str] = Field(default_factory=list, description="Required pip packages")
     test_cases: list[str] = Field(default_factory=list, description="Test cases to verify the code")
     safety_notes: list[str] = Field(
-        default_factory=list, description="Potential safety concerns or limitations",
+        default_factory=list,
+        description="Potential safety concerns or limitations",
     )
 
 
@@ -241,10 +248,12 @@ class ResearchResult(BaseModel):
     sources: list[dict[str, str]] = Field(..., description="List of sources with 'url' and 'relevance' keys")
     key_findings: list[str] = Field(..., description="Main findings from the research")
     ConfidenceLevel: Literal["high", "medium", "low"] = Field(
-        ..., description="Confidence in the research results",
+        ...,
+        description="Confidence in the research results",
     )
     follow_up_questions: list[str] = Field(
-        default_factory=list, description="Suggested follow-up research questions",
+        default_factory=list,
+        description="Suggested follow-up research questions",
     )
 
 
@@ -254,5 +263,6 @@ class AgentPlan(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     reasoning: str = Field(..., description="High-level strategy for the overall Task")
     tool_calls: list[dict[str, Any]] = Field(
-        ..., description="Ordered list of tool calls to execute the plan",
+        ...,
+        description="Ordered list of tool calls to execute the plan",
     )

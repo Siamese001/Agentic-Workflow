@@ -1,10 +1,12 @@
 """Model Router - Stub implementation for reasoning compatibility."""
+
 from enum import Enum
 from typing import Any
 
 
 class TaskType(Enum):
     """Types of tasks."""
+
     SIMPLE = "simple"
     COMPLEX = "complex"
     CREATIVE = "creative"

@@ -28,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 class DocumentationType(Enum):
     """Types of documentation that can be generated."""
+
     API_REFERENCE = "api_reference"
     ARCHITECTURAL_OVERVIEW = "architectural_overview"
     TUTORIAL = "tutorial"
@@ -40,6 +41,7 @@ class DocumentationType(Enum):
 
 class DocumentationQuality(Enum):
     """Quality levels for documentation."""
+
     BASIC = "basic"  # Simple description and basic information
     STANDARD = "standard"  # Complete with examples and usage
     COMPREHENSIVE = "comprehensive"  # Full with edge cases, troubleshooting, and best practices
@@ -49,6 +51,7 @@ class DocumentationQuality(Enum):
 @dataclass
 class DocumentationSection:
     """Represents a section of documentation."""
+
     title: str
     content: str
     subsections: list[DocumentationSection] = field(default_factory=list)
@@ -60,6 +63,7 @@ class DocumentationSection:
 @dataclass
 class DocumentationArtifact:
     """Represents a complete documentation artifact."""
+
     title: str
     doc_type: DocumentationType
     sections: list[DocumentationSection]
@@ -102,7 +106,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
             raise FileNotFoundError(f"Source file not found: {source}")
 
         try:
-            with open(source, encoding='utf-8') as f:
+            with open(source, encoding="utf-8") as f:
                 source_content = f.read()
 
             tree = ast.parse(source_content)
@@ -179,7 +183,9 @@ class APIDocumentationGenerator(DocumentationGenerator):
         """Extract function definitions from AST."""
         return [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
 
-    def _generate_overview(self, source: Path, classes: list[ast.ClassDef], functions: list[ast.FunctionDef]) -> str:
+    def _generate_overview(
+        self, source: Path, classes: list[ast.ClassDef], functions: list[ast.FunctionDef]
+    ) -> str:
         """Generate overview section for API documentation."""
         overview = f"# {source.stem} API Documentation\n\n"
         overview += f"**File**: `{source.name}`\n"
@@ -222,7 +228,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 if isinstance(base, ast.Name):
                     base_names.append(base.id)
                 else:
-                    base_names.append(ast.unparse(base) if hasattr(ast, 'unparse') else str(base))
+                    base_names.append(ast.unparse(base) if hasattr(ast, "unparse") else str(base))
             content += ", ".join(base_names) + "\n\n"
 
         # Add methods
@@ -241,11 +247,17 @@ class APIDocumentationGenerator(DocumentationGenerator):
 
                 # Add return type
                 if method.returns:
-                    return_type = ast.unparse(method.returns) if hasattr(ast, 'unparse') else str(method.returns)
+                    return_type = (
+                        ast.unparse(method.returns) if hasattr(ast, "unparse") else str(method.returns)
+                    )
                     content += f"**Returns**: {return_type}\n"
 
                 # Add docstring if available
-                if method.body and isinstance(method.body[0], ast.Expr) and isinstance(method.body[0].value, ast.Constant):
+                if (
+                    method.body
+                    and isinstance(method.body[0], ast.Expr)
+                    and isinstance(method.body[0].value, ast.Constant)
+                ):
                     docstring = method.body[0].value.value
                     content += f"**Description**: {docstring}\n"
 
@@ -270,7 +282,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
 
         # Add return type
         if func.returns:
-            return_type = ast.unparse(func.returns) if hasattr(ast, 'unparse') else str(func.returns)
+            return_type = ast.unparse(func.returns) if hasattr(ast, "unparse") else str(func.returns)
             content += f"**Returns**: {return_type}\n"
 
         # Add docstring if available
@@ -296,7 +308,11 @@ class APIDocumentationGenerator(DocumentationGenerator):
                 examples += f"{cls.name.lower()} = {cls.name}()\n"
 
                 # Add method calls
-                methods = [node for node in cls.body if isinstance(node, ast.FunctionDef) and not node.name.startswith('_')]
+                methods = [
+                    node
+                    for node in cls.body
+                    if isinstance(node, ast.FunctionDef) and not node.name.startswith("_")
+                ]
                 for method in methods[:2]:  # Limit to first 2 public methods
                     examples += f"{cls.name.lower()}.{method.name}()\n"
 
@@ -307,7 +323,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
             examples += "### Function Usage\n\n"
             for func in functions[:3]:  # Limit to first 3 functions
                 examples += f"```python\n# Using {func.name}\n"
-                args = [arg.arg for arg in func.args.args if arg.arg != 'self']
+                args = [arg.arg for arg in func.args.args if arg.arg != "self"]
                 if args:
                     examples += f"result = {func.name}({', '.join(args[:2])})\n"  # Limit to first 2 args
                 else:
@@ -545,11 +561,13 @@ The Agentic Workflow system is a multi-layered architecture designed for autonom
 - Emergency shutdown procedures
 """
 
-            sections.append(DocumentationSection(
-                title=f"Layer {layer_code}",
-                content=content,
-                quality_level=DocumentationQuality.COMPREHENSIVE,
-            ))
+            sections.append(
+                DocumentationSection(
+                    title=f"Layer {layer_code}",
+                    content=content,
+                    quality_level=DocumentationQuality.COMPREHENSIVE,
+                )
+            )
 
         return sections
 
@@ -1924,7 +1942,9 @@ class DocumentationManager:
         }
         self.quality_validator = DocumentationQualityValidator()
 
-    def generate_documentation(self, doc_type: DocumentationType, source: Any, target_path: Path) -> DocumentationArtifact:
+    def generate_documentation(
+        self, doc_type: DocumentationType, source: Any, target_path: Path
+    ) -> DocumentationArtifact:
         """Generate documentation of specified type."""
         generator = self.generators.get(doc_type)
         if not generator:
@@ -1947,7 +1967,7 @@ class DocumentationManager:
 
         content = self._format_documentation(artifact)
 
-        with open(target_path, 'w', encoding='utf-8') as f:
+        with open(target_path, "w", encoding="utf-8") as f:
             f.write(content)
 
         logger.info(f"Documentation written to: {target_path}")

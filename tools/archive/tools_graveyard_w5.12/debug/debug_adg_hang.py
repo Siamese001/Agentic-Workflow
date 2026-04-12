@@ -7,6 +7,7 @@ from pathlib import Path
 # Monkey-patch to add progress tracking
 original_scan = None
 
+
 def debug_scan(self, commit_sha=""):
     """Debug wrapper for ADGStaticScanner.scan"""
     print(f"[DEBUG] Starting scan with commit_sha: {commit_sha}")
@@ -16,12 +17,14 @@ def debug_scan(self, commit_sha=""):
         # Load cache step
         print("[DEBUG] Step 1: Loading cache...")
         from agentic_core.adg.extraction.scan_cache import ScanCache
+
         cache = ScanCache.load(self.cache_path) if self.cache_path else ScanCache()
         print(f"[DEBUG] Cache loaded: {cache.size()} entries")
 
         # Initialize manifest
         print("[DEBUG] Step 2: Initializing manifest...")
         import sys
+
         manifest = self.ScanManifest(
             python_ast_version=f"{sys.version_info.major}.{sys.version_info.minor}",
             scanner_version=self._SCANNER_VERSION,
@@ -115,6 +118,7 @@ def debug_scan(self, commit_sha=""):
         traceback.print_exc()
         raise
 
+
 def install_debug_wrapper():
     """Install debug wrapper for ADGStaticScanner.scan"""
     import agentic_core.adg.extraction.static_scanner as scanner_module
@@ -137,6 +141,7 @@ def install_debug_wrapper():
     scanner_module.ADGStaticScanner._scan_file = scanner_module._scan_file
     scanner_module.ADGStaticScanner.ScanResult = scanner_module.ScanResult
     scanner_module.ADGStaticScanner.Edge = scanner_module.Edge
+
 
 if __name__ == "__main__":
     print("=== ADG Hang Debug ===")

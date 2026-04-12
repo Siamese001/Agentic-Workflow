@@ -378,7 +378,9 @@ class ExecutionProofRecord:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "ExecutionProofRecord.validate_replay",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "ExecutionProofRecord.validate_replay",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

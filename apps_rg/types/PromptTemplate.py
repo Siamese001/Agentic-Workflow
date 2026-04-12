@@ -165,8 +165,11 @@ class PromptTemplate(BaseModel):
     @classmethod
     def validate_placeholders(cls, v):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptTemplate.validate_placeholders")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptTemplate.validate_placeholders"
+        )
 
         if "{" in v and "}" not in v:
             raise ValueError(f"Potentially broken placeholder in prompt: {v[:50]}...")
@@ -456,7 +459,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="L3 Orchestrator",
             purpose="Coordinates the 50-engine fleet",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "HOP.1.CLERK": KNodeDefinition(
@@ -464,7 +470,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Clerk Extraction",
             purpose="Structural data extraction",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "HOP.2.ENRICH": KNodeDefinition(
@@ -472,7 +481,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Data Enrichment",
             purpose="Verb canonicalization and enrichment",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SERVICE.INVOKER": KNodeDefinition(
@@ -480,7 +492,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Service Invoker",
             purpose="LLM service invocation",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.WEIGHTS": KNodeDefinition(
@@ -488,7 +503,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Weight Adjustment",
             purpose="Dynamic section weighting",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.OPTIMIZER": KNodeDefinition(
@@ -496,7 +514,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Content Optimizer",
             purpose="Bullet ordering optimization",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.RANKER": KNodeDefinition(
@@ -504,7 +525,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Section Ranker",
             purpose="Section ordering by role type",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "REFINE.TEMPLATE": KNodeDefinition(
@@ -512,7 +536,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Template Optimizer",
             purpose="Template selection",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SAFETY.VOID": KNodeDefinition(
@@ -520,7 +547,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Void Compliance",
             purpose="Architecture enforcement",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SAFETY.ATS": KNodeDefinition(
@@ -528,7 +558,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="ATS Compatibility",
             purpose="ATS parsing validation",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
         "SAFETY.HALLUCINATION": KNodeDefinition(
@@ -536,7 +569,10 @@ FROZEN_SNAPSHOT = SovereignKnowledge(
             name="Hallucination Detector",
             purpose="Claim verification",
             config=ThresholdConfig(
-                rag_recency_weight=0.25, cot_min_paths=None, min_tot_depth=None, qa_thresholds={},
+                rag_recency_weight=0.25,
+                cot_min_paths=None,
+                min_tot_depth=None,
+                qa_thresholds={},
             ),
         ),
     },

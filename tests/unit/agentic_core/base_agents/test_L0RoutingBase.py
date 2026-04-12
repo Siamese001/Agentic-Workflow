@@ -16,14 +16,17 @@ class TestL0routingbase:
     def test_L0RoutingBase_imports(self):
         """Test L0RoutingBase module imports."""
         from agentic_core import L0RoutingBase
+
         assert L0RoutingBase is not None
 
     def test_L0RoutingBase_class(self):
         """Test L0routingbase class exists."""
         from agentic_core import L0routingbase
+
         assert L0routingbase is not None
 
     def test_L0RoutingBase_callable(self):
         """Test L0RoutingBase functions are callable."""
         from agentic_core import validate_L0RoutingBase
+
         assert callable(validate_L0RoutingBase)

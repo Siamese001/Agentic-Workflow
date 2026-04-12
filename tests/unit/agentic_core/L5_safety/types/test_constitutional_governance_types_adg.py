@@ -16,14 +16,17 @@ class TestConstitutionalGovernanceTypesAdg:
     def test_constitutional_governance_types_adg_imports(self):
         """Test constitutional_governance_types_adg module imports."""
         from agentic_core import constitutional_governance_types_adg
+
         assert constitutional_governance_types_adg is not None
 
     def test_constitutional_governance_types_adg_class(self):
         """Test ConstitutionalGovernanceTypesAdg class exists."""
         from agentic_core import ConstitutionalGovernanceTypesAdg
+
         assert ConstitutionalGovernanceTypesAdg is not None
 
     def test_constitutional_governance_types_adg_callable(self):
         """Test constitutional_governance_types_adg functions are callable."""
         from agentic_core import validate_constitutional_governance_types_adg
+
         assert callable(validate_constitutional_governance_types_adg)

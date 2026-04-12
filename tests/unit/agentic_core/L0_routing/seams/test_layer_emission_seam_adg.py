@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L0_routing.seams.layer_emission_seam."""
+
 from __future__ import annotations
 
 import importlib
@@ -51,8 +52,7 @@ def test_protocol_is_instantiable(mod):
     assert cls is not None, "Protocol must be defined in {MODULE_PATH}"
     assert isinstance(cls, type), "Protocol must be a class"
 
-
-# Arrange
+    # Arrange
     input_data = {}  # Replace with actual test data
 
     # Act

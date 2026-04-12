@@ -45,16 +45,16 @@ class LayerGravityFixer:
 
         if source.exists() and not dest.exists():
             # Read source content
-            content = source.read_text(encoding='utf-8')
+            content = source.read_text(encoding="utf-8")
 
             # Update docstring to reflect new location
             content = content.replace(
-                'agentic_core/runtime/lifecycle_trace_contract.py',
-                'agentic_core/L_CONTRACTS/lifecycle_trace_contract.py',
+                "agentic_core/runtime/lifecycle_trace_contract.py",
+                "agentic_core/L_CONTRACTS/lifecycle_trace_contract.py",
             )
 
             # Write to destination
-            dest.write_text(content, encoding='utf-8')
+            dest.write_text(content, encoding="utf-8")
 
             print("✅ Moved lifecycle_trace_contract to L_CONTRACTS")
             return True
@@ -71,16 +71,16 @@ class LayerGravityFixer:
 
         # Pattern to find imports from old location
         patterns = [
-            r'from agentic_core.runtime.contracts.lifecycle_trace_contract import',
-            r'import agentic_core.runtime.lifecycle_trace_contract',
-            r'from agentic_core\.runtime import lifecycle_trace_contract',
+            r"from agentic_core.runtime.contracts.lifecycle_trace_contract import",
+            r"import agentic_core.runtime.lifecycle_trace_contract",
+            r"from agentic_core\.runtime import lifecycle_trace_contract",
         ]
 
         # Find all Python files
         python_files = list(PROJECT_ROOT.rglob("*.py"))
 
         # Skip certain directories
-        skip_dirs = {'.git', '__pycache__', '.pytest_cache', 'venv', '.venv', 'node_modules', 'archives'}
+        skip_dirs = {".git", "__pycache__", ".pytest_cache", "venv", ".venv", "node_modules", "archives"}
 
         for file_path in python_files:
             if any(skip_dir in file_path.parts for skip_dir in skip_dirs):
@@ -95,7 +95,7 @@ class LayerGravityFixer:
     def _fix_file_imports(self, file_path: Path, patterns: list):
         """Fix imports in a single file."""
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             original_content = content
 
             # Fix each pattern
@@ -103,14 +103,14 @@ class LayerGravityFixer:
                 # Replace with L_CONTRACTS location
                 new_content = re.sub(
                     pattern,
-                    pattern.replace('runtime', 'L_CONTRACTS'),
+                    pattern.replace("runtime", "L_CONTRACTS"),
                     content,
                 )
                 content = new_content
 
             # Write back if changed
             if content != original_content:
-                file_path.write_text(content, encoding='utf-8')
+                file_path.write_text(content, encoding="utf-8")
                 self.violations_fixed += 1
 
                 if self.violations_fixed % 100 == 0:
@@ -128,10 +128,10 @@ class LayerGravityFixer:
         scanner_file = PROJECT_ROOT / "agentic_core" / "adg" / "extraction" / "static_scanner.py"
 
         if scanner_file.exists():
-            content = scanner_file.read_text(encoding='utf-8')
+            content = scanner_file.read_text(encoding="utf-8")
 
             # Look for layer assignment logic
-            if '_infer_layer' in content:
+            if "_infer_layer" in content:
                 # Add L_CONTRACTS to layer inference
                 new_content = content.replace(
                     'elif "tools" in rel_path:\n        return "TOOLS"',
@@ -139,19 +139,19 @@ class LayerGravityFixer:
                 )
 
                 if new_content != content:
-                    scanner_file.write_text(new_content, encoding='utf-8')
+                    scanner_file.write_text(new_content, encoding="utf-8")
                     print("✅ Updated layer assignments in static scanner")
 
             # Look for layer constants
-            if 'L_RUNTIME' in content:
+            if "L_RUNTIME" in content:
                 # Add L_CONTRACTS to layer definitions
                 new_content = content.replace(
-                    'L_RUNTIME',
-                    'L_CONTRACTS\nL_RUNTIME',
+                    "L_RUNTIME",
+                    "L_CONTRACTS\nL_RUNTIME",
                 )
 
                 if new_content != content:
-                    scanner_file.write_text(new_content, encoding='utf-8')
+                    scanner_file.write_text(new_content, encoding="utf-8")
                     print("✅ Added L_CONTRACTS to layer definitions")
 
     def verify_fixes(self):

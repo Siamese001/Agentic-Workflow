@@ -12,7 +12,7 @@ def analyze_cache():
         return
 
     cache = json.loads(cache_path.read_text())
-    entries = cache.get('entries', {})
+    entries = cache.get("entries", {})
 
     print("📊 Cache Analysis:")
     print(f"   Total entries: {len(entries)}")
@@ -21,7 +21,7 @@ def analyze_cache():
     # Show sample cached files
     print("\n📁 Sample cached files:")
     for i, (file_path, entry) in enumerate(list(entries.items())[:10]):
-        print(f"   {i+1}. {file_path}")
+        print(f"   {i + 1}. {file_path}")
         print(f"      Hash: {entry['file_hash'][:16]}...")
         print(f"      Edges: {len(entry['edges'])}")
 
@@ -29,7 +29,7 @@ def analyze_cache():
     print("\n🔍 File patterns in cache:")
     patterns = {}
     for file_path in entries.keys():
-        parts = file_path.split('/')
+        parts = file_path.split("/")
         if len(parts) > 1:
             prefix = parts[0]
             patterns[prefix] = patterns.get(prefix, 0) + 1
@@ -54,6 +54,7 @@ def analyze_cache():
         print("\n💾 Full Cache Estimate:")
         print(f"   Average entry size: {avg_entry_size / 1024:.1f} KB")
         print(f"   Estimated full cache size: {estimated_full_size:.1f} MB")
+
 
 if __name__ == "__main__":
     analyze_cache()

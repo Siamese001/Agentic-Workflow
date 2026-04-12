@@ -60,6 +60,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
     def _calculate_complexity(self, node: Any) -> int:
         """Computes McCabe Cyclomatic Complexity."""
         import ast
+
         if isinstance(node, ast.AST):
             return _calculate_cyclomatic_complexity(node)
         return 1

@@ -179,6 +179,7 @@ class ReciprocalRankFusion(ICandidateFusion):
             Merged list sorted by descending RRF score
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReciprocalRankFusion.merge")
 
@@ -219,9 +220,9 @@ class ScoreFusion(ICandidateFusion):
             Merged list sorted by descending average score
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScoreFusion.merge")
-
 
         def _normalize(docs: list[Document]) -> dict[str, float]:
             if not docs:

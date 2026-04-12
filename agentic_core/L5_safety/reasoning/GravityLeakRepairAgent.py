@@ -226,7 +226,11 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         self._prohibition_hits: dict[tuple[str, str], int] = {}
 
     def analyze_violation(
-        self, file_path: Path, import_statement: str, file_layer: str, import_layer: str,
+        self,
+        file_path: Path,
+        import_statement: str,
+        file_layer: str,
+        import_layer: str,
     ) -> GravityFix:
         """
         Analyze a gravity violation and recommend a fix.
@@ -370,7 +374,9 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
     def _check_prohibition_circuit_breaker(self, file_path: Path, op: str) -> None:
         """Increment hit counter; raise GravityRepairProhibitedError on second hit."""
         _emit_validated_by_safety_plane(
-            str(uuid.uuid4()), "GravityLeakRepairAgent._check_prohibition_circuit_breaker", "L5_POLICY",
+            str(uuid.uuid4()),
+            "GravityLeakRepairAgent._check_prohibition_circuit_breaker",
+            "L5_POLICY",
         )
         key = (str(file_path), op)
         self._prohibition_hits[key] = self._prohibition_hits.get(key, 0) + 1
@@ -415,7 +421,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         source = file_path.read_text(encoding="utf-8")
         try:
             tree = _ast.parse(source)
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return False
         import_node = None
         for node in tree.body:
@@ -496,7 +502,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         new_lines.insert(insert_idx, deferred_line)
         try:
             _ast.parse("".join(new_lines))
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return False
         file_path.write_text("".join(new_lines), encoding="utf-8")
         return True
@@ -535,7 +541,10 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
 
     # guardian: allow-type-erasure -- returns status dict with dynamic keys depending on fix outcome
     def apply_fix(
-        self, fix: GravityFix, dry_run: bool = True, privileged_mutation_context: bool = False,
+        self,
+        fix: GravityFix,
+        dry_run: bool = True,
+        privileged_mutation_context: bool = False,
     ) -> dict[str, Any]:
         """
         Apply a gravity fix to a file using Atomic Write Safety.
@@ -571,7 +580,9 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         self._check_prohibition_circuit_breaker(fix.file_path, "shutil.mutate")
                         return self._emit_plan_only(fix)
                 except GravityRepairProhibitedError:
-                    return self._emit_plan_only(fix)    # guardian: GravityRepairProhibitedError should be handled with specific context
+                    return self._emit_plan_only(
+                        fix
+                    )  # guardian: GravityRepairProhibitedError should be handled with specific context
                 except ImportError:  # guardian: allow-silent-swallow
                     pass
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
@@ -582,8 +593,11 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                     try:
                         os.close(temp_fd)
                     except OSError as e:
+                        import logging
 
-                        import logging; logging.getLogger(__name__).debug("GravityLeakRepairAgent: OSError swallowed at L584: %s", e)
+                        logging.getLogger(__name__).debug(
+                            "GravityLeakRepairAgent: OSError swallowed at L584: %s", e
+                        )
                     temp_fd = None
                     # guardian: allow-path-string -- temp_path is OS tempfile path requiring os.path.exists check
                     if os.path.exists(temp_path):
@@ -620,7 +634,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                 self.logger.info(f"[FIXED] {fix.file_path.name} (Backup: {backup_path.name})")
                 return {"status": "fixed", "fix_type": fix.fix_type}
             except PermissionError as perm_err:
-                err_str = str(perm_err)    # guardian: Permission errors should validate access before operation
+                err_str = str(perm_err)  # guardian: Permission errors should validate access before operation
                 if "MUTATION_PROHIBITED" in err_str:
                     op = "shutil.mutate"
                     self._check_prohibition_circuit_breaker(fix.file_path, op)
@@ -643,7 +657,9 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                     _wg.remove_file(temp_path)
                 raise write_err
         except GravityRepairProhibitedError as prohibited:
-            self.logger.warning(str(prohibited))    # guardian: GravityRepairProhibitedError should be handled with specific context
+            self.logger.warning(
+                str(prohibited)
+            )  # guardian: GravityRepairProhibitedError should be handled with specific context
             return self._emit_plan_only(fix)
         # guardian: allow-silent-swallow -- outer catch-all returns error status dict with error logged
         except (RuntimeError, OSError) as e:
@@ -767,7 +783,8 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
             )
 
             config = StructureConfig(
-                project_root=self.project_root, excluded_paths=(OPS_SCRIPTS_DIR, "scripts"),
+                project_root=self.project_root,
+                excluded_paths=(OPS_SCRIPTS_DIR, "scripts"),
             )
             enforcer = StructuralValidatorAgent(config=config)
             results = enforcer.validate_structure(self.project_root)
@@ -951,7 +968,9 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                             "line_number": fix.line_number,
                         }
                         self.context.store_healing_pattern(
-                            violation, healing_result, agent="GravityLeakRepairAgent",
+                            violation,
+                            healing_result,
+                            agent="GravityLeakRepairAgent",
                         )
                         return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
                 # guardian: allow-silent-swallow -- gravity heal failure returns error count with error logged

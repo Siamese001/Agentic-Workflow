@@ -85,8 +85,12 @@ class BM25Scorer:
         for term in query_terms:
             tf = term_freqs.get(term, 0)
             score += self.score_term(
-                term, tf, doc_length,
-                doc_freq, total_docs, avg_doc_length,
+                term,
+                tf,
+                doc_length,
+                doc_freq,
+                total_docs,
+                avg_doc_length,
             )
 
         return score

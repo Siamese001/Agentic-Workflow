@@ -77,7 +77,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             from apps_eval.config.agent_spec_config import load_eval_specs
 
             self.specs = load_eval_specs()
-# guardian: allow-silent-degradation - Optional eval specs
+        # guardian: allow-silent-degradation - Optional eval specs
         except ImportError:
             self.specs = None
             self.logger.warning("[%s] eval specs not available", self.name)
@@ -86,7 +86,7 @@ class BaseEvalEngine(SemanticCacheMixin, EmbeddingMixin, ABC):
             from apps_eval.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
             self.toggles = DEFAULT_TOGGLES
-# guardian: allow-silent-degradation - Optional reasoning toggles
+        # guardian: allow-silent-degradation - Optional reasoning toggles
         except ImportError:
             self.toggles = None
 

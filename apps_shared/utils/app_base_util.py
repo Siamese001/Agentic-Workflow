@@ -86,17 +86,23 @@ try:
     from agentic_core.interfaces.mixins import MetaLearningMixin
 # guardian: allow-silent-swallow - optional dependency
 except ImportError:
+
     class MetaLearningMixin:
         """Fallback MetaLearningMixin when not available."""
+
         pass
+
 
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
+
     class HealerMixin:
         """Fallback HealerMixin when not available."""
 
         pass
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -243,6 +249,7 @@ class AppBase(MetaLearningMixin, SovereignBaseAgent, HealerMixin):
             True if configuration is valid
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AppBase.validate_app_config")
 

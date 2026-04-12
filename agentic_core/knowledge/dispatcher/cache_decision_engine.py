@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 class CacheStrategy(Enum):
     """Cache strategy types."""
+
     CHECK_CACHE = "check_cache"
     BYPASS_CACHE = "bypass_cache"
     FORCE_REFRESH = "force_refresh"
@@ -27,6 +28,7 @@ class CacheStrategy(Enum):
 
 class RetrievalStrategy(Enum):
     """Retrieval strategy types."""
+
     HYBRID = "hybrid"
     VECTOR_ONLY = "vector_only"
     SPARSE_ONLY = "sparse_only"
@@ -36,6 +38,7 @@ class RetrievalStrategy(Enum):
 @dataclass
 class CacheDecision:
     """Decision from cache decision engine."""
+
     query_id: str
     cache_strategy: CacheStrategy
     retrieval_strategy: RetrievalStrategy
@@ -124,7 +127,9 @@ class CacheDecisionEngine:
         """
         trace_id = f"cache_dec_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "CacheDecisionEngine.decide",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "CacheDecisionEngine.decide",
         )
 
         # Find matching policy
@@ -174,11 +179,13 @@ class CacheDecisionEngine:
             condition: Function that takes context and returns bool
             decision: Dictionary with cache_strategy, retrieval_strategy, etc.
         """
-        self._policies.append({
-            "name": name,
-            "condition": condition,
-            "decision": decision,
-        })
+        self._policies.append(
+            {
+                "name": name,
+                "condition": condition,
+                "decision": decision,
+            }
+        )
         log.info(f"Added policy: {name}")
 
     def _find_matching_policy(self, context: dict[str, Any]) -> dict[str, Any]:

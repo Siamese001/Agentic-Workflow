@@ -5,7 +5,6 @@ Extracted from execute_ssot.py to reduce file size and improve cohesion.
 All public symbols are re-exported from execute_ssot.py for backward compat.
 """
 
-
 import atexit
 import json
 import logging
@@ -163,6 +162,7 @@ def assert_no_persistent_write(layer: str, operation: str) -> None:
 # tqdm - optional progress bar with explicit dependency management
 try:
     from tqdm import tqdm
+
     _TQDM_AVAILABLE = True
 except ImportError as e:
     _TQDM_AVAILABLE = False
@@ -241,7 +241,8 @@ class RuntimeStateManager:
                 "total_experiences": _prior_meta.get("total_experiences", 0),
                 "patterns_extracted": _prior_meta.get("patterns_extracted", 0),
                 "strategy_weights": _prior_meta.get(
-                    "strategy_weights", {"cot": 1.0, "tot": 1.0, "react": 1.0},
+                    "strategy_weights",
+                    {"cot": 1.0, "tot": 1.0, "react": 1.0},
                 ),
                 "recent_experiences": list(_prior_meta.get("recent_experiences", [])),
                 "recent_failure_vectors": list(_prior_meta.get("recent_failure_vectors", []))[-200:],
@@ -322,7 +323,9 @@ class RuntimeStateManager:
                 compute_runtime_state_digest,
             )
 
-            self.state["runtime_state_digest_sha256"] = compute_runtime_state_digest(self.state)    # guardian: Permission errors should validate access before operation
+            self.state["runtime_state_digest_sha256"] = compute_runtime_state_digest(
+                self.state
+            )  # guardian: Permission errors should validate access before operation
             self.state["runtime_state_digest_schema_version"] = DIGEST_SCHEMA_VERSION
         except (ImportError, AttributeError, ValueError):
             pass
@@ -333,7 +336,7 @@ class RuntimeStateManager:
             with tempfile.NamedTemporaryFile("w", dir=str(temp_dir), delete=False, encoding="utf-8") as tf:
                 assert_no_persistent_write("L0", "json.dump")
                 json.dump(self.state, tf, indent=2, default=str, ensure_ascii=False)
-                temp_name = tf.name    # guardian: Add error context logging
+                temp_name = tf.name  # guardian: Add error context logging
             os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
             os.replace(temp_name, state_path)
         except PermissionError as e:
@@ -343,7 +346,7 @@ class RuntimeStateManager:
                 logger.critical(
                     f"[RuntimeStateManager] L0 mutation prohibition active — runtime state persistence DISABLED for this run (fail-closed). Reason: {err_str}",
                 )
-                try:    # guardian: Add error context logging
+                try:  # guardian: Add error context logging
                     if "temp_name" in locals() and os.path.exists(temp_name):
                         os.remove(temp_name)
                         logger.debug("Cleaned up temp file after mutation prohibition")
@@ -448,7 +451,10 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
             try:
                 temp_name = None
                 with tempfile.NamedTemporaryFile(
-                    "w", delete=False, dir=str(project_root), encoding="utf-8",
+                    "w",
+                    delete=False,
+                    dir=str(project_root),
+                    encoding="utf-8",
                 ) as tf:
                     assert_no_persistent_write("L0", "json.dump")
                     json.dump(discovery_data, tf, indent=2, ensure_ascii=False)
@@ -483,16 +489,31 @@ def validate_territory_input(territory: str) -> tuple[bool, str]:
 
 
 def execute_phase1_discovery(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    ctx: "HealContext" = None,
+    repo_root: Path = None,
 ):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
     return execute_phase1_discovery_impl(
-        agents, territory, decision_engine, state_mgr, ctx, repo_root=repo_root,
+        agents,
+        territory,
+        decision_engine,
+        state_mgr,
+        ctx,
+        repo_root=repo_root,
     )
 
 
 def execute_phase1_discovery_impl(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    ctx: "HealContext" = None,
+    repo_root: Path = None,
 ):
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     REPO_ROOT = repo_root
@@ -581,14 +602,19 @@ def execute_phase1_discovery_impl(
         logger.info(f"🧠 Enhanced confidence with cognitive analysis: {confidence.value:.2f}")
     else:
         confidence = decision_engine.calculate_healing_confidence(
-            len(violations), [str(v) for v in violations[:10]], territory, agent_name="location",
+            len(violations),
+            [str(v) for v in violations[:10]],
+            territory,
+            agent_name="location",
         )
     state_mgr.state["compliance_scores"][territory] = confidence.value
     state_mgr.state["location_violations"] = violations
     state_mgr.state["location_scan_result"] = location_scan_result
     if len(violations) > 0:
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "LocationHealerAgent", territory=territory,
+            confidence,
+            "LocationHealerAgent",
+            territory=territory,
         )
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
@@ -596,7 +622,9 @@ def execute_phase1_discovery_impl(
             logger.info(f"Triggering LocationAgent auto-heal for {len(violations)} violations")
             import sys as _sys
 
-            def _w6_hitl_archive_gate(file_path, msg):    # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
+            def _w6_hitl_archive_gate(
+                file_path, msg
+            ):  # guardian: Multiple exceptions (EOFError, KeyboardInterrupt) need specific handling
                 if ctx is not None and getattr(ctx, "auto_approve", False):
                     return (True, "HITL-AUTO-APPROVED (--heal active)")
                 if not _sys.stdin.isatty():
@@ -627,7 +655,8 @@ def execute_phase1_discovery_impl(
             location_validator._hitl_approval_fn = _w6_hitl_archive_gate
             if hasattr(location_validator, "heal_violations"):
                 heal_result = location_validator.heal_violations(
-                    violations, auto_approve=ctx.auto_approve if ctx else False,
+                    violations,
+                    auto_approve=ctx.auto_approve if ctx else False,
                 )
                 healed_count = heal_result.get("healed", 0) if isinstance(heal_result, dict) else 0
                 state_mgr.state["location_fixed"] = healed_count
@@ -809,7 +838,9 @@ def execute_phase2_reconciliation(
                 agent_name=agent_key,
             )
             allowed, reason = decision_engine.should_proceed_with_healing(
-                confidence, agent_key, territory=territory,
+                confidence,
+                agent_key,
+                territory=territory,
             )
             if not allowed:
                 logging.warning(f"Phase 2: BLOCKED {agent_key}: {reason}")
@@ -821,7 +852,12 @@ def execute_phase2_reconciliation(
             if ctx is None or not ctx.heal:
                 for v in agent_violations:
                     reconciliation_log.append(
-                        {"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason},
+                        {
+                            "action": "would_fix",
+                            "target": v.get("file"),
+                            "agent": agent_key,
+                            "reason": reason,
+                        },
                     )
                 pbar.update(1)
                 continue
@@ -835,11 +871,12 @@ def execute_phase2_reconciliation(
             try:
                 agent_instance = agent_cls(project_root=REPO_ROOT)
                 state_mgr.update_agent(
-                    agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations",
+                    agent_key,
+                    f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations",
                 )
                 logging.warning(
                     "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
-                    agent_key,    # guardian: FuturesTimeoutError should be handled with specific context
+                    agent_key,  # guardian: FuturesTimeoutError should be handled with specific context
                     len(agent_violations),
                     reason.split("(")[0].strip(),
                 )
@@ -870,7 +907,9 @@ def execute_phase2_reconciliation(
                     finally:
                         _uwg.revoke_write_permission(_territory_posix)
                         _uwg.record_mutation(
-                            path=_territory_posix, operation="heal_repository", permitted=True,
+                            path=_territory_posix,
+                            operation="heal_repository",
+                            permitted=True,
                         )
                 if not isinstance(fix_result, dict):
                     fix_result = {"raw_output": str(fix_result)}
@@ -999,16 +1038,31 @@ def execute_phase3_validation(
 
 
 def execute_phase3_alignment(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    ctx: "HealContext" = None,
+    repo_root: Path = None,
 ):
     """PHASE 3: STRUCTURAL ALIGNMENT (Retriable)"""
     return execute_phase3_alignment_impl(
-        agents, territory, decision_engine, state_mgr, ctx, repo_root=repo_root,
+        agents,
+        territory,
+        decision_engine,
+        state_mgr,
+        ctx,
+        repo_root=repo_root,
     )
 
 
 def execute_phase3_alignment_impl(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
+    agents,
+    territory,
+    decision_engine,
+    state_mgr,
+    ctx: "HealContext" = None,
+    repo_root: Path = None,
 ):
     """PHASE 3: STRUCTURAL ALIGNMENT - Implementation"""
     REPO_ROOT = repo_root
@@ -1034,7 +1088,9 @@ def execute_phase3_alignment_impl(
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "HierarchyHealerAgent", territory=territory,
+            confidence,
+            "HierarchyHealerAgent",
+            territory=territory,
         )
         state_mgr.add_event("decision", f"Hierarchy Healing: {reason}")
         logger.info(f"Decision: {reason}")
@@ -1206,7 +1262,9 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None, rep
         if gravity_violations > 0:
             status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
             state_mgr.complete_agent(
-                "GravityValidatorAgent", True, f"Scanned: {gravity_violations} gravity violation(s) found",
+                "GravityValidatorAgent",
+                True,
+                f"Scanned: {gravity_violations} gravity violation(s) found",
             )
             state_mgr.complete_agent("GravityLeakHealerAgent", True, status_msg)
             logger.info(f"Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
@@ -1248,14 +1306,22 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None, rep
 
 
 def execute_phase4_architectural_validation(
-    agents, territory, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
+    agents,
+    territory,
+    state_mgr,
+    ctx: "HealContext" = None,
+    repo_root: Path = None,
 ):
     """PHASE 4: ARCHITECTURAL VALIDATION (Retriable)"""
     return execute_phase4_validation_impl(agents, territory, state_mgr, ctx=ctx, repo_root=repo_root)
 
 
 def execute_phase4_validation_impl(
-    agents, territory, state_mgr, ctx: "HealContext" = None, repo_root: Path = None,
+    agents,
+    territory,
+    state_mgr,
+    ctx: "HealContext" = None,
+    repo_root: Path = None,
 ):
     """PHASE 4: ARCHITECTURAL VALIDATION - Implementation"""
     REPO_ROOT = repo_root
@@ -1270,7 +1336,9 @@ def execute_phase4_validation_impl(
     else:
         target_territories = [territory]
     gov_report = arch_gov.comprehensive_territory_audit(
-        target_territories=target_territories, check_layer_boundaries=True, check_naming_conventions=True,
+        target_territories=target_territories,
+        check_layer_boundaries=True,
+        check_naming_conventions=True,
     )
     if gov_report is None:
         state_mgr.complete_agent("ArchitectureGovernorAgent", False, "Returned None")
@@ -1313,7 +1381,13 @@ def execute_phase5_healing(
         logger.warning("Skipping healing: No governance report available.")
         return None
     return execute_phase5_healing_impl(
-        agents, territory, gov_report, decision_engine, state_mgr, ctx, repo_root=repo_root,
+        agents,
+        territory,
+        gov_report,
+        decision_engine,
+        state_mgr,
+        ctx,
+        repo_root=repo_root,
     )
 
 
@@ -1341,7 +1415,9 @@ def execute_phase5_healing_impl(
         fixes = len(plan.get("naming_fixes", []))
         confidence = decision_engine.calculate_healing_confidence(fixes, ["NAMING"], territory)
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "ArchitectureGovernorAgent", territory=territory,
+            confidence,
+            "ArchitectureGovernorAgent",
+            territory=territory,
         )
         state_mgr.add_event("decision", f"Arch Healing: {reason}")
         logger.info(f"Decision: {reason}")
@@ -1441,7 +1517,9 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
         elif "Forbidden keyword 'import '" in message:
             violation_type = "IMPORT_IN_DOCS"
         violation_confidence = decision_engine.calculate_healing_confidence(
-            violations_count=1, violation_types=[violation_type], territory=territory,
+            violations_count=1,
+            violation_types=[violation_type],
+            territory=territory,
         ).value
         llm_decisions = [d for d in decision_engine.decisions_made if "LLM" in d.get("reason", "")]
         llm_was_triggered = decision_engine.enable_llm and len(llm_decisions) > 0
@@ -1466,7 +1544,8 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
                 "message": conv_violation.get("message", str(conv_violation)),
                 "severity": conv_violation.get("severity", "medium"),
                 "recommended_action": conv_violation.get(
-                    "recommended_action", "Review conversational pattern",
+                    "recommended_action",
+                    "Review conversational pattern",
                 ),
                 "llm_triggered": decision_engine.enable_llm,
                 "confidence": round(conv_violation.get("confidence", 0.5), 3),

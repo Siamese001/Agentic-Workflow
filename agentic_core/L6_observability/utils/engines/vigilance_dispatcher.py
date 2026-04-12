@@ -205,7 +205,9 @@ class VigilanceEventArtifact:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "VigilanceEventArtifact.create",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "VigilanceEventArtifact.create",
         )
 
         unique_signals = tuple(sorted(set(signals)))
@@ -221,7 +223,10 @@ class VigilanceDispatcher:
     """
 
     def dispatch(
-        self, *, event: VigilanceEventArtifact, enqueue_fn: Callable[[VigilanceEventArtifact], None],
+        self,
+        *,
+        event: VigilanceEventArtifact,
+        enqueue_fn: Callable[[VigilanceEventArtifact], None],
     ) -> None:
         """
         Dispatch event using injected enqueue function.

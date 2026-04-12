@@ -37,10 +37,7 @@ async def foo():
     time.sleep(1)
 """
         antipatterns = _parse_and_visit(code)
-        assert any(
-            cat == "blocking_call_in_async" and "time.sleep" in sym
-            for _, cat, sym in antipatterns
-        )
+        assert any(cat == "blocking_call_in_async" and "time.sleep" in sym for _, cat, sym in antipatterns)
 
     def test_requests_get_in_async_fires(self) -> None:
         code = """
@@ -48,10 +45,7 @@ async def foo():
     requests.get("https://example.com")
 """
         antipatterns = _parse_and_visit(code)
-        assert any(
-            cat == "blocking_call_in_async" and "requests.get" in sym
-            for _, cat, sym in antipatterns
-        )
+        assert any(cat == "blocking_call_in_async" and "requests.get" in sym for _, cat, sym in antipatterns)
 
     def test_dict_get_in_async_no_fire(self) -> None:
         code = """
@@ -59,9 +53,7 @@ async def foo():
     data = cache.get("key")
 """
         antipatterns = _parse_and_visit(code)
-        assert not any(
-            cat == "blocking_call_in_async" for _, cat, _ in antipatterns
-        )
+        assert not any(cat == "blocking_call_in_async" for _, cat, _ in antipatterns)
 
     def test_subprocess_run_in_async_fires(self) -> None:
         code = """
@@ -70,8 +62,7 @@ async def foo():
 """
         antipatterns = _parse_and_visit(code)
         assert any(
-            cat == "blocking_call_in_async" and "subprocess.run" in sym
-            for _, cat, sym in antipatterns
+            cat == "blocking_call_in_async" and "subprocess.run" in sym for _, cat, sym in antipatterns
         )
 
 
@@ -84,10 +75,7 @@ def foo():
     GLOBAL_CACHE = {}
 """
         antipatterns = _parse_and_visit(code)
-        assert any(
-            cat == "global_state_mutation" and "GLOBAL_CACHE" in sym
-            for _, cat, sym in antipatterns
-        )
+        assert any(cat == "global_state_mutation" and "GLOBAL_CACHE" in sym for _, cat, sym in antipatterns)
 
     def test_lowercase_assignment_no_fire(self) -> None:
         code = """
@@ -95,9 +83,7 @@ def foo():
     local_var = {}
 """
         antipatterns = _parse_and_visit(code)
-        assert not any(
-            cat == "global_state_mutation" for _, cat, _ in antipatterns
-        )
+        assert not any(cat == "global_state_mutation" for _, cat, _ in antipatterns)
 
     # Note: Lazy-init guard detection requires parent tracking (TODO)
     # For now, we fire on all UPPER_CASE assignments
@@ -115,10 +101,7 @@ for i in range(3):
         pass
 """
         antipatterns = _parse_and_visit(code)
-        assert any(
-            cat == "retry_without_backoff" and "for_retry" in sym
-            for _, cat, sym in antipatterns
-        )
+        assert any(cat == "retry_without_backoff" and "for_retry" in sym for _, cat, sym in antipatterns)
 
     def test_for_collection_no_fire(self) -> None:
         code = """
@@ -130,9 +113,7 @@ for item in items:
 """
         antipatterns = _parse_and_visit(code)
         # Should not fire because it's not a range() loop
-        assert not any(
-            cat == "retry_without_backoff" for _, cat, _ in antipatterns
-        )
+        assert not any(cat == "retry_without_backoff" for _, cat, _ in antipatterns)
 
     def test_for_range_with_sleep_no_fire(self) -> None:
         code = """
@@ -145,9 +126,7 @@ for i in range(3):
 """
         antipatterns = _parse_and_visit(code)
         # Should not fire because has backoff
-        assert not any(
-            cat == "retry_without_backoff" for _, cat, _ in antipatterns
-        )
+        assert not any(cat == "retry_without_backoff" for _, cat, _ in antipatterns)
 
     def test_while_with_try_except_fires(self) -> None:
         code = """
@@ -159,7 +138,4 @@ while True:
         pass
 """
         antipatterns = _parse_and_visit(code)
-        assert any(
-            cat == "retry_without_backoff" and "while_retry" in sym
-            for _, cat, sym in antipatterns
-        )
+        assert any(cat == "retry_without_backoff" and "while_retry" in sym for _, cat, sym in antipatterns)

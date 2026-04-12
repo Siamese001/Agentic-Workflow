@@ -86,15 +86,34 @@ class ADGGraphIngestion:
             """)
 
             for row in cursor.fetchall():
-                (edge_id, relation_type, edge_kind, source_file, line_no, symbol,
-                 src_name, src_type, src_layer, dst_name, dst_type, dst_layer) = row
+                (
+                    edge_id,
+                    relation_type,
+                    edge_kind,
+                    source_file,
+                    line_no,
+                    symbol,
+                    src_name,
+                    src_type,
+                    src_layer,
+                    dst_name,
+                    dst_type,
+                    dst_layer,
+                ) = row
 
                 # Create natural language description
                 doc_content = self._create_relationship_description(
-                    src_name, src_type, src_layer,
-                    relation_type, edge_kind,
-                    dst_name, dst_type, dst_layer,
-                    source_file, line_no, symbol,
+                    src_name,
+                    src_type,
+                    src_layer,
+                    relation_type,
+                    edge_kind,
+                    dst_name,
+                    dst_type,
+                    dst_layer,
+                    source_file,
+                    line_no,
+                    symbol,
                 )
 
                 # Create metadata
@@ -123,9 +142,9 @@ class ADGGraphIngestion:
             if documents:
                 batch_size = 1000
                 for i in range(0, len(documents), batch_size):
-                    batch_docs = documents[i:i+batch_size]
-                    batch_metas = metadatas[i:i+batch_size]
-                    batch_ids = ids[i:i+batch_size]
+                    batch_docs = documents[i : i + batch_size]
+                    batch_metas = metadatas[i : i + batch_size]
+                    batch_ids = ids[i : i + batch_size]
 
                     self.chroma.add_documents(
                         collection_name="repo_adg_graph",
@@ -133,7 +152,7 @@ class ADGGraphIngestion:
                         metadatas=batch_metas,
                         ids=batch_ids,
                     )
-                    logger.info(f"Added batch {i//batch_size + 1}: {len(batch_docs)} relationships")
+                    logger.info(f"Added batch {i // batch_size + 1}: {len(batch_docs)} relationships")
 
                 logger.info(f"Ingested {len(documents)} ADG relationships total")
 
@@ -185,9 +204,9 @@ class ADGGraphIngestion:
             if documents:
                 batch_size = 500
                 for i in range(0, len(documents), batch_size):
-                    batch_docs = documents[i:i+batch_size]
-                    batch_metas = metadatas[i:i+batch_size]
-                    batch_ids = ids[i:i+batch_size]
+                    batch_docs = documents[i : i + batch_size]
+                    batch_metas = metadatas[i : i + batch_size]
+                    batch_ids = ids[i : i + batch_size]
 
                     self.chroma.add_documents(
                         collection_name="repo_adg_graph",
@@ -195,7 +214,7 @@ class ADGGraphIngestion:
                         metadatas=batch_metas,
                         ids=batch_ids,
                     )
-                    logger.info(f"Added pattern batch {i//batch_size + 1}: {len(batch_docs)} patterns")
+                    logger.info(f"Added pattern batch {i // batch_size + 1}: {len(batch_docs)} patterns")
 
                 logger.info(f"Ingested {len(documents)} structural patterns total")
 
@@ -207,10 +226,18 @@ class ADGGraphIngestion:
             return 0
 
     def _create_relationship_description(
-        self, src_name: str, src_type: str, src_layer: str,
-        relation_type: str, edge_kind: str,
-        dst_name: str, dst_type: str, dst_layer: str,
-        source_file: str, line_no: int, symbol: str,
+        self,
+        src_name: str,
+        src_type: str,
+        src_layer: str,
+        relation_type: str,
+        edge_kind: str,
+        dst_name: str,
+        dst_type: str,
+        dst_layer: str,
+        source_file: str,
+        line_no: int,
+        symbol: str,
     ) -> str:
         """Create natural language description of a relationship."""
 
@@ -266,7 +293,9 @@ class ADGGraphIngestion:
         for row in cursor.fetchall():
             src_layer, dst_layer, edge_count, relation_types = row
 
-            pattern_desc = f"Layer {src_layer} is strongly coupled to Layer {dst_layer} with {edge_count} edges"
+            pattern_desc = (
+                f"Layer {src_layer} is strongly coupled to Layer {dst_layer} with {edge_count} edges"
+            )
             pattern_desc += f" using relations: {relation_types}"
 
             metadata = {
@@ -307,7 +336,9 @@ class ADGGraphIngestion:
         for row in cursor.fetchall():
             name, entity_type, layer, out_degree, relation_types = row
 
-            pattern_desc = f"Hub node: {entity_type} '{name}' in {layer} has {out_degree} outgoing connections"
+            pattern_desc = (
+                f"Hub node: {entity_type} '{name}' in {layer} has {out_degree} outgoing connections"
+            )
             pattern_desc += f" using relations: {relation_types}"
 
             metadata = {
@@ -400,7 +431,9 @@ def main():
     parser.add_argument("--repo-root", default=".", help="Repository root directory")
     parser.add_argument("--adg-db", help="Path to ADG SQLite database")
     parser.add_argument("--chroma-dir", default="artifacts/chromadb", help="ChromaDB persistence directory")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be ingested without actually doing it")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be ingested without actually doing it"
+    )
     args = parser.parse_args()
 
     # Find ADG database if not specified

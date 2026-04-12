@@ -179,6 +179,7 @@ class BaseProactiveAgent(SovereignBaseAgent):
         Emits HANDOFF_RECOMMENDED signal when needed.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BaseProactiveAgent.execute")
 
@@ -213,7 +214,10 @@ class BaseProactiveAgent(SovereignBaseAgent):
         domain-specific fields (e.g. leads_processed).
         """
         self.monitor.record_execution(
-            agent_name=self.name, TaskType=task.name, success=True, duration_ms=task.estimated_duration_ms,
+            agent_name=self.name,
+            TaskType=task.name,
+            success=True,
+            duration_ms=task.estimated_duration_ms,
         )
 
     def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs: Any) -> dict[str, Any]:

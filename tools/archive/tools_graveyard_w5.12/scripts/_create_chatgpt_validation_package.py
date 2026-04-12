@@ -14,8 +14,12 @@ _emit_writes_through("p1", "_create_chatgpt_validation_package", "uwg_governed_w
 _emit_writes_through("p1", "_create_chatgpt_validation_package", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_create_chatgpt_validation_package", "context_retrieval")
 _emit_pulls_context("p1", "_create_chatgpt_validation_package", "context_retrieval_2")
-emit_determinism_digest("trace__create_chatgpt_validation_package", "_create_chatgpt_validation_package_dispatch")
-emit_determinism_digest("trace__create_chatgpt_validation_package", "_create_chatgpt_validation_package_complete")
+emit_determinism_digest(
+    "trace__create_chatgpt_validation_package", "_create_chatgpt_validation_package_dispatch"
+)
+emit_determinism_digest(
+    "trace__create_chatgpt_validation_package", "_create_chatgpt_validation_package_complete"
+)
 _emit_validated_by_safety_plane("p1", "_create_chatgpt_validation_package", "safety_validation")
 
 

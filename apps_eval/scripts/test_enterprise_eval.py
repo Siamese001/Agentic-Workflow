@@ -67,7 +67,9 @@ def _assert_detailed_observability(result: object) -> None:
     required_steps = {"DECOMPOSE", "RETRIEVE", "ENRICH", "EXECUTE", "VALIDATE", "EMIT"}
     actual_steps = {entry.get("step", "").upper() for entry in execution_log}
 
-    complete_steps = {entry.get("step", "").upper() for entry in execution_log if entry.get("status") == "complete"}
+    complete_steps = {
+        entry.get("step", "").upper() for entry in execution_log if entry.get("status") == "complete"
+    }
 
     _assert(
         len(complete_steps) >= 3,
@@ -198,9 +200,9 @@ def _assert_rigorous_e2e_wiring(result: object) -> None:
 
 async def test_basic_evaluation():
     """Test basic evaluation flow."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 1: Basic Enterprise Evaluation")
-    print("="*60)
+    print("=" * 60)
 
     suite_ids = [
         "routing_enforcement",
@@ -261,9 +263,9 @@ async def test_basic_evaluation():
 
 async def test_with_trend_analysis():
     """Test evaluation with trend analysis."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 2: Evaluation with Trend Analysis")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseEvalOrchestrator()
 
@@ -318,9 +320,9 @@ async def test_with_trend_analysis():
 
 async def test_full_pipeline():
     """Test the full enterprise pipeline with all features."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 3: Full Enterprise Pipeline")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseEvalOrchestrator()
 
@@ -388,9 +390,9 @@ async def test_full_pipeline():
 
 async def test_regression_detection():
     """Test regression detection capabilities."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST 4: Regression Detection")
-    print("="*60)
+    print("=" * 60)
 
     orchestrator = EnterpriseEvalOrchestrator()
 
@@ -432,9 +434,9 @@ async def test_regression_detection():
 
 async def main():
     """Run all E2E tests."""
-    print("\n" + "🚀 "*30)
+    print("\n" + "🚀 " * 30)
     print("ENTERPRISE EVALUATION SYSTEM - E2E TEST SUITE")
-    print("🚀 "*30)
+    print("🚀 " * 30)
 
     results = []
     failures: list[str] = []
@@ -459,22 +461,23 @@ async def main():
     except Exception as exc:
         print(f"\n❌ Test failed: {exc}")
         import traceback
+
         traceback.print_exc()
         failures.append(str(exc))
 
     # Summary
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
 
     for name, result in results:
-        if hasattr(result, 'status'):
+        if hasattr(result, "status"):
             status = "✅ PASS" if result.status in ("complete", "partial") else "❌ FAIL"
             print(f"{status}: {name}")
             print(f"      Trace: {result.trace_id[:16]}")
             print(f"      Artifacts: {getattr(result, 'report_path', 'N/A')}")
         else:
-            status = "✅ PASS" if result.get('regression_detected') else "✅ PASS"
+            status = "✅ PASS" if result.get("regression_detected") else "✅ PASS"
             print(f"{status}: {name}")
 
     if failures:

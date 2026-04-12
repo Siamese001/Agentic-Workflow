@@ -153,6 +153,7 @@ _emit_stores_embedding("p4", "DagRuntimeInspectorAgent", "embedding_store")
 _emit_updates_meta_learning_state("p4", "DagRuntimeInspectorAgent", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "DagRuntimeInspectorAgent", "exec_snapshot_link")
 
+
 def _get_DagRuntimeInspectorAgent():
     # InspectorExecutor imported lazily to avoid L3->L5 violation
     _mod = _importlib.import_module("agentic_core.L5_safety.reasoning.InspectorExecutor")

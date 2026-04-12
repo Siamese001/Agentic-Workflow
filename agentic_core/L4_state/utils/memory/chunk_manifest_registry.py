@@ -40,6 +40,7 @@ class EnrichedChunkManifest:
 
     Contains the semantic enrichment output from Pipeline B Step 3.
     """
+
     chunk_id: str  # SHA-256 hash
     raw_content: str
     enriched_content: dict[str, Any]  # Structured Knowledge Object
@@ -159,10 +160,14 @@ class ChunkManifestRegistry:
         """
         _trace_id = f"l4d_store_{manifest.chunk_id[:16]}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "ChunkManifestRegistry.store_manifest",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "ChunkManifestRegistry.store_manifest",
         )
         _emit_records_learning_event(
-            _trace_id, "chunk_manifest_stored", f"doc:{manifest.doc_id}",
+            _trace_id,
+            "chunk_manifest_stored",
+            f"doc:{manifest.doc_id}",
         )
 
         if manifest.fact_vec:
@@ -172,7 +177,8 @@ class ChunkManifestRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT OR REPLACE INTO chunk_manifests (
                     chunk_id, raw_content, enriched_content, title, summary,
                     key_concepts, agentic_patterns, execution_insight, query_expansion_terms,
@@ -180,32 +186,34 @@ class ChunkManifestRegistry:
                     fact_vec, fact_vec_hash, embedding_model, created_at,
                     healer_used, success_status, trace_id, replay_key, version, parent_chunk_id
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                manifest.chunk_id,
-                manifest.raw_content,
-                json.dumps(manifest.enriched_content),
-                manifest.title,
-                manifest.summary,
-                json.dumps(manifest.key_concepts),
-                json.dumps(manifest.agentic_patterns),
-                manifest.execution_insight,
-                json.dumps(manifest.query_expansion_terms),
-                manifest.source_file,
-                manifest.doc_id,
-                manifest.chunk_index,
-                json.dumps(manifest.security_labels),
-                json.dumps(manifest.adg_edges),
-                json.dumps(manifest.fact_vec) if manifest.fact_vec else None,
-                manifest.fact_vec_hash,
-                manifest.embedding_model,
-                manifest.created_at,
-                manifest.healer_used,
-                1 if manifest.success_status else 0,
-                manifest.trace_id,
-                manifest.replay_key,
-                manifest.version,
-                manifest.parent_chunk_id,
-            ))
+            """,
+                (
+                    manifest.chunk_id,
+                    manifest.raw_content,
+                    json.dumps(manifest.enriched_content),
+                    manifest.title,
+                    manifest.summary,
+                    json.dumps(manifest.key_concepts),
+                    json.dumps(manifest.agentic_patterns),
+                    manifest.execution_insight,
+                    json.dumps(manifest.query_expansion_terms),
+                    manifest.source_file,
+                    manifest.doc_id,
+                    manifest.chunk_index,
+                    json.dumps(manifest.security_labels),
+                    json.dumps(manifest.adg_edges),
+                    json.dumps(manifest.fact_vec) if manifest.fact_vec else None,
+                    manifest.fact_vec_hash,
+                    manifest.embedding_model,
+                    manifest.created_at,
+                    manifest.healer_used,
+                    1 if manifest.success_status else 0,
+                    manifest.trace_id,
+                    manifest.replay_key,
+                    manifest.version,
+                    manifest.parent_chunk_id,
+                ),
+            )
 
             conn.commit()
             Logger.info(f"Stored manifest: {manifest.chunk_id[:16]}...")
@@ -230,9 +238,12 @@ class ChunkManifestRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM chunk_manifests WHERE chunk_id = ?
-            """, (chunk_id,))
+            """,
+                (chunk_id,),
+            )
 
             row = cursor.fetchone()
             if row is None:
@@ -256,9 +267,12 @@ class ChunkManifestRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM chunk_manifests WHERE doc_id = ? ORDER BY chunk_index
-            """, (doc_id,))
+            """,
+                (doc_id,),
+            )
 
             rows = cursor.fetchall()
             return [self._row_to_manifest(row, cursor) for row in rows]
@@ -279,9 +293,12 @@ class ChunkManifestRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM chunk_manifests WHERE source_file = ?
-            """, (source_file,))
+            """,
+                (source_file,),
+            )
 
             rows = cursor.fetchall()
             return [self._row_to_manifest(row, cursor) for row in rows]
@@ -303,9 +320,12 @@ class ChunkManifestRegistry:
 
         try:
             # Get this chunk
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT chunk_id, parent_chunk_id FROM chunk_manifests WHERE chunk_id = ?
-            """, (chunk_id,))
+            """,
+                (chunk_id,),
+            )
 
             row = cursor.fetchone()
             if row is None:
@@ -314,9 +334,12 @@ class ChunkManifestRegistry:
             parent_id = row[1]
 
             # Get children
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT chunk_id FROM chunk_manifests WHERE parent_chunk_id = ?
-            """, (chunk_id,))
+            """,
+                (chunk_id,),
+            )
 
             children = [r[0] for r in cursor.fetchall()]
 
@@ -346,9 +369,12 @@ class ChunkManifestRegistry:
             # Simple LIKE search on key_concepts JSON
             pattern = f'%"{concept}"%'
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM chunk_manifests WHERE key_concepts LIKE ? LIMIT ?
-            """, (pattern, limit))
+            """,
+                (pattern, limit),
+            )
 
             rows = cursor.fetchall()
             return [self._row_to_manifest(row, cursor) for row in rows]

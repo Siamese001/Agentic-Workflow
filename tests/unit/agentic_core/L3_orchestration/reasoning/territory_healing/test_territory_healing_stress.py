@@ -194,10 +194,7 @@ class TestAgentSpecificHealing:
         logger.info(f"HierarchyHealer scan: {scan_result.violations_found} violations")
 
         # Check for territory root files
-        root_file_violations = [
-            v for v in scan_result.violations
-            if v.type == "TERRITORY_ROOT_FILE"
-        ]
+        root_file_violations = [v for v in scan_result.violations if v.type == "TERRITORY_ROOT_FILE"]
         logger.info(f"  Territory root files: {len(root_file_violations)}")
 
     def test_location_healer_adapter(self):
@@ -264,7 +261,7 @@ class TestStressScenarios:
 
         # Scan same territories multiple times
         for i in range(3):
-            logger.info(f"Scan iteration {i+1}")
+            logger.info(f"Scan iteration {i + 1}")
             for territory in territories:
                 report = coordinator.validate_territory(territory)
                 assert report.success is True  # No exceptions
@@ -284,10 +281,12 @@ class TestStressScenarios:
         for agent in coordinator.agents:
             if agent.can_handle("tests"):
                 scan_result = agent.scan_territory("tests")
-                reports.append({
-                    "agent": agent.agent_name,
-                    "violations": scan_result.violations_found,
-                })
+                reports.append(
+                    {
+                        "agent": agent.agent_name,
+                        "violations": scan_result.violations_found,
+                    }
+                )
 
         # All should have succeeded
         for report in reports:
@@ -338,7 +337,9 @@ class TestNoExceptions:
         for territory in test_territories:
             try:
                 report = coordinator.validate_territory(territory)
-                logger.info(f"Scan {territory}: success={report.success}, violations={report.total_violations_found}")
+                logger.info(
+                    f"Scan {territory}: success={report.success}, violations={report.total_violations_found}"
+                )
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # Non-existent territories should be handled gracefully
                 logger.warning(f"Exception for {territory}: {e}")

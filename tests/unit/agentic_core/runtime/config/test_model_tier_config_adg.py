@@ -1,4 +1,5 @@
 """ADG-driven tests for agentic_core/runtime/config/model_tier_config.py — fan_in=0."""
+
 from __future__ import annotations
 
 import pytest
@@ -37,13 +38,14 @@ class TestModelTier:
     def test_is_enum(self):
         """Test ModelTier is an enum."""
         from enum import Enum
+
         assert isinstance(ModelTier, type) and issubclass(ModelTier, Enum)
 
     def test_has_members(self):
         """Test ModelTier has expected members."""
-        assert hasattr(ModelTier, 'LOW')
-        assert hasattr(ModelTier, 'MEDIUM')
-        assert hasattr(ModelTier, 'HIGH')
+        assert hasattr(ModelTier, "LOW")
+        assert hasattr(ModelTier, "MEDIUM")
+        assert hasattr(ModelTier, "HIGH")
 
     def test_is_not_none(self):
         """Test ModelTier is not None."""
@@ -54,6 +56,7 @@ class TestTaskComplexity:
     def test_is_enum(self):
         """Test TaskComplexity is an enum."""
         from enum import Enum
+
         assert isinstance(TaskComplexity, type) and issubclass(TaskComplexity, Enum)
 
     def test_is_not_none(self):

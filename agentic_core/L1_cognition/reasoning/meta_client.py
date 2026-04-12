@@ -17,7 +17,6 @@ Guardrails:
 """
 # guardian: allow-silent_swallower - ADG violation exemption
 
-
 from __future__ import annotations
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -345,7 +344,9 @@ class MetaLearningClient:
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"MetaClient.cache_get:{domain}:{key}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"MetaClient.cache_get:{domain}:{key}",
         )
         cache_key = self._get_cache_key(key, domain)
         from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
@@ -405,7 +406,10 @@ class MetaLearningClient:
         return True
 
     def store_healing_pattern(
-        self, violation: dict[str, Any], healing_result: dict[str, Any], domain: str = "agentic_core",
+        self,
+        violation: dict[str, Any],
+        healing_result: dict[str, Any],
+        domain: str = "agentic_core",
     ) -> str | None:
         """
         Store a successful healing pattern in Pinecone.
@@ -474,7 +478,8 @@ class MetaLearningClient:
             Logger.warning(f"[MetaLearningClient] Failed to generate embedding: {e}")
             return []
         effective_threshold = min_similarity or self.domain_thresholds.get(
-            domain, DEFAULT_SIMILARITY_THRESHOLD,
+            domain,
+            DEFAULT_SIMILARITY_THRESHOLD,
         )
         try:
             ids = list(self._vector_store.keys())

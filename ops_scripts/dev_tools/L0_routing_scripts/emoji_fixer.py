@@ -173,8 +173,10 @@ _emit_proposal_commits_routing("p1", "emoji_fixer", "routing_commit")
 AGENTIC_CORE_DIR = Path(".")
 APPS_SHARED_DIR = Path(".")
 
+
 def get_python_files(directory):
     return directory.rglob("*.py")
+
 
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
@@ -186,6 +188,7 @@ try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
         get_python_files as _acquired_get_files,
     )
+
     # Update if import succeeds
     AGENTIC_CORE_DIR = Path(_acquired_core_dir)
     APPS_SHARED_DIR = Path(_acquired_shared_dir)

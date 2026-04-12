@@ -300,6 +300,7 @@ def _install_l2_execution_compat_shims() -> None:
     def _make_callable(name: str):
         def _stub(*_args, **_kwargs):
             return True
+
         _stub.__name__ = name
         return _stub
 
@@ -329,7 +330,9 @@ def _install_l2_execution_compat_shims() -> None:
         "validate_l2_healers_adg": _make_callable("validate_l2_healers_adg"),
         "monotonic_reentrancy_enforcer_adg": _make_module("monotonic_reentrancy_enforcer_adg"),
         "MonotonicReentrancyEnforcerAdg": _make_class("MonotonicReentrancyEnforcerAdg"),
-        "validate_monotonic_reentrancy_enforcer_adg": _make_callable("validate_monotonic_reentrancy_enforcer_adg"),
+        "validate_monotonic_reentrancy_enforcer_adg": _make_callable(
+            "validate_monotonic_reentrancy_enforcer_adg"
+        ),
         "qwen_gpu_validator_adg": _make_module("qwen_gpu_validator_adg"),
         "QwenGpuValidatorAdg": _make_class("QwenGpuValidatorAdg"),
         "validate_qwen_gpu_validator_adg": _make_callable("validate_qwen_gpu_validator_adg"),
@@ -413,7 +416,9 @@ def _install_l2_execution_compat_shims() -> None:
         "validate_vllm_replay_validator": _make_callable("validate_vllm_replay_validator"),
         "vllm_invariant_contract_types_adg": _make_module("vllm_invariant_contract_types_adg"),
         "VllmInvariantContractTypesAdg": _make_class("VllmInvariantContractTypesAdg"),
-        "validate_vllm_invariant_contract_types_adg": _make_callable("validate_vllm_invariant_contract_types_adg"),
+        "validate_vllm_invariant_contract_types_adg": _make_callable(
+            "validate_vllm_invariant_contract_types_adg"
+        ),
         "vllm_backpressure_types_adg": _make_module("vllm_backpressure_types_adg"),
         "VllmBackpressureTypesAdg": _make_class("VllmBackpressureTypesAdg"),
         "validate_vllm_backpressure_types_adg": _make_callable("validate_vllm_backpressure_types_adg"),
@@ -436,7 +441,9 @@ def _install_l2_execution_compat_shims() -> None:
         "validate_token_enforcement_types": _make_callable("validate_token_enforcement_types"),
         "token_budget_preflight_fallback": _make_module("token_budget_preflight_fallback"),
         "TokenBudgetPreflightFallback": _make_class("TokenBudgetPreflightFallback"),
-        "validate_token_budget_preflight_fallback": _make_callable("validate_token_budget_preflight_fallback"),
+        "validate_token_budget_preflight_fallback": _make_callable(
+            "validate_token_budget_preflight_fallback"
+        ),
         "tool_args_types_adg": _make_module("tool_args_types_adg"),
         "ToolArgsTypesAdg": _make_class("ToolArgsTypesAdg"),
         "validate_tool_args_types_adg": _make_callable("validate_tool_args_types_adg"),
@@ -485,10 +492,14 @@ def _install_l2_execution_compat_shims() -> None:
         "validate_vllm_gateway_integration_types": _make_callable("validate_vllm_gateway_integration_types"),
         "vllm_gateway_integration_types_adg": _make_module("vllm_gateway_integration_types_adg"),
         "VllmGatewayIntegrationTypesAdg": _make_class("VllmGatewayIntegrationTypesAdg"),
-        "validate_vllm_gateway_integration_types_adg": _make_callable("validate_vllm_gateway_integration_types_adg"),
+        "validate_vllm_gateway_integration_types_adg": _make_callable(
+            "validate_vllm_gateway_integration_types_adg"
+        ),
         "vllm_infrastructure_fingerprint_types": _make_module("vllm_infrastructure_fingerprint_types"),
         "VllmInfrastructureFingerprintTypes": _make_class("VllmInfrastructureFingerprintTypes"),
-        "validate_vllm_infrastructure_fingerprint_types": _make_callable("validate_vllm_infrastructure_fingerprint_types"),
+        "validate_vllm_infrastructure_fingerprint_types": _make_callable(
+            "validate_vllm_infrastructure_fingerprint_types"
+        ),
     }
 
     l2_tests_root = Path(__file__).parent / _AGENTIC_CORE_DIR / "L2_execution"
@@ -530,14 +541,17 @@ def _install_l2_enforcement_compat_shims() -> None:
     def _make_callable(name: str):
         def _stub(*_args, **_kwargs):
             return True
+
         _stub.__name__ = name
         return _stub
 
     def _make_class(name: str):
         def _init(_self, *_args, **_kwargs):
             return None
+
         def _instance_getattr(_self, _attr):
             return _make_callable(_attr)
+
         return type(name, (), {"__init__": _init, "__getattr__": _instance_getattr})
 
     enforcement_names = {

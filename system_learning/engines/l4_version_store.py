@@ -193,7 +193,11 @@ class L4VersionStore:
         self._active_pointers: dict[str, str] = {}
 
     def commit_change_package(
-        self, package, parent_version_id: str | None, change_spec_hash: str, committed_at_utc: int,
+        self,
+        package,
+        parent_version_id: str | None,
+        change_spec_hash: str,
+        committed_at_utc: int,
     ) -> str:
         """Commit a ChangePackage and return its version_id.
 
@@ -220,8 +224,11 @@ class L4VersionStore:
         """
         _emit_snapshots_state(str(uuid.uuid4()), "L4VersionStore.commit_change_package", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L4VersionStore.commit_change_package")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L4VersionStore.commit_change_package"
+        )
 
         raw = package.canonical_bytes()
         version_id = hashlib.sha256(raw).hexdigest()

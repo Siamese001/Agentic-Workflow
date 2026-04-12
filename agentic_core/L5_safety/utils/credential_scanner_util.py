@@ -74,13 +74,13 @@ class CredentialScanResult:
 # Default credential patterns
 DEFAULT_PATTERNS: dict[str, tuple[str, str, float]] = {
     "generic_api_key": (
-        "(?i)(api[_-]?key|apikey|api[_-]?secret)\\s*[:=]\\s*[\"\']([a-zA-Z0-9_\\-]{20,})[\"\']",
+        "(?i)(api[_-]?key|apikey|api[_-]?secret)\\s*[:=]\\s*[\"']([a-zA-Z0-9_\\-]{20,})[\"']",
         "high",
         0.8,
     ),
     "aws_access_key": ("(?i)(AKIA[0-9A-Z]{16})", "high", 0.95),
     "aws_secret_key": (
-        "(?i)(aws[_-]?secret[_-]?access[_-]?key)\\s*[:=]\\s*[\"\']([a-zA-Z0-9/+=]{40})[\"\']",
+        "(?i)(aws[_-]?secret[_-]?access[_-]?key)\\s*[:=]\\s*[\"']([a-zA-Z0-9/+=]{40})[\"']",
         "high",
         0.9,
     ),
@@ -92,7 +92,7 @@ DEFAULT_PATTERNS: dict[str, tuple[str, str, float]] = {
     "gcp_api_key": ("(?i)(AIza[0-9A-Za-z_\\-]{35})", "high", 0.9),
     "github_token": ("(?i)(gh[pousr]_[a-zA-Z0-9]{36,})", "high", 0.95),
     "github_classic_token": (
-        "(?i)(github[_-]?token|gh[_-]?token)\\s*[:=]\\s*[\"\']([a-f0-9]{40})[\"\']",
+        "(?i)(github[_-]?token|gh[_-]?token)\\s*[:=]\\s*[\"']([a-f0-9]{40})[\"']",
         "high",
         0.85,
     ),
@@ -102,7 +102,7 @@ DEFAULT_PATTERNS: dict[str, tuple[str, str, float]] = {
     "ssh_private_key": ("-----BEGIN OPENSSH PRIVATE KEY-----", "high", 1.0),
     "pgp_private_key": ("-----BEGIN PGP PRIVATE KEY BLOCK-----", "high", 1.0),
     "generic_secret": (
-        "(?i)(secret|password|passwd|pwd)\\s*[:=]\\s*[\"\']([^\"\']{8,})[\"\']",
+        "(?i)(secret|password|passwd|pwd)\\s*[:=]\\s*[\"']([^\"']{8,})[\"']",
         "medium",
         0.6,
     ),
@@ -112,7 +112,7 @@ DEFAULT_PATTERNS: dict[str, tuple[str, str, float]] = {
         0.85,
     ),
     "oauth_client_secret": (
-        "(?i)(client[_-]?secret|oauth[_-]?secret)\\s*[:=]\\s*[\"\']([a-zA-Z0-9_\\-]{20,})[\"\']",
+        "(?i)(client[_-]?secret|oauth[_-]?secret)\\s*[:=]\\s*[\"']([a-zA-Z0-9_\\-]{20,})[\"']",
         "high",
         0.8,
     ),
@@ -126,16 +126,45 @@ DEFAULT_PATTERNS: dict[str, tuple[str, str, float]] = {
 
 # Default scannable extensions
 DEFAULT_SCANNABLE_EXTENSIONS: set[str] = {
-    ".py", ".js", ".ts", ".jsx", ".tsx", ".java", ".go", ".rb", ".php",
-    ".cs", ".cpp", ".c", ".h", ".sh", ".bash", ".zsh", ".yaml", ".yml",
-    ".json", ".xml", ".env", ".config", ".ini", ".toml", ".properties",
+    ".py",
+    ".js",
+    ".ts",
+    ".jsx",
+    ".tsx",
+    ".java",
+    ".go",
+    ".rb",
+    ".php",
+    ".cs",
+    ".cpp",
+    ".c",
+    ".h",
+    ".sh",
+    ".bash",
+    ".zsh",
+    ".yaml",
+    ".yml",
+    ".json",
+    ".xml",
+    ".env",
+    ".config",
+    ".ini",
+    ".toml",
+    ".properties",
 }
 
 # Default excluded paths
 DEFAULT_EXCLUDED_PATHS: set[str] = {
-    ".git", "__pycache__", "node_modules", ".venv", "venv",
-    ".sovereign_healing_backup", "healing_backups", "coverage_html",
-    ".pytest_cache", ".mypy_cache",
+    ".git",
+    "__pycache__",
+    "node_modules",
+    ".venv",
+    "venv",
+    ".sovereign_healing_backup",
+    "healing_backups",
+    "coverage_html",
+    ".pytest_cache",
+    ".mypy_cache",
 }
 
 
@@ -144,8 +173,19 @@ def _is_false_positive(line: str, pattern_name: str) -> bool:
     if line.strip().startswith("#") or line.strip().startswith("//"):
         return True
     false_positive_markers = [
-        "example", "placeholder", "your_", "your-", "xxx", "yyy",
-        "test", "mock", "fake", "dummy", "sample", "<", ">",
+        "example",
+        "placeholder",
+        "your_",
+        "your-",
+        "xxx",
+        "yyy",
+        "test",
+        "mock",
+        "fake",
+        "dummy",
+        "sample",
+        "<",
+        ">",
     ]
     line_lower = line.lower()
     return any(marker in line_lower for marker in false_positive_markers)

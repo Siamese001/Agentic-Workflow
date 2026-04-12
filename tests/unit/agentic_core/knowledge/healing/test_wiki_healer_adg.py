@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.knowledge.healing.wiki_healer."""
+
 from __future__ import annotations
 
 import importlib

@@ -292,7 +292,8 @@ class ClaimExtractor:
         """Initialize claim extractor with patterns."""
         self.patterns = {
             "percentage": re.compile(
-                "(\\d+(?:\\.\\d+)?)%|\\b(\\d+(?:\\.\\d+)?\\s*percent)\\b", re.IGNORECASE,
+                "(\\d+(?:\\.\\d+)?)%|\\b(\\d+(?:\\.\\d+)?\\s*percent)\\b",
+                re.IGNORECASE,
             ),
             "currency": re.compile(
                 "\\$(\\d+(?:,\\d{3})*(?:\\.\\d+)?)|(\\d+(?:,\\d{3})*(?:\\.\\d+)?)\\s*(dollars?|usd)",
@@ -324,7 +325,9 @@ class ClaimExtractor:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "FactClaimExtractor.extract_claim")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "FactClaimExtractor.extract_claim"
+        )
         text_lower = text.lower()
         entity = None
         for entity_type, keywords in self.entity_keywords.items():

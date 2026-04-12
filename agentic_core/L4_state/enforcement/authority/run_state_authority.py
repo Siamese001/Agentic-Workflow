@@ -152,7 +152,9 @@ class StateVersion:
     @classmethod
     def build(cls, key: str, value: Any, version: int, run_id: str) -> StateVersion:
         payload = json.dumps(
-            {"key": key, "value": value, "version": version, "run_id": run_id}, sort_keys=True, default=str,
+            {"key": key, "value": value, "version": version, "run_id": run_id},
+            sort_keys=True,
+            default=str,
         )
         return cls(
             key=key,
@@ -175,7 +177,11 @@ class StateSnapshot:
 
     @classmethod
     def build(
-        cls, run_id: str, label: str, state: dict[str, Any], version_vectors: dict[str, int],
+        cls,
+        run_id: str,
+        label: str,
+        state: dict[str, Any],
+        version_vectors: dict[str, int],
     ) -> StateSnapshot:
         payload = json.dumps(
             {"run_id": run_id, "label": label, "state": state, "versions": version_vectors},
@@ -244,7 +250,11 @@ class RunStateAuthority(WriteGovernorMixin):
                     versioned.source_hash,
                 )
                 return versioned.value, versioned.state_version
-            except (StateVersionMissingError, StateNamespaceError, UnversionedStateError) as exc:    # guardian: Multiple exceptions (StateVersionMissingError, StateNamespaceError) need specific handling
+            except (
+                StateVersionMissingError,
+                StateNamespaceError,
+                UnversionedStateError,
+            ) as exc:  # guardian: Multiple exceptions (StateVersionMissingError, StateNamespaceError) need specific handling
                 logger.warning(
                     "RUN_STATE_AUTHORITY versioned_read failed, falling back: %s (namespace=%s key=%s)",
                     exc,
@@ -414,7 +424,11 @@ class RunStateAuthority(WriteGovernorMixin):
                 policy_critical=bool(policy_hash),
                 expected_previous_version=expected_previous_version,
             )
-        except (StateNamespaceError, StateVersionMissingError, StateConflictError) as exc:    # guardian: Multiple exceptions (StateNamespaceError, StateVersionMissingError) need specific handling
+        except (
+            StateNamespaceError,
+            StateVersionMissingError,
+            StateConflictError,
+        ) as exc:  # guardian: Multiple exceptions (StateNamespaceError, StateVersionMissingError) need specific handling
             logger.error(
                 "RUN_STATE_AUTHORITY commit_versioned_state_transition failed: %s (namespace=%s key=%s)",
                 exc,
@@ -428,7 +442,10 @@ class RunStateAuthority(WriteGovernorMixin):
             self._state[key] = value
             self._versions[key] = transition.new_version
             sv = StateVersion.build(
-                key=key, value=value, version=transition.new_version, run_id=effective_run_id,
+                key=key,
+                value=value,
+                version=transition.new_version,
+                run_id=effective_run_id,
             )
             self._ledger.append(sv)
             # Also create legacy StateMutationRecord for backward compatibility
@@ -453,7 +470,9 @@ class RunStateAuthority(WriteGovernorMixin):
             transition.state_transition_id,
         )
         _emit_records_execution_trace(
-            trace_id or effective_run_id, "L4", f"commit:{key}:v{transition.new_version}",
+            trace_id or effective_run_id,
+            "L4",
+            f"commit:{key}:v{transition.new_version}",
         )
         _emit_signs_execution_trace(
             trace_id or effective_run_id,

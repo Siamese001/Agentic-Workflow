@@ -12,6 +12,7 @@ from typing import Any
 @dataclass
 class RegistryValidationResult:
     """Result of registry validation."""
+
     is_valid: bool
     identity_verified: bool
     model_allowed: bool

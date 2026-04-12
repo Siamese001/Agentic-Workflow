@@ -169,8 +169,11 @@ class PromptLoader:
     def load_global_constraints(self) -> str:
         """Load global constraints that apply to all agents."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptLoader.load_global_constraints")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptLoader.load_global_constraints"
+        )
 
         if self._global_constraints is not None:
             return self._global_constraints
@@ -201,7 +204,12 @@ class PromptLoader:
         return ""
 
     def build_full_prompt(
-        self, agent_role: str, task: str, code: str, original_line_count: int, lesson_learned: str = "",
+        self,
+        agent_role: str,
+        task: str,
+        code: str,
+        original_line_count: int,
+        lesson_learned: str = "",
     ) -> str:
         """
         Build complete prompt combining global constraints and specialist instructions.
@@ -224,10 +232,12 @@ class PromptLoader:
             sections.append(specialist_prompt)
         if global_constraints:
             constraints_with_count = global_constraints.replace(
-                "{original_line_count}", str(original_line_count),
+                "{original_line_count}",
+                str(original_line_count),
             )
             constraints_with_count = constraints_with_count.replace(
-                "{int(original_line_count * 0.1)}", str(int(original_line_count * 0.1)),
+                "{int(original_line_count * 0.1)}",
+                str(int(original_line_count * 0.1)),
             )
             sections.append(constraints_with_count)
         if lesson_learned:
@@ -254,7 +264,11 @@ _loader = PromptLoader()
 
 
 def load_prompt_for_agent(
-    agent_role: str, task: str, code: str, original_line_count: int, lesson_learned: str = "",
+    agent_role: str,
+    task: str,
+    code: str,
+    original_line_count: int,
+    lesson_learned: str = "",
 ) -> str:
     """
     Convenience function to load complete prompt for an agent.

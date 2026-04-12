@@ -27,7 +27,7 @@ class MCPRedisFix:
         """Connect to Redis with error handling"""
         try:
             self.redis_client = redis.Redis(
-                host='localhost',
+                host="localhost",
                 port=6379,
                 db=0,
                 decode_responses=True,
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     main()
 '''
 
-        with open(script_path, 'w') as f:
+        with open(script_path, "w") as f:
             f.write(script_content)
 
     def _run_command_with_progress(self, cmd: str, timeout: int = 300) -> dict:
@@ -272,9 +272,14 @@ if __name__ == "__main__":
 
         try:
             process = subprocess.Popen(
-                cmd, shell=True, cwd=str(self.repo_root),
-                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, bufsize=1, universal_newlines=True,
+                cmd,
+                shell=True,
+                cwd=str(self.repo_root),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                universal_newlines=True,
             )
 
             output_lines = []
@@ -340,6 +345,7 @@ if __name__ == "__main__":
         except Exception as e:
             return {"success": False, "error": str(e)}
 
+
 def test_redis_fixes():
     """Test the MCP Redis fixes"""
 
@@ -378,6 +384,7 @@ def test_redis_fixes():
         optimized_script.unlink(missing_ok=True)
 
     return True
+
 
 def create_redis_wrapper_script():
     """Create a wrapper script for MCP Redis operations"""
@@ -437,10 +444,11 @@ if __name__ == "__main__":
 '''
 
     wrapper_file = Path(__file__).parent / "mcp_redis_wrapper.py"
-    with open(wrapper_file, 'w') as f:
+    with open(wrapper_file, "w") as f:
         f.write(wrapper_script)
 
     return wrapper_file
+
 
 def main():
     """Main function"""
@@ -458,7 +466,7 @@ def main():
     repo_root = Path(__file__).parent
 
     result = subprocess.run(
-        'python mcp_redis_wrapper.py status',
+        "python mcp_redis_wrapper.py status",
         cwd=str(repo_root),
         capture_output=True,
         text=True,
@@ -480,6 +488,7 @@ def main():
     print("✅ Wrapper script provides drop-in replacement")
 
     return True
+
 
 if __name__ == "__main__":
     main()

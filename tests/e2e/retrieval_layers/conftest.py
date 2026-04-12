@@ -14,6 +14,7 @@ if project_root not in sys.path:
 @pytest.fixture
 def mock_redis_client():
     """Mock Redis client for Layer 1 tests."""
+
     class MockRedis:
         def __init__(self):
             self.cache = {}
@@ -34,6 +35,7 @@ def mock_redis_client():
 @pytest.fixture
 def mock_embedding_service():
     """Mock BGE-M3 embedding service for Layer 2 tests."""
+
     class MockEmbeddingService:
         def embed(self, text):
             # Return mock 768-dim embedding
@@ -41,6 +43,7 @@ def mock_embedding_service():
 
         def similarity(self, vec1, vec2):
             import math
+
             dot = sum(a * b for a, b in zip(vec1, vec2))
             norm1 = math.sqrt(sum(a * a for a in vec1))
             norm2 = math.sqrt(sum(a * a for a in vec2))
@@ -52,6 +55,7 @@ def mock_embedding_service():
 @pytest.fixture
 def mock_faiss_store():
     """Mock FAISS vector store for Layer 3 tests."""
+
     class MockFAISSStore:
         def __init__(self):
             self.vectors = {
@@ -74,6 +78,7 @@ def mock_faiss_store():
 @pytest.fixture
 def mock_adg_graph():
     """Mock ADG graph for Layer 3 tests."""
+
     class MockADGGraph:
         def __init__(self):
             self.edges = {
@@ -90,6 +95,7 @@ def mock_adg_graph():
 @pytest.fixture
 def mock_langgraph_orchestrator():
     """Mock LangGraph orchestrator for Layer 4 tests."""
+
     class MockLangGraph:
         def execute(self, plan):
             return {
@@ -104,6 +110,7 @@ def mock_langgraph_orchestrator():
 @pytest.fixture
 def mock_llm_client():
     """Mock LLM client for Layer 5 tests."""
+
     class MockLLMClient:
         def generate(self, prompt, context=None):
             return {

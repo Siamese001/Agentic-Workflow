@@ -333,7 +333,11 @@ class ToolReliabilityMixin:
             ValueError: If any parameter is invalid
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"ToolReliabilityMixin.configure_tool_retry:{tool_name}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"ToolReliabilityMixin.configure_tool_retry:{tool_name}",
+        )
         # [HARDENING] Validate inputs
         if not tool_name or not tool_name.strip():
             raise ValueError("tool_name cannot be empty")

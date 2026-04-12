@@ -46,6 +46,7 @@ def test_normal_enforcement():
         if temp_dir.exists():
             temp_dir.rmdir()
 
+
 def test_compression_trigger():
     """Test content that should trigger compression"""
     print("\n=== TESTING COMPRESSION TRIGGER ===\n")
@@ -77,9 +78,9 @@ def test_compression_trigger():
         print(f"  - Compression applied: {estimate.compression_applied}")
         print(f"  - Top contributors: {[c['type'] for c in estimate.top_contributors[:3]]}")
 
-        if estimate.status == 'yellow' and estimate.action == 'compress':
+        if estimate.status == "yellow" and estimate.action == "compress":
             print("  - ✅ Compression was triggered correctly")
-        elif estimate.status == 'green':
+        elif estimate.status == "green":
             print("  - ℹ️  Content was within limits, no compression needed")
 
     except Exception as e:
@@ -89,6 +90,7 @@ def test_compression_trigger():
             budget_file.unlink()
         if temp_dir.exists():
             temp_dir.rmdir()
+
 
 def test_budget_exceeded():
     """Test content that should exceed budget limits"""
@@ -134,6 +136,7 @@ def test_budget_exceeded():
             budget_file.unlink()
         if temp_dir.exists():
             temp_dir.rmdir()
+
 
 def test_decorator_enforcement():
     """Test decorator-based enforcement"""
@@ -194,6 +197,7 @@ def test_decorator_enforcement():
             budget_file.unlink()
         if temp_dir.exists():
             temp_dir.rmdir()
+
 
 def test_edge_cases():
     """Test various edge cases"""
@@ -267,6 +271,7 @@ def test_edge_cases():
             budget_file.unlink()
         if temp_dir.exists():
             temp_dir.rmdir()
+
 
 if __name__ == "__main__":
     print("🧪 TOKEN ESTIMATOR ENFORCEMENT TESTING")

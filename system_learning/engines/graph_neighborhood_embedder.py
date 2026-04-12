@@ -233,8 +233,11 @@ class GraphNeighborhoodEmbedder:
             The generated CorpusRecord.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphNeighborhoodEmbedder.ingest")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GraphNeighborhoodEmbedder.ingest"
+        )
 
         text = neighborhood.to_embedding_text()
         content_hash = compute_content_hash(text.encode("utf-8"))

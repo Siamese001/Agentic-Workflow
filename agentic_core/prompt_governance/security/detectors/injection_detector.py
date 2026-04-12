@@ -282,6 +282,7 @@ class InjectionDetector:
         leetspeak) are detected.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionDetector.scan")
 
@@ -326,6 +327,7 @@ class InjectionDetector:
         """Emit injection detection counts to system learning."""
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             # Create a summary of detection counts
@@ -337,9 +339,10 @@ class InjectionDetector:
                     timestamp_utc=int(time.time() * 1000),
                 )
         except Exception as e:
-
             # System learning unavailable - continue without emission
-            import logging; logging.getLogger(__name__).debug("injection_detector: Exception swallowed at L339: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("injection_detector: Exception swallowed at L339: %s", e)
 
     def scan_with_context(
         self,
@@ -358,8 +361,11 @@ class InjectionDetector:
             True if scan completed (regardless of detections)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionDetector.scan_with_context")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InjectionDetector.scan_with_context"
+        )
 
         self._total_scans += 1
 
@@ -368,9 +374,9 @@ class InjectionDetector:
 
         # Track per-agent/route scans
         context_key = f"{agent_id or 'unknown'}:{route or 'unknown'}"
-        if not hasattr(self, '_context_scan_counts'):
+        if not hasattr(self, "_context_scan_counts"):
             self._context_scan_counts = {}
-        if not hasattr(self, '_context_detection_counts'):
+        if not hasattr(self, "_context_detection_counts"):
             self._context_detection_counts = {}
 
         self._context_scan_counts[context_key] = self._context_scan_counts.get(context_key, 0) + 1
@@ -388,7 +394,9 @@ class InjectionDetector:
             # Detection occurred - track by context
             detections_after = sum(self._detection_counts.values())
             if detections_after > detections_before:
-                self._context_detection_counts[context_key] = self._context_detection_counts.get(context_key, 0) + 1
+                self._context_detection_counts[context_key] = (
+                    self._context_detection_counts.get(context_key, 0) + 1
+                )
 
         # Emit enhanced detection data with context
         self._emit_context_detection_counts(agent_id, route)
@@ -402,10 +410,11 @@ class InjectionDetector:
         """Emit context-aware injection detection data."""
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             # Emit per-context data if we have context tracking
-            if hasattr(self, '_context_scan_counts') and hasattr(self, '_context_detection_counts'):
+            if hasattr(self, "_context_scan_counts") and hasattr(self, "_context_detection_counts"):
                 bridge.persist_injection_context_data(
                     agent_id=agent_id or "unknown",
                     route=route or "unknown",
@@ -414,9 +423,10 @@ class InjectionDetector:
                     timestamp_utc=int(time.time() * 1000),
                 )
         except Exception as e:
-
             # System learning unavailable - continue without emission
-            import logging; logging.getLogger(__name__).debug("injection_detector: Exception swallowed at L415: %s", e)
+            import logging
+
+            logging.getLogger(__name__).debug("injection_detector: Exception swallowed at L415: %s", e)
 
     def get_detection_counts(self) -> dict[str, int]:
         """Get current detection counts (for testing/monitoring)."""
@@ -449,7 +459,8 @@ class InjectionDetector:
                 gate_thresholds = RegressionThresholds(
                     max_attack_success_rate_increase=thresholds.get("max_attack_success_rate_increase", 0.05),
                     max_high_risk_count_increase_ratio=thresholds.get(
-                        "max_high_risk_count_increase_ratio", 0.2,
+                        "max_high_risk_count_increase_ratio",
+                        0.2,
                     ),
                 )
             evaluate_against_baseline(current_metrics, baseline_metrics, gate_thresholds)

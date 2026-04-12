@@ -201,7 +201,8 @@ class CitationBundle:
 
 
 def validate_citation_custody(
-    context_chunks: list[dict[str, Any]], citation_bundles: list[CitationBundle] | None,
+    context_chunks: list[dict[str, Any]],
+    citation_bundles: list[CitationBundle] | None,
 ) -> None:
     """Enforce that every external-knowledge chunk has a matching CitationBundle.
 

@@ -119,7 +119,10 @@ class ActivationFlagsStore:
         return hashlib.sha256(flags_str.encode()).hexdigest()
 
     def update_flags(
-        self, flags: ActivationFlags, guardian_signature: str = "", activated_by: str = "system",
+        self,
+        flags: ActivationFlags,
+        guardian_signature: str = "",
+        activated_by: str = "system",
     ) -> ActivationProof:
         """Update activation flags with cryptographic proof.
 
@@ -317,7 +320,9 @@ def get_activation_flags() -> ActivationFlags | None:
 
 
 def update_activation_flags(
-    flags: ActivationFlags, signature: str = "", activated_by: str = "system",
+    flags: ActivationFlags,
+    signature: str = "",
+    activated_by: str = "system",
 ) -> ActivationProof:
     """Exported function to update activation flags."""
     return _activation_store.update_flags(flags, signature, activated_by)
@@ -327,7 +332,7 @@ def is_meta_learning_allowed() -> bool:
     """Exported function to check if meta-learning is allowed."""
     try:
         return _activation_gate.check_meta_learning_allowed()
-    except RuntimeError:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
         return False
 
 

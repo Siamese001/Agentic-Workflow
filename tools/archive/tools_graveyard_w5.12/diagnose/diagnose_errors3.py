@@ -17,7 +17,10 @@ for d in sorted(os.listdir(TESTS_DIR)):
 
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "-q", "-p", "no:logging", "--tb=no"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     last_line = ""

@@ -207,8 +207,11 @@ class HealingOutcomeAggregator:
         Returns a list sorted by (healer_id, tier, failure_type).
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregator.snapshot")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregator.snapshot"
+        )
 
         # Accumulate counts per composite key
         counts: dict[tuple[str, str, str], tuple[int, int]] = {}
@@ -330,11 +333,13 @@ class HealingOutcomeAggregator:
             aggregate_pairs.append((key, aggregate))
 
         # Sort deterministically by (healer_name, tier, failure_type)
-        aggregate_pairs.sort(key=lambda pair: (
-            pair[0].healer_name,
-            pair[0].tier,
-            pair[0].failure_type,
-        ))
+        aggregate_pairs.sort(
+            key=lambda pair: (
+                pair[0].healer_name,
+                pair[0].tier,
+                pair[0].failure_type,
+            )
+        )
 
         # Create temporary snapshot without version_id to compute hash
         temp_snapshot = HealingOutcomeAggregateSnapshot(

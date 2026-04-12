@@ -23,7 +23,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 1: governance_hub
     try:
-
         _emit_records_execution_trace(
             "phase9_activation",
             LayerSegment.L1_COGNITION,
@@ -37,7 +36,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 2: injection_detector
     try:
-
         _emit_records_execution_trace(
             "phase9_activation",
             LayerSegment.L5_SAFETY,
@@ -51,7 +49,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 3: pattern_repository
     try:
-
         _emit_records_execution_trace(
             "phase9_activation",
             LayerSegment.L5_SAFETY,
@@ -65,7 +62,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 4: evaluation_loader
     try:
-
         _emit_records_execution_trace(
             "phase9_activation",
             LayerSegment.L1_COGNITION,
@@ -79,7 +75,6 @@ def activate_orphaned_modules() -> dict[str, bool]:
 
     # Module 5: meta_prompt_renderer
     try:
-
         _emit_records_execution_trace(
             "phase9_activation",
             LayerSegment.L3_ORCHESTRATION,

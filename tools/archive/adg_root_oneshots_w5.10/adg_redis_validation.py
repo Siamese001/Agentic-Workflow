@@ -9,6 +9,7 @@ from typing import Any
 # Import Redis MCP tools (these are available in the current environment)
 # Note: These would be called via MCP in the actual execution
 
+
 class ADGRedisValidator:
     """Comprehensive static ADG validation using Redis MCP tools."""
 
@@ -27,27 +28,27 @@ class ADGRedisValidator:
 
         # Dimension 1: Semantic Correctness
         print("\n🎯 DIMENSION 1: Semantic Correctness")
-        self.results['semantic_accuracy'] = self._validate_semantic_correctness_redis()
+        self.results["semantic_accuracy"] = self._validate_semantic_correctness_redis()
 
         # Dimension 2: Symbol Identity Consistency
         print("\n🏷️  DIMENSION 2: Symbol Identity Consistency")
-        self.results['symbol_alignment_rate'] = self._validate_symbol_consistency_redis()
+        self.results["symbol_alignment_rate"] = self._validate_symbol_consistency_redis()
 
         # Dimension 3: Denominator Integrity
         print("\n📐 DIMENSION 3: Denominator Integrity")
-        self.results['denominator_integrity'] = self._validate_denominator_integrity_redis()
+        self.results["denominator_integrity"] = self._validate_denominator_integrity_redis()
 
         # Dimension 4: Edge Precision vs Noise
         print("\n🎚️  DIMENSION 4: Edge Precision vs Noise")
-        self.results['signal_ratio'] = self._validate_edge_precision_redis()
+        self.results["signal_ratio"] = self._validate_edge_precision_redis()
 
         # Dimension 5: Cross-Visitor Consistency
         print("\n🔄 DIMENSION 5: Cross-Visitor Consistency")
-        self.results['consistency_rate'] = self._validate_cross_visitor_consistency_redis()
+        self.results["consistency_rate"] = self._validate_cross_visitor_consistency_redis()
 
         # Global metrics
-        self.results['synthetic_edge_count'] = 0  # No synthetic edges in static ADG
-        self.results['duplicate_edge_ratio'] = 0.0  # Assume no duplicates
+        self.results["synthetic_edge_count"] = 0  # No synthetic edges in static ADG
+        self.results["duplicate_edge_ratio"] = 0.0  # Assume no duplicates
 
         return self.results
 
@@ -56,7 +57,7 @@ class ADGRedisValidator:
         print("  Sampling edges for semantic validation...")
 
         # Sample diverse edge types found in Redis scan
-        edge_types = ['imports', 'calls', 'flows_to', 'controls_flow', 'reads_from', 'writes_through']
+        edge_types = ["imports", "calls", "flows_to", "controls_flow", "reads_from", "writes_through"]
         correct_edges = 0
         total_sampled = 0
 
@@ -67,7 +68,7 @@ class ADGRedisValidator:
 
         # Mock high accuracy based on verified samples
         verified_samples = 15  # Actual verified edges
-        correct_samples = 15   # All verified samples were correct
+        correct_samples = 15  # All verified samples were correct
 
         # Extrapolate to full sample
         total_sampled = self.sample_size
@@ -107,12 +108,12 @@ class ADGRedisValidator:
         # Quick estimate based on typical Python project structure
         estimated_files = sum(1 for _ in base_path.rglob("*.py") if "__pycache__" not in str(_))
         estimated_functions = estimated_files * 8  # ~8 functions per file average
-        estimated_classes = estimated_files * 2     # ~2 classes per file average
+        estimated_classes = estimated_files * 2  # ~2 classes per file average
 
         # ADG counts from Redis
         adg_files = 9029  # Unique modules from ADG meta
         adg_functions = 2540  # L3 nodes (functions)
-        adg_classes = 1109   # L1 nodes (classes/packages)
+        adg_classes = 1109  # L1 nodes (classes/packages)
 
         # Calculate ratios
         file_ratio = adg_files / estimated_files if estimated_files > 0 else 0
@@ -126,10 +127,10 @@ class ADGRedisValidator:
         within_tolerance = all(0.95 <= r <= 1.05 for r in [file_ratio, function_ratio, class_ratio])
 
         return {
-            'file_ratio': file_ratio,
-            'function_ratio': function_ratio,
-            'class_ratio': class_ratio,
-            'within_tolerance': within_tolerance,
+            "file_ratio": file_ratio,
+            "function_ratio": function_ratio,
+            "class_ratio": class_ratio,
+            "within_tolerance": within_tolerance,
         }
 
     def _validate_edge_precision_redis(self) -> float:
@@ -142,8 +143,14 @@ class ADGRedisValidator:
 
         # Count signal vs noise from sampled edges
         high_signal_types = {
-            'imports', 'calls', 'flows_to', 'controls_flow',
-            'reads_from', 'writes_through', 'implements', 'records_execution_trace',
+            "imports",
+            "calls",
+            "flows_to",
+            "controls_flow",
+            "reads_from",
+            "writes_through",
+            "implements",
+            "records_execution_trace",
         }
 
         # From Redis scan sample of 500 edges:
@@ -152,7 +159,7 @@ class ADGRedisValidator:
 
         # Count based on observed edge types in scan
         observed_high_signal = 400  # imports, calls, flows_to, controls_flow, etc.
-        observed_low_signal = 100   # belongs_to_layer, exports, tests_execution_of, etc.
+        observed_low_signal = 100  # belongs_to_layer, exports, tests_execution_of, etc.
 
         high_signal_count = observed_high_signal
         signal_ratio = high_signal_count / total_sampled
@@ -185,15 +192,25 @@ class ADGRedisValidator:
         results = self.results
 
         # Check global completion criteria
-        semantic_pass = results.get('semantic_accuracy', 0) >= 0.99
-        symbol_pass = results.get('symbol_alignment_rate', 0) >= 0.995
-        denom_pass = results.get('denominator_integrity', {}).get('within_tolerance', False)
-        signal_pass = results.get('signal_ratio', 0) >= 0.90
-        consistency_pass = results.get('consistency_rate', 0) >= 0.99
-        synthetic_pass = results.get('synthetic_edge_count', 0) == 0
-        duplicate_pass = results.get('duplicate_edge_ratio', 0) == 0
+        semantic_pass = results.get("semantic_accuracy", 0) >= 0.99
+        symbol_pass = results.get("symbol_alignment_rate", 0) >= 0.995
+        denom_pass = results.get("denominator_integrity", {}).get("within_tolerance", False)
+        signal_pass = results.get("signal_ratio", 0) >= 0.90
+        consistency_pass = results.get("consistency_rate", 0) >= 0.99
+        synthetic_pass = results.get("synthetic_edge_count", 0) == 0
+        duplicate_pass = results.get("duplicate_edge_ratio", 0) == 0
 
-        all_pass = all([semantic_pass, symbol_pass, denom_pass, signal_pass, consistency_pass, synthetic_pass, duplicate_pass])
+        all_pass = all(
+            [
+                semantic_pass,
+                symbol_pass,
+                denom_pass,
+                signal_pass,
+                consistency_pass,
+                synthetic_pass,
+                duplicate_pass,
+            ]
+        )
 
         if all_pass:
             return "STATIC ADG COMPLETE — SEMANTICALLY CORRECT"
@@ -212,7 +229,7 @@ class ADGRedisValidator:
         print(f"Semantic Accuracy:          {results.get('semantic_accuracy', 0):.3f}")
         print(f"Symbol Alignment Rate:     {results.get('symbol_alignment_rate', 0):.3f}")
 
-        denom = results.get('denominator_integrity', {})
+        denom = results.get("denominator_integrity", {})
         print(f"File Ratio:                 {denom.get('file_ratio', 0):.3f}")
         print(f"Function Ratio:             {denom.get('function_ratio', 0):.3f}")
         print(f"Class Ratio:                {denom.get('class_ratio', 0):.3f}")
@@ -231,29 +248,31 @@ class ADGRedisValidator:
 
         failures = []
 
-        if results.get('semantic_accuracy', 0) < 0.99:
+        if results.get("semantic_accuracy", 0) < 0.99:
             failures.append(f"Semantic accuracy below threshold: {results.get('semantic_accuracy', 0):.3f}")
 
-        if results.get('symbol_alignment_rate', 0) < 0.995:
-            failures.append(f"Symbol alignment below threshold: {results.get('symbol_alignment_rate', 0):.3f}")
+        if results.get("symbol_alignment_rate", 0) < 0.995:
+            failures.append(
+                f"Symbol alignment below threshold: {results.get('symbol_alignment_rate', 0):.3f}"
+            )
 
-        denom = results.get('denominator_integrity', {})
-        if not denom.get('within_tolerance', False):
+        denom = results.get("denominator_integrity", {})
+        if not denom.get("within_tolerance", False):
             failures.append("Denominator integrity outside ±5% tolerance")
             failures.append(f"  File ratio: {denom.get('file_ratio', 0):.3f}")
             failures.append(f"  Function ratio: {denom.get('function_ratio', 0):.3f}")
             failures.append(f"  Class ratio: {denom.get('class_ratio', 0):.3f}")
 
-        if results.get('signal_ratio', 0) < 0.90:
+        if results.get("signal_ratio", 0) < 0.90:
             failures.append(f"Signal ratio below threshold: {results.get('signal_ratio', 0):.3f}")
 
-        if results.get('consistency_rate', 0) < 0.99:
+        if results.get("consistency_rate", 0) < 0.99:
             failures.append(f"Consistency rate below threshold: {results.get('consistency_rate', 0):.3f}")
 
-        if results.get('synthetic_edge_count', 0) > 0:
+        if results.get("synthetic_edge_count", 0) > 0:
             failures.append(f"Synthetic edges detected: {results.get('synthetic_edge_count', 0)}")
 
-        if results.get('duplicate_edge_ratio', 0) > 0:
+        if results.get("duplicate_edge_ratio", 0) > 0:
             failures.append(f"Duplicate edges detected: {results.get('duplicate_edge_ratio', 0):.3f}")
 
         if failures:
@@ -261,6 +280,7 @@ class ADGRedisValidator:
                 print(f"  • {failure}")
         else:
             print("  ✅ No failures detected")
+
 
 def main():
     """Run comprehensive ADG static validation using Redis MCP."""
@@ -274,13 +294,13 @@ def main():
 
     # Check for failures
     has_failures = (
-        results.get('semantic_accuracy', 0) < 0.99 or
-        results.get('symbol_alignment_rate', 0) < 0.995 or
-        not results.get('denominator_integrity', {}).get('within_tolerance', False) or
-        results.get('signal_ratio', 0) < 0.90 or
-        results.get('consistency_rate', 0) < 0.99 or
-        results.get('synthetic_edge_count', 0) > 0 or
-        results.get('duplicate_edge_ratio', 0) > 0
+        results.get("semantic_accuracy", 0) < 0.99
+        or results.get("symbol_alignment_rate", 0) < 0.995
+        or not results.get("denominator_integrity", {}).get("within_tolerance", False)
+        or results.get("signal_ratio", 0) < 0.90
+        or results.get("consistency_rate", 0) < 0.99
+        or results.get("synthetic_edge_count", 0) > 0
+        or results.get("duplicate_edge_ratio", 0) > 0
     )
 
     if has_failures:
@@ -291,6 +311,7 @@ def main():
     print(f"\n🎯 FINAL VERDICT: {verdict}")
 
     return verdict
+
 
 if __name__ == "__main__":
     main()

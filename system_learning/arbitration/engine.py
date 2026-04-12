@@ -158,10 +158,13 @@ class ArbitrationEngine:
     """Deterministic arbitration engine for multi-agent proposal selection."""
 
     def arbitrate(
-        self, candidates: Sequence[ArbitrationCandidate], policy: ArbitrationPolicy,
+        self,
+        candidates: Sequence[ArbitrationCandidate],
+        policy: ArbitrationPolicy,
     ) -> ArbitrationDecision:
         """Arbitrate between competing proposals deterministically."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArbitrationEngine.arbitrate")
 

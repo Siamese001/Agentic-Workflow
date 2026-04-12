@@ -208,6 +208,7 @@ class RegressionDetector:
             RegressionResult with all regression records.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RegressionDetector.detect")
 
@@ -289,6 +290,7 @@ class RegressionDetector:
         """Emit regression results to system learning for drift detection."""
         try:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
             bridge = get_sl_memory_bridge()
 
             # Calculate regression metrics
@@ -299,7 +301,7 @@ class RegressionDetector:
             # Count verdicts
             verdict_counts = {}
             for record in result.records:
-                verdict = record.verdict.name if hasattr(record.verdict, 'name') else str(record.verdict)
+                verdict = record.verdict.name if hasattr(record.verdict, "name") else str(record.verdict)
                 verdict_counts[verdict] = verdict_counts.get(verdict, 0) + 1
 
             bridge.persist_eval_regression_results(

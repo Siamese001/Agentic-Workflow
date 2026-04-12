@@ -216,8 +216,11 @@ class HealingOutcomeAggregate:
     def success_rate(self) -> float:
         """Compute success rate with deterministic rounding."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregate.success_rate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregate.success_rate"
+        )
 
         if self.total_count == 0:
             return 0.0
@@ -274,8 +277,11 @@ class HealingOutcomeAggregateSnapshot:
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation for hashing."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregateSnapshot.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HealingOutcomeAggregateSnapshot.canonical_bytes"
+        )
 
         aggregates_data = []
         for key, aggregate in self.aggregates:

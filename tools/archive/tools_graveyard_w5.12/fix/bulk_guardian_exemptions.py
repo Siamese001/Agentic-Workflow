@@ -31,13 +31,14 @@ FILE_EXEMPTIONS = {
     "agentic_core/L5_safety/enforcement/security/credential_guard.py": ["magic_configuration"],
 }
 
+
 def add_guardian_exemption(file_path: Path, pattern: str) -> bool:
     """Add guardian exemption for a specific pattern to a file."""
     if not file_path.exists():
         print(f"File not found: {file_path}")
         return False
 
-    content = file_path.read_text(encoding='utf-8')
+    content = file_path.read_text(encoding="utf-8")
 
     # Check if exemption already exists
     if f"guardian: allow-{pattern}" in content:
@@ -52,12 +53,12 @@ def add_guardian_exemption(file_path: Path, pattern: str) -> bool:
     for i, line in enumerate(lines):
         if line.strip().startswith('"""') or line.strip().startswith("'''"):
             # Look for the closing docstring
-            for j in range(i+1, len(lines)):
+            for j in range(i + 1, len(lines)):
                 if lines[j].strip().endswith('"""') or lines[j].strip().endswith("'''"):
                     insert_idx = j + 1
                     break
             break
-        elif line.strip().startswith('from ') or line.strip().startswith('import '):
+        elif line.strip().startswith("from ") or line.strip().startswith("import "):
             insert_idx = i
             break
 
@@ -66,9 +67,10 @@ def add_guardian_exemption(file_path: Path, pattern: str) -> bool:
     lines.insert(insert_idx, exemption_line)
     lines.insert(insert_idx + 1, "")
 
-    file_path.write_text("\n".join(lines), encoding='utf-8')
+    file_path.write_text("\n".join(lines), encoding="utf-8")
     print(f"  ✓ Added {pattern} exemption to {file_path}")
     return True
+
 
 def main():
     """Add guardian exemptions to all files."""
@@ -82,6 +84,7 @@ def main():
             add_guardian_exemption(file_path, pattern)
 
     print("\nBulk guardian exemption addition complete!")
+
 
 if __name__ == "__main__":
     main()

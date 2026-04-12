@@ -16,6 +16,7 @@ from typing import Any
 @dataclass(frozen=True)
 class WriteRequest:
     """Immutable write request for UWG processing."""
+
     actor_id: str
     run_id: str
     operation: str
@@ -38,6 +39,7 @@ class WriteRequest:
 @dataclass(frozen=True)
 class WriteReceipt:
     """Receipt for a completed UWG write."""
+
     request_hash: str
     commit_hash: str
     ledger_index: int
@@ -88,9 +90,7 @@ class UWGClerk:
         # This is a stub - actual implementation calls verifier, catalog, locker, committer
         with self._ledger_lock:
             self._ledger_index += 1
-            commit_hash = hashlib.sha256(
-                f"{request.request_hash}:{self._ledger_index}".encode()
-            ).hexdigest()
+            commit_hash = hashlib.sha256(f"{request.request_hash}:{self._ledger_index}".encode()).hexdigest()
 
             return WriteReceipt(
                 request_hash=request.request_hash,

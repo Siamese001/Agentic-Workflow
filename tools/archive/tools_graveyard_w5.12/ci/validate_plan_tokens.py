@@ -20,6 +20,7 @@ sys.path.insert(0, str(repo_root))
 
 try:
     from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
+
     TOKEN_ESTIMATOR_AVAILABLE = True
 except ImportError:
     TOKEN_ESTIMATOR_AVAILABLE = False
@@ -97,7 +98,9 @@ class PlanTokenValidator:
             result["warnings"].append(f"Total tokens {total_tokens:,} exceeds 150K threshold (YELLOW)")
         else:
             result["status"] = "red"
-            result["issues"].append(f"Total tokens {total_tokens:,} exceeds 175K maximum (RED) - Plan must be split")
+            result["issues"].append(
+                f"Total tokens {total_tokens:,} exceeds 175K maximum (RED) - Plan must be split"
+            )
 
         # Run actual token estimator if available
         if TOKEN_ESTIMATOR_AVAILABLE and self.estimator:
@@ -150,11 +153,13 @@ class PlanTokenValidator:
                     wave_num = match[0]
                     tokens = int(match[1])
                     status = match[2] if len(match) > 2 else "🟢"
-                    waves.append({
-                        "wave": wave_num,
-                        "tokens": tokens,
-                        "status": status,
-                    })
+                    waves.append(
+                        {
+                            "wave": wave_num,
+                            "tokens": tokens,
+                            "status": status,
+                        }
+                    )
                 except (ValueError, IndexError):
                     continue
 

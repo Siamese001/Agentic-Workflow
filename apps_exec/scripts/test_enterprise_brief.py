@@ -61,7 +61,9 @@ def _assert_detailed_observability(result: object) -> None:
     _assert(bool(trace_id), "Trace ID missing - distributed tracing not wired")
     _assert(len(trace_id) >= 16, f"Trace ID too short ({len(trace_id)} chars)")
 
-    complete_steps = {entry.get("step", "").upper() for entry in execution_log if entry.get("status") == "complete"}
+    complete_steps = {
+        entry.get("step", "").upper() for entry in execution_log if entry.get("status") == "complete"
+    }
     _assert(len(complete_steps) >= 3, f"Insufficient completed steps: {complete_steps}")
 
 
@@ -456,10 +458,7 @@ async def main():
     for name, result in results:
         # Hardened E2E: accept complete, partial, or failed with quality >= 60%
         quality = result.avg_quality_score
-        is_pass = (
-            result.status in ("complete", "partial") or
-            (result.status == "failed" and quality >= 0.6)
-        )
+        is_pass = result.status in ("complete", "partial") or (result.status == "failed" and quality >= 0.6)
         status = "✅ PASS" if is_pass else "❌ FAIL"
         print(f"{status}: {name}")
         print(f"      Trace: {result.trace_id[:16]}")

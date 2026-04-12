@@ -3,6 +3,7 @@ L6 observability
 ================
 Monitoring, benchmarking, and observability components.
 """
+
 from enum import Enum
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

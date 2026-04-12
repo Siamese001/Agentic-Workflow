@@ -268,8 +268,7 @@ class OptimizationProposal:
             )
         if self.risk_class not in _VALID_RISK_CLASSES:
             raise ValueError(
-                f"risk_class must be one of {sorted(_VALID_RISK_CLASSES)}, "
-                f"got {self.risk_class!r}",
+                f"risk_class must be one of {sorted(_VALID_RISK_CLASSES)}, got {self.risk_class!r}",
             )
         if self.reward_score is not None and not 0.0 <= self.reward_score <= 1.0:
             raise ValueError(
@@ -286,9 +285,7 @@ class OptimizationProposal:
             "policy_hash": self.policy_hash,
             "proposal_id": self.proposal_id,
             "proposed_change_type": self.proposed_change_type,
-            "reward_score": (
-                round(self.reward_score, 6) if self.reward_score is not None else None
-            ),
+            "reward_score": (round(self.reward_score, 6) if self.reward_score is not None else None),
             "risk_class": self.risk_class,
             "timestamp_utc": self.timestamp_utc,
         }
@@ -472,18 +469,15 @@ class OptimizationCommit:
             raise ValueError("validation_result_id must not be empty")
         if self.adg_relation != "proposal_commits_optimization":
             raise ValueError(
-                f"adg_relation must be 'proposal_commits_optimization', "
-                f"got {self.adg_relation!r}",
+                f"adg_relation must be 'proposal_commits_optimization', got {self.adg_relation!r}",
             )
         if self.change_type not in _VALID_CHANGE_TYPES:
             raise ValueError(
-                f"change_type must be one of {sorted(_VALID_CHANGE_TYPES)}, "
-                f"got {self.change_type!r}",
+                f"change_type must be one of {sorted(_VALID_CHANGE_TYPES)}, got {self.change_type!r}",
             )
         if self.risk_class not in _VALID_RISK_CLASSES:
             raise ValueError(
-                f"risk_class must be one of {sorted(_VALID_RISK_CLASSES)}, "
-                f"got {self.risk_class!r}",
+                f"risk_class must be one of {sorted(_VALID_RISK_CLASSES)}, got {self.risk_class!r}",
             )
 
     def _canonical_dict(self) -> dict:
@@ -672,12 +666,14 @@ class GovernanceRewardScore:
             "aggregate_score": round(self.aggregate_score, 6),
             "groundedness_contrib": round(self.groundedness_contrib, 6),
             "guardrail_cleanliness_contrib": round(
-                self.guardrail_cleanliness_contrib, 6,
+                self.guardrail_cleanliness_contrib,
+                6,
             ),
             "human_approval_rate": round(self.human_approval_rate, 6),
             "invariant_preserved": self.invariant_preserved,
             "mutation_correctness_contrib": round(
-                self.mutation_correctness_contrib, 6,
+                self.mutation_correctness_contrib,
+                6,
             ),
             "policy_compliance_contrib": round(self.policy_compliance_contrib, 6),
             "proposal_id": self.proposal_id,

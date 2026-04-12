@@ -1,6 +1,7 @@
 """
 XLSX Mapper - Maps XLSX templates to UnderwritingRequest domain model.
 """
+
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -12,6 +13,7 @@ from .json_mapper import JSONMapper
 @dataclass
 class XLSXMappingResult:
     """Result of XLSX mapping."""
+
     request: Optional[UnderwritingRequest] = None
     warnings: list = field(default_factory=list)
     errors: list = field(default_factory=list)
@@ -81,19 +83,19 @@ class XLSXMapper:
 
         # Sheet mapping
         sheet_mapping = {
-            'Borrower': 'borrower',
-            'Financials': 'financials',
-            'Collateral': 'collateral',
-            'Credit': 'credit',
-            'Banking': 'banking',
-            'Request': 'request_info',
+            "Borrower": "borrower",
+            "Financials": "financials",
+            "Collateral": "collateral",
+            "Credit": "credit",
+            "Banking": "banking",
+            "Request": "request_info",
         }
 
         for sheet_name, data_key in sheet_mapping.items():
             if sheet_name in wb.sheetnames:
                 ws = wb[sheet_name]
                 sheet_data = self._parse_sheet(ws)
-                if data_key == 'request_info':
+                if data_key == "request_info":
                     # Merge request info into root
                     data.update(sheet_data)
                 else:
@@ -108,7 +110,7 @@ class XLSXMapper:
         # Assume two-column format: Field | Value
         for row in ws.iter_rows(min_row=1, max_row=ws.max_row, max_col=2):
             if len(row) >= 2 and row[0].value:
-                field_name = str(row[0].value).strip().lower().replace(' ', '_')
+                field_name = str(row[0].value).strip().lower().replace(" ", "_")
                 value = row[1].value
                 data[field_name] = value
 

@@ -4,6 +4,7 @@ import pytest
 try:
     from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
     from agentic_core.L5_safety.validators import canonical_truth
+
     PATH_SETUP_AVAILABLE = True
 except ImportError:
     PATH_SETUP_AVAILABLE = False
@@ -23,5 +24,7 @@ def _setup_paths():
             if str(parent) not in sys.path:
                 sys.path.insert(0, str(parent))
             return parent
-    raise RuntimeError('Could not locate project root from script position.')
+    raise RuntimeError("Could not locate project root from script position.")
+
+
 PROJECT_ROOT = _setup_paths()

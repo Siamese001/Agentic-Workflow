@@ -229,7 +229,9 @@ class SystemLearningStateManager:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "SystemLearningStateManager.create_state_snapshot",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "SystemLearningStateManager.create_state_snapshot",
         )
 
         # Generate state ID
@@ -454,7 +456,9 @@ class SystemLearningStateManager:
 
         # Emit deletion event
         _emit_records_learning_event(
-            "p3lm", self.component_name, f"state_deleted:{snapshot.state_type.value}",
+            "p3lm",
+            self.component_name,
+            f"state_deleted:{snapshot.state_type.value}",
         )
 
         logger.info(f"Deleted state snapshot: {state_id}")

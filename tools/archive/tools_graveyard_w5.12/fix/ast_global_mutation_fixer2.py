@@ -178,11 +178,11 @@ def _is_sys_path_call(node: ast.AST) -> bool:
     if not isinstance(call.func, ast.Attribute):
         return False
     return (
-        call.func.attr in ('insert', 'append', 'extend', 'remove')
+        call.func.attr in ("insert", "append", "extend", "remove")
         and isinstance(call.func.value, ast.Attribute)
-        and call.func.value.attr == 'path'
+        and call.func.value.attr == "path"
         and isinstance(call.func.value.value, ast.Name)
-        and call.func.value.value.id == 'sys'
+        and call.func.value.value.id == "sys"
     )
 
 
@@ -193,19 +193,23 @@ def _is_os_environ_assign(node: ast.AST) -> bool:
         for target in node.targets:
             if isinstance(target, ast.Subscript):
                 if isinstance(target.value, ast.Attribute):
-                    if (target.value.attr == 'environ'
-                            and isinstance(target.value.value, ast.Name)
-                            and target.value.value.id == 'os'):
+                    if (
+                        target.value.attr == "environ"
+                        and isinstance(target.value.value, ast.Name)
+                        and target.value.value.id == "os"
+                    ):
                         return True
     # os.environ.setdefault(...) / os.environ.update(...) / os.environ.pop(...)
     if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
         call = node.value
         if isinstance(call.func, ast.Attribute):
-            if call.func.attr in ('setdefault', 'update', 'pop', 'clear'):
+            if call.func.attr in ("setdefault", "update", "pop", "clear"):
                 if isinstance(call.func.value, ast.Attribute):
-                    if (call.func.value.attr == 'environ'
-                            and isinstance(call.func.value.value, ast.Name)
-                            and call.func.value.value.id == 'os'):
+                    if (
+                        call.func.value.attr == "environ"
+                        and isinstance(call.func.value.value, ast.Name)
+                        and call.func.value.value.id == "os"
+                    ):
                         return True
     return False
 
@@ -225,10 +229,7 @@ def _collect_target_lines(tree: ast.Module) -> set[int]:
             elif isinstance(node, ast.If):
                 # Check if any direct child of this if body is a sys.path/environ call
                 # If so, whitelist at the if-statement level
-                has_mutation = any(
-                    _is_sys_path_call(c) or _is_os_environ_assign(c)
-                    for c in node.body
-                )
+                has_mutation = any(_is_sys_path_call(c) or _is_os_environ_assign(c) for c in node.body)
                 if has_mutation:
                     targets.add(node.lineno)
                 else:
@@ -237,11 +238,11 @@ def _collect_target_lines(tree: ast.Module) -> set[int]:
                     _walk_body(node.orelse)
             else:
                 # Recurse into compound statements
-                for body_attr in ('body', 'orelse', 'finalbody'):
+                for body_attr in ("body", "orelse", "finalbody"):
                     stmts2 = getattr(node, body_attr, None)
                     if isinstance(stmts2, list):
                         _walk_body(stmts2)
-                for handler in getattr(node, 'handlers', []):
+                for handler in getattr(node, "handlers", []):
                     _walk_body(handler.body)
 
     _walk_body(tree.body)
@@ -251,14 +252,14 @@ def _collect_target_lines(tree: ast.Module) -> set[int]:
 def fix_file(file_path: Path, dry_run: bool = True) -> dict:
     """Add whitelist comments to all global mutation sites."""
     try:
-        source = file_path.read_text(encoding='utf-8')
+        source = file_path.read_text(encoding="utf-8")
         lines = source.splitlines(keepends=True)
 
         tree = ast.parse(source, filename=str(file_path))
         target_lines = _collect_target_lines(tree)
 
         if not target_lines:
-            return {'status': 'skipped', 'reason': 'no_mutations'}
+            return {"status": "skipped", "reason": "no_mutations"}
 
         # Filter already whitelisted
         lines_to_fix = []
@@ -269,56 +270,57 @@ def fix_file(file_path: Path, dry_run: bool = True) -> dict:
             lines_to_fix.append(lineno)
 
         if not lines_to_fix:
-            return {'status': 'skipped', 'reason': 'already_whitelisted'}
+            return {"status": "skipped", "reason": "already_whitelisted"}
 
         if not dry_run:
             for lineno in sorted(lines_to_fix, reverse=True):
                 idx = lineno - 1
                 indent = len(lines[idx]) - len(lines[idx].lstrip())
-                comment_line = ' ' * indent + WHITELIST_COMMENT + '\n'
+                comment_line = " " * indent + WHITELIST_COMMENT + "\n"
                 lines.insert(idx, comment_line)
-            file_path.write_text(''.join(lines), encoding='utf-8')
+            file_path.write_text("".join(lines), encoding="utf-8")
 
         return {
-            'status': 'success',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'fixed_lines': lines_to_fix,
-            'dry_run': dry_run,
+            "status": "success",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "fixed_lines": lines_to_fix,
+            "dry_run": dry_run,
         }
 
     # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': f'SyntaxError: {e}',
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": f"SyntaxError: {e}",
         }
     except (ValueError, TypeError, RuntimeError) as e:
         return {
-            'status': 'error',
-            'file': str(file_path.relative_to(PROJECT_ROOT)),
-            'error': str(e),
+            "status": "error",
+            "file": str(file_path.relative_to(PROJECT_ROOT)),
+            "error": str(e),
         }
 
 
 def main():
     import argparse
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--execute', action='store_true')
-    parser.add_argument('--limit', type=int, default=500)
+    parser.add_argument("--execute", action="store_true")
+    parser.add_argument("--limit", type=int, default=500)
     args = parser.parse_args()
 
     project_root = get_validated_project_root()
     baseline_file = project_root / "ops_scripts/hooks/landmine_baseline.txt"
 
     violations = []
-    with open(baseline_file, encoding='utf-8') as f:
+    with open(baseline_file, encoding="utf-8") as f:
         for line in f:
-            if 'global_mutation' in line:
-                file_path = line.split(':')[0]
+            if "global_mutation" in line:
+                file_path = line.split(":")[0]
                 violations.append(project_root / file_path)
 
-    unique_files = sorted(set(violations))[:args.limit]
+    unique_files = sorted(set(violations))[: args.limit]
 
     print(f"[INFO] Processing {len(unique_files)} files")
     print(f"[MODE] {'EXECUTE' if args.execute else 'DRY RUN'}")
@@ -330,19 +332,19 @@ def main():
             continue
         result = fix_file(file_path, dry_run=not args.execute)
         results.append(result)
-        if result['status'] == 'success':
+        if result["status"] == "success":
             print(f"✓ {result['file']} ({len(result['fixed_lines'])} lines)")
-        elif result['status'] == 'error':
+        elif result["status"] == "error":
             print(f"✗ {result['file']}: {result['error']}")
 
-    success = len([r for r in results if r['status'] == 'success'])
-    errors = len([r for r in results if r['status'] == 'error'])
-    skipped = len([r for r in results if r['status'] == 'skipped'])
+    success = len([r for r in results if r["status"] == "success"])
+    errors = len([r for r in results if r["status"] == "error"])
+    skipped = len([r for r in results if r["status"] == "skipped"])
     print(f"\n[SUMMARY] Success: {success}, Errors: {errors}, Skipped: {skipped}")
     if not args.execute and success > 0:
         print("[NEXT] Run with --execute to apply")
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

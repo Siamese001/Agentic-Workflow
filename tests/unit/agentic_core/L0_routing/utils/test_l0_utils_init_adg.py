@@ -16,14 +16,17 @@ class TestL0UtilsInitAdg:
     def test_l0_utils_init_adg_imports(self):
         """Test l0_utils_init_adg module imports."""
         from agentic_core import l0_utils_init_adg
+
         assert l0_utils_init_adg is not None
 
     def test_l0_utils_init_adg_class(self):
         """Test L0UtilsInitAdg class exists."""
         from agentic_core import L0UtilsInitAdg
+
         assert L0UtilsInitAdg is not None
 
     def test_l0_utils_init_adg_callable(self):
         """Test l0_utils_init_adg functions are callable."""
         from agentic_core import validate_l0_utils_init_adg
+
         assert callable(validate_l0_utils_init_adg)

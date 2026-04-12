@@ -222,7 +222,10 @@ class MetaLearningMixin(BaseMetaLearner):
         MetaLearningEngine.reflect_on_execution(self._namespace, task_id, status, **kwargs)
 
     def record_agent_interaction(
-        self, callee_agent: str, success: bool, error_type: str | None = None,
+        self,
+        callee_agent: str,
+        success: bool,
+        error_type: str | None = None,
     ) -> None:
         MetaLearningEngine.record_agent_interaction(self._namespace, callee_agent, success, error_type)
 

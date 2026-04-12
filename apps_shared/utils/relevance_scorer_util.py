@@ -235,7 +235,11 @@ class RelevanceScorer:
             )
 
     def score_chunk(
-        self, chunk_id: str, chunk_content: str, query: str, chunk_metadata: dict[str, Any] | None = None,
+        self,
+        chunk_id: str,
+        chunk_content: str,
+        query: str,
+        chunk_metadata: dict[str, Any] | None = None,
     ) -> RelevanceScore:
         """Score a single chunk for relevance.
 
@@ -249,6 +253,7 @@ class RelevanceScorer:
             RelevanceScore
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RelevanceScorer.score_chunk")
 

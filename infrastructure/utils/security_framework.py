@@ -253,7 +253,10 @@ class AccessController:
         logger.info(f"Assigned role {role} to user {user_id}")
 
     def set_resource_permissions(
-        self, resource_type: str, resource_id: str, role_permissions: dict[str, list[AccessLevel]],
+        self,
+        resource_type: str,
+        resource_id: str,
+        role_permissions: dict[str, list[AccessLevel]],
     ):
         """Set permissions for specific resource."""
         self.resource_permissions[resource_type][resource_id] = {
@@ -324,7 +327,10 @@ class PrivacyEngine:
         }
 
     def mask_data(
-        self, data: Any, classification: DataClassification, context: dict[str, Any] | None = None,
+        self,
+        data: Any,
+        classification: DataClassification,
+        context: dict[str, Any] | None = None,
     ) -> Any:
         """Mask data based on classification."""
         if classification == DataClassification.PUBLIC:
@@ -465,7 +471,10 @@ class AuditLogger:
         )
 
     async def generate_compliance_report(
-        self, framework: ComplianceFramework, period_start: datetime, period_end: datetime,
+        self,
+        framework: ComplianceFramework,
+        period_start: datetime,
+        period_end: datetime,
     ) -> ComplianceReport:
         """Generate compliance report."""
         async with self._lock:
@@ -518,7 +527,8 @@ class AuditLogger:
         async with self._lock:
             original_size = len(self.audit_logs)
             self.audit_logs = deque(
-                [log for log in self.audit_logs if log.timestamp >= cutoff_date], maxlen=100000,
+                [log for log in self.audit_logs if log.timestamp >= cutoff_date],
+                maxlen=100000,
             )
             removed = original_size - len(self.audit_logs)
 
@@ -642,13 +652,18 @@ class SecurityGateway:
         return has_access
 
     async def filter_response_data(
-        self, layer_type: LayerType, data: Any, security_context: SecurityContext,
+        self,
+        layer_type: LayerType,
+        data: Any,
+        security_context: SecurityContext,
     ) -> Any:
         """Filter and mask response data based on security policies."""
         # Classify data
         if isinstance(data, dict) and "key" in data:
             classification = self.data_classifier.classify_cache_entry(
-                data["key"], data.get("value"), layer_type,
+                data["key"],
+                data.get("value"),
+                layer_type,
             )
         else:
             classification = self.data_classifier.classify_text(str(data))
@@ -702,7 +717,9 @@ class SecurityGateway:
         return masked_data
 
     async def validate_compliance(
-        self, framework: ComplianceFramework, security_context: SecurityContext,
+        self,
+        framework: ComplianceFramework,
+        security_context: SecurityContext,
     ) -> bool:
         """Validate compliance with framework requirements."""
         framework_requirements = {

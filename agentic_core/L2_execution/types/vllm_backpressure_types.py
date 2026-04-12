@@ -240,7 +240,9 @@ class VLLMCircuitBreaker:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "VLLMCircuitBreaker.record_failure",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "VLLMCircuitBreaker.record_failure",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

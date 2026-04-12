@@ -255,7 +255,9 @@ class GapClosureArchitectAgent(SubatomicTestingMixin):
         return keywords
 
     def _calculate_gap_coverage(
-        self, competencies: list[CompetencyItem], jd_keyword_gap: list[str],
+        self,
+        competencies: list[CompetencyItem],
+        jd_keyword_gap: list[str],
     ) -> set[str]:
         """Calculate gap coverage."""
         covered: set[str] = set()
@@ -293,11 +295,17 @@ class GapClosureArchitectAgent(SubatomicTestingMixin):
             CompetenciesOutput with generated competencies
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GapClosureArchitectAgent.generate_competencies")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GapClosureArchitectAgent.generate_competencies"
+        )
 
         prompt = self._build_initial_prompt(
-            jd_keyword_gap, authentic_phrasing, base_competency_pool, target_industry,
+            jd_keyword_gap,
+            authentic_phrasing,
+            base_competency_pool,
+            target_industry,
         )
         Logger.debug(f"Generated prompt: {prompt[:100]}...")
         competencies = self._parse_competencies("")

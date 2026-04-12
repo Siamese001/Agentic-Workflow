@@ -31,6 +31,7 @@ print(f"Database: {SQLITE_PATH.name}")
 print(f"Zip Archive: {ZIP_PATH.name if ZIP_PATH else 'None'}")
 print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
+
 class ADGEndToEndTest:
     """Comprehensive end-to-end testing suite."""
 
@@ -69,17 +70,27 @@ class ADGEndToEndTest:
 
         try:
             # Basic counts
-            node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]['count']
-            edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]['count']
+            node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]["count"]
+            edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]["count"]
 
             # Data integrity checks
-            null_layers = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer IS NULL OR layer = ''")[0]['count']
-            null_identity = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE identity_kind IS NULL OR identity_kind = ''")[0]['count']
-            null_confidence = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE confidence IS NULL OR confidence = ''")[0]['count']
+            null_layers = self.execute_query(
+                "SELECT COUNT(*) as count FROM nodes WHERE layer IS NULL OR layer = ''"
+            )[0]["count"]
+            null_identity = self.execute_query(
+                "SELECT COUNT(*) as count FROM nodes WHERE identity_kind IS NULL OR identity_kind = ''"
+            )[0]["count"]
+            null_confidence = self.execute_query(
+                "SELECT COUNT(*) as count FROM nodes WHERE confidence IS NULL OR confidence = ''"
+            )[0]["count"]
 
             # Reference integrity
-            invalid_src = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE src_id NOT IN (SELECT id FROM nodes)")[0]['count']
-            invalid_dst = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE dst_id NOT IN (SELECT id FROM nodes)")[0]['count']
+            invalid_src = self.execute_query(
+                "SELECT COUNT(*) as count FROM edges WHERE src_id NOT IN (SELECT id FROM nodes)"
+            )[0]["count"]
+            invalid_dst = self.execute_query(
+                "SELECT COUNT(*) as count FROM edges WHERE dst_id NOT IN (SELECT id FROM nodes)"
+            )[0]["count"]
 
             # Entity and relation type counts
             entity_types = self.execute_query("SELECT DISTINCT entity_type FROM nodes")
@@ -95,11 +106,19 @@ class ADGEndToEndTest:
                 "invalid_dst_refs": invalid_dst,
                 "entity_types": len(entity_types),
                 "relation_types": len(relation_types),
-                "integrity_score": 100 - (null_layers + null_identity + null_confidence + invalid_src + invalid_dst),
+                "integrity_score": 100
+                - (null_layers + null_identity + null_confidence + invalid_src + invalid_dst),
             }
 
-            success = (null_layers == 0 and null_identity == 0 and null_confidence == 0 and
-                      invalid_src == 0 and invalid_dst == 0 and node_count > 0 and edge_count > 0)
+            success = (
+                null_layers == 0
+                and null_identity == 0
+                and null_confidence == 0
+                and invalid_src == 0
+                and invalid_dst == 0
+                and node_count > 0
+                and edge_count > 0
+            )
 
             print(f"Nodes: {node_count:,}")
             print(f"Edges: {edge_count:,}")
@@ -130,26 +149,34 @@ class ADGEndToEndTest:
 
         try:
             # Layer distribution
-            layer_dist = self.execute_query("SELECT layer, COUNT(*) as count FROM nodes GROUP BY layer ORDER BY count DESC")
-            layer_distribution = {row['layer']: row['count'] for row in layer_dist}
+            layer_dist = self.execute_query(
+                "SELECT layer, COUNT(*) as count FROM nodes GROUP BY layer ORDER BY count DESC"
+            )
+            layer_distribution = {row["layer"]: row["count"] for row in layer_dist}
 
             # Critical layers check (using the actual layer names in the system)
-            critical_layers = ['L0', 'L2', 'L5']
+            critical_layers = ["L0", "L2", "L5"]
             critical_counts = {}
             for layer in critical_layers:
-                count = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = ?", (layer,))[0]['count']
+                count = self.execute_query("SELECT COUNT(*) as count FROM nodes WHERE layer = ?", (layer,))[
+                    0
+                ]["count"]
                 critical_counts[layer] = count
 
             # Module vs symbol distribution by layer
-            module_by_layer = self.execute_query("SELECT layer, COUNT(*) as count FROM nodes WHERE entity_type = 'module' GROUP BY layer ORDER BY count DESC")
-            symbol_by_layer = self.execute_query("SELECT layer, COUNT(*) as count FROM nodes WHERE entity_type = 'symbol' GROUP BY layer ORDER BY count DESC")
+            module_by_layer = self.execute_query(
+                "SELECT layer, COUNT(*) as count FROM nodes WHERE entity_type = 'module' GROUP BY layer ORDER BY count DESC"
+            )
+            symbol_by_layer = self.execute_query(
+                "SELECT layer, COUNT(*) as count FROM nodes WHERE entity_type = 'symbol' GROUP BY layer ORDER BY count DESC"
+            )
 
             layer_details = {
                 "total_layers": len(layer_distribution),
                 "layer_distribution": layer_distribution,
                 "critical_layers": critical_counts,
-                "modules_by_layer": {row['layer']: row['count'] for row in module_by_layer},
-                "symbols_by_layer": {row['layer']: row['count'] for row in symbol_by_layer},
+                "modules_by_layer": {row["layer"]: row["count"] for row in module_by_layer},
+                "symbols_by_layer": {row["layer"]: row["count"] for row in symbol_by_layer},
                 "architecture_health": len(layer_distribution) >= 10 and sum(critical_counts.values()) > 0,
             }
 
@@ -184,18 +211,29 @@ class ADGEndToEndTest:
         try:
             # Key edge types
             key_relations = [
-                'calls', 'imports', 'exports', 'implements', 'covers',
-                'emits_test_result', 'defines_test_case', 'detects_regression',
-                'emits_replay_key', 'mutation_signature', 'parent_snapshot_hash',
+                "calls",
+                "imports",
+                "exports",
+                "implements",
+                "covers",
+                "emits_test_result",
+                "defines_test_case",
+                "detects_regression",
+                "emits_replay_key",
+                "mutation_signature",
+                "parent_snapshot_hash",
             ]
 
             edge_counts = {}
             for relation in key_relations:
-                count = self.execute_query("SELECT COUNT(*) as count FROM edges WHERE relation_type = ?", (relation,))[0]['count']
+                count = self.execute_query(
+                    "SELECT COUNT(*) as count FROM edges WHERE relation_type = ?", (relation,)
+                )[0]["count"]
                 edge_counts[relation] = count
 
             # Connectivity metrics
-            avg_degree = self.execute_query("""
+            avg_degree = (
+                self.execute_query("""
                 SELECT AVG(degree) as avg_degree FROM (
                     SELECT (in_degree + out_degree) as degree
                     FROM (
@@ -205,13 +243,15 @@ class ADGEndToEndTest:
                         FROM nodes n
                     )
                 )
-            """)[0]['avg_degree'] or 0
+            """)[0]["avg_degree"]
+                or 0
+            )
 
             # Isolated nodes
             isolated_nodes = self.execute_query("""
                 SELECT COUNT(*) as count FROM nodes n
                 WHERE NOT EXISTS (SELECT 1 FROM edges e WHERE e.src_id = n.id OR e.dst_id = n.id)
-            """)[0]['count']
+            """)[0]["count"]
 
             connectivity_details = {
                 "key_relation_counts": edge_counts,
@@ -251,8 +291,12 @@ class ADGEndToEndTest:
 
         try:
             # Generate hash
-            node_data = self.execute_query("SELECT adg_name, entity_type, layer, identity_kind, confidence, resolved_path FROM nodes ORDER BY adg_name")
-            edge_data = self.execute_query("SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type")
+            node_data = self.execute_query(
+                "SELECT adg_name, entity_type, layer, identity_kind, confidence, resolved_path FROM nodes ORDER BY adg_name"
+            )
+            edge_data = self.execute_query(
+                "SELECT src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges ORDER BY src_id, dst_id, relation_type"
+            )
 
             node_hash_input = json.dumps([dict(row) for row in node_data], sort_keys=True)
             node_hash = hashlib.sha256(node_hash_input.encode()).hexdigest()
@@ -268,7 +312,7 @@ class ADGEndToEndTest:
                 GROUP BY relation_type
             """)
 
-            mutation_counts = {row['relation_type']: row['count'] for row in mutation_edges}
+            mutation_counts = {row["relation_type"]: row["count"] for row in mutation_edges}
 
             determinism_details = {
                 "node_hash": node_hash[:20] + "...",
@@ -341,11 +385,15 @@ class ADGEndToEndTest:
                 "required_files": file_status,
                 "zip_archive": zip_status,
                 "reports_directory": {"exists": reports_exist, "report_count": report_count},
-                "completeness_score": sum(1 for f in file_status.values() if f["exists"]) / len(file_status) * 100,
+                "completeness_score": sum(1 for f in file_status.values() if f["exists"])
+                / len(file_status)
+                * 100,
             }
 
-            success = (sum(1 for f in file_status.values() if f["exists"]) >= len(required_files) - 1 and
-                      self.sqlite_path.exists())
+            success = (
+                sum(1 for f in file_status.values() if f["exists"]) >= len(required_files) - 1
+                and self.sqlite_path.exists()
+            )
 
             print("Required files:")
             for name, status in file_status.items():
@@ -390,11 +438,11 @@ class ADGEndToEndTest:
 
             # Test query performance
             start_time = time.time()
-            node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]['count']
+            node_count = self.execute_query("SELECT COUNT(*) as count FROM nodes")[0]["count"]
             node_query_time = time.time() - start_time
 
             start_time = time.time()
-            edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]['count']
+            edge_count = self.execute_query("SELECT COUNT(*) as count FROM edges")[0]["count"]
             edge_query_time = time.time() - start_time
 
             start_time = time.time()
@@ -412,14 +460,14 @@ class ADGEndToEndTest:
                 "performance_score": 100 if (node_query_time < 0.1 and edge_query_time < 0.1) else 80,
             }
 
-            success = (db_size_mb > 10 and node_query_time < 0.5 and edge_query_time < 0.5)
+            success = db_size_mb > 10 and node_query_time < 0.5 and edge_query_time < 0.5
 
             print(f"Database size: {db_size_mb} MB")
             print(f"Cache size: {cache_size_mb} MB")
             print("Query performance:")
-            print(f"  Node count: {node_query_time*1000:.2f} ms")
-            print(f"  Edge count: {edge_query_time*1000:.2f} ms")
-            print(f"  Layer distribution: {layer_query_time*1000:.2f} ms")
+            print(f"  Node count: {node_query_time * 1000:.2f} ms")
+            print(f"  Edge count: {edge_query_time * 1000:.2f} ms")
+            print(f"  Layer distribution: {layer_query_time * 1000:.2f} ms")
             print(f"Performance: {'✅' if success else '❌'}")
 
             result["details"] = performance_details
@@ -474,7 +522,9 @@ class ADGEndToEndTest:
             if "error" in result:
                 print(f"  Error: {result['error']}")
 
-        overall_status = "✅ ALL TESTS PASSED" if self.test_results["overall_success"] else "❌ SOME TESTS FAILED"
+        overall_status = (
+            "✅ ALL TESTS PASSED" if self.test_results["overall_success"] else "❌ SOME TESTS FAILED"
+        )
         print(f"\nOVERALL: {overall_status}")
 
         if self.test_results["overall_success"]:
@@ -498,7 +548,7 @@ def main():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     results_file = results_dir / f"end_to_end_test_results_{timestamp}.json"
 
-    with open(results_file, 'w') as f:
+    with open(results_file, "w") as f:
         json.dump(results, f, indent=2, sort_keys=True)
 
     print(f"\n📊 Test results saved: {results_file.name}")

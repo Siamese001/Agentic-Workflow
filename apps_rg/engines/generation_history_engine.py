@@ -172,8 +172,11 @@ class GenerationHistoryEngine(BaseRGEngine):
         Query generation history.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GenerationHistoryEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GenerationHistoryEngine.execute"
+        )
 
         self._mcp_audit("history_query", {"query": query})
         results = []

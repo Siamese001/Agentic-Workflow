@@ -15,25 +15,83 @@ from pathlib import Path
 from typing import Any
 
 # Known third-party packages (not first-party)
-THIRD_PARTY = frozenset({
-    "redis", "pinecone", "torch", "tensorflow", "transformers", "langchain",
-    "openai", "anthropic", "cohere", "chromadb", "weaviate", "qdrant",
-    "faiss", "numpy", "pandas", "scipy", "sklearn", "matplotlib",
-    "fastapi", "uvicorn", "flask", "django", "celery", "dramatiq",
-    "boto3", "botocore", "google", "azure", "docker", "kubernetes",
-    "psycopg2", "pymongo", "sqlalchemy", "alembic", "pydantic",
-    "httpx", "aiohttp", "requests", "grpc", "protobuf",
-    "PIL", "cv2", "spacy", "nltk", "sentence_transformers",
-    "litellm", "tiktoken", "tokenizers", "huggingface_hub",
-    "voyageai", "fireworks", "groq", "mistralai",
-    "playwright", "selenium", "bs4", "scrapy",
-    "ray", "dask", "spark", "pyspark",
-    "neo4j", "networkx", "igraph",
-})
+THIRD_PARTY = frozenset(
+    {
+        "redis",
+        "pinecone",
+        "torch",
+        "tensorflow",
+        "transformers",
+        "langchain",
+        "openai",
+        "anthropic",
+        "cohere",
+        "chromadb",
+        "weaviate",
+        "qdrant",
+        "faiss",
+        "numpy",
+        "pandas",
+        "scipy",
+        "sklearn",
+        "matplotlib",
+        "fastapi",
+        "uvicorn",
+        "flask",
+        "django",
+        "celery",
+        "dramatiq",
+        "boto3",
+        "botocore",
+        "google",
+        "azure",
+        "docker",
+        "kubernetes",
+        "psycopg2",
+        "pymongo",
+        "sqlalchemy",
+        "alembic",
+        "pydantic",
+        "httpx",
+        "aiohttp",
+        "requests",
+        "grpc",
+        "protobuf",
+        "PIL",
+        "cv2",
+        "spacy",
+        "nltk",
+        "sentence_transformers",
+        "litellm",
+        "tiktoken",
+        "tokenizers",
+        "huggingface_hub",
+        "voyageai",
+        "fireworks",
+        "groq",
+        "mistralai",
+        "playwright",
+        "selenium",
+        "bs4",
+        "scrapy",
+        "ray",
+        "dask",
+        "spark",
+        "pyspark",
+        "neo4j",
+        "networkx",
+        "igraph",
+    }
+)
 
-FIRST_PARTY_ROOTS = frozenset({
-    "agentic_core", "tools", "scripts", "config",
-})
+FIRST_PARTY_ROOTS = frozenset(
+    {
+        "agentic_core",
+        "tools",
+        "scripts",
+        "config",
+    }
+)
 
 
 def is_first_party(module_name: str) -> bool:
@@ -71,11 +129,13 @@ class TestSurfaceVisitor(ast.NodeVisitor):
         self.current_class = None
 
     def _add_finding(self, node, **kwargs):
-        self.findings.append({
-            "file": self.filepath,
-            "line": getattr(node, "lineno", 0),
-            **kwargs,
-        })
+        self.findings.append(
+            {
+                "file": self.filepath,
+                "line": getattr(node, "lineno", 0),
+                **kwargs,
+            }
+        )
 
     def visit_Import(self, node):
         self.generic_visit(node)
@@ -93,7 +153,12 @@ class TestSurfaceVisitor(ast.NodeVisitor):
         if node.name.startswith("test_"):
             self.test_functions.append(node)
             self._analyze_test_function(node)
-        elif node.name.startswith("_") or node.name in ("setup", "teardown", "setup_method", "teardown_method"):
+        elif node.name.startswith("_") or node.name in (
+            "setup",
+            "teardown",
+            "setup_method",
+            "teardown_method",
+        ):
             self._analyze_fixture_or_helper(node)
         self.generic_visit(node)
 
@@ -124,7 +189,8 @@ class TestSurfaceVisitor(ast.NodeVisitor):
                 if func_name in ("pytest.skip", "skip"):
                     has_skip_call = True
                     reason = self._extract_reason(child)
-                    self._add_finding(child,
+                    self._add_finding(
+                        child,
                         test_name=test_name,
                         pattern_type="pytest.skip_call",
                         reason=reason,
@@ -132,27 +198,46 @@ class TestSurfaceVisitor(ast.NodeVisitor):
                     )
                 elif func_name in ("pytest.importorskip", "importorskip"):
                     module = self._extract_first_arg_str(child)
-                    self._add_finding(child,
+                    self._add_finding(
+                        child,
                         test_name=test_name,
                         pattern_type="pytest.importorskip",
                         dependency=module,
                         classification=classify_dependency(module),
                     )
-                elif func_name and not func_name.startswith(("assert", "isinstance", "len", "dir", "getattr", "hasattr", "type", "str", "int", "print")):
+                elif func_name and not func_name.startswith(
+                    (
+                        "assert",
+                        "isinstance",
+                        "len",
+                        "dir",
+                        "getattr",
+                        "hasattr",
+                        "type",
+                        "str",
+                        "int",
+                        "print",
+                    )
+                ):
                     has_real_call = True
 
         # Check for pass-only body
-        body_stmts = [s for s in node.body if not isinstance(s, (ast.Expr,)) or not isinstance(s.value, (ast.Constant,))]
+        body_stmts = [
+            s for s in node.body if not isinstance(s, (ast.Expr,)) or not isinstance(s.value, (ast.Constant,))
+        ]
         if len(body_stmts) == 1 and isinstance(body_stmts[0], ast.Pass):
             has_pass_only = True
 
         # Detect import-only / hollow test
         if not has_assert and not has_skip_call and has_pass_only:
-            self._add_finding(node,
+            self._add_finding(
+                node,
                 test_name=test_name,
                 pattern_type="import_only_test",
                 current_behavior="import-only",
-                severity="invalid" if "adg" in self.filepath.lower() or "core" in self.filepath.lower() else "questionable",
+                severity="invalid"
+                if "adg" in self.filepath.lower() or "core" in self.filepath.lower()
+                else "questionable",
             )
         elif has_assert and not has_real_call:
             # Has assertions but no real function calls — check if it's just checking module attributes
@@ -165,7 +250,8 @@ class TestSurfaceVisitor(ast.NodeVisitor):
                 for s in assertion_sources
             )
             if all_module_checks and len(assertion_sources) <= 3:
-                self._add_finding(node,
+                self._add_finding(
+                    node,
                     test_name=test_name,
                     pattern_type="shallow_assertion_only",
                     current_behavior="shallow-assertion",
@@ -176,17 +262,20 @@ class TestSurfaceVisitor(ast.NodeVisitor):
         if isinstance(deco, ast.Attribute):
             attr = deco.attr
             if attr == "skip":
-                self._add_finding(node,
+                self._add_finding(
+                    node,
                     test_name=test_name,
                     pattern_type="@pytest.mark.skip",
                 )
             elif attr == "skipif":
-                self._add_finding(node,
+                self._add_finding(
+                    node,
                     test_name=test_name,
                     pattern_type="@pytest.mark.skipif",
                 )
             elif attr == "xfail":
-                self._add_finding(node,
+                self._add_finding(
+                    node,
                     test_name=test_name,
                     pattern_type="@pytest.mark.xfail",
                 )
@@ -196,7 +285,8 @@ class TestSurfaceVisitor(ast.NodeVisitor):
                 attr = func.attr
                 if attr == "skip":
                     reason = self._extract_keyword(deco, "reason") or self._extract_first_arg_str(deco)
-                    self._add_finding(node,
+                    self._add_finding(
+                        node,
                         test_name=test_name,
                         pattern_type="@pytest.mark.skip",
                         reason=reason,
@@ -204,7 +294,8 @@ class TestSurfaceVisitor(ast.NodeVisitor):
                 elif attr == "skipif":
                     reason = self._extract_keyword(deco, "reason") or ""
                     condition = ast.dump(deco.args[0]) if deco.args else ""
-                    self._add_finding(node,
+                    self._add_finding(
+                        node,
                         test_name=test_name,
                         pattern_type="@pytest.mark.skipif",
                         reason=reason,
@@ -213,7 +304,8 @@ class TestSurfaceVisitor(ast.NodeVisitor):
                 elif attr == "xfail":
                     reason = self._extract_keyword(deco, "reason") or ""
                     strict = self._extract_keyword(deco, "strict")
-                    self._add_finding(node,
+                    self._add_finding(
+                        node,
                         test_name=test_name,
                         pattern_type="@pytest.mark.xfail",
                         reason=reason,
@@ -228,7 +320,8 @@ class TestSurfaceVisitor(ast.NodeVisitor):
                     if handler.type:
                         handler_name = self._get_exception_name(handler.type)
                         if handler_name in ("ImportError", "ModuleNotFoundError"):
-                            self._add_finding(child,
+                            self._add_finding(
+                                child,
                                 test_name=node.name,
                                 pattern_type="try_except_import_error_in_fixture",
                                 severity="invalid" if self._handler_swallows(handler) else "questionable",
@@ -313,7 +406,16 @@ def scan_file_for_try_except_patterns(filepath: str, source: str) -> list[dict]:
                             getattr(e, "id", getattr(e, "attr", "")) for e in handler.type.elts
                         )
 
-                    if any(x in exc_name for x in ("ImportError", "ModuleNotFoundError", "ValueError", "TypeError", "RuntimeError")):
+                    if any(
+                        x in exc_name
+                        for x in (
+                            "ImportError",
+                            "ModuleNotFoundError",
+                            "ValueError",
+                            "TypeError",
+                            "RuntimeError",
+                        )
+                    ):
                         # Check what's being imported in the try block
                         imported_modules = []
                         for stmt in node.body:
@@ -325,15 +427,17 @@ def scan_file_for_try_except_patterns(filepath: str, source: str) -> list[dict]:
                                         imported_modules.append(alias.name)
 
                         for mod in imported_modules:
-                            findings.append({
-                                "file": filepath,
-                                "line": node.lineno,
-                                "pattern_type": "try_except_import_swallower",
-                                "exception_type": exc_name,
-                                "dependency": mod,
-                                "classification": classify_dependency(mod),
-                                "severity": "invalid" if is_first_party(mod) else "valid-but-avoidable",
-                            })
+                            findings.append(
+                                {
+                                    "file": filepath,
+                                    "line": node.lineno,
+                                    "pattern_type": "try_except_import_swallower",
+                                    "exception_type": exc_name,
+                                    "dependency": mod,
+                                    "classification": classify_dependency(mod),
+                                    "severity": "invalid" if is_first_party(mod) else "valid-but-avoidable",
+                                }
+                            )
 
     return findings
 
@@ -369,14 +473,18 @@ def scan_conftest_patterns(filepath: str, source: str) -> list[dict]:
                                         imported_modules.append(alias.name)
 
                         for mod in imported_modules:
-                            findings.append({
-                                "file": filepath,
-                                "line": node.lineno,
-                                "pattern_type": "conftest_optionalizes_first_party" if is_first_party(mod) else "conftest_optionalizes_third_party",
-                                "dependency": mod,
-                                "classification": classify_dependency(mod),
-                                "severity": "invalid" if is_first_party(mod) else "valid-required",
-                            })
+                            findings.append(
+                                {
+                                    "file": filepath,
+                                    "line": node.lineno,
+                                    "pattern_type": "conftest_optionalizes_first_party"
+                                    if is_first_party(mod)
+                                    else "conftest_optionalizes_third_party",
+                                    "dependency": mod,
+                                    "classification": classify_dependency(mod),
+                                    "severity": "invalid" if is_first_party(mod) else "valid-required",
+                                }
+                            )
     return findings
 
 
@@ -469,9 +577,7 @@ def main():
             "by_severity": dict(summary["by_severity"].most_common()),
             "by_classification": dict(summary["by_classification"].most_common()),
         },
-        "top_20_files_by_finding_density": [
-            {"file": f, "count": c} for f, c in top_files
-        ],
+        "top_20_files_by_finding_density": [{"file": f, "count": c} for f, c in top_files],
         "findings": all_findings,
         "error_files": [{"file": f, "error": e} for f, e in error_files],
     }

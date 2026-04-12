@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L0_routing.types.routing_artifact_types."""
+
 from __future__ import annotations
 
 import importlib

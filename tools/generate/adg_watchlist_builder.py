@@ -24,6 +24,7 @@ from typing import Any
 @dataclass
 class WatchlistItem:
     """Single watchlist entry."""
+
     rank: int
     file: str
     layer: str
@@ -70,7 +71,7 @@ class ADGWatchlistBuilder:
         self.cur.execute(
             "SELECT resolved_path, layer, fan_in, fan_out FROM mv_hotspot_centrality "
             "WHERE fan_in >= ? ORDER BY fan_in DESC",
-            (threshold,)
+            (threshold,),
         )
         return [dict(r) for r in self.cur.fetchall()]
 
@@ -80,22 +81,18 @@ class ADGWatchlistBuilder:
             "SELECT resolved_path, layer, direct_fan_in, cone_risk_score "
             "FROM mv_dependency_cone_risk WHERE cone_risk_score >= ? "
             "ORDER BY cone_risk_score DESC",
-            (threshold,)
+            (threshold,),
         )
         return [dict(r) for r in self.cur.fetchall()]
 
     def _get_sc1_violations(self) -> set[str]:
         """Get set of files with SC-1 violations."""
-        self.cur.execute(
-            "SELECT DISTINCT file_path FROM violations WHERE category = 'SC-1'"
-        )
+        self.cur.execute("SELECT DISTINCT file_path FROM violations WHERE category = 'SC-1'")
         return {r[0] for r in self.cur.fetchall() if r[0]}
 
     def _get_sc5_violations(self) -> set[str]:
         """Get set of files with SC-5 violations."""
-        self.cur.execute(
-            "SELECT DISTINCT file_path FROM violations WHERE category = 'SC-5'"
-        )
+        self.cur.execute("SELECT DISTINCT file_path FROM violations WHERE category = 'SC-5'")
         return {r[0] for r in self.cur.fetchall() if r[0]}
 
     def _compute_composite_score(
@@ -204,7 +201,12 @@ class ADGWatchlistBuilder:
         max_cone = max((c["cone_risk_score"] for c in cone_risks), default=1.0)
 
         # Combine all files of interest
-        all_files = {h["resolved_path"] for h in hotspots} | {c["resolved_path"] for c in cone_risks} | sc1_files | sc5_files
+        all_files = (
+            {h["resolved_path"] for h in hotspots}
+            | {c["resolved_path"] for c in cone_risks}
+            | sc1_files
+            | sc5_files
+        )
 
         # Build watchlist items
         items: list[tuple[float, WatchlistItem]] = []
@@ -228,9 +230,7 @@ class ADGWatchlistBuilder:
             high_fi = fan_in >= fi_threshold
             high_cone = cone_risk >= cone_threshold
 
-            score = self._compute_composite_score(
-                fan_in, max_fi, cone_risk, max_cone, sc1, sc5, layer
-            )
+            score = self._compute_composite_score(fan_in, max_fi, cone_risk, max_cone, sc1, sc5, layer)
 
             anomaly_type = self._classify_anomaly(sc1, sc5, high_fi, high_cone)
 
@@ -257,9 +257,7 @@ class ADGWatchlistBuilder:
 
         return result
 
-    def emit_artifact(
-        self, watchlist: list[WatchlistItem], output_dir: Path
-    ) -> Path:
+    def emit_artifact(self, watchlist: list[WatchlistItem], output_dir: Path) -> Path:
         """Emit watchlist JSON artifact."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         artifact_path = output_dir / f"adg_anomaly_watchlist_{timestamp}.json"
@@ -298,16 +296,16 @@ class ADGWatchlistBuilder:
             file_short = item.file[:44] if len(item.file) <= 44 else item.file[:41] + "..."
             type_short = item.anomaly_type[:24]
             layer_short = item.layer[:7] if item.layer else ""
-            lines.append(
-                f"{item.rank:<6}{item.score:<8.1f}{type_short:<25}{layer_short:<8}{file_short}"
-            )
+            lines.append(f"{item.rank:<6}{item.score:<8.1f}{type_short:<25}{layer_short:<8}{file_short}")
 
-        lines.extend([
-            "",
-            "Signals: FI=fan-in, CR=cone-risk, SC1=gravity-violation, SC5=spine-gap",
-            "Multi-signal hotspots indicate highest architectural risk.",
-            "",
-        ])
+        lines.extend(
+            [
+                "",
+                "Signals: FI=fan-in, CR=cone-risk, SC1=gravity-violation, SC5=spine-gap",
+                "Multi-signal hotspots indicate highest architectural risk.",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 

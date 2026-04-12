@@ -16,14 +16,17 @@ class TestPromptVersionStore:
     def test_prompt_version_store_imports(self):
         """Test prompt_version_store module imports."""
         from agentic_core import prompt_version_store
+
         assert prompt_version_store is not None
 
     def test_prompt_version_store_class(self):
         """Test PromptVersionStore class exists."""
         from agentic_core import PromptVersionStore
+
         assert PromptVersionStore is not None
 
     def test_prompt_version_store_callable(self):
         """Test prompt_version_store functions are callable."""
         from agentic_core import validate_prompt_version_store
+
         assert callable(validate_prompt_version_store)

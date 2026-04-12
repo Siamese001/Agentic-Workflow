@@ -221,7 +221,8 @@ class OscillationFirewall:
         cfg = config or OscillationFirewallConfig()
         self._config = cfg
         self._detector = OscillationDetector(
-            cooldown_window=cfg.cooldown_window, freeze_cycles=cfg.freeze_cycles,
+            cooldown_window=cfg.cooldown_window,
+            freeze_cycles=cfg.freeze_cycles,
         )
         self._tier_histories: dict[str, list[Any]] = {}
 
@@ -234,7 +235,9 @@ class OscillationFirewall:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "OscillationFirewall.record_tier_decision",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "OscillationFirewall.record_tier_decision",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -262,7 +265,9 @@ class OscillationFirewall:
 
         try:
             self._detector.record_change(self._ROUTING_PARAM, tier, cycle)
-        except ParameterFrozenError as exc:    # guardian: ParameterFrozenError should be handled with specific context
+        except (
+            ParameterFrozenError
+        ) as exc:  # guardian: ParameterFrozenError should be handled with specific context
             raise OscillationFirewallTripped(
                 f"OscillationFirewall: tier {tier!r} is oscillating at cycle {cycle}. Routing frozen.\nDetector: {exc}",
             ) from exc
@@ -283,7 +288,8 @@ class OscillationFirewall:
 
 
 def validate_threshold(
-    tier_sequence: tuple[str, ...], config: OscillationFirewallConfig | None = None,
+    tier_sequence: tuple[str, ...],
+    config: OscillationFirewallConfig | None = None,
 ) -> bool:
     """Return True if *tier_sequence* does NOT contain an oscillation pattern.
 

@@ -174,7 +174,9 @@ def _adg_bootstrap() -> None:
         _log.info("[ADG] %s", report.summary)
         if report.layer_violation_count > 0:
             _log.warning(
-                "[ADG] %d layer violation(s): %s", report.layer_violation_count, report.scope_widening_events,
+                "[ADG] %d layer violation(s): %s",
+                report.layer_violation_count,
+                report.scope_widening_events,
             )
         if report.route_mode == "HUMAN_REVIEW":
             _log.error("[ADG] route_mode=HUMAN_REVIEW — manual review required")

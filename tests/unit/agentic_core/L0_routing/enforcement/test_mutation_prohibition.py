@@ -1,4 +1,5 @@
 """Placeholder test file - syntax fixed."""
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -16,6 +17,7 @@ class GeneratedTest(unittest.TestCase):
     def test_get_default_protected_root_policy(self):
         """Test get_default_protected_root_policy function."""
         from agentic_core.L0_routing.enforcement import get_default_protected_root_policy
+
         result = get_default_protected_root_policy()
         self.assertIsNotNone(result)
 
@@ -24,6 +26,7 @@ class GeneratedTest(unittest.TestCase):
         from pathlib import Path
 
         from agentic_core.L0_routing.enforcement import enforce_protected_root
+
         # enforce_protected_root returns None, just test it doesn't raise
         try:
             enforce_protected_root(Path("/test/path"))
@@ -33,14 +36,17 @@ class GeneratedTest(unittest.TestCase):
     def test_SourceMutationBlocked_init(self):
         """Test SourceMutationBlocked initialization."""
         from agentic_core.L0_routing.enforcement import SourceMutationBlocked
+
         instance = SourceMutationBlocked()
         self.assertIsNotNone(instance)
 
     def test_ProtectedRootBlockEvent_init(self):
         """Test ProtectedRootBlockEvent initialization."""
         from agentic_core.L0_routing.enforcement import ProtectedRootBlockEvent
+
         instance = ProtectedRootBlockEvent("2023-01-01T00:00:00Z", "/test/path", "root123", "caller")
         self.assertIsNotNone(instance)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

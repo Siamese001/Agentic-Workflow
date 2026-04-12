@@ -201,16 +201,22 @@ class L2BoundaryVerifier:
     def verify_instruction_packet(self, packet: InstructionPacket) -> None:
         """Verify InstructionPacket signature.  Raises SignatureVerificationError on failure."""
         _emit_verifies_boundary(
-            str(uuid.uuid4()), "L2BoundaryVerifier.verify_instruction_packet", "L2_EXECUTION",
+            str(uuid.uuid4()),
+            "L2BoundaryVerifier.verify_instruction_packet",
+            "L2_EXECUTION",
         )
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "L2BoundaryVerifier.verify_instruction_packet", "L2_EXECUTION",
+            str(uuid.uuid4()),
+            "L2BoundaryVerifier.verify_instruction_packet",
+            "L2_EXECUTION",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "L2BoundaryVerifier.verify_instruction_packet",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "L2BoundaryVerifier.verify_instruction_packet",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

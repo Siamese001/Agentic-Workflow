@@ -185,7 +185,9 @@ class HardenedRouter:
     """
 
     def __init__(
-        self, configs: dict[str, RouteConfig] | None = None, telemetry: SystemTelemetry | None = None,
+        self,
+        configs: dict[str, RouteConfig] | None = None,
+        telemetry: SystemTelemetry | None = None,
     ):
         """Initialize hardened router.
 
@@ -230,6 +232,7 @@ class HardenedRouter:
             ValueError: If tier not found
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedRouter.get_config")
 
@@ -263,7 +266,11 @@ class HardenedRouter:
         return True
 
     def _log_routing_event(
-        self, tier: str, provider: Provider, is_fallback: bool, reason: str | None = None,
+        self,
+        tier: str,
+        provider: Provider,
+        is_fallback: bool,
+        reason: str | None = None,
     ) -> None:
         """Log a routing event for observability.
 
@@ -352,7 +359,10 @@ class HardenedRouter:
                         f"Routing to fallback provider: {fallback.value} (primary {primary.value} unavailable)",
                     )
                     self._log_routing_event(
-                        tier_name, fallback, is_fallback=True, reason=f"primary_{primary.value}_down",
+                        tier_name,
+                        fallback,
+                        is_fallback=True,
+                        reason=f"primary_{primary.value}_down",
                     )
                     return await self._execute_on_provider(
                         provider=fallback,

@@ -1,4 +1,5 @@
 """Behavioral contract tests for agentic_core.L5_safety.config.structure_blueprint."""
+
 from __future__ import annotations
 
 import importlib

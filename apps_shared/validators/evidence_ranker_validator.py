@@ -241,7 +241,9 @@ class EvidenceRanker:
         )
 
     def rank_evidence(
-        self, signals: list[dict[str, Any]], current_year: int | None = None,
+        self,
+        signals: list[dict[str, Any]],
+        current_year: int | None = None,
     ) -> list[RankedEvidence]:
         """Rank evidence based on freshness and corroboration.
 
@@ -254,7 +256,9 @@ class EvidenceRanker:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "EvidenceRanker.rank_evidence")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "EvidenceRanker.rank_evidence"
+        )
         try:
             if current_year:
                 self.current_year = current_year
@@ -277,7 +281,9 @@ class EvidenceRanker:
                         semantic_score = max(0.0, min(1.0, semantic_score))
                     freshness_score, year_detected = self._score_freshness(content, metadata)
                     corroboration_count, key_entities = self._count_corroboration(
-                        content, all_entities, signals,
+                        content,
+                        all_entities,
+                        signals,
                     )
                     corroboration_normalized = min(1.0, corroboration_count / 3.0)
                     final_score = (
@@ -381,7 +387,10 @@ class EvidenceRanker:
             return None
 
     def _count_corroboration(
-        self, content: str, all_entities: dict[str, list[str]], all_signals: list[dict[str, Any]],
+        self,
+        content: str,
+        all_entities: dict[str, list[str]],
+        all_signals: list[dict[str, Any]],
     ) -> tuple[int, list[str]]:
         """Count how many other signals corroborate this one.
 
@@ -553,7 +562,9 @@ def create_evidence_ranker(
 
 
 def rank_evidence(
-    signals: list[dict[str, Any]], prioritize_freshness: bool = True, current_year: int | None = None,
+    signals: list[dict[str, Any]],
+    prioritize_freshness: bool = True,
+    current_year: int | None = None,
 ) -> list[RankedEvidence]:
     """Quickly rank evidence by freshness and corroboration.
 

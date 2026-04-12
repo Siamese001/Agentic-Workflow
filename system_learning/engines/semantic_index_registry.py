@@ -340,7 +340,9 @@ class SemanticIndexRegistry:
     # -----------------------------------------------------------------------
 
     def ingest_incident(self, bundle: IncidentBundle) -> MultiIndexIngestResult:
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L4_STATE, "SemanticIndexRegistry.ingest_incident")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L4_STATE, "SemanticIndexRegistry.ingest_incident"
+        )
         r = self.incident.ingest(bundle)
         return MultiIndexIngestResult(INDEX_INCIDENT, r.content_hash, r.trace_id)
 

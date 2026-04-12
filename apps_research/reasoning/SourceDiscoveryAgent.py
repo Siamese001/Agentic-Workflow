@@ -52,19 +52,25 @@ class SourceDiscoveryAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SourceDiscoveryAgent.discover_sources",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SourceDiscoveryAgent.discover_sources",
         )
         _emit_orchestrates_workflow("p3", "source_discovery_agent", "discovery_workflow")
         _emit_dispatches_agent("p3", "source_discovery_agent", "discovery_dispatch")
         _emit_records_telemetry_event("p4", "source_discovery_agent", "discovery_start")
 
         sources = self._discovery_service.discover_from_query(
-            research_topic, source_types, max_sources,
+            research_topic,
+            source_types,
+            max_sources,
         )
 
         _log.info("Discovered %d sources for topic: %s", len(sources), research_topic[:50])
         _emit_records_telemetry_event(
-            "p4", "source_discovery_agent", f"discovery_complete:{len(sources)}",
+            "p4",
+            "source_discovery_agent",
+            f"discovery_complete:{len(sources)}",
         )
 
         return {

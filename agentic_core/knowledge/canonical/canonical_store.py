@@ -37,6 +37,7 @@ class CanonicalStore:
         """
         if storage_path is None:
             from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
+
             storage_path = AGENTIC_CORE_DIR / "knowledge" / "canonical_store"
 
         self.storage_path = Path(storage_path)
@@ -71,13 +72,15 @@ class CanonicalStore:
         """
         trace_id = f"store_{unit.identifier.unit_id}_{unit.identifier.version}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "CanonicalStore.store_unit",
+            trace_id,
+            LayerSegment.L4_STATE,
+            "CanonicalStore.store_unit",
         )
 
         try:
             # Store unit file
             unit_file = self.units_path / f"{unit.identifier.unit_id}_v{unit.identifier.version}.json"
-            with open(unit_file, 'w', encoding='utf-8') as f:
+            with open(unit_file, "w", encoding="utf-8") as f:
                 json.dump(unit.to_dict(), f, indent=2, default=str)
 
             # Update caches
@@ -130,7 +133,7 @@ class CanonicalStore:
             return None
 
         try:
-            with open(unit_file, encoding='utf-8') as f:
+            with open(unit_file, encoding="utf-8") as f:
                 data = json.load(f)
 
             unit = CanonicalRawUnit.from_dict(data)
@@ -166,7 +169,7 @@ class CanonicalStore:
         """
         if unit_id in self._index_cache:
             version_strings = self._index_cache[unit_id]
-            return [int(v[1:]) for v in version_strings if v.startswith('v')]
+            return [int(v[1:]) for v in version_strings if v.startswith("v")]
         return []
 
     def get_children(self, parent_id: str) -> list[CanonicalRawUnit]:
@@ -270,7 +273,9 @@ class CanonicalStore:
             changes.append(f"Size changed: {unit1.metadata.size_bytes} -> {unit2.metadata.size_bytes}")
 
         if unit1.metadata.token_count != unit2.metadata.token_count:
-            changes.append(f"Token count changed: {unit1.metadata.token_count} -> {unit2.metadata.token_count}")
+            changes.append(
+                f"Token count changed: {unit1.metadata.token_count} -> {unit2.metadata.token_count}"
+            )
 
         # Status changes
         if unit1.status != unit2.status:
@@ -409,7 +414,7 @@ class CanonicalStore:
         for index_file in self.index_path.glob("*.json"):
             unit_id = index_file.stem
             try:
-                with open(index_file, encoding='utf-8') as f:
+                with open(index_file, encoding="utf-8") as f:
                     self._index_cache[unit_id] = json.load(f)
             except Exception as e:
                 log.warning(f"Failed to load index for {unit_id}: {e}")
@@ -418,7 +423,7 @@ class CanonicalStore:
         for lineage_file in self.lineage_path.glob("*.json"):
             parent_id = lineage_file.stem
             try:
-                with open(lineage_file, encoding='utf-8') as f:
+                with open(lineage_file, encoding="utf-8") as f:
                     child_set = set(json.load(f))
                     self._lineage_cache[parent_id] = child_set
             except Exception as e:
@@ -427,13 +432,13 @@ class CanonicalStore:
     def _save_index(self, unit_id: str):
         """Save index data for a unit."""
         index_file = self.index_path / f"{unit_id}.json"
-        with open(index_file, 'w', encoding='utf-8') as f:
+        with open(index_file, "w", encoding="utf-8") as f:
             json.dump(self._index_cache[unit_id], f, indent=2)
 
     def _save_lineage(self, parent_id: str):
         """Save lineage data for a parent."""
         lineage_file = self.lineage_path / f"{parent_id}.json"
-        with open(lineage_file, 'w', encoding='utf-8') as f:
+        with open(lineage_file, "w", encoding="utf-8") as f:
             json.dump(list(self._lineage_cache[parent_id]), f, indent=2)
 
 

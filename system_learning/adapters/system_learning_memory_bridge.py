@@ -242,7 +242,9 @@ class SystemLearningMemoryBridge:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningMemoryBridge.get_instance",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SystemLearningMemoryBridge.get_instance",
         )
 
         if cls._instance is None:
@@ -440,7 +442,9 @@ class SystemLearningMemoryBridge:
             True if persisted, False if MCP unavailable.
         """
         _emit_snapshots_state(
-            str(uuid.uuid4()), "SystemLearningMemoryBridge.persist_healing_success_rate", "L4_STATE",
+            str(uuid.uuid4()),
+            "SystemLearningMemoryBridge.persist_healing_success_rate",
+            "L4_STATE",
         )
         if not self._bridge:
             return False
@@ -510,12 +514,18 @@ class SystemLearningMemoryBridge:
                 elif o.startswith("rate="):
                     rate_str = o[5:]
                     # Safe float parsing without exception handling
-                    if rate_str.replace('.', '', 1).replace('-', '', 1).replace('e', '', 1).replace('E', '', 1).isdigit():
+                    if (
+                        rate_str.replace(".", "", 1)
+                        .replace("-", "", 1)
+                        .replace("e", "", 1)
+                        .replace("E", "", 1)
+                        .isdigit()
+                    ):
                         rate = float(rate_str)
                 elif o.startswith("count="):
                     count_str = o[6:]
                     # Safe int parsing without exception handling
-                    if count_str.lstrip('-').isdigit():
+                    if count_str.lstrip("-").isdigit():
                         count = int(count_str)
             if sig and rate is not None and count is not None:
                 restored[sig] = (rate, count)
@@ -580,7 +590,9 @@ class SystemLearningMemoryBridge:
             raise
 
         # Individual finding entities for pattern library queries
-        for finding in tqdm(rca_findings[:_MAX_RCA_FINDINGS], desc="rca findings", unit="finding", leave=False):
+        for finding in tqdm(
+            rca_findings[:_MAX_RCA_FINDINGS], desc="rca findings", unit="finding", leave=False
+        ):
             cat = getattr(finding, "category", "UNKNOWN")
             sig = getattr(finding, "signature", "unknown")
             cnt = getattr(finding, "count", 0)
@@ -792,7 +804,10 @@ class SystemLearningMemoryBridge:
             raise
 
     def query_policy_recommendations(
-        self, profile_id: str = "", *, applied_only: bool = False,
+        self,
+        profile_id: str = "",
+        *,
+        applied_only: bool = False,
     ) -> list[dict[str, Any]]:
         """Query persisted policy recommendations.
 
@@ -1038,12 +1053,12 @@ class SystemLearningMemoryBridge:
             ]
 
             # Add tier distribution
-            tier_dist = conf_summary.get('tier_distribution', {})
+            tier_dist = conf_summary.get("tier_distribution", {})
             for tier, count in tier_dist.items():
                 observations.append(f"tier_{tier}={count}")
 
             # Add confidence metrics
-            for metric, value in conf_summary.get('confidence_metrics', {}).items():
+            for metric, value in conf_summary.get("confidence_metrics", {}).items():
                 observations.append(f"metric_{metric}={value}")
 
             self._bridge.create_agent_entity(

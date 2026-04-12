@@ -200,7 +200,9 @@ class MCPSovereignAuthority:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "MCPSovereignAuthority.is_authorized",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "MCPSovereignAuthority.is_authorized",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

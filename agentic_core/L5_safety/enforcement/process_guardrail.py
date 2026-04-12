@@ -325,9 +325,9 @@ class ProcessGuard:
                 os.kill(pid, signal.SIGTERM)
             else:
                 os.kill(pid, signal.SIGTERM)
-        except ProcessLookupError:    # guardian: ProcessLookupError should be handled with specific context
+        except ProcessLookupError:  # guardian: ProcessLookupError should be handled with specific context
             pass  # guardian: allow-silent-swallow -- intentional: ProcessLookupError used for control flow
-        except PermissionError:    # guardian: Permission errors should validate access before operation
+        except PermissionError:  # guardian: Permission errors should validate access before operation
             logger.warning(f"ProcessGuard: Permission denied killing PID {pid}")
             raise
 

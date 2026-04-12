@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class ThresholdConfig:
     """Threshold configuration for hybrid retrieval."""
+
     vector_weight: float = 0.5
     sparse_weight: float = 0.5
     vector_threshold: float = 0.7
@@ -73,7 +74,9 @@ class HybridThresholdManager:
         """
         trace_id = f"thresholds_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "HybridThresholdManager.get_thresholds",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "HybridThresholdManager.get_thresholds",
         )
 
         # Start with base config

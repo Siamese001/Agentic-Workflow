@@ -26,6 +26,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class SyncStatus:
     """Status of a file in the sync system."""
+
     file_path: str
     last_checksum: str
     last_modified: float
@@ -38,6 +39,7 @@ class SyncStatus:
 @dataclass
 class SyncResult:
     """Result of a sync operation."""
+
     file_path: str
     action: str  # 'created', 'updated', 'deleted', 'unchanged', 'error'
     unit_id: str | None = None
@@ -146,7 +148,9 @@ class StateSyncManager:
 
         trace_id = f"check_{hashlib.sha256(path_str.encode()).hexdigest()[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "StateSyncManager.check_for_changes",
+            trace_id,
+            LayerSegment.L4_STATE,
+            "StateSyncManager.check_for_changes",
         )
 
         try:
@@ -162,7 +166,7 @@ class StateSyncManager:
                 if status.last_checksum:  # Was previously tracked
                     result = SyncResult(
                         file_path=path_str,
-                        action='deleted',
+                        action="deleted",
                     )
                     self._handle_sync_result(result)
                     return result
@@ -179,9 +183,9 @@ class StateSyncManager:
 
             # Determine action type
             if not status.last_checksum:
-                action = 'created'
+                action = "created"
             else:
-                action = 'updated'
+                action = "updated"
 
             # Find existing unit
             existing_units = self.store.find_by_checksum(status.last_checksum)
@@ -215,7 +219,7 @@ class StateSyncManager:
             self._handle_error(path_str, e)
             return SyncResult(
                 file_path=path_str,
-                action='error',
+                action="error",
                 error_message=str(e),
             )
 
@@ -227,7 +231,9 @@ class StateSyncManager:
         """
         trace_id = f"sync_all_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "StateSyncManager.sync_all",
+            trace_id,
+            LayerSegment.L4_STATE,
+            "StateSyncManager.sync_all",
         )
 
         results = []
@@ -268,10 +274,7 @@ class StateSyncManager:
             List of file paths marked stale
         """
         with self._status_lock:
-            return [
-                path for path, status in self._sync_status.items()
-                if status.is_stale
-            ]
+            return [path for path, status in self._sync_status.items() if status.is_stale]
 
     def get_sync_stats(self) -> dict[str, int]:
         """Get synchronization statistics.
@@ -286,10 +289,10 @@ class StateSyncManager:
             errors = sum(s.error_count for s in self._sync_status.values())
 
         return {
-            'total_monitored': total,
-            'synced_at_least_once': synced,
-            'stale_files': stale,
-            'total_errors': errors,
+            "total_monitored": total,
+            "synced_at_least_once": synced,
+            "stale_files": stale,
+            "total_errors": errors,
         }
 
     def on_sync(self, callback: Callable[[SyncResult], None]) -> None:

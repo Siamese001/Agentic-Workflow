@@ -92,6 +92,8 @@ except ImportError:
 
     class MCPHardenedMixin:
         pass
+
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_captures_pattern,
@@ -198,7 +200,9 @@ class TraceRegistry(MCPHardenedMixin):
                 with self.persistence_path.open("r", encoding="utf-8") as f:
                     for line in f:
                         if line.strip():
-                            self._traces.append(json.loads(line))    # guardian: File operations should check existence before access
+                            self._traces.append(
+                                json.loads(line)
+                            )  # guardian: File operations should check existence before access
             except FileNotFoundError:
                 self._flush_to_disk()
 
@@ -224,6 +228,7 @@ class TraceRegistry(MCPHardenedMixin):
             details: Contextual data for the event.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TraceRegistry.add_trace")
 

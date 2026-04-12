@@ -240,8 +240,11 @@ class MetaLearningEmbeddingService:
             IntegrityError: If pack integrity validation fails.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningEmbeddingService.retrieve")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningEmbeddingService.retrieve"
+        )
 
         if self.embedder is None:
             return None
@@ -251,7 +254,8 @@ class MetaLearningEmbeddingService:
         if not pack_dir.exists():
             return None
         manifest, row_data, embeddings_matrix = self._load_and_validate_pack(
-            pack_dir, seed_index_version_hash,
+            pack_dir,
+            seed_index_version_hash,
         )
         if profile is not None and manifest["dimensions"] != profile.embedding_dim:
             raise IntegrityError(
@@ -274,7 +278,9 @@ class MetaLearningEmbeddingService:
         )
 
     def _load_and_validate_pack(
-        self, pack_dir: Path, seed_index_version_hash: str,
+        self,
+        pack_dir: Path,
+        seed_index_version_hash: str,
     ) -> tuple[dict[str, Any], list[dict[str, Any]], list[list[float]]]:
         """Load and validate seed pack integrity.
 
@@ -333,7 +339,10 @@ class MetaLearningEmbeddingService:
         return (manifest, row_data, embeddings_matrix)
 
     def _compute_similarities(
-        self, query_vec: list[float], row_data: list[dict[str, Any]], embeddings_matrix: list[list[float]],
+        self,
+        query_vec: list[float],
+        row_data: list[dict[str, Any]],
+        embeddings_matrix: list[list[float]],
     ) -> list[dict[str, Any]]:
         """Compute cosine similarities between query and all embeddings.
 

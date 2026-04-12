@@ -15,6 +15,7 @@ from .failure_signal import FailureSignal
 @dataclass
 class RoutingDecision:
     """Healing routing decision."""
+
     tier: HealTier
     target_model: str
     timeout_seconds: int

@@ -14,13 +14,15 @@ from typing import Any
 
 class GauntletStage(Enum):
     """Gauntlet promotion stages."""
-    SHADOW_REPLAY = auto()      # Stage 1
-    REGRESSION_PASS = auto()    # Stage 2
-    SME_SIGN_OFF = auto()       # Stage 3
+
+    SHADOW_REPLAY = auto()  # Stage 1
+    REGRESSION_PASS = auto()  # Stage 2
+    SME_SIGN_OFF = auto()  # Stage 3
 
 
 class GauntletResult(Enum):
     """Gauntlet stage results."""
+
     PASS = auto()
     FAIL = auto()
     PENDING = auto()
@@ -29,6 +31,7 @@ class GauntletResult(Enum):
 @dataclass
 class StageStatus:
     """Status of a gauntlet stage."""
+
     stage: GauntletStage
     result: GauntletResult
     evidence: dict[str, Any]

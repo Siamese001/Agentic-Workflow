@@ -206,6 +206,7 @@ class PromptLoader:
             PromptSchemaError: If schema is invalid
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptLoader.load_prompt")
 
@@ -225,7 +226,7 @@ class PromptLoader:
                     data = yaml.safe_load(f)
             except yaml.YAMLError as e:
                 raise PromptLoadError(f"Invalid YAML in {prompt_file}: {e}")
-            except OSError as e:    # guardian: Add error context logging
+            except OSError as e:  # guardian: Add error context logging
                 raise PromptLoadError(f"Cannot read {prompt_file}: {e}")
             if not isinstance(data, dict):
                 raise PromptSchemaError(f"Prompt must be a dict: {prompt_file}")

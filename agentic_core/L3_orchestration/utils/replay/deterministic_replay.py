@@ -293,7 +293,7 @@ def _truncate_if_needed(text: str, max_bytes: int) -> tuple[str, bool]:
     truncated_bytes = text_bytes[:allowed_text_bytes]
     try:
         truncated_text = truncated_bytes.decode("utf-8")
-    except UnicodeDecodeError:    # guardian: Encoding errors should specify fallback encoding strategy
+    except UnicodeDecodeError:  # guardian: Encoding errors should specify fallback encoding strategy
         truncated_text = truncated_bytes.decode("utf-8", errors="replace")
         truncated_text = truncated_text.rstrip("�")
     return (truncated_text + suffix, True)
@@ -332,7 +332,9 @@ def run_and_record(commands: list[ReplayCommand]) -> ReplayRecord:
         truncated_stdout, stdout_truncated = _truncate_if_needed(result.stdout, command.max_stdout_bytes)
         truncated_stderr, stderr_truncated = _truncate_if_needed(result.stderr, command.max_stderr_bytes)
         replay_result = ReplayResult(
-            exit_code=result.returncode, stdout=truncated_stdout, stderr=truncated_stderr,
+            exit_code=result.returncode,
+            stdout=truncated_stdout,
+            stderr=truncated_stderr,
         )
         results.append(replay_result)
         per_command_bytes_out.append(len(replay_result.stdout.encode("utf-8")))
@@ -451,7 +453,9 @@ def replay_and_compare(record: ReplayRecord) -> ComparisonResult:
                 timeout=command.timeout_s,
             )
             current_result = ReplayResult(
-                exit_code=result.returncode, stdout=result.stdout, stderr=result.stderr,
+                exit_code=result.returncode,
+                stdout=result.stdout,
+                stderr=result.stderr,
             )
             if current_result.exit_code != original_result.exit_code:
                 mismatches.append(

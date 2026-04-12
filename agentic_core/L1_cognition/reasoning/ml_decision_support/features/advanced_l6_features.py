@@ -566,7 +566,9 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
         baseline_response_time = performance_data.get("baseline_response_time", 100)
 
         if baseline_response_time > 0:
-            response_degradation = max(0, (current_response_time - baseline_response_time)) / baseline_response_time
+            response_degradation = (
+                max(0, (current_response_time - baseline_response_time)) / baseline_response_time
+            )
             response_degradation = min(1.0, response_degradation)
         else:
             response_degradation = 0.0
@@ -773,15 +775,15 @@ class AdvancedL6FeatureExtractor(DeterministicFeatureExtractor):
 
         # Weighted combination
         anomaly_confidence = (
-            confidence_factors["behavioral_deviation"] * behavioral_score +
-            confidence_factors["system_metric_anomaly"] * system_score +
-            confidence_factors["temporal_pattern_break"] * temporal_score +
-            confidence_factors["reconstruction_error"] * reconstruction_score +
-            confidence_factors["multivariate_anomaly"] * multivariate_score +
-            confidence_factors["contextual_anomaly"] * contextual_score +
-            confidence_factors["performance_degradation"] * performance_score +
-            confidence_factors["resource_anomaly"] * resource_score +
-            confidence_factors["security_anomaly"] * security_score
+            confidence_factors["behavioral_deviation"] * behavioral_score
+            + confidence_factors["system_metric_anomaly"] * system_score
+            + confidence_factors["temporal_pattern_break"] * temporal_score
+            + confidence_factors["reconstruction_error"] * reconstruction_score
+            + confidence_factors["multivariate_anomaly"] * multivariate_score
+            + confidence_factors["contextual_anomaly"] * contextual_score
+            + confidence_factors["performance_degradation"] * performance_score
+            + confidence_factors["resource_anomaly"] * resource_score
+            + confidence_factors["security_anomaly"] * security_score
         )
 
         return round(max(0.0, min(1.0, anomaly_confidence)), 3)

@@ -16,14 +16,17 @@ class TestGlobalSettingsConfigAdg:
     def test_global_settings_config_adg_imports(self):
         """Test global_settings_config_adg module imports."""
         from agentic_core import global_settings_config_adg
+
         assert global_settings_config_adg is not None
 
     def test_global_settings_config_adg_class(self):
         """Test GlobalSettingsConfigAdg class exists."""
         from agentic_core import GlobalSettingsConfigAdg
+
         assert GlobalSettingsConfigAdg is not None
 
     def test_global_settings_config_adg_callable(self):
         """Test global_settings_config_adg functions are callable."""
         from agentic_core import validate_global_settings_config_adg
+
         assert callable(validate_global_settings_config_adg)

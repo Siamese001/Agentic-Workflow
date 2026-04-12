@@ -39,7 +39,12 @@ class SectionRenderer:
                 lines.append(f"- {source}")
             lines.append("")
 
-        lines.extend([f"*Word count: {section.word_count} | Deterministic: {section.is_deterministic} | Claim: {section.claim_type}*", ""])
+        lines.extend(
+            [
+                f"*Word count: {section.word_count} | Deterministic: {section.is_deterministic} | Claim: {section.claim_type}*",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 
@@ -69,6 +74,8 @@ class SectionRenderer:
                 lines.append(f"<li>{source}</li>")
             lines.extend(["</ul>", ""])
 
-        lines.append(f"<p><em>Word count: {section.word_count} | Deterministic: {section.is_deterministic} | Claim: {section.claim_type}</em></p>")
+        lines.append(
+            f"<p><em>Word count: {section.word_count} | Deterministic: {section.is_deterministic} | Claim: {section.claim_type}</em></p>"
+        )
 
         return "\n".join(lines)

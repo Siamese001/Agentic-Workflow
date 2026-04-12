@@ -1,4 +1,5 @@
 """ADG Antipattern Detection - Identifies and reports antipatterns in code."""
+
 from __future__ import annotations
 
 from typing import Any

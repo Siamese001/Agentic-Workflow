@@ -254,13 +254,20 @@ class RfpAgentSpecs(BaseModel):
                 requires_assumptions=True,
             ),
             ProposalSectionConfig(
-                section_id="risk_and_governance", heading="Risk and Governance", required=True,
+                section_id="risk_and_governance",
+                heading="Risk and Governance",
+                required=True,
             ),
             ProposalSectionConfig(
-                section_id="value_case", heading="Value Case", required=True, requires_evidence=True,
+                section_id="value_case",
+                heading="Value Case",
+                required=True,
+                requires_evidence=True,
             ),
             ProposalSectionConfig(
-                section_id="solution_appendix", heading="Solution Appendix", required=False,
+                section_id="solution_appendix",
+                heading="Solution Appendix",
+                required=False,
             ),
         ],
     )
@@ -315,8 +322,11 @@ class RfpAgentSpecs(BaseModel):
     @model_validator(mode="after")
     def validate_required_sections_present(self) -> RfpAgentSpecs:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RfpAgentSpecs.validate_required_sections_present")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "RfpAgentSpecs.validate_required_sections_present"
+        )
 
         required_ids = {s.section_id for s in self.sections if s.required}
         must_have = {"executive_summary", "implementation_roadmap", "risk_and_governance", "value_case"}

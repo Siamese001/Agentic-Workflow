@@ -36,5 +36,6 @@ def update_imports():
 
     print(f"\nTotal files updated: {count}")
 
+
 if __name__ == "__main__":
     update_imports()

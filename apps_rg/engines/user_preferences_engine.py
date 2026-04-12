@@ -172,8 +172,11 @@ class UserPreferencesEngine(BaseRGEngine):
         Fetch user preferences.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "UserPreferencesEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "UserPreferencesEngine.execute"
+        )
 
         self._mcp_audit("preferences_retrieval", {"user_id": user_id})
         preferences = {

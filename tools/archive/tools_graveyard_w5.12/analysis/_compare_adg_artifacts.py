@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Compare two ADG artifacts to understand the 34% size reduction."""
+
 from __future__ import annotations
 
 import json
@@ -38,7 +39,9 @@ def analyze_structure(data: dict, label: str) -> None:
             if edges:
                 sample_src = list(edges.keys())[0]
                 sample_targets = edges[sample_src]
-                print(f"    Sample: {sample_src} -> {len(sample_targets) if isinstance(sample_targets, list) else 1} targets")
+                print(
+                    f"    Sample: {sample_src} -> {len(sample_targets) if isinstance(sample_targets, list) else 1} targets"
+                )
         elif isinstance(edges, list):
             print(f"  Edges: {len(edges)} edge records")
 

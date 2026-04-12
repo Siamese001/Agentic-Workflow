@@ -188,6 +188,7 @@ class StateSnapshot:
             target_graph: Graph to restore state to
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateSnapshot.restore_to")
 
@@ -218,7 +219,9 @@ class DAGSafetyManager:
         logger.debug(f"Initialized DAGSafetyManager: {name}")
 
     def add_validation_hook(
-        self, phase: MutationPhase, hook: Callable[[nx.DiGraph, dict[str, Any]], None],
+        self,
+        phase: MutationPhase,
+        hook: Callable[[nx.DiGraph, dict[str, Any]], None],
     ) -> None:
         """Add a validation hook for a specific phase.
 
@@ -227,8 +230,11 @@ class DAGSafetyManager:
             hook: Validation function
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "DAGSafetyManager.add_validation_hook")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "DAGSafetyManager.add_validation_hook"
+        )
 
         self._validation_hooks[phase].append(hook)
         logger.debug(f"Added validation hook for phase: {phase.value}")
@@ -305,7 +311,10 @@ class DAGSafetyManager:
         return mutation_id
 
     def execute_mutation(
-        self, graph: nx.DiGraph, mutation_func: Callable[[nx.DiGraph], None], mutation_id: str,
+        self,
+        graph: nx.DiGraph,
+        mutation_func: Callable[[nx.DiGraph], None],
+        mutation_id: str,
     ) -> bool:
         """Execute a mutation with full safety checks.
 

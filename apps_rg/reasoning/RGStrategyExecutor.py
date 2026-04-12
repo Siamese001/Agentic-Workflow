@@ -170,7 +170,11 @@ class RGStrategyExecutor(RGAgentBase):
         """Dispatch to strategy-specific execution."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RGStrategyExecutor.execute:{self.strategy_type}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"RGStrategyExecutor.execute:{self.strategy_type}",
+        )
         ctx = data or {}
         handler = {
             "content": self._strategy_content,

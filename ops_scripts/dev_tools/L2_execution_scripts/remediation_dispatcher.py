@@ -344,7 +344,9 @@ class CanonicalEscalationPayload:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "CanonicalEscalationPayload.to_canonical_string",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "CanonicalEscalationPayload.to_canonical_string",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 
@@ -1131,19 +1133,23 @@ def main() -> int:
 
     try:
         result = run_dispatcher(
-            guardian_result_path=Path(args.guardian_result),    # guardian: MutationGuardError should be handled with specific context
+            guardian_result_path=Path(
+                args.guardian_result
+            ),  # guardian: MutationGuardError should be handled with specific context
             write_artifacts_dir=Path(args.write_artifacts),
             created_utc=args.created_utc,
-            plan_name=args.plan_name,    # guardian: ApprovalGatingError should be handled with specific context
+            plan_name=args.plan_name,  # guardian: ApprovalGatingError should be handled with specific context
             approval_bundle_path=Path(args.approval_bundle) if args.approval_bundle else None,
             apply=args.apply,
             repo_root=Path(args.repo_root) if args.repo_root else None,
             allow_repo_mutation=args.allow_repo_mutation,
         )
-    except MutationGuardError as exc:    # guardian: MutationGuardError should be handled with specific context
+    except MutationGuardError as exc:  # guardian: MutationGuardError should be handled with specific context
         print(f"ERROR: {exc}", file=sys.stderr)
         return 3
-    except ApprovalGatingError as exc:    # guardian: ApprovalGatingError should be handled with specific context
+    except (
+        ApprovalGatingError
+    ) as exc:  # guardian: ApprovalGatingError should be handled with specific context
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
 

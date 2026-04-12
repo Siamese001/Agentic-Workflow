@@ -55,7 +55,9 @@ class RetrievalBenchmark:
         self.engine = engine
 
     def run_performance_benchmark(
-        self, queries: list[str], iterations: int = 10,
+        self,
+        queries: list[str],
+        iterations: int = 10,
     ) -> BenchmarkMetrics:
         """Run performance benchmark.
 
@@ -98,7 +100,9 @@ class RetrievalBenchmark:
         return metrics
 
     def run_quality_benchmark(
-        self, queries: list[BenchmarkQuery], k: int = 10,
+        self,
+        queries: list[BenchmarkQuery],
+        k: int = 10,
     ) -> RetrievalQualityMetrics:
         """Run retrieval quality benchmark.
 
@@ -158,7 +162,9 @@ class RetrievalBenchmark:
         return metrics
 
     def run_governance_benchmark(
-        self, queries: list[str], governance_filter: dict[str, Any],
+        self,
+        queries: list[str],
+        governance_filter: dict[str, Any],
     ) -> dict[str, Any]:
         """Benchmark governance filter effectiveness.
 
@@ -189,8 +195,7 @@ class RetrievalBenchmark:
             if results_with_filter
             else 0.0,
             "filter_reduction_pct": (
-                (sum(results_without_filter) - sum(results_with_filter))
-                / sum(results_without_filter) * 100
+                (sum(results_without_filter) - sum(results_with_filter)) / sum(results_without_filter) * 100
                 if results_without_filter and sum(results_without_filter) > 0
                 else 0.0
             ),

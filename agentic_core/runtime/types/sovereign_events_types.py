@@ -213,8 +213,11 @@ class event_emission_mixin:
             SovereignEvent: The emitted event object
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "event_emission_mixin.emit_event")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "event_emission_mixin.emit_event"
+        )
 
         active_trace = trace_id or trace_id_var.get()
         active_span = span_id_var.get()
@@ -269,10 +272,12 @@ class event_emission_mixin:
         try:
             loop = asyncio.get_running_loop()
             loop.create_task(_dispatch_async())
-        except RuntimeError:    # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
             try:
                 self.redis_client.xadd(
-                    "sovereign_event_stream", {"event": json.dumps(event.model_dump())}, maxlen=10000,
+                    "sovereign_event_stream",
+                    {"event": json.dumps(event.model_dump())},
+                    maxlen=10000,
                 )
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
@@ -295,13 +300,16 @@ class event_emission_mixin:
                     result = await func(self, *args, **kwargs)
                     duration = time.time() - start_time
                     self.emit_event(
-                        f"{event_prefix}.completed", {"duration": round(duration, 4), "success": True},
+                        f"{event_prefix}.completed",
+                        {"duration": round(duration, 4), "success": True},
                     )
                     return result
                 except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     self.emit_event(
-                        f"{event_prefix}.failed", {"error": str(e), "success": False}, severity="ERROR",
+                        f"{event_prefix}.failed",
+                        {"error": str(e), "success": False},
+                        severity="ERROR",
                     )
                     raise e
 

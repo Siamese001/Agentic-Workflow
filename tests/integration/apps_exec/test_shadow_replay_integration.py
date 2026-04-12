@@ -154,7 +154,9 @@ class TestShadowEvaluationIntegrator:
         }
 
         result = integrator.evaluate_shadow_deployment(
-            production_metrics, shadow_metrics, strict_thresholds,
+            production_metrics,
+            shadow_metrics,
+            strict_thresholds,
         )
 
         assert result.passed is False
@@ -312,7 +314,12 @@ class TestIntegration:
 
         # Shadow evaluation
         shadow_result = shadow_integrator.evaluate_shadow_deployment(
-            production_metrics={"p95_latency_ms": 100.0, "error_rate": 0.01, "cpu_pct": 50.0, "mem_mb": 1000.0},
+            production_metrics={
+                "p95_latency_ms": 100.0,
+                "error_rate": 0.01,
+                "cpu_pct": 50.0,
+                "mem_mb": 1000.0,
+            },
             shadow_metrics={"p95_latency_ms": 105.0, "error_rate": 0.01, "cpu_pct": 50.0, "mem_mb": 1000.0},
         )
 
@@ -335,8 +342,18 @@ class TestIntegration:
         # Run multiple evaluations
         for i in range(5):
             shadow_integrator.evaluate_shadow_deployment(
-                production_metrics={"p95_latency_ms": 100.0, "error_rate": 0.01, "cpu_pct": 50.0, "mem_mb": 1000.0},
-                shadow_metrics={"p95_latency_ms": 100.0 + i * 5, "error_rate": 0.01, "cpu_pct": 50.0, "mem_mb": 1000.0},
+                production_metrics={
+                    "p95_latency_ms": 100.0,
+                    "error_rate": 0.01,
+                    "cpu_pct": 50.0,
+                    "mem_mb": 1000.0,
+                },
+                shadow_metrics={
+                    "p95_latency_ms": 100.0 + i * 5,
+                    "error_rate": 0.01,
+                    "cpu_pct": 50.0,
+                    "mem_mb": 1000.0,
+                },
             )
 
             replay_evaluator.evaluate_replay(

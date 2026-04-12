@@ -304,7 +304,9 @@ class StructureHealerAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L5_POLICY, "StructureHealerAgent.heal_repository",
+            str(uuid.uuid4()),
+            LayerSegment.L5_POLICY,
+            "StructureHealerAgent.heal_repository",
         )
         # Update config based on args
         self._agent_config.dry_run = dry_run

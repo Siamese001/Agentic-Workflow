@@ -16,14 +16,17 @@ class TestVllmTokenBudgetTypes:
     def test_vllm_token_budget_types_imports(self):
         """Test vllm_token_budget_types module imports."""
         from agentic_core import vllm_token_budget_types
+
         assert vllm_token_budget_types is not None
 
     def test_vllm_token_budget_types_class(self):
         """Test VllmTokenBudgetTypes class exists."""
         from agentic_core import VllmTokenBudgetTypes
+
         assert VllmTokenBudgetTypes is not None
 
     def test_vllm_token_budget_types_callable(self):
         """Test vllm_token_budget_types functions are callable."""
         from agentic_core import validate_vllm_token_budget_types
+
         assert callable(validate_vllm_token_budget_types)

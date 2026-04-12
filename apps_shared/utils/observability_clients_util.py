@@ -14,7 +14,6 @@ emit_determinism_digest("observability_clients_util", "observability_clients_uti
 record_execution_trace("observability_clients_util", "observability_clients_util_trace")
 
 
-
 def create_span(name: str, **kwargs) -> Any:
     """Create a tracing span.
 

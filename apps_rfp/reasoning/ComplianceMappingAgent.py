@@ -50,14 +50,18 @@ class ComplianceMappingAgent:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ComplianceMappingAgent.map_compliance",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "ComplianceMappingAgent.map_compliance",
         )
         _emit_orchestrates_workflow("p3", "compliance_mapping_agent", "mapping_workflow")
         _emit_dispatches_agent("p3", "compliance_mapping_agent", "mapping_dispatch")
         _emit_records_telemetry_event("p4", "compliance_mapping_agent", "mapping_start")
 
         result = self._compliance_service.check_compliance(
-            requirements, proposal_sections, strict_mode,
+            requirements,
+            proposal_sections,
+            strict_mode,
         )
 
         _log.info(
@@ -67,7 +71,9 @@ class ComplianceMappingAgent:
             result.get("total_requirements", 0),
         )
         _emit_records_telemetry_event(
-            "p4", "compliance_mapping_agent", f"mapping_complete:{result.get('compliance_rate', 0):.2f}",
+            "p4",
+            "compliance_mapping_agent",
+            f"mapping_complete:{result.get('compliance_rate', 0):.2f}",
         )
 
         return {

@@ -111,7 +111,9 @@ def load_context_jit(
     """
     _tid = str(uuid.uuid4())
     _emit_records_execution_trace(
-        _tid, LayerSegment.L0_ROUTING, "elevator_shaft_seam.load_context_jit",
+        _tid,
+        LayerSegment.L0_ROUTING,
+        "elevator_shaft_seam.load_context_jit",
     )
     emit_replay_key(_tid, f"c0:{trace_id}")
     emit_determinism_digest(_tid, f"intent:{intent_class}")
@@ -121,6 +123,7 @@ def load_context_jit(
         from agentic_core.L4_state.utils.memory.semantic_cache_manager import (
             get_semantic_cache,
         )
+
         semantic_cache = get_semantic_cache()
         rag_chunks = semantic_cache.query(intent_class, k=5)
     except (ValueError, TypeError):
@@ -129,6 +132,7 @@ def load_context_jit(
     # Query BM25 store for keyword matches
     try:
         from agentic_core.L4_state.utils.memory.bm25_store import get_bm25_store
+
         bm25_store = get_bm25_store()
         bm25_results = bm25_store.query(intent_class, k=5)
     except (ValueError, TypeError):
@@ -160,6 +164,7 @@ def load_context_jit(
         from agentic_core.L4_state.utils.memory.ast_snapshot_store import (
             get_ast_snapshot_store,
         )
+
         ast_store = get_ast_snapshot_store()
         ast_snapshot = ast_store.get_snapshot(trace_id)
     except (ValueError, TypeError):
@@ -168,6 +173,7 @@ def load_context_jit(
     # Get boundary refs if available
     try:
         from agentic_core.L4_state.utils.memory.boundary_store import get_boundary_store
+
         boundary_store = get_boundary_store()
         boundary_refs = boundary_store.get_refs_for_intent(intent_class)
     except (ValueError, TypeError):

@@ -1,11 +1,12 @@
 """Query applies_guardrail coverage from ADG SQLite database."""
+
 import sqlite3
 from pathlib import Path
 
 
 def query_guardrail_coverage():
-    adg_dir = Path(__file__).resolve().parents[2] / 'artifacts' / 'adg'
-    sqlite_files = list(adg_dir.glob('adg_indexed_*.sqlite'))
+    adg_dir = Path(__file__).resolve().parents[2] / "artifacts" / "adg"
+    sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
     if not sqlite_files:
         print("No ADG SQLite files found")
         return
@@ -93,9 +94,12 @@ def query_guardrail_coverage():
     print(f"Total function calls: {total_calls}")
     print(f"Files with calls: {files_with_calls}")
     print(f"Files with guardrails: {files_with_guardrails}")
-    print(f"Guardrail coverage: {files_with_guardrails}/{files_with_calls} files ({100*files_with_guardrails/files_with_calls:.1f}%)")
+    print(
+        f"Guardrail coverage: {files_with_guardrails}/{files_with_calls} files ({100 * files_with_guardrails / files_with_calls:.1f}%)"
+    )
 
     conn.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     query_guardrail_coverage()

@@ -22,6 +22,6 @@ this file thinking you need a Redis client, import instead:
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "redis_mcp_client")

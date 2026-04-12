@@ -1,4 +1,5 @@
 """Placeholder test file - syntax fixed."""
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -16,12 +17,14 @@ class GeneratedTest(unittest.TestCase):
     def test_hash_artifact_canonical(self):
         """Test hash_artifact_canonical function."""
         from agentic_core.L0_routing.enforcement import hash_artifact_canonical
+
         result = hash_artifact_canonical(b"test data")
         self.assertIsNotNone(result)
 
     def test_sign_artifact(self):
         """Test sign_artifact function."""
         from agentic_core.L0_routing.enforcement import SigningError
+
         # sign_artifact requires a SignatureEnclave which is complex to set up
         # Just test that the error class can be imported
         self.assertIsNotNone(SigningError)
@@ -29,13 +32,17 @@ class GeneratedTest(unittest.TestCase):
     def test_SigningError_init(self):
         """Test SigningError initialization."""
         from agentic_core.L0_routing.enforcement import SigningError
+
         instance = SigningError()
         self.assertIsNotNone(instance)
 
     def test_VerificationError_init(self):
         """Test VerificationError initialization."""
         from agentic_core.L0_routing.enforcement import VerificationError
+
         instance = VerificationError()
         self.assertIsNotNone(instance)
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     unittest.main()

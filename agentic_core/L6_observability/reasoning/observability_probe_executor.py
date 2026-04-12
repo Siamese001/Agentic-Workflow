@@ -204,13 +204,17 @@ class ObservabilityProbeExecutorAgent(SovereignBaseAgent):
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(
-            str(_uuid.uuid4()), "ObservabilityProbeExecutorAgent.execute", "p0_governance",
+            str(_uuid.uuid4()),
+            "ObservabilityProbeExecutorAgent.execute",
+            "p0_governance",
         )
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L6_OBSERVABILITY, "ObservabilityProbeExecutorAgent.execute",
+            _trace_id,
+            LayerSegment.L6_OBSERVABILITY,
+            "ObservabilityProbeExecutorAgent.execute",
         )
 
         ctx = context or {}

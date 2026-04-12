@@ -229,7 +229,8 @@ class NervousSystemAgent(SovereignBaseAgent):
         self.SignalLedger = SignalLedger(storage_adapter, self.session_id)
         self.brain = cognitive_plane or create_sovereign_cognitive_plane()
         self.hands = action_plane or create_sovereign_action_plane(
-            safety_layer=self.safety_layer, SignalLedger=self.SignalLedger,
+            safety_layer=self.safety_layer,
+            SignalLedger=self.SignalLedger,
         )
         self.config = config or OrchestratorConfig()
         self._state: dict[str, Any] = {}
@@ -247,12 +248,19 @@ class NervousSystemAgent(SovereignBaseAgent):
         self.import_agent = _healer_factory() if _healer_factory else None
         self._backup_dir: Path | None = None
         self._checkpointing = NervousSystemCheckpointing(
-            self.CheckpointManager, self.SignalLedger, self.session_id, LOGGER,
+            self.CheckpointManager,
+            self.SignalLedger,
+            self.session_id,
+            LOGGER,
         )
         self._result_reporting = NervousSystemResultReporting(self.config, LOGGER)
         self._state_management = NervousSystemStateManagement(LOGGER)
         self._phase_execution = NervousSystemPhaseExecution(
-            self.brain, self.safety_layer, self.SignalLedger, self._modified_files, LOGGER,
+            self.brain,
+            self.safety_layer,
+            self.SignalLedger,
+            self._modified_files,
+            LOGGER,
         )
         self.phases = self._phase_execution.phases
         self._architecture_governance = NervousSystemArchitectureGovernance(self.ArchitectureGovernor, LOGGER)
@@ -398,7 +406,9 @@ class NervousSystemAgent(SovereignBaseAgent):
         return None
 
     def _v15_build_operation_manifest(
-        self, operation: str, target_layer: str = "L3",
+        self,
+        operation: str,
+        target_layer: str = "L3",
     ) -> SurgicalManifest | None:
         """§8.1a — Construct SurgicalManifest for orchestrator-level operation."""
         if not is_v15_enforced():
@@ -487,7 +497,9 @@ class NervousSystemAgent(SovereignBaseAgent):
         if "TELEPATHY_STOP" in context.signals:
             LOGGER.warning("Mission stopped by telepathic instruction")
             return ExecutionResult(
-                success=False, report="Mission stopped by telepathic instruction", signals=["TELEPATHY_STOP"],
+                success=False,
+                report="Mission stopped by telepathic instruction",
+                signals=["TELEPATHY_STOP"],
             )
         intervention_status = await self._intervention_manager.handle_intervention_if_required(
             cycle=cycle,
@@ -525,19 +537,23 @@ class NervousSystemAgent(SovereignBaseAgent):
             stage=resume_phase or "execute",
         )
         _exec_breaker.call(lambda: None)
-        try:    # guardian: PolicyEnforcementError should be handled with specific context
+        try:  # guardian: PolicyEnforcementError should be handled with specific context
             enforce_policy_before_action(
                 action_name="NervousSystemAgent.execute",
                 action_class=ActionClass.REASONING,
                 actor_id="NervousSystemAgent",
                 run_id=getattr(context, "run_id", "") or "",
             )
-        except PolicyEnforcementError as _pee:    # guardian: PolicyEnforcementError should be handled with specific context
+        except (
+            PolicyEnforcementError
+        ) as _pee:  # guardian: PolicyEnforcementError should be handled with specific context
             LOGGER.error("Policy blocked NervousSystemAgent.execute: %s", _pee)
             raise
         _rsa = get_run_state_authority()
         _rsa.observe_runtime_state(
-            "execute_start", stage=resume_phase or "execute", actor_id="NervousSystemAgent",
+            "execute_start",
+            stage=resume_phase or "execute",
+            actor_id="NervousSystemAgent",
         )
         start_time = get_clock().now_epoch()
         context.execution_trace = []
@@ -549,11 +565,13 @@ class NervousSystemAgent(SovereignBaseAgent):
             self._modified_files = set()
         self._state.update(context.state)
         LOGGER.info(
-            "execution_started", extra={"mission": context.mission, "scene_keys": list(context.scene.keys())},
+            "execution_started",
+            extra={"mission": context.mission, "scene_keys": list(context.scene.keys())},
         )
         try:
             converged, errors = await self._phase_orchestrator.run_execution_loop(
-                context, resume_phase=resume_phase,
+                context,
+                resume_phase=resume_phase,
             )
             self._result_reporting._generate_mission_report(self._results, self._state)
             result = self._result_reporting.create_execution_result(
@@ -569,12 +587,16 @@ class NervousSystemAgent(SovereignBaseAgent):
             )
             await self.SignalLedger.append_result(result)
             _rsa.observe_runtime_state(
-                "execute_complete", stage="run_complete", actor_id="NervousSystemAgent",
+                "execute_complete",
+                stage="run_complete",
+                actor_id="NervousSystemAgent",
             )
             _rsa.snapshot_state("nervous_system_execute_complete")
             # P0/L6: lifecycle trace completion — records + signs + transcript
             _active_trace = _rsa.observe_runtime_state(
-                "trace_id_fetch", stage="run_complete", actor_id="NervousSystemAgent",
+                "trace_id_fetch",
+                stage="run_complete",
+                actor_id="NervousSystemAgent",
             )
             from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
@@ -582,7 +604,10 @@ class NervousSystemAgent(SovereignBaseAgent):
             _rtid = _et.trace_id if _et else getattr(context, "run_id", "") or "no-trace"
             _emit_records_execution_trace(_rtid, LayerSegment.L3_ORCHESTRATION, "execute_complete")
             _emit_signs_execution_trace(
-                _rtid, getattr(result, "report", "")[:16] or "ok", "NervousSystemAgent", self._iteration,
+                _rtid,
+                getattr(result, "report", "")[:16] or "ok",
+                "NervousSystemAgent",
+                self._iteration,
             )
             _emit_transcripts_response(_rtid, f"tr:{_rtid[:12]}", "NervousSystemAgent")
             emit_replay_key(_rtid, f"rk:{_rtid[:16]}")
@@ -597,7 +622,12 @@ class NervousSystemAgent(SovereignBaseAgent):
             _rtid2 = _et2.trace_id if _et2 else getattr(context, "run_id", "") or "no-trace"
             _emit_hard_fails_untranscripted(_rtid2, f"execute_error:{type(e).__name__}")
             return self._result_reporting.handle_execution_error(
-                context, context.execution_trace, start_time, e, self._iteration, self._state,
+                context,
+                context.execution_trace,
+                start_time,
+                e,
+                self._iteration,
+                self._state,
             )
 
     async def should_continue(self, context: ExecutionContext) -> bool:
@@ -689,7 +719,10 @@ class NervousSystemAgent(SovereignBaseAgent):
         return self._architecture_governance.validate_architecture(file_paths)
 
     def post_phase_validation(
-        self, phase_name: str, affected_paths: list[Path], dry_run: bool = True,
+        self,
+        phase_name: str,
+        affected_paths: list[Path],
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         GOLD STANDARD: Post-phase validation using domain-specific agents.
@@ -766,7 +799,10 @@ class NervousSystemAgent(SovereignBaseAgent):
 
     # guardian: allow-magic-config
     def cleanup_violations(
-        self, violations: list[PhaseViolation], dry_run: bool = True, max_actions: int = 50,
+        self,
+        violations: list[PhaseViolation],
+        dry_run: bool = True,
+        max_actions: int = 50,
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup violations using integrated domain agents.
@@ -798,7 +834,8 @@ class NervousSystemAgent(SovereignBaseAgent):
                 if violation.file_path and self.location_agent:
                     if "LOCATION" in violation.message.upper() or "TERRITORY" in violation.message.upper():
                         cleanup_result = self.location_agent.cleanup_violations(
-                            [(violation.file_path, violation.message)], dry_run=dry_run,
+                            [(violation.file_path, violation.message)],
+                            dry_run=dry_run,
                         )
                         if cleanup_result:
                             action.update(cleanup_result[0])
@@ -806,7 +843,8 @@ class NervousSystemAgent(SovereignBaseAgent):
                                 affected_paths.append(violation.file_path)
                     elif "HIERARCHY" in violation.message.upper() and self.hierarchy_agent:
                         cleanup_result = self.hierarchy_agent.cleanup_violations(
-                            [(violation.file_path, violation.message)], dry_run=dry_run,
+                            [(violation.file_path, violation.message)],
+                            dry_run=dry_run,
                         )
                         if cleanup_result:
                             action.update(cleanup_result[0])
@@ -815,7 +853,8 @@ class NervousSystemAgent(SovereignBaseAgent):
                     elif "IMPORT" in violation.message.upper() or "GRAVITY" in violation.message.upper():
                         if self.import_agent:
                             cleanup_result = self.import_agent.cleanup_violations(
-                                [(violation.file_path, violation.message)], dry_run=dry_run,
+                                [(violation.file_path, violation.message)],
+                                dry_run=dry_run,
                             )
                             if cleanup_result:
                                 action.update(cleanup_result[0])
@@ -968,6 +1007,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [str(e)],
             }
+
 
 _emit_reads_through("l4", "NervousSystemAgent", "urg_read_1")
 _emit_reads_through("l4", "NervousSystemAgent", "urg_read_2")

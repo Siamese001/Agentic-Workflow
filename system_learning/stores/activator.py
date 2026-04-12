@@ -197,7 +197,7 @@ class FileBackedActivator:
         if self._active_path.exists():
             try:
                 return json.loads(self._active_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):    # guardian: Add error context logging
+            except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
                 return {}
         return {}
 
@@ -210,7 +210,9 @@ class FileBackedActivator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedActivator.activate",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "FileBackedActivator.activate",
         )
 
         logger.info("Activating component=%s version=%s", component, version_id)

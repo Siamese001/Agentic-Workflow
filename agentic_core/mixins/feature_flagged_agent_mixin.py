@@ -308,7 +308,9 @@ class FeatureFlaggedAgentMixin:
             VerificationResult indicating success/failure
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"FeatureFlaggedAgentMixin.verify_action:{action_type}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"FeatureFlaggedAgentMixin.verify_action:{action_type}"
+        )
         if not self._is_flag_enabled("ENABLE_VERIFICATION_GATE"):
             logger.debug(f"[{self.__class__.__name__}] Verification gate disabled, allowing action")
             return VerificationResult(
@@ -458,7 +460,6 @@ class FeatureFlaggedAgentMixin:
                 status=ReviewStatus.APPROVED,
                 reason="queue_unavailable",
             )
-
 
         request = ReviewRequest(
             request_id=str(uuid.uuid4()),

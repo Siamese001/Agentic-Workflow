@@ -9,6 +9,7 @@ The scanner detects:
 - `emit_determinism_digest` via G11 (_DeterminismControlVisitor) — tail in DETERMINISM_PATCH_METHODS
 - `record_execution_trace` via G14 (_ExecutionProofVisitor) — tail in REPLAY_KEY_METHODS → else branch
 """
+
 from __future__ import annotations
 
 import json

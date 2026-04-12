@@ -210,7 +210,8 @@ class K1Router:
             },
         )
         self.cxo_precedence_tokens: list[str] = self.config.get(
-            "cxo_precedence_tokens", ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "FOUNDER", "CHIEF"],
+            "cxo_precedence_tokens",
+            ["CEO", "CTO", "CFO", "CIO", "COO", "PRESIDENT", "FOUNDER", "CHIEF"],
         )
         self.route_configs: dict[str, Any] = self.config.get("route_configs", {})
 
@@ -249,6 +250,7 @@ class K1Router:
             str: Next hop identifier
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "K1Router.determine_next_hop")
 
@@ -406,7 +408,11 @@ class K1Router:
         )
 
     def _select_route(
-        self, lifecycle: str, premium_available: bool, route_override: str | None, archetype: str,
+        self,
+        lifecycle: str,
+        premium_available: bool,
+        route_override: str | None,
+        archetype: str,
     ) -> RouteSelectionResult:
         """Select message route with premium routing validation.
 
@@ -429,7 +435,9 @@ class K1Router:
                     blocking_reason="INMAIL route selected but Premium InMail not available. Operator response to Gate 3A conflicts with route selection.",
                 )
             return RouteSelectionResult(
-                route=selected_route, premium_available=premium_available, premium_routing_mismatch=False,
+                route=selected_route,
+                premium_available=premium_available,
+                premium_routing_mismatch=False,
             )
         if lifecycle == "EXISTING":
             selected_route = "FOLLOW_UP"
@@ -438,5 +446,7 @@ class K1Router:
         else:
             selected_route = "CONNECTION_REQ"
         return RouteSelectionResult(
-            route=selected_route, premium_available=premium_available, premium_routing_mismatch=False,
+            route=selected_route,
+            premium_available=premium_available,
+            premium_routing_mismatch=False,
         )

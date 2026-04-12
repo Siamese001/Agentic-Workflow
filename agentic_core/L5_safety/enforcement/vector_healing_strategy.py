@@ -288,7 +288,8 @@ class VectorHealingStrategy:
             ]
             Logger.info(f"[L0 VECTOR HEALING] Upserting vector for {file_path}")
             result: Any = await self.pinecone_client.upsert(
-                vectors=payload, namespace=config.PINECONE_DEFAULT_NAMESPACE,
+                vectors=payload,
+                namespace=config.PINECONE_DEFAULT_NAMESPACE,
             )
             if result and result.get("upserted_count", 0) > 0:
                 self.processed_today += 1

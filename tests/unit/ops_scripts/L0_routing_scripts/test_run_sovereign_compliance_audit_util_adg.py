@@ -16,14 +16,17 @@ class TestRunSovereignComplianceAuditUtilAdg:
     def test_run_sovereign_compliance_audit_util_adg_imports(self):
         """Test run_sovereign_compliance_audit_util_adg module imports."""
         from agentic_core import run_sovereign_compliance_audit_util_adg
+
         assert run_sovereign_compliance_audit_util_adg is not None
 
     def test_run_sovereign_compliance_audit_util_adg_class(self):
         """Test RunSovereignComplianceAuditUtilAdg class exists."""
         from agentic_core import RunSovereignComplianceAuditUtilAdg
+
         assert RunSovereignComplianceAuditUtilAdg is not None
 
     def test_run_sovereign_compliance_audit_util_adg_callable(self):
         """Test run_sovereign_compliance_audit_util_adg functions are callable."""
         from agentic_core import validate_run_sovereign_compliance_audit_util_adg
+
         assert callable(validate_run_sovereign_compliance_audit_util_adg)

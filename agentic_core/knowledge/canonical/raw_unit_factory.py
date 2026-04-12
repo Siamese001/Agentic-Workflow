@@ -77,7 +77,9 @@ class RawUnitFactory:
         """
         trace_id = f"create_unit_{uuid.uuid4().hex[:8]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_from_content",
+            trace_id,
+            LayerSegment.L2_EXECUTION,
+            "RawUnitFactory.create_from_content",
         )
 
         # Generate unique identifier
@@ -164,7 +166,9 @@ class RawUnitFactory:
         """
         trace_id = f"create_children_{parent_unit.identifier.unit_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_child_units",
+            trace_id,
+            LayerSegment.L2_EXECUTION,
+            "RawUnitFactory.create_child_units",
         )
 
         child_units = []
@@ -204,7 +208,9 @@ class RawUnitFactory:
         """
         trace_id = f"version_{existing_unit.identifier.unit_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.create_versioned_unit",
+            trace_id,
+            LayerSegment.L2_EXECUTION,
+            "RawUnitFactory.create_versioned_unit",
         )
 
         # Check if content actually changed
@@ -278,7 +284,9 @@ class RawUnitFactory:
         """
         trace_id = f"tombstone_{unit.identifier.unit_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L2_EXECUTION, "RawUnitFactory.tombstone_unit",
+            trace_id,
+            LayerSegment.L2_EXECUTION,
+            "RawUnitFactory.tombstone_unit",
         )
 
         # Create tombstoned version
@@ -324,13 +332,13 @@ class RawUnitFactory:
     def _generate_unit_id(self, content: str, unit_type: CanonicalUnitType) -> str:
         """Generate unique unit ID based on content and type."""
         # Create content hash for uniqueness
-        content_hash = hashlib.sha256(content.encode('utf-8')).hexdigest()[:16]
+        content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()[:16]
         type_prefix = unit_type.value[:3].upper()
         return f"{type_prefix}_{content_hash}"
 
     def _calculate_checksum(self, content: str) -> str:
         """Calculate SHA-256 checksum of content."""
-        return hashlib.sha256(content.encode('utf-8')).hexdigest()
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
     def _get_next_version(self, unit_id: str) -> int:
         """Get next version number for a unit ID."""
@@ -349,7 +357,7 @@ class RawUnitFactory:
     ) -> CanonicalMetadata:
         """Create metadata for a canonical unit."""
         # Base metadata from content analysis
-        size_bytes = len(content.encode('utf-8'))
+        size_bytes = len(content.encode("utf-8"))
         token_count = len(content) // 4  # Rough approximation
 
         # Default values
@@ -376,13 +384,15 @@ class RawUnitFactory:
         if custom_attributes:
             attributes.update(custom_attributes)
         if content_metadata:
-            attributes.update({
-                "file_size": content_metadata.file_size_bytes,
-                "has_tables": content_metadata.has_tables,
-                "has_images": content_metadata.has_images,
-                "has_code_blocks": content_metadata.has_code_blocks,
-                "has_headings": content_metadata.has_headings,
-            })
+            attributes.update(
+                {
+                    "file_size": content_metadata.file_size_bytes,
+                    "has_tables": content_metadata.has_tables,
+                    "has_images": content_metadata.has_images,
+                    "has_code_blocks": content_metadata.has_code_blocks,
+                    "has_headings": content_metadata.has_headings,
+                }
+            )
 
         return CanonicalMetadata(
             content_type=content_type,

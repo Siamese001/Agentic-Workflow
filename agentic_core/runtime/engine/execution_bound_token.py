@@ -262,8 +262,11 @@ class SecureCapabilityAuthority:
     ) -> ExecutionBoundToken:
         """Issue a new execution-bound capability token."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SecureCapabilityAuthority.issue_token")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SecureCapabilityAuthority.issue_token"
+        )
 
         token_id = str(uuid.uuid4())
         raw_signature_payload = f"{token_id}:{capability_type.value}:{caller_context}:{target_context}:{execution_trace_id}:{policy_hash}:{determinism_digest}:{hierarchy_hash}"
@@ -304,6 +307,7 @@ def get_capability_authority() -> SecureCapabilityAuthority:
     if _capability_authority is None:
         _capability_authority = SecureCapabilityAuthority()
     return _capability_authority
+
 
 _emit_reads_through("l4", "execution_bound_token", "urg_read_1")
 _emit_reads_through("l4", "execution_bound_token", "urg_read_2")

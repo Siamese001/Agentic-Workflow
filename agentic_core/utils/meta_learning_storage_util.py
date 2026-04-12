@@ -182,8 +182,11 @@ class MetaLearningStorage:
     def ensure_memory_connection(cls, agent_name: str) -> None:
         """Connect to SemanticCacheManager singleton (thread-safe, circuit-breaker)."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningStorage.ensure_memory_connection")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MetaLearningStorage.ensure_memory_connection"
+        )
 
         if cls._lobotomized:
             return
@@ -232,7 +235,11 @@ class MetaLearningStorage:
 
     @classmethod
     def learn_with_feedback(
-        cls, context: str, namespace: str, result: dict[str, Any], feedback_score: float,
+        cls,
+        context: str,
+        namespace: str,
+        result: dict[str, Any],
+        feedback_score: float,
     ) -> bool:
         """Learn with feedback score, promoting to long-term DNA if threshold met."""
         if cls._lobotomized or cls._memory is None:
@@ -290,7 +297,9 @@ class MetaLearningStorage:
             return
         try:
             cls._graph_bridge.create_agent_entity(
-                agent_name=agent_name, agent_type="Agent", observations=[f"Agent {agent_name} initialized"],
+                agent_name=agent_name,
+                agent_type="Agent",
+                observations=[f"Agent {agent_name} initialized"],
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise
@@ -303,7 +312,9 @@ class MetaLearningStorage:
             return
         try:
             cls._graph_bridge.create_mastered_task_relation(
-                agent_name=agent_name, task_description=context, feedback_score=feedback_score,
+                agent_name=agent_name,
+                task_description=context,
+                feedback_score=feedback_score,
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             raise

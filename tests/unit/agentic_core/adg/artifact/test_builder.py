@@ -16,14 +16,17 @@ class TestBuilder:
     def test_builder_imports(self):
         """Test builder module imports."""
         from agentic_core import builder
+
         assert builder is not None
 
     def test_builder_class(self):
         """Test Builder class exists."""
         from agentic_core import Builder
+
         assert Builder is not None
 
     def test_builder_callable(self):
         """Test builder functions are callable."""
         from agentic_core import validate_builder
+
         assert callable(validate_builder)

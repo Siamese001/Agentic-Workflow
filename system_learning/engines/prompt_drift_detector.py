@@ -266,12 +266,14 @@ def _build_signal_id(
     drift_type: str,
     timestamp_utc: int,
 ) -> str:
-    canonical = deterministic_json({
-        "drift_type": drift_type,
-        "prompt_hash_after": prompt_hash_after,
-        "prompt_hash_before": prompt_hash_before,
-        "timestamp_utc": timestamp_utc,
-    })
+    canonical = deterministic_json(
+        {
+            "drift_type": drift_type,
+            "prompt_hash_after": prompt_hash_after,
+            "prompt_hash_before": prompt_hash_before,
+            "timestamp_utc": timestamp_utc,
+        }
+    )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -332,6 +334,7 @@ class PromptDriftDetector:
             Sorted by signal_id for determinism.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptDriftDetector.detect")
 
@@ -346,89 +349,111 @@ class PromptDriftDetector:
 
         # --- Structural drift from template files ---
         if structural_drift_detected:
-            signals.append(self._make_signal(
-                prompt_hash_before, prompt_hash_after,
-                "STRUCTURAL_DRIFT", 1.0, None,
-                baseline.n, current.n,
-                DRIFT_REGRESSION_DETECTED, timestamp_utc,
-            ))
+            signals.append(
+                self._make_signal(
+                    prompt_hash_before,
+                    prompt_hash_after,
+                    "STRUCTURAL_DRIFT",
+                    1.0,
+                    None,
+                    baseline.n,
+                    current.n,
+                    DRIFT_REGRESSION_DETECTED,
+                    timestamp_utc,
+                )
+            )
 
         # --- Escalation rate ---
         esc_delta = current.escalation_rate - baseline.escalation_rate
         if abs(esc_delta) > cfg.escalation_rate_threshold:
-            drift_type = (
-                "ESCALATION_RATE_INCREASE" if esc_delta > 0
-                else "IMPROVEMENT_DETECTED"
+            drift_type = "ESCALATION_RATE_INCREASE" if esc_delta > 0 else "IMPROVEMENT_DETECTED"
+            adg_rel = DRIFT_REGRESSION_DETECTED if esc_delta > 0 else DRIFT_IMPROVEMENT_DETECTED
+            signals.append(
+                self._make_signal(
+                    prompt_hash_before,
+                    prompt_hash_after,
+                    drift_type,
+                    esc_delta,
+                    "NONE",
+                    baseline.n,
+                    current.n,
+                    adg_rel,
+                    timestamp_utc,
+                )
             )
-            adg_rel = (
-                DRIFT_REGRESSION_DETECTED if esc_delta > 0
-                else DRIFT_IMPROVEMENT_DETECTED
-            )
-            signals.append(self._make_signal(
-                prompt_hash_before, prompt_hash_after,
-                drift_type, esc_delta, "NONE",
-                baseline.n, current.n, adg_rel, timestamp_utc,
-            ))
 
         # --- Groundedness ---
         gnd_delta = current.mean_groundedness - baseline.mean_groundedness
         if abs(gnd_delta) > cfg.groundedness_threshold:
-            drift_type = (
-                "GROUNDEDNESS_DROP" if gnd_delta < 0
-                else "IMPROVEMENT_DETECTED"
+            drift_type = "GROUNDEDNESS_DROP" if gnd_delta < 0 else "IMPROVEMENT_DETECTED"
+            adg_rel = DRIFT_REGRESSION_DETECTED if gnd_delta < 0 else DRIFT_IMPROVEMENT_DETECTED
+            signals.append(
+                self._make_signal(
+                    prompt_hash_before,
+                    prompt_hash_after,
+                    drift_type,
+                    gnd_delta,
+                    "C0",
+                    baseline.n,
+                    current.n,
+                    adg_rel,
+                    timestamp_utc,
+                )
             )
-            adg_rel = (
-                DRIFT_REGRESSION_DETECTED if gnd_delta < 0
-                else DRIFT_IMPROVEMENT_DETECTED
-            )
-            signals.append(self._make_signal(
-                prompt_hash_before, prompt_hash_after,
-                drift_type, gnd_delta, "C0",
-                baseline.n, current.n, adg_rel, timestamp_utc,
-            ))
 
         # --- Replay instability ---
         replay_delta = current.replay_failure_rate - baseline.replay_failure_rate
         if abs(replay_delta) > cfg.replay_instability_threshold:
-            drift_type = (
-                "REPLAY_INSTABILITY" if replay_delta > 0
-                else "IMPROVEMENT_DETECTED"
+            drift_type = "REPLAY_INSTABILITY" if replay_delta > 0 else "IMPROVEMENT_DETECTED"
+            adg_rel = DRIFT_REGRESSION_DETECTED if replay_delta > 0 else DRIFT_IMPROVEMENT_DETECTED
+            signals.append(
+                self._make_signal(
+                    prompt_hash_before,
+                    prompt_hash_after,
+                    drift_type,
+                    replay_delta,
+                    "NONE",
+                    baseline.n,
+                    current.n,
+                    adg_rel,
+                    timestamp_utc,
+                )
             )
-            adg_rel = (
-                DRIFT_REGRESSION_DETECTED if replay_delta > 0
-                else DRIFT_IMPROVEMENT_DETECTED
-            )
-            signals.append(self._make_signal(
-                prompt_hash_before, prompt_hash_after,
-                drift_type, replay_delta, "NONE",
-                baseline.n, current.n, adg_rel, timestamp_utc,
-            ))
 
         # --- Guardrail violations ---
         guard_delta = current.guardrail_hit_rate - baseline.guardrail_hit_rate
         if abs(guard_delta) > cfg.guardrail_violation_threshold:
-            drift_type = (
-                "GUARDRAIL_VIOLATION_INCREASE" if guard_delta > 0
-                else "IMPROVEMENT_DETECTED"
+            drift_type = "GUARDRAIL_VIOLATION_INCREASE" if guard_delta > 0 else "IMPROVEMENT_DETECTED"
+            adg_rel = DRIFT_REGRESSION_DETECTED if guard_delta > 0 else DRIFT_IMPROVEMENT_DETECTED
+            signals.append(
+                self._make_signal(
+                    prompt_hash_before,
+                    prompt_hash_after,
+                    drift_type,
+                    guard_delta,
+                    "D0",
+                    baseline.n,
+                    current.n,
+                    adg_rel,
+                    timestamp_utc,
+                )
             )
-            adg_rel = (
-                DRIFT_REGRESSION_DETECTED if guard_delta > 0
-                else DRIFT_IMPROVEMENT_DETECTED
-            )
-            signals.append(self._make_signal(
-                prompt_hash_before, prompt_hash_after,
-                drift_type, guard_delta, "D0",
-                baseline.n, current.n, adg_rel, timestamp_utc,
-            ))
 
         # Always emit a VERSION_REPLACED_BY relation if hashes differ
         if prompt_hash_before != prompt_hash_after and prompt_hash_before:
-            signals.append(self._make_signal(
-                prompt_hash_before, prompt_hash_after,
-                "IMPROVEMENT_DETECTED", 0.0, None,
-                baseline.n, current.n,
-                DRIFT_VERSION_REPLACED_BY, timestamp_utc,
-            ))
+            signals.append(
+                self._make_signal(
+                    prompt_hash_before,
+                    prompt_hash_after,
+                    "IMPROVEMENT_DETECTED",
+                    0.0,
+                    None,
+                    baseline.n,
+                    current.n,
+                    DRIFT_VERSION_REPLACED_BY,
+                    timestamp_utc,
+                )
+            )
 
         signals.sort(key=lambda s: s.signal_id)
         return signals
@@ -441,10 +466,15 @@ class PromptDriftDetector:
     ) -> PromptDriftSignal:
         """Emit a TEMPLATE_SUPERSEDED signal when a template is replaced."""
         return self._make_signal(
-            old_prompt_hash, new_prompt_hash,
-            "IMPROVEMENT_DETECTED", 0.0, None,
-            0, 1,
-            DRIFT_TEMPLATE_SUPERSEDED, timestamp_utc,
+            old_prompt_hash,
+            new_prompt_hash,
+            "IMPROVEMENT_DETECTED",
+            0.0,
+            None,
+            0,
+            1,
+            DRIFT_TEMPLATE_SUPERSEDED,
+            timestamp_utc,
         )
 
     def _make_signal(
@@ -460,7 +490,10 @@ class PromptDriftDetector:
         timestamp_utc: int,
     ) -> PromptDriftSignal:
         signal_id = _build_signal_id(
-            prompt_hash_before, prompt_hash_after, drift_type, timestamp_utc,
+            prompt_hash_before,
+            prompt_hash_after,
+            drift_type,
+            timestamp_utc,
         )
         return PromptDriftSignal(
             signal_id=signal_id,

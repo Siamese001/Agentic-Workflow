@@ -166,10 +166,11 @@ class TestGoldenL6Emitter:
 
     def test_get_emit_stats(self, emitter, sample_result):
         """Test emission statistics tracking."""
-        with patch("agentic_core.evaluation.golden.l6_emitter._emit_captures_evaluation_metric"), \
-             patch("agentic_core.evaluation.golden.l6_emitter._emit_records_telemetry_event"), \
-             patch("agentic_core.evaluation.golden.l6_emitter._emit_emits_metric_event"):
-
+        with (
+            patch("agentic_core.evaluation.golden.l6_emitter._emit_captures_evaluation_metric"),
+            patch("agentic_core.evaluation.golden.l6_emitter._emit_records_telemetry_event"),
+            patch("agentic_core.evaluation.golden.l6_emitter._emit_emits_metric_event"),
+        ):
             stats_before = emitter.get_emit_stats()
             assert stats_before["total_emits"] == 0
 

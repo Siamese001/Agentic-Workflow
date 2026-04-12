@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class AccessLogEntry:
     """Cache access log entry."""
+
     key: str
     timestamp: float
     hit: bool
@@ -71,7 +72,9 @@ class FastTerminal:
         """
         trace_id = f"lookup_{key[:16]}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "FastTerminal.lookup",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "FastTerminal.lookup",
         )
 
         start_time = time.time()
@@ -170,10 +173,7 @@ class FastTerminal:
         Returns:
             Number of entries evicted
         """
-        stale_keys = [
-            k for k, v in self._cache.items()
-            if self._is_expired(v)
-        ]
+        stale_keys = [k for k, v in self._cache.items() if self._is_expired(v)]
 
         for key in stale_keys:
             del self._cache[key]
@@ -234,7 +234,7 @@ class FastTerminal:
 
         # Trim log if too large
         if len(self._access_log) > self._max_log_size:
-            self._access_log = self._access_log[-self._max_log_size:]
+            self._access_log = self._access_log[-self._max_log_size :]
 
 
 # Global instance

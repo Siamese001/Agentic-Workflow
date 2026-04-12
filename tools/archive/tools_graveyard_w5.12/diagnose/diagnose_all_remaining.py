@@ -9,7 +9,10 @@ ROOT = r"C:\Git\Agentic-Workflow"
 for d in ["adg", "performance", "reasoning", "system_learning"]:
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/{d}", "--co", "--tb=short", "-p", "no:logging", "-q"],
-        capture_output=True, text=True, cwd=ROOT, timeout=60,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+        timeout=60,
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 
@@ -35,7 +38,11 @@ for d in ["adg", "performance", "reasoning", "system_learning"]:
     if errors:
         print(f"\n=== tests/{d}/ ({len(errors)} errors) ===")
         for err_file, err_msg in errors:
-            fname = err_file.split("ERROR collecting ")[-1].split(" ")[0] if "ERROR collecting" in err_file else err_file
+            fname = (
+                err_file.split("ERROR collecting ")[-1].split(" ")[0]
+                if "ERROR collecting" in err_file
+                else err_file
+            )
             print(f"  {fname}")
             if err_msg:
                 print(f"    -> {err_msg[:200]}")
@@ -44,7 +51,10 @@ for d in ["adg", "performance", "reasoning", "system_learning"]:
 print("\n=== Analyzing tests/unit/ errors ===")
 r = subprocess.run(
     ["python", "-m", "pytest", "tests/unit/", "--co", "--tb=no", "-p", "no:logging", "-q", "--no-header"],
-    capture_output=True, text=True, cwd=ROOT, timeout=120,
+    capture_output=True,
+    text=True,
+    cwd=ROOT,
+    timeout=120,
 )
 clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
 with open(os.path.join(ROOT, "artifacts", "unit_errors_tbno.txt"), "w", encoding="utf-8") as f:

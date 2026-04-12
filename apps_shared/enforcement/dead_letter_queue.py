@@ -1,10 +1,12 @@
 """Dead Letter Queue - Stub implementation for test compatibility."""
+
 from enum import Enum
 from typing import Any
 
 
 class FailureReason(Enum):
     """Reason for failure."""
+
     PROCESSING_ERROR = "processing_error"
     TIMEOUT = "timeout"
     CIRCUIT_BREAKER_OPEN = "circuit_breaker_open"
@@ -17,14 +19,18 @@ class DeadLetterQueue:
     def __init__(self):
         self._failed_envelopes: list[dict[str, Any]] = []
 
-    async def add_failed_envelope(self, envelope: Any, reason: FailureReason, source: str, error: str) -> None:
+    async def add_failed_envelope(
+        self, envelope: Any, reason: FailureReason, source: str, error: str
+    ) -> None:
         """Add failed envelope to DLQ."""
-        self._failed_envelopes.append({
-            "envelope": envelope,
-            "reason": reason,
-            "source": source,
-            "error": error,
-        })
+        self._failed_envelopes.append(
+            {
+                "envelope": envelope,
+                "reason": reason,
+                "source": source,
+                "error": error,
+            }
+        )
 
     async def get_failed_envelopes(self) -> list[dict[str, Any]]:
         """Get all failed envelopes."""

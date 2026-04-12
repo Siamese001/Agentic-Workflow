@@ -1,4 +1,5 @@
 """Show remaining violations for Wave 2+ fixing."""
+
 import collections
 import json
 
@@ -13,14 +14,14 @@ for k, v in by_type.most_common():
 print("\n=== core_test_import_skip ===")
 for v in data:
     if v["violation_type"] == "core_test_import_skip":
-        print(f"  {v['file_path']}:{v.get('line','')} {v.get('why_invalid','')[:120]}")
+        print(f"  {v['file_path']}:{v.get('line', '')} {v.get('why_invalid', '')[:120]}")
 
 print("\n=== first_party_import_skip ===")
 for v in data:
     if v["violation_type"] == "first_party_import_skip":
-        print(f"  {v['file_path']}:{v.get('line','')} {v.get('why_invalid','')[:120]}")
+        print(f"  {v['file_path']}:{v.get('line', '')} {v.get('why_invalid', '')[:120]}")
 
 print("\n=== importorskip_in_core ===")
 for v in data:
     if v["violation_type"] == "importorskip_in_core":
-        print(f"  {v['file_path']}:{v.get('line','')} {v.get('why_invalid','')[:120]}")
+        print(f"  {v['file_path']}:{v.get('line', '')} {v.get('why_invalid', '')[:120]}")

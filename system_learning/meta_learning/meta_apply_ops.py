@@ -237,7 +237,9 @@ def _check_no_schema_changes(base_dir: Path, target_component: str, policy_confi
 
 
 def _check_policy_hash_unchanged(
-    base_dir: Path, target_component: str, policy_config_hash: str | None,
+    base_dir: Path,
+    target_component: str,
+    policy_config_hash: str | None,
 ) -> bool:
     """Assert policy_config_hash matches the one stored in config metadata.
 
@@ -249,7 +251,9 @@ def _check_policy_hash_unchanged(
 
 
 def _check_guardian_determinism_empty_diff(
-    base_dir: Path, target_component: str, policy_config_hash: str | None,
+    base_dir: Path,
+    target_component: str,
+    policy_config_hash: str | None,
 ) -> bool:
     """Simulated guardian determinism check.
 

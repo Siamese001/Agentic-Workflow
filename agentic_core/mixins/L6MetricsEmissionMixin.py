@@ -35,6 +35,7 @@ try:
         SNAPSHOT_PERSISTENCE_DURATION_SECONDS,
         TOOL_INVOCATION_DURATION_SECONDS,
     )
+
     PROMETHEUS_AVAILABLE = True
 except ImportError:
     PROMETHEUS_AVAILABLE = False
@@ -79,8 +80,9 @@ class L6MetricsEmissionMixin:
                     status=labels.get("status", "success"),
                 ).inc(value)
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("L6MetricsEmissionMixin: Exception swallowed at L81: %s", e)
+            logging.getLogger(__name__).debug("L6MetricsEmissionMixin: Exception swallowed at L81: %s", e)
 
     def emit_reasoning_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:
         """Emit L1 reasoning metric.
@@ -101,8 +103,9 @@ class L6MetricsEmissionMixin:
                     status=labels.get("status", "success"),
                 ).inc(value)
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("L6MetricsEmissionMixin: Exception swallowed at L102: %s", e)
+            logging.getLogger(__name__).debug("L6MetricsEmissionMixin: Exception swallowed at L102: %s", e)
 
     def emit_execution_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:
         """Emit L2 execution metric.
@@ -123,8 +126,9 @@ class L6MetricsEmissionMixin:
                     status=labels.get("status", "success"),
                 ).inc(value)
         except Exception as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("L6MetricsEmissionMixin: Exception swallowed at L123: %s", e)
+            logging.getLogger(__name__).debug("L6MetricsEmissionMixin: Exception swallowed at L123: %s", e)
 
     def emit_orchestration_metric(self, metric_name: str, value: float = 1.0, **labels: Any) -> None:
         """Emit L3 orchestration metric.

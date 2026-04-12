@@ -172,8 +172,11 @@ class StrategicPlanningEngine(BaseRGEngine):
         Formulate strategic response based on active signals.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StrategicPlanningEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "StrategicPlanningEngine.execute"
+        )
 
         self._mcp_audit("strategic_planning_start", {"signal_count": len(signals)})
         strategy = {"primary_focus": "quality", "adjustments": [], "priority_sections": []}

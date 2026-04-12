@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FileReadResult:
     """Result from async file read."""
+
     file_path: str
     content: bytes | str
     size: int
@@ -42,8 +43,8 @@ class AsyncFileProcessor:
     async def read_file_async(
         self,
         file_path: str,
-        mode: str = 'r',
-        encoding: str = 'utf-8',
+        mode: str = "r",
+        encoding: str = "utf-8",
     ) -> FileReadResult:
         """Read file asynchronously.
 
@@ -56,12 +57,13 @@ class AsyncFileProcessor:
             FileReadResult with content or error
         """
         import time
+
         start = time.time()
 
         try:
             async with self._semaphore:
-                if mode == 'rb':
-                    async with aiofiles.open(file_path, 'rb') as f:
+                if mode == "rb":
+                    async with aiofiles.open(file_path, "rb") as f:
                         content = await f.read()
                 else:
                     async with aiofiles.open(file_path, encoding=encoding) as f:
@@ -81,7 +83,7 @@ class AsyncFileProcessor:
             elapsed_ms = (time.time() - start) * 1000
             return FileReadResult(
                 file_path=file_path,
-                content=b"" if mode == 'rb' else "",
+                content=b"" if mode == "rb" else "",
                 size=0,
                 read_time_ms=elapsed_ms,
                 success=False,
@@ -92,7 +94,7 @@ class AsyncFileProcessor:
         """Read and parse JSON file asynchronously."""
         import json
 
-        result = await self.read_file_async(file_path, mode='r')
+        result = await self.read_file_async(file_path, mode="r")
 
         if not result.success:
             raise ValueError(f"Failed to read {file_path}: {result.error}")
@@ -102,7 +104,7 @@ class AsyncFileProcessor:
     async def read_multiple(
         self,
         file_paths: list[str],
-        mode: str = 'r',
+        mode: str = "r",
     ) -> list[FileReadResult]:
         """Read multiple files concurrently.
 
@@ -143,12 +145,12 @@ class MemoryMappedFileReader:
         Returns:
             File content as bytes
         """
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
                 if size is None:
                     return mm[offset:]
                 else:
-                    return mm[offset:offset + size]
+                    return mm[offset : offset + size]
 
     def read_lines_mmap(self, file_path: str) -> list[bytes]:
         """Read file line by line using memory mapping.
@@ -158,10 +160,10 @@ class MemoryMappedFileReader:
         """
         lines = []
 
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
                 # Iterate over lines in memory-mapped file
-                for line in mm.read().split(b'\n'):
+                for line in mm.read().split(b"\n"):
                     if line:
                         lines.append(line)
 
@@ -178,7 +180,7 @@ class MemoryMappedFileReader:
         """
         offsets = []
 
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
                 offset = mm.find(pattern)
                 while offset != -1:
@@ -201,8 +203,8 @@ class BufferedFileWriter:
         self,
         file_path: str,
         content_generator,
-        mode: str = 'w',
-        encoding: str = 'utf-8',
+        mode: str = "w",
+        encoding: str = "utf-8",
     ) -> int:
         """Write content with buffering.
 
@@ -217,7 +219,7 @@ class BufferedFileWriter:
         """
         total_written = 0
 
-        if 'b' in mode:
+        if "b" in mode:
             with open(file_path, mode, buffering=self.buffer_size) as f:
                 for chunk in content_generator:
                     if isinstance(chunk, str):
@@ -246,10 +248,10 @@ class BufferedFileWriter:
 
         total = 0
 
-        with open(file_path, 'w', buffering=self.buffer_size) as f:
+        with open(file_path, "w", buffering=self.buffer_size) as f:
             for i in range(0, len(records), batch_size):
-                batch = records[i:i + batch_size]
-                lines = [json.dumps(r) + '\n' for r in batch]
+                batch = records[i : i + batch_size]
+                lines = [json.dumps(r) + "\n" for r in batch]
                 f.writelines(lines)
                 total += len(batch)
 
@@ -269,7 +271,7 @@ class StreamingFileProcessor:
         self,
         file_path: str,
         processor_func,
-        mode: str = 'rb',
+        mode: str = "rb",
     ):
         """Process file in streaming fashion.
 
@@ -295,7 +297,7 @@ class StreamingFileProcessor:
         self,
         file_path: str,
         processor_func,
-        mode: str = 'rb',
+        mode: str = "rb",
     ):
         """Async streaming file processor."""
         async with aiofiles.open(file_path, mode) as f:

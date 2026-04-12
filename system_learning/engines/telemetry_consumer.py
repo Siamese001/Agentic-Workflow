@@ -297,10 +297,12 @@ def ingest_otel_spans(
         return 0
 
     # Check if store supports span ingestion
-    if hasattr(store, 'ingest_spans'):
+    if hasattr(store, "ingest_spans"):
         count = store.ingest_spans(spans)
         _emit_records_telemetry_event(
-            "telemetry_consumer", "L4_STATE", "otel_span_ingestion",
+            "telemetry_consumer",
+            "L4_STATE",
+            "otel_span_ingestion",
             ingested_count=count,
         )
         return count
@@ -331,7 +333,9 @@ def create_telemetry_consumer_with_otel(
     store = OpenTelemetrySpanStore(max_buffer_size=max_buffer_size)
 
     _emit_records_telemetry_event(
-        "telemetry_consumer", "L4_STATE", "otel_consumer_created",
+        "telemetry_consumer",
+        "L4_STATE",
+        "otel_consumer_created",
         max_buffer_size=max_buffer_size,
     )
 

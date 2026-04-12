@@ -205,19 +205,33 @@ def _check_dead_imports(spec: AppGuardianSpec) -> AppHealResult:
     import subprocess
 
     result = subprocess.run(
-        [sys.executable, "-m", "ruff", "check", "--select", "F401",
-         "apps_rg/", "apps_lic/", "apps_shared/", "--output-format=json"],
-        capture_output=True, text=True,
+        [
+            sys.executable,
+            "-m",
+            "ruff",
+            "check",
+            "--select",
+            "F401",
+            "apps_rg/",
+            "apps_lic/",
+            "apps_shared/",
+            "--output-format=json",
+        ],
+        capture_output=True,
+        text=True,
     )
     violations = json.loads(result.stdout) if result.stdout.strip().startswith("[") else []
     if not violations:
         return AppHealResult(
-            check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 F401 violations",
+            check_id=spec.check_id,
+            app=spec.app,
+            status=AppHealStatus.HEALED,
+            detail="0 F401 violations",
         )
     files = list({v["filename"] for v in violations})
     return AppHealResult(
-        check_id=spec.check_id, app=spec.app,
+        check_id=spec.check_id,
+        app=spec.app,
         status=AppHealStatus.PARTIAL,
         changes_made=tuple(files),
         detail="%d F401 violation(s) remain" % len(violations),
@@ -228,17 +242,23 @@ def _check_layer_violations(spec: AppGuardianSpec) -> AppHealResult:
     """AGS-002: Check ADG for L_APP→L_SL violations."""
     try:
         from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+
         report = build_pre_run_report(changed_files=[], force_fresh=False)
         if report.layer_violation_count == 0:
             return AppHealResult(
-                check_id=spec.check_id, app=spec.app,
-                status=AppHealStatus.HEALED, detail="0 layer violations",
+                check_id=spec.check_id,
+                app=spec.app,
+                status=AppHealStatus.HEALED,
+                detail="0 layer violations",
             )
         return AppHealResult(
-            check_id=spec.check_id, app=spec.app,
+            check_id=spec.check_id,
+            app=spec.app,
             status=AppHealStatus.FAILED,
-            detail="%d layer violation(s): %s" % (
-                report.layer_violation_count, report.scope_widening_events,
+            detail="%d layer violation(s): %s"
+            % (
+                report.layer_violation_count,
+                report.scope_widening_events,
             ),
         )
     # guardian: allow-silent-swallow
@@ -255,11 +275,14 @@ def _check_misplaced_tests(spec: AppGuardianSpec) -> AppHealResult:
                 misplaced.append(py.as_posix())
     if not misplaced:
         return AppHealResult(
-            check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 misplaced test files",
+            check_id=spec.check_id,
+            app=spec.app,
+            status=AppHealStatus.HEALED,
+            detail="0 misplaced test files",
         )
     return AppHealResult(
-        check_id=spec.check_id, app=spec.app,
+        check_id=spec.check_id,
+        app=spec.app,
         status=AppHealStatus.FAILED,
         changes_made=tuple(misplaced),
         detail="%d misplaced test file(s)" % len(misplaced),
@@ -269,6 +292,7 @@ def _check_misplaced_tests(spec: AppGuardianSpec) -> AppHealResult:
 def _check_inline_constants(spec: AppGuardianSpec) -> AppHealResult:
     """AGS-004: Detect files that still define MAX_RETRIES = 3 inline."""
     import re
+
     pattern = re.compile(r"^MAX_RETRIES = 3$", re.MULTILINE)
     ssot = "apps_shared/config/pipeline_constants_config.py"
     offenders = []
@@ -280,11 +304,14 @@ def _check_inline_constants(spec: AppGuardianSpec) -> AppHealResult:
                 offenders.append(py.as_posix())
     if not offenders:
         return AppHealResult(
-            check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 inline MAX_RETRIES definitions",
+            check_id=spec.check_id,
+            app=spec.app,
+            status=AppHealStatus.HEALED,
+            detail="0 inline MAX_RETRIES definitions",
         )
     return AppHealResult(
-        check_id=spec.check_id, app=spec.app,
+        check_id=spec.check_id,
+        app=spec.app,
         status=AppHealStatus.FAILED,
         changes_made=tuple(offenders),
         detail="%d file(s) still define MAX_RETRIES inline" % len(offenders),
@@ -296,11 +323,14 @@ def _check_content_strategy_shim(spec: AppGuardianSpec) -> AppHealResult:
     shim = Path("apps_rg/reasoning/ContentStrategyAgent.py")
     if not shim.exists():
         return AppHealResult(
-            check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="ContentStrategyAgent shim absent",
+            check_id=spec.check_id,
+            app=spec.app,
+            status=AppHealStatus.HEALED,
+            detail="ContentStrategyAgent shim absent",
         )
     return AppHealResult(
-        check_id=spec.check_id, app=spec.app,
+        check_id=spec.check_id,
+        app=spec.app,
         status=AppHealStatus.FAILED,
         detail="ContentStrategyAgent shim still present",
     )
@@ -309,12 +339,13 @@ def _check_content_strategy_shim(spec: AppGuardianSpec) -> AppHealResult:
 def _check_duplicate_stubs(spec: AppGuardianSpec) -> AppHealResult:
     """AGS-006: Detect unconditional duplicate stub class definitions."""
     import ast
+
     offenders = []
     for app in ["apps_lic"]:
         for py in sorted(Path(app).rglob("*.py")):
             try:
                 tree = ast.parse(py.read_text(encoding="utf-8"))
-            except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+            except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
                 continue
             class_names = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             dupes = {n for n in class_names if class_names.count(n) > 1}
@@ -322,11 +353,14 @@ def _check_duplicate_stubs(spec: AppGuardianSpec) -> AppHealResult:
                 offenders.append("%s: %s" % (py.as_posix(), sorted(dupes)))
     if not offenders:
         return AppHealResult(
-            check_id=spec.check_id, app=spec.app,
-            status=AppHealStatus.HEALED, detail="0 duplicate stub classes",
+            check_id=spec.check_id,
+            app=spec.app,
+            status=AppHealStatus.HEALED,
+            detail="0 duplicate stub classes",
         )
     return AppHealResult(
-        check_id=spec.check_id, app=spec.app,
+        check_id=spec.check_id,
+        app=spec.app,
         status=AppHealStatus.PARTIAL,
         changes_made=tuple(offenders),
         detail="%d file(s) with duplicate class names" % len(offenders),
@@ -361,6 +395,7 @@ def dispatch(app: str = "*", strict: bool = False) -> list[dict[str, Any]]:
 
 if __name__ == "__main__":
     import argparse
+
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     parser = argparse.ArgumentParser(description="apps_* remediation dispatcher")
     parser.add_argument("--app", default="*", help="Target app (apps_rg, apps_lic, apps_shared, *)")

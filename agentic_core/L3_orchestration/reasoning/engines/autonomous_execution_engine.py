@@ -184,7 +184,6 @@ def _get_create_autonomous_checkpoint_manager():
 
         return create_autonomous_checkpoint_manager
     except ImportError as e:
-
         raise
 
 
@@ -235,7 +234,6 @@ class autonomous_execution_engine:
                 self.last_mission_result = data.get("last_mission")
                 Logger.info("L3: Loaded execution state")
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
                 raise
                 Logger.error(f"Failed to load execution state: {e}")
 
@@ -250,7 +248,6 @@ class autonomous_execution_engine:
             _wg.write_json_atomic(self.state_path, data)
             Logger.debug("L3: Execution state saved atomically")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             Logger.error(f"Execution state save failed: {e}")
 
@@ -274,7 +271,8 @@ class autonomous_execution_engine:
                 Logger.warning("L3: Low resource budget, skipping mission")
                 return
             checkpoint_id = await self.CheckpointManager.auto_checkpoint_if_needed(
-                state={"mission": "validation", "timestamp": datetime.utcnow().isoformat()}, files_to_track=[],
+                state={"mission": "validation", "timestamp": datetime.utcnow().isoformat()},
+                files_to_track=[],
             )
             Logger.info("L3: Starting validation mission")
             await asyncio.sleep(DEFAULT_SLEEP)
@@ -287,7 +285,6 @@ class autonomous_execution_engine:
             self.consecutive_failures = 0
             Logger.info("L3 MISSION COMPLETE: Canon state verified")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
             raise
             Logger.error(f"L3 MISSION FAILED: {e}")
             self.consecutive_failures += 1
@@ -308,7 +305,9 @@ class autonomous_execution_engine:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "autonomous_execution_engine.eternal_execution_cycle",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "autonomous_execution_engine.eternal_execution_cycle",
         )
 
         Logger.info("L3: Eternal execution cycle active")
@@ -319,7 +318,6 @@ class autonomous_execution_engine:
                 await self.execute_validation_mission()
                 self.save_state()
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-
                 raise
                 Logger.error(f"L3 Execution cycle error: {e}")
                 self.consecutive_failures += 1

@@ -12,15 +12,17 @@ from typing import Any
 
 class DecisionType(Enum):
     """Policy chokepoint decisions."""
-    REJECT = auto()     # Block and deny
+
+    REJECT = auto()  # Block and deny
     REMEDIATE = auto()  # Allow with modification
-    CERTIFY = auto()    # Allow as-is
-    ESCALATE = auto()   # Send to HITL
+    CERTIFY = auto()  # Allow as-is
+    ESCALATE = auto()  # Send to HITL
 
 
 @dataclass
 class ChokepointDecision:
     """Result of policy chokepoint."""
+
     decision: DecisionType
     is_allowed: bool
     reason: str
@@ -38,9 +40,7 @@ class PolicyChokepoint:
     def __init__(self) -> None:
         self._policy_rules: list[dict[str, Any]] = []
         self._injection_patterns: list[str] = []
-        self._decision_count: dict[DecisionType, int] = {
-            d: 0 for d in DecisionType
-        }
+        self._decision_count: dict[DecisionType, int] = {d: 0 for d in DecisionType}
 
     def evaluate(
         self,
@@ -73,7 +73,9 @@ class PolicyChokepoint:
                     decision=decision_type,
                     is_allowed=decision_type in (DecisionType.CERTIFY, DecisionType.REMEDIATE),
                     reason=rule.get("reason", "policy_match"),
-                    modification=rule.get("modification") if decision_type == DecisionType.REMEDIATE else None,
+                    modification=rule.get("modification")
+                    if decision_type == DecisionType.REMEDIATE
+                    else None,
                     confidence=rule.get("confidence", 0.9),
                 )
 

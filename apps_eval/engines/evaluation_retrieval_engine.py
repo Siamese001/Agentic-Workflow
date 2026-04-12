@@ -215,12 +215,14 @@ class EvaluationRetrievalEngine:
 
         results = self.store.query_similar(query, n_results=n_results)
 
-        self._query_history.append({
-            "query_type": "similar",
-            "suite_ids": suite_ids,
-            "results_count": len(results),
-            "timestamp": datetime.now().isoformat(),
-        })
+        self._query_history.append(
+            {
+                "query_type": "similar",
+                "suite_ids": suite_ids,
+                "results_count": len(results),
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         return results
 
@@ -270,7 +272,7 @@ class EvaluationRetrievalEngine:
         # Volatility (standard deviation)
         mean = sum(values) / len(values)
         variance = sum((v - mean) ** 2 for v in values) / len(values)
-        volatility = variance ** 0.5
+        volatility = variance**0.5
 
         # Direction
         if slope > 0.05:
@@ -302,10 +304,13 @@ class EvaluationRetrievalEngine:
             # Compare against specific baseline
             return {
                 "comparison_type": "baseline",
-                "overall_delta": current_result.get("overall_score", 0.0) - baseline_result.get("overall_score", 0.0),
+                "overall_delta": current_result.get("overall_score", 0.0)
+                - baseline_result.get("overall_score", 0.0),
                 "dimension_deltas": {
-                    dim: current_result.get("dimension_scores", {}).get(dim, 0.0) - baseline_result.get("dimension_scores", {}).get(dim, 0.0)
-                    for dim in set(current_result.get("dimension_scores", {}).keys()) | set(baseline_result.get("dimension_scores", {}).keys())
+                    dim: current_result.get("dimension_scores", {}).get(dim, 0.0)
+                    - baseline_result.get("dimension_scores", {}).get(dim, 0.0)
+                    for dim in set(current_result.get("dimension_scores", {}).keys())
+                    | set(baseline_result.get("dimension_scores", {}).keys())
                 },
             }
 
@@ -341,11 +346,7 @@ class EvaluationRetrievalEngine:
         current_dims = current_result.get("dimension_scores", {})
 
         for dim, current_score in current_dims.items():
-            past_scores = [
-                e.dimension_scores.get(dim)
-                for e in similar
-                if dim in e.dimension_scores
-            ]
+            past_scores = [e.dimension_scores.get(dim) for e in similar if dim in e.dimension_scores]
 
             if not past_scores:
                 continue
@@ -354,14 +355,16 @@ class EvaluationRetrievalEngine:
             delta = current_score - avg_past
 
             if delta < -threshold:
-                signals.append({
-                    "type": "dimension_regression",
-                    "dimension": dim,
-                    "current_score": current_score,
-                    "historical_avg": avg_past,
-                    "delta": delta,
-                    "severity": "high" if delta < -0.15 else "medium",
-                })
+                signals.append(
+                    {
+                        "type": "dimension_regression",
+                        "dimension": dim,
+                        "current_score": current_score,
+                        "historical_avg": avg_past,
+                        "delta": delta,
+                        "severity": "high" if delta < -0.15 else "medium",
+                    }
+                )
 
         return signals
 

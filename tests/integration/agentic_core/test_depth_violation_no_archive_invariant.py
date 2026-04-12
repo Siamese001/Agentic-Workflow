@@ -30,6 +30,7 @@ try:
         _emit_records_execution_trace,
         _emit_snapshots_state,
     )
+
     MODULES_AVAILABLE = True
 except ImportError:
     MODULES_AVAILABLE = False

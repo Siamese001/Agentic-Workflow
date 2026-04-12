@@ -21,9 +21,11 @@ MEMORY_DB_PATH = ROOT / "artifacts" / "memory" / "unified_memory.db"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class ModelCheckpoint:
     """Model checkpoint data structure."""
+
     model_name: str
     version: str
     model_type: str
@@ -32,9 +34,11 @@ class ModelCheckpoint:
     performance_metrics: dict[str, float]
     created_at: datetime
 
+
 @dataclass
 class EmbeddingVector:
     """Embedding vector data structure."""
+
     entity_id: str
     entity_type: str
     vector: list[float]
@@ -42,9 +46,11 @@ class EmbeddingVector:
     dimension: int
     created_at: datetime
 
+
 @dataclass
 class TrainingSession:
     """Training session data structure."""
+
     session_id: str
     model_id: int
     status: str
@@ -55,9 +61,11 @@ class TrainingSession:
     end_time: datetime | None
     created_at: datetime
 
+
 @dataclass
 class LearningExperience:
     """Learning experience data structure."""
+
     experience_type: str
     input_context: dict[str, Any]
     outcome_result: dict[str, Any]
@@ -65,6 +73,7 @@ class LearningExperience:
     confidence_score: float
     created_at: datetime
     metadata: dict[str, Any]
+
 
 class UnifiedMemoryManager:
     """Centralized persistent memory manager for agentic system learning."""
@@ -245,18 +254,21 @@ class UnifiedMemoryManager:
                 metadata_json = json.dumps(checkpoint.metadata)
                 metrics_json = json.dumps(checkpoint.performance_metrics)
 
-                cursor = self.conn.execute("""
+                cursor = self.conn.execute(
+                    """
                     INSERT OR REPLACE INTO learning_models
                     (model_name, version, model_type, weights, metadata, performance_metrics)
                     VALUES (?, ?, ?, ?, ?, ?)
-                """, (
-                    checkpoint.model_name,
-                    checkpoint.version,
-                    checkpoint.model_type,
-                    weights_blob,
-                    metadata_json,
-                    metrics_json,
-                ))
+                """,
+                    (
+                        checkpoint.model_name,
+                        checkpoint.version,
+                        checkpoint.model_type,
+                        weights_blob,
+                        metadata_json,
+                        metrics_json,
+                    ),
+                )
 
                 model_id = cursor.lastrowid
                 self.conn.commit()
@@ -272,17 +284,23 @@ class UnifiedMemoryManager:
         """Load a model checkpoint from persistent memory."""
         try:
             if version == "latest":
-                cursor = self.conn.execute("""
+                cursor = self.conn.execute(
+                    """
                     SELECT * FROM learning_models
                     WHERE model_name = ?
                     ORDER BY created_at DESC
                     LIMIT 1
-                """, (model_name,))
+                """,
+                    (model_name,),
+                )
             else:
-                cursor = self.conn.execute("""
+                cursor = self.conn.execute(
+                    """
                     SELECT * FROM learning_models
                     WHERE model_name = ? AND version = ?
-                """, (model_name, version))
+                """,
+                    (model_name, version),
+                )
 
             row = cursor.fetchone()
             if not row:
@@ -290,18 +308,18 @@ class UnifiedMemoryManager:
                 return None
 
             # Deserialize data
-            weights = pickle.loads(row['weights'])
-            metadata = json.loads(row['metadata'])
-            performance_metrics = json.loads(row['performance_metrics'])
+            weights = pickle.loads(row["weights"])
+            metadata = json.loads(row["metadata"])
+            performance_metrics = json.loads(row["performance_metrics"])
 
             checkpoint = ModelCheckpoint(
-                model_name=row['model_name'],
-                version=row['version'],
-                model_type=row['model_type'],
+                model_name=row["model_name"],
+                version=row["version"],
+                model_type=row["model_type"],
                 weights=weights,
                 metadata=metadata,
                 performance_metrics=performance_metrics,
-                created_at=datetime.fromisoformat(row['created_at']),
+                created_at=datetime.fromisoformat(row["created_at"]),
             )
 
             logger.info(f"Loaded model checkpoint: {model_name} v{version}")
@@ -317,17 +335,20 @@ class UnifiedMemoryManager:
             # Serialize vector
             vector_blob = pickle.dumps(embedding.vector)
 
-            cursor = self.conn.execute("""
+            cursor = self.conn.execute(
+                """
                 INSERT OR REPLACE INTO embeddings
                 (entity_id, entity_type, vector, model_version, dimension)
                 VALUES (?, ?, ?, ?, ?)
-            """, (
-                embedding.entity_id,
-                embedding.entity_type,
-                vector_blob,
-                embedding.model_version,
-                embedding.dimension,
-            ))
+            """,
+                (
+                    embedding.entity_id,
+                    embedding.entity_type,
+                    vector_blob,
+                    embedding.model_version,
+                    embedding.dimension,
+                ),
+            )
 
             embedding_id = cursor.lastrowid
             self.conn.commit()
@@ -339,15 +360,20 @@ class UnifiedMemoryManager:
             logger.error(f"Failed to store embedding: {e}")
             raise
 
-    def load_embedding(self, entity_id: str, entity_type: str, model_version: str = "latest") -> EmbeddingVector | None:
+    def load_embedding(
+        self, entity_id: str, entity_type: str, model_version: str = "latest"
+    ) -> EmbeddingVector | None:
         """Load an embedding vector from persistent memory."""
         try:
-            cursor = self.conn.execute("""
+            cursor = self.conn.execute(
+                """
                 SELECT * FROM embeddings
                 WHERE entity_id = ? AND entity_type = ?
                 ORDER BY created_at DESC
                 LIMIT 1
-            """, (entity_id, entity_type))
+            """,
+                (entity_id, entity_type),
+            )
 
             row = cursor.fetchone()
             if not row:
@@ -355,15 +381,15 @@ class UnifiedMemoryManager:
                 return None
 
             # Deserialize vector
-            vector = pickle.loads(row['vector'])
+            vector = pickle.loads(row["vector"])
 
             embedding = EmbeddingVector(
-                entity_id=row['entity_id'],
-                entity_type=row['entity_type'],
+                entity_id=row["entity_id"],
+                entity_type=row["entity_type"],
                 vector=vector,
-                model_version=row['model_version'],
-                dimension=row['dimension'],
-                created_at=datetime.fromisoformat(row['created_at']),
+                model_version=row["model_version"],
+                dimension=row["dimension"],
+                created_at=datetime.fromisoformat(row["created_at"]),
             )
 
             logger.info(f"Loaded embedding: {entity_id} ({entity_type})")
@@ -379,20 +405,23 @@ class UnifiedMemoryManager:
             loss_history_json = json.dumps(session.loss_history)
             hyperparameters_json = json.dumps(session.hyperparameters)
 
-            cursor = self.conn.execute("""
+            cursor = self.conn.execute(
+                """
                 INSERT INTO training_sessions
                 (session_id, model_id, status, current_epoch, loss_history, hyperparameters, start_time, end_time)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                session.session_id,
-                session.model_id,
-                session.status,
-                session.current_epoch,
-                loss_history_json,
-                hyperparameters_json,
-                session.start_time.isoformat(),
-                session.end_time.isoformat() if session.end_time else None,
-            ))
+            """,
+                (
+                    session.session_id,
+                    session.model_id,
+                    session.status,
+                    session.current_epoch,
+                    loss_history_json,
+                    hyperparameters_json,
+                    session.start_time.isoformat(),
+                    session.end_time.isoformat() if session.end_time else None,
+                ),
+            )
 
             session_id = cursor.lastrowid
             self.conn.commit()
@@ -411,13 +440,13 @@ class UnifiedMemoryManager:
             values = []
 
             for key, value in updates.items():
-                if key in ['status', 'current_epoch']:
+                if key in ["status", "current_epoch"]:
                     set_clauses.append(f"{key} = ?")
                     values.append(value)
-                elif key == 'loss_history':
+                elif key == "loss_history":
                     set_clauses.append("loss_history = ?")
                     values.append(json.dumps(value))
-                elif key == 'end_time':
+                elif key == "end_time":
                     set_clauses.append("end_time = ?")
                     values.append(value.isoformat() if value else None)
 
@@ -426,11 +455,14 @@ class UnifiedMemoryManager:
 
             values.append(session_id)
 
-            self.conn.execute(f"""
+            self.conn.execute(
+                f"""
                 UPDATE training_sessions
-                SET {', '.join(set_clauses)}
+                SET {", ".join(set_clauses)}
                 WHERE session_id = ?
-            """, values)
+            """,
+                values,
+            )
 
             self.conn.commit()
             logger.info(f"Updated training session: {session_id}")
@@ -447,18 +479,21 @@ class UnifiedMemoryManager:
             outcome_result_blob = pickle.dumps(experience.outcome_result)
             metadata_json = json.dumps(experience.metadata)
 
-            cursor = self.conn.execute("""
+            cursor = self.conn.execute(
+                """
                 INSERT INTO learning_experiences
                 (experience_type, input_context, outcome_result, lesson_learned, confidence_score, metadata)
                 VALUES (?, ?, ?, ?, ?, ?)
-            """, (
-                experience.experience_type,
-                input_context_blob,
-                outcome_result_blob,
-                experience.lesson_learned,
-                experience.confidence_score,
-                metadata_json,
-            ))
+            """,
+                (
+                    experience.experience_type,
+                    input_context_blob,
+                    outcome_result_blob,
+                    experience.lesson_learned,
+                    experience.confidence_score,
+                    metadata_json,
+                ),
+            )
 
             experience_id = cursor.lastrowid
             self.conn.commit()
@@ -470,36 +505,44 @@ class UnifiedMemoryManager:
             logger.error(f"Failed to store learning experience: {e}")
             raise
 
-    def get_learning_experiences(self, experience_type: str = None, limit: int = 100) -> list[LearningExperience]:
+    def get_learning_experiences(
+        self, experience_type: str = None, limit: int = 100
+    ) -> list[LearningExperience]:
         """Retrieve learning experiences for analysis."""
         try:
             if experience_type:
-                cursor = self.conn.execute("""
+                cursor = self.conn.execute(
+                    """
                     SELECT * FROM learning_experiences
                     WHERE experience_type = ?
                     ORDER BY created_at DESC
                     LIMIT ?
-                """, (experience_type, limit))
+                """,
+                    (experience_type, limit),
+                )
             else:
-                cursor = self.conn.execute("""
+                cursor = self.conn.execute(
+                    """
                     SELECT * FROM learning_experiences
                     ORDER BY created_at DESC
                     LIMIT ?
-                """, (limit,))
+                """,
+                    (limit,),
+                )
 
             experiences = []
             for row in cursor.fetchall():
-                input_context = pickle.loads(row['input_context'])
-                outcome_result = pickle.loads(row['outcome_result'])
-                metadata = json.loads(row['metadata'])
+                input_context = pickle.loads(row["input_context"])
+                outcome_result = pickle.loads(row["outcome_result"])
+                metadata = json.loads(row["metadata"])
 
                 experience = LearningExperience(
-                    experience_type=row['experience_type'],
+                    experience_type=row["experience_type"],
                     input_context=input_context,
                     outcome_result=outcome_result,
-                    lesson_learned=row['lesson_learned'],
-                    confidence_score=row['confidence_score'],
-                    created_at=datetime.fromisoformat(row['created_at']),
+                    lesson_learned=row["lesson_learned"],
+                    confidence_score=row["confidence_score"],
+                    created_at=datetime.fromisoformat(row["created_at"]),
                     metadata=metadata,
                 )
                 experiences.append(experience)
@@ -511,7 +554,9 @@ class UnifiedMemoryManager:
             logger.error(f"Failed to get learning experiences: {e}")
             return []
 
-    def store_application_state(self, key: str, value: Any, state_type: str = "json", expires_at: datetime = None) -> bool:
+    def store_application_state(
+        self, key: str, value: Any, state_type: str = "json", expires_at: datetime = None
+    ) -> bool:
         """Store application state persistently."""
         try:
             # Serialize value
@@ -524,11 +569,14 @@ class UnifiedMemoryManager:
 
             expires_at_str = expires_at.isoformat() if expires_at else None
 
-            self.conn.execute("""
+            self.conn.execute(
+                """
                 INSERT OR REPLACE INTO application_state
                 (state_key, state_value, state_type, expires_at)
                 VALUES (?, ?, ?, ?)
-            """, (key, state_blob, state_type, expires_at_str))
+            """,
+                (key, state_blob, state_type, expires_at_str),
+            )
 
             self.conn.commit()
             logger.info(f"Stored application state: {key}")
@@ -541,10 +589,13 @@ class UnifiedMemoryManager:
     def load_application_state(self, key: str) -> Any | None:
         """Load application state from persistent storage."""
         try:
-            cursor = self.conn.execute("""
+            cursor = self.conn.execute(
+                """
                 SELECT * FROM application_state
                 WHERE state_key = ? AND (expires_at IS NULL OR expires_at > CURRENT_TIMESTAMP)
-            """, (key,))
+            """,
+                (key,),
+            )
 
             row = cursor.fetchone()
             if not row:
@@ -552,8 +603,8 @@ class UnifiedMemoryManager:
                 return None
 
             # Deserialize based on type
-            state_blob = row['state_value']
-            state_type = row['state_type']
+            state_blob = row["state_value"]
+            state_type = row["state_type"]
 
             if state_type == "json":
                 return json.loads(state_blob.decode())
@@ -566,16 +617,21 @@ class UnifiedMemoryManager:
             logger.error(f"Failed to load application state: {e}")
             return None
 
-    def store_performance_metric(self, name: str, value: float, unit: str = None, context: dict = None, component: str = None) -> int:
+    def store_performance_metric(
+        self, name: str, value: float, unit: str = None, context: dict = None, component: str = None
+    ) -> int:
         """Store a performance metric."""
         try:
             context_json = json.dumps(context) if context else None
 
-            cursor = self.conn.execute("""
+            cursor = self.conn.execute(
+                """
                 INSERT INTO performance_metrics
                 (metric_name, metric_value, metric_unit, context, component)
                 VALUES (?, ?, ?, ?, ?)
-            """, (name, value, unit, context_json, component))
+            """,
+                (name, value, unit, context_json, component),
+            )
 
             metric_id = cursor.lastrowid
             self.conn.commit()
@@ -587,7 +643,9 @@ class UnifiedMemoryManager:
             logger.error(f"Failed to store performance metric: {e}")
             raise
 
-    def get_performance_metrics(self, name: str = None, component: str = None, limit: int = 1000) -> list[dict]:
+    def get_performance_metrics(
+        self, name: str = None, component: str = None, limit: int = 1000
+    ) -> list[dict]:
         """Get performance metrics for analysis."""
         try:
             query = "SELECT * FROM performance_metrics WHERE 1=1"
@@ -608,15 +666,15 @@ class UnifiedMemoryManager:
 
             metrics = []
             for row in cursor.fetchall():
-                context = json.loads(row['context']) if row['context'] else None
+                context = json.loads(row["context"]) if row["context"] else None
                 metric = {
-                    'id': row['id'],
-                    'name': row['metric_name'],
-                    'value': row['metric_value'],
-                    'unit': row['metric_unit'],
-                    'context': context,
-                    'component': row['component'],
-                    'timestamp': row['timestamp'],
+                    "id": row["id"],
+                    "name": row["metric_name"],
+                    "value": row["metric_value"],
+                    "unit": row["metric_unit"],
+                    "context": context,
+                    "component": row["component"],
+                    "timestamp": row["timestamp"],
                 }
                 metrics.append(metric)
 
@@ -633,23 +691,38 @@ class UnifiedMemoryManager:
             stats = {}
 
             # Table counts
-            tables = ['learning_models', 'training_sessions', 'embeddings', 'knowledge_graphs',
-                     'application_state', 'learning_experiences', 'learning_config', 'performance_metrics']
+            tables = [
+                "learning_models",
+                "training_sessions",
+                "embeddings",
+                "knowledge_graphs",
+                "application_state",
+                "learning_experiences",
+                "learning_config",
+                "performance_metrics",
+            ]
 
             for table in tables:
                 cursor = self.conn.execute(f"SELECT COUNT(*) as count FROM {table}")
-                stats[f"{table}_count"] = cursor.fetchone()['count']
+                stats[f"{table}_count"] = cursor.fetchone()["count"]
 
             # Database size
-            stats['database_size_mb'] = self.db_path.stat().st_size / 1024 / 1024
+            stats["database_size_mb"] = self.db_path.stat().st_size / 1024 / 1024
 
             # Latest timestamps (skip tables that might not have created_at)
-            timestamp_tables = ['learning_models', 'training_sessions', 'embeddings', 'knowledge_graphs',
-                              'learning_experiences', 'learning_config', 'performance_metrics']
+            timestamp_tables = [
+                "learning_models",
+                "training_sessions",
+                "embeddings",
+                "knowledge_graphs",
+                "learning_experiences",
+                "learning_config",
+                "performance_metrics",
+            ]
             for table in timestamp_tables:
                 try:
                     cursor = self.conn.execute(f"SELECT MAX(created_at) as latest FROM {table}")
-                    latest = cursor.fetchone()['latest']
+                    latest = cursor.fetchone()["latest"]
                     stats[f"{table}_latest"] = latest
                 except (ValueError, TypeError, RuntimeError) as e:
                     # Skip tables without created_at column

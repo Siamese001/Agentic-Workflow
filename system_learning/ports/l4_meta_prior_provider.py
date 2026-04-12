@@ -197,8 +197,11 @@ class L4MetaPriorProvider:
         Returns float in [0.0, 1.0]. Returns 0.50 (neutral) when unknown.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L4MetaPriorProvider.get_prior")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L4MetaPriorProvider.get_prior"
+        )
 
         if self._store is None:
             return _NEUTRAL_PRIOR
@@ -210,7 +213,9 @@ class L4MetaPriorProvider:
         # guardian: allow-silent-swallow
         except Exception as exc:
             logger.warning(
-                "L4MetaPriorProvider.get_prior(%r) error: %s — returning neutral", error_signature, exc,
+                "L4MetaPriorProvider.get_prior(%r) error: %s — returning neutral",
+                error_signature,
+                exc,
             )
             return _NEUTRAL_PRIOR
 
@@ -230,7 +235,8 @@ def wire_l4_prior_into_dispatcher(dispatcher: Any, outcome_store: Any | None = N
         logger.info("L4MetaPriorProvider wired into %s", type(dispatcher).__name__)
     else:
         logger.warning(
-            "wire_l4_prior_into_dispatcher: %s has no set_prior_provider() method", type(dispatcher).__name__,
+            "wire_l4_prior_into_dispatcher: %s has no set_prior_provider() method",
+            type(dispatcher).__name__,
         )
 
 

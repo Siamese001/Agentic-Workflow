@@ -206,8 +206,11 @@ class AnomalyReport(BaseModel):
     def validate_description(cls, v: str) -> str:
         """[HARDENED] Ensure description is not empty."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AnomalyReport.validate_description")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AnomalyReport.validate_description"
+        )
 
         if not v.strip():
             raise ValueError("Description cannot be empty")

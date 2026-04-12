@@ -168,7 +168,9 @@ class CognitiveRecoveryMixin:
         return SemanticKnowledgeClient()
 
     def consult_knowledge_base(
-        self, query: str, namespace: str = "architecture-docs",
+        self,
+        query: str,
+        namespace: str = "architecture-docs",
     ) -> list[dict[str, Any]]:
         """
         Generic query to the semantic brain.
@@ -191,8 +193,11 @@ class CognitiveRecoveryMixin:
         to see if this specific error has a known fix or RCA document.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "CognitiveRecoveryMixin.perform_cognitive_rca")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "CognitiveRecoveryMixin.perform_cognitive_rca"
+        )
 
         error_msg = f"{type(exception).__name__}: {str(exception)}"
         tb = traceback.format_exc()

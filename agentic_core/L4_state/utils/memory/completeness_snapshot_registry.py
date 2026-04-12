@@ -37,6 +37,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class ContextCompletenessMetrics:
     """Context completeness metrics data contract [18]."""
+
     # Core completeness score (0-1)
     context_completeness_score: float = 0.0
 
@@ -63,6 +64,7 @@ class ContextCompletenessMetrics:
 @dataclass
 class CompletenessSnapshot:
     """Completeness snapshot for a retrieval context."""
+
     snap_id: str  # trace_id + hash
     trace_id: str
     query: str
@@ -204,10 +206,7 @@ class CompletenessSnapshotRegistry:
         # Combined completeness score
         # Weight: coverage 50%, diversity 25%, freshness 15%, authority 10%
         context_completeness_score = (
-            coverage_score * 0.5 +
-            diversity_score * 0.25 +
-            freshness_score * 0.15 +
-            authority_score * 0.10
+            coverage_score * 0.5 + diversity_score * 0.25 + freshness_score * 0.15 + authority_score * 0.10
         )
 
         # Determine missing signals
@@ -259,7 +258,9 @@ class CompletenessSnapshotRegistry:
         """
         _trace_id = f"l4g_snap_{trace_id[:16]}"
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "CompletenessSnapshotRegistry.capture_snapshot",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "CompletenessSnapshotRegistry.capture_snapshot",
         )
 
         # Generate IDs
@@ -275,7 +276,9 @@ class CompletenessSnapshotRegistry:
         if metrics.context_completeness_score < metrics.completeness_threshold:
             triggered_actions.append("Depth++")
             _emit_writes_learning_snapshot(
-                _trace_id, "completeness", metrics.context_completeness_score,
+                _trace_id,
+                "completeness",
+                metrics.context_completeness_score,
             )
 
         if "low_diversity" in metrics.missing_signals:
@@ -305,7 +308,9 @@ class CompletenessSnapshotRegistry:
         # Emit meta-learning signal
         if triggered_actions:
             _emit_feeds_meta_learning(
-                _trace_id, "CompletenessSnapshotRegistry", json.dumps(triggered_actions),
+                _trace_id,
+                "CompletenessSnapshotRegistry",
+                json.dumps(triggered_actions),
             )
 
         Logger.info(
@@ -324,7 +329,8 @@ class CompletenessSnapshotRegistry:
         metrics = snapshot.metrics
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT OR REPLACE INTO completeness_snapshots (
                     snap_id, trace_id, query, query_hash,
                     context_completeness_score, coverage_score, diversity_score,
@@ -335,31 +341,33 @@ class CompletenessSnapshotRegistry:
                     retrieved_contexts, context_count, triggered_actions,
                     timestamp, retrieval_config, session_id, user_id
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                snapshot.snap_id,
-                snapshot.trace_id,
-                snapshot.query,
-                snapshot.query_hash,
-                metrics.context_completeness_score,
-                metrics.coverage_score,
-                metrics.diversity_score,
-                metrics.freshness_score,
-                metrics.authority_score,
-                json.dumps(metrics.missing_signals),
-                metrics.query_terms_covered,
-                metrics.query_terms_total,
-                metrics.sources_retrieved,
-                metrics.sources_unique,
-                metrics.completeness_threshold,
-                metrics.coverage_threshold,
-                json.dumps(snapshot.retrieved_contexts),
-                snapshot.context_count,
-                json.dumps(snapshot.triggered_actions),
-                snapshot.timestamp,
-                json.dumps(snapshot.retrieval_config),
-                snapshot.session_id,
-                snapshot.user_id,
-            ))
+            """,
+                (
+                    snapshot.snap_id,
+                    snapshot.trace_id,
+                    snapshot.query,
+                    snapshot.query_hash,
+                    metrics.context_completeness_score,
+                    metrics.coverage_score,
+                    metrics.diversity_score,
+                    metrics.freshness_score,
+                    metrics.authority_score,
+                    json.dumps(metrics.missing_signals),
+                    metrics.query_terms_covered,
+                    metrics.query_terms_total,
+                    metrics.sources_retrieved,
+                    metrics.sources_unique,
+                    metrics.completeness_threshold,
+                    metrics.coverage_threshold,
+                    json.dumps(snapshot.retrieved_contexts),
+                    snapshot.context_count,
+                    json.dumps(snapshot.triggered_actions),
+                    snapshot.timestamp,
+                    json.dumps(snapshot.retrieval_config),
+                    snapshot.session_id,
+                    snapshot.user_id,
+                ),
+            )
 
             conn.commit()
             return True
@@ -376,9 +384,12 @@ class CompletenessSnapshotRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM completeness_snapshots WHERE snap_id = ?
-            """, (snap_id,))
+            """,
+                (snap_id,),
+            )
 
             row = cursor.fetchone()
             if row is None:
@@ -395,9 +406,12 @@ class CompletenessSnapshotRegistry:
         cursor = conn.cursor()
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT * FROM completeness_snapshots WHERE trace_id = ?
-            """, (trace_id,))
+            """,
+                (trace_id,),
+            )
 
             rows = cursor.fetchall()
             return [self._row_to_snapshot(row, cursor) for row in rows]
@@ -424,17 +438,23 @@ class CompletenessSnapshotRegistry:
 
         try:
             if since:
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT * FROM completeness_snapshots
                     WHERE context_completeness_score < ? AND timestamp >= ?
                     ORDER BY context_completeness_score ASC
-                """, (threshold, since))
+                """,
+                    (threshold, since),
+                )
             else:
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT * FROM completeness_snapshots
                     WHERE context_completeness_score < ?
                     ORDER BY context_completeness_score ASC
-                """, (threshold,))
+                """,
+                    (threshold,),
+                )
 
             rows = cursor.fetchall()
             return [self._row_to_snapshot(row, cursor) for row in rows]
@@ -496,8 +516,11 @@ class CompletenessSnapshotRegistry:
                     for trigger in triggers:
                         trigger_counts[trigger] = trigger_counts.get(trigger, 0) + 1
                 except Exception as e:
+                    import logging
 
-                    import logging; logging.getLogger(__name__).debug("completeness_snapshot_registry: Exception swallowed at L498: %s", e)
+                    logging.getLogger(__name__).debug(
+                        "completeness_snapshot_registry: Exception swallowed at L498: %s", e
+                    )
 
             return {
                 "avg_completeness_score": row[0] or 0.0,
@@ -574,5 +597,7 @@ def capture_completeness_snapshot(
 ) -> CompletenessSnapshot:
     """Convenience function to capture snapshot."""
     return get_global_snapshot_registry().capture_snapshot(
-        trace_id, query, retrieved_contexts,
+        trace_id,
+        query,
+        retrieved_contexts,
     )

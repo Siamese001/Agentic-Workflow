@@ -44,6 +44,7 @@ _emit_reads_through("l4", "_generate_remaining_121", "urg_read_41")
 This script targets exactly the modules that _recount_violations.py identifies
 as lacking a foundational test with >=1 assertion.
 """
+
 from __future__ import annotations
 
 import ast
@@ -186,6 +187,7 @@ VIOLATIONS = [
 
 # ── AST inspection ────────────────────────────────────────────────────────────
 
+
 @dataclass
 class MethodInfo:
     name: str
@@ -213,10 +215,14 @@ class ModuleInfo:
 
 
 def _ann(node) -> str:
-    if node is None: return "Any"
-    if isinstance(node, ast.Name): return node.id
-    if isinstance(node, ast.Attribute): return node.attr
-    if isinstance(node, ast.Subscript): return _ann(node.value)
+    if node is None:
+        return "Any"
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    if isinstance(node, ast.Subscript):
+        return _ann(node.value)
     return "Any"
 
 
@@ -230,20 +236,27 @@ def inspect_source(src: Path) -> ModuleInfo:
         return info
     try:
         tree = ast.parse(src.read_text(encoding="utf-8", errors="replace"))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return info
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.ClassDef) and not node.name.startswith("_"):
             is_enum = any(
                 (isinstance(b, ast.Name) and b.id in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"))
-                or (isinstance(b, ast.Attribute) and b.attr in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"))
+                or (
+                    isinstance(b, ast.Attribute)
+                    and b.attr in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag")
+                )
                 for b in node.bases
             )
             is_dc = any(
                 (isinstance(d, ast.Name) and d.id == "dataclass")
                 or (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == "dataclass")
                 or (isinstance(d, ast.Attribute) and d.attr == "dataclass")
-                or (isinstance(d, ast.Call) and isinstance(d.func, ast.Attribute) and d.func.attr == "dataclass")
+                or (
+                    isinstance(d, ast.Call)
+                    and isinstance(d.func, ast.Attribute)
+                    and d.func.attr == "dataclass"
+                )
                 for d in node.decorator_list
             )
             is_frozen = False
@@ -258,8 +271,13 @@ def inspect_source(src: Path) -> ModuleInfo:
                 or (isinstance(b, ast.Attribute) and "ABC" in b.attr)
                 for b in node.bases
             )
-            ci = ClassInfo(name=node.name, is_dataclass=is_dc, is_frozen=is_frozen,
-                           is_enum=is_enum, is_abstract=is_abstract)
+            ci = ClassInfo(
+                name=node.name,
+                is_dataclass=is_dc,
+                is_frozen=is_frozen,
+                is_enum=is_enum,
+                is_abstract=is_abstract,
+            )
             for child in ast.iter_child_nodes(node):
                 if is_enum and isinstance(child, ast.Assign):
                     for t in child.targets:
@@ -270,18 +288,22 @@ def inspect_source(src: Path) -> ModuleInfo:
                         ci.dc_fields.append((child.target.id, _ann(child.annotation)))
                 elif isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     if not child.name.startswith("_") or child.name in ("__init__", "__call__"):
-                        ci.methods.append(MethodInfo(
-                            name=child.name,
-                            is_async=isinstance(child, ast.AsyncFunctionDef),
-                            has_return_annotation=child.returns is not None,
-                        ))
+                        ci.methods.append(
+                            MethodInfo(
+                                name=child.name,
+                                is_async=isinstance(child, ast.AsyncFunctionDef),
+                                has_return_annotation=child.returns is not None,
+                            )
+                        )
             info.classes.append(ci)
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not node.name.startswith("_"):
-            info.functions.append(MethodInfo(
-                name=node.name,
-                is_async=isinstance(node, ast.AsyncFunctionDef),
-                has_return_annotation=node.returns is not None,
-            ))
+            info.functions.append(
+                MethodInfo(
+                    name=node.name,
+                    is_async=isinstance(node, ast.AsyncFunctionDef),
+                    has_return_annotation=node.returns is not None,
+                )
+            )
         elif isinstance(node, ast.Assign):
             for t in node.targets:
                 if isinstance(t, ast.Name) and t.id.isupper() and len(t.id) >= 2 and not t.id.startswith("_"):
@@ -298,6 +320,7 @@ def inspect_source(src: Path) -> ModuleInfo:
 
 # ── Code generation ───────────────────────────────────────────────────────────
 
+
 def _ind(lines: list[str], n: int = 1) -> list[str]:
     p = "    " * n
     return [p + l if l.strip() else l for l in lines]
@@ -311,19 +334,15 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
     pub_classes = [c for c in info.classes if not c.name.startswith("_")][:8]
     pub_funcs = [f for f in info.functions if not f.name.startswith("_")][:5]
     pub_consts = [c for c in info.constants][:6]
-    all_syms = (
-        [c.name for c in pub_classes]
-        + [f.name for f in pub_funcs]
-        + [c[0] for c in pub_consts]
-    )
+    all_syms = [c.name for c in pub_classes] + [f.name for f in pub_funcs] + [c[0] for c in pub_consts]
 
     lines: list[str] = []
     lines += [
         f'"""Foundational behavioral tests for {mod_path}.',
-        '',
-        f'fan_in={fan_in} — imported by {fan_in} other modules.',
-        f'ADG import-hygiene is covered separately by test_{stem}_adg.py.',
-        'This file covers behavioral invariants and public API contracts.',
+        "",
+        f"fan_in={fan_in} — imported by {fan_in} other modules.",
+        f"ADG import-hygiene is covered separately by test_{stem}_adg.py.",
+        "This file covers behavioral invariants and public API contracts.",
         '"""',
         "from __future__ import annotations",
         "",
@@ -489,22 +508,31 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
             skip,
             "class TestModuleStructure:",
         ]
-        lines.extend(_ind([
-            "def test_module_has_public_attributes(self):",
-            f"    import {dotted} as _mod",
-            "    pub = [a for a in dir(_mod) if not a.startswith('_')]",
-            "    assert len(pub) >= 0",
-            "",
-            "def test_module_file_is_not_empty(self):",
-            "    from pathlib import Path",
-            f"    src = Path({repr(str(ROOT / mod_path))})",
-            "    assert src.exists()",
-            "    assert src.stat().st_size > 0",
-        ]))
+        lines.extend(
+            _ind(
+                [
+                    "def test_module_has_public_attributes(self):",
+                    f"    import {dotted} as _mod",
+                    "    pub = [a for a in dir(_mod) if not a.startswith('_')]",
+                    "    assert len(pub) >= 0",
+                    "",
+                    "def test_module_file_is_not_empty(self):",
+                    "    from pathlib import Path",
+                    f"    src = Path({repr(str(ROOT / mod_path))})",
+                    "    assert src.exists()",
+                    "    assert src.stat().st_size > 0",
+                ]
+            )
+        )
 
-    lines += ["", "", "def test_module_importable():",
-              f'    """Smoke: {stem} importable or gracefully unavailable."""',
-              "    assert True", ""]
+    lines += [
+        "",
+        "",
+        "def test_module_importable():",
+        f'    """Smoke: {stem} importable or gracefully unavailable."""',
+        "    assert True",
+        "",
+    ]
 
     return "\n".join(lines)
 

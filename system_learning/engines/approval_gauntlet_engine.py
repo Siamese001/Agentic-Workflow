@@ -172,10 +172,7 @@ class ApprovalGauntletResult:
             "incident_trace_id": self.incident_trace_id,
             "loop_proposals": list(self.loop_proposals),
             "overall_decision": self.overall_decision,
-            "proposals": [
-                {"proposal": p.to_dict(), "decision": d.to_dict()}
-                for p, d in self.proposals
-            ],
+            "proposals": [{"proposal": p.to_dict(), "decision": d.to_dict()} for p, d in self.proposals],
             "rejected_proposals": list(self.rejected_proposals),
             "result_id": self.result_id,
             "timestamp_utc": self.timestamp_utc,
@@ -279,13 +276,15 @@ class ApprovalGauntletEngine:
 
         result = ApprovalGauntletResult(
             artifact_type="APPROVAL_GAUNTLET_RESULT",
-            result_id=stable_sha256_json({
-                "incident_trace_id": incident_trace_id,
-                "approved_count": len(approved),
-                "rejected_count": len(rejected),
-                "loop_count": len(loop),
-                "timestamp_utc": timestamp_utc,
-            }),
+            result_id=stable_sha256_json(
+                {
+                    "incident_trace_id": incident_trace_id,
+                    "approved_count": len(approved),
+                    "rejected_count": len(rejected),
+                    "loop_count": len(loop),
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             incident_trace_id=incident_trace_id,
             proposals=tuple(proposal_decisions),
             approved_proposals=tuple(approved),
@@ -431,7 +430,9 @@ class ApprovalGauntletEngine:
         elif proposal.confidence < self.min_confidence_for_approval:
             # Confidence too low
             decision = "LOOP"
-            reason = f"Confidence {proposal.confidence:.2f} below threshold {self.min_confidence_for_approval:.2f}"
+            reason = (
+                f"Confidence {proposal.confidence:.2f} below threshold {self.min_confidence_for_approval:.2f}"
+            )
             confidence = proposal.confidence
 
         else:
@@ -441,11 +442,13 @@ class ApprovalGauntletEngine:
             confidence = proposal.confidence
 
         return ApprovalDecision(
-            decision_id=stable_sha256_json({
-                "proposal": proposal.proposal_id,
-                "decision": decision,
-                "timestamp_utc": timestamp_utc,
-            }),
+            decision_id=stable_sha256_json(
+                {
+                    "proposal": proposal.proposal_id,
+                    "decision": decision,
+                    "timestamp_utc": timestamp_utc,
+                }
+            ),
             proposal_id=proposal.proposal_id,
             decision=decision,
             reason=reason,

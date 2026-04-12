@@ -3,6 +3,7 @@
 Phase 2: Fix Magic Configuration anti-patterns.
 Target: Externalize hardcoded timeouts, thresholds, and magic numbers.
 """
+
 from __future__ import annotations
 
 import re
@@ -28,13 +29,11 @@ def fix_magic_config_in_file(file_path: Path) -> int:
         (r"timeout=(\d+\.?\d*)", r"timeout=DEFAULT_TIMEOUT"),
         (r"timeout\s*=\s*(\d+\.?\d*)", r"timeout = DEFAULT_TIMEOUT"),
         (r"sleep\((\d+\.?\d*)\)", r"sleep(DEFAULT_SLEEP)"),
-
         # Thresholds
         (r"max_files=(\d+)", r"max_files=MAX_FILES"),
         (r"max_depth=(\d+)", r"max_depth=MAX_DEPTH"),
         (r"max_retries=(\d+)", r"max_retries=MAX_RETRIES"),
         (r"batch_size=(\d+)", r"batch_size=BATCH_SIZE"),
-
         # Common magic numbers
         (r"buffer_size=(\d+)", r"buffer_size=BUFFER_SIZE"),
         (r"limit=(\d+)", r"limit=LIMIT"),
@@ -55,7 +54,12 @@ def fix_magic_config_in_file(file_path: Path) -> int:
         for i, line in enumerate(lines):
             if line.startswith("import ") or line.startswith("from "):
                 import_section.append(i)
-            elif import_section and line.strip() and not line.startswith("import ") and not line.startswith("from "):
+            elif (
+                import_section
+                and line.strip()
+                and not line.startswith("import ")
+                and not line.startswith("from ")
+            ):
                 # End of imports, add config here
                 indent = 0
                 config_lines = [
@@ -79,18 +83,20 @@ def fix_magic_config_in_file(file_path: Path) -> int:
 
         if not config_added and import_section:
             # Add at end of file if no clear import section end
-            lines.extend([
-                "",
-                "# Configuration constants",
-                "DEFAULT_TIMEOUT = 300  # 5 minutes",
-                "MAX_FILES = 1000",
-                "MAX_DEPTH = 6",
-                "BATCH_SIZE = 32",
-                "BUFFER_SIZE = 8192",
-                "THRESHOLD = 0.95",
-                "DEFAULT_SLEEP = 1.0",
-                "MAX_RETRIES = 3",
-            ])
+            lines.extend(
+                [
+                    "",
+                    "# Configuration constants",
+                    "DEFAULT_TIMEOUT = 300  # 5 minutes",
+                    "MAX_FILES = 1000",
+                    "MAX_DEPTH = 6",
+                    "BATCH_SIZE = 32",
+                    "BUFFER_SIZE = 8192",
+                    "THRESHOLD = 0.95",
+                    "DEFAULT_SLEEP = 1.0",
+                    "MAX_RETRIES = 3",
+                ]
+            )
             fixed_count += 10
 
     # Apply magic pattern fixes
@@ -110,7 +116,7 @@ def fix_magic_config_in_file(file_path: Path) -> int:
                     config_start = i
                 else:
                     # Remove duplicate
-                    del lines[i:i+10]  # Remove the duplicate block
+                    del lines[i : i + 10]  # Remove the duplicate block
                     fixed_count -= 10
                     break
 
@@ -129,8 +135,15 @@ def main() -> None:
 
     # Skip certain directories
     skip_dirs = {
-        ".git", ".venv", "venv", "__pycache__", ".pytest_cache",
-        "node_modules", ".nox", "archives", ".backup",
+        ".git",
+        ".venv",
+        "venv",
+        "__pycache__",
+        ".pytest_cache",
+        "node_modules",
+        ".nox",
+        "archives",
+        ".backup",
     }
 
     total_fixed = 0
@@ -158,6 +171,7 @@ def main() -> None:
     # Update baseline
     import os
     import subprocess
+
     env = os.environ.copy()
     env["ALLOW_LANDMINE_BASELINE_WRITE"] = "1"
 

@@ -3,54 +3,55 @@
 Re-analyze edge signal vs noise based on actual Redis scan results.
 """
 
+
 def main():
     print("🎚️ EDGE SIGNAL/NOISE RE-ANALYSIS")
     print("=" * 60)
 
     # From the actual Redis scan, these edge types were found:
     high_signal_types = {
-        'imports',           # ✅ Critical for dependency analysis
-        'calls',             # ✅ Critical for execution flow
-        'flows_to',          # ✅ Critical for data flow
-        'controls_flow',     # ✅ Critical for control flow
-        'reads_from',        # ✅ Critical for data access
-        'writes_through',    # ✅ Critical for data mutation
-        'implements',        # ✅ Critical for interface analysis
-        'records_execution_trace',  # ✅ Critical for observability
-        'reads_runtime_state',      # ✅ Critical for state analysis
-        'reads_policy_state',       # ✅ Critical for governance
-        'pulls_context',            # ✅ Critical for context flow
-        'emits_determinism_digest',  # ✅ Critical for determinism
-        'emits_replay_key',         # ✅ Critical for replay
-        'applies_guardrail',        # ✅ Critical for safety
-        'snapshots_state',          # ✅ Critical for state management
-        'invokes_dynamic',          # ✅ Critical for dynamic behavior
-        'resolves_callsite',        # ✅ Critical for call resolution
-        'instantiates',             # ✅ Critical for object creation
-        'accesses_credential',      # ✅ Critical for security
-        'stores_embedding',         # ✅ Critical for ML/LLM
-        'retrieves_via',            # ✅ Critical for data retrieval
-        'decorated_by',             # ✅ Critical for AOP/metadata
-        'uses_uuid',                # ✅ Critical for identification
-        'defines_test_case',        # ✅ Critical for testing
-        'defines_test_suite',       # ✅ Critical for testing
-        'emits_test_result',        # ✅ Critical for testing
-        'covers',                   # ✅ Critical for test coverage
-        'tests_execution_of',       # ✅ Critical for test relationships
-        'violates',                 # ✅ Critical for policy violations
-        'antipattern',              # ✅ Critical for code quality
-        'reads_env',                # ✅ Critical for configuration
-        'emits_side_effect',        # ✅ Critical for side effects
-        'signs_execution_trace',    # ✅ Critical for security
+        "imports",  # ✅ Critical for dependency analysis
+        "calls",  # ✅ Critical for execution flow
+        "flows_to",  # ✅ Critical for data flow
+        "controls_flow",  # ✅ Critical for control flow
+        "reads_from",  # ✅ Critical for data access
+        "writes_through",  # ✅ Critical for data mutation
+        "implements",  # ✅ Critical for interface analysis
+        "records_execution_trace",  # ✅ Critical for observability
+        "reads_runtime_state",  # ✅ Critical for state analysis
+        "reads_policy_state",  # ✅ Critical for governance
+        "pulls_context",  # ✅ Critical for context flow
+        "emits_determinism_digest",  # ✅ Critical for determinism
+        "emits_replay_key",  # ✅ Critical for replay
+        "applies_guardrail",  # ✅ Critical for safety
+        "snapshots_state",  # ✅ Critical for state management
+        "invokes_dynamic",  # ✅ Critical for dynamic behavior
+        "resolves_callsite",  # ✅ Critical for call resolution
+        "instantiates",  # ✅ Critical for object creation
+        "accesses_credential",  # ✅ Critical for security
+        "stores_embedding",  # ✅ Critical for ML/LLM
+        "retrieves_via",  # ✅ Critical for data retrieval
+        "decorated_by",  # ✅ Critical for AOP/metadata
+        "uses_uuid",  # ✅ Critical for identification
+        "defines_test_case",  # ✅ Critical for testing
+        "defines_test_suite",  # ✅ Critical for testing
+        "emits_test_result",  # ✅ Critical for testing
+        "covers",  # ✅ Critical for test coverage
+        "tests_execution_of",  # ✅ Critical for test relationships
+        "violates",  # ✅ Critical for policy violations
+        "antipattern",  # ✅ Critical for code quality
+        "reads_env",  # ✅ Critical for configuration
+        "emits_side_effect",  # ✅ Critical for side effects
+        "signs_execution_trace",  # ✅ Critical for security
     }
 
     lower_signal_types = {
-        'belongs_to_layer',  # 📉 Administrative/metadata
-        'exports',           # 📉 Interface declaration only
-        'decomposes_into',   # 📉 Structural decomposition
-        'dead_imports',      # 📉 Unused imports (noise)
-        'violation_propagates_through',  # 📉 Violation tracking
-        'accesses_credential', # 📉 Security (but important)
+        "belongs_to_layer",  # 📉 Administrative/metadata
+        "exports",  # 📉 Interface declaration only
+        "decomposes_into",  # 📉 Structural decomposition
+        "dead_imports",  # 📉 Unused imports (noise)
+        "violation_propagates_through",  # 📉 Violation tracking
+        "accesses_credential",  # 📉 Security (but important)
     }
 
     # From the Redis scan sample of 500 edges, let's reclassify:
@@ -70,7 +71,7 @@ def main():
     # Anything that represents a meaningful relationship between code entities
 
     revised_high_signal_count = 450  # 90% of edges are meaningful
-    revised_low_signal_count = 50     # 10% are truly noise/administrative
+    revised_low_signal_count = 50  # 10% are truly noise/administrative
 
     total_sampled = 500
     revised_signal_ratio = revised_high_signal_count / total_sampled
@@ -100,6 +101,7 @@ def main():
         print("\n🎉 UPDATED VERDICT: STATIC ADG COMPLETE — SEMANTICALLY CORRECT")
     else:
         print(f"\n⚠️  Still below threshold, need {0.90 - revised_signal_ratio:.3f} more")
+
 
 if __name__ == "__main__":
     main()

@@ -315,8 +315,7 @@ def _open_adg(adg_dir: Path) -> sqlite3.Connection:
     dbs = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
     if not dbs:
         raise RuntimeError(
-            f"No ADG SQLite found in {adg_dir}. "
-            "Run: python tools/adg/adg_redis_ingest.py --force",
+            f"No ADG SQLite found in {adg_dir}. Run: python tools/adg/adg_redis_ingest.py --force",
         )
     return sqlite3.connect(str(dbs[-1]))
 
@@ -463,9 +462,7 @@ def build_proposals(
         # If EVERY covered prod module contains phase/wave in its path, the
         # file is testing phase-named production code — exclude it.
         if covered:
-            all_prod_phase = all(
-                _PRODUCTION_PHASE_TOKENS.search(Path(p).stem) for p in covered if p
-            )
+            all_prod_phase = all(_PRODUCTION_PHASE_TOKENS.search(Path(p).stem) for p in covered if p)
             if all_prod_phase:
                 continue  # Not a low-signal name — production module uses phase/wave
 
@@ -532,8 +529,7 @@ def execute_renames(
         )
         if result.returncode != 0:
             print(
-                f"  FAIL: git mv {p.original_path} -> {p.proposed_path}\n"
-                f"        {result.stderr.strip()}",
+                f"  FAIL: git mv {p.original_path} -> {p.proposed_path}\n        {result.stderr.strip()}",
                 file=sys.stderr,
             )
             skipped += 1
@@ -580,7 +576,7 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         conn = _open_adg(adg_dir)
-    except RuntimeError as exc:    # guardian: Runtime errors should be prevented with proper validation
+    except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 

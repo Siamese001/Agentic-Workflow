@@ -2,6 +2,7 @@
 
 These tests verify the actual behavior of V15 exception classes and functions.
 """
+
 from __future__ import annotations
 
 import os
@@ -18,6 +19,7 @@ try:
         is_v15_hard_fail,
         is_v15_soft_fail,
     )
+
     V15_AVAILABLE = True
 except ImportError:
     V15_AVAILABLE = False

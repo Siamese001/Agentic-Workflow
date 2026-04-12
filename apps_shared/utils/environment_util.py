@@ -208,8 +208,11 @@ class EnvironmentValidator:
             EnvironmentError: If required variables are missing and raise_on_missing=True
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EnvironmentValidator.validate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EnvironmentValidator.validate"
+        )
 
         missing_required = []
         missing_optional = []
@@ -237,7 +240,7 @@ class EnvironmentValidator:
                 if value is not None:
                     env_kwargs[field_name] = value
             config = EnvironmentConfig(**env_kwargs)
-        except ValidationError as e:    # guardian: ValidationError should be handled with specific context
+        except ValidationError as e:  # guardian: ValidationError should be handled with specific context
             for error in e.errors():
                 field_name = ".".join(str(loc) for loc in error["loc"])
                 errors.append(f"{field_name}: {error['msg']}")

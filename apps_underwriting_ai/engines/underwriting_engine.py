@@ -1,6 +1,7 @@
 """
 Underwriting Engine - Main orchestrator for the underwriting workflow.
 """
+
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Dict, List, Optional
@@ -35,6 +36,7 @@ from ..validators.stale_data_validator import StaleDataValidator
 @dataclass
 class UnderwritingResult:
     """Complete result of underwriting workflow."""
+
     success: bool = True
     request_id: str = ""
     decision: DecisionState = "PEND_FOR_INFORMATION"
@@ -129,24 +131,35 @@ class UnderwritingEngine:
 
             # Step 8: Determine if escalation needed
             should_escalate, escalation_reasons = self.escalation_selector.should_escalate(
-                features, request, validator_results,
+                features,
+                request,
+                validator_results,
             )
 
             # Step 9: Determine recommendation
             decision, confidence, conditions, covenants, missing_info = self._determine_decision(
-                request, features, hypothesis, validator_results, should_escalate, escalation_reasons,
+                request,
+                features,
+                hypothesis,
+                validator_results,
+                should_escalate,
+                escalation_reasons,
             )
 
             # Step 10: Build exception summary
             exception_summary = self.exception_summarizer.summarize(
-                features, request, decision, validator_results,
+                features,
+                request,
+                decision,
+                validator_results,
             )
 
             # Step 11: Check for counter-offer
             counter_offer = None
             if decision == "COUNTER_OFFER":
                 counter_offer = self.counter_offer_recommender.recommend_counter_offer(
-                    features, request,
+                    features,
+                    request,
                 )
 
             # Step 12: Assemble decision outputs
@@ -207,7 +220,9 @@ class UnderwritingEngine:
         self.evidence_engine.collect_collateral_evidence(register, request)
         self.evidence_engine.collect_relationship_evidence(register, request)
         self.evidence_engine.collect_policy_evidence(
-            register, request, features.policy.policy_exception_count,
+            register,
+            request,
+            features.policy.policy_exception_count,
         )
 
     def _run_validators(
@@ -273,10 +288,22 @@ class UnderwritingEngine:
                 return "PEND_FOR_INFORMATION", features.composite.confidence_score * 0.7, [], [], missing_info
 
             if stale_data and stale_data.requires_update:
-                return "PEND_FOR_INFORMATION", features.composite.confidence_score * 0.6, [], [], stale_data.stale_items
+                return (
+                    "PEND_FOR_INFORMATION",
+                    features.composite.confidence_score * 0.6,
+                    [],
+                    [],
+                    stale_data.stale_items,
+                )
 
             if contradictions and contradictions.escalation_recommended:
-                return "ESCALATE_TO_HUMAN", features.composite.confidence_score * 0.5, [], [], escalation_reasons
+                return (
+                    "ESCALATE_TO_HUMAN",
+                    features.composite.confidence_score * 0.5,
+                    [],
+                    [],
+                    escalation_reasons,
+                )
 
             return "ESCALATE_TO_HUMAN", features.composite.confidence_score, [], [], escalation_reasons
 
@@ -295,11 +322,23 @@ class UnderwritingEngine:
 
         # Check for stale data
         if stale_data and stale_data.requires_update:
-            return "PEND_FOR_INFORMATION", features.composite.confidence_score * 0.6, [], [], ["Stale documentation requires update"]
+            return (
+                "PEND_FOR_INFORMATION",
+                features.composite.confidence_score * 0.6,
+                [],
+                [],
+                ["Stale documentation requires update"],
+            )
 
         # Check for contradictions requiring pend
         if contradictions and contradictions.pend_recommended:
-            return "PEND_FOR_INFORMATION", features.composite.confidence_score * 0.6, [], [], ["Data contradictions require reconciliation"]
+            return (
+                "PEND_FOR_INFORMATION",
+                features.composite.confidence_score * 0.6,
+                [],
+                [],
+                ["Data contradictions require reconciliation"],
+            )
 
         # Use hypothesis recommendation as base
         decision = hypothesis.initial_recommendation

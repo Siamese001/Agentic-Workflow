@@ -38,22 +38,22 @@ test_edges = [
 # Test the stamping function
 stamped_edges, stats = _stamp_semantic_types_with_stats(test_edges)
 
-print('=== Semantic Stamping Test Results ===')
-print(f'Input edges: {len(test_edges)}')
-print(f'Output edges: {len(stamped_edges)}')
+print("=== Semantic Stamping Test Results ===")
+print(f"Input edges: {len(test_edges)}")
+print(f"Output edges: {len(stamped_edges)}")
 print()
-print('Stats:')
+print("Stats:")
 for key, value in stats.items():
-    print(f'  {key}: {value}')
+    print(f"  {key}: {value}")
 print()
 
-print('Stamped edges:')
+print("Stamped edges:")
 for edge in stamped_edges:
-    print(f'  {edge.relation_type} -> {edge.semantic_type}')
+    print(f"  {edge.relation_type} -> {edge.semantic_type}")
 
 # Check if layer_membership works
 layer_edge = stamped_edges[2]
 if layer_edge.semantic_type == "layer_membership":
-    print('✅ layer_membership correctly mapped')
+    print("✅ layer_membership correctly mapped")
 else:
-    print(f'❌ layer_membership failed: got {layer_edge.semantic_type}')
+    print(f"❌ layer_membership failed: got {layer_edge.semantic_type}")

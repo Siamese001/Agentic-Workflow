@@ -171,24 +171,27 @@ _emit_invokes_evaluation("p1", "ptc_hitl_integration", "eval_call")
 
 class PTCScriptRiskLevel(Enum):
     """Risk levels for PTC scripts."""
-    LOW = "low"           # Read-only, pure functions
-    MEDIUM = "medium"     # File reads, safe queries
-    HIGH = "high"         # File writes, subprocess
-    CRITICAL = "critical" # System-level operations
+
+    LOW = "low"  # Read-only, pure functions
+    MEDIUM = "medium"  # File reads, safe queries
+    HIGH = "high"  # File writes, subprocess
+    CRITICAL = "critical"  # System-level operations
 
 
 class PTCSafetyGateResult(Enum):
     """Results of PTC safety gate evaluation."""
-    ALLOW = "allow"           # No human review needed
-    REVIEW = "review"         # Human review required
-    REJECT = "reject"         # Automatically rejected
-    ESCALATE = "escalate"     # Escalate to higher authority
+
+    ALLOW = "allow"  # No human review needed
+    REVIEW = "review"  # Human review required
+    REJECT = "reject"  # Automatically rejected
+    ESCALATE = "escalate"  # Escalate to higher authority
 
 
 class PTCHumanDecision(Enum):
     """Human decisions for PTC script review."""
-    APPROVE = "approve"       # Approve as-is
-    REJECT = "reject"         # Reject completely
+
+    APPROVE = "approve"  # Approve as-is
+    REJECT = "reject"  # Reject completely
     MODIFY_DIFF = "modify_diff"  # Approve with modifications
 
 
@@ -206,6 +209,7 @@ class PTCSafetyAssessment:
         safety_gate_result: Result of safety gate evaluation
         trace_id: Trace ID for this assessment
     """
+
     script_id: str
     risk_level: PTCScriptRiskLevel
     confidence_score: float
@@ -229,6 +233,7 @@ class PTCHumanReviewRecord:
         timestamp: Review timestamp
         trace_id: Trace ID
     """
+
     script_id: str
     reviewer_id: str
     decision: PTCHumanDecision
@@ -345,7 +350,9 @@ class PTCHITLIntegration:
         import uuid as _uuid
 
         trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.assess_script_safety")
+        _emit_records_execution_trace(
+            trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.assess_script_safety"
+        )
 
         # Detect patterns in code
         detected_patterns: list[str] = []
@@ -389,9 +396,9 @@ class PTCHITLIntegration:
         confidence_score = max(0.0, min(1.0, base_confidence + tool_adjustment))
 
         # Determine if human review required
-        requires_human_review = (
-            confidence_score < self.LOW_CONFIDENCE_THRESHOLD
-            or risk_level in (PTCScriptRiskLevel.HIGH, PTCScriptRiskLevel.CRITICAL)
+        requires_human_review = confidence_score < self.LOW_CONFIDENCE_THRESHOLD or risk_level in (
+            PTCScriptRiskLevel.HIGH,
+            PTCScriptRiskLevel.CRITICAL,
         )
 
         # Determine safety gate result
@@ -495,7 +502,9 @@ class PTCHITLIntegration:
         from datetime import datetime, timezone
 
         trace_id = assessment.trace_id
-        _emit_records_execution_trace(trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.request_human_review")
+        _emit_records_execution_trace(
+            trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.request_human_review"
+        )
         _emit_escalates_to_human(trace_id, assessment.script_id, "review_requested")
 
         # In a real implementation, this would:
@@ -573,7 +582,9 @@ class PTCHITLIntegration:
         """
 
         trace_id = review_record.trace_id
-        _emit_records_execution_trace(trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.perform_l5_reclear")
+        _emit_records_execution_trace(
+            trace_id, LayerSegment.L5_POLICY, "PTCHITLIntegration.perform_l5_reclear"
+        )
 
         if review_record.decision != PTCHumanDecision.MODIFY_DIFF:
             # Only MODIFY_DIFF requires reclear
@@ -625,7 +636,9 @@ class PTCHITLIntegration:
         """
 
         trace_id = assessment.trace_id
-        _emit_records_execution_trace(trace_id, LayerSegment.L6_OBSERVABILITY, "PTCHITLIntegration.generate_dpo_pair")
+        _emit_records_execution_trace(
+            trace_id, LayerSegment.L6_OBSERVABILITY, "PTCHITLIntegration.generate_dpo_pair"
+        )
 
         # Create example ID with hashes
         original_code_hash = hashlib.sha256(
@@ -715,6 +728,7 @@ def reset_ptc_hitl_integration() -> None:
 # =============================================================================
 # Convenience Functions
 # =============================================================================
+
 
 def assess_ptc_script_safety(
     script_id: str,

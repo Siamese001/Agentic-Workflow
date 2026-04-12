@@ -413,7 +413,9 @@ class ToneEnforcer:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ToneVoiceAuditor.audit_content")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ToneVoiceAuditor.audit_content"
+        )
         violations = []
         violations.extend(self._check_sentence_length(text, settings))
         violations.extend(self._check_banned_words(text, settings))

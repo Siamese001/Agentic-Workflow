@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Configure ADG SQLite MCP server in Windsurf."""
+
 import json
 import sys
 
 MCP_CONFIG_PATH = r"C:\Users\amita\.codeium\windsurf\mcp_config.json"
+
 
 def main():
     print(f"Reading MCP config from: {MCP_CONFIG_PATH}")
@@ -37,7 +39,7 @@ def main():
         print("Disabled old adg_redis server")
 
     # Write config back
-    with open(MCP_CONFIG_PATH, 'w') as f:
+    with open(MCP_CONFIG_PATH, "w") as f:
         json.dump(config, f, indent=2)
 
     print("✅ MCP config updated successfully!")
@@ -47,6 +49,7 @@ def main():
         print(f"  - {name}: {status}")
 
     print("\n⚠️  IMPORTANT: Restart Windsurf completely for changes to take effect!")
+
 
 if __name__ == "__main__":
     main()

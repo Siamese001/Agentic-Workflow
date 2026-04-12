@@ -1,6 +1,7 @@
 """
 Document Package Types - Domain contracts for document references.
 """
+
 from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
@@ -8,6 +9,7 @@ from pydantic import BaseModel, Field
 
 class DocumentRef(BaseModel):
     """Reference to a document with metadata."""
+
     doc_id: str = Field(..., description="Unique document ID")
     doc_type: str = Field(..., description="Document type")
     source_uri: str = Field(..., description="Document location/URI")
@@ -21,6 +23,7 @@ class DocumentPackage(BaseModel):
     """
     Complete document package for underwriting.
     """
+
     financial_statements: List[DocumentRef] = Field(default_factory=list)
     tax_returns: List[DocumentRef] = Field(default_factory=list)
     bank_statements: List[DocumentRef] = Field(default_factory=list)
@@ -36,16 +39,16 @@ class DocumentPackage(BaseModel):
     def total_doc_count(self) -> int:
         """Total number of documents in package."""
         return (
-            len(self.financial_statements) +
-            len(self.tax_returns) +
-            len(self.bank_statements) +
-            len(self.ar_aging) +
-            len(self.ap_aging) +
-            len(self.debt_schedule) +
-            len(self.entity_docs) +
-            len(self.insurance_certificates) +
-            len(self.appraisals) +
-            len(self.management_comments)
+            len(self.financial_statements)
+            + len(self.tax_returns)
+            + len(self.bank_statements)
+            + len(self.ar_aging)
+            + len(self.ap_aging)
+            + len(self.debt_schedule)
+            + len(self.entity_docs)
+            + len(self.insurance_certificates)
+            + len(self.appraisals)
+            + len(self.management_comments)
         )
 
     @property

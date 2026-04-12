@@ -8,6 +8,7 @@ These files have a common pattern:
 
 Strategy: Parse text-level, extract import statement and test class, rewrite clean.
 """
+
 from __future__ import annotations
 
 import ast
@@ -57,7 +58,12 @@ def rewrite_file(filepath: pathlib.Path) -> dict:
 
         if not in_import:
             # Look for start of import
-            if (stripped.startswith("from ") or stripped.startswith("import ")) and "pytest" not in stripped and "__future__" not in stripped and "importorskip" not in stripped:
+            if (
+                (stripped.startswith("from ") or stripped.startswith("import "))
+                and "pytest" not in stripped
+                and "__future__" not in stripped
+                and "importorskip" not in stripped
+            ):
                 in_import = True
                 import_lines_raw.append(stripped)
                 paren_depth += stripped.count("(") - stripped.count(")")
@@ -75,7 +81,7 @@ def rewrite_file(filepath: pathlib.Path) -> dict:
     if import_lines_raw:
         import_text = "\n".join(import_lines_raw)
         # Clean up: remove noqa, add it back standardized
-        import_text = re.sub(r'\s*#\s*noqa:[^\n]*', '', import_text)
+        import_text = re.sub(r"\s*#\s*noqa:[^\n]*", "", import_text)
         # Ensure balanced parens
         open_p = import_text.count("(")
         close_p = import_text.count(")")
@@ -105,8 +111,14 @@ def rewrite_file(filepath: pathlib.Path) -> dict:
         if in_test_area:
             # Skip lines referencing _AVAILABLE
             if "_AVAILABLE" in stripped and "assert" in stripped:
-                test_content.append(line.replace("assert _AVAILABLE or not _AVAILABLE", "pass  # Import verified at module level"))
-                test_content.append(line.replace("assert _AVAILABLE", "pass  # Import verified at module level"))
+                test_content.append(
+                    line.replace(
+                        "assert _AVAILABLE or not _AVAILABLE", "pass  # Import verified at module level"
+                    )
+                )
+                test_content.append(
+                    line.replace("assert _AVAILABLE", "pass  # Import verified at module level")
+                )
                 continue
             test_content.append(line)
 
@@ -171,7 +183,9 @@ def main():
             print(f"  FIXED: {result['file']}")
         else:
             failed.append(result)
-            print(f"  {result['status'].upper()}: {result['file']} - {result.get('reason', result.get('error', '?'))}")
+            print(
+                f"  {result['status'].upper()}: {result['file']} - {result.get('reason', result.get('error', '?'))}"
+            )
 
     print(f"\nFixed: {fixed}, Failed: {len(failed)}")
     if failed:

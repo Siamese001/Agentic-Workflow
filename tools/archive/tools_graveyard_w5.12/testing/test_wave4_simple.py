@@ -29,9 +29,14 @@ def test_query_routing():
     ]
 
     available_collections = [
-        "repo_code_chunks", "repo_symbols", "repo_arch_docs",
-        "repo_adg_graph", "repo_tests_guardrails",
-        "repo_runtime_evidence", "repo_git_history", "repo_incidents_rca",
+        "repo_code_chunks",
+        "repo_symbols",
+        "repo_arch_docs",
+        "repo_adg_graph",
+        "repo_tests_guardrails",
+        "repo_runtime_evidence",
+        "repo_git_history",
+        "repo_incidents_rca",
     ]
 
     routing_success = 0
@@ -107,7 +112,9 @@ def test_reranking_engine():
         print(f"Features used: {len(rerank_result.features_used)}")
 
         print("\nReranked results:")
-        for i, (result, score) in enumerate(zip(rerank_result.reranked_results, rerank_result.reranking_scores), 1):
+        for i, (result, score) in enumerate(
+            zip(rerank_result.reranked_results, rerank_result.reranking_scores), 1
+        ):
             print(f"  {i}. Score: {score:.3f} - {result.content[:50]}...")
 
         print("\n✅ Reranking engine test successful")
@@ -175,7 +182,6 @@ def test_fusion_strategies():
     print("\n=== Fusion Strategies Test ===\n")
 
     try:
-
         # Test strategy list
         expected_strategies = [
             "reciprocal_rank_fusion",

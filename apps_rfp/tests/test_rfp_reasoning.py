@@ -1,6 +1,5 @@
 """Tests for apps_rfp reasoning components."""
 
-
 from apps_rfp.reasoning.RequirementAnalysisAgent import (
     RequirementAnalysisAgent,
 )

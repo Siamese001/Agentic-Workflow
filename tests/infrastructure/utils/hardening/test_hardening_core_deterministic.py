@@ -14,8 +14,10 @@ import pytest
 # Optimization Strategy Tests
 # ============================================================================
 
+
 class OptimizationStrategy(Enum):
     """Optimization strategies (from adaptive_optimizer)."""
+
     COST_MINIMIZATION = "cost_minimization"
     LATENCY_MINIMIZATION = "latency_minimization"
     QUALITY_MAXIMIZATION = "quality_maximization"
@@ -51,9 +53,11 @@ class TestOptimizationStrategy:
 # Performance Metrics Tests
 # ============================================================================
 
+
 @dataclass
 class PerformanceMetrics:
     """Performance metrics for optimization (from adaptive_optimizer)."""
+
     layer_type: str
     latency_ms: float
     cost_estimate: float
@@ -122,6 +126,7 @@ class TestPerformanceMetrics:
 # ============================================================================
 # Distributed State Manager Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestDistributedStateManager:
@@ -205,6 +210,7 @@ class TestDistributedStateManager:
 # Cross-Layer Coherence Tests
 # ============================================================================
 
+
 @pytest.mark.unit
 class TestCrossLayerCoherence:
     """Tests for cross-layer coherence validation."""
@@ -240,6 +246,7 @@ class TestCrossLayerCoherence:
 # ============================================================================
 # Implementation Plan Tests
 # ============================================================================
+
 
 @pytest.mark.unit
 class TestImplementationPlan:

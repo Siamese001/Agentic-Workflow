@@ -20,6 +20,7 @@ log = logging.getLogger(__name__)
 
 class AccessDecision(Enum):
     """Decision from pre-retrieval gate."""
+
     ALLOW = "allow"
     DENY = "deny"
     RESTRICTED = "restricted"
@@ -29,6 +30,7 @@ class AccessDecision(Enum):
 @dataclass
 class FilterResult:
     """Result of filter evaluation."""
+
     filter_name: str
     passed: bool
     reason: str | None = None
@@ -38,6 +40,7 @@ class FilterResult:
 @dataclass
 class GateDecision:
     """Final gate decision."""
+
     decision: AccessDecision
     query_id: str
     allowed_filters: dict[str, Any] = field(default_factory=dict)
@@ -88,7 +91,9 @@ class PreRetrievalGate:
         """
         trace_id = f"gate_{query_id}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L1_REASONING, "PreRetrievalGate.evaluate",
+            trace_id,
+            LayerSegment.L1_REASONING,
+            "PreRetrievalGate.evaluate",
         )
 
         filters_to_apply = required_filters or list(self._filters.keys())
@@ -270,7 +275,9 @@ class PreRetrievalGate:
         now = datetime.utcnow()
 
         if effective_date:
-            effective = datetime.fromisoformat(effective_date) if isinstance(effective_date, str) else effective_date
+            effective = (
+                datetime.fromisoformat(effective_date) if isinstance(effective_date, str) else effective_date
+            )
             if now < effective:
                 return FilterResult(
                     filter_name="temporal",

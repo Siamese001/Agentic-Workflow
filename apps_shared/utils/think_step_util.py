@@ -165,7 +165,8 @@ class ThinkStep(BaseModel):
     thought: str = Field(..., description="The reasoning or thought process")
     confidence: float = Field(default=1.0, ge=0.0, le=1.0, description="Confidence in this reasoning")
     reasoning_type: str = Field(
-        default="general", description="Type of reasoning (e.g., deductive, inductive)",
+        default="general",
+        description="Type of reasoning (e.g., deductive, inductive)",
     )
     timestamp: datetime = Field(default_factory=datetime.now, description="When this thought occurred")
     metadata: dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
@@ -218,7 +219,8 @@ class ReasoningTraceModel(BaseModel):
     trace_id: str = Field(..., description="Unique identifier for this trace")
     task: str = Field(..., description="The task being reasoned about")
     steps: list[ThinkStep | ActionStep | ObservationStep] = Field(
-        default_factory=list, description="Sequence of reasoning, action, and observation steps",
+        default_factory=list,
+        description="Sequence of reasoning, action, and observation steps",
     )
     final_answer: str | None = Field(None, description="Final answer or conclusion")
     total_steps: int = Field(default=0, description="Total number of steps taken")
@@ -234,8 +236,11 @@ class ReasoningTraceModel(BaseModel):
     def add_think(self, thought: str, **kwargs: object) -> None:
         """Add a thinking step to the trace."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningTraceModel.add_think")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ReasoningTraceModel.add_think"
+        )
 
         step = ThinkStep(thought=thought, **kwargs)
         self.steps.append(step)

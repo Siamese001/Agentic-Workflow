@@ -239,6 +239,7 @@ class StateSnapshot(Generic[T]):
     def get_hash(self) -> str:
         """Generate a deterministic hash of this snapshot."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "StateSnapshot.get_hash")
 

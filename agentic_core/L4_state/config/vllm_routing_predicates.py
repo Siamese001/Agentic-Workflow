@@ -72,7 +72,9 @@ def default_routing(ctx: Mapping[str, Any]) -> bool:
 ROUTING_PREDICATES: tuple[RoutingPredicate, ...] = (
     RoutingPredicate(name="requires_policy_read", predicate=requires_policy_read, provider=Provider.OPUS),
     RoutingPredicate(
-        name="iteration_count_exceeded", predicate=iteration_count_exceeded, provider=Provider.OPUS,
+        name="iteration_count_exceeded",
+        predicate=iteration_count_exceeded,
+        provider=Provider.OPUS,
     ),
     RoutingPredicate(name="invalid_ast_detected", predicate=invalid_ast_detected, provider=Provider.OPUS),
     RoutingPredicate(name="default_routing", predicate=default_routing, provider=Provider.LOCAL_VLLM),

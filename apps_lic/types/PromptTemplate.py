@@ -30,8 +30,10 @@ _emit_snapshots_state("p0", "lic_PromptTemplate", "state_snapshot")
 # LINKEDIN CAMPAIGN PROMPT DEFINITIONS
 # -----------------------------------------------------------------------------
 
+
 class LicPromptEntry(BaseModel):
     """Single immutable prompt definition for LinkedIn outreach campaigns."""
+
     prompt_id: str
     description: str
     system_prompt: str
@@ -46,6 +48,7 @@ class LicPromptEntry(BaseModel):
 
 class LicNodeEntry(BaseModel):
     """K-node configuration for LinkedIn campaign pipeline stages."""
+
     node_id: str
     description: str
     stage: str  # archetype, targeting, messaging, delivery, analytics
@@ -57,6 +60,7 @@ class LicNodeEntry(BaseModel):
 
 class LicGlobalRule(BaseModel):
     """Cross-cutting governance rule for all LinkedIn campaign operations."""
+
     rule_id: str
     description: str
     severity: str  # info, warning, error, fatal
@@ -278,6 +282,7 @@ _LIC_RULES: dict[str, LicGlobalRule] = {
 
 class LicSovereignKnowledge(BaseModel):
     """Immutable frozen snapshot of LinkedIn campaign domain knowledge."""
+
     version: str = "1.0"
     prompts: dict[str, LicPromptEntry]
     nodes: dict[str, LicNodeEntry]
@@ -299,6 +304,7 @@ FROZEN_SNAPSHOT = LicSovereignKnowledge(
 # -----------------------------------------------------------------------------
 # PUBLIC API (Read-Only Access)
 # -----------------------------------------------------------------------------
+
 
 def get_prompt(prompt_id: str) -> str:
     """Retrieve prompt template by ID.

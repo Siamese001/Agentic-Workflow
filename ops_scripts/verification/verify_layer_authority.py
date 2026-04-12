@@ -41,9 +41,12 @@ from typing import Any
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+
 class LayerAuthorityError(Exception):
     """Raised when layer authority verification fails."""
+
     pass
+
 
 class ADGLayerAuthorityVerifier:
     """Verifies ADG layer authority compliance."""
@@ -70,7 +73,12 @@ class ADGLayerAuthorityVerifier:
 
     # Disallowed direct edges to runtime
     DISALLOWED_DIRECT_TO_RUNTIME = {
-        "L0", "L1", "L2", "L3", "L_TOOLS", "L_SL",
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L_TOOLS",
+        "L_SL",
     }
 
     # Disallowed upward control flow
@@ -82,8 +90,12 @@ class ADGLayerAuthorityVerifier:
 
     # Write-related edge types that require UWG termination
     WRITE_EDGE_TYPES = {
-        "writes_to", "writes_through", "invokes_provider", "invokes_dynamic",
-        "executes_action", "invokes_tool",
+        "writes_to",
+        "writes_through",
+        "invokes_provider",
+        "invokes_dynamic",
+        "executes_action",
+        "invokes_tool",
     }
 
     def __init__(self, adg_dir: Path):
@@ -119,9 +131,11 @@ class ADGLayerAuthorityVerifier:
             return None
 
         # Check for direct edges to runtime from disallowed layers
-        if (dst_layer == "L_RUNTIME" and
-            src_layer in self.DISALLOWED_DIRECT_TO_RUNTIME and
-            relation_type in ["calls", "invokes_provider"]):
+        if (
+            dst_layer == "L_RUNTIME"
+            and src_layer in self.DISALLOWED_DIRECT_TO_RUNTIME
+            and relation_type in ["calls", "invokes_provider"]
+        ):
             return f"Direct {relation_type} from {src_layer} to L_RUNTIME without mediation"
 
         # Check for disallowed upward control flow
@@ -166,24 +180,37 @@ class ADGLayerAuthorityVerifier:
 
                 violations = []
                 for edge in cross_layer_edges:
-                    (edge_id, src_id, dst_id, relation_type, symbol,
-                     src_name, src_layer, dst_name, dst_layer) = edge
+                    (
+                        edge_id,
+                        src_id,
+                        dst_id,
+                        relation_type,
+                        symbol,
+                        src_name,
+                        src_layer,
+                        dst_name,
+                        dst_layer,
+                    ) = edge
 
                     violation = self._check_layer_violation_edge(
-                        src_layer, dst_layer, relation_type,
+                        src_layer,
+                        dst_layer,
+                        relation_type,
                     )
 
                     if violation:
-                        violations.append({
-                            "edge_id": edge_id,
-                            "src_module": src_name,
-                            "dst_module": dst_name,
-                            "src_layer": src_layer,
-                            "dst_layer": dst_layer,
-                            "relation_type": relation_type,
-                            "symbol": symbol,
-                            "violation": violation,
-                        })
+                        violations.append(
+                            {
+                                "edge_id": edge_id,
+                                "src_module": src_name,
+                                "dst_module": dst_name,
+                                "src_layer": src_layer,
+                                "dst_layer": dst_layer,
+                                "relation_type": relation_type,
+                                "symbol": symbol,
+                                "violation": violation,
+                            }
+                        )
 
                 # Summary by violation type
                 violation_summary = {}
@@ -215,43 +242,53 @@ class ADGLayerAuthorityVerifier:
 
                 # Find modules with write operations
                 write_modules = []
-                placeholders = ','.join(['?' for _ in self.WRITE_EDGE_TYPES])
+                placeholders = ",".join(["?" for _ in self.WRITE_EDGE_TYPES])
 
-                cursor.execute(f"""
+                cursor.execute(
+                    f"""
                     SELECT DISTINCT e.src_id, n.adg_name, n.layer, e.relation_type
                     FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE e.relation_type IN ({placeholders})
                     AND n.identity_kind NOT IN ('external_module', 'external_provider')
-                """, list(self.WRITE_EDGE_TYPES))
+                """,
+                    list(self.WRITE_EDGE_TYPES),
+                )
 
                 for row in cursor.fetchall():
-                    write_modules.append({
-                        "module_id": row[0],
-                        "module_name": row[1],
-                        "layer": row[2],
-                        "write_type": row[3],
-                    })
+                    write_modules.append(
+                        {
+                            "module_id": row[0],
+                            "module_name": row[1],
+                            "layer": row[2],
+                            "write_type": row[3],
+                        }
+                    )
 
                 print(f"   📊 Found {len(write_modules)} modules with write operations")
 
                 # Check UWG termination for each write module
                 uwg_violations = []
                 for module in write_modules:
-                    cursor.execute("""
+                    cursor.execute(
+                        """
                         SELECT COUNT(*) FROM edges
                         WHERE src_id = ? AND relation_type = 'execution_terminates_at_uwg'
-                    """, (module["module_id"],))
+                    """,
+                        (module["module_id"],),
+                    )
 
                     has_uwg_termination = cursor.fetchone()[0] > 0
 
                     if not has_uwg_termination:
-                        uwg_violations.append({
-                            "module_name": module["module_name"],
-                            "layer": module["layer"],
-                            "write_type": module["write_type"],
-                            "violation": "Write operation without UWG termination",
-                        })
+                        uwg_violations.append(
+                            {
+                                "module_name": module["module_name"],
+                                "layer": module["layer"],
+                                "write_type": module["write_type"],
+                                "violation": "Write operation without UWG termination",
+                            }
+                        )
 
                 print(f"   📊 UWG violations: {len(uwg_violations)}")
 
@@ -259,7 +296,8 @@ class ADGLayerAuthorityVerifier:
                     "write_modules": len(write_modules),
                     "uwg_compliant": len(write_modules) - len(uwg_violations),
                     "uwg_violations": uwg_violations,
-                    "uwg_compliance_rate": (len(write_modules) - len(uwg_violations)) / max(1, len(write_modules)),
+                    "uwg_compliance_rate": (len(write_modules) - len(uwg_violations))
+                    / max(1, len(write_modules)),
                 }
 
         except Exception as e:
@@ -282,14 +320,16 @@ class ADGLayerAuthorityVerifier:
 
                 l4_modules = []
                 for row in cursor.fetchall():
-                    l4_modules.append({
-                        "id": row[0],
-                        "name": row[1],
-                        "layer": row[2],
-                        "identity_kind": row[3],
-                        "confidence": row[4],
-                        "resolved_path": row[5],
-                    })
+                    l4_modules.append(
+                        {
+                            "id": row[0],
+                            "name": row[1],
+                            "layer": row[2],
+                            "identity_kind": row[3],
+                            "confidence": row[4],
+                            "resolved_path": row[5],
+                        }
+                    )
 
                 print(f"   📊 Found {len(l4_modules)} L4 modules")
 
@@ -311,17 +351,20 @@ class ADGLayerAuthorityVerifier:
                         issues.append("Missing resolved path")
 
                     if issues:
-                        identity_issues.append({
-                            "module_name": module["name"],
-                            "issues": issues,
-                        })
+                        identity_issues.append(
+                            {
+                                "module_name": module["name"],
+                                "issues": issues,
+                            }
+                        )
 
                 print(f"   📊 L4 identity issues: {len(identity_issues)}")
 
                 return {
                     "total_l4_modules": len(l4_modules),
                     "identity_issues": len(identity_issues),
-                    "identity_compliance_rate": (len(l4_modules) - len(identity_issues)) / max(1, len(l4_modules)),
+                    "identity_compliance_rate": (len(l4_modules) - len(identity_issues))
+                    / max(1, len(l4_modules)),
                     "issue_details": identity_issues,
                 }
 
@@ -345,7 +388,8 @@ class ADGLayerAuthorityVerifier:
                 existing_violations = cursor.fetchone()[0]
 
                 # Look for potential unauthorized writes (writes without proper authority)
-                cursor.execute("""
+                cursor.execute(
+                    """
                     SELECT DISTINCT e.src_id, n.adg_name, n.layer, e.relation_type
                     FROM edges e
                     JOIN nodes n ON e.src_id = n.id
@@ -356,15 +400,19 @@ class ADGLayerAuthorityVerifier:
                         WHERE e2.src_id = e.src_id
                         AND e2.relation_type = 'execution_terminates_at_uwg'
                     )
-                """.format(','.join(['?' for _ in self.WRITE_EDGE_TYPES])), list(self.WRITE_EDGE_TYPES))
+                """.format(",".join(["?" for _ in self.WRITE_EDGE_TYPES])),
+                    list(self.WRITE_EDGE_TYPES),
+                )
 
                 potential_unauthorized = []
                 for row in cursor.fetchall():
-                    potential_unauthorized.append({
-                        "module_name": row[1],
-                        "layer": row[2],
-                        "write_type": row[3],
-                    })
+                    potential_unauthorized.append(
+                        {
+                            "module_name": row[1],
+                            "layer": row[2],
+                            "write_type": row[3],
+                        }
+                    )
 
                 print(f"   📊 Existing write violations: {existing_violations}")
                 print(f"   📊 Potential unauthorized writes: {len(potential_unauthorized)}")
@@ -398,9 +446,9 @@ class ADGLayerAuthorityVerifier:
 
         # Determine overall status
         critical_issues = (
-            layer_compliance["violation_count"] > 0 or
-            len(uwg_compliance["uwg_violations"]) > 0 or
-            l4_identity["identity_issues"] > 0
+            layer_compliance["violation_count"] > 0
+            or len(uwg_compliance["uwg_violations"]) > 0
+            or l4_identity["identity_issues"] > 0
         )
 
         # Prepare result
@@ -445,6 +493,7 @@ class ADGLayerAuthorityVerifier:
 
         return result
 
+
 def main():
     """CLI entry point."""
     import argparse
@@ -469,18 +518,19 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, 'w') as f:
+            with open(args.output, "w") as f:
                 json.dump(result, f, indent=2, default=str)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1
 
-    except LayerAuthorityError as e:    # guardian: LayerAuthorityError should be handled with specific context
+    except LayerAuthorityError as e:  # guardian: LayerAuthorityError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:
         print(f"💥 Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

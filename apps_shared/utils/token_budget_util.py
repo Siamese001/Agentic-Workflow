@@ -225,8 +225,11 @@ class TokenBudget:
             BudgetExceededError: If budget would be exceeded
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TokenBudget.check_request_budget")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "TokenBudget.check_request_budget"
+        )
 
         prompt_tokens = self.estimate_tokens(prompt)
         if prompt_tokens > self.config.max_tokens_per_request:

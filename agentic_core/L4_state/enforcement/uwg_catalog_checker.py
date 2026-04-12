@@ -15,6 +15,7 @@ from .uwg_clerk import WriteRequest
 @dataclass
 class BlastRadius:
     """Blast radius analysis for a proposed change."""
+
     file_count: int = 0
     downstream_dependencies: list[str] = field(default_factory=list)
     layer_crossings: list[str] = field(default_factory=list)
@@ -24,6 +25,7 @@ class BlastRadius:
 @dataclass
 class DiffValidation:
     """Before-after diff validation result."""
+
     before_hash: str = ""
     after_hash: str = ""
     structural_change: bool = False
@@ -33,6 +35,7 @@ class DiffValidation:
 @dataclass
 class CatalogRuleResult:
     """Result of catalog rule checking."""
+
     rbac_allowed: bool
     blast_radius_acceptable: bool
     diff_valid: bool

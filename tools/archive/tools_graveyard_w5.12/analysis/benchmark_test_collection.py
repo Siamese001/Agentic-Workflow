@@ -17,6 +17,7 @@ def run_command(cmd, cwd=None):
     )
     return result.stdout, result.stderr, result.returncode
 
+
 def benchmark_collection():
     """Benchmark pytest --collect-only timing."""
     print("=== Benchmark: Test Collection Time (Before Changes) ===")
@@ -35,9 +36,9 @@ def benchmark_collection():
     # Count collected tests
     test_count = 0
     if returncode == 0:
-        lines = stdout.strip().split('\n')
+        lines = stdout.strip().split("\n")
         for line in lines:
-            if '::test_' in line:
+            if "::test_" in line:
                 test_count += 1
 
     print(f"Collection time: {collection_time:.2f} seconds")
@@ -57,6 +58,7 @@ def benchmark_collection():
 
     with open("test_collection_before.json", "w") as f:
         import json
+
         json.dump(results, f, indent=2)
 
     print()
@@ -64,6 +66,7 @@ def benchmark_collection():
     print("Expected improvement: ~30s (based on 60,457 emitter calls)")
 
     return collection_time, test_count
+
 
 if __name__ == "__main__":
     benchmark_collection()

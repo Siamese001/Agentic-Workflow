@@ -200,6 +200,7 @@ class ReviewRubric:
     def quality_score(self) -> float:
         """Numeric quality score [0.0, 1.0] computed from rubric dimensions."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ReviewRubric.quality_score")
 

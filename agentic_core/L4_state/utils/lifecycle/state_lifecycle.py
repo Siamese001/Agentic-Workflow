@@ -285,7 +285,9 @@ class StateLifecycleRecord:
     def is_stale_growth(self) -> bool:
         """Check if stale state growth is occurring (Gate D)."""
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StateLifecycle.is_stale_growth")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "StateLifecycle.is_stale_growth"
+        )
         current_time = get_clock().now_epoch()
         time_since_access = current_time - self.last_accessed_tick
         time_since_mutation = current_time - self.last_mutated_tick

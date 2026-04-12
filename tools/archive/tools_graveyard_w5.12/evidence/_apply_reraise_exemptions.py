@@ -8,6 +8,7 @@ Usage:
     python tools/evidence/_apply_reraise_exemptions.py           # dry-run
     python tools/evidence/_apply_reraise_exemptions.py --apply   # write
 """
+
 from __future__ import annotations
 
 import ast
@@ -73,11 +74,13 @@ def apply_exemptions(dry_run: bool = True) -> None:
             if start_0 < 0:
                 skipped.append(f"HANDLER_NOT_FOUND: {entry['source_file']}:{entry['line_no']}")
                 continue
-            print(f"  {'DRY' if dry_run else 'REMOVE'} pure_reraise  {entry['source_file']}:{entry['line_no']}")
+            print(
+                f"  {'DRY' if dry_run else 'REMOVE'} pure_reraise  {entry['source_file']}:{entry['line_no']}"
+            )
             for i in range(start_0, min(end_0 + 1, len(lines))):
                 print(f"    - {lines[i].rstrip()}")
             if not dry_run:
-                del lines[start_0:end_0 + 1]
+                del lines[start_0 : end_0 + 1]
                 fpath.write_text("".join(lines), encoding="utf-8")
             removed_handlers += 1
             continue
@@ -87,10 +90,12 @@ def apply_exemptions(dry_run: bool = True) -> None:
             skipped.append(f"ALREADY_EXEMPT: {entry['source_file']}:{entry['line_no']}")
             continue
 
-        ending = original_line[len(stripped):]
+        ending = original_line[len(stripped) :]
         new_line = f"{stripped}{GUARDIAN_COMMENT}{ending}"
 
-        print(f"  {'DRY' if dry_run else 'APPLY'}  [{reraise_type}]  {entry['source_file']}:{entry['line_no']}")
+        print(
+            f"  {'DRY' if dry_run else 'APPLY'}  [{reraise_type}]  {entry['source_file']}:{entry['line_no']}"
+        )
         print(f"    before: {stripped!r}")
         print(f"    after:  {new_line.rstrip()!r}")
 

@@ -24,23 +24,15 @@ from typing import Any
 try:
     from agentic_core.L3_orchestration.inference.qwen_vllm import (
         AppsQwenGateway,
-        AppsQwenInferenceWorker,
         AppsQwenRequest,
         apps_qwen_telemetry,
-    )
-    from agentic_core.L3_orchestration.inference.qwen_vllm.config import (
-        AppsQwenModelConfig,
-        AppsQwenPromptConfig,
     )
 
     _QWEN_AVAILABLE = True
 except ImportError:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
-    AppsQwenInferenceWorker = None  # type: ignore[assignment]
     apps_qwen_telemetry = None  # type: ignore[assignment]
-    AppsQwenModelConfig = None  # type: ignore[assignment]
-    AppsQwenPromptConfig = None  # type: ignore[assignment]
     _QWEN_AVAILABLE = False
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -217,34 +209,22 @@ class ResearchOrchestrator:
 
         # Initialize Qwen vLLM for research synthesis
         self._qwen_gateway = None
-        self._qwen_inference_worker = None
         self._qwen_session_id = None
+        self._qwen_init_error: str | None = None
 
         if self.qwen_enabled and _QWEN_AVAILABLE:
             try:
-                # Initialize Qwen gateway for research synthesis
                 self._qwen_gateway = AppsQwenGateway(model_id="Qwen/Qwen2.5-7B-Instruct")
 
-                # Initialize inference worker with research-specific config
-                model_config = AppsQwenModelConfig(
-                    model_id="Qwen/Qwen2.5-7B-Instruct",
-                    max_tokens=3072,  # Higher token limit for research content
-                    temperature=0.4,  # Moderate temperature for creative synthesis
-                    confidence_threshold=0.7,
-                    timeout_seconds=60,
-                )
-                self._qwen_inference_worker = AppsQwenInferenceWorker(model_config)
-
-                # Start telemetry session
                 if apps_qwen_telemetry is not None:
                     self._qwen_session_id = apps_qwen_telemetry.start_session("apps_research")
 
                 _emit_records_execution_trace("ResearchOrchestrator", "L2_EXECUTION", "qwen_vllm_init")
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- gateway init raises heterogeneous errors (aiohttp, ImportError, RuntimeError); all recorded and surfaced via _qwen_init_error
                 _emit_records_telemetry_event("ResearchOrchestrator", "L2_EXECUTION", "qwen_init_error")
-                _log.warning(f"Failed to initialize Qwen vLLM: {e}")
-                self.qwen_enabled = False
+                _log.error("Qwen vLLM init failed — run() will raise if LOCAL_VLLM is selected: %s", e)
+                self._qwen_init_error = str(e)
 
         try:
             from apps_research.config import load_research_specs
@@ -265,7 +245,7 @@ class ResearchOrchestrator:
             self.adg_behavioral_score = 0.5
             self.adg_antipattern_signals = []
 
-    def run(self, request: ResearchRequest) -> ResearchResult:
+    async def run(self, request: ResearchRequest) -> ResearchResult:
         """Execute full research generation pipeline."""
         import uuid as _uuid  # noqa: PLC0415
 
@@ -280,7 +260,7 @@ class ResearchOrchestrator:
             trace_id=trace_id,
             topic=request.topic,
             mode=mode_str,
-            status=ResearchStatus.GENERATING,
+            status="generating",
             provenance={
                 "trace_id": trace_id,
                 "topic": request.topic,
@@ -288,6 +268,122 @@ class ResearchOrchestrator:
                 "app": "apps_research",
             },
         )
+
+        # --- Local-first Qwen routing (Phase 1 + adapter enforcement) ---
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (  # noqa: PLC0415
+            VLLMGatewayAdapter,
+        )
+        from agentic_core.L2_execution.types.local_first_disposition import (  # noqa: PLC0415
+            LocalFirstDisposition,
+        )
+        from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: PLC0415
+            Provider,
+            evaluate as evaluate_routing,
+        )
+
+        # requires_policy_read / iteration_count / invalid_ast: repair-domain predicates.
+        # Generation apps are single-pass pipelines with no policy-read concept, no retry
+        # iterations, and no AST output — False/0/100 are semantically correct here, not
+        # placeholders.  Wire these only if a retry loop or policy-read path is introduced.
+        routing_ctx: dict[str, object] = {
+            "requires_policy_read": False,
+            "iteration_count": 0,
+            "max_iterations": 100,
+            "invalid_ast": False,
+            "routing_version": "1",
+        }
+        routing_decision = evaluate_routing(routing_ctx)
+        _dsp: LocalFirstDisposition | None = None
+
+        if routing_decision.provider == Provider.LOCAL_VLLM:
+            if self._qwen_init_error is not None:
+                _dsp = LocalFirstDisposition.for_fail_init(
+                    orchestrator="ResearchOrchestrator",
+                    run_id=_trace_id,
+                    predicate_hash=routing_decision.predicate_evaluation_hash,
+                    init_error=self._qwen_init_error,
+                )
+                _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                raise RuntimeError(f"LOCAL_VLLM selected but Qwen init failed: {self._qwen_init_error}")
+            if self._qwen_gateway is not None:
+                # Adapter enforces token budget, backpressure, and circuit breaker
+                _adapter = VLLMGatewayAdapter()
+                _prompt_preview = request.topic[:512]
+                _adapter_result = _adapter.evaluate(
+                    prompt=_prompt_preview,
+                    task_class="research_synthesis",
+                    severity="medium",
+                )
+                _telem = _adapter_result.telemetry.as_dict() if _adapter_result.telemetry is not None else {}
+                if _adapter_result.route_to_gemini:
+                    _dsp = LocalFirstDisposition.for_escalate(
+                        orchestrator="ResearchOrchestrator",
+                        run_id=_trace_id,
+                        predicate_hash=routing_decision.predicate_evaluation_hash,
+                        telem=_telem,
+                    )
+                    _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                    _emit_records_telemetry_event(
+                        "ResearchOrchestrator",
+                        "L2_EXECUTION",
+                        "adapter_escalate",
+                    )
+                else:
+                    _emit_records_telemetry_event(
+                        "ResearchOrchestrator",
+                        "L2_EXECUTION",
+                        "adapter_allow",
+                    )
+                    try:
+                        qwen_result = await self.synthesize_research_with_qwen(
+                            research_topic=request.topic,
+                            sources=[],
+                        )
+                        _adapter.record_local_success(severity="medium")
+                    except Exception as _exc:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure recorded in circuit breaker
+                        _adapter.record_local_failure(severity="medium")
+                        _dsp = LocalFirstDisposition.for_fail_exec(
+                            orchestrator="ResearchOrchestrator",
+                            run_id=_trace_id,
+                            predicate_hash=routing_decision.predicate_evaluation_hash,
+                            telem=_telem,
+                            exc=_exc,
+                        )
+                        _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                        raise
+                    result.qwen_inference_result = qwen_result
+                    _dsp = LocalFirstDisposition.for_allow(
+                        orchestrator="ResearchOrchestrator",
+                        run_id=_trace_id,
+                        predicate_hash=routing_decision.predicate_evaluation_hash,
+                        telem=_telem,
+                        qwen_result_present=qwen_result is not None,
+                    )
+                    _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+                    _emit_records_execution_trace(
+                        str(_uuid.uuid4()),
+                        LayerSegment.L3_ORCHESTRATION,
+                        "ResearchOrchestrator.run.qwen_local",
+                    )
+            else:
+                _dsp = LocalFirstDisposition.for_skip(
+                    orchestrator="ResearchOrchestrator",
+                    run_id=_trace_id,
+                    provider_value="LOCAL_VLLM",
+                    predicate_hash=routing_decision.predicate_evaluation_hash,
+                    reason_code="gateway_not_initialized",
+                )
+                _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+        else:
+            _dsp = LocalFirstDisposition.for_skip(
+                orchestrator="ResearchOrchestrator",
+                run_id=_trace_id,
+                provider_value=routing_decision.provider.value,
+                predicate_hash=routing_decision.predicate_evaluation_hash,
+                reason_code="predicate_selected_opus",
+            )
+            _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
+        result.local_first_disposition = _dsp.as_dict() if _dsp is not None else None
 
         try:
             assembly = self._assembly.execute(request)
@@ -302,18 +398,18 @@ class ResearchOrchestrator:
                 if mode_cfg:
                     required_ids = mode_cfg.required_sections
 
-            result.status = ResearchStatus.GATE_CHECKING
+            result.status = "gate_checking"
             gate = self._gate.validate(assembly.sections, assembly.source_register, required_ids)
             self._record_hop("HOP-2-GATE", gate.passed)
             result.quality_score = gate.quality_score
             result.gate_violations = [f"[{v.rule_id}:{v.severity}] {v.message}" for v in gate.violations]
 
             if not gate.passed and self.gate_mode == "HARD_FAIL":
-                result.status = ResearchStatus.FAILED
+                result.status = "failed"
                 _log.error("[ResearchOrchestrator] Gate FAILED: %d violations", len(gate.violations))
             else:
                 is_dry = request.dry_run or self.dry_run
-                result.status = ResearchStatus.DRY_RUN if is_dry else ResearchStatus.COMPLETE
+                result.status = "dry_run" if is_dry else "complete"
                 if not is_dry:
                     paths = self._emit_artifacts(result, trace_id)
                     result.artifact_paths = paths
@@ -321,14 +417,14 @@ class ResearchOrchestrator:
 
         except (ValueError, TypeError, KeyError, AttributeError, RuntimeError) as exc:
             _log.error("[ResearchOrchestrator] Pipeline error trace=%s: %s", trace_id, exc, exc_info=True)
-            result.status = ResearchStatus.FAILED
+            result.status = "failed"
             result.error = str(exc)
             self._record_hop("PIPELINE-ERROR", False)
             result.provenance["checkpoints"] = [c["hop_id"] for c in self.hop_checkpoints]
 
         summary = ResearchRunSummary(
             trace_id=trace_id,
-            status=result.status.value,
+            status=result.status,
             topic=result.topic,
             mode=result.mode,
             sections_generated=len(result.sections),
@@ -348,7 +444,7 @@ class ResearchOrchestrator:
         _log.info(
             "[ResearchOrchestrator] Complete trace=%s status=%s score=%.2f",
             trace_id,
-            result.status.value,
+            result.status,
             result.quality_score,
         )
         return result
@@ -417,7 +513,10 @@ class ResearchOrchestrator:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
 
     async def synthesize_research_with_qwen(
-        self, research_topic: str, sources: list[dict[str, Any]], synthesis_type: str = "comprehensive",
+        self,
+        research_topic: str,
+        sources: list[dict[str, Any]],
+        synthesis_type: str = "comprehensive",
     ) -> dict[str, Any]:
         """Synthesize research content using Qwen vLLM inference.
 
@@ -508,7 +607,10 @@ class ResearchOrchestrator:
             return {"success": False, "error": f"synthesis_failed: {str(e)}", "content": None}
 
     def _prepare_research_synthesis_prompt(
-        self, research_topic: str, sources: list[dict[str, Any]], synthesis_type: str,
+        self,
+        research_topic: str,
+        sources: list[dict[str, Any]],
+        synthesis_type: str,
     ) -> str:
         """Prepare prompt for research synthesis using Qwen.
 

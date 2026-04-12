@@ -1,4 +1,5 @@
 """Breakdown of Section 2 gaps for convergence report."""
+
 import json
 from collections import Counter
 from pathlib import Path
@@ -67,5 +68,5 @@ print(f"Unique modules with gaps: {len(set(g['module'] for g in gaps))}")
 
 # Most important: what percentage of gaps are from agent_executes_agent alone?
 axa_gaps = [g for g in gaps if g["missing"] == "agent_executes_agent"]
-print(f"\nagent_executes_agent gaps: {len(axa_gaps)} ({len(axa_gaps)/len(gaps)*100:.1f}% of all gaps)")
+print(f"\nagent_executes_agent gaps: {len(axa_gaps)} ({len(axa_gaps) / len(gaps) * 100:.1f}% of all gaps)")
 print(f"Non-agent_executes_agent gaps: {len(gaps) - len(axa_gaps)}")

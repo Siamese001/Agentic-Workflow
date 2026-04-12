@@ -213,7 +213,8 @@ class IntelligenceQueryValidator:
         self.min_query_length = config.get("min_query_length", 3)
         self.max_query_length = config.get("max_query_length", 500)
         self.allowed_filter_keys = config.get(
-            "allowed_filter_keys", ["industry", "date_range", "source", "relevance_threshold"],
+            "allowed_filter_keys",
+            ["industry", "date_range", "source", "relevance_threshold"],
         )
         self.cache_ttl = config.get("cache_ttl", 3600)
 
@@ -232,7 +233,9 @@ class IntelligenceQueryValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_POLICY, "IntelligenceQueryValidator.validate_query",
+            _trace_id,
+            LayerSegment.L5_POLICY,
+            "IntelligenceQueryValidator.validate_query",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

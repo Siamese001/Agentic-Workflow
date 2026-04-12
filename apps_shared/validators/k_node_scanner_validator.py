@@ -200,6 +200,7 @@ class KNodeScanner:
             Scan results
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "KNodeScanner.scan_directory")
 
@@ -447,8 +448,11 @@ class MigrationValidator:
             Validation results
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MigrationValidator.validate_migration")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MigrationValidator.validate_migration"
+        )
 
         logger.info("Validating migration...")
 

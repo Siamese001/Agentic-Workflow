@@ -46,6 +46,7 @@ class TwoPhaseCoordinator:
         Raises MutationCommitFailure if either ACK fails.
         """
         from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure  # noqa: F401
+
         _emit_snapshots_state(str(uuid.uuid4()), "TwoPhaseCoordinator.execute_commit", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
 
@@ -87,7 +88,9 @@ class TwoPhaseCoordinator:
         try:
             r, l = self.execute_commit(resource_write, ledger_write, context)
             return {"success": True, "resource_result": r, "ledger_result": l}
-        except MutationCommitFailure as exc:    # guardian: MutationCommitFailure should be handled with specific context
+        except (
+            MutationCommitFailure
+        ) as exc:  # guardian: MutationCommitFailure should be handled with specific context
             logger.error("2PC commit failed: %s", exc)
             return {"success": False, "error": str(exc)}
 

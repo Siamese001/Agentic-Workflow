@@ -355,7 +355,9 @@ class ValidationGateExecutor:
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ValidationGateRegistry.execute_gate:{gate_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"ValidationGateRegistry.execute_gate:{gate_id}"
+        )
         context = context or {}
         gate = self.validation_gates.get(gate_id)
         if not gate:
@@ -405,7 +407,11 @@ class ValidationGateExecutor:
         )
 
     def execute_all_gates(
-        self, execution_point: str, content: str, k_node_id: str, context: dict[str, Any] | None = None,
+        self,
+        execution_point: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any] | None = None,
     ) -> list[ValidationResult]:
         """Execute all gates for a specific execution point.
 
@@ -429,7 +435,11 @@ class ValidationGateExecutor:
         return results
 
     def _execute_check(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Execute a single validation check.
 
@@ -462,7 +472,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_word_count(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check word count with scope support.
 
@@ -509,7 +523,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_char_count(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check character count."""
         if "K.4" in k_node_id or "headline" in check.lower():
@@ -535,7 +553,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_differentiators(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check differentiator distribution or gap coverage."""
         if "gap_coverage" in check.lower():
@@ -586,7 +608,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_similarity(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check similarity/deduplication."""
         # guardian: allow-magic-config
@@ -640,7 +666,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_placeholders(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check for placeholders."""
         placeholder_patterns = [
@@ -670,7 +700,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_grounding(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check claim grounding and hallucination."""
         claims = [s.strip() for s in content.split(".") if s.strip()]
@@ -696,7 +730,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_variance(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check word count variance (for K.8 competencies)."""
         competencies = self._segment_competencies(content)
@@ -722,7 +760,11 @@ class ValidationGateExecutor:
         return None
 
     def _check_plausibility(
-        self, check: str, content: str, k_node_id: str, context: dict[str, Any],
+        self,
+        check: str,
+        content: str,
+        k_node_id: str,
+        context: dict[str, Any],
     ) -> RuleFailure | None:
         """Check plausibility (authentic vs synthetic)."""
         base_pool = context.get("Base_Competency_Pool", [])

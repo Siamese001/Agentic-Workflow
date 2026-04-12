@@ -328,7 +328,7 @@ def scan_file_for_c0_mutations(source_path: Any) -> list[str]:
     source = path.read_text(encoding="utf-8", errors="replace")
     try:
         tree = _ast.parse(source, filename=str(path))
-    except SyntaxError as exc:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError at line {exc.lineno}: {exc.msg}"]
     violations: list[str] = []
     for node in _ast.walk(tree):

@@ -86,6 +86,7 @@ class ExecutionAdapter:
     def _timestamp(self) -> str:
         """Generate ISO timestamp."""
         from datetime import datetime, timezone
+
         return datetime.now(timezone.utc).isoformat()
 
     def get_execution_log(self) -> list[dict]:

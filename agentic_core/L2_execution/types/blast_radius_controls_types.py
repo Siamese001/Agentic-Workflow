@@ -223,7 +223,9 @@ class BlastRadiusControls:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "BlastRadiusControls.check_state_diff",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "BlastRadiusControls.check_state_diff",
         )
         if diff_bytes > self.max_state_diff_bytes:
             raise BlastRadiusExceeded(

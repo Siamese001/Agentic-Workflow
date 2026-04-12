@@ -1,6 +1,5 @@
 """Tests for retrieval benchmarking."""
 
-
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     HybridSearchEngine,
 )

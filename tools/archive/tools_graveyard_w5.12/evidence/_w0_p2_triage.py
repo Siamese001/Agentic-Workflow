@@ -7,6 +7,7 @@ to artifacts/adg_analysis/p2_high_severity_inventory.csv.
 Usage:
     python tools/evidence/_w0_p2_triage.py
 """
+
 from __future__ import annotations
 
 import csv
@@ -103,9 +104,7 @@ def main() -> None:
     header = f"{'kind':<35}" + "".join(f"{l:<12}" for l in layers_seen)
     print(f"  {header}")
     for kind in HIGH_SEVERITY_KINDS:
-        row_str = f"  {kind:<35}" + "".join(
-            f"{matrix.get((kind, l), 0):<12}" for l in layers_seen
-        )
+        row_str = f"  {kind:<35}" + "".join(f"{matrix.get((kind, l), 0):<12}" for l in layers_seen)
         print(row_str)
 
     # Top-20 files by count

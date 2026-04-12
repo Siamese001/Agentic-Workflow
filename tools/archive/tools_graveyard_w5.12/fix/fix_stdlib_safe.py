@@ -14,14 +14,14 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 # Map: symbol name -> (module, import_line)
 STDLIB = {
-    'Any': ('typing', 'from typing import Any'),
-    'Optional': ('typing', 'from typing import Optional'),
-    'dataclass': ('dataclasses', 'from dataclasses import dataclass'),
-    'field': ('dataclasses', 'from dataclasses import field'),
-    'Enum': ('enum', 'from enum import Enum'),
-    'Path': ('pathlib', 'from pathlib import Path'),
-    'BaseModel': ('pydantic', 'from pydantic import BaseModel'),
-    'ConfigDict': ('pydantic', 'from pydantic import ConfigDict'),
+    "Any": ("typing", "from typing import Any"),
+    "Optional": ("typing", "from typing import Optional"),
+    "dataclass": ("dataclasses", "from dataclasses import dataclass"),
+    "field": ("dataclasses", "from dataclasses import field"),
+    "Enum": ("enum", "from enum import Enum"),
+    "Path": ("pathlib", "from pathlib import Path"),
+    "BaseModel": ("pydantic", "from pydantic import BaseModel"),
+    "ConfigDict": ("pydantic", "from pydantic import ConfigDict"),
 }
 
 fixed = 0
@@ -45,26 +45,28 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
             needed = {}  # module -> set of (symbol, import_line)
             for sym, (mod, imp_line) in STDLIB.items():
                 # Usage check (word boundary)
-                if sym == 'field':
-                    if not re.search(r'\bfield\s*\(', content):
+                if sym == "field":
+                    if not re.search(r"\bfield\s*\(", content):
                         continue
-                elif sym == 'Path':
-                    if not re.search(r'\bPath\b(?![A-Za-z_])', content):
+                elif sym == "Path":
+                    if not re.search(r"\bPath\b(?![A-Za-z_])", content):
                         continue
                 else:
-                    if not re.search(r'\b' + re.escape(sym) + r'\b', content):
+                    if not re.search(r"\b" + re.escape(sym) + r"\b", content):
                         continue
 
                 # Already imported? Check multiple patterns
-                if re.search(r'^import\s+' + re.escape(sym) + r'\b', content, re.MULTILINE):
+                if re.search(r"^import\s+" + re.escape(sym) + r"\b", content, re.MULTILINE):
                     continue
-                if re.search(r'^\s*' + re.escape(sym) + r'\s*[,)]', content, re.MULTILINE):
+                if re.search(r"^\s*" + re.escape(sym) + r"\s*[,)]", content, re.MULTILINE):
                     # Inside a multi-line import block
                     continue
-                if re.search(r'from\s+\S+\s+import\s+.*\b' + re.escape(sym) + r'\b', content):
+                if re.search(r"from\s+\S+\s+import\s+.*\b" + re.escape(sym) + r"\b", content):
                     continue
                 # Local definition?
-                if f"class {sym}" in content or (f"{sym} =" in content and sym not in ('Any', 'Optional', 'Enum', 'BaseModel', 'dataclass')):
+                if f"class {sym}" in content or (
+                    f"{sym} =" in content and sym not in ("Any", "Optional", "Enum", "BaseModel", "dataclass")
+                ):
                     continue
 
                 needed.setdefault(mod, set()).add((sym, imp_line))
@@ -90,7 +92,9 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
             if insert_pos is None:
                 # Fallback: after first module-level 'import' or 'from __future__'
                 for i, line in enumerate(lines):
-                    if (line.startswith("import ") or line.startswith("from __future__")) and not line.startswith("    "):
+                    if (
+                        line.startswith("import ") or line.startswith("from __future__")
+                    ) and not line.startswith("    "):
                         insert_pos = i + 1
                         # Keep looking for a better spot
                         continue
@@ -113,7 +117,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
             if insert_pos < len(lines):
                 next_line = lines[insert_pos] if insert_pos < len(lines) else ""
                 # Don't insert if next line is indented (inside a block)
-                if next_line and next_line[0] in (' ', '\t') and not next_line.strip().startswith('#'):
+                if next_line and next_line[0] in (" ", "\t") and not next_line.strip().startswith("#"):
                     # This might be inside a function - skip
                     continue
 
@@ -127,7 +131,9 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
             fixed += 1
             rel = os.path.relpath(fp, ROOT)
             if fixed <= 15:
-                syms = "; ".join(f"{m}: {','.join(sorted(s[0] for s in ss))}" for m, ss in sorted(needed.items()))
+                syms = "; ".join(
+                    f"{m}: {','.join(sorted(s[0] for s in ss))}" for m, ss in sorted(needed.items())
+                )
                 print(f"  Fixed: {rel} ({syms})")
 
 if fixed > 15:

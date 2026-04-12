@@ -4,6 +4,7 @@ Strategy: For each file with a called-but-not-imported emit function,
 add a standalone import line AFTER the last top-level import statement.
 Never touch existing multi-line import blocks.
 """
+
 import ast
 import sys
 from pathlib import Path
@@ -24,8 +25,12 @@ EMIT_FUNCS = [
 ]
 
 SKIP_PATTERNS = {
-    "_constants.py", "conftest.py", "structure_blueprint_config.py",
-    "ssot_tier_constants.py", "path_constants.py", "lifecycle_trace_contract.py",
+    "_constants.py",
+    "conftest.py",
+    "structure_blueprint_config.py",
+    "ssot_tier_constants.py",
+    "path_constants.py",
+    "lifecycle_trace_contract.py",
 }
 
 
@@ -109,6 +114,7 @@ def main():
     targets = []
     # Scan all repaired files via git diff
     import subprocess
+
     result = subprocess.run(
         ["git", "diff", "--name-only"],
         cwd=str(PROJECT_ROOT),
@@ -119,6 +125,7 @@ def main():
 
     # Also include the deficit CSV
     import csv
+
     gaps = PROJECT_ROOT / "runtime_gaps" / "trace_deficit_modules.csv"
     if gaps.exists():
         for row in csv.DictReader(open(gaps)):

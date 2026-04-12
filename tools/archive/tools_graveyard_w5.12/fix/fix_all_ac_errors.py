@@ -10,15 +10,5 @@ ROOT = r"C:\Git\Agentic-Workflow"
 fixed_total = 0
 
 
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     main()

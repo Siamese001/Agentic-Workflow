@@ -19,7 +19,9 @@ from typing import Any
 # Lazy import to avoid L0->L_TOOLS gravity violation
 def _get_hitl_graph():
     from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+
     return HITLGraph, HITLRuntimeRecorder
+
 
 from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
@@ -126,12 +128,15 @@ class DeterministicRoutingGateway:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "DeterministicRoutingGateway.stamp_decision",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "DeterministicRoutingGateway.stamp_decision",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
         from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
+        from agentic_core.utils.runners.providers import get_clock  # noqa: PLC0415
 
         active = get_active_execution_trace()
         trace_id = active.trace_id if active else "no-active-trace"
@@ -261,7 +266,9 @@ class DeterministicRoutingGateway:
             Checkpoint ID
         """
         recorder = HITLRuntimeRecorder(
-            rt_graph, hitl_graph, agent_id="DeterministicRoutingGateway",
+            rt_graph,
+            hitl_graph,
+            agent_id="DeterministicRoutingGateway",
         )
 
         checkpoint_id = recorder.checkpoint(

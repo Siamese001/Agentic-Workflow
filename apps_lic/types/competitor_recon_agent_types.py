@@ -293,12 +293,16 @@ class MockIntelProvider(IntelProvider):
     def get_competitors(self, target_company: str, industry: str) -> list[str]:
         """Get mock competitors for target company."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "MockIntelProvider.get_competitors")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "MockIntelProvider.get_competitors"
+        )
 
         industry_lower = industry.lower()
         return self.mock_competitors.get(
-            industry_lower, ["Market Leader A", "Market Leader B", "Market Leader C"],
+            industry_lower,
+            ["Market Leader A", "Market Leader B", "Market Leader C"],
         )[:3]
 
     def get_recent_moves(self, competitor: str, months: int = 6) -> list[CompetitorMove]:
@@ -329,7 +333,10 @@ class CompetitorReconAgent:
         logger.info("Initialized CompetitorReconAgent")
 
     def generate_fomo_hook(
-        self, target_company: str, industry: str, candidate_skills: list[str],
+        self,
+        target_company: str,
+        industry: str,
+        candidate_skills: list[str],
     ) -> StrategicHook | None:
         """Generate FOMO hook based on competitive intelligence.
 
@@ -484,7 +491,10 @@ class CompetitorReconAgent:
             raise
 
     def _create_speed_hook(
-        self, move: CompetitorMove, target_company: str, skills: list[str],
+        self,
+        move: CompetitorMove,
+        target_company: str,
+        skills: list[str],
     ) -> StrategicHook:
         """Create speed-focused hook when no direct feature match.
 

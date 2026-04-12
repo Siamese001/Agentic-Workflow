@@ -42,15 +42,15 @@ def test_adg_source_context_fallback() -> dict[str, Any]:
 
 def test_redis_completely_down() -> dict[str, Any]:
     """Test behavior when Redis is completely down (not just wrong port)."""
-    original_url = os.environ.get('ADG_REDIS_URL', 'redis://localhost:6379/0')
+    original_url = os.environ.get("ADG_REDIS_URL", "redis://localhost:6379/0")
 
     try:
         # Set Redis to completely invalid host
-        os.environ['ADG_REDIS_URL'] = 'redis://nonexistent-host:9999/0'
+        os.environ["ADG_REDIS_URL"] = "redis://nonexistent-host:9999/0"
 
         # Force reimport
-        if 'adg_mcp_server' in sys.modules:
-            del sys.modules['adg_mcp_server']
+        if "adg_mcp_server" in sys.modules:
+            del sys.modules["adg_mcp_server"]
 
         sys.path.insert(0, str(Path(__file__).parent / "tools" / "adg"))
         import adg_mcp_server
@@ -68,9 +68,9 @@ def test_redis_completely_down() -> dict[str, Any]:
 
         return {
             "test_passed": (
-                status_result.get("status") == "error" and
-                cache_result.get("available") == False and
-                sqlite_result.get("status") == "ok"
+                status_result.get("status") == "error"
+                and cache_result.get("available") == False
+                and sqlite_result.get("status") == "ok"
             ),
             "redis_functions_fail": status_result.get("status") == "error",
             "cache_fails": cache_result.get("available") == False,
@@ -85,7 +85,7 @@ def test_redis_completely_down() -> dict[str, Any]:
             "error": str(e),
         }
     finally:
-        os.environ['ADG_REDIS_URL'] = original_url
+        os.environ["ADG_REDIS_URL"] = original_url
 
 
 def test_mcp_server_without_redis() -> dict[str, Any]:
@@ -93,7 +93,7 @@ def test_mcp_server_without_redis() -> dict[str, Any]:
     try:
         # Temporarily disable Redis by setting invalid URL
         env = os.environ.copy()
-        env['ADG_REDIS_URL'] = 'redis://invalid-host:9999/0'
+        env["ADG_REDIS_URL"] = "redis://invalid-host:9999/0"
 
         server_path = Path(__file__).parent / "tools" / "adg" / "adg_mcp_server.py"
 
@@ -203,7 +203,7 @@ def test_direct_sqlite_access() -> dict[str, Any]:
             "sample_nodes": len(sample_nodes),
             "sample_edges": len(sample_edges),
             "layer_count": len(layer_distribution),
-            "file_size_mb": round(latest_sqlite.stat().st_size / (1024*1024), 2),
+            "file_size_mb": round(latest_sqlite.stat().st_size / (1024 * 1024), 2),
         }
     except Exception as e:
         return {
@@ -219,7 +219,7 @@ def test_ingest_with_redis_down() -> dict[str, Any]:
 
         # Set Redis to invalid host
         env = os.environ.copy()
-        env['ADG_REDIS_URL'] = 'redis://invalid-host:9999/0'
+        env["ADG_REDIS_URL"] = "redis://invalid-host:9999/0"
 
         # Test ingest script with Redis down
         result = subprocess.run(
@@ -232,9 +232,8 @@ def test_ingest_with_redis_down() -> dict[str, Any]:
         )
 
         # Should fail gracefully with Redis error
-        fails_gracefully = (
-            result.returncode != 0 and
-            ("redis" in result.stderr.lower() or "connection" in result.stderr.lower())
+        fails_gracefully = result.returncode != 0 and (
+            "redis" in result.stderr.lower() or "connection" in result.stderr.lower()
         )
 
         return {
@@ -280,9 +279,17 @@ def test_mcp_error_messages() -> dict[str, Any]:
                 # Check if error message is helpful
                 if result.get("status") == "error":
                     message = result.get("message", "")
-                    is_helpful = any(keyword in message.lower() for keyword in [
-                        "run:", "python", "ingest", "redis", "unavailable", "not found",
-                    ])
+                    is_helpful = any(
+                        keyword in message.lower()
+                        for keyword in [
+                            "run:",
+                            "python",
+                            "ingest",
+                            "redis",
+                            "unavailable",
+                            "not found",
+                        ]
+                    )
                     helpful_errors.append(is_helpful)
                 else:
                     helpful_errors.append(True)  # No error is fine
@@ -315,9 +322,9 @@ def run_extreme_fallback_test():
     print("1. Testing SQLite direct access fallback...")
     sqlite_test = test_direct_sqlite_access()
     print(f"   SQLite direct access: {sqlite_test.get('test_passed', False)}")
-    if sqlite_test.get('node_count'):
+    if sqlite_test.get("node_count"):
         print(f"   Nodes available: {sqlite_test['node_count']}")
-    if sqlite_test.get('error'):
+    if sqlite_test.get("error"):
         print(f"   Error: {sqlite_test['error']}")
     print()
 
@@ -326,7 +333,7 @@ def run_extreme_fallback_test():
     source_test = test_adg_source_context_fallback()
     print(f"   Source context works: {source_test.get('test_passed', False)}")
     print(f"   Uses SQLite: {source_test.get('has_provenance', False)}")
-    if source_test.get('error'):
+    if source_test.get("error"):
         print(f"   Error: {source_test['error']}")
     print()
 
@@ -336,7 +343,7 @@ def run_extreme_fallback_test():
     print(f"   Handles Redis down: {redis_down_test.get('test_passed', False)}")
     print(f"   Redis functions fail: {redis_down_test.get('redis_functions_fail', False)}")
     print(f"   SQLite functions work: {redis_down_test.get('sqlite_functions_work', False)}")
-    if redis_down_test.get('error'):
+    if redis_down_test.get("error"):
         print(f"   Error: {redis_down_test['error']}")
     print()
 
@@ -345,7 +352,7 @@ def run_extreme_fallback_test():
     server_test = test_mcp_server_without_redis()
     print(f"   Server responds: {server_test.get('server_responded', False)}")
     print(f"   Has tools: {server_test.get('has_tools', False)}")
-    if server_test.get('error'):
+    if server_test.get("error"):
         print(f"   Error: {server_test['error']}")
     print()
 
@@ -353,7 +360,7 @@ def run_extreme_fallback_test():
     print("5. Testing ingest script with Redis down...")
     ingest_test = test_ingest_with_redis_down()
     print(f"   Ingest fails gracefully: {ingest_test.get('fails_gracefully', False)}")
-    if ingest_test.get('error'):
+    if ingest_test.get("error"):
         print(f"   Error: {ingest_test['error']}")
     print()
 
@@ -362,7 +369,7 @@ def run_extreme_fallback_test():
     error_test = test_mcp_error_messages()
     print(f"   Helpful error messages: {error_test.get('all_helpful', False)}")
     print(f"   Helpful count: {error_test.get('helpful_count', 0)}/{error_test.get('total_scenarios', 0)}")
-    if error_test.get('error'):
+    if error_test.get("error"):
         print(f"   Error: {error_test['error']}")
     print()
 
@@ -372,12 +379,12 @@ def run_extreme_fallback_test():
     print("=" * 80)
 
     tests = [
-        ("SQLite Direct Access", sqlite_test.get('test_passed', False)),
-        ("Source Context Fallback", source_test.get('test_passed', False)),
-        ("Redis Completely Down", redis_down_test.get('test_passed', False)),
-        ("Server Without Redis", server_test.get('server_responded', False)),
-        ("Ingest Fails Gracefully", ingest_test.get('fails_gracefully', False)),
-        ("Helpful Error Messages", error_test.get('all_helpful', False)),
+        ("SQLite Direct Access", sqlite_test.get("test_passed", False)),
+        ("Source Context Fallback", source_test.get("test_passed", False)),
+        ("Redis Completely Down", redis_down_test.get("test_passed", False)),
+        ("Server Without Redis", server_test.get("server_responded", False)),
+        ("Ingest Fails Gracefully", ingest_test.get("fails_gracefully", False)),
+        ("Helpful Error Messages", error_test.get("all_helpful", False)),
     ]
 
     passed = sum(1 for _, result in tests if result)
@@ -391,10 +398,10 @@ def run_extreme_fallback_test():
 
     # Critical fallback assessment
     critical_fallbacks = [
-        ("SQLite data available", sqlite_test.get('test_passed', False)),
-        ("Redis functions fail gracefully", redis_down_test.get('redis_functions_fail', False)),
-        ("SQLite functions work", redis_down_test.get('sqlite_functions_work', False)),
-        ("Helpful error messages", error_test.get('all_helpful', False)),
+        ("SQLite data available", sqlite_test.get("test_passed", False)),
+        ("Redis functions fail gracefully", redis_down_test.get("redis_functions_fail", False)),
+        ("SQLite functions work", redis_down_test.get("sqlite_functions_work", False)),
+        ("Helpful error messages", error_test.get("all_helpful", False)),
     ]
 
     critical_passed = sum(1 for _, result in critical_fallbacks if result)
@@ -403,7 +410,9 @@ def run_extreme_fallback_test():
     if passed >= 5 and critical_passed >= 3:
         print("\n🎉 ADG Redis MCP has robust extreme fallback behavior!")
     elif passed >= 3:
-        print(f"\n⚠️  ADG Redis MCP has partial extreme fallback ({critical_passed}/{len(critical_fallbacks)} critical).")
+        print(
+            f"\n⚠️  ADG Redis MCP has partial extreme fallback ({critical_passed}/{len(critical_fallbacks)} critical)."
+        )
     else:
         print("\n❌ ADG Redis MCP extreme fallback needs significant improvement.")
 
@@ -428,10 +437,10 @@ if __name__ == "__main__":
 
     # Save results to file
     results_file = Path(__file__).parent / "adg_extreme_fallback_results.json"
-    with open(results_file, 'w') as f:
+    with open(results_file, "w") as f:
         json.dump(results, f, indent=2, default=str)
 
     print(f"\nDetailed results saved to: {results_file}")
 
     # Exit with appropriate code
-    sys.exit(0 if results['passed_tests'] >= 5 else 1)
+    sys.exit(0 if results["passed_tests"] >= 5 else 1)

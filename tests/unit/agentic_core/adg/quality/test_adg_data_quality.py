@@ -14,11 +14,5 @@ class TestAdgDataQuality:
     """Test ADG data quality functionality."""
 
 
-
-
-
-
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -228,7 +228,11 @@ class RgReflectionAgent(BaseReflectionAgent):
         self._persist_reflection_to_kg(insights, passed_agents, failed_agents, converged)
 
     def _persist_reflection_to_kg(
-        self, insights: dict[str, Any], passed_agents: list[str], failed_agents: list[str], converged: bool,
+        self,
+        insights: dict[str, Any],
+        passed_agents: list[str],
+        failed_agents: list[str],
+        converged: bool,
     ) -> None:
         """Persist reflection outcome to Memory MCP knowledge graph."""
         try:
@@ -309,7 +313,11 @@ class RgReflectionAgent(BaseReflectionAgent):
         """
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RgReflectionAgent.ml_cache_execution_insight:{insight_id}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"RgReflectionAgent.ml_cache_execution_insight:{insight_id}",
+        )
         cache_key = f"execution_insight:{insight_id}"
         return self.ml_cache_set(cache_key, insight_data)
 
@@ -356,7 +364,10 @@ class RgReflectionAgent(BaseReflectionAgent):
         return self.ml_cache_get(cache_key)
 
     def ml_record_reflection_success(
-        self, context_hash: str, insights: dict[str, Any], quality_score: float,
+        self,
+        context_hash: str,
+        insights: dict[str, Any],
+        quality_score: float,
     ) -> bool:
         """
         Record a successful reflection for future learning.

@@ -10,14 +10,14 @@ from pathlib import Path
 from typing import Any
 
 REPORTS = {
-    "system_learning":           "docs/reports/plans/deep_analysis_system_learning.json",
+    "system_learning": "docs/reports/plans/deep_analysis_system_learning.json",
     "agentic_core/prompt_governance": "docs/reports/plans/deep_analysis_prompt_governance.json",
-    "agentic_core/runtime":      "docs/reports/plans/deep_analysis_runtime.json",
-    "ops_scripts":               "docs/reports/plans/deep_analysis_ops_scripts.json",
-    "data":                      "docs/reports/plans/deep_analysis_data.json",
-    "docs":                      "docs/reports/plans/deep_analysis_docs.json",
-    "infrastructure":            "docs/reports/plans/deep_analysis_infrastructure.json",
-    "tools":                     "docs/reports/plans/deep_analysis_tools.json",
+    "agentic_core/runtime": "docs/reports/plans/deep_analysis_runtime.json",
+    "ops_scripts": "docs/reports/plans/deep_analysis_ops_scripts.json",
+    "data": "docs/reports/plans/deep_analysis_data.json",
+    "docs": "docs/reports/plans/deep_analysis_docs.json",
+    "infrastructure": "docs/reports/plans/deep_analysis_infrastructure.json",
+    "tools": "docs/reports/plans/deep_analysis_tools.json",
 }
 
 OUTPUT = "docs/reports/plans/CONSOLIDATED_REFACTORING_REPORT.md"
@@ -50,11 +50,11 @@ def build_report() -> str:
         data = load(report_path)
         s = data["summary"]
         dir_summaries[dir_key] = (s, data["files"])
-        grand_files           += s["total_files"]
-        grand_issues          += s["total_with_issues"]
+        grand_files += s["total_files"]
+        grand_issues += s["total_with_issues"]
         grand_root_violations += s["total_root_violations"]
-        grand_dead            += s["total_dead_code_files"]
-        grand_misplaced       += s["total_misplaced_files"]
+        grand_dead += s["total_dead_code_files"]
+        grand_misplaced += s["total_misplaced_files"]
 
     lines.append(section("Grand Totals"))
     lines.append("| Metric | Count |")
@@ -94,8 +94,7 @@ def build_report() -> str:
                 mp = len(fs.get("misplaced_files", []))
                 marker = "⚠️" if (rv + dc + mp) > 0 else "✅"
                 lines.append(
-                    f"| {marker} `{folder}/` | {fs['files']} | {fs['total_lines']} "
-                    f"| {rv} | {dc} | {mp} |",
+                    f"| {marker} `{folder}/` | {fs['files']} | {fs['total_lines']} | {rv} | {dc} | {mp} |",
                 )
 
         # Root violations detail
@@ -145,35 +144,43 @@ def build_report() -> str:
     for dir_key, (summary, file_records) in dir_summaries.items():
         root_files = [r for r in file_records if r.get("root_violation")]
         for r in root_files:
-            action_items.append({
-                "priority": "HIGH",
-                "action": "MOVE",
-                "file": r["path"],
-                "reason": f"Root-level violation — {len(r.get('functions', []))} functions, {r['code_lines']} code lines",
-            })
+            action_items.append(
+                {
+                    "priority": "HIGH",
+                    "action": "MOVE",
+                    "file": r["path"],
+                    "reason": f"Root-level violation — {len(r.get('functions', []))} functions, {r['code_lines']} code lines",
+                }
+            )
         dead_files = [r for r in file_records if r.get("issues")]
         for r in dead_files:
             for imp in r.get("adg_unused_imports", []):
-                action_items.append({
-                    "priority": "MEDIUM",
-                    "action": "REMOVE_IMPORT",
-                    "file": r["path"],
-                    "reason": f"Unused import line {imp['line']}: `{imp['symbol']}`",
-                })
+                action_items.append(
+                    {
+                        "priority": "MEDIUM",
+                        "action": "REMOVE_IMPORT",
+                        "file": r["path"],
+                        "reason": f"Unused import line {imp['line']}: `{imp['symbol']}`",
+                    }
+                )
             for d in r.get("adg_duplicate_methods", []):
-                action_items.append({
-                    "priority": "HIGH",
-                    "action": "REMOVE_DUPLICATE",
-                    "file": r["path"],
-                    "reason": f"Duplicate method line {d['line']}: `{d['symbol']}`",
-                })
+                action_items.append(
+                    {
+                        "priority": "HIGH",
+                        "action": "REMOVE_DUPLICATE",
+                        "file": r["path"],
+                        "reason": f"Duplicate method line {d['line']}: `{d['symbol']}`",
+                    }
+                )
             for u in r.get("adg_unreachable", []):
-                action_items.append({
-                    "priority": "HIGH",
-                    "action": "REMOVE_UNREACHABLE",
-                    "file": r["path"],
-                    "reason": f"Unreachable code line {u['line']}: `{u['symbol']}`",
-                })
+                action_items.append(
+                    {
+                        "priority": "HIGH",
+                        "action": "REMOVE_UNREACHABLE",
+                        "file": r["path"],
+                        "reason": f"Unreachable code line {u['line']}: `{u['symbol']}`",
+                    }
+                )
 
     # Group by priority
     for priority in ("HIGH", "MEDIUM", "LOW"):

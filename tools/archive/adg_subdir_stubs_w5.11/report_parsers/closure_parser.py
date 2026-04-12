@@ -48,7 +48,7 @@ class ClosureReportParser(BaseReportParser):
                     "line_no": None,
                     "issue_type": f"closure_failure_{row.get('capability', 'unknown').lower().replace(' ', '_')}",
                     "description": f"Closure validation failed for {row.get('capability', 'unknown')}: "
-                                   f"ratio={row.get('ratio', 0):.2f}, threshold={row.get('threshold', 0):.2f}",
+                    f"ratio={row.get('ratio', 0):.2f}, threshold={row.get('threshold', 0):.2f}",
                     "confidence": 0.95,
                     "metadata": {
                         "capability": row.get("capability"),

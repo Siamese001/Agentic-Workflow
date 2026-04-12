@@ -1,4 +1,5 @@
 """Add remaining manual CamelCase aliases where automatic snake_case conversion failed."""
+
 import ast
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\types\sovereign_severity_types.py"

@@ -1,6 +1,7 @@
 """
 Policy Adapter - Reads underwriting policy context and prepares compliance payload.
 """
+
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
@@ -10,6 +11,7 @@ from ..types import UnderwritingRequest
 @dataclass
 class PolicyCompliancePayload:
     """Policy compliance payload for governance."""
+
     policy_version: str = ""
     applicable_rules: Dict[str, Any] = field(default_factory=dict)
     exception_rules: list = field(default_factory=list)
@@ -53,7 +55,9 @@ class PolicyAdapter:
             "max_debt_to_ebitda": policy.max_debt_to_ebitda,
             "min_fico": policy.min_fico,
             "max_ltv": policy.collateral_rules.max_ltv if policy.collateral_rules else None,
-            "eligible_collateral": policy.collateral_rules.eligible_collateral if policy.collateral_rules else [],
+            "eligible_collateral": policy.collateral_rules.eligible_collateral
+            if policy.collateral_rules
+            else [],
         }
 
         # Preserve exception rules
@@ -91,36 +95,48 @@ class PolicyAdapter:
         # Check DSCR exception
         if policy.min_dscr and metrics.dscr_ttm and metrics.dscr_ttm < policy.min_dscr:
             exceptions["count"] += 1
-            exceptions["details"].append({
-                "type": "dscr_below_minimum",
-                "value": metrics.dscr_ttm,
-                "threshold": policy.min_dscr,
-                "severity": "moderate",
-            })
+            exceptions["details"].append(
+                {
+                    "type": "dscr_below_minimum",
+                    "value": metrics.dscr_ttm,
+                    "threshold": policy.min_dscr,
+                    "severity": "moderate",
+                }
+            )
             exceptions["requires_approval"] = True
 
         # Check leverage exception
-        if policy.max_debt_to_ebitda and metrics.debt_to_ebitda_ttm and metrics.debt_to_ebitda_ttm > policy.max_debt_to_ebitda:
+        if (
+            policy.max_debt_to_ebitda
+            and metrics.debt_to_ebitda_ttm
+            and metrics.debt_to_ebitda_ttm > policy.max_debt_to_ebitda
+        ):
             exceptions["count"] += 1
-            exceptions["details"].append({
-                "type": "leverage_above_maximum",
-                "value": metrics.debt_to_ebitda_ttm,
-                "threshold": policy.max_debt_to_ebitda,
-                "severity": "moderate",
-            })
+            exceptions["details"].append(
+                {
+                    "type": "leverage_above_maximum",
+                    "value": metrics.debt_to_ebitda_ttm,
+                    "threshold": policy.max_debt_to_ebitda,
+                    "severity": "moderate",
+                }
+            )
             exceptions["requires_approval"] = True
 
         # Check FICO exception
         if policy.min_fico:
-            min_fico = min(request.credit.personal_fico_scores) if request.credit.personal_fico_scores else None
+            min_fico = (
+                min(request.credit.personal_fico_scores) if request.credit.personal_fico_scores else None
+            )
             if min_fico and min_fico < policy.min_fico:
                 exceptions["count"] += 1
-                exceptions["details"].append({
-                    "type": "fico_below_minimum",
-                    "value": min_fico,
-                    "threshold": policy.min_fico,
-                    "severity": "moderate",
-                })
+                exceptions["details"].append(
+                    {
+                        "type": "fico_below_minimum",
+                        "value": min_fico,
+                        "threshold": policy.min_fico,
+                        "severity": "moderate",
+                    }
+                )
                 exceptions["requires_approval"] = True
 
         return exceptions

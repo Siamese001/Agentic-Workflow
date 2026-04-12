@@ -123,10 +123,14 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
         """Register L1-specific feature extraction functions."""
         self.register_extraction_function("traffic_growth_rate", self._extract_traffic_growth_rate)
         self.register_extraction_function("demand_volatility", self._extract_demand_volatility)
-        self.register_extraction_function("current_capacity_utilization", self._extract_current_capacity_utilization)
+        self.register_extraction_function(
+            "current_capacity_utilization", self._extract_current_capacity_utilization
+        )
         self.register_extraction_function("peak_demand_ratio", self._extract_peak_demand_ratio)
         self.register_extraction_function("scaling_frequency", self._extract_scaling_frequency)
-        self.register_extraction_function("seasonal_pattern_strength", self._extract_seasonal_pattern_strength)
+        self.register_extraction_function(
+            "seasonal_pattern_strength", self._extract_seasonal_pattern_strength
+        )
         self.register_extraction_function("forecast_accuracy", self._extract_forecast_accuracy)
         self.register_extraction_function("resource_efficiency", self._extract_resource_efficiency)
         self.register_extraction_function("cost_per_request", self._extract_cost_per_request)
@@ -262,10 +266,11 @@ class L1FeatureExtractor(DeterministicFeatureExtractor):
         day_ago = now - timedelta(days=1)
 
         recent_events = [
-            event for event in scaling_events
+            event
+            for event in scaling_events
             if event.get("timestamp")
             and isinstance(event["timestamp"], str)
-            and datetime.fromisoformat(event["timestamp"].replace('Z', '+00:00')) > day_ago
+            and datetime.fromisoformat(event["timestamp"].replace("Z", "+00:00")) > day_ago
         ]
 
         frequency = len(recent_events)

@@ -252,7 +252,9 @@ class TestRigorEnforcer:
             ValidationResult with compliant=True if requirements declared, False otherwise
         """
         _emit_applies_guardrail(
-            str(uuid.uuid4()), "TestRigorEnforcer.validate_pre_code_generation", "L5_POLICY",
+            str(uuid.uuid4()),
+            "TestRigorEnforcer.validate_pre_code_generation",
+            "L5_POLICY",
         )
         violations = []
 

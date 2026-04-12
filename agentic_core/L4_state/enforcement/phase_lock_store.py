@@ -384,7 +384,9 @@ class PhaseLockValidator:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L4_STATE, "PhaseLockValidator.validate_phase_sequence",
+            _trace_id,
+            LayerSegment.L4_STATE,
+            "PhaseLockValidator.validate_phase_sequence",
         )
 
         for phase in range(1, current_phase):

@@ -16,14 +16,17 @@ class TestComplexityMetricsConfigAdg:
     def test_complexity_metrics_config_adg_imports(self):
         """Test complexity_metrics_config_adg module imports."""
         from agentic_core import complexity_metrics_config_adg
+
         assert complexity_metrics_config_adg is not None
 
     def test_complexity_metrics_config_adg_class(self):
         """Test ComplexityMetricsConfigAdg class exists."""
         from agentic_core import ComplexityMetricsConfigAdg
+
         assert ComplexityMetricsConfigAdg is not None
 
     def test_complexity_metrics_config_adg_callable(self):
         """Test complexity_metrics_config_adg functions are callable."""
         from agentic_core import validate_complexity_metrics_config_adg
+
         assert callable(validate_complexity_metrics_config_adg)

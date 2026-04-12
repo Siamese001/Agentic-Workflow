@@ -38,26 +38,26 @@ class IdempotentWaveRunner:
         Returns:
             Execution result with full details
         """
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Wave Execution: {wave_name}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         # Pre-execution validation
         if not validate_before_execution(wave_name, force):
             return {
-                'wave_name': wave_name,
-                'executed': False,
-                'reason': 'pre_execution_validation_failed',
-                'timestamp': datetime.now().isoformat(),
+                "wave_name": wave_name,
+                "executed": False,
+                "reason": "pre_execution_validation_failed",
+                "timestamp": datetime.now().isoformat(),
             }
 
         if dry_run:
             return {
-                'wave_name': wave_name,
-                'executed': False,
-                'reason': 'dry_run_mode',
-                'timestamp': datetime.now().isoformat(),
-                'would_execute': True,
+                "wave_name": wave_name,
+                "executed": False,
+                "reason": "dry_run_mode",
+                "timestamp": datetime.now().isoformat(),
+                "would_execute": True,
             }
 
         # Execute the wave
@@ -65,31 +65,33 @@ class IdempotentWaveRunner:
             wave_instance = self._create_wave_instance(wave_name)
             if wave_instance is None:
                 return {
-                    'wave_name': wave_name,
-                    'executed': False,
-                    'reason': 'unknown_wave',
-                    'timestamp': datetime.now().isoformat(),
+                    "wave_name": wave_name,
+                    "executed": False,
+                    "reason": "unknown_wave",
+                    "timestamp": datetime.now().isoformat(),
                 }
 
             result = wave_instance.execute()
 
             return {
-                'wave_name': wave_name,
-                'executed': True,
-                'result': result,
-                'timestamp': datetime.now().isoformat(),
+                "wave_name": wave_name,
+                "executed": True,
+                "result": result,
+                "timestamp": datetime.now().isoformat(),
             }
 
         except Exception as e:
             return {
-                'wave_name': wave_name,
-                'executed': False,
-                'reason': 'execution_error',
-                'error': str(e),
-                'timestamp': datetime.now().isoformat(),
+                "wave_name": wave_name,
+                "executed": False,
+                "reason": "execution_error",
+                "error": str(e),
+                "timestamp": datetime.now().isoformat(),
             }
 
-    def run_wave_sequence(self, wave_names: list[str], force: bool = False, dry_run: bool = False) -> dict[str, Any]:
+    def run_wave_sequence(
+        self, wave_names: list[str], force: bool = False, dry_run: bool = False
+    ) -> dict[str, Any]:
         """
         Run a sequence of waves with dependency validation.
 
@@ -101,9 +103,9 @@ class IdempotentWaveRunner:
         Returns:
             Execution summary for all waves
         """
-        print(f"\n{'='*80}")
+        print(f"\n{'=' * 80}")
         print("Wave Sequence Execution")
-        print(f"{'='*80}")
+        print(f"{'=' * 80}")
         print(f"Waves: {', '.join(wave_names)}")
         print(f"Force: {force}")
         print(f"Dry Run: {dry_run}")
@@ -118,38 +120,38 @@ class IdempotentWaveRunner:
         results = {}
 
         # Execute waves in planned order
-        for wave_name in plan['execution_order']:
+        for wave_name in plan["execution_order"]:
             result = self.run_wave(wave_name, force, dry_run)
             results[wave_name] = result
 
             # Stop on first failure unless forcing
-            if not result['executed'] and not force:
+            if not result["executed"] and not force:
                 print(f"\n❌ Stopping execution due to failure in {wave_name}")
                 break
 
         # Add skipped waves to results
-        for skip in plan['skipped_waves']:
-            results[skip['wave']] = {
-                'wave_name': skip['wave'],
-                'executed': False,
-                'reason': skip['reason'],
-                'details': skip['details'],
-                'timestamp': datetime.now().isoformat(),
+        for skip in plan["skipped_waves"]:
+            results[skip["wave"]] = {
+                "wave_name": skip["wave"],
+                "executed": False,
+                "reason": skip["reason"],
+                "details": skip["details"],
+                "timestamp": datetime.now().isoformat(),
             }
 
         return {
-            'sequence': wave_names,
-            'execution_plan': plan,
-            'results': results,
-            'summary': self._generate_execution_summary(results),
+            "sequence": wave_names,
+            "execution_plan": plan,
+            "results": results,
+            "summary": self._generate_execution_summary(results),
         }
 
     def _create_wave_instance(self, wave_name: str) -> IdempotentWave | None:
         """Create wave instance based on name."""
         # Import wave classes dynamically
         wave_classes = {
-            'wave2a_first_party': 'IdempotentWave2a',
-            'wave5c_core_path_semantics': 'IdempotentWave5c',
+            "wave2a_first_party": "IdempotentWave2a",
+            "wave5c_core_path_semantics": "IdempotentWave5c",
             # Add other wave classes as they're implemented
         }
 
@@ -160,11 +162,13 @@ class IdempotentWaveRunner:
 
         try:
             # Import and create instance
-            if class_name == 'IdempotentWave2a':
+            if class_name == "IdempotentWave2a":
                 from idempotent_wave_template import IdempotentWave2a
+
                 return IdempotentWave2a()
-            elif class_name == 'IdempotentWave5c':
+            elif class_name == "IdempotentWave5c":
                 from idempotent_wave_template import IdempotentWave5c
+
                 return IdempotentWave5c()
             # Add other wave imports as needed
 
@@ -176,14 +180,14 @@ class IdempotentWaveRunner:
 
     def _generate_execution_summary(self, results: dict[str, Any]) -> dict[str, Any]:
         """Generate execution summary from results."""
-        executed = len([r for r in results.values() if r['executed']])
-        skipped = len([r for r in results.values() if not r['executed']])
+        executed = len([r for r in results.values() if r["executed"]])
+        skipped = len([r for r in results.values() if not r["executed"]])
 
         return {
-            'total_waves': len(results),
-            'executed': executed,
-            'skipped': skipped,
-            'success_rate': (executed / len(results)) * 100 if results else 0,
+            "total_waves": len(results),
+            "executed": executed,
+            "skipped": skipped,
+            "success_rate": (executed / len(results)) * 100 if results else 0,
         }
 
     def reset_wave_state(self, wave_name: str):
@@ -197,19 +201,19 @@ class IdempotentWaveRunner:
 
         if not state:
             return {
-                'wave_name': wave_name,
-                'status': 'never_executed',
-                'details': 'No execution record found',
+                "wave_name": wave_name,
+                "status": "never_executed",
+                "details": "No execution record found",
             }
 
         return {
-            'wave_name': wave_name,
-            'status': 'completed' if state.is_complete else 'incomplete',
-            'execution_id': state.execution_id,
-            'timestamp': state.timestamp,
-            'files_modified': len(state.files_modified),
-            'patterns_applied': sum(len(patterns) for patterns in state.patterns_applied.values()),
-            'metrics': state.metrics,
+            "wave_name": wave_name,
+            "status": "completed" if state.is_complete else "incomplete",
+            "execution_id": state.execution_id,
+            "timestamp": state.timestamp,
+            "files_modified": len(state.files_modified),
+            "patterns_applied": sum(len(patterns) for patterns in state.patterns_applied.values()),
+            "metrics": state.metrics,
         }
 
     def get_all_wave_status(self) -> dict[str, Any]:
@@ -217,10 +221,10 @@ class IdempotentWaveRunner:
         summary = self.state_manager.get_execution_summary()
 
         return {
-            'timestamp': datetime.now().isoformat(),
-            'total_waves': summary['total_waves'],
-            'completed_waves': summary['completed_waves'],
-            'waves': summary['waves'],
+            "timestamp": datetime.now().isoformat(),
+            "total_waves": summary["total_waves"],
+            "completed_waves": summary["completed_waves"],
+            "waves": summary["waves"],
         }
 
 
@@ -230,18 +234,18 @@ def main():
 
     # Example 1: Run single wave
     print("Example 1: Single Wave Execution")
-    result = runner.run_wave('wave5c_core_path_semantics', dry_run=True)
+    result = runner.run_wave("wave5c_core_path_semantics", dry_run=True)
     print(f"Result: {result}")
 
     # Example 2: Run wave sequence
     print("\nExample 2: Wave Sequence Execution")
-    waves = ['wave2a_first_party', 'wave5c_core_path_semantics']
+    waves = ["wave2a_first_party", "wave5c_core_path_semantics"]
     sequence_result = runner.run_wave_sequence(waves, dry_run=True)
     print(f"Sequence result: {sequence_result['summary']}")
 
     # Example 3: Get wave status
     print("\nExample 3: Wave Status")
-    status = runner.get_wave_status('wave5c_core_path_semantics')
+    status = runner.get_wave_status("wave5c_core_path_semantics")
     print(f"Wave status: {status}")
 
     # Example 4: Get all wave status
@@ -250,5 +254,5 @@ def main():
     print(f"All waves: {all_status['total_waves']} completed, {all_status['completed_waves']}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

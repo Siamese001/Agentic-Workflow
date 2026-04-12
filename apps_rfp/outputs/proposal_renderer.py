@@ -41,12 +41,30 @@ class ProposalRenderer:
         if result.sections:
             lines.extend(["## Proposal Sections", ""])
             for section in result.sections:
-                lines.extend([f"### {section.heading}", "", section.body, "", f"*Word count: {section.word_count}*", ""])
+                lines.extend(
+                    [
+                        f"### {section.heading}",
+                        "",
+                        section.body,
+                        "",
+                        f"*Word count: {section.word_count}*",
+                        "",
+                    ]
+                )
 
         if result.roadmap:
             lines.extend(["## Implementation Roadmap", ""])
             for phase in result.roadmap:
-                lines.extend([f"### Phase: {phase.name}", "", f"- Duration: {phase.duration_weeks} weeks", "", "#### Objectives", ""])
+                lines.extend(
+                    [
+                        f"### Phase: {phase.name}",
+                        "",
+                        f"- Duration: {phase.duration_weeks} weeks",
+                        "",
+                        "#### Objectives",
+                        "",
+                    ]
+                )
                 for obj in phase.objectives:
                     lines.append(f"- {obj}")
                 lines.append("")
@@ -54,12 +72,30 @@ class ProposalRenderer:
         if result.risks:
             lines.extend(["## Risk Assessment", ""])
             for risk in result.risks:
-                lines.extend([f"### {risk.risk_id} ({risk.severity})", "", f"**Category:** {risk.category}", f"**Description:** {risk.description}", f"**Mitigation:** {risk.mitigation}", f"**Owner:** {risk.owner}", ""])
+                lines.extend(
+                    [
+                        f"### {risk.risk_id} ({risk.severity})",
+                        "",
+                        f"**Category:** {risk.category}",
+                        f"**Description:** {risk.description}",
+                        f"**Mitigation:** {risk.mitigation}",
+                        f"**Owner:** {risk.owner}",
+                        "",
+                    ]
+                )
 
         if result.assumptions:
             lines.extend(["## Assumptions", ""])
             for assumption in result.assumptions:
-                lines.extend([f"### {assumption.assumption_id}", "", f"**Statement:** {assumption.statement}", f"**Basis:** {assumption.basis}", ""])
+                lines.extend(
+                    [
+                        f"### {assumption.assumption_id}",
+                        "",
+                        f"**Statement:** {assumption.statement}",
+                        f"**Basis:** {assumption.basis}",
+                        "",
+                    ]
+                )
 
         if result.gate_violations:
             lines.extend(["## Gate Violations", ""])
@@ -130,7 +166,14 @@ class ProposalSummaryRenderer:
         if summary.error:
             lines.extend(["## Error", "", f"```\n{summary.error}\n```", ""])
 
-        lines.extend(["## Provenance", "", f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```", ""])
+        lines.extend(
+            [
+                "## Provenance",
+                "",
+                f"```json\n{json.dumps(summary.provenance, indent=2, default=str)}\n```",
+                "",
+            ]
+        )
 
         return "\n".join(lines)
 

@@ -5,6 +5,7 @@ DEPRECATED: Redirects to the unified 'generate_hooks.py' script.
 This file is retained as a stub to prevent breaking existing automation
 that calls this specific path.
 """
+
 from __future__ import annotations
 
 import sys
@@ -162,13 +163,14 @@ _emit_transcripts_response("p1", "maintenance_generate_hooks_util", "transcript"
 _emit_hard_fails_untranscripted("p1", "maintenance_generate_hooks_util")
 _emit_gated_by_confidence("p1", "maintenance_generate_hooks_util", "confidence_gate")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description='Sync pre-commit config with SSOT (Redirect)')
-    parser.add_argument('--dry-run', action='store_true', help='Show changes without applying')
-    parser.add_argument('--list', action='store_true', help='List current sovereign roots')
+
+    parser = argparse.ArgumentParser(description="Sync pre-commit config with SSOT (Redirect)")
+    parser.add_argument("--dry-run", action="store_true", help="Show changes without applying")
+    parser.add_argument("--list", action="store_true", help="List current sovereign roots")
     args = parser.parse_args()
-    print('[*] maintenance_generate_hooks_util.py is DEPRECATED. Redirecting to generate_hooks.py...')
+    print("[*] maintenance_generate_hooks_util.py is DEPRECATED. Redirecting to generate_hooks.py...")
     if args.list:
         generate_sovereign_list()
     else:

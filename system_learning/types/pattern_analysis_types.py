@@ -186,8 +186,11 @@ class PatternFinding:
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PatternFinding.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PatternFinding.canonical_bytes"
+        )
 
         data = {
             "component": self.key.component,
@@ -214,8 +217,11 @@ class PatternFindingReport:
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PatternFindingReport.canonical_bytes")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PatternFindingReport.canonical_bytes"
+        )
 
         data = {
             "healing_snapshot_version": self.source_ids.healing_snapshot_version,

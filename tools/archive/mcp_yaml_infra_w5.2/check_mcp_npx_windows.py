@@ -11,6 +11,7 @@ Exit codes:
     0 = no bare npx found (or not Windows)
     1 = bare npx found in mcp_servers.yaml (blocks commit)
 """
+
 import sys
 from pathlib import Path
 

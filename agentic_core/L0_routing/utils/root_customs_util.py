@@ -675,9 +675,7 @@ def _print_summary(routing_decisions: list[RoutingDecision], dry_run: bool) -> N
     routed = sum(1 for d in routing_decisions if d.destination)
     ast_routed = sum(1 for d in routing_decisions if d.destination and "AST" in d.reason)
     unmatched = sum(
-        1
-        for d in routing_decisions
-        if not d.destination and not d.is_protected and not d.is_allowed_pattern
+        1 for d in routing_decisions if not d.destination and not d.is_protected and not d.is_allowed_pattern
     )
 
     print(f"📁 Total Files Analyzed: {total}")

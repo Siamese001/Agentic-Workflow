@@ -268,8 +268,11 @@ class AuditTrailMixin:
             level: Log level (INFO, WARNING, ERROR)
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AuditTrailMixin.log_sovereign_event")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "AuditTrailMixin.log_sovereign_event"
+        )
 
         if not self._audit_enabled:
             return
@@ -331,7 +334,8 @@ class AuditTrailMixin:
             details: Additional validation context
         """
         self.log_sovereign_event(
-            "VALIDATE", {"validator": validator_name, "result": "PASS" if result else "FAIL", **details},
+            "VALIDATE",
+            {"validator": validator_name, "result": "PASS" if result else "FAIL", **details},
         )
 
     def disable_audit(self) -> None:
@@ -391,7 +395,10 @@ class AuditTrailMixin:
         return proof
 
     async def emit_auditable_action(
-        self, action_type: str, payload: dict[str, Any], severity: str = "INFO",
+        self,
+        action_type: str,
+        payload: dict[str, Any],
+        severity: str = "INFO",
     ) -> AuditProof:
         """
         Generate proof and emit via event_emission_mixin.

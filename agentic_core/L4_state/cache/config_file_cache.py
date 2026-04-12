@@ -231,7 +231,7 @@ class ConfigFileCache:
                 if cached is not None:
                     logger.debug(f"[Config cache] HIT for {config_path.name}")
                     return cached
-            except FileNotFoundError:    # guardian: File operations should check existence before access
+            except FileNotFoundError:  # guardian: File operations should check existence before access
                 raise
             except (OSError, ConnectionError) as e:
                 logger.warning(f"[Config cache] Cache read failed: {e}")
@@ -244,7 +244,7 @@ class ConfigFileCache:
                 content_hash = self._compute_file_hash(config_path)
                 cache_key = f"config:{config_path.name}:{content_hash}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            except FileNotFoundError:    # guardian: File operations should check existence before access
+            except FileNotFoundError:  # guardian: File operations should check existence before access
                 pass  # File may have been deleted after fetch  # guardian: allow-silent-swallow -- intentional: FileNotFoundError used for control flow
             except (OSError, ConnectionError) as e:
                 logger.warning(f"[Config cache] Cache write failed: {e}")

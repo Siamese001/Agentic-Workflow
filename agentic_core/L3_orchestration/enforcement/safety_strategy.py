@@ -125,7 +125,12 @@ class SafetyStrategy:
         return agent
 
     def execute_agent(
-        self, agent: Any, agent_name: str, dry_run: bool = True, execute: bool = False, **kwargs: Any,
+        self,
+        agent: Any,
+        agent_name: str,
+        dry_run: bool = True,
+        execute: bool = False,
+        **kwargs: Any,
     ) -> dict[str, Any]:
         """
         Execute a single agent and return results.
@@ -144,7 +149,9 @@ class SafetyStrategy:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyStrategy.execute_agent",
+            _trace_id,
+            LayerSegment.L3_ORCHESTRATION,
+            "SafetyStrategy.execute_agent",
         )
 
         start_time = get_clock().now_epoch()

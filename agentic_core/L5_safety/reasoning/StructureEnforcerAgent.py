@@ -333,7 +333,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         allowed_layers = self.GRAVITY_RULES.get(source_layer, set())
         try:
             tree = ast.parse(content)
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
@@ -357,7 +357,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             return violations
         try:
             tree = ast.parse(content)
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
@@ -379,7 +379,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         violations = []
         try:
             tree = ast.parse(content)
-        except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+        except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef | ast.FunctionDef):
@@ -413,7 +413,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         for i, line in enumerate(lines, 1):
             try:
                 line.encode("ascii")
-            except UnicodeEncodeError:    # guardian: UnicodeEncodeError should be handled with specific context
+            except UnicodeEncodeError:  # guardian: UnicodeEncodeError should be handled with specific context
                 non_ascii = [c for c in line if ord(c) > 127]
                 violations.append(
                     StructureViolation(
@@ -445,7 +445,11 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
     # guardian: allow-type-erasure
     def force_rename_class(
-        self, file_path: Path, old_name: str, new_name: str, dry_run: bool = True,
+        self,
+        file_path: Path,
+        old_name: str,
+        new_name: str,
+        dry_run: bool = True,
     ) -> dict[str, Any]:
         """
         Force rename a class to comply with naming conventions.

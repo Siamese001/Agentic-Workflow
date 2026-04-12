@@ -1,6 +1,5 @@
 """Tests for apps_rg engine components."""
 
-
 from apps_rg.engines.content_optimizer_engine import (
     ContentOptimizerEngine,
 )

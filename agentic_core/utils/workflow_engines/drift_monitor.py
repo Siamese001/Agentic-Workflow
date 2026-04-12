@@ -233,7 +233,9 @@ class RetrievalDriftMonitor:
         """
         import uuid as _uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(_uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RetrievalDriftMonitor.measure")
+        _emit_records_execution_trace(
+            str(_uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "RetrievalDriftMonitor.measure"
+        )
         n = len(queries)
         if n == 0:
             raise ValueError("queries must be non-empty")
@@ -578,7 +580,9 @@ class AnswerQualityMonitor:
 
 
 def emit_alerts_to_registry(
-    alerts: list[DriftAlert], source: str, threshold_map: dict[str, float] | None = None,
+    alerts: list[DriftAlert],
+    source: str,
+    threshold_map: dict[str, float] | None = None,
 ) -> None:
     """P5-5B: Convert DriftAlerts to DriftRegistryEntry and record in DriftRegistry.
 
@@ -638,7 +642,9 @@ def emit_alerts_to_registry(
         # guardian: allow-silent-swallow
         except Exception:
             _logger.debug(
-                "emit_alerts_to_registry: failed to record entry for %s", alert.metric_name, exc_info=True,
+                "emit_alerts_to_registry: failed to record entry for %s",
+                alert.metric_name,
+                exc_info=True,
             )
             continue
         if alert.severity == "critical":

@@ -17,6 +17,7 @@ print("=" * 80)
 print(f"Repository: {ROOT}")
 print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
+
 class MigrationStatusChecker:
     """Comprehensive migration status verification."""
 
@@ -140,7 +141,7 @@ class MigrationStatusChecker:
 
             for pattern in patterns:
                 try:
-                    files = list(ROOT.rglob(pattern.split('/')[-1]))
+                    files = list(ROOT.rglob(pattern.split("/")[-1]))
                     if files:
                         category_files.extend(files)
                 except (ValueError, TypeError, RuntimeError) as e:
@@ -169,7 +170,9 @@ class MigrationStatusChecker:
         print(f"  Total files found: {total_files}")
         print(f"  Files migrated: {migrated_files}")
         print(f"  Files remaining: {total_files - migrated_files}")
-        print(f"  Migration progress: {(migrated_files/total_files*100):.1f}%" if total_files > 0 else "N/A")
+        print(
+            f"  Migration progress: {(migrated_files / total_files * 100):.1f}%" if total_files > 0 else "N/A"
+        )
 
     def _is_file_migrated(self, file_path: Path) -> bool:
         """Check if a file has been migrated to persistent memory."""
@@ -186,21 +189,27 @@ class MigrationStatusChecker:
             cursor = conn.cursor()
 
             # Check in learning_models (for model files)
-            if any(pattern in str(file_path).lower() for pattern in ['model', 'checkpoint', 'ckpt']):
-                cursor.execute("""
+            if any(pattern in str(file_path).lower() for pattern in ["model", "checkpoint", "ckpt"]):
+                cursor.execute(
+                    """
                     SELECT COUNT(*) FROM learning_models
                     WHERE metadata LIKE ? OR model_name LIKE ?
-                """, (f"%{relative_path}%", f"%{file_path.stem}%"))
+                """,
+                    (f"%{relative_path}%", f"%{file_path.stem}%"),
+                )
 
                 if cursor.fetchone()[0] > 0:
                     return True
 
             # Check in application_state (for config/state files)
-            if any(pattern in str(file_path).lower() for pattern in ['config', 'state', 'setting']):
-                cursor.execute("""
+            if any(pattern in str(file_path).lower() for pattern in ["config", "state", "setting"]):
+                cursor.execute(
+                    """
                     SELECT COUNT(*) FROM application_state
                     WHERE state_key LIKE ?
-                """, (f"%{file_path.stem}%",))
+                """,
+                    (f"%{file_path.stem}%",),
+                )
 
                 if cursor.fetchone()[0] > 0:
                     return True
@@ -215,7 +224,7 @@ class MigrationStatusChecker:
     def _get_file_hash(self, file_path: Path) -> str:
         """Get file hash for identification."""
         try:
-            with open(file_path, 'rb') as f:
+            with open(file_path, "rb") as f:
                 return hashlib.md5(f.read()).hexdigest()
         except (ValueError, TypeError, RuntimeError) as e:
             return hashlib.md5(str(file_path).encode()).hexdigest()
@@ -232,7 +241,11 @@ class MigrationStatusChecker:
         # Check key components
         components = {
             "stores": ["activator.py", "config_provider.py", "telemetry_store.py", "version_store.py"],
-            "adapters": ["l1_meta_adapter.py", "l4_meta_prior_provider.py", "system_learning_memory_bridge.py"],
+            "adapters": [
+                "l1_meta_adapter.py",
+                "l4_meta_prior_provider.py",
+                "system_learning_memory_bridge.py",
+            ],
             "engines": ["embedding_engine.py", "arbitration_engine.py", "confidence_engine.py"],
             "pipelines": ["meta_learning_pipeline.py", "live_run_pipeline.py"],
         }
@@ -253,14 +266,16 @@ class MigrationStatusChecker:
                     status = "✅" if integration_status else "⚠️"
                     print(f"    {status} {file_name} ({integration_status})")
 
-                    self.results["learning_components_status"][str(file_path.relative_to(ROOT))] = integration_status
+                    self.results["learning_components_status"][str(file_path.relative_to(ROOT))] = (
+                        integration_status
+                    )
                 else:
                     print(f"    ❌ {file_name} (not found)")
 
     def _check_integration_status(self, file_path: Path) -> str:
         """Check if a file has been integrated with continuous learning."""
         try:
-            content = file_path.read_text(encoding='utf-8', errors='ignore')
+            content = file_path.read_text(encoding="utf-8", errors="ignore")
 
             # Check for integration indicators
             if "get_global_pipeline" in content:
@@ -342,63 +357,76 @@ class MigrationStatusChecker:
         if self.results["unmigrated_files"]:
             for category, files in self.results["unmigrated_files"].items():
                 if files:
-                    recommendations.append({
-                        "priority": "HIGH",
-                        "category": "File Migration",
-                        "description": f"Migrate {len(files)} {category} files to persistent memory",
-                        "files": files[:5],  # Show first 5
-                        "action": "Use continuous learning pipeline to migrate these files",
-                    })
+                    recommendations.append(
+                        {
+                            "priority": "HIGH",
+                            "category": "File Migration",
+                            "description": f"Migrate {len(files)} {category} files to persistent memory",
+                            "files": files[:5],  # Show first 5
+                            "action": "Use continuous learning pipeline to migrate these files",
+                        }
+                    )
 
         # Check component integration
-        non_integrated = [path for path, status in self.results["learning_components_status"].items()
-                         if status == "Not integrated"]
+        non_integrated = [
+            path
+            for path, status in self.results["learning_components_status"].items()
+            if status == "Not integrated"
+        ]
         if non_integrated:
-            recommendations.append({
-                "priority": "HIGH",
-                "category": "Component Integration",
-                "description": f"Integrate {len(non_integrated)} system_learning components",
-                "files": non_integrated[:3],
-                "action": "Add pipeline integration to these components",
-            })
+            recommendations.append(
+                {
+                    "priority": "HIGH",
+                    "category": "Component Integration",
+                    "description": f"Integrate {len(non_integrated)} system_learning components",
+                    "files": non_integrated[:3],
+                    "action": "Add pipeline integration to these components",
+                }
+            )
 
         # Check database status
         if not self.results["unified_memory_exists"]:
-            recommendations.append({
-                "priority": "CRITICAL",
-                "category": "Database Setup",
-                "description": "Create and initialize unified memory database",
-                "action": "Run: python tools/implement_unified_memory.py",
-            })
+            recommendations.append(
+                {
+                    "priority": "CRITICAL",
+                    "category": "Database Setup",
+                    "description": "Create and initialize unified memory database",
+                    "action": "Run: python tools/implement_unified_memory.py",
+                }
+            )
 
         # General recommendations
-        recommendations.extend([
-            {
-                "priority": "MEDIUM",
-                "category": "Pipeline Deployment",
-                "description": "Deploy continuous learning pipeline in production",
-                "action": "Add pipeline startup to main application",
-            },
-            {
-                "priority": "MEDIUM",
-                "category": "Monitoring",
-                "description": "Set up monitoring for learning pipeline health",
-                "action": "Implement health checks and alerts",
-            },
-            {
-                "priority": "LOW",
-                "category": "Documentation",
-                "description": "Update documentation with migration status",
-                "action": "Document current state and next steps",
-            },
-        ])
+        recommendations.extend(
+            [
+                {
+                    "priority": "MEDIUM",
+                    "category": "Pipeline Deployment",
+                    "description": "Deploy continuous learning pipeline in production",
+                    "action": "Add pipeline startup to main application",
+                },
+                {
+                    "priority": "MEDIUM",
+                    "category": "Monitoring",
+                    "description": "Set up monitoring for learning pipeline health",
+                    "action": "Implement health checks and alerts",
+                },
+                {
+                    "priority": "LOW",
+                    "category": "Documentation",
+                    "description": "Update documentation with migration status",
+                    "action": "Document current state and next steps",
+                },
+            ]
+        )
 
         self.results["recommendations"] = recommendations
 
         # Print recommendations
         print(f"\n📋 RECOMMENDATIONS ({len(recommendations)}):")
         for i, rec in enumerate(recommendations, 1):
-            priority_icon = {"CRITICAL": "🚨", "HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢"}.get(rec["priority"], "⚪")
+            priority_icon = {"CRITICAL": "🚨", "HIGH": "🔴", "MEDIUM": "🟡", "LOW": "🟢"}.get(
+                rec["priority"], "⚪"
+            )
             print(f"  {priority_icon} {i}. {rec['category']} ({rec['priority']})")
             print(f"     {rec['description']}")
             print(f"     Action: {rec['action']}")
@@ -424,12 +452,15 @@ class MigrationStatusChecker:
             print("✅ All Files Migrated")
 
         # Component integration
-        integrated_count = sum(1 for status in self.results["learning_components_status"].values()
-                              if status != "Not integrated")
+        integrated_count = sum(
+            1 for status in self.results["learning_components_status"].values() if status != "Not integrated"
+        )
         total_components = len(self.results["learning_components_status"])
         if total_components > 0:
             integration_rate = (integrated_count / total_components) * 100
-            print(f"🔧 Component Integration: {integration_rate:.1f}% ({integrated_count}/{total_components})")
+            print(
+                f"🔧 Component Integration: {integration_rate:.1f}% ({integrated_count}/{total_components})"
+            )
 
         # Recommendations
         high_priority = [r for r in self.results["recommendations"] if r["priority"] in ["CRITICAL", "HIGH"]]
@@ -460,7 +491,8 @@ def main():
     results_file = results_dir / f"migration_status_{timestamp}.json"
 
     import json
-    with open(results_file, 'w') as f:
+
+    with open(results_file, "w") as f:
         json.dump(results, f, indent=2, default=str)
 
     print(f"\n📊 Detailed results saved: {results_file.name}")

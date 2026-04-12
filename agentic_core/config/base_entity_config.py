@@ -157,6 +157,7 @@ _emit_links_execution_to_snapshot("p4", "base_entity_config", "exec_snapshot_lin
 
 # Configuration constants
 
+
 class BaseEntity(BaseModel):
     """
     Root entity for all persistent domain objects.
@@ -255,6 +256,7 @@ class AgentConfig(BaseEntity):
         HARDENED: Added validation to prevent injection.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "AgentConfig.validate_name")
 

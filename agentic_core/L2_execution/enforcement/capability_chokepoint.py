@@ -249,7 +249,9 @@ class CapabilityChokepoint:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L2_EXECUTION, "CapabilityChokepoint.authorize_and_execute",
+            _trace_id,
+            LayerSegment.L2_EXECUTION,
+            "CapabilityChokepoint.authorize_and_execute",
         )
         import hashlib as _hashlib  # noqa: PLC0415
 

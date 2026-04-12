@@ -22,7 +22,7 @@ from agentic_core.L0_routing.types.boundary_types import (
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
-    )
+)
 
 _emit_records_execution_trace("p0", "evidence", "boundary_contracts")
 # =============================================================================

@@ -372,7 +372,9 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         """Validate an email address."""
         import uuid  # noqa: PLC0415
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContentValidator.validate_email")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ContentValidator.validate_email"
+        )
         violations = []
         if not email:
             if self.config.require_contact:
@@ -477,7 +479,9 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         return SequenceMatcher(None, text1.lower(), text2.lower()).ratio()
 
     def validate_diversity(
-        self, messages: list[str], threshold: float | None = None,
+        self,
+        messages: list[str],
+        threshold: float | None = None,
     ) -> ContentValidationReport:
         """
         Validate message diversity (check for too-similar messages).
@@ -519,7 +523,9 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         return report
 
     def validate_message(
-        self, message_data: dict[str, Any], config: ContentConfig | None = None,
+        self,
+        message_data: dict[str, Any],
+        config: ContentConfig | None = None,
     ) -> ContentValidationReport:
         """
         Validate a single outreach message.
@@ -551,7 +557,9 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         return report
 
     def validate_messages(
-        self, messages: list[dict[str, Any]], check_diversity: bool = True,
+        self,
+        messages: list[dict[str, Any]],
+        check_diversity: bool = True,
     ) -> ContentValidationReport:
         """
         Validate multiple messages with optional diversity check.

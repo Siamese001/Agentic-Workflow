@@ -1,4 +1,5 @@
 """Configuration Service - Stub implementation for test compatibility."""
+
 from typing import Any
 
 

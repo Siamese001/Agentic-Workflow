@@ -26,6 +26,7 @@ log = logging.getLogger(__name__)
 @dataclass
 class ReindexJob:
     """A reindexing job."""
+
     job_id: str
     file_paths: list[str]
     status: str = "pending"  # pending, running, completed, failed
@@ -40,6 +41,7 @@ class ReindexJob:
 @dataclass
 class ReindexResult:
     """Result of reindexing a single file."""
+
     file_path: str
     success: bool
     unit_id: str | None = None
@@ -111,6 +113,7 @@ class ReindexCoordinator:
         else:
             # Run async
             import threading
+
             thread = threading.Thread(target=self._execute_job, args=(job,))
             thread.daemon = True
             thread.start()
@@ -150,7 +153,9 @@ class ReindexCoordinator:
         """
         trace_id = f"reindex_{Path(file_path).name}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "ReindexCoordinator.reindex_file",
+            trace_id,
+            LayerSegment.L4_STATE,
+            "ReindexCoordinator.reindex_file",
         )
 
         start_time = time.time()
@@ -213,7 +218,9 @@ class ReindexCoordinator:
         """
         trace_id = f"batch_{int(time.time())}"
         _emit_records_execution_trace(
-            trace_id, LayerSegment.L4_STATE, "ReindexCoordinator.reindex_batch",
+            trace_id,
+            LayerSegment.L4_STATE,
+            "ReindexCoordinator.reindex_batch",
         )
 
         results = []
@@ -221,10 +228,7 @@ class ReindexCoordinator:
 
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             # Submit all tasks
-            future_to_path = {
-                executor.submit(self.reindex_file, path): path
-                for path in file_paths
-            }
+            future_to_path = {executor.submit(self.reindex_file, path): path for path in file_paths}
 
             # Collect results as they complete
             completed = 0
@@ -234,11 +238,13 @@ class ReindexCoordinator:
                     result = future.result()
                     results.append(result)
                 except Exception as e:
-                    results.append(ReindexResult(
-                        file_path=str(path),
-                        success=False,
-                        error_message=str(e),
-                    ))
+                    results.append(
+                        ReindexResult(
+                            file_path=str(path),
+                            success=False,
+                            error_message=str(e),
+                        )
+                    )
 
                 completed += 1
                 if progress_callback:

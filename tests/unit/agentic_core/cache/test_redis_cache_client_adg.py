@@ -16,14 +16,17 @@ class TestRedisCacheClientAdg:
     def test_redis_cache_client_adg_imports(self):
         """Test redis_cache_client_adg module imports."""
         from agentic_core import redis_cache_client_adg
+
         assert redis_cache_client_adg is not None
 
     def test_redis_cache_client_adg_class(self):
         """Test RedisCacheClientAdg class exists."""
         from agentic_core import RedisCacheClientAdg
+
         assert RedisCacheClientAdg is not None
 
     def test_redis_cache_client_adg_callable(self):
         """Test redis_cache_client_adg functions are callable."""
         from agentic_core import validate_redis_cache_client_adg
+
         assert callable(validate_redis_cache_client_adg)

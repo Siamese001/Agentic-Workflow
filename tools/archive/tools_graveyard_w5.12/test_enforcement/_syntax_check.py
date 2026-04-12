@@ -1,4 +1,5 @@
 """Quick syntax check across all test files."""
+
 import ast
 import pathlib
 

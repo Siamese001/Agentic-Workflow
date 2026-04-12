@@ -16,14 +16,17 @@ class TestOutreachsignalrouteragent:
     def test_OutreachSignalRouterAgent_imports(self):
         """Test OutreachSignalRouterAgent module imports."""
         from agentic_core import OutreachSignalRouterAgent
+
         assert OutreachSignalRouterAgent is not None
 
     def test_OutreachSignalRouterAgent_class(self):
         """Test Outreachsignalrouteragent class exists."""
         from agentic_core import Outreachsignalrouteragent
+
         assert Outreachsignalrouteragent is not None
 
     def test_OutreachSignalRouterAgent_callable(self):
         """Test OutreachSignalRouterAgent functions are callable."""
         from agentic_core import validate_OutreachSignalRouterAgent
+
         assert callable(validate_OutreachSignalRouterAgent)

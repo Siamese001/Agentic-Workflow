@@ -72,7 +72,10 @@ def get_staged_files() -> list[str]:
             check=True,
         )
         return [f for f in result.stdout.strip().split("\n") if f.endswith(".py")]
-    except (subprocess.CalledProcessError, FileNotFoundError):    # guardian: File operations should check existence before access
+    except (
+        subprocess.CalledProcessError,
+        FileNotFoundError,
+    ):  # guardian: File operations should check existence before access
         return []
 
 

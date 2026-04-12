@@ -65,7 +65,9 @@ class MCPRobustTesterFixed:
             except Exception as e:  # guardian: allow-broad-exception -- teardown/cleanup context -- swallow is conventional in resource-release paths
                 print(f"Warning: Could not cleanup test directory: {e}")
 
-    def run_mcp_function(self, server_name: str, function_name: str, args: list[str], timeout: int = 30) -> dict:
+    def run_mcp_function(
+        self, server_name: str, function_name: str, args: list[str], timeout: int = 30
+    ) -> dict:
         """Run MCP function with proper error handling"""
         try:
             # Create a Python script that calls the MCP function
@@ -86,13 +88,15 @@ except Exception as e:
 """
 
             script_file = self.temp_dir / f"mcp_test_{function_name}.py"
-            with open(script_file, 'w') as f:
+            with open(script_file, "w") as f:
                 f.write(script_content)
 
             result = subprocess.run(
                 ["python", str(script_file)],
                 cwd=str(self.repo_root),
-                capture_output=True, text=True, timeout=timeout,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
             )
 
             if result.returncode == 0:
@@ -151,7 +155,9 @@ except Exception as e:
         # Test 4: Write file
         try:
             test_write_file = self.temp_dir / "test_write.txt"
-            result = self.run_mcp_function("filesystem", "write_file", [str(test_write_file), "Test content", "False"])
+            result = self.run_mcp_function(
+                "filesystem", "write_file", [str(test_write_file), "Test content", "False"]
+            )
             if result.get("success"):
                 self.log_result("Write File", True, "MCP call successful")
             else:
@@ -181,11 +187,11 @@ except Exception as e:
             content = "Basic test content"
 
             # Write file
-            with open(test_file, 'w', encoding='utf-8') as f:
+            with open(test_file, "w", encoding="utf-8") as f:
                 f.write(content)
 
             # Read file
-            with open(test_file, encoding='utf-8') as f:
+            with open(test_file, encoding="utf-8") as f:
                 read_content = f.read()
 
             if read_content == content:
@@ -212,7 +218,7 @@ except Exception as e:
             large_file = self.temp_dir / "large_test.txt"
             large_content = "x" * (1024 * 1024)  # 1MB
 
-            with open(large_file, 'w', encoding='utf-8') as f:
+            with open(large_file, "w", encoding="utf-8") as f:
                 f.write(large_content)
 
             if large_file.exists() and large_file.stat().st_size == 1024 * 1024:
@@ -227,10 +233,10 @@ except Exception as e:
             special_file = self.temp_dir / "special_特殊_🚀.txt"
             special_content = "Special content: 特殊 characters 🚀"
 
-            with open(special_file, 'w', encoding='utf-8') as f:
+            with open(special_file, "w", encoding="utf-8") as f:
                 f.write(special_content)
 
-            with open(special_file, encoding='utf-8') as f:
+            with open(special_file, encoding="utf-8") as f:
                 read_content = f.read()
 
             if read_content == special_content:
@@ -305,9 +311,10 @@ except Exception as e:
         try:
             search_term = "test"
             found_entities = [
-                name for name, entity in memory_graph["entities"].items()
-                if search_term in name.lower() or
-                   any(search_term.lower() in obs.lower() for obs in entity.get("observations", []))
+                name
+                for name, entity in memory_graph["entities"].items()
+                if search_term in name.lower()
+                or any(search_term.lower() in obs.lower() for obs in entity.get("observations", []))
             ]
 
             if len(found_entities) > 0:
@@ -337,8 +344,7 @@ except Exception as e:
                 "entity_count": len(memory_graph["entities"]),
                 "relation_count": len(memory_graph["relations"]),
                 "total_observations": sum(
-                    len(entity.get("observations", []))
-                    for entity in memory_graph["entities"].values()
+                    len(entity.get("observations", [])) for entity in memory_graph["entities"].values()
                 ),
             }
 
@@ -389,7 +395,9 @@ except Exception as e:
             if entity["observations"][0] == special_obs:
                 self.log_result("Special Characters in Observations", True, "Special characters handled")
             else:
-                self.log_result("Special Characters in Observations", False, error="Special characters not handled")
+                self.log_result(
+                    "Special Characters in Observations", False, error="Special characters not handled"
+                )
         except Exception as e:
             self.log_result("Special Characters in Observations", False, error=str(e))
 
@@ -427,9 +435,9 @@ except Exception as e:
 
             search_term = "特殊"
             found_entities = [
-                name for name, entity in memory_graph["entities"].items()
-                if search_term in name or
-                   any(search_term in obs for obs in entity.get("observations", []))
+                name
+                for name, entity in memory_graph["entities"].items()
+                if search_term in name or any(search_term in obs for obs in entity.get("observations", []))
             ]
 
             if len(found_entities) > 0:
@@ -450,7 +458,7 @@ except Exception as e:
             test_file = self.temp_dir / "integration_test.txt"
             test_content = "Integration test content with special chars: 测试"
 
-            with open(test_file, 'w', encoding='utf-8') as f:
+            with open(test_file, "w", encoding="utf-8") as f:
                 f.write(test_content)
 
             # Read file info
@@ -513,9 +521,13 @@ except Exception as e:
                     success_count += 1
 
             if success_count == 5 and len(memory_graph["entities"]) == 5:
-                self.log_result("Concurrent Operations", True, f"All {success_count} concurrent operations succeeded")
+                self.log_result(
+                    "Concurrent Operations", True, f"All {success_count} concurrent operations succeeded"
+                )
             else:
-                self.log_result("Concurrent Operations", False, error=f"Only {success_count}/5 operations succeeded")
+                self.log_result(
+                    "Concurrent Operations", False, error=f"Only {success_count}/5 operations succeeded"
+                )
         except Exception as e:
             self.log_result("Concurrent Operations", False, error=str(e))
 
@@ -545,14 +557,14 @@ except Exception as e:
     def generate_test_summary(self):
         """Generate test summary"""
         total_tests = len(self.test_results)
-        passed_tests = len([r for r in self.test_results if r['success']])
+        passed_tests = len([r for r in self.test_results if r["success"]])
         failed_tests = len(self.errors_found)
 
         print("\n=== Test Summary ===")
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
         print(f"Failed: {failed_tests}")
-        print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
+        print(f"Success Rate: {(passed_tests / total_tests) * 100:.1f}%")
 
         if self.errors_found:
             print("\n=== Errors Found ===")
@@ -561,19 +573,24 @@ except Exception as e:
 
         # Save detailed results
         results_file = self.repo_root / "mcp_robust_test_results_fixed.json"
-        with open(results_file, 'w') as f:
-            json.dump({
-                "summary": {
-                    "total_tests": total_tests,
-                    "passed": passed_tests,
-                    "failed": failed_tests,
-                    "success_rate": (passed_tests/total_tests)*100,
+        with open(results_file, "w") as f:
+            json.dump(
+                {
+                    "summary": {
+                        "total_tests": total_tests,
+                        "passed": passed_tests,
+                        "failed": failed_tests,
+                        "success_rate": (passed_tests / total_tests) * 100,
+                    },
+                    "results": self.test_results,
+                    "errors": self.errors_found,
                 },
-                "results": self.test_results,
-                "errors": self.errors_found,
-            }, f, indent=2)
+                f,
+                indent=2,
+            )
 
         print(f"\nDetailed results saved to: {results_file}")
+
 
 def main():
     """Main function"""
@@ -588,6 +605,7 @@ def main():
     else:
         print(f"\n⚠️  {len(tester.errors_found)} MCP tests failed!")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

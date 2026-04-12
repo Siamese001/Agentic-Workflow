@@ -15,6 +15,7 @@ from typing import Any
 
 class FindingSeverity(Enum):
     """Severity level for findings."""
+
     ERROR = "ERROR"
     WARN = "WARN"
     INFO = "INFO"
@@ -23,6 +24,7 @@ class FindingSeverity(Enum):
 @dataclass
 class Finding:
     """A finding from a review or validation."""
+
     code: str
     severity: FindingSeverity | str
     message: str
@@ -32,6 +34,7 @@ class Finding:
 @dataclass
 class ResultEnvelope:
     """Envelope for review/validation results."""
+
     tool: str
     exit_code: int
     findings: list[Finding] = field(default_factory=list)
@@ -40,19 +43,25 @@ class ResultEnvelope:
 
     def write_json(self, path: str | Path) -> None:
         """Write envelope to JSON file."""
-        with open(str(path), 'w') as f:
-            json.dump({
-                'tool': self.tool,
-                'exit_code': self.exit_code,
-                'findings': [
-                    {
-                        'code': f.code,
-                        'severity': f.severity.value if isinstance(f.severity, FindingSeverity) else f.severity,
-                        'message': f.message,
-                        'context': f.context,
-                    }
-                    for f in self.findings
-                ],
-                'inputs': self.inputs,
-                'outputs': self.outputs,
-            }, f, indent=2)
+        with open(str(path), "w") as f:
+            json.dump(
+                {
+                    "tool": self.tool,
+                    "exit_code": self.exit_code,
+                    "findings": [
+                        {
+                            "code": f.code,
+                            "severity": f.severity.value
+                            if isinstance(f.severity, FindingSeverity)
+                            else f.severity,
+                            "message": f.message,
+                            "context": f.context,
+                        }
+                        for f in self.findings
+                    ],
+                    "inputs": self.inputs,
+                    "outputs": self.outputs,
+                },
+                f,
+                indent=2,
+            )

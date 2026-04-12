@@ -218,8 +218,11 @@ class BatchingMixin:
     ) -> None:
         """Configure batching settings."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BatchingMixin.configure_batching")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "BatchingMixin.configure_batching"
+        )
 
         if batch_size is not None and batch_size <= 0:
             raise ValueError("batch_size must be positive")
@@ -383,7 +386,10 @@ class BatchingMixin:
                     results.append(e)
             return results
         return await self.execute_batch(
-            tasks, concurrency=max_workers, timeout=DEFAULT_TIMEOUT, return_exceptions=True,
+            tasks,
+            concurrency=max_workers,
+            timeout=DEFAULT_TIMEOUT,
+            return_exceptions=True,
         )
 
     def get_batching_status(self) -> dict[str, Any]:

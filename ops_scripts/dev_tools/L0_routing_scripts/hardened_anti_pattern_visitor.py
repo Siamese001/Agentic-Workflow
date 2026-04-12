@@ -217,7 +217,9 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L0_ROUTING, "HardenedAntiPatternVisitor.visit_Import",
+            _trace_id,
+            LayerSegment.L0_ROUTING,
+            "HardenedAntiPatternVisitor.visit_Import",
         )
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")

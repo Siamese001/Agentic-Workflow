@@ -19,6 +19,7 @@ class InvocationRecord:
 
     10C-REQ-161: Who used what provider tool compute cost audit log seal replay envelope.
     """
+
     record_id: str
     actor_id: str
     capability_token: str

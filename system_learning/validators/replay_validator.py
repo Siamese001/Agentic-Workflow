@@ -24,13 +24,15 @@ emit_determinism_digest("replay_validator", "replay_validator_digest")
 record_execution_trace("replay_validator", "replay_validator_trace")
 
 
-
 class DeterminismViolation(RuntimeError):
     """Raised when an engine produces different outputs across identical runs."""
 
 
 def replay_validate(
-    snapshot: Any, engine_fn: Callable[[Any], Any], *, canonicalize_fn: Callable[[Any], bytes],
+    snapshot: Any,
+    engine_fn: Callable[[Any], Any],
+    *,
+    canonicalize_fn: Callable[[Any], bytes],
 ) -> str:
     """Validate that an engine produces identical outputs across two runs.
 

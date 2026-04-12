@@ -30,6 +30,7 @@ Logger = logging.getLogger(__name__)
 @dataclass
 class ToolSchema:
     """Schema definition for L4 Agentic Action tool."""
+
     name: str
     description: str
     parameters: dict[str, Any]  # JSON Schema format
@@ -41,6 +42,7 @@ class ToolSchema:
 @dataclass
 class ToolInstance:
     """Registered tool instance with schema and handler."""
+
     schema: ToolSchema
     handler: Callable[..., Any]
     source_module: str
@@ -104,6 +106,7 @@ class ToolRegistry:
         )
 
         import time
+
         tool_instance = ToolInstance(
             schema=schema,
             handler=handler,
@@ -205,7 +208,9 @@ class ToolRegistry:
                         )
 
         _emit_validates_capability(
-            f"validate_{tool_name}", "ToolRegistry", f"valid_{not errors}",
+            f"validate_{tool_name}",
+            "ToolRegistry",
+            f"valid_{not errors}",
         )
 
         return len(errors) == 0, errors
@@ -378,7 +383,8 @@ class ToolRegistry:
             "validation_failures": self._validation_failures,
             "success_rate": (
                 (self._invocation_count - self._validation_failures) / self._invocation_count
-                if self._invocation_count > 0 else 1.0
+                if self._invocation_count > 0
+                else 1.0
             ),
         }
 
@@ -412,6 +418,7 @@ def tool_decorator(
     Returns:
         Decorator function
     """
+
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         func_name = name or func.__name__
         func_description = description or inspect.getdoc(func) or f"Tool {func_name}"
@@ -544,6 +551,7 @@ def _register_default_tools(registry: ToolRegistry) -> None:
         query = f"{component} architecture design pattern"
 
         from agentic_core.L4_state.reasoning.retrieval_layers import L3SemanticRAG
+
         l3 = L3SemanticRAG()
         results = l3.query_docs(query, 3)
 

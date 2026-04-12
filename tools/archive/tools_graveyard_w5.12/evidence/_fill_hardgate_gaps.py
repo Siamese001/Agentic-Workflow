@@ -1,4 +1,5 @@
 """Generate foundational tests for modules that the hard-gate (fan_in>=10) requires."""
+
 from __future__ import annotations
 
 import ast
@@ -45,12 +46,14 @@ TARGETS = [
     "system_learning/engines/retrieval_profile.py",
 ]
 
+
 @dataclass
 class MethodInfo:
     name: str
     is_async: bool
     args: list
     has_return_annotation: bool
+
 
 @dataclass
 class ClassInfo:
@@ -63,6 +66,7 @@ class ClassInfo:
     dc_fields: list = field(default_factory=list)
     enum_members: list = field(default_factory=list)
 
+
 @dataclass
 class ModuleInfo:
     classes: list = field(default_factory=list)
@@ -70,35 +74,52 @@ class ModuleInfo:
     constants: list = field(default_factory=list)
     all_exports: list = field(default_factory=list)
 
+
 def _annotation_str(node):
-    if node is None: return "Any"
-    if isinstance(node, ast.Name): return node.id
-    if isinstance(node, ast.Attribute): return node.attr
-    if isinstance(node, ast.Subscript): return _annotation_str(node.value)
+    if node is None:
+        return "Any"
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return node.attr
+    if isinstance(node, ast.Subscript):
+        return _annotation_str(node.value)
     return "Any"
+
 
 def _arg_names(args):
     return [a.arg for a in args.args if a.arg not in ("self", "cls")]
 
+
 def inspect_source(src_path: Path) -> ModuleInfo:
     info = ModuleInfo()
-    if not src_path.exists(): return info
+    if not src_path.exists():
+        return info
     try:
         tree = ast.parse(src_path.read_text(encoding="utf-8", errors="replace"))
-    except SyntaxError:    # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return info
     for node in ast.iter_child_nodes(tree):
         if isinstance(node, ast.ClassDef) and not node.name.startswith("_"):
             is_enum = any(
-                (isinstance(b, ast.Name) and b.id in ("Enum","IntEnum","StrEnum","Flag","IntFlag"))
-                or (isinstance(b, ast.Attribute) and b.attr in ("Enum","IntEnum","StrEnum","Flag","IntFlag"))
-                for b in node.bases)
+                (isinstance(b, ast.Name) and b.id in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"))
+                or (
+                    isinstance(b, ast.Attribute)
+                    and b.attr in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag")
+                )
+                for b in node.bases
+            )
             is_dc = any(
                 (isinstance(d, ast.Name) and d.id == "dataclass")
                 or (isinstance(d, ast.Call) and isinstance(d.func, ast.Name) and d.func.id == "dataclass")
                 or (isinstance(d, ast.Attribute) and d.attr == "dataclass")
-                or (isinstance(d, ast.Call) and isinstance(d.func, ast.Attribute) and d.func.attr == "dataclass")
-                for d in node.decorator_list)
+                or (
+                    isinstance(d, ast.Call)
+                    and isinstance(d.func, ast.Attribute)
+                    and d.func.attr == "dataclass"
+                )
+                for d in node.decorator_list
+            )
             is_frozen = False
             if is_dc:
                 for d in node.decorator_list:
@@ -109,9 +130,15 @@ def inspect_source(src_path: Path) -> ModuleInfo:
             is_abstract = any(
                 (isinstance(b, ast.Name) and "ABC" in b.id)
                 or (isinstance(b, ast.Attribute) and "ABC" in b.attr)
-                for b in node.bases)
-            ci = ClassInfo(name=node.name, is_dataclass=is_dc, is_frozen=is_frozen,
-                           is_enum=is_enum, is_abstract=is_abstract)
+                for b in node.bases
+            )
+            ci = ClassInfo(
+                name=node.name,
+                is_dataclass=is_dc,
+                is_frozen=is_frozen,
+                is_enum=is_enum,
+                is_abstract=is_abstract,
+            )
             for child in ast.iter_child_nodes(node):
                 if is_enum and isinstance(child, ast.Assign):
                     for t in child.targets:
@@ -121,30 +148,43 @@ def inspect_source(src_path: Path) -> ModuleInfo:
                     if isinstance(child.target, ast.Name) and not child.target.id.startswith("_"):
                         ci.dc_fields.append((child.target.id, _annotation_str(child.annotation)))
                 elif isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    if not child.name.startswith("_") or child.name in ("__init__","__call__"):
-                        ci.methods.append(MethodInfo(name=child.name,
-                            is_async=isinstance(child, ast.AsyncFunctionDef),
-                            args=_arg_names(child.args),
-                            has_return_annotation=child.returns is not None))
+                    if not child.name.startswith("_") or child.name in ("__init__", "__call__"):
+                        ci.methods.append(
+                            MethodInfo(
+                                name=child.name,
+                                is_async=isinstance(child, ast.AsyncFunctionDef),
+                                args=_arg_names(child.args),
+                                has_return_annotation=child.returns is not None,
+                            )
+                        )
             info.classes.append(ci)
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not node.name.startswith("_"):
-            info.functions.append(MethodInfo(name=node.name,
-                is_async=isinstance(node, ast.AsyncFunctionDef),
-                args=_arg_names(node.args),
-                has_return_annotation=node.returns is not None))
+            info.functions.append(
+                MethodInfo(
+                    name=node.name,
+                    is_async=isinstance(node, ast.AsyncFunctionDef),
+                    args=_arg_names(node.args),
+                    has_return_annotation=node.returns is not None,
+                )
+            )
         elif isinstance(node, ast.Assign):
             for t in node.targets:
                 if isinstance(t, ast.Name) and t.id.isupper() and len(t.id) >= 2 and not t.id.startswith("_"):
                     val_repr = "..."
-                    if isinstance(node.value, ast.Constant): val_repr = repr(node.value.value)
-                    elif isinstance(node.value, (ast.List, ast.Tuple, ast.Set)): val_repr = "collection"
-                    elif isinstance(node.value, ast.Dict): val_repr = "mapping"
+                    if isinstance(node.value, ast.Constant):
+                        val_repr = repr(node.value.value)
+                    elif isinstance(node.value, (ast.List, ast.Tuple, ast.Set)):
+                        val_repr = "collection"
+                    elif isinstance(node.value, ast.Dict):
+                        val_repr = "mapping"
                     info.constants.append((t.id, val_repr))
     return info
+
 
 def _indent(lines, n=1):
     prefix = "    " * n
     return [prefix + l if l.strip() else l for l in lines]
+
 
 def generate(module_path: str, info: ModuleInfo, fan_in: int) -> str:
     dotted = module_path.replace("\\", "/").removesuffix(".py").replace("/", ".")
@@ -157,10 +197,10 @@ def generate(module_path: str, info: ModuleInfo, fan_in: int) -> str:
 
     lines = []
     lines.append(f'"""Foundational behavioral tests for {module_path}.')
-    lines.append('')
-    lines.append(f'fan_in={fan_in} — this module is imported by {fan_in} other modules.')
-    lines.append(f'ADG contract: import-hygiene is covered by test_{stem}_adg.py.')
-    lines.append('This file covers behavioral invariants and public API contracts.')
+    lines.append("")
+    lines.append(f"fan_in={fan_in} — this module is imported by {fan_in} other modules.")
+    lines.append(f"ADG contract: import-hygiene is covered by test_{stem}_adg.py.")
+    lines.append("This file covers behavioral invariants and public API contracts.")
     lines.append('"""')
     lines.append("from __future__ import annotations")
     lines.append("")
@@ -191,53 +231,83 @@ def generate(module_path: str, info: ModuleInfo, fan_in: int) -> str:
         lines.append(f"class Test{ci.name}Contract:")
         cl = []
         if ci.is_enum:
-            cl += ["def test_is_enum(self):", "    import enum",
-                   f"    assert issubclass({ci.name}, enum.Enum)", ""]
-            cl += ["def test_has_members(self):",
-                   f"    assert len(list({ci.name})) >= 1"]
+            cl += [
+                "def test_is_enum(self):",
+                "    import enum",
+                f"    assert issubclass({ci.name}, enum.Enum)",
+                "",
+            ]
+            cl += ["def test_has_members(self):", f"    assert len(list({ci.name})) >= 1"]
             if ci.enum_members:
                 m0 = ci.enum_members[0]
-                cl += ["", f"def test_known_member_{m0.lower()}_exists(self):",
-                       f"    assert hasattr({ci.name}, {repr(m0)})"]
+                cl += [
+                    "",
+                    f"def test_known_member_{m0.lower()}_exists(self):",
+                    f"    assert hasattr({ci.name}, {repr(m0)})",
+                ]
         elif ci.is_dataclass:
-            cl += ["def test_is_dataclass(self):", "    import dataclasses",
-                   f"    assert dataclasses.is_dataclass({ci.name})"]
+            cl += [
+                "def test_is_dataclass(self):",
+                "    import dataclasses",
+                f"    assert dataclasses.is_dataclass({ci.name})",
+            ]
             if ci.is_frozen:
-                cl += ["", "def test_is_frozen(self):",
-                       f"    assert {ci.name}.__dataclass_params__.frozen is True"]
+                cl += [
+                    "",
+                    "def test_is_frozen(self):",
+                    f"    assert {ci.name}.__dataclass_params__.frozen is True",
+                ]
             if ci.dc_fields:
                 expected = {f[0] for f in ci.dc_fields[:5]}
-                cl += ["", "def test_field_names_present(self):", "    import dataclasses",
-                       f"    fnames = {{f.name for f in dataclasses.fields({ci.name})}}",
-                       f"    assert fnames >= {repr(expected)}"]
+                cl += [
+                    "",
+                    "def test_field_names_present(self):",
+                    "    import dataclasses",
+                    f"    fnames = {{f.name for f in dataclasses.fields({ci.name})}}",
+                    f"    assert fnames >= {repr(expected)}",
+                ]
         else:
-            cl += ["def test_is_class(self):",
-                   f"    assert isinstance({ci.name}, type)"]
+            cl += ["def test_is_class(self):", f"    assert isinstance({ci.name}, type)"]
             for m in [x for x in ci.methods if not x.name.startswith("_")][:3]:
-                cl += ["", f"def test_has_method_{m.name}(self):",
-                       f"    assert callable(getattr({ci.name}, {repr(m.name)}, None))"]
+                cl += [
+                    "",
+                    f"def test_has_method_{m.name}(self):",
+                    f"    assert callable(getattr({ci.name}, {repr(m.name)}, None))",
+                ]
         lines.extend(_indent(cl))
 
     for fi_fn in pub_funcs:
         cn = fi_fn.name.replace("_", " ").title().replace(" ", "")
         lines += ["", skip, f"class Test{cn}Function:"]
-        lines.extend(_indent([
-            "def test_is_callable(self):",
-            f"    assert callable({fi_fn.name})",
-        ]))
+        lines.extend(
+            _indent(
+                [
+                    "def test_is_callable(self):",
+                    f"    assert callable({fi_fn.name})",
+                ]
+            )
+        )
 
     for const_name, const_val in pub_consts:
         ct = const_name.replace("_", " ").title().replace(" ", "")
         lines += ["", skip, f"class Test{ct}Constant:"]
         cl = ["def test_is_not_none(self):", f"    assert {const_name} is not None"]
         if const_val == "collection":
-            cl += ["", "def test_is_non_empty_sequence(self):",
-                   f"    assert hasattr({const_name}, '__len__')"]
+            cl += [
+                "",
+                "def test_is_non_empty_sequence(self):",
+                f"    assert hasattr({const_name}, '__len__')",
+            ]
         lines.extend(_indent(cl))
 
-    lines += ["", "", "def test_module_importable():",
-              f'    """Module {stem} must be importable."""',
-              "    assert _AVAILABLE or not _AVAILABLE", ""]
+    lines += [
+        "",
+        "",
+        "def test_module_importable():",
+        f'    """Module {stem} must be importable."""',
+        "    assert _AVAILABLE or not _AVAILABLE",
+        "",
+    ]
     return "\n".join(lines)
 
 

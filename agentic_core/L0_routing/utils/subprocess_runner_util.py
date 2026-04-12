@@ -181,7 +181,10 @@ __all__ = [
 
 
 def invoke_arch_governor(
-    action: str, project_root: Path | None = None, targets: list[str] | None = None, auto_approve: bool = True,
+    action: str,
+    project_root: Path | None = None,
+    targets: list[str] | None = None,
+    auto_approve: bool = True,
 ) -> dict[str, Any]:
     """
     Invoke ArchitectureGovernorAgent via subprocess.
@@ -231,7 +234,9 @@ def invoke_arch_governor(
 
 
 def invoke_orchestrator_mission(
-    project_root: Path | None = None, targets: list[str] | None = None, execute: bool = False,
+    project_root: Path | None = None,
+    targets: list[str] | None = None,
+    execute: bool = False,
 ) -> dict[str, Any]:
     """
     Invoke orchestrator mission via subprocess.
@@ -319,7 +324,9 @@ def invoke_hierarchy_agent(action: str, project_root: Path | None = None) -> dic
 
 
 def invoke_code_validator(
-    action: str, project_root: Path | None = None, directory: str | None = None,
+    action: str,
+    project_root: Path | None = None,
+    directory: str | None = None,
 ) -> dict[str, Any]:
     """
     Invoke CodeValidatorAgent via subprocess.

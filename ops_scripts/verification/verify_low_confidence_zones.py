@@ -33,9 +33,12 @@ from typing import Any
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+
 class DeadCodeZoneControlError(Exception):
     """Raised when dead code zone control verification fails."""
+
     pass
+
 
 class ADGDeadCodeZoneControlVerifier:
     """Verifies dead code, dead imports, and low-confidence zone control."""
@@ -135,7 +138,7 @@ class ADGDeadCodeZoneControlVerifier:
 
                 print("   📊 Top dead import hotspots:")
                 for i, (module, count) in enumerate(dead_import_hotspots[:5]):
-                    print(f"      {i+1}. {module}: {count}")
+                    print(f"      {i + 1}. {module}: {count}")
 
                 # Check L4 dead imports (should trend to zero)
                 l4_dead_imports = dead_imports_by_layer.get("L4", 0)
@@ -283,7 +286,7 @@ class ADGDeadCodeZoneControlVerifier:
 
                 print("   📊 Top unresolved import hotspots:")
                 for i, (module, count) in enumerate(unresolved_hotspots[:5]):
-                    print(f"      {i+1}. {module}: {count}")
+                    print(f"      {i + 1}. {module}: {count}")
 
                 # Check L4 unresolved imports (should be zero)
                 l4_unresolved = unresolved_by_layer.get("L4", 0)
@@ -395,7 +398,9 @@ class ADGDeadCodeZoneControlVerifier:
                 governance_low_conf_ratio = (governance_low_conf / max(1, governance_total)) * 100
 
                 if governance_low_conf_ratio > 20:
-                    self.warnings.append(f"High low-confidence ratio in governance layers: {governance_low_conf_ratio:.1f}%")
+                    self.warnings.append(
+                        f"High low-confidence ratio in governance layers: {governance_low_conf_ratio:.1f}%"
+                    )
 
                 return {
                     "total_low_confidence": total_low_confidence,
@@ -515,9 +520,14 @@ class ADGDeadCodeZoneControlVerifier:
 
                     # Add first-party filter
                     if "edges" in query:
-                        fp_query = query.replace("FROM edges", "FROM edges e JOIN nodes n ON e.src_id = n.id") + " AND n.identity_kind NOT IN ('external_module', 'external_provider')"
+                        fp_query = (
+                            query.replace("FROM edges", "FROM edges e JOIN nodes n ON e.src_id = n.id")
+                            + " AND n.identity_kind NOT IN ('external_module', 'external_provider')"
+                        )
                     elif "nodes" in query:
-                        fp_query = query + " AND identity_kind NOT IN ('external_module', 'external_provider')"
+                        fp_query = (
+                            query + " AND identity_kind NOT IN ('external_module', 'external_provider')"
+                        )
                     else:
                         fp_query = query
 
@@ -588,10 +598,7 @@ class ADGDeadCodeZoneControlVerifier:
         executive = self._verify_executive_readiness()
 
         # Determine overall status
-        critical_issues = (
-            unresolved.get("l4_unresolved", 0) > 0 or
-            not executive.get("executive_ready", True)
-        )
+        critical_issues = unresolved.get("l4_unresolved", 0) > 0 or not executive.get("executive_ready", True)
 
         # Prepare result
         result = {
@@ -639,6 +646,7 @@ class ADGDeadCodeZoneControlVerifier:
 
         return result
 
+
 def main():
     """CLI entry point."""
     import argparse
@@ -663,18 +671,21 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, 'w') as f:
+            with open(args.output, "w") as f:
                 json.dump(result, f, indent=2, default=str)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1
 
-    except DeadCodeZoneControlError as e:    # guardian: DeadCodeZoneControlError should be handled with specific context
+    except (
+        DeadCodeZoneControlError
+    ) as e:  # guardian: DeadCodeZoneControlError should be handled with specific context
         print(f"❌ Verification failed: {e}")
         return 1
     except Exception as e:
         print(f"💥 Unexpected error: {e}")
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -118,12 +118,13 @@ def parse_llm_response(response: str) -> dict[str, Any]:
     """
     try:
         # Try to find JSON in the response
-        json_match = re.search(r'\{.*\}', response, re.DOTALL)
+        json_match = re.search(r"\{.*\}", response, re.DOTALL)
         if json_match:
             return json.loads(json_match.group())
     except json.JSONDecodeError as e:
+        import logging
 
-        import logging; logging.getLogger(__name__).debug("strategic_recommendation_util: Exception swallowed at L124: %s", e)
+        logging.getLogger(__name__).debug("strategic_recommendation_util: Exception swallowed at L124: %s", e)
 
     # Fallback: return empty structure
     return {"review": "", "recommendations": []}
@@ -159,7 +160,9 @@ def generate_fallback_recommendations(dashboard_data: list[dict[str, Any]]) -> R
     if low_invocation:
         recommendations.append(f"1. Boost Invocation Coverage<br>Focus on: {', '.join(low_invocation[:3])}")
     if low_mcp:
-        recommendations.append(f"2. Strengthen MCP Hardening<br>Priority territories: {', '.join(low_mcp[:3])}")
+        recommendations.append(
+            f"2. Strengthen MCP Hardening<br>Priority territories: {', '.join(low_mcp[:3])}"
+        )
     if low_tests:
         recommendations.append(f"3. Increase Test Coverage<br>Target: {', '.join(low_tests[:3])}")
 

@@ -4,6 +4,7 @@ Analyzes the real gap between denominators and numerators post-normalization.
 Identifies false-negative symbols (real governed calls scanner misses)
 and quantifies achievable closure without denominator growth.
 """
+
 import glob
 import os
 import sqlite3
@@ -17,9 +18,9 @@ conn = sqlite3.connect(db_path)
 
 # ── 1. reads_through / reads_from gap ──────────────────────────────────────
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("GAP 1: reads_through / reads_from")
-print("="*70)
+print("=" * 70)
 
 # What kind of reads_from edges exist?
 rf_kinds = conn.execute(
@@ -66,9 +67,9 @@ for sym, cnt in read_candidates:
 
 # ── 2. records_execution_trace / calls gap ─────────────────────────────────
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("GAP 2: records_execution_trace / calls")
-print("="*70)
+print("=" * 70)
 
 # What symbols generate records_execution_trace?
 ret_symbols = conn.execute(
@@ -108,9 +109,9 @@ for sym, cnt in trace_candidates:
 
 # ── 3. All governance numerator gaps ───────────────────────────────────────
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("ALL GOVERNANCE NUMERATOR COVERAGE")
-print("="*70)
+print("=" * 70)
 
 numerator_types = [
     ("writes_through", "writes_to"),
@@ -127,19 +128,21 @@ numerator_types = [
 ]
 for num_type, den_type in numerator_types:
     num_count = conn.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type=?", (num_type,),
+        "SELECT COUNT(*) FROM edges WHERE relation_type=?",
+        (num_type,),
     ).fetchone()[0]
     den_count = conn.execute(
-        "SELECT COUNT(*) FROM edges WHERE relation_type=?", (den_type,),
+        "SELECT COUNT(*) FROM edges WHERE relation_type=?",
+        (den_type,),
     ).fetchone()[0]
     pct = num_count / den_count * 100 if den_count > 0 else 0
     print(f"  {num_type:40s} {num_count:>6,} / {den_count:>6,} = {pct:6.1f}%")
 
 # ── 4. emits_metric_event check ───────────────────────────────────────────
 
-print("\n" + "="*70)
+print("\n" + "=" * 70)
 print("SPECIAL: emits_metric_event (was 18,032, now 0)")
-print("="*70)
+print("=" * 70)
 eme = conn.execute(
     "SELECT COUNT(*) FROM edges WHERE relation_type='emits_metric_event'",
 ).fetchone()[0]

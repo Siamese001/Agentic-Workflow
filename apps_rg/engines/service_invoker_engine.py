@@ -177,8 +177,11 @@ class ServiceInvokerEngine(BaseRGEngine):
         Execute LLM call with full observability.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ServiceInvokerEngine.execute")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ServiceInvokerEngine.execute"
+        )
 
         start = time.time()
         response = "Sovereign Generated Content"

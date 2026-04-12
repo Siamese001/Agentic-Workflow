@@ -16,14 +16,17 @@ class TestAnalysisOpsUtilAdg:
     def test_analysis_ops_util_adg_imports(self):
         """Test analysis_ops_util_adg module imports."""
         from agentic_core import analysis_ops_util_adg
+
         assert analysis_ops_util_adg is not None
 
     def test_analysis_ops_util_adg_class(self):
         """Test AnalysisOpsUtilAdg class exists."""
         from agentic_core import AnalysisOpsUtilAdg
+
         assert AnalysisOpsUtilAdg is not None
 
     def test_analysis_ops_util_adg_callable(self):
         """Test analysis_ops_util_adg functions are callable."""
         from agentic_core import validate_analysis_ops_util_adg
+
         assert callable(validate_analysis_ops_util_adg)

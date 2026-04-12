@@ -24,6 +24,7 @@ except ImportError as e:
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
+
 class PhaseScriptArchiver:
     def __init__(self, repo_root: str):
         self.repo_root = Path(repo_root)
@@ -40,7 +41,7 @@ class PhaseScriptArchiver:
         """Load the repo hygiene manifest."""
         with open(manifest_path) as f:
             data = json.load(f)
-        return data['files']
+        return data["files"]
 
     def get_phase_named_files(self, manifest: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Extract phase-named files from manifest."""
@@ -52,7 +53,7 @@ class PhaseScriptArchiver:
         """Create batches of files for archiving."""
         batches = []
         for i in range(0, len(files), batch_size):
-            batch = files[i:i + batch_size]
+            batch = files[i : i + batch_size]
             batches.append(batch)
         return batches
 
@@ -101,10 +102,12 @@ class PhaseScriptArchiver:
                 results["success"] += 1
             else:
                 results["failed"] += 1
-            results["files"].append({
-                "path": file_info["path"],
-                "status": "success" if success else "failed",
-            })
+            results["files"].append(
+                {
+                    "path": file_info["path"],
+                    "status": "success" if success else "failed",
+                }
+            )
 
         return results
 
@@ -119,11 +122,12 @@ class PhaseScriptArchiver:
             "operations": self.archive_log,
         }
 
-        with open(log_file, 'w', encoding='utf-8') as f:
+        with open(log_file, "w", encoding="utf-8") as f:
             json.dump(log_data, f, indent=2, ensure_ascii=False)
 
         logging.info(f"Archive log saved to {log_file}")
         return log_file
+
 
 def main():
     """Main execution function."""
@@ -174,6 +178,7 @@ def main():
     print(f"Archive log: {log_path}")
 
     return total_archived
+
 
 if __name__ == "__main__":
     main()

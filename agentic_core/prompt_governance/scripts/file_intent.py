@@ -292,8 +292,11 @@ class HardenedNamingAuditor:
         This would have correctly classified pii.py as CLASS_EXPORT.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedNamingAuditor.classify_file_intent")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "HardenedNamingAuditor.classify_file_intent"
+        )
 
         if "error" in analysis:
             return (FileIntent.UNCLEAR, 0.0)

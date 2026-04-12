@@ -176,8 +176,11 @@ def _existing_hashes(corpus_path: Path) -> set[str]:
         try:
             hashes.add(json.loads(line).get("content_hash", ""))
         except json.JSONDecodeError as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("historical_backfill_engine: Exception swallowed at L178: %s", e)
+            logging.getLogger(__name__).debug(
+                "historical_backfill_engine: Exception swallowed at L178: %s", e
+            )
     return hashes
 
 
@@ -190,8 +193,11 @@ def _load_jsonl_lenient(path: Path) -> list[dict[str, Any]]:
         try:
             records.append(json.loads(line))
         except json.JSONDecodeError as e:
+            import logging
 
-            import logging; logging.getLogger(__name__).debug("historical_backfill_engine: Exception swallowed at L191: %s", e)
+            logging.getLogger(__name__).debug(
+                "historical_backfill_engine: Exception swallowed at L191: %s", e
+            )
     return records
 
 
@@ -279,7 +285,9 @@ def backfill_protected_root_blocks(
                 fh.write(line + "\n")
 
     logger.info(
-        "[Backfill] Wrote %d protected_root_block records to corpus (dry_run=%s).", len(new_lines), dry_run,
+        "[Backfill] Wrote %d protected_root_block records to corpus (dry_run=%s).",
+        len(new_lines),
+        dry_run,
     )
     return len(new_lines)
 

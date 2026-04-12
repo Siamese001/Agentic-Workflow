@@ -194,7 +194,9 @@ try:
                             invocation_inherited += 1
                         else:
                             invocation_no += 1
-                            missing_invocation_agents.append({"name": name, "path": path, "territory": territory})
+                            missing_invocation_agents.append(
+                                {"name": name, "path": path, "territory": territory}
+                            )
                 print(f"\nTotal agents: {total_agents}")
                 print(f"Invocation Yes: {invocation_yes}")
                 print(f"Invocation Inherited: {invocation_inherited}")

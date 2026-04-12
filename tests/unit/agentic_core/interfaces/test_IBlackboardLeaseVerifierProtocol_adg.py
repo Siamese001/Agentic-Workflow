@@ -16,14 +16,17 @@ class TestIblackboardleaseverifierprotocolAdg:
     def test_IBlackboardLeaseVerifierProtocol_adg_imports(self):
         """Test IBlackboardLeaseVerifierProtocol_adg module imports."""
         from agentic_core import IBlackboardLeaseVerifierProtocol_adg
+
         assert IBlackboardLeaseVerifierProtocol_adg is not None
 
     def test_IBlackboardLeaseVerifierProtocol_adg_class(self):
         """Test IblackboardleaseverifierprotocolAdg class exists."""
         from agentic_core import IblackboardleaseverifierprotocolAdg
+
         assert IblackboardleaseverifierprotocolAdg is not None
 
     def test_IBlackboardLeaseVerifierProtocol_adg_callable(self):
         """Test IBlackboardLeaseVerifierProtocol_adg functions are callable."""
         from agentic_core import validate_IBlackboardLeaseVerifierProtocol_adg
+
         assert callable(validate_IBlackboardLeaseVerifierProtocol_adg)

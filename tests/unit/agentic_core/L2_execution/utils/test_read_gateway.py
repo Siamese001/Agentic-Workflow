@@ -16,14 +16,17 @@ class TestReadGateway:
     def test_read_gateway_imports(self):
         """Test read_gateway module imports."""
         from agentic_core import read_gateway
+
         assert read_gateway is not None
 
     def test_read_gateway_class(self):
         """Test ReadGateway class exists."""
         from agentic_core import ReadGateway
+
         assert ReadGateway is not None
 
     def test_read_gateway_callable(self):
         """Test read_gateway functions are callable."""
         from agentic_core import validate_read_gateway
+
         assert callable(validate_read_gateway)

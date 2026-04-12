@@ -315,7 +315,8 @@ class SemanticRetriever:
         bundle = engine.shape_search(query, collection_name=collection_name, top_k=top_k)
 
         cited_spans: list[CitedSpan] = []
-        for chunk in bundle.ranked_chunks[:top_k]:  # progress_bar: bounded to top_k (≤20 items)
+        # progress_bar: not required — loop bounded to top_k items (default ≤20, sub-ms/item)
+        for chunk in bundle.ranked_chunks[:top_k]:
             anchor = bundle.citation_anchors.get(chunk.chunk_id)
             source_ref = (
                 (anchor.file_path or anchor.source_url or collection_name) if anchor else collection_name

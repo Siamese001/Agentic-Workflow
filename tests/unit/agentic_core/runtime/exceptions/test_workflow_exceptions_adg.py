@@ -18,16 +18,19 @@ class GeneratedTest(unittest.TestCase):
     def test_AgenticWorkflowError_init(self):
         """Test AgenticWorkflowError initialization."""
         from agentic_core.runtime.exceptions import AgenticWorkflowError
+
         # TODO: Implement actual test
         instance = AgenticWorkflowError()
         self.assertIsNotNone(instance)
+
     def test_HopExecutionError_init(self):
         """Test HopExecutionError initialization."""
         from agentic_core.runtime.exceptions import HopExecutionError
+
         # TODO: Implement actual test
         instance = HopExecutionError()
         self.assertIsNotNone(instance)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

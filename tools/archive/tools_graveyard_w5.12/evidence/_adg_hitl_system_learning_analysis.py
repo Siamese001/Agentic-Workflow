@@ -6,9 +6,9 @@ import sys
 
 def run_query(description, query):
     """Execute ADG SQLite query and return results."""
-    print(f"\n{'='*80}")
+    print(f"\n{'=' * 80}")
     print(f"QUERY: {description}")
-    print(f"{'='*80}")
+    print(f"{'=' * 80}")
 
     cmd = [
         sys.executable,
@@ -27,6 +27,7 @@ def run_query(description, query):
         print(f"ERROR: {result.stderr}")
 
     return result.stdout
+
 
 # Query 1: Find all modules importing HITLMixin
 q1 = """
@@ -109,7 +110,7 @@ ORDER BY adg_name
 
 if __name__ == "__main__":
     print("ADG ANALYSIS: HITL Mixin + System Learning Confidence Integration")
-    print("="*80)
+    print("=" * 80)
 
     run_query("1. Modules importing HITLMixin", q1)
     run_query("2. System Learning Confidence/Scoring Classes", q2)
@@ -119,6 +120,6 @@ if __name__ == "__main__":
     run_query("6. HITL Approval/Risk Types", q6)
     run_query("7. System Learning Outcome/Feedback Patterns", q7)
 
-    print("\n" + "="*80)
+    print("\n" + "=" * 80)
     print("ANALYSIS COMPLETE")
-    print("="*80)
+    print("=" * 80)

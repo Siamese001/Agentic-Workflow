@@ -18,35 +18,44 @@ class GeneratedTest(unittest.TestCase):
     def test_is_enabled(self):
         """Test is_enabled function."""
         from agentic_core.runtime.config import is_enabled
+
         # TODO: Implement actual test
         result = is_enabled()
         self.assertIsNotNone(result)
+
     def test_set_override(self):
         """Test set_override function."""
         from agentic_core.runtime.config import set_override
+
         # TODO: Implement actual test
         result = set_override()
         self.assertIsNotNone(result)
+
     def test_FeatureFlag_init(self):
         """Test FeatureFlag initialization."""
         from agentic_core.runtime.config import FeatureFlag
+
         # TODO: Implement actual test
         instance = FeatureFlag()
         self.assertIsNotNone(instance)
+
     def test_FeatureFlagManager_init(self):
         """Test FeatureFlagManager initialization."""
         from agentic_core.runtime.config import FeatureFlagManager
+
         # TODO: Implement actual test
         instance = FeatureFlagManager()
         self.assertIsNotNone(instance)
+
     def test_FeatureFlagManager_is_enabled(self):
         """Test FeatureFlagManager.is_enabled method."""
         from agentic_core.runtime.config import FeatureFlagManager
+
         # TODO: Implement actual test
         instance = FeatureFlagManager()
         result = instance.is_enabled()
         self.assertIsNotNone(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

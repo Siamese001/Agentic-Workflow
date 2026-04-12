@@ -197,8 +197,11 @@ class ModelConfig(BaseModel):
     def validate_capabilities(cls, value: list[str]) -> list[str]:
         """[HARDENED] Ensure capability entries are non-empty."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ModelConfig.validate_capabilities")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "ModelConfig.validate_capabilities"
+        )
 
         for capability in value:
             if not capability.strip():

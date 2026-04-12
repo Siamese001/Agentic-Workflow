@@ -40,13 +40,13 @@ class ADG1653LayerFix:
     def convert_layer_names(self):
         """Convert short layer names to full names."""
         layer_mapping = {
-            'L0': 'L0_FOUNDATION',
-            'L1': 'L1_INTERFACES',
-            'L2': 'L2_DETERMINISM',
-            'L3': 'L3_RUNTIME',
-            'L4': 'L4_STATE',
-            'L5': 'L5_POLICY',
-            'L6': 'L6_EXECUTION',
+            "L0": "L0_FOUNDATION",
+            "L1": "L1_INTERFACES",
+            "L2": "L2_DETERMINISM",
+            "L3": "L3_RUNTIME",
+            "L4": "L4_STATE",
+            "L5": "L5_POLICY",
+            "L6": "L6_EXECUTION",
         }
 
         for short_name, full_name in layer_mapping.items():
@@ -66,10 +66,13 @@ class ADG1653LayerFix:
 
         # Add determinism_digest_emit
         for module_id, module_name in core_modules:
-            self.cur.execute("""
+            self.cur.execute(
+                """
                 INSERT OR IGNORE INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
                 VALUES (?, ?, 'determinism_digest_emit', 'internal_to_internal', ?, 1, 'determinism_digest')
-            """, (module_id, module_id, module_name))
+            """,
+                (module_id, module_id, module_name),
+            )
 
         # Add execution_plan_dispatch for L5 modules
         self.cur.execute("""
@@ -80,10 +83,13 @@ class ADG1653LayerFix:
         l5_modules = self.cur.fetchall()
 
         for module_id, module_name in l5_modules:
-            self.cur.execute("""
+            self.cur.execute(
+                """
                 INSERT OR IGNORE INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
                 VALUES (?, ?, 'execution_plan_dispatch', 'internal_to_internal', ?, 1, 'execution_plan')
-            """, (module_id, module_id, module_name))
+            """,
+                (module_id, module_id, module_name),
+            )
 
         # Add unresolved_import (sample)
         self.cur.execute("""
@@ -108,16 +114,19 @@ class ADG1653LayerFix:
         core_modules = self.cur.fetchall()
 
         lineage_relations = [
-            'mutation_signature_link',
-            'parent_snapshot_link',
+            "mutation_signature_link",
+            "parent_snapshot_link",
         ]
 
         for relation in lineage_relations:
             for module_id, module_name in core_modules:
-                self.cur.execute(f"""
+                self.cur.execute(
+                    f"""
                     INSERT OR IGNORE INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
-                    VALUES (?, ?, '{relation}', 'internal_to_internal', ?, 1, '{relation.replace('_link', '')}')
-                """, (module_id, module_id, module_name))
+                    VALUES (?, ?, '{relation}', 'internal_to_internal', ?, 1, '{relation.replace("_link", "")}')
+                """,
+                    (module_id, module_id, module_name),
+                )
 
         print(f"  Added lineage edges for {len(core_modules)} core modules")
 
@@ -128,7 +137,9 @@ class ADG1653LayerFix:
         print("=" * 80)
 
         # Check layer distribution
-        self.cur.execute('SELECT layer, COUNT(*) FROM nodes WHERE entity_type = "module" GROUP BY layer ORDER BY COUNT(*) DESC')
+        self.cur.execute(
+            'SELECT layer, COUNT(*) FROM nodes WHERE entity_type = "module" GROUP BY layer ORDER BY COUNT(*) DESC'
+        )
         layer_dist = self.cur.fetchall()
 
         print("MODULES BY LAYER (AFTER FIX):")
@@ -136,19 +147,26 @@ class ADG1653LayerFix:
             print(f"  {layer}: {count}")
 
         # Check core modules
-        self.cur.execute('SELECT COUNT(*) FROM nodes WHERE layer IN ("L0_FOUNDATION", "L2_DETERMINISM", "L5_POLICY") AND entity_type = "module"')
+        self.cur.execute(
+            'SELECT COUNT(*) FROM nodes WHERE layer IN ("L0_FOUNDATION", "L2_DETERMINISM", "L5_POLICY") AND entity_type = "module"'
+        )
         core_count = self.cur.fetchone()[0]
         print(f"\nCORE MODULES: {core_count}")
 
         # Check critical relations
-        critical_relations = ['determinism_seed', 'determinism_digest_emit', 'execution_plan_dispatch', 'unresolved_import']
+        critical_relations = [
+            "determinism_seed",
+            "determinism_digest_emit",
+            "execution_plan_dispatch",
+            "unresolved_import",
+        ]
         for relation in critical_relations:
             self.cur.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type = '{relation}'")
             count = self.cur.fetchone()[0]
             print(f"{relation}: {count} edges")
 
         # Check lineage edges
-        lineage_edges = ['mutation_signature_link', 'parent_snapshot_link']
+        lineage_edges = ["mutation_signature_link", "parent_snapshot_link"]
         for edge in lineage_edges:
             self.cur.execute(f"SELECT COUNT(*) FROM edges WHERE relation_type = '{edge}'")
             count = self.cur.fetchone()[0]

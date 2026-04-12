@@ -261,7 +261,9 @@ class MultiRegionReplicator:
         return success
 
     async def retrieve_state(
-        self, snapshot_id: str, preferred_region: Region | None = None,
+        self,
+        snapshot_id: str,
+        preferred_region: Region | None = None,
     ) -> StateSnapshot | None:
         """Retrieve state snapshot from preferred region or primary."""
         regions_to_try = [preferred_region] if preferred_region else []
@@ -492,7 +494,8 @@ class HealthChecker:
             "region_status": {k: dict(v) for k, v in region_status.items()},
             "layer_status": {k: dict(v) for k, v in layer_status.items()},
             "last_check": max(
-                (r.timestamp for r in self.health_status.values()), default=datetime.now(),
+                (r.timestamp for r in self.health_status.values()),
+                default=datetime.now(),
             ).isoformat(),
         }
 
@@ -757,7 +760,8 @@ class DisasterRecoveryManager:
             layer_status[result.layer_type.value][result.status.value] += 1
 
         last_check = max(
-            (r.timestamp for r in self.health_checker.health_status.values()), default=datetime.now(),
+            (r.timestamp for r in self.health_checker.health_status.values()),
+            default=datetime.now(),
         ).isoformat()
 
         return {
@@ -796,7 +800,7 @@ class DistributedStateManager:
         """Start distributed state management."""
         try:
             asyncio.get_event_loop()
-        except RuntimeError:    # guardian: Runtime errors should be prevented with proper validation
+        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
             asyncio.set_event_loop(asyncio.new_event_loop())
         await self.replicator.start_replication()
         await self.health_checker.start_health_checks()
@@ -837,7 +841,9 @@ class DistributedStateManager:
             raise Exception(f"Failed to store layer state for {layer_type}")
 
     async def retrieve_layer_state(
-        self, layer_type: LayerType, snapshot_id: str | None = None,
+        self,
+        layer_type: LayerType,
+        snapshot_id: str | None = None,
     ) -> dict[str, Any] | None:
         """Retrieve layer state."""
         if snapshot_id:
@@ -847,7 +853,8 @@ class DistributedStateManager:
             storage = self.replicator.storage_backends.get(self.primary_region)
             if storage:
                 snapshots = await storage.list_snapshots(
-                    state_type=StateType.CACHE_STATE, layer_type=layer_type,
+                    state_type=StateType.CACHE_STATE,
+                    layer_type=layer_type,
                 )
                 snapshot = snapshots[0] if snapshots else None
             else:

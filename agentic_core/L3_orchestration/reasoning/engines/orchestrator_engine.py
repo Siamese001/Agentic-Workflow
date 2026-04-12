@@ -225,6 +225,7 @@ try:
     from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
     from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
     from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+
     RUNTIME_ADG_AVAILABLE = True
 # guardian: allow-silent-degradation - Optional runtime ADG
 except ImportError:
@@ -285,11 +286,15 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
     async def execute(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
         """Execute orchestration logic via unified strategy."""
         _emit_agent_executes_agent(
-            str(uuid.uuid4()), "L3OrchestrationStrategy", "L3OrchestrationStrategy.execute",
+            str(uuid.uuid4()),
+            "L3OrchestrationStrategy",
+            "L3OrchestrationStrategy.execute",
         )
 
         _emit_records_execution_trace(
-            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}",
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"orchestrator_engine.execute:{self.mode}",
         )
 
         # Initialize runtime ADG tracing if available
@@ -311,7 +316,9 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
             else:
                 return await self._execute_without_tracing(agent, **kwargs)
 
-    async def _execute_with_tracing(self, agent: UnifiedAgent, tracer, mission_id: str, **kwargs: Any) -> OrchestrationResult:
+    async def _execute_with_tracing(
+        self, agent: UnifiedAgent, tracer, mission_id: str, **kwargs: Any
+    ) -> OrchestrationResult:
         """Execute with runtime ADG tracing enabled."""
         try:
             agent.log_info(f"Executing L3 orchestration in {self.mode} mode with runtime ADG tracing...")
@@ -538,7 +545,7 @@ class Orchestrator(SovereignBaseAgent):
         self,
         agents: list[str],
         dry_run: bool = True,
-        execute: bool = False,    # guardian: PolicyEnforcementError should be handled with specific context
+        execute: bool = False,  # guardian: PolicyEnforcementError should be handled with specific context
         context: ExecutionContext | None = None,
     ) -> MissionResult:
         """
@@ -609,7 +616,10 @@ class Orchestrator(SovereignBaseAgent):
 
     @runtime_guard("A.run_agent.orchestrator_engine")
     def run_agent(
-        self, agent_name: str, dry_run: bool = True, context: ExecutionContext | None = None,
+        self,
+        agent_name: str,
+        dry_run: bool = True,
+        context: ExecutionContext | None = None,
     ) -> AgentResult:
         """
         Execute a single agent with standardized result.
@@ -626,7 +636,9 @@ class Orchestrator(SovereignBaseAgent):
             stage="run_agent",
         )
         get_run_state_authority().observe_runtime_state(
-            "run_agent_dispatch", stage=agent_name, actor_id="orchestrator_engine",
+            "run_agent_dispatch",
+            stage=agent_name,
+            actor_id="orchestrator_engine",
         )
         get_run_state_authority().snapshot_state(f"run_agent:{agent_name}", run_id="orchestrator_engine")
         try:
@@ -671,7 +683,10 @@ class Orchestrator(SovereignBaseAgent):
             return AgentResult(agent_name=agent_name, success=False, errors=1, status="ERROR", message=str(e))
 
     def _run_compliance_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
+        self,
+        agent_name: str,
+        dry_run: bool,
+        context: ExecutionContext | None,
     ) -> AgentResult:
         """
         Execute agent in COMPLIANCE mode.
@@ -731,7 +746,10 @@ class Orchestrator(SovereignBaseAgent):
             )
 
     def _run_healing_mode(
-        self, agent_name: str, dry_run: bool, context: ExecutionContext | None,
+        self,
+        agent_name: str,
+        dry_run: bool,
+        context: ExecutionContext | None,
     ) -> AgentResult:
         """Execute agent in HEALING mode - focus on heal_repository."""
         self.logger.info(f"[HEALING] Running {agent_name}")
@@ -891,7 +909,9 @@ class Orchestrator(SovereignBaseAgent):
             return True
 
     def _v15_build_operation_manifest(
-        self, operation: str, target_layer: str = "L3",
+        self,
+        operation: str,
+        target_layer: str = "L3",
     ) -> SurgicalManifest | None:
         """§8.1a — Construct SurgicalManifest for orchestrator-level operation."""
         if not is_v15_enforced():
@@ -1052,6 +1072,7 @@ class Orchestrator(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [str(e)],
             }
+
 
 _emit_reads_through("l4", "orchestrator_engine", "urg_read_1")
 _emit_reads_through("l4", "orchestrator_engine", "urg_read_2")

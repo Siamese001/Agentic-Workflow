@@ -214,7 +214,11 @@ class TelemetryRecorder:
         self.logger = logging.getLogger(__name__)
 
     def record(
-        self, event_type: str, data: dict[str, Any], commit_tick: int, timestamp: int | None = None,
+        self,
+        event_type: str,
+        data: dict[str, Any],
+        commit_tick: int,
+        timestamp: int | None = None,
     ) -> str:
         """Record a telemetry event.
 

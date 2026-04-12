@@ -285,7 +285,8 @@ class ArchGovAdapter:
 
     def validate(self, territory: str, ctx: Any) -> SubphaseResult:
         raw = self._agent.comprehensive_territory_audit(
-            target_territories=[territory], check_layer_boundaries=True,
+            target_territories=[territory],
+            check_layer_boundaries=True,
         )
         self._audit_report = raw if isinstance(raw, dict) else {}
         return _to_result(raw)

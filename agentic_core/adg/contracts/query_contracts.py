@@ -21,6 +21,7 @@ from agentic_core.L5_safety.config.severity import SeverityLevel as FindingSever
 
 class EntityType(Enum):
     """ADG entity types."""
+
     MODULE = "module"
     SYMBOL = "symbol"
     CLASS = "class"
@@ -30,6 +31,7 @@ class EntityType(Enum):
 
 class RelationType(Enum):
     """ADG relation types for edges."""
+
     IMPORTS = "imports"
     EXPORTS = "exports"
     CALLS = "calls"
@@ -41,6 +43,7 @@ class RelationType(Enum):
 
 class EdgeKind(Enum):
     """ADG edge kinds."""
+
     DIRECT = "direct"
     LOW = "low"
     MEDIUM = "medium"
@@ -62,6 +65,7 @@ class SnapshotMetadata:
         redis_digest: SHA256 digest of Redis materialization (if available)
         projection_coherent: Whether Redis matches SQLite
     """
+
     snapshot_id: str
     timestamp: str
     node_count: int
@@ -89,6 +93,7 @@ class Node:
         identity_kind: Kind of identity (repo_module, external_module, etc.)
         confidence: Confidence level (HIGH, MEDIUM, LOW)
     """
+
     id: int
     adg_name: str
     entity_type: str
@@ -114,6 +119,7 @@ class Edge:
         semantic_type: Semantic classification
         confidence_score: Confidence 0.0-1.0
     """
+
     id: int
     src_id: int
     dst_id: int
@@ -149,6 +155,7 @@ class QueryResult:
         snapshot_id: Snapshot used for query
         cache_hit: Whether result came from Redis cache
     """
+
     success: bool
     data: Any | None = None
     error: str | None = None
@@ -159,12 +166,14 @@ class QueryResult:
 @dataclass(frozen=True)
 class NodeQueryResult(QueryResult):
     """Result for node queries."""
+
     data: Node | None = None
 
 
 @dataclass(frozen=True)
 class EdgeQueryResult(QueryResult):
     """Result for edge queries."""
+
     data: list[Edge] = field(default_factory=list)
 
 
@@ -182,6 +191,7 @@ class UnresolvedImport:
         dst_entity_type: Actual entity type of destination (usually "symbol")
         reason: Why import is unresolved
     """
+
     edge_id: int
     src_module: str
     src_file: str
@@ -210,6 +220,7 @@ class FindingPacket:
         remediation: Suggested remediation
         snapshot_id: Snapshot where finding was detected
     """
+
     finding_id: str
     finding_type: str
     severity: FindingSeverity
@@ -247,6 +258,7 @@ class InvariantResult:
         duration_ms: Check duration in milliseconds
         snapshot_id: Snapshot checked
     """
+
     invariant_name: str
     passed: bool
     findings: list[FindingPacket] = field(default_factory=list)
@@ -257,10 +269,7 @@ class InvariantResult:
     @property
     def has_violations(self) -> bool:
         """Check if any HIGH or CRITICAL violations exist."""
-        return any(
-            f.severity in (FindingSeverity.HIGH, FindingSeverity.CRITICAL)
-            for f in self.findings
-        )
+        return any(f.severity in (FindingSeverity.HIGH, FindingSeverity.CRITICAL) for f in self.findings)
 
 
 __all__ = [

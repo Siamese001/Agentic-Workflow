@@ -45,7 +45,9 @@ class CoverageAgent(SovereignBaseAgent):
             stacklevel=2,
         )
 
-    def calculate_coverage_metrics(self, layer_counts: dict[str, int], threshold_entropy: float = 2.2) -> CoverageMetrics:
+    def calculate_coverage_metrics(
+        self, layer_counts: dict[str, int], threshold_entropy: float = 2.2
+    ) -> CoverageMetrics:
         """Calculate coverage metrics for layer distribution."""
         return _calculate_coverage_metrics(layer_counts, threshold_entropy)
 

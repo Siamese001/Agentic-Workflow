@@ -4,11 +4,13 @@ Source: agentic_core\L3_orchestration\registry\capability_registry.py
 Extracted: 2026-03-27T06:50:34.188517
 """
 
+
 class CapabilityNotFoundError(LookupError):
     """Raised when no registered agent has the requested capability.
 
     Gate A enforcement: dispatch without registry resolution fails.
     """
+
 
 class CapabilityPermissionError(PermissionError):
     """Raised when caller is not in allowed_callers for the capability.
@@ -16,11 +18,13 @@ class CapabilityPermissionError(PermissionError):
     Gate B enforcement: capability token must have resolved_agent_id.
     """
 
+
 class UnregisteredAgentError(RuntimeError):
     """Raised when selected agent is not in CapabilityRegistry.
 
     Gate C enforcement: unregistered agents must not do production work.
     """
+
 
 class ExclusiveCapabilityConflictError(RuntimeError):
     """Raised when multiple agents claim exclusive ownership without shared policy.
@@ -28,17 +32,20 @@ class ExclusiveCapabilityConflictError(RuntimeError):
     Gate D enforcement: exclusive capability conflicts must be explicit.
     """
 
+
 class RegistryVersionError(RuntimeError):
     """Raised on illegal registry mutation without version increment.
 
     Gate E enforcement: capability changes must be versioned.
     """
 
+
 class UnregisteredDispatchError(RuntimeError):
     """Raised when dispatch bypasses registry resolution.
 
     Gate A enforcement: all dispatches must go through resolve_agent_for_capability().
     """
+
 
 class CapabilityOwnership(str, Enum):
     """How execution ownership is held for a capability."""
@@ -47,6 +54,7 @@ class CapabilityOwnership(str, Enum):
     DELEGATED = "DELEGATED"  # One owner; may delegate to others
     PARALLELIZABLE = "PARALLELIZABLE"  # Multiple agents may run concurrently
     SHARED = "SHARED"  # Multiple agents share with explicit policy
+
 
 class CapabilityRegistryEntry:
     """Registry entry for one versioned agent capability declaration.
@@ -84,6 +92,7 @@ class CapabilityRegistryEntry:
 
     def meets_policy(self, policy_hash: str) -> bool:
         return not self.policy_requirements or bool(policy_hash)
+
 
 class CapabilityToken:
     """Typed token issued on every successful capability resolution.
@@ -124,6 +133,7 @@ class CapabilityToken:
             registry_version=registry_version,
         )
 
+
 class CapabilityDecision:
     """Result of resolve_agent_for_capability() — bound to trace."""
 
@@ -135,6 +145,7 @@ class CapabilityDecision:
     run_id: str
     trace_id: str
     registry_version: int
+
 
 class RunContext:
     """Minimal run context for capability resolution."""
@@ -150,6 +161,7 @@ class RunContext:
             trace_id=trace_id or f"trace-{uuid.uuid4().hex[:8]}",
             policy_hash=policy_hash,
         )
+
 
 class CapabilityRegistry:
     """Thread-safe agent capability registry.
@@ -291,6 +303,7 @@ class CapabilityRegistry:
             and e.ownership == CapabilityOwnership.SINGLETON
         ]
 
+
 def resolve_agent_for_capability(
     capability_name: str,
     caller_agent_id: str,
@@ -425,6 +438,7 @@ def resolve_agent_for_capability(
     )
     return decision
 
+
 class CapabilityDecisionStore:
     """In-memory queryable store for all issued CapabilityDecision records."""
 
@@ -457,6 +471,7 @@ class CapabilityDecisionStore:
         with self._lock:
             return [d for d in self._decisions if not d.selected_agent_id]
 
+
 def get_capability_registry() -> CapabilityRegistry:
     """Return the process-level CapabilityRegistry singleton."""
     global _global_registry
@@ -465,6 +480,7 @@ def get_capability_registry() -> CapabilityRegistry:
             if _global_registry is None:
                 _global_registry = CapabilityRegistry()
     return _global_registry
+
 
 def get_capability_decision_store() -> CapabilityDecisionStore:
     """Return the process-level CapabilityDecisionStore singleton."""
@@ -475,10 +491,12 @@ def get_capability_decision_store() -> CapabilityDecisionStore:
                 _global_store = CapabilityDecisionStore()
     return _global_store
 
+
 def reset_capability_registry() -> None:
     """Reset global registry (for testing)."""
     global _global_registry
     _global_registry = None
+
 
 def reset_capability_decision_store() -> None:
     """Reset global store (for testing)."""

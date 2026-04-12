@@ -1,4 +1,5 @@
 """L4 Phase 2 — reads_from / reads_through baseline check."""
+
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
@@ -17,8 +18,8 @@ rows = conn.execute("""
     GROUP BY relation_type
 """).fetchall()
 counts = dict(rows)
-rf = counts.get('reads_from', 0)
-rt = counts.get('reads_through', 0)
+rf = counts.get("reads_from", 0)
+rt = counts.get("reads_through", 0)
 ratio = rt / rf if rf > 0 else 0
 target = -(-int(rf * 0.90) // 1)  # ceil
 gap = max(0, target - rt)
