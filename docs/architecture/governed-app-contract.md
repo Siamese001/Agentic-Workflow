@@ -115,8 +115,8 @@ in `APP_REGISTRY`. Silent bypass (absent from registry entirely) is a conformanc
 | `apps_research` | **GOVERNED** | — | GovernedResearchRun; proof APP01–APP15 pass | done |
 | `apps_exec` | **GOVERNED** | — | GovernedExecRun; proof EXE01–EXE12 pass | done |
 | `apps_rfp` | **GOVERNED** | — | GovernedRfpRun; proof RFP01–RFP12 pass | done |
-| `apps_rg` | CANDIDATE | pending_migration | trace_id present; 45+ engines need query mapping | Phase 4 |
-| `apps_lic` | CANDIDATE | pending_migration | trace_id present; multi-hop engine needs care | Phase 4 |
+| `apps_rg` | **GOVERNED** | — | GovernedRgRun; proof RG01–RG12 pass | done |
+| `apps_lic` | **GOVERNED** | — | GovernedLicRun; proof LIC01–LIC12 pass | done |
 | `apps_eval` | EXCEPTION | circular_dependency | IS the evaluation framework; would evaluate itself | permanent |
 | `apps_underwriting_ai` | EXCEPTION | regulatory_domain | Legally-binding credit decisions; own governance protocol | permanent |
 

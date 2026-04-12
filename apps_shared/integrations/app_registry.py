@@ -115,28 +115,23 @@ APP_REGISTRY: dict[str, GovernedAppEntry | ExceptionAppEntry] = {
         routing_target="rfp_proposal_assembly",
         proof_prefix="RFP",
     ),
-    # ── Candidates (pending migration — bounded exception until migrated) ─
-    "apps_rg": ExceptionAppEntry(
+    "apps_rg": GovernedAppEntry(
         app_name="apps_rg",
-        status=GovernanceStatus.CANDIDATE,
-        exception_category="pending_migration",
-        exception_reason=(
-            "ResumeRequest.trace_id is present; 45+ specialized engines (ATS, achievement "
-            "prioritizer, etc.) need query-construction mapping before adoption. Moderate effort."
-        ),
-        owner="apps_rg maintainer",
-        target_phase="Phase 4",
+        status=GovernanceStatus.GOVERNED,
+        runner_module="apps_rg.integrations.governed_rg_run",
+        runner_class="GovernedRgRun",
+        capability_token="apps_rg.governed_e2e.v1",
+        routing_target="resume_generation_assembly",
+        proof_prefix="RG",
     ),
-    "apps_lic": ExceptionAppEntry(
+    "apps_lic": GovernedAppEntry(
         app_name="apps_lic",
-        status=GovernanceStatus.CANDIDATE,
-        exception_category="pending_migration",
-        exception_reason=(
-            "CampaignRequest has campaign_id/trace_id; multi-hop engine (hop_stage_registry, "
-            "control_plane) requires careful query-construction mapping. Moderate effort."
-        ),
-        owner="apps_lic maintainer",
-        target_phase="Phase 4",
+        status=GovernanceStatus.GOVERNED,
+        runner_module="apps_lic.integrations.governed_lic_run",
+        runner_class="GovernedLicRun",
+        capability_token="apps_lic.governed_e2e.v1",
+        routing_target="lic_campaign_assembly",
+        proof_prefix="LIC",
     ),
     # ── Permanent exceptions (cannot adopt GovernedAppRunner) ────────────
     "apps_eval": ExceptionAppEntry(

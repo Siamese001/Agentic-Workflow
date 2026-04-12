@@ -3341,6 +3341,554 @@ def run_rfp_pilot_proof() -> bool:
     return all_pass
 
 
+def run_rg_pilot_proof() -> bool:
+    """Prove apps_rg wired end-to-end via the shared GovernedAppRunner.
+
+    Checks
+    ------
+    RG01  L1 called: sub_queries produced from resume query
+    RG02  L0 routed: target_name = resume_generation_assembly
+    RG03  C0 EvidenceBundle produced (shaped_count >= 1)
+    RG04  happy path: no error
+    RG05  happy path: governed disposition (proceed or refine)
+    RG06  happy path: grounded = True
+    RG07  happy path: L6 packet ingested
+    RG08  degraded path: no error
+    RG09  degraded path: disposition != proceed
+    RG10  degraded path: coverage < happy (genuine degradation)
+    RG11  L2 chokepoint: authorize_and_execute() ran
+    RG12  runner uses shared GovernedAppRunner base
+
+    Returns True if all checks pass.
+    """
+    from apps_rg.integrations.governed_rg_run import (  # guardian: allow-layer-violation -- L_TOOLS->apps_rg lazy import; rg pilot proof exercises full E2E governed path
+        GovernedRgRun,
+    )
+    from apps_rg.types.rg_types import ResumeRequest
+    from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
+        HybridSearchResult,
+    )
+    from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+        get_async_eval_ingester,
+        reset_async_eval_ingester,
+    )
+    from agentic_core.L2_execution.audit.telemetry_bus import (  # guardian: allow-layer-violation -- L_TOOLS->L2 lazy import; benchmark reads BUS T to verify real audit/obs records
+        BusType,
+        get_telemetry_bus,
+    )
+    from apps_shared.integrations.governed_app_runner import (
+        GovernedAppRunner,
+    )  # guardian: allow-layer-violation -- L_TOOLS->apps_shared lazy import; proof verifies shared base is used
+
+    print(f"\n{'=' * 80}")
+    print("  RG PILOT PROOF  —  apps_rg → L1 → L0 → C0 → L5 → L6  (shared runner)")
+    print(f"{'=' * 80}")
+
+    reset_async_eval_ingester()
+    get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=1000)
+    runner = GovernedRgRun(collection="rg_docs")
+
+    # ── Well-formed chunks for happy-path demonstration ───────────────────────
+    happy_chunks_rg = [
+        HybridSearchResult(
+            chunk_id="chunk-rg-b1",
+            content=(
+                "ATS optimization for senior software engineers: highlight distributed systems, "
+                "cloud architecture (AWS/GCP/Azure), and leadership of cross-functional teams. "
+                "Quantify impact with metrics: latency reduction, cost savings, uptime improvement."
+            ),
+            vector_score=0.92,
+            lexical_score=0.88,
+            combined_score=0.90,
+            metadata={
+                "canonical_digest": "rg1a2b3c",
+                "file_path": "docs/architecture/adr/ADR-0010-layer-boundaries.md",
+                "layer": "L0",
+                "doc_type": "adr",
+                "chunk_index": "1",
+            },
+            source="both",
+        ),
+        HybridSearchResult(
+            chunk_id="chunk-rg-b2",
+            content=(
+                "Tech industry resume section: Experience section should lead with the most "
+                "impactful role. Use STAR format for each bullet. Avoid passive voice. "
+                "Target keyword density of 2-3% for primary skills."
+            ),
+            vector_score=0.86,
+            lexical_score=0.82,
+            combined_score=0.84,
+            metadata={
+                "canonical_digest": "rg2b3c4d",
+                "file_path": "apps_rg/config/agent_spec_config.py",
+                "layer": "L3",
+                "doc_type": "config",
+                "chunk_index": "2",
+            },
+            source="both",
+        ),
+        HybridSearchResult(
+            chunk_id="chunk-rg-b3",
+            content=(
+                "Skills section best practice: List primary technical skills first, group by "
+                "category (languages, frameworks, cloud, data), then soft skills. "
+                "Limit to 15-20 items for ATS compatibility."
+            ),
+            vector_score=0.79,
+            lexical_score=0.75,
+            combined_score=0.77,
+            metadata={
+                "canonical_digest": "rg3c4d5e",
+                "file_path": "docs/architecture/governance-model.md",
+                "layer": "L5",
+                "doc_type": "arch",
+                "chunk_index": "3",
+            },
+            source="lexical",
+        ),
+    ]
+
+    # ── Happy-path run ────────────────────────────────────────────────────────
+    print("\n  [RG-H] Happy path: real L1→L0→C0 pipeline, 3 injected grounded chunks ...")
+    happy_request_rg = ResumeRequest(
+        candidate_name="Alex Kim",
+        target_role="Staff Software Engineer",
+        target_industry="tech",
+        experience_level="senior",
+        source_resume_text="",
+        job_description="Build distributed systems at scale.",
+        trace_id="RG-e2e-happy-001",
+    )
+    happy_rec_rg = runner.run_governed_e2e(happy_request_rg, inject_chunks=happy_chunks_rg)
+    print(
+        f"     L1 sub_queries={happy_rec_rg.l1_sub_queries!r}  fallback={happy_rec_rg.l1_fallback}\n"
+        f"     L0 target={happy_rec_rg.l0_target!r}  confidence={happy_rec_rg.l0_confidence:.2f}"
+        f"  fallback={happy_rec_rg.l0_fallback}\n"
+        f"     C0: raw={happy_rec_rg.c0_raw_count}  shaped={happy_rec_rg.c0_shaped_count}\n"
+        f"     disposition={happy_rec_rg.disposition!r}  gate={happy_rec_rg.gate_disposition!r}  "
+        f"grounded={happy_rec_rg.grounded}  citations={happy_rec_rg.citation_count}  "
+        f"coverage={happy_rec_rg.support_coverage:.2f}  l6={happy_rec_rg.l6_ingested}"
+        f"  error={happy_rec_rg.error!r}"
+    )
+
+    # ── Degraded-path run ─────────────────────────────────────────────────────
+    print("\n  [RG-D] Degraded path: real retrieval, no store → empty bundle → ABSTAIN ...")
+    degraded_request_rg = ResumeRequest(
+        candidate_name="Jordan Lee",
+        target_role="Product Manager",
+        target_industry="finance",
+        experience_level="mid",
+        trace_id="RG-e2e-degraded-001",
+    )
+    degraded_rec_rg = runner.run_governed_e2e(degraded_request_rg)  # no inject_chunks
+    print(
+        f"     L1={degraded_rec_rg.l1_sub_queries!r}  L0={degraded_rec_rg.l0_target!r}\n"
+        f"     C0: raw={degraded_rec_rg.c0_raw_count}  shaped={degraded_rec_rg.c0_shaped_count}\n"
+        f"     disposition={degraded_rec_rg.disposition!r}  gate={degraded_rec_rg.gate_disposition!r}"
+        f"  grounded={degraded_rec_rg.grounded}  error={degraded_rec_rg.error!r}"
+    )
+
+    # ── Verify L6 ingester ────────────────────────────────────────────────────
+    ingester_rg = get_async_eval_ingester()
+    packets_rg = ingester_rg.drain()
+
+    # ── Drain BUS T ───────────────────────────────────────────────────────────
+    bus_t_msgs_rg = get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=500)
+    _audit_types_rg = ("guardrail_audit", "safety_plane_validation_audit")
+    audit_bus_msgs_rg = [m for m in bus_t_msgs_rg if m.signal_type in _audit_types_rg]
+
+    # ── Build checks ──────────────────────────────────────────────────────────
+    rg_checks: list[tuple[str, bool, str]] = [
+        (
+            "RG01 L1: sub_queries produced from resume query",
+            len(happy_rec_rg.l1_sub_queries) >= 1 and happy_rec_rg.l1_sub_queries[0] != "",
+            str(happy_rec_rg.l1_sub_queries),
+        ),
+        (
+            "RG02 L0: target=resume_generation_assembly routed",
+            happy_rec_rg.l0_target == "resume_generation_assembly",
+            f"target={happy_rec_rg.l0_target!r}",
+        ),
+        (
+            "RG03 C0: EvidenceBundle produced (shaped>=1)",
+            happy_rec_rg.c0_shaped_count >= 1,
+            f"raw={happy_rec_rg.c0_raw_count} shaped={happy_rec_rg.c0_shaped_count}",
+        ),
+        ("RG04 happy path: no error", happy_rec_rg.error == "", happy_rec_rg.error or "ok"),
+        (
+            "RG05 happy path: governed disposition (proceed or refine)",
+            happy_rec_rg.disposition in ("proceed", "refine"),
+            happy_rec_rg.disposition,
+        ),
+        (
+            "RG06 happy path: grounded=True",
+            happy_rec_rg.grounded is True,
+            str(happy_rec_rg.grounded),
+        ),
+        (
+            "RG07 happy path: L6 packet ingested",
+            happy_rec_rg.l6_ingested is True,
+            f"{len(packets_rg)} packets drained",
+        ),
+        (
+            "RG08 degraded path: no error",
+            degraded_rec_rg.error == "",
+            degraded_rec_rg.error or "ok",
+        ),
+        (
+            "RG09 degraded path: disposition!=PROCEED (refine/abstain/escalate)",
+            degraded_rec_rg.disposition != "proceed",
+            degraded_rec_rg.disposition,
+        ),
+        (
+            "RG10 degraded path: coverage<happy (genuine degradation)",
+            degraded_rec_rg.c0_shaped_count < happy_rec_rg.c0_shaped_count,
+            f"degraded={degraded_rec_rg.c0_shaped_count} happy={happy_rec_rg.c0_shaped_count}",
+        ),
+        (
+            "RG11 L2 chokepoint: authorize_and_execute() ran",
+            happy_rec_rg.l2_executed is True,
+            f"l2_executed={happy_rec_rg.l2_executed}",
+        ),
+        (
+            "RG12 runner uses shared GovernedAppRunner base",
+            isinstance(runner, GovernedAppRunner),
+            type(runner).__mro__[1].__name__,
+        ),
+    ]
+
+    _print_proof_table(rg_checks)
+
+    all_pass = all(ok for _, ok, _ in rg_checks)
+    verdict = PASS_MARK if all_pass else FAIL_MARK
+    print(
+        f"\n  VERDICT: {verdict}  {'ALL RG PILOT CHECKS PASS' if all_pass else 'ONE OR MORE CHECKS FAILED'}"
+    )
+
+    print(f"\n{'=' * 80}")
+    print("  RG ARTIFACT  —  apps_rg Governed E2E Proof")
+    print(f"{'=' * 80}")
+    print(f"""
+  App:           apps_rg  (Resume Generation)
+  Entrypoint:    GovernedRgRun.run_governed_e2e(request)
+  File:          apps_rg/integrations/governed_rg_run.py
+  Shared base:   apps_shared/integrations/governed_app_runner.GovernedAppRunner
+
+  Lane trace (AFTER governed migration):
+    ResumeRequest
+      → [query] target_industry + target_role + experience_level → query string
+      → L1 query_planner.decompose_query(query)   [intent decomposition]
+      → L0 AgenticRouter.route(query)             [route → resume_generation_assembly]
+      → C0 get_hybrid_search_engine()             [grounded retrieval — rg_docs]
+         EvidenceShaper.shape()                   [C0 shaping → EvidenceBundle]
+    EvidenceBundle
+      → authorize_and_execute(ctx, fn, token)     [L2 chokepoint]
+      → evaluate_and_emit(bundle, ctx)            [L5 exit gate + BUS T + L6]
+    GovernedRgE2ERunRecord (frozen)
+
+  Shared vs app-specific split:
+    Shared (GovernedAppRunner): L1, L0, C0, L2, L5, L6 — 100% reused
+    App-specific (GovernedRgRun): _build_query() + record mapper — 2 methods
+
+  Happy path:
+    candidate={happy_rec_rg.candidate_name!r}  role={happy_rec_rg.target_role!r}
+    industry={happy_rec_rg.target_industry!r}  level={happy_rec_rg.experience_level!r}
+    L1={happy_rec_rg.l1_sub_queries}
+    L0={happy_rec_rg.l0_target!r}  confidence={happy_rec_rg.l0_confidence:.2f}
+    C0 raw={happy_rec_rg.c0_raw_count} shaped={happy_rec_rg.c0_shaped_count}
+    disposition={happy_rec_rg.disposition!r}  gate={happy_rec_rg.gate_disposition!r}
+    grounded={happy_rec_rg.grounded}  coverage={happy_rec_rg.support_coverage:.2f}
+
+  Degraded path:
+    C0 raw={degraded_rec_rg.c0_raw_count} shaped={degraded_rec_rg.c0_shaped_count}
+    disposition={degraded_rec_rg.disposition!r}  grounded={degraded_rec_rg.grounded}
+
+  BUS T audit records this run: {len(audit_bus_msgs_rg)}
+""")
+    print(f"{'=' * 80}")
+    return all_pass
+
+
+def run_lic_pilot_proof() -> bool:
+    """Prove apps_lic wired end-to-end via the shared GovernedAppRunner.
+
+    Checks
+    ------
+    LIC01  L1 called: sub_queries produced from campaign query
+    LIC02  L0 routed: target_name = lic_campaign_assembly
+    LIC03  C0 EvidenceBundle produced (shaped_count >= 1)
+    LIC04  happy path: no error
+    LIC05  happy path: governed disposition (proceed or refine)
+    LIC06  happy path: grounded = True
+    LIC07  happy path: L6 packet ingested
+    LIC08  degraded path: no error
+    LIC09  degraded path: disposition != proceed
+    LIC10  degraded path: coverage < happy (genuine degradation)
+    LIC11  L2 chokepoint: authorize_and_execute() ran
+    LIC12  runner uses shared GovernedAppRunner base
+
+    Returns True if all checks pass.
+    """
+    from apps_lic.integrations.governed_lic_run import (  # guardian: allow-layer-violation -- L_TOOLS->apps_lic lazy import; lic pilot proof exercises full E2E governed path
+        GovernedLicRun,
+    )
+    from apps_lic.types.lic_types import CampaignConfig, CampaignRequest
+    from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L_TOOLS->L3 lazy import; benchmark injects well-formed chunks into real C0 shaping pipeline
+        HybridSearchResult,
+    )
+    from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # guardian: allow-layer-violation -- L_TOOLS->L6 lazy import
+        get_async_eval_ingester,
+        reset_async_eval_ingester,
+    )
+    from agentic_core.L2_execution.audit.telemetry_bus import (  # guardian: allow-layer-violation -- L_TOOLS->L2 lazy import; benchmark reads BUS T to verify real audit/obs records
+        BusType,
+        get_telemetry_bus,
+    )
+    from apps_shared.integrations.governed_app_runner import (
+        GovernedAppRunner,
+    )  # guardian: allow-layer-violation -- L_TOOLS->apps_shared lazy import; proof verifies shared base is used
+
+    print(f"\n{'=' * 80}")
+    print("  LIC PILOT PROOF  —  apps_lic → L1 → L0 → C0 → L5 → L6  (shared runner)")
+    print(f"{'=' * 80}")
+
+    reset_async_eval_ingester()
+    get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=1000)
+    runner = GovernedLicRun(collection="lic_docs")
+
+    # ── Well-formed chunks for happy-path demonstration ───────────────────────
+    happy_chunks_lic = [
+        HybridSearchResult(
+            chunk_id="chunk-lic-b1",
+            content=(
+                "Enterprise outreach best practice: personalize subject lines with the recipient's "
+                "industry and pain point. Use a value-first structure: insight → evidence → CTA. "
+                "Compliance: include opt-out link and sender identity in every message."
+            ),
+            vector_score=0.91,
+            lexical_score=0.87,
+            combined_score=0.89,
+            metadata={
+                "canonical_digest": "lic1a2b3c",
+                "file_path": "docs/architecture/adr/ADR-0010-layer-boundaries.md",
+                "layer": "L0",
+                "doc_type": "adr",
+                "chunk_index": "1",
+            },
+            source="both",
+        ),
+        HybridSearchResult(
+            chunk_id="chunk-lic-b2",
+            content=(
+                "Campaign targeting strategy for fintech decision-makers: use firmographic signals "
+                "(company size > 500, recent funding round, compliance mandate) to qualify leads. "
+                "Sequence: awareness → value → proof → CTA over 5 touches."
+            ),
+            vector_score=0.85,
+            lexical_score=0.81,
+            combined_score=0.83,
+            metadata={
+                "canonical_digest": "lic2b3c4d",
+                "file_path": "apps_lic/config/archetype_indicator_config.py",
+                "layer": "L3",
+                "doc_type": "config",
+                "chunk_index": "2",
+            },
+            source="both",
+        ),
+        HybridSearchResult(
+            chunk_id="chunk-lic-b3",
+            content=(
+                "Draft compliance checklist: (1) no false urgency, (2) accurate sender info, "
+                "(3) opt-out mechanism present, (4) no deceptive subject lines, "
+                "(5) CAN-SPAM and GDPR alignment verified before send."
+            ),
+            vector_score=0.78,
+            lexical_score=0.74,
+            combined_score=0.76,
+            metadata={
+                "canonical_digest": "lic3c4d5e",
+                "file_path": "docs/architecture/governance-model.md",
+                "layer": "L5",
+                "doc_type": "arch",
+                "chunk_index": "3",
+            },
+            source="lexical",
+        ),
+    ]
+
+    # ── Happy-path run ────────────────────────────────────────────────────────
+    print("\n  [LIC-H] Happy path: real L1→L0→C0 pipeline, 3 injected grounded chunks ...")
+    happy_config_lic = CampaignConfig(
+        name="Q2 Fintech Outreach",
+        target_audience="fintech_cto",
+        compliance_level="strict",
+        max_recipients=500,
+        min_quality_score=7,
+        require_approval=True,
+    )
+    happy_request_lic = CampaignRequest(
+        campaign_id="LIC-happy-001",
+        config=happy_config_lic,
+        trace_id="LIC-e2e-happy-001",
+    )
+    happy_rec_lic = runner.run_governed_e2e(happy_request_lic, inject_chunks=happy_chunks_lic)
+    print(
+        f"     L1 sub_queries={happy_rec_lic.l1_sub_queries!r}  fallback={happy_rec_lic.l1_fallback}\n"
+        f"     L0 target={happy_rec_lic.l0_target!r}  confidence={happy_rec_lic.l0_confidence:.2f}"
+        f"  fallback={happy_rec_lic.l0_fallback}\n"
+        f"     C0: raw={happy_rec_lic.c0_raw_count}  shaped={happy_rec_lic.c0_shaped_count}\n"
+        f"     disposition={happy_rec_lic.disposition!r}  gate={happy_rec_lic.gate_disposition!r}  "
+        f"grounded={happy_rec_lic.grounded}  citations={happy_rec_lic.citation_count}  "
+        f"coverage={happy_rec_lic.support_coverage:.2f}  l6={happy_rec_lic.l6_ingested}"
+        f"  error={happy_rec_lic.error!r}"
+    )
+
+    # ── Degraded-path run ─────────────────────────────────────────────────────
+    print("\n  [LIC-D] Degraded path: real retrieval, no store → empty bundle → ABSTAIN ...")
+    degraded_config_lic = CampaignConfig(
+        name="Healthcare Compliance Drive",
+        target_audience="healthcare_ciso",
+        compliance_level="standard",
+        max_recipients=200,
+        min_quality_score=6,
+        require_approval=True,
+    )
+    degraded_request_lic = CampaignRequest(
+        campaign_id="LIC-degraded-001",
+        config=degraded_config_lic,
+        trace_id="LIC-e2e-degraded-001",
+    )
+    degraded_rec_lic = runner.run_governed_e2e(degraded_request_lic)  # no inject_chunks
+    print(
+        f"     L1={degraded_rec_lic.l1_sub_queries!r}  L0={degraded_rec_lic.l0_target!r}\n"
+        f"     C0: raw={degraded_rec_lic.c0_raw_count}  shaped={degraded_rec_lic.c0_shaped_count}\n"
+        f"     disposition={degraded_rec_lic.disposition!r}  gate={degraded_rec_lic.gate_disposition!r}"
+        f"  grounded={degraded_rec_lic.grounded}  error={degraded_rec_lic.error!r}"
+    )
+
+    # ── Verify L6 ingester ────────────────────────────────────────────────────
+    ingester_lic = get_async_eval_ingester()
+    packets_lic = ingester_lic.drain()
+
+    # ── Drain BUS T ───────────────────────────────────────────────────────────
+    bus_t_msgs_lic = get_telemetry_bus().drain(BusType.TELEMETRY, max_messages=500)
+    _audit_types_lic = ("guardrail_audit", "safety_plane_validation_audit")
+    audit_bus_msgs_lic = [m for m in bus_t_msgs_lic if m.signal_type in _audit_types_lic]
+
+    # ── Build checks ──────────────────────────────────────────────────────────
+    lic_checks: list[tuple[str, bool, str]] = [
+        (
+            "LIC01 L1: sub_queries produced from campaign query",
+            len(happy_rec_lic.l1_sub_queries) >= 1 and happy_rec_lic.l1_sub_queries[0] != "",
+            str(happy_rec_lic.l1_sub_queries),
+        ),
+        (
+            "LIC02 L0: target=lic_campaign_assembly routed",
+            happy_rec_lic.l0_target == "lic_campaign_assembly",
+            f"target={happy_rec_lic.l0_target!r}",
+        ),
+        (
+            "LIC03 C0: EvidenceBundle produced (shaped>=1)",
+            happy_rec_lic.c0_shaped_count >= 1,
+            f"raw={happy_rec_lic.c0_raw_count} shaped={happy_rec_lic.c0_shaped_count}",
+        ),
+        ("LIC04 happy path: no error", happy_rec_lic.error == "", happy_rec_lic.error or "ok"),
+        (
+            "LIC05 happy path: governed disposition (proceed or refine)",
+            happy_rec_lic.disposition in ("proceed", "refine"),
+            happy_rec_lic.disposition,
+        ),
+        (
+            "LIC06 happy path: grounded=True",
+            happy_rec_lic.grounded is True,
+            str(happy_rec_lic.grounded),
+        ),
+        (
+            "LIC07 happy path: L6 packet ingested",
+            happy_rec_lic.l6_ingested is True,
+            f"{len(packets_lic)} packets drained",
+        ),
+        (
+            "LIC08 degraded path: no error",
+            degraded_rec_lic.error == "",
+            degraded_rec_lic.error or "ok",
+        ),
+        (
+            "LIC09 degraded path: disposition!=PROCEED (refine/abstain/escalate)",
+            degraded_rec_lic.disposition != "proceed",
+            degraded_rec_lic.disposition,
+        ),
+        (
+            "LIC10 degraded path: coverage<happy (genuine degradation)",
+            degraded_rec_lic.c0_shaped_count < happy_rec_lic.c0_shaped_count,
+            f"degraded={degraded_rec_lic.c0_shaped_count} happy={happy_rec_lic.c0_shaped_count}",
+        ),
+        (
+            "LIC11 L2 chokepoint: authorize_and_execute() ran",
+            happy_rec_lic.l2_executed is True,
+            f"l2_executed={happy_rec_lic.l2_executed}",
+        ),
+        (
+            "LIC12 runner uses shared GovernedAppRunner base",
+            isinstance(runner, GovernedAppRunner),
+            type(runner).__mro__[1].__name__,
+        ),
+    ]
+
+    _print_proof_table(lic_checks)
+
+    all_pass = all(ok for _, ok, _ in lic_checks)
+    verdict = PASS_MARK if all_pass else FAIL_MARK
+    print(
+        f"\n  VERDICT: {verdict}  {'ALL LIC PILOT CHECKS PASS' if all_pass else 'ONE OR MORE CHECKS FAILED'}"
+    )
+
+    print(f"\n{'=' * 80}")
+    print("  LIC ARTIFACT  —  apps_lic Governed E2E Proof")
+    print(f"{'=' * 80}")
+    print(f"""
+  App:           apps_lic  (Lead Intelligence & Campaign)
+  Entrypoint:    GovernedLicRun.run_governed_e2e(request)
+  File:          apps_lic/integrations/governed_lic_run.py
+  Shared base:   apps_shared/integrations/governed_app_runner.GovernedAppRunner
+
+  Lane trace (AFTER governed migration):
+    CampaignRequest
+      → [query] target_audience + campaign name → query string
+      → L1 query_planner.decompose_query(query)   [intent decomposition]
+      → L0 AgenticRouter.route(query)             [route → lic_campaign_assembly]
+      → C0 get_hybrid_search_engine()             [grounded retrieval — lic_docs]
+         EvidenceShaper.shape()                   [C0 shaping → EvidenceBundle]
+    EvidenceBundle
+      → authorize_and_execute(ctx, fn, token)     [L2 chokepoint]
+      → evaluate_and_emit(bundle, ctx)            [L5 exit gate + BUS T + L6]
+    GovernedLicE2ERunRecord (frozen)
+
+  Shared vs app-specific split:
+    Shared (GovernedAppRunner): L1, L0, C0, L2, L5, L6 — 100% reused
+    App-specific (GovernedLicRun): _build_query() + record mapper — 2 methods
+
+  Happy path:
+    campaign_id={happy_rec_lic.campaign_id!r}
+    audience={happy_rec_lic.target_audience!r}  compliance={happy_rec_lic.compliance_level!r}
+    L1={happy_rec_lic.l1_sub_queries}
+    L0={happy_rec_lic.l0_target!r}  confidence={happy_rec_lic.l0_confidence:.2f}
+    C0 raw={happy_rec_lic.c0_raw_count} shaped={happy_rec_lic.c0_shaped_count}
+    disposition={happy_rec_lic.disposition!r}  gate={happy_rec_lic.gate_disposition!r}
+    grounded={happy_rec_lic.grounded}  coverage={happy_rec_lic.support_coverage:.2f}
+
+  Degraded path:
+    C0 raw={degraded_rec_lic.c0_raw_count} shaped={degraded_rec_lic.c0_shaped_count}
+    disposition={degraded_rec_lic.disposition!r}  grounded={degraded_rec_lic.grounded}
+
+  BUS T audit records this run: {len(audit_bus_msgs_lic)}
+""")
+    print(f"{'=' * 80}")
+    return all_pass
+
+
 def run_triple_app_proof() -> bool:
     """Run apps_research + apps_exec + apps_rfp E2E proofs; return combined PASS/FAIL.
 
@@ -3372,12 +3920,50 @@ def run_triple_app_proof() -> bool:
     return overall
 
 
+def run_penta_app_proof() -> bool:
+    """Run all five governed apps E2E; return combined PASS/FAIL.
+
+    Proves GovernedAppRunner generalizes across all non-exception governed apps:
+    apps_research, apps_exec, apps_rfp, apps_rg, and apps_lic.
+    """
+    print(f"\n{'#' * 80}")
+    print("  PENTA-APP GOVERNED PROOF  —  research + exec + rfp + rg + lic")
+    print(f"{'#' * 80}")
+
+    research_pass = run_app_pilot_proof()
+    exec_pass = run_exec_pilot_proof()
+    rfp_pass = run_rfp_pilot_proof()
+    rg_pass = run_rg_pilot_proof()
+    lic_pass = run_lic_pilot_proof()
+
+    overall = research_pass and exec_pass and rfp_pass and rg_pass and lic_pass
+    verdict = PASS_MARK if overall else FAIL_MARK
+    print(f"\n{'#' * 80}")
+    print(
+        f"  PENTA-APP VERDICT: {verdict}  "
+        f"research={'PASS' if research_pass else 'FAIL'}  "
+        f"exec={'PASS' if exec_pass else 'FAIL'}  "
+        f"rfp={'PASS' if rfp_pass else 'FAIL'}  "
+        f"rg={'PASS' if rg_pass else 'FAIL'}  "
+        f"lic={'PASS' if lic_pass else 'FAIL'}"
+    )
+    if overall:
+        print(
+            "  GovernedAppRunner pattern GENERALIZES: all five non-exception apps\n"
+            "  (apps_research, apps_exec, apps_rfp, apps_rg, apps_lic) run the same\n"
+            "  L1→L0→C0→L2→L5+L6 substrate through the shared base class.\n"
+            "  Governed-app rollout COMPLETE — only permanent exceptions remain."
+        )
+    print(f"{'#' * 80}")
+    return overall
+
+
 def run_conformance_gate_proof() -> bool:
-    """Run the repo-wide governed-app conformance gate + dual-app E2E proof.
+    """Run the repo-wide governed-app conformance gate + penta-app E2E proof.
 
     Combines:
       1. ops_scripts/ci/check_governed_app_conformance.py  (registry + import checks)
-      2. run_triple_app_proof()                             (apps_research + apps_exec + apps_rfp E2E)
+      2. run_penta_app_proof()   (all five governed apps: research + exec + rfp + rg + lic)
 
     Returns True only when both pass.
     """
@@ -3400,16 +3986,16 @@ def run_conformance_gate_proof() -> bool:
     conf_pass = gate_result.returncode == 0
     print(f"\n  Conformance gate: {'PASS' if conf_pass else 'FAIL'}")
 
-    # ── Step 2: triple-app E2E ────────────────────────────────────────────
-    triple_pass = run_triple_app_proof()
+    # ── Step 2: penta-app E2E ───────────────────────────────────────────────
+    penta_pass = run_penta_app_proof()
 
-    overall = conf_pass and triple_pass
+    overall = conf_pass and penta_pass
     verdict = PASS_MARK if overall else FAIL_MARK
     print(f"\n{'#' * 80}")
     print(
         f"  FULL VERDICT: {verdict}  "
         f"conformance={'PASS' if conf_pass else 'FAIL'}  "
-        f"triple_app={'PASS' if triple_pass else 'FAIL'}"
+        f"penta_app={'PASS' if penta_pass else 'FAIL'}"
     )
     print("  Governed-app standard is LIVE and enforced." if overall else "  See failures above.")
     print(f"{'#' * 80}\n")
@@ -3486,6 +4072,21 @@ def main() -> None:
         help="Run apps_research + apps_exec + apps_rfp E2E proofs via shared GovernedAppRunner (triple-app governed standard).",
     )
     parser.add_argument(
+        "--rg-pilot-proof",
+        action="store_true",
+        help="Run apps_rg E2E proof via shared GovernedAppRunner (resume generation governed standard).",
+    )
+    parser.add_argument(
+        "--lic-pilot-proof",
+        action="store_true",
+        help="Run apps_lic E2E proof via shared GovernedAppRunner (campaign outreach governed standard).",
+    )
+    parser.add_argument(
+        "--penta-app-proof",
+        action="store_true",
+        help="Run all five governed apps (research + exec + rfp + rg + lic) E2E proofs via shared GovernedAppRunner.",
+    )
+    parser.add_argument(
         "--conformance-gate-proof",
         action="store_true",
         help="Run the repo-wide governed-app conformance gate (registry + import checks) then triple-app E2E proof. Full PASS/FAIL verdict on the formal governed-app standard.",
@@ -3514,6 +4115,18 @@ def main() -> None:
 
     if args.triple_app_proof:
         passed = run_triple_app_proof()
+        sys.exit(0 if passed else 1)
+
+    if args.rg_pilot_proof:
+        passed = run_rg_pilot_proof()
+        sys.exit(0 if passed else 1)
+
+    if args.lic_pilot_proof:
+        passed = run_lic_pilot_proof()
+        sys.exit(0 if passed else 1)
+
+    if args.penta_app_proof:
+        passed = run_penta_app_proof()
         sys.exit(0 if passed else 1)
 
     if args.conformance_gate_proof:
