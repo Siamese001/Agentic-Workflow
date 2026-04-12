@@ -82,7 +82,7 @@ from apps_rg.engines.ats_compatibility_engine import ATSCompatibilityEngine
 from apps_rg.engines.base_rg_engine import BaseRGEngine
 from apps_rg.engines.clerk_extraction_engine import ClerkExtractionEngine
 from apps_rg.engines.content_optimizer_engine import ContentOptimizerEngine
-from apps_rg.engines.content_quality_engine import ContentQualityEngine
+from apps_rg.reasoning.ContentQualityAgent import ContentQualityAgent as ContentQualityEngine
 from apps_rg.engines.data_enrichment_engine import DataEnrichmentEngine
 from apps_rg.engines.gap_closure_engine import GapClosureEngine
 from apps_rg.engines.section_ranker_engine import SectionRankerEngine

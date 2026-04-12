@@ -55,4 +55,4 @@ class TestGapClosureArchitectTypesSource:
 
     def test_agent_has_check_industry_first_ranking(self):
         """Test agent_has_check_industry_first_ranking contract compliance."""
-        assert "check_industry_first_ranking" in _methods_of("GapClosureArchitectAgent")
+        assert "_check_industry_first_ranking" in _methods_of("GapClosureArchitectAgent")

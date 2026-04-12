@@ -48,7 +48,7 @@ Keep these four layers separate at all times:
 
 | Need | Tool |
 |------|------|
-| ADG scope / blast radius | `adg_health`, `adg_edge_fanout` (server: `adg_sqlite`) |
+| ADG scope / blast radius | `adg_health`, `adg_edge_fanout`, `adg_edge_fanin`, `adg_nodes_by_file`, `adg_nodes_by_layer` (server: `adg_sqlite` — Redis hot cache is the default read surface for all five; SQLite is canonical truth and always the fallback) |
 | Session context | `mem_recall_session_start` (server: `memory`) |
 | Semantic / concept search | `mcp11_semantic_search`, `mcp11_query_collection` (server: `vector_db`) — use for meaning-based lookup, cross-file concept search, similarity retrieval; NOT structural deps (→ `adg_sqlite`), NOT episodic recall (→ `memory`), NOT direct file reads (→ `filesystem`) |
 | Task tracking | `create_task`, `update_task` (server: `task_manager`) |

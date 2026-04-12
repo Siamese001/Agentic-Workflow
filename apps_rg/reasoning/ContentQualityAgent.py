@@ -64,7 +64,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
-from apps_rg.utils.RGAgentBase import RGAgentBase
+from apps_rg.utils.rg_agent_base_util import RGAgentBase
 
 _emit_authorize_and_execute("p2", "ContentQualityAgent", "execution_auth")
 _emit_validates_capability("p2", "ContentQualityAgent", "capability_check")

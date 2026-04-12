@@ -52,4 +52,4 @@ class TestContentQualityAgentSource:
 
     def test_has_check_placeholders(self):
         """Test has_check_placeholders contract compliance."""
-        assert "check_placeholders" in _methods_of("ContentQualityAgent")
+        assert "_check_placeholders" in _methods_of("ContentQualityAgent")

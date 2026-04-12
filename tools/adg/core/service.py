@@ -129,17 +129,21 @@ class ADGService:
         )
 
     def get_nodes_by_layer(self, layer: str, limit: int = 100) -> ADGResponse:
-        """Fetch nodes by layer (Redis not cached for list queries)."""
-        nodes = self._sqlite.get_nodes_by_layer(layer, limit)
-
+        """Fetch nodes by layer with Redis-first read-through (lazy warm; 7 bounded keys)."""
+        nodes, backend = self._query_with_fallback(
+            redis_query=lambda: self._redis.get_nodes_by_layer(layer, self._adg_snapshot_id),
+            sqlite_query=lambda: self._sqlite.get_nodes_by_layer(layer, limit),
+            cache_set=lambda n: self._redis.set_nodes_by_layer(layer, n, self._adg_snapshot_id),
+            method="get_nodes_by_layer",
+        )
         return ADGResponse(
             status="ok",
             data={
                 "layer": layer,
-                "nodes": [n.model_dump() for n in nodes],
-                "count": len(nodes),
+                "nodes": [n.model_dump() for n in nodes] if nodes else [],
+                "count": len(nodes) if nodes else 0,
             },
-            backend_used="sqlite",
+            backend_used=backend,
         )
 
     def get_nodes_by_file(self, file_path: str, limit: int = 100) -> ADGResponse:

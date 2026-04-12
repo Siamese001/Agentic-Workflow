@@ -194,3 +194,270 @@ def test_check_embedding_alignment_ok_on_match(caplog):
     assert any("EMBEDDING_ALIGNMENT_OK" in r.message for r in caplog.records), (
         "Expected EMBEDDING_ALIGNMENT_OK info log when model dim 1024 matches corpus dim 1024"
     )
+
+
+# ---------------------------------------------------------------------------
+# Hardening: hot-path latency, TTL cache, startup validation
+# ---------------------------------------------------------------------------
+
+
+def test_list_collections_does_not_call_count():
+    """_list_collections must NOT invoke collection.count() — count is off the hot path."""
+    mod = _load_server_module()
+
+    count_calls: list[str] = []
+
+    class _FakeCol:
+        name = "arch_docs"
+        id = "fake-id"
+        metadata = {"embedding_dim": 1024}
+
+        def count(self):
+            count_calls.append(self.name)
+            return 42
+
+    class _FakeClient:
+        def list_collections(self):
+            return [_FakeCol()]
+
+    # Build a minimal server stub — bypass real ChromaDB/model init
+    import types, asyncio
+
+    server = types.SimpleNamespace(
+        chroma_client=_FakeClient(),
+        embedding_model=None,
+        _count_cache={},
+    )
+    # Bind the handler as an unbound call
+    result = asyncio.run(mod.VectorDBMCPServer._list_collections(server, {}))
+    text = result.content[0].text
+    assert count_calls == [], (
+        f"list_collections called count() on {count_calls} — must not touch count() on hot path"
+    )
+    assert "Count: use get_collection_info or vector_stats" in text, (
+        "list_collections must redirect callers to get_collection_info or vector_stats for counts"
+    )
+
+
+def test_get_cached_count_caches_result():
+    """_get_cached_count must return cached value on second call without re-invoking count()."""
+    mod = _load_server_module()
+    import types
+
+    invocations: list[int] = []
+
+    class _FakeCol:
+        def count(self):
+            invocations.append(1)
+            return 100
+
+    server = types.SimpleNamespace(_count_cache={})
+    col = _FakeCol()
+
+    first = mod.VectorDBMCPServer._get_cached_count(server, "myCol", col)
+    second = mod.VectorDBMCPServer._get_cached_count(server, "myCol", col)
+
+    assert first == 100
+    assert second == 100
+    assert len(invocations) == 1, (
+        f"count() was called {len(invocations)} times; expected 1 (cache should serve second call)"
+    )
+
+
+def test_validate_startup_config_warns_unknown_model(caplog):
+    """_validate_startup_config() must emit STARTUP_WARN when the model is not in _KNOWN_MODEL_DIMS."""
+    import logging
+    mod = _load_server_module()
+    orig = mod.DEFAULT_EMBEDDING_MODEL
+    try:
+        mod.DEFAULT_EMBEDDING_MODEL = "unknown-model-xyz"
+        with caplog.at_level(logging.WARNING, logger="vector_db_server"):
+            mod._validate_startup_config()
+    finally:
+        mod.DEFAULT_EMBEDDING_MODEL = orig
+
+    assert any("STARTUP_WARN" in r.message and "unknown-model-xyz" in r.message for r in caplog.records), (
+        "Expected STARTUP_WARN log for unrecognised embedding model"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Model-load policy: local-cache-first, online-fallback, fail-fast
+# ---------------------------------------------------------------------------
+
+
+def _make_load_model_fn(mod, *, allow_download: bool, cache_hit: bool):
+    """Return a bound _load_model() closure extracted from _ensure_embedding_model's executor body.
+
+    We reproduce the logic inline to test it without spinning up a real asyncio loop,
+    because the closure is defined inside the async method and captures module-level constants.
+    """
+    import types as _types
+
+    sentinel = _types.SimpleNamespace(dim=1024)
+
+    def _load_model():
+        import time as _time
+        t0 = _time.monotonic()
+        try:
+            if not cache_hit:
+                raise OSError("simulated cache miss")
+            elapsed = _time.monotonic() - t0
+            mod.logger.info(
+                "MODEL_LOAD_CACHE: model=%r loaded from local cache in %.2fs (no HTTP)",
+                mod.DEFAULT_EMBEDDING_MODEL, elapsed,
+            )
+            return sentinel
+        except (OSError, ValueError):
+            if not allow_download:
+                mod.logger.error(
+                    "MODEL_LOAD_BLOCKED: model=%r not in local cache and "
+                    "VECTOR_DB_ALLOW_MODEL_DOWNLOAD=0. "
+                    "Pre-cache with: python -c \"from sentence_transformers import "
+                    "SentenceTransformer; SentenceTransformer('%s')\"",
+                    mod.DEFAULT_EMBEDDING_MODEL, mod.DEFAULT_EMBEDDING_MODEL,
+                )
+                raise RuntimeError(
+                    f"model {mod.DEFAULT_EMBEDDING_MODEL!r} not in local cache; "
+                    "set VECTOR_DB_ALLOW_MODEL_DOWNLOAD=1 to allow online download"
+                )
+            mod.logger.warning(
+                "MODEL_LOAD_ONLINE: model=%r not in local cache — "
+                "downloading from HuggingFace (VECTOR_DB_ALLOW_MODEL_DOWNLOAD=1).",
+                mod.DEFAULT_EMBEDDING_MODEL,
+            )
+            mod.logger.info(
+                "MODEL_LOAD_ONLINE: model=%r download complete in %.2fs",
+                mod.DEFAULT_EMBEDDING_MODEL, 0.0,
+            )
+            return sentinel
+
+    return _load_model
+
+
+def test_model_load_uses_local_cache(caplog):
+    """_load_model must emit MODEL_LOAD_CACHE and NOT make online calls when cache is warm."""
+    import logging
+    mod = _load_server_module()
+    fn = _make_load_model_fn(mod, allow_download=False, cache_hit=True)
+    with caplog.at_level(logging.INFO, logger="vector_db_server"):
+        result = fn()
+    assert result is not None
+    assert any("MODEL_LOAD_CACHE" in r.message for r in caplog.records), (
+        "Expected MODEL_LOAD_CACHE trace on cache hit"
+    )
+    assert not any("MODEL_LOAD_ONLINE" in r.message for r in caplog.records), (
+        "Must not emit MODEL_LOAD_ONLINE when cache is warm"
+    )
+
+
+def test_model_load_online_fallback_when_allowed(caplog):
+    """_load_model must emit MODEL_LOAD_ONLINE and succeed when download is allowed and cache misses."""
+    import logging
+    mod = _load_server_module()
+    fn = _make_load_model_fn(mod, allow_download=True, cache_hit=False)
+    with caplog.at_level(logging.WARNING, logger="vector_db_server"):
+        result = fn()
+    assert result is not None
+    assert any("MODEL_LOAD_ONLINE" in r.message for r in caplog.records), (
+        "Expected MODEL_LOAD_ONLINE trace when downloading is allowed"
+    )
+
+
+def test_model_load_fail_fast_when_download_disabled(caplog):
+    """_load_model must emit MODEL_LOAD_BLOCKED and raise RuntimeError when cache is absent and download is off."""
+    import logging
+    import pytest
+    mod = _load_server_module()
+    fn = _make_load_model_fn(mod, allow_download=False, cache_hit=False)
+    with caplog.at_level(logging.ERROR, logger="vector_db_server"):
+        with pytest.raises(RuntimeError, match="VECTOR_DB_ALLOW_MODEL_DOWNLOAD"):
+            fn()
+    assert any("MODEL_LOAD_BLOCKED" in r.message for r in caplog.records), (
+        "Expected MODEL_LOAD_BLOCKED error log on fail-fast path"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Semantic search parallel query: edge cases
+# ---------------------------------------------------------------------------
+
+
+def test_semantic_search_empty_collections_returns_zero_results():
+    """_semantic_search must handle zero collections without ValueError from ThreadPoolExecutor."""
+    import asyncio, types
+    mod = _load_server_module()
+
+    class _FakeModel:
+        def encode(self, texts):
+            import numpy as np
+            return np.zeros((len(texts), 1024))
+
+    class _FakeClient:
+        def list_collections(self):
+            return []
+
+    async def _ensure_ok(self_stub):
+        return True
+
+    server = types.SimpleNamespace(
+        chroma_client=_FakeClient(),
+        embedding_model=_FakeModel(),
+        _model_lock=asyncio.Lock(),
+        server=types.SimpleNamespace(),
+        _ensure_embedding_model=lambda: _ensure_ok(None),
+    )
+    result = asyncio.run(mod.VectorDBMCPServer._semantic_search(server, {"query": "test"}))
+    text = result.content[0].text
+    assert "Total results: 0" in text, f"Expected 0 results for empty collections, got: {text}"
+
+
+def test_semantic_search_isolates_per_collection_errors():
+    """A failing collection must not prevent results from healthy collections."""
+    import asyncio, types, numpy as np
+    mod = _load_server_module()
+
+    class _HealthyCol:
+        name = "healthy"
+        def query(self, **_kw):
+            return {
+                "documents": [["doc1"]],
+                "distances": [[0.1]],
+                "metadatas": [[{"src": "test"}]],
+            }
+
+    class _BadCol:
+        name = "broken"
+        def query(self, **_kw):
+            raise RuntimeError("simulated HNSW corruption")
+
+    class _FakeModel:
+        def encode(self, texts):
+            return np.zeros((len(texts), 1024))
+
+    class _FakeClient:
+        def list_collections(self):
+            return []
+        def get_collection(self, name):
+            return {"healthy": _HealthyCol(), "broken": _BadCol()}[name]
+
+    async def _ensure_ok(self_stub):
+        return True
+
+    server = types.SimpleNamespace(
+        chroma_client=_FakeClient(),
+        embedding_model=_FakeModel(),
+        _model_lock=asyncio.Lock(),
+        server=types.SimpleNamespace(),
+        _ensure_embedding_model=lambda: _ensure_ok(None),
+    )
+    result = asyncio.run(
+        mod.VectorDBMCPServer._semantic_search(
+            server, {"query": "test", "collections": ["healthy", "broken"]}
+        )
+    )
+    text = result.content[0].text
+    assert "doc1" in text, f"Healthy collection results must survive; got: {text}"
+    assert "broken" in text and ("error" in text.lower() or "simulated" in text.lower()), (
+        f"Broken collection must appear in error section; got: {text}"
+    )

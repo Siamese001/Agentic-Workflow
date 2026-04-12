@@ -70,6 +70,7 @@
       "env": {
         "VECTOR_DB_CHROMA_PATH": "C:/Git/Agentic-Workflow/data/cache/chromadb",
         "VECTOR_DB_EMBEDDING_MODEL": "BAAI/bge-m3",
+        "VECTOR_DB_ALLOW_MODEL_DOWNLOAD": "0",
         "VECTOR_DB_MAX_BATCH": "32",
         "VECTOR_DB_MAX_QUERY_RESULTS": "100",
         "VECTOR_DB_MAX_SEARCH_RESULTS": "20",

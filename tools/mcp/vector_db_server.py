@@ -5,6 +5,7 @@ Provides vector operations for semantic search, embeddings, and similarity queri
 """
 
 import asyncio
+import concurrent.futures as _cf
 import json
 import logging
 import os
@@ -80,6 +81,10 @@ def _parse_int_env(name: str, default: int, min_val: int = 1) -> int:
 MAX_RESULTS: int = _parse_int_env("VECTOR_DB_MAX_QUERY_RESULTS", 100)
 MAX_EMBEDDING_BATCH_SIZE: int = _parse_int_env("VECTOR_DB_MAX_BATCH", 32)
 MAX_SEARCH_RESULTS: int = _parse_int_env("VECTOR_DB_MAX_SEARCH_RESULTS", 20)
+
+# When False (default): load model from local HuggingFace cache only; fail fast if absent.
+# When True: allow online download as a fallback on cache miss (slower, makes HTTP calls).
+ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "0").strip() == "1"
 
 # Known model → output dimension map. Extend when new models are indexed into the corpus.
 _KNOWN_MODEL_DIMS: dict[str, int] = {
@@ -246,9 +251,46 @@ class VectorDBMCPServer:
                 try:
                     logger.info("Loading embedding model in thread executor...")
                     loop = asyncio.get_event_loop()
-                    self.embedding_model = await loop.run_in_executor(
-                        None, lambda: SentenceTransformer(DEFAULT_EMBEDDING_MODEL)
-                    )
+
+                    def _load_model() -> SentenceTransformer:
+                        """Load from local cache first; policy controls online fallback."""
+                        import time as _time
+                        t0 = _time.monotonic()
+                        try:
+                            model = SentenceTransformer(DEFAULT_EMBEDDING_MODEL, local_files_only=True)
+                            elapsed = _time.monotonic() - t0
+                            logger.info(
+                                "MODEL_LOAD_CACHE: model=%r loaded from local cache in %.2fs (no HTTP)",
+                                DEFAULT_EMBEDDING_MODEL, elapsed,
+                            )
+                            return model
+                        except (OSError, ValueError):  # HF Hub raises these on cache miss
+                            if not ALLOW_MODEL_DOWNLOAD:
+                                logger.error(
+                                    "MODEL_LOAD_BLOCKED: model=%r not in local cache and "
+                                    "VECTOR_DB_ALLOW_MODEL_DOWNLOAD=0. "
+                                    "Pre-cache with: python -c \"from sentence_transformers import "
+                                    "SentenceTransformer; SentenceTransformer('%s')\"",
+                                    DEFAULT_EMBEDDING_MODEL, DEFAULT_EMBEDDING_MODEL,
+                                )
+                                raise RuntimeError(
+                                    f"model {DEFAULT_EMBEDDING_MODEL!r} not in local cache; "
+                                    "set VECTOR_DB_ALLOW_MODEL_DOWNLOAD=1 to allow online download"
+                                )
+                            logger.warning(
+                                "MODEL_LOAD_ONLINE: model=%r not in local cache — "
+                                "downloading from HuggingFace (VECTOR_DB_ALLOW_MODEL_DOWNLOAD=1).",
+                                DEFAULT_EMBEDDING_MODEL,
+                            )
+                            t1 = _time.monotonic()
+                            model = SentenceTransformer(DEFAULT_EMBEDDING_MODEL)
+                            logger.info(
+                                "MODEL_LOAD_ONLINE: model=%r download complete in %.2fs",
+                                DEFAULT_EMBEDDING_MODEL, _time.monotonic() - t1,
+                            )
+                            return model
+
+                    self.embedding_model = await loop.run_in_executor(None, _load_model)
                     logger.info(f"Embedding model loaded: {DEFAULT_EMBEDDING_MODEL}")
                 except Exception as e:  # guardian: allow-broad-exception -- SentenceTransformer raises heterogeneous errors from torch/transformers/safetensors with no shared base
                     logger.error(f"Failed to load embedding model: {e}")
@@ -874,44 +916,63 @@ class VectorDBMCPServer:
                 all_collections = self.chroma_client.list_collections()
                 collections = [col.name for col in all_collections]
 
-            # Generate query embedding
-            query_embedding = self.embedding_model.encode([query])
+            # Generate query embedding — run in executor to keep event loop free
+            loop = asyncio.get_event_loop()
+            query_embedding = await loop.run_in_executor(
+                None, lambda: self.embedding_model.encode([query])
+            )
 
             merged: list[dict] = []
             collection_errors: dict[str, str] = {}
             total_time = 0.0
 
-            for collection_name in tqdm(collections, desc="search-collections", leave=False, disable=True):
-                try:
-                    collection = self.chroma_client.get_collection(collection_name)
-                    start_time = time.time()
-                    search_results = collection.query(
-                        query_embeddings=query_embedding.tolist(),
-                        n_results=n_results,
-                        include=["metadatas", "documents", "distances"],
-                    )
-                    total_time += time.time() - start_time
+            def _query_one(col_name: str) -> tuple[str, list[dict], float]:
+                """Query a single collection — runs in a thread to avoid blocking the event loop."""
+                col = self.chroma_client.get_collection(col_name)
+                t0 = time.time()
+                res = col.query(
+                    query_embeddings=query_embedding.tolist(),
+                    n_results=n_results,
+                    include=["metadatas", "documents", "distances"],
+                )
+                elapsed = time.time() - t0
+                docs = res.get("documents", [[]])[0] if res.get("documents") else []
+                dists = res.get("distances", [[]])[0] if res.get("distances") else []
+                metas = res.get("metadatas", [[]])[0] if res.get("metadatas") else []
+                hits = []
+                for doc, dist, meta in zip(docs, dists, metas or [None] * len(docs)):
+                    hits.append({"collection": col_name, "distance": dist, "document": doc, "metadata": meta})
+                return col_name, hits, elapsed
 
-                    docs = search_results.get("documents", [[]])[0] if search_results.get("documents") else []
-                    dists = (
-                        search_results.get("distances", [[]])[0] if search_results.get("distances") else []
-                    )
-                    metas = (
-                        search_results.get("metadatas", [[]])[0] if search_results.get("metadatas") else []
-                    )
+            # Query collections in parallel threads with a 5 s per-collection timeout.
+            # ext_knowledge cold-loads a large HNSW index (~9 s); this lets faster
+            # collections return results while slow ones are reported as timeouts.
+            # Entire block runs in an executor so the asyncio event loop stays free.
+            _PER_COL_TIMEOUT = 5.0
 
-                    for doc, dist, meta in zip(docs, dists, metas or [None] * len(docs)):
-                        merged.append(
-                            {
-                                "collection": collection_name,
-                                "distance": dist,
-                                "document": doc,
-                                "metadata": meta,
-                            }
-                        )
+            def _run_parallel_queries() -> None:
+                if not collections:
+                    return
+                with _cf.ThreadPoolExecutor(max_workers=min(len(collections), 4)) as pool:
+                    futs = {pool.submit(_query_one, cn): cn for cn in collections}
+                    try:
+                        for fut in _cf.as_completed(futs, timeout=30.0):
+                            cn = futs[fut]
+                            try:
+                                _, hits, elapsed = fut.result(timeout=_PER_COL_TIMEOUT)
+                                merged.extend(hits)
+                                nonlocal total_time
+                                total_time += elapsed
+                            except _cf.TimeoutError:
+                                collection_errors[cn] = "QUERY_TIMEOUT (>5 s — HNSW index may be cold)"
+                            except Exception as col_err:  # guardian: allow-broad-exception -- ChromaDB raises heterogeneous per-collection errors (InvalidDimensionException, NotFoundError, etc.) with no shared catchable base; must not lose cross-collection results
+                                collection_errors[cn] = str(col_err)
+                    except TimeoutError:
+                        for fut, cn in futs.items():
+                            if not fut.done():
+                                collection_errors[cn] = "GLOBAL_TIMEOUT (>30 s)"
 
-                except Exception as col_err:  # guardian: allow-broad-exception -- ChromaDB raises heterogeneous errors per collection; non-fatal to preserve cross-collection results
-                    collection_errors[collection_name] = str(col_err)
+            await loop.run_in_executor(None, _run_parallel_queries)
 
             # Sort merged results by distance ascending; secondary keys break ties deterministically
             merged.sort(key=lambda r: (r["distance"], r["collection"], r["document"]))
@@ -1012,10 +1073,6 @@ class VectorDBMCPServer:
 async def main():
     """Main entry point"""
     server_instance = VectorDBMCPServer()
-
-    # Prewarm: start loading the embedding model in the background so the first
-    # semantic_search call does not bear the full cold-start latency (~4 s).
-    asyncio.create_task(server_instance._ensure_embedding_model())
 
     # Run the server
     async with stdio_server() as (read_stream, write_stream):

@@ -41,6 +41,21 @@ explicit authority assignment.
 - **Authority**: Project structure, dependency graph, layer analysis
 - **Capability**: `adg_health`, `adg_node`, `adg_edge_fanout`, `adg_edge_fanin`, `adg_nodes_by_file`, `adg_nodes_by_layer`, `adg_violations`
 - **Constitutional**: §13 MCP Green Light — call `adg_health` before T2/T3 work
+- **Read path**: Redis hot cache first (`adg:v1:{snapshot}:{key}`), SQLite fallback; `backend_used` field in every response reports which backend served the result.
+- **Accelerated methods** (Redis-first):
+  - `adg_edge_fanout` — pre-warmed by `adg_redis_ingest.py`; key: `edge:{src_id}:{rel}`
+  - `adg_edge_fanin` — pre-warmed by ingest; key: `fanin:{tgt_id}:{rel}` + `edge_detail:{id}` hashes
+  - `adg_node` — lazy-warm on first call; key: `node:{id}`
+  - `adg_nodes_by_file` — lazy-warm on first call; key: `file_nodes:{sha1(path)[:16]}`
+  - `adg_nodes_by_layer` — lazy-warm on first call; key: `layer_nodes:{layer}` (7 bounded keys)
+- **SQLite-only methods**: `adg_violations`, `adg_status`, `adg_find_node`
+- **Canonical truth**: SQLite (`artifacts/adg/adg_indexed_<timestamp>.sqlite`) is always authoritative. Redis is non-authoritative accelerator only; `adg_redis_ingest.py --force` rebuilds hot cache.
+- **hmset compat**: Redis writes use deprecated `hmset` (not `hset mapping=`) for compatibility with this Redis version. Do not upgrade to `hset` without verifying redis-py and server version.
+- **Non-accelerated methods and why**:
+  - `adg_violations` — unbounded query, result set size varies; caching would require invalidation logic on every ingest run; value is low (called infrequently, not on hot paths).
+  - `adg_status` — returns live snapshot metadata; must always reflect current state; caching would produce stale counts.
+  - `adg_find_node` — variable key space (arbitrary name substring); no bounded key set; false-hit risk outweighs benefit.
+- **Acceleration stop condition**: The Redis-first ADG acceleration wave is complete as of 2026-04-12. All high-value, bounded-key-space read methods are accelerated. Further caching of additional methods requires clear evidence of runtime heat (measured via `backend_used` telemetry logs) and a bounded key space. Do not accelerate `adg_violations`, `adg_status`, or `adg_find_node` without that evidence. Do not add new Redis cache keys without a corresponding completeness-check guard and snapshot-rotation test.
 
 ### `memory` — Persistent Knowledge Graph
 - **Transport**: Python (local subprocess)

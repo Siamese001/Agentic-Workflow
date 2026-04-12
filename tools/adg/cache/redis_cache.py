@@ -109,8 +109,10 @@ class RedisCache:
                 detail = self._client.hgetall(detail_key)
                 if detail:
                     edges.append(ADGEdge(**detail))
+            if len(edges) != len(edge_ids):
+                return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
             logger.debug(f"Redis get_edge_fanout miss: {e}")
 
         return None
@@ -153,6 +155,8 @@ class RedisCache:
                 detail = self._client.hgetall(detail_key)
                 if detail:
                     edges.append(ADGEdge(**detail))
+            if len(edges) != len(edge_ids):
+                return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
         except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
             logger.debug(f"Redis get_edge_fanin miss: {e}")
@@ -206,6 +210,35 @@ class RedisCache:
             self._client.set(key, json.dumps(payload))
         except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
             logger.debug(f"Redis set_nodes_by_file failed: {e}")
+
+    def get_nodes_by_layer(self, layer: str, adg_snapshot_id: str) -> list[ADGNode] | None:
+        """Try Redis for layer->nodes list. Returns None on cache miss."""
+        if not self._available:
+            return None
+        try:
+            import json
+
+            key = self._key(f"layer_nodes:{layer}", adg_snapshot_id)
+            raw = self._client.get(key)
+            if raw is None:
+                return None
+            return [ADGNode(**n) for n in json.loads(raw)]
+        except Exception as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
+            logger.debug(f"Redis get_nodes_by_layer miss: {e}")
+        return None
+
+    def set_nodes_by_layer(self, layer: str, nodes: list[ADGNode], adg_snapshot_id: str) -> None:
+        """Cache layer->nodes list in Redis as JSON string (key: layer_nodes:{layer})."""
+        if not self._available:
+            return
+        try:
+            import json
+
+            key = self._key(f"layer_nodes:{layer}", adg_snapshot_id)
+            payload = [{k: str(v) for k, v in n.model_dump().items() if v is not None} for n in nodes]
+            self._client.set(key, json.dumps(payload))
+        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
+            logger.debug(f"Redis set_nodes_by_layer failed: {e}")
 
     def clear_snapshot(self, adg_snapshot_id: str) -> None:
         """Clear all cache entries for a snapshot."""
