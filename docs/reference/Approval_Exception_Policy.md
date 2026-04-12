@@ -126,4 +126,4 @@ All approvals are logged in:
 - Constitutional Section 6 (HITL), Section 8 (Guardian), Section 3 (Agent deletion)
 - `.windsurf/rules/hitl-enforcement.md` - HITL protocol
 - `.windsurf/rules/anti-pattern-hitl-gate.md` - Anti-pattern approval flow
-- `docs/reference/HITL_SVP_Calibration.md` - When HITL is required vs forbidden
+- `.windsurf/rules/hitl-svp-calibration.md` - When HITL is required vs forbidden
