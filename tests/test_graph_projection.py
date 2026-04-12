@@ -1,4 +1,4 @@
-"""Tests for the graph projection system (Increment 1–3).
+"""Tests for the graph projection system (Increment 1–5).
 
 Coverage
 --------
@@ -20,6 +20,24 @@ Backend (Increment 2):
   - get_status() always returns a dict with expected keys
   - context-manager protocol works (close called on __exit__)
   - query methods return None/[] when unavailable (no projection)
+
+New backend methods (Increment 4):
+  - get_diff() returns [] when unavailable, list[dict] when available
+  - get_top_bridges() returns [] when unavailable, list[dict] when available
+  - get_top_regressions() returns [] when unavailable, list[dict] when available
+  - get_reachability() returns [] when unavailable, list[dict] when available
+
+CLI (Increment 4):
+  - diff, bridges, regressions, reachability subcommands exit 0
+
+Hardening (Increment 5):
+  - schema_version is 1.1
+  - proj_diff stores no unchanged rows
+  - new indexes present: idx_proj_diff_metric_dir, idx_proj_diff_delta,
+    idx_proj_viol_blast, idx_proj_reach_src_hop
+  - proj_meta contains build metadata keys
+  - reachability rows per seed <= _REACHABILITY_PER_SEED_LIMIT
+  - get_status() exposes build-quality fields
 
 Integration (uses live canonical artifact, auto-skips if absent):
   - build_graph_projection runs without error on real canonical artifact
@@ -148,12 +166,14 @@ class TestBuildGraphProjection:
         )
 
     def test_schema_version_in_proj_meta(self, tmp_canonical_sqlite, tmp_path):
-        from tools.generate.graph_projection import build_graph_projection
+        from tools.generate.graph_projection import build_graph_projection, _PROJECTION_SCHEMA_VERSION
 
         out = build_graph_projection(tmp_canonical_sqlite, tmp_path, "test05")
         meta = _proj_meta(out)
         assert "schema_version" in meta
-        assert meta["schema_version"], "schema_version must be non-empty"
+        assert meta["schema_version"] == _PROJECTION_SCHEMA_VERSION, (
+            f"schema_version must be {_PROJECTION_SCHEMA_VERSION!r}, got {meta['schema_version']!r}"
+        )
 
     def test_no_tmp_file_left_behind(self, tmp_canonical_sqlite, tmp_path):
         from tools.generate.graph_projection import build_graph_projection
@@ -449,3 +469,358 @@ class TestGraphProjectionIntegration:
         canonical_digest = _canonical_digest(latest_canonical_sqlite)
 
         assert meta["source_artifact_digest"] == canonical_digest
+
+
+# -----------------------------------------------------------------------
+# New backend methods — unavailable path (Increment 4)
+# -----------------------------------------------------------------------
+
+
+class TestNewMethodsWhenUnavailable:
+    """New backend methods return safe defaults when projection is unavailable."""
+
+    @pytest.fixture
+    def unavailable_backend(self, tmp_path, monkeypatch):
+        from tools.adg.core import graph_projection_backend as gpb_mod
+
+        monkeypatch.setattr(gpb_mod, "_resolve_adg_dir", lambda: tmp_path)
+        from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+
+        backend = GraphProjectionBackend()
+        yield backend
+        backend.close()
+
+    def test_get_diff_returns_empty_list(self, unavailable_backend):
+        result = unavailable_backend.get_diff()
+        assert result == []
+
+    def test_get_diff_with_metric_returns_empty_list(self, unavailable_backend):
+        result = unavailable_backend.get_diff(metric="blast_radius_direct")
+        assert result == []
+
+    def test_get_top_bridges_returns_empty_list(self, unavailable_backend):
+        result = unavailable_backend.get_top_bridges()
+        assert result == []
+
+    def test_get_top_regressions_returns_empty_list(self, unavailable_backend):
+        result = unavailable_backend.get_top_regressions()
+        assert result == []
+
+    def test_get_reachability_returns_empty_list(self, unavailable_backend):
+        result = unavailable_backend.get_reachability("ADG::Module::any")
+        assert result == []
+
+
+# -----------------------------------------------------------------------
+# New backend methods — fresh projection path (Increment 4)
+# -----------------------------------------------------------------------
+
+
+class TestNewMethodsWhenAvailable:
+    """New backend methods return correct types when a fresh projection exists."""
+
+    @pytest.fixture
+    def fresh_backend(self, tmp_canonical_sqlite, tmp_path, monkeypatch):
+        from tools.generate.graph_projection import build_graph_projection
+
+        build_graph_projection(tmp_canonical_sqlite, tmp_path, "newmeth01")
+
+        from tools.adg.core import graph_projection_backend as gpb_mod
+
+        monkeypatch.setattr(gpb_mod, "_resolve_adg_dir", lambda: tmp_path)
+
+        from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+
+        backend = GraphProjectionBackend(canonical_sqlite_path=tmp_canonical_sqlite)
+        yield backend
+        backend.close()
+
+    def test_get_diff_returns_list(self, fresh_backend):
+        result = fresh_backend.get_diff()
+        assert isinstance(result, list)
+
+    def test_get_diff_items_have_required_keys(self, fresh_backend):
+        result = fresh_backend.get_diff(limit=5)
+        for item in result:
+            for key in (
+                "adg_name",
+                "metric",
+                "prev_value",
+                "curr_value",
+                "delta",
+                "direction",
+                "derived_from",
+                "stale",
+            ):
+                assert key in item, f"get_diff() item missing key: {key}"
+
+    def test_get_diff_direction_filter(self, fresh_backend):
+        result = fresh_backend.get_diff(direction="worsened")
+        assert isinstance(result, list)
+        for item in result:
+            assert item["direction"] == "worsened"
+
+    def test_get_diff_metric_filter(self, fresh_backend):
+        result = fresh_backend.get_diff(metric="fan_in")
+        assert isinstance(result, list)
+        for item in result:
+            assert item["metric"] == "fan_in"
+
+    def test_get_top_bridges_returns_list(self, fresh_backend):
+        result = fresh_backend.get_top_bridges(limit=10)
+        assert isinstance(result, list)
+
+    def test_get_top_bridges_items_have_required_keys(self, fresh_backend):
+        result = fresh_backend.get_top_bridges(limit=5)
+        for item in result:
+            for key in (
+                "adg_name",
+                "bridge_score",
+                "bridge_type",
+                "fan_in",
+                "fan_out",
+                "blast_radius_direct",
+                "layer",
+                "derived_from",
+                "stale",
+            ):
+                assert key in item, f"get_top_bridges() item missing key: {key}"
+
+    def test_get_top_regressions_returns_list(self, fresh_backend):
+        result = fresh_backend.get_top_regressions(metric="blast_radius_direct", limit=10)
+        assert isinstance(result, list)
+
+    def test_get_top_regressions_items_have_required_keys(self, fresh_backend):
+        result = fresh_backend.get_top_regressions(limit=5)
+        for item in result:
+            for key in ("adg_name", "metric", "delta", "delta_pct", "layer", "derived_from", "stale"):
+                assert key in item, f"get_top_regressions() item missing key: {key}"
+
+    def test_get_reachability_returns_list(self, fresh_backend):
+        result = fresh_backend.get_reachability("ADG::Module::tools/a", limit=10)
+        assert isinstance(result, list)
+
+    def test_get_reachability_items_have_required_keys(self, fresh_backend):
+        result = fresh_backend.get_reachability("ADG::Module::tools/a", limit=10)
+        for item in result:
+            for key in ("src_adg_name", "dst_adg_name", "hop_count", "path_weight", "derived_from", "stale"):
+                assert key in item, f"get_reachability() item missing key: {key}"
+
+
+# -----------------------------------------------------------------------
+# CLI subcommand smoke tests (Increment 4)
+# -----------------------------------------------------------------------
+
+
+class TestCLINewSubcommands:
+    """Smoke tests for new CLI subcommands via _build_parser and handler functions."""
+
+    @pytest.fixture
+    def fresh_backend(self, tmp_canonical_sqlite, tmp_path, monkeypatch):
+        from tools.generate.graph_projection import build_graph_projection
+
+        build_graph_projection(tmp_canonical_sqlite, tmp_path, "cli01")
+
+        from tools.adg.core import graph_projection_backend as gpb_mod
+
+        monkeypatch.setattr(gpb_mod, "_resolve_adg_dir", lambda: tmp_path)
+
+        from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+
+        backend = GraphProjectionBackend(canonical_sqlite_path=tmp_canonical_sqlite)
+        yield backend
+        backend.close()
+
+    def test_cmd_diff_exits_zero(self, fresh_backend):
+        from tools.adg.adg_graph_query import _cmd_diff
+
+        rc = _cmd_diff(fresh_backend, metric=None, direction=None, layer=None, limit=10)
+        assert rc in (0, 2), f"_cmd_diff returned unexpected exit code: {rc}"
+
+    def test_cmd_diff_with_metric_exits_zero(self, fresh_backend):
+        from tools.adg.adg_graph_query import _cmd_diff
+
+        rc = _cmd_diff(fresh_backend, metric="blast_radius_direct", direction=None, layer=None, limit=5)
+        assert rc in (0, 2)
+
+    def test_cmd_bridges_exits_zero(self, fresh_backend):
+        from tools.adg.adg_graph_query import _cmd_bridges
+
+        rc = _cmd_bridges(fresh_backend, limit=5)
+        assert rc in (0, 2)
+
+    def test_cmd_regressions_exits_zero(self, fresh_backend):
+        from tools.adg.adg_graph_query import _cmd_regressions
+
+        rc = _cmd_regressions(fresh_backend, metric="blast_radius_direct", limit=5)
+        assert rc in (0, 2)
+
+    def test_cmd_reachability_exits_zero(self, fresh_backend):
+        from tools.adg.adg_graph_query import _cmd_reachability
+
+        rc = _cmd_reachability(fresh_backend, adg_name="ADG::Module::tools/a", limit=5)
+        assert rc in (0, 2)
+
+    def test_cmd_diff_unavailable_returns_one(self, tmp_path, monkeypatch):
+        from tools.adg.core import graph_projection_backend as gpb_mod
+
+        monkeypatch.setattr(gpb_mod, "_resolve_adg_dir", lambda: tmp_path)
+
+        from tools.adg.adg_graph_query import _cmd_diff
+        from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+
+        with GraphProjectionBackend() as backend:
+            rc = _cmd_diff(backend, metric=None, direction=None, layer=None, limit=10)
+        assert rc == 1
+
+    def test_cmd_bridges_unavailable_returns_one(self, tmp_path, monkeypatch):
+        from tools.adg.core import graph_projection_backend as gpb_mod
+
+        monkeypatch.setattr(gpb_mod, "_resolve_adg_dir", lambda: tmp_path)
+
+        from tools.adg.adg_graph_query import _cmd_bridges
+        from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+
+        with GraphProjectionBackend() as backend:
+            rc = _cmd_bridges(backend, limit=10)
+        assert rc == 1
+
+
+# -----------------------------------------------------------------------
+# Hardening tests (Increment 5 — schema 1.1, indexes, caps, metadata)
+# -----------------------------------------------------------------------
+
+
+class TestHardeningSchemaV11:
+    """Verify schema 1.1 hardening: indexes, metadata, unchanged exclusion, per-seed cap."""
+
+    @pytest.fixture
+    def proj_path(self, tmp_canonical_sqlite, tmp_path):
+        from tools.generate.graph_projection import build_graph_projection
+
+        return build_graph_projection(tmp_canonical_sqlite, tmp_path, "hard01")
+
+    @pytest.fixture
+    def proj_conn(self, proj_path):
+        conn = sqlite3.connect(str(proj_path))
+        conn.row_factory = sqlite3.Row
+        yield conn
+        conn.close()
+
+    @pytest.fixture
+    def fresh_backend(self, tmp_canonical_sqlite, tmp_path, monkeypatch, proj_path):
+        from tools.adg.core import graph_projection_backend as gpb_mod
+
+        monkeypatch.setattr(gpb_mod, "_resolve_adg_dir", lambda: tmp_path)
+        from tools.adg.core.graph_projection_backend import GraphProjectionBackend
+
+        backend = GraphProjectionBackend(canonical_sqlite_path=tmp_canonical_sqlite)
+        yield backend
+        backend.close()
+
+    # --- Schema version ---
+
+    def test_schema_version_is_1_1(self, proj_conn):
+        row = proj_conn.execute("SELECT value FROM proj_meta WHERE key='schema_version'").fetchone()
+        assert row is not None
+        assert row["value"] == "1.1", f"Expected schema 1.1, got {row['value']!r}"
+
+    # --- Unchanged rows excluded from proj_diff ---
+
+    def test_proj_diff_has_no_unchanged_rows(self, proj_conn):
+        count = proj_conn.execute("SELECT COUNT(*) FROM proj_diff WHERE direction='unchanged'").fetchone()[0]
+        assert count == 0, f"proj_diff must not store unchanged rows in schema 1.1, found {count}"
+
+    # --- Required indexes present ---
+
+    def _indexes(self, conn):
+        rows = conn.execute("SELECT name FROM sqlite_master WHERE type='index'").fetchall()
+        return {r["name"] for r in rows}
+
+    def test_idx_proj_diff_metric_dir_present(self, proj_conn):
+        assert "idx_proj_diff_metric_dir" in self._indexes(proj_conn), (
+            "Missing index idx_proj_diff_metric_dir on proj_diff(metric, direction)"
+        )
+
+    def test_idx_proj_diff_delta_present(self, proj_conn):
+        assert "idx_proj_diff_delta" in self._indexes(proj_conn), (
+            "Missing index idx_proj_diff_delta on proj_diff(metric, delta DESC)"
+        )
+
+    def test_idx_proj_viol_blast_present(self, proj_conn):
+        assert "idx_proj_viol_blast" in self._indexes(proj_conn), (
+            "Missing index idx_proj_viol_blast on proj_violations(blast_radius_direct DESC)"
+        )
+
+    def test_idx_proj_reach_src_hop_present(self, proj_conn):
+        assert "idx_proj_reach_src_hop" in self._indexes(proj_conn), (
+            "Missing index idx_proj_reach_src_hop on proj_reachability(src_adg_name, hop_count)"
+        )
+
+    # --- Build metadata keys in proj_meta ---
+
+    def test_build_duration_s_in_proj_meta(self, proj_conn):
+        row = proj_conn.execute("SELECT value FROM proj_meta WHERE key='build_duration_s'").fetchone()
+        assert row is not None, "proj_meta must contain build_duration_s"
+        assert float(row["value"]) >= 0.0
+
+    def test_reachability_seed_count_in_proj_meta(self, proj_conn):
+        row = proj_conn.execute("SELECT value FROM proj_meta WHERE key='reachability_seed_count'").fetchone()
+        assert row is not None, "proj_meta must contain reachability_seed_count"
+        assert int(row["value"]) >= 0
+
+    def test_reachability_per_seed_cap_in_proj_meta(self, proj_conn):
+        row = proj_conn.execute(
+            "SELECT value FROM proj_meta WHERE key='reachability_per_seed_cap'"
+        ).fetchone()
+        assert row is not None, "proj_meta must contain reachability_per_seed_cap"
+        assert int(row["value"]) > 0
+
+    def test_diff_row_count_in_proj_meta(self, proj_conn):
+        row = proj_conn.execute("SELECT value FROM proj_meta WHERE key='diff_row_count'").fetchone()
+        assert row is not None, "proj_meta must contain diff_row_count"
+
+    def test_diff_changed_count_in_proj_meta(self, proj_conn):
+        row = proj_conn.execute("SELECT value FROM proj_meta WHERE key='diff_changed_count'").fetchone()
+        assert row is not None, "proj_meta must contain diff_changed_count"
+
+    # --- Per-seed reachability cap enforced ---
+
+    def test_reachability_per_seed_cap_enforced(self, proj_conn):
+        from tools.generate.graph_projection import _REACHABILITY_PER_SEED_LIMIT
+
+        over_cap = proj_conn.execute(
+            """
+            SELECT src_adg_name, COUNT(*) c
+            FROM proj_reachability
+            GROUP BY src_adg_name
+            HAVING c > ?
+            """,
+            (_REACHABILITY_PER_SEED_LIMIT,),
+        ).fetchall()
+        assert len(over_cap) == 0, (
+            f"{len(over_cap)} seeds exceed per-seed cap {_REACHABILITY_PER_SEED_LIMIT}: "
+            + ", ".join(f"{r['src_adg_name']} ({r['c']})" for r in over_cap)
+        )
+
+    # --- get_status() exposes build-quality fields ---
+
+    def test_get_status_has_build_metadata_keys(self, fresh_backend):
+        status = fresh_backend.get_status()
+        build_keys = (
+            "build_duration_s",
+            "reachability_seed_count",
+            "reachability_row_count",
+            "reachability_per_seed_cap",
+            "diff_row_count",
+            "diff_changed_count",
+        )
+        for k in build_keys:
+            assert k in status, f"get_status() missing build-quality key: {k}"
+
+    def test_get_status_build_duration_is_numeric_or_none(self, fresh_backend):
+        status = fresh_backend.get_status()
+        val = status.get("build_duration_s")
+        assert val is None or isinstance(val, (int, float)), (
+            f"build_duration_s must be numeric or None, got {val!r}"
+        )

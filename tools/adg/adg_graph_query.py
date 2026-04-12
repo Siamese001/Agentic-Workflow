@@ -23,8 +23,17 @@ Subcommands
     violations [--layer L] [--severity S] [--limit N]
         Print violations sorted by blast-radius impact descending.
 
-    diff [--metric M]
+    diff [--metric M] [--direction D] [--layer L] [--limit N]
         Print cross-run metric deltas from proj_diff.
+
+    bridges [--limit N]
+        Print top bridge/chokepoint nodes by bridge_score.
+
+    regressions [--metric M] [--limit N]
+        Print top metric regressions (largest increases) from proj_diff.
+
+    reachability <adg_name> [--limit N]
+        Print reachability rows for a seed module.
 
 Usage examples
 --------------
@@ -33,14 +42,15 @@ Usage examples
     python tools/adg/adg_graph_query.py scc "ADG::Module::tools/adg/core/sqlite_backend"
     python tools/adg/adg_graph_query.py violations --severity HIGH --limit 20
     python tools/adg/adg_graph_query.py diff --metric blast_radius_direct
+    python tools/adg/adg_graph_query.py bridges --limit 10
+    python tools/adg/adg_graph_query.py regressions --metric fan_in --limit 10
+    python tools/adg/adg_graph_query.py reachability "ADG::Module::agentic_core/__init__" --limit 20
 """
 
 from __future__ import annotations
 
 import argparse
-import sqlite3
 import sys
-from pathlib import Path
 from typing import Any
 
 from tqdm import tqdm
@@ -180,57 +190,27 @@ def _cmd_violations(
 def _cmd_diff(
     backend: GraphProjectionBackend,
     metric: str | None,
+    direction: str | None,
+    layer: str | None,
+    limit: int,
 ) -> int:
-    """Read proj_diff directly from the projection sqlite.
-
-    GraphProjectionBackend does not expose a get_diff() method (deferred to a later
-    increment), so this command performs a minimal local sqlite read using the
-    projection_path reported by get_status(). All reads are read-only.
-    """
+    """Print cross-run metric deltas from proj_diff via backend.get_diff()."""
     if not backend.is_available():
         print("ERROR: projection unavailable — cannot query diff")
         return 1
 
-    status = backend.get_status()
-    proj_path_str = status.get("projection_path")
-    if not proj_path_str:
-        print("ERROR: projection path not available from status")
-        return 1
+    rows = backend.get_diff(metric=metric, direction=direction, layer=layer, limit=limit)
 
-    proj_path = Path(proj_path_str)
-    if not proj_path.exists():
-        print(f"ERROR: projection file not found: {proj_path}")
-        return 1
+    filters = []
+    if metric:
+        filters.append(f"metric={metric}")
+    if direction:
+        filters.append(f"direction={direction}")
+    if layer:
+        filters.append(f"layer={layer}")
+    filter_str = f" [{', '.join(filters)}]" if filters else ""
 
-    try:
-        conn = sqlite3.connect(str(proj_path), timeout=5)
-        conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA query_only = ON")
-
-        if metric:
-            rows = conn.execute(
-                "SELECT adg_name, metric, prev_value, curr_value, delta, delta_pct, direction, layer "
-                "FROM proj_diff WHERE metric = ? AND direction != 'unchanged' "
-                "ORDER BY ABS(delta) DESC",
-                (metric,),
-            ).fetchall()
-        else:
-            rows = conn.execute(
-                "SELECT adg_name, metric, prev_value, curr_value, delta, delta_pct, direction, layer "
-                "FROM proj_diff WHERE direction != 'unchanged' "
-                "ORDER BY ABS(delta) DESC "
-                "LIMIT 100",
-            ).fetchall()
-
-        total_rows = conn.execute("SELECT COUNT(*) FROM proj_diff").fetchone()[0]
-        conn.close()
-    except sqlite3.Error as exc:
-        print(f"ERROR: could not read proj_diff: {exc}")
-        return 1
-
-    metric_str = f" [metric={metric}]" if metric else ""
-    print(f"=== Cross-run Metric Diff{metric_str} ===")
-    print(f"  Total proj_diff rows  : {total_rows}")
+    print(f"=== Cross-run Metric Diff{filter_str} (limit={limit}) ===")
 
     if not rows:
         print("  (no changed metrics found)")
@@ -250,6 +230,105 @@ def _cmd_diff(
 
     if backend.is_stale():
         print("\nWARNING: projection is stale — diff may not reflect current canonical state.")
+        return 2
+    return 0
+
+
+def _cmd_bridges(backend: GraphProjectionBackend, limit: int) -> int:
+    """Print top bridge/chokepoint nodes by bridge_score."""
+    if not backend.is_available():
+        print("ERROR: projection unavailable — cannot query bridges")
+        return 1
+
+    rows = backend.get_top_bridges(limit=limit)
+
+    print(f"=== Top Bridges / Chokepoints (limit={limit}) ===")
+    if not rows:
+        print("  (no bridge nodes found — graph may have no betweenness data)")
+        if backend.is_stale():
+            return 2
+        return 0
+
+    print(
+        f"  {'BRIDGE_SCORE':>12}  {'TYPE':<22}  {'FAN_IN':>6}  {'FAN_OUT':>7}  {'BLAST':>5}  {'LAYER':<14}  NODE"
+    )
+    print("  " + "-" * 110)
+    for row in rows:
+        node_short = row["adg_name"][-55:] if len(row["adg_name"]) > 55 else row["adg_name"]
+        print(
+            f"  {row['bridge_score']:>12.4f}  {row['bridge_type']:<22}  "
+            f"{row['fan_in']:>6}  {row['fan_out']:>7}  {row['blast_radius_direct']:>5}  "
+            f"{row['layer']:<14}  {node_short}"
+        )
+
+    if backend.is_stale():
+        print("\nWARNING: projection is stale.")
+        return 2
+    return 0
+
+
+def _cmd_regressions(
+    backend: GraphProjectionBackend,
+    metric: str,
+    limit: int,
+) -> int:
+    """Print top metric regressions (largest increases) from proj_diff."""
+    if not backend.is_available():
+        print("ERROR: projection unavailable — cannot query regressions")
+        return 1
+
+    rows = backend.get_top_regressions(metric=metric, limit=limit)
+
+    print(f"=== Top Regressions [metric={metric}] (limit={limit}) ===")
+    if not rows:
+        print("  (no regressions found — no increases recorded for this metric)")
+        if backend.is_stale():
+            return 2
+        return 0
+
+    print(f"  {'DELTA':>8}  {'PCT':>7}  {'PREV':>8}  {'CURR':>8}  {'LAYER':<14}  NODE")
+    print("  " + "-" * 100)
+    for row in rows:
+        node_short = row["adg_name"][-55:] if len(row["adg_name"]) > 55 else row["adg_name"]
+        print(
+            f"  {row['delta']:>+8.1f}  {row['delta_pct']:>6.1f}%  "
+            f"{row['prev_value']:>8.1f}  {row['curr_value']:>8.1f}  "
+            f"{row['layer']:<14}  {node_short}"
+        )
+
+    if backend.is_stale():
+        print("\nWARNING: projection is stale.")
+        return 2
+    return 0
+
+
+def _cmd_reachability(
+    backend: GraphProjectionBackend,
+    adg_name: str,
+    limit: int,
+) -> int:
+    """Print reachability rows for a seed module."""
+    if not backend.is_available():
+        print(f"ERROR: projection unavailable — cannot query reachability for {adg_name!r}")
+        return 1
+
+    rows = backend.get_reachability(adg_name, limit=limit)
+
+    print(f"=== Reachability: {adg_name} (limit={limit}) ===")
+    if not rows:
+        print("  (node is not a reachability seed or has no reachable targets)")
+        if backend.is_stale():
+            return 2
+        return 0
+
+    print(f"  {'HOPS':>4}  {'WEIGHT':>8}  DST")
+    print("  " + "-" * 80)
+    for row in rows:
+        dst_short = row["dst_adg_name"][-65:] if len(row["dst_adg_name"]) > 65 else row["dst_adg_name"]
+        print(f"  {row['hop_count']:>4}  {row['path_weight']:>8.3f}  {dst_short}")
+
+    if backend.is_stale():
+        print("\nWARNING: projection is stale.")
         return 2
     return 0
 
@@ -313,6 +392,39 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=list(_DIFF_ALL_METRICS),
         help="Filter to a single metric (default: all changed metrics)",
     )
+    p_diff.add_argument(
+        "--direction",
+        default=None,
+        choices=["worsened", "improved", "unchanged"],
+        help="Filter by change direction (default: all changed)",
+    )
+    p_diff.add_argument("--layer", default=None, help="Filter by layer (e.g. L0, L3)")
+    p_diff.add_argument("--limit", type=int, default=100, help="Max rows (default: 100)")
+
+    p_bridges = sub.add_parser(
+        "bridges",
+        help="List top bridge/chokepoint nodes by bridge_score",
+    )
+    p_bridges.add_argument("--limit", type=int, default=20, help="Max rows (default: 20)")
+
+    p_reg = sub.add_parser(
+        "regressions",
+        help="List top metric regressions (largest increases) from proj_diff",
+    )
+    p_reg.add_argument(
+        "--metric",
+        default="blast_radius_direct",
+        choices=list(_DIFF_ALL_METRICS),
+        help="Metric to rank by (default: blast_radius_direct)",
+    )
+    p_reg.add_argument("--limit", type=int, default=20, help="Max rows (default: 20)")
+
+    p_reach = sub.add_parser(
+        "reachability",
+        help="Show reachability rows for a seed module",
+    )
+    p_reach.add_argument("adg_name", help="Seed module adg_name")
+    p_reach.add_argument("--limit", type=int, default=50, help="Max rows (default: 50)")
 
     return parser
 
@@ -342,7 +454,22 @@ def main() -> int:
             return _cmd_violations(backend, args.layer, args.severity, args.limit)
 
         if args.command == "diff":
-            return _cmd_diff(backend, args.metric)
+            return _cmd_diff(
+                backend,
+                args.metric,
+                args.direction,
+                args.layer,
+                args.limit,
+            )
+
+        if args.command == "bridges":
+            return _cmd_bridges(backend, args.limit)
+
+        if args.command == "regressions":
+            return _cmd_regressions(backend, args.metric, args.limit)
+
+        if args.command == "reachability":
+            return _cmd_reachability(backend, args.adg_name, args.limit)
 
         parser.print_help()
         return 1

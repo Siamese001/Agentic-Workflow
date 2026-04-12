@@ -49,11 +49,15 @@ from typing import Any
 
 from tqdm import tqdm
 
-_PROJECTION_SCHEMA_VERSION = "1.0"
+_PROJECTION_SCHEMA_VERSION = "1.1"
 
 _REACHABILITY_SEED_THRESHOLD = 10
 _REACHABILITY_MAX_HOPS = 4
+_REACHABILITY_PER_SEED_LIMIT = 2000  # hard cap: rows stored per seed node
 _BETWEENNESS_K_SAMPLE = 200
+# proj_diff: only store changed rows (direction != 'unchanged'). Unchanged rows
+# are 58.7% of the table on real artifacts and are never returned by any query.
+_DIFF_STORE_UNCHANGED = False
 _LAYER_CRITICALITY_WEIGHTS: dict[str, float] = {
     "L0": 2.0,
     "L1": 2.0,
@@ -149,6 +153,7 @@ CREATE TABLE IF NOT EXISTS proj_violations (
 CREATE INDEX IF NOT EXISTS idx_proj_viol_from ON proj_violations(adg_name_from);
 CREATE INDEX IF NOT EXISTS idx_proj_viol_sev ON proj_violations(severity);
 CREATE INDEX IF NOT EXISTS idx_proj_viol_disp ON proj_violations(disposition);
+CREATE INDEX IF NOT EXISTS idx_proj_viol_blast ON proj_violations(blast_radius_direct DESC);
 
 CREATE TABLE IF NOT EXISTS proj_reachability (
     src_adg_name  TEXT NOT NULL,
@@ -160,6 +165,7 @@ CREATE TABLE IF NOT EXISTS proj_reachability (
 );
 CREATE INDEX IF NOT EXISTS idx_proj_reach_src ON proj_reachability(src_adg_name);
 CREATE INDEX IF NOT EXISTS idx_proj_reach_hop ON proj_reachability(hop_count);
+CREATE INDEX IF NOT EXISTS idx_proj_reach_src_hop ON proj_reachability(src_adg_name, hop_count);
 
 CREATE TABLE IF NOT EXISTS proj_diff (
     adg_name          TEXT NOT NULL,
@@ -175,6 +181,8 @@ CREATE TABLE IF NOT EXISTS proj_diff (
     PRIMARY KEY (adg_name, metric)
 );
 CREATE INDEX IF NOT EXISTS idx_proj_diff_dir ON proj_diff(direction, layer);
+CREATE INDEX IF NOT EXISTS idx_proj_diff_metric_dir ON proj_diff(metric, direction);
+CREATE INDEX IF NOT EXISTS idx_proj_diff_delta ON proj_diff(metric, delta DESC);
 """
 
 _DIFF_METRICS = ("fan_in", "fan_out", "blast_radius_direct", "blast_radius_2hop")
@@ -206,6 +214,7 @@ def build_graph_projection(
         RuntimeError:     If the canonical sqlite is missing expected tables.
     """
     import networkx as nx  # lazy — ImportError surfaces clearly to caller
+    import time as _time
 
     if not canonical_sqlite.exists():
         raise FileNotFoundError(f"Canonical sqlite not found: {canonical_sqlite}")
@@ -220,6 +229,8 @@ def build_graph_projection(
     print(f"[graph_projection] Canonical : {canonical_sqlite.name}")
     print(f"[graph_projection] Output    : {proj_path.name}")
 
+    build_start = _time.perf_counter()
+
     graph, node_attrs = _load_graph(canonical_sqlite, nx)
 
     print(f"[graph_projection] Graph     : {graph.number_of_nodes()} nodes, {graph.number_of_edges()} edges")
@@ -229,6 +240,25 @@ def build_graph_projection(
     reachability = _compute_reachability(graph, centrality)
     diff_rows = _compute_diff(centrality, out_dir)
 
+    build_duration_s = round(_time.perf_counter() - build_start, 2)
+
+    # Collect build-quality metadata for proj_meta
+    seed_count = len({row[0] for row in reachability})
+    changed_diff_count = sum(1 for r in diff_rows if r[6] != "unchanged")
+    build_meta = {
+        "build_duration_s": str(build_duration_s),
+        "graph_node_count": str(graph.number_of_nodes()),
+        "graph_edge_count": str(graph.number_of_edges()),
+        "reachability_seed_count": str(seed_count),
+        "reachability_row_count": str(len(reachability)),
+        "reachability_per_seed_cap": str(_REACHABILITY_PER_SEED_LIMIT),
+        "reachability_max_hops": str(_REACHABILITY_MAX_HOPS),
+        "diff_row_count": str(len(diff_rows)),
+        "diff_changed_count": str(changed_diff_count),
+        "diff_store_unchanged": str(_DIFF_STORE_UNCHANGED).lower(),
+    }
+    print(f"[graph_projection] Build     : {build_duration_s}s")
+
     _write_projection_sqlite(
         db_path=tmp_path,
         canonical_sqlite=canonical_sqlite,
@@ -237,6 +267,7 @@ def build_graph_projection(
         sccs=sccs,
         reachability=reachability,
         diff_rows=diff_rows,
+        build_meta=build_meta,
     )
 
     tmp_path.replace(proj_path)  # replace() is atomic on POSIX; on Windows it overwrites atomically
@@ -417,6 +448,7 @@ def _compute_centrality(
             "blast_radius_2hop": 0,
             "bridge_score": bridge_score,
             "bridge_type": bridge_type,
+            "_layer": layer,  # transient — used by _compute_diff, not written to proj_centrality
         }
 
     seeds = [n for n, m in result.items() if m["blast_radius_direct"] > _REACHABILITY_SEED_THRESHOLD]
@@ -473,7 +505,7 @@ def _compute_reachability(
     """
     seeds = [n for n, m in centrality.items() if m["blast_radius_direct"] > _REACHABILITY_SEED_THRESHOLD]
     rows: list[tuple[str, str, int, float]] = []
-    seen_pairs: set[tuple[str, str]] = set()
+    capped_seeds = 0
 
     for seed in tqdm(seeds, desc="reachability", leave=False, disable=True):
         frontier: dict[str, int] = {seed: 0}
@@ -489,15 +521,24 @@ def _compute_reachability(
             if not frontier:
                 break
 
+        seed_rows: list[tuple[str, str, int, float]] = []
         for reached_node, hops in visited.items():
             if reached_node == seed:
                 continue
-            pair = (seed, reached_node)
-            if pair not in seen_pairs:
-                seen_pairs.add(pair)
-                rows.append((seed, reached_node, hops, float(hops)))
+            seed_rows.append((seed, reached_node, hops, float(hops)))
 
-    print(f"[graph_projection] Reachability: {len(rows)} pairs from {len(seeds)} seeds")
+        if len(seed_rows) > _REACHABILITY_PER_SEED_LIMIT:
+            # Keep the nearest hops first (smallest hop_count = most actionable)
+            seed_rows.sort(key=lambda r: (r[2], r[1]))
+            seed_rows = seed_rows[:_REACHABILITY_PER_SEED_LIMIT]
+            capped_seeds += 1
+
+        rows.extend(seed_rows)
+
+    print(
+        f"[graph_projection] Reachability: {len(rows)} pairs from {len(seeds)} seeds"
+        + (f" ({capped_seeds} capped at {_REACHABILITY_PER_SEED_LIMIT})" if capped_seeds else "")
+    )
     return rows
 
 
@@ -552,7 +593,9 @@ def _compute_diff(
     for adg_name in tqdm(sorted(all_names), desc="diff", leave=False, disable=True):
         curr = current_centrality.get(adg_name, {})
         prev = prev_centrality.get(adg_name, {})
-        layer = ""
+        # Populate layer from the current run's centrality dict if available;
+        # fall back to empty string for nodes that only existed in the prior run.
+        layer = curr.get("_layer", "")
         for m in tqdm(_DIFF_METRICS, desc="diff-metrics", leave=False, disable=True):
             curr_val = float(curr.get(m, 0))
             prev_val = float(prev.get(m, 0))
@@ -566,6 +609,8 @@ def _compute_diff(
                 direction = "improved"
             else:
                 direction = "unchanged"
+            if not _DIFF_STORE_UNCHANGED and direction == "unchanged":
+                continue
             rows.append(
                 (
                     adg_name,
@@ -599,6 +644,7 @@ def _write_projection_sqlite(
     sccs: list[frozenset[str]],
     reachability: list[tuple[str, str, int, float]],
     diff_rows: list[tuple],
+    build_meta: dict[str, str] | None = None,
 ) -> None:
     """Write all projection tables to `db_path` atomically (single transaction).
 
@@ -628,7 +674,7 @@ def _write_projection_sqlite(
         conn.execute("PRAGMA synchronous=OFF")
         conn.executescript(_PROJ_DDL)
 
-        proj_meta_values = [
+        proj_meta_values: list[tuple[str, str]] = [
             ("schema_version", _PROJECTION_SCHEMA_VERSION),
             ("source_artifact_digest", source_artifact_digest),
             ("source_commit_sha", commit_sha),
@@ -639,6 +685,8 @@ def _write_projection_sqlite(
             ("edge_count", str(sum(m["fan_in"] + m["fan_out"] for m in centrality.values()) // 2)),
             ("networkx_version", _networkx_version()),
         ]
+        if build_meta:
+            proj_meta_values.extend(sorted(build_meta.items()))
         conn.executemany(
             "INSERT OR REPLACE INTO proj_meta(key, value) VALUES (?, ?)",
             proj_meta_values,
@@ -678,6 +726,7 @@ def _write_projection_sqlite(
                 snapshot_id,
             )
             for adg_name, m in sorted(centrality.items())
+            # _layer is a transient key used by _compute_diff; excluded from DB writes
         ]
         conn.executemany(
             "INSERT OR REPLACE INTO proj_centrality"

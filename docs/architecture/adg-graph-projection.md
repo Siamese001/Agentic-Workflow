@@ -186,7 +186,12 @@ python tools/adg/adg_graph_query.py <subcommand> [options]
 | `blast-radius <adg_name>` | `--hops N` (default 2) | Print direct and k-hop blast radius for a node |
 | `scc <adg_name>` | — | Print SCC ID, size, type, risk score, and all member nodes |
 | `violations` | `--layer L`, `--severity S`, `--limit N` | List violations sorted by blast-radius impact descending |
-| `diff` | `--metric M` | Print cross-run metric deltas from `proj_diff` |
+| `diff` | `--metric M`, `--direction D`, `--layer L`, `--limit N` | Print cross-run metric deltas from `proj_diff` |
+| `bridges` | `--limit N` | List top bridge/chokepoint nodes by `bridge_score` |
+| `regressions` | `--metric M`, `--limit N` | List top metric regressions (largest worsened deltas) |
+| `reachability <adg_name>` | `--limit N` | Show nodes reachable from a seed module |
+
+`--direction` values: `worsened` \| `improved` \| `unchanged` (matches `proj_diff.direction` vocabulary).
 
 ### Exit codes
 
@@ -215,6 +220,75 @@ a canonical row (e.g. node count differs), the canonical row wins.
 
 ---
 
+## Backend and Service Query Surface
+
+All projection-native queries are now accessible at three levels:
+
+| Query | `GraphProjectionBackend` | `SQLiteBackend` | `ADGService` |
+|---|---|---|---|
+| Availability/staleness | `get_status()` | `get_projection_status()` | `get_projection_status()` |
+| Centrality metrics | `get_centrality(adg_name)` | `get_centrality(node_id)` ¹ | — |
+| Blast radius | `get_blast_radius(adg_name, hops)` | `get_blast_radius(node_id, hops)` | `get_blast_radius(node_id, hops)` |
+| SCC membership | `get_scc(adg_name)` | `get_scc(node_id)` | `get_scc(node_id)` |
+| Violations with impact | `get_violations_with_impact(layer, severity, limit)` | `get_violations_with_impact(...)` | `get_violations_with_impact(...)` |
+| Cross-run diff | `get_diff(metric, direction, layer, limit)` | `get_diff(...)` | `get_diff(...)` |
+| Top bridges | `get_top_bridges(limit)` | `get_top_bridges(limit)` | `get_top_bridges(limit)` |
+| Top regressions | `get_top_regressions(metric, limit)` | `get_top_regressions(...)` | `get_top_regressions(...)` |
+| Reachability rows | `get_reachability(src, limit)` | `get_reachability(src, limit)` | `get_reachability(src, limit)` |
+
+¹ `SQLiteBackend.get_centrality()` returns a scalar float (blast_radius_direct); use `GraphProjectionBackend.get_centrality()` directly for the full dict.
+
+All methods return `[]` / `None` / empty dict when the projection is unavailable — never raise.
+
+---
+
+## Schema 1.1 — Hardening (Increment 5)
+
+Schema version `1.1` was introduced to bound query cost and table growth on large live artifacts.
+
+### Indexes added
+
+| Index | Table | Columns | Covers |
+|---|---|---|---|
+| `idx_proj_diff_metric_dir` | `proj_diff` | `(metric, direction)` | `get_diff(metric=X, direction=Y)` filter |
+| `idx_proj_diff_delta` | `proj_diff` | `(metric, delta DESC)` | `get_top_regressions()` ORDER BY delta |
+| `idx_proj_viol_blast` | `proj_violations` | `(blast_radius_direct DESC)` | `get_violations_with_impact()` sorted output |
+| `idx_proj_reach_src_hop` | `proj_reachability` | `(src_adg_name, hop_count)` | `get_reachability()` hop-filtered queries |
+
+### Growth controls
+
+| Control | Value | Effect |
+|---|---|---|
+| `_DIFF_STORE_UNCHANGED` | `False` | Unchanged metric rows are not written — eliminates ~59% of `proj_diff` rows on real artifacts |
+| `_REACHABILITY_PER_SEED_LIMIT` | `2000` | Hard cap on rows stored per reachability seed; nearest-hop rows kept when cap exceeded |
+
+### Build metadata in `proj_meta`
+
+Schema 1.1 writes these additional keys to `proj_meta` on every build:
+
+| Key | Type | Description |
+|---|---|---|
+| `build_duration_s` | float | Wall-clock seconds for graph load + compute phases |
+| `graph_node_count` | int | Total nodes in the in-memory DiGraph (modules + symbols) |
+| `graph_edge_count` | int | Total edges in the in-memory DiGraph |
+| `reachability_seed_count` | int | Number of seed nodes that triggered reachability BFS |
+| `reachability_row_count` | int | Total rows written to `proj_reachability` |
+| `reachability_per_seed_cap` | int | Cap applied per seed (constant `_REACHABILITY_PER_SEED_LIMIT`) |
+| `reachability_max_hops` | int | BFS depth limit (constant `_REACHABILITY_MAX_HOPS`) |
+| `diff_row_count` | int | Total rows written to `proj_diff` |
+| `diff_changed_count` | int | Rows with direction `worsened` or `improved` |
+| `diff_store_unchanged` | bool str | `"false"` in 1.1+ — confirms unchanged rows were excluded |
+
+`get_status()` exposes `build_duration_s`, `reachability_seed_count`, `reachability_row_count`,
+`reachability_per_seed_cap`, `diff_row_count`, and `diff_changed_count` directly.
+
+### Backward compatibility
+
+Schema 1.0 projections remain readable. `GraphProjectionBackend.get_diff()` detects `schema_version < 1.1`
+and re-applies the `direction != 'unchanged'` WHERE clause to avoid returning stored unchanged rows.
+
+---
+
 ## Deferred Items
 
 The following are explicitly out of scope until a future increment:
@@ -222,7 +296,8 @@ The following are explicitly out of scope until a future increment:
 | Item | Status |
 |---|---|
 | Redis ingest for `adg_graph_<ts>.sqlite` | Deferred — Redis projection cache not implemented |
-| `GraphProjectionBackend.get_diff()` method | Deferred — CLI reads `proj_diff` directly via local sqlite read |
-| ADG MCP server exposure of projection data | Deferred — `SQLiteBackend` wires `GraphProjectionBackend` but MCP tools not yet extended |
+| ADG MCP server tool-level exposure | Deferred — `SQLiteBackend`/`ADGService` wired but MCP tools not yet extended |
 | Archive zip inclusion of projection | **Implemented** — projection included in `adg_run_<ts>.zip` if built |
 | Reachability table for all nodes | Partial — only high-centrality seed nodes have reachability rows |
+| `get_diff()` method on backend | **Implemented** — `GraphProjectionBackend`, `SQLiteBackend`, `ADGService` all expose it |
+| Schema 1.1 hardening | **Implemented** — indexes, growth controls, build metadata (Increment 5) |

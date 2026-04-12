@@ -478,16 +478,56 @@ class GraphProjectionBackend:
                 "source_artifact_digest": str,
                 "proj_schema_version": str,
                 "node_count": int,
+                # Build-quality fields (present only when schema_version >= 1.1):
+                "build_duration_s": float | None,
+                "reachability_seed_count": int | None,
+                "reachability_row_count": int | None,
+                "reachability_per_seed_cap": int | None,
+                "diff_row_count": int | None,
+                "diff_changed_count": int | None,
             }
         """
-        return {
+        status: dict[str, Any] = {
             "available": self._available,
             "stale": self._stale,
             "projection_path": str(self._proj_path) if self._proj_path else None,
             "source_artifact_digest": self._source_artifact_digest,
             "proj_schema_version": self._proj_schema_version,
             "node_count": self._proj_node_count,
+            "build_duration_s": None,
+            "reachability_seed_count": None,
+            "reachability_row_count": None,
+            "reachability_per_seed_cap": None,
+            "diff_row_count": None,
+            "diff_changed_count": None,
         }
+
+        if self._available and self._conn is not None:
+            _build_keys = (
+                "build_duration_s",
+                "reachability_seed_count",
+                "reachability_row_count",
+                "reachability_per_seed_cap",
+                "diff_row_count",
+                "diff_changed_count",
+            )
+            try:
+                rows = self._conn.execute(
+                    "SELECT key, value FROM proj_meta WHERE key IN ({})".format(
+                        ",".join("?" * len(_build_keys))
+                    ),
+                    _build_keys,
+                ).fetchall()
+                for row in rows:
+                    k, v = row["key"], row["value"]
+                    try:
+                        status[k] = float(v) if k == "build_duration_s" else int(v)
+                    except (ValueError, TypeError):
+                        status[k] = v
+            except sqlite3.Error:
+                pass
+
+        return status
 
     def get_diff(
         self,
@@ -501,10 +541,14 @@ class GraphProjectionBackend:
         Filters to changed rows only (direction != 'unchanged') unless
         direction is explicitly passed. Returns [] if unavailable.
 
+        Schema note: as of schema_version 1.1, `proj_diff` only stores changed rows
+        (worsened or improved). Passing direction='unchanged' will return [] on 1.1+
+        projections. The default None still means "all stored rows" (all changed).
+
         Args:
             metric:    One of fan_in, fan_out, blast_radius_direct, blast_radius_2hop.
                        None = all metrics.
-            direction: 'increased', 'decreased', 'unchanged', or None (changed only).
+            direction: 'worsened', 'improved', or None (all changed rows, default).
             layer:     Layer prefix filter (e.g. 'L0', 'L3').
             limit:     Maximum rows to return (default 100).
 
@@ -533,7 +577,9 @@ class GraphProjectionBackend:
         if direction is not None:
             conditions.append("direction = ?")
             params.append(direction)
-        else:
+        elif self._proj_schema_version < "1.1":
+            # Schema 1.0 stored unchanged rows; filter them out by default.
+            # Schema 1.1+ skips unchanged rows at build time — no WHERE needed.
             conditions.append("direction != 'unchanged'")
 
         if metric is not None:
@@ -645,7 +691,7 @@ class GraphProjectionBackend:
             rows = self._conn.execute(
                 "SELECT adg_name, metric, prev_value, curr_value, delta, delta_pct, layer "
                 "FROM proj_diff "
-                "WHERE metric = ? AND direction = 'increased' "
+                "WHERE metric = ? AND direction = 'worsened' "
                 "ORDER BY delta DESC "
                 "LIMIT ?",
                 (metric, limit),

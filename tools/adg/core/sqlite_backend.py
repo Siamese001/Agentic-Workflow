@@ -260,6 +260,112 @@ class SQLiteBackend:
         )
         return float(cur.fetchone()[0])
 
+    def get_projection_status(self) -> dict[str, Any]:
+        """Return graph projection availability, staleness, and metadata.
+
+        Always returns a dict — never raises. Returns available=False if the
+        projection backend is not wired or is unavailable.
+        """
+        if self._graph_store:
+            return self._graph_store.get_status()
+        return {
+            "available": False,
+            "stale": False,
+            "projection_path": None,
+            "source_artifact_digest": "",
+            "proj_schema_version": "",
+            "node_count": 0,
+        }
+
+    def get_blast_radius(self, node_id: str, hops: int = 2) -> dict[str, Any]:
+        """Return blast-radius summary from the graph projection for a node.
+
+        Delegates to GraphProjectionBackend.get_blast_radius(). Always returns
+        a dict — empty counts when projection is unavailable.
+        """
+        if self._graph_store:
+            return self._graph_store.get_blast_radius(node_id, hops=hops)
+        return {
+            "adg_name": node_id,
+            "blast_radius_direct": 0,
+            "blast_radius_2hop": 0,
+            "reachability_rows": 0,
+            "hops_requested": hops,
+            "derived_from": "",
+            "stale": False,
+            "available": False,
+        }
+
+    def get_scc(self, node_id: str) -> dict[str, Any] | None:
+        """Return SCC membership for a node from the graph projection.
+
+        Returns None if projection unavailable or node is in a trivial SCC.
+        """
+        if self._graph_store:
+            return self._graph_store.get_scc(node_id)
+        return None
+
+    def get_violations_with_impact(
+        self,
+        layer: str | None = None,
+        severity: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Return violations with blast-radius impact from the graph projection.
+
+        Delegates to GraphProjectionBackend.get_violations_with_impact().
+        Returns [] if projection is unavailable.
+        """
+        if self._graph_store:
+            return self._graph_store.get_violations_with_impact(layer=layer, severity=severity, limit=limit)
+        return []
+
+    def get_diff(
+        self,
+        metric: str | None = None,
+        direction: str | None = None,
+        layer: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Return cross-run metric deltas from the graph projection.
+
+        Delegates to GraphProjectionBackend.get_diff(). Returns [] if unavailable.
+        """
+        if self._graph_store:
+            return self._graph_store.get_diff(metric=metric, direction=direction, layer=layer, limit=limit)
+        return []
+
+    def get_top_bridges(self, limit: int = 20) -> list[dict[str, Any]]:
+        """Return top bridge/chokepoint nodes by bridge_score from the projection.
+
+        Returns [] if projection is unavailable.
+        """
+        if self._graph_store:
+            return self._graph_store.get_top_bridges(limit=limit)
+        return []
+
+    def get_top_regressions(
+        self,
+        metric: str = "blast_radius_direct",
+        limit: int = 20,
+    ) -> list[dict[str, Any]]:
+        """Return top metric regressions (largest increases) from the projection.
+
+        Returns [] if projection is unavailable.
+        """
+        if self._graph_store:
+            return self._graph_store.get_top_regressions(metric=metric, limit=limit)
+        return []
+
+    def get_reachability(self, src_adg_name: str, limit: int = 50) -> list[dict[str, Any]]:
+        """Return proj_reachability rows for a seed module from the projection.
+
+        Returns [] if projection is unavailable or node is not a seed.
+        """
+        if self._graph_store:
+            return self._graph_store.get_reachability(src_adg_name, limit=limit)
+        return []
+
     def traverse(self, start_id: str, max_depth: int = 2, relation_types: list[str] | None = None) -> list:
         """Traverse graph from start node using graph store if available."""
         if self._graph_store and hasattr(self._graph_store, "traverse"):

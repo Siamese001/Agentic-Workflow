@@ -235,6 +235,93 @@ class ADGService:
             self._adg_snapshot_id = status["timestamp"]
         logger.info("ADGService reopened SQLite connection")
 
+    def get_projection_status(self) -> ADGResponse:
+        """Return graph projection availability, staleness, and metadata."""
+        data = self._sqlite.get_projection_status()
+        return ADGResponse(
+            status="ok",
+            data=data,
+            backend_used="projection",
+        )
+
+    def get_blast_radius(self, node_id: str, hops: int = 2) -> ADGResponse:
+        """Return blast-radius summary for a node from the graph projection."""
+        data = self._sqlite.get_blast_radius(node_id, hops=hops)
+        return ADGResponse(
+            status="ok",
+            data=data,
+            backend_used="projection",
+        )
+
+    def get_scc(self, node_id: str) -> ADGResponse:
+        """Return SCC membership for a node from the graph projection."""
+        data = self._sqlite.get_scc(node_id)
+        return ADGResponse(
+            status="ok",
+            data=data if data is not None else {"adg_name": node_id, "scc": None},
+            backend_used="projection",
+        )
+
+    def get_violations_with_impact(
+        self,
+        layer: str | None = None,
+        severity: str | None = None,
+        limit: int = 100,
+    ) -> ADGResponse:
+        """Return violations with blast-radius impact from the graph projection."""
+        rows = self._sqlite.get_violations_with_impact(layer=layer, severity=severity, limit=limit)
+        return ADGResponse(
+            status="ok",
+            data={"violations": rows, "count": len(rows)},
+            backend_used="projection",
+        )
+
+    def get_diff(
+        self,
+        metric: str | None = None,
+        direction: str | None = None,
+        layer: str | None = None,
+        limit: int = 100,
+    ) -> ADGResponse:
+        """Return cross-run metric deltas from the graph projection."""
+        rows = self._sqlite.get_diff(metric=metric, direction=direction, layer=layer, limit=limit)
+        return ADGResponse(
+            status="ok",
+            data={"diff": rows, "count": len(rows)},
+            backend_used="projection",
+        )
+
+    def get_top_bridges(self, limit: int = 20) -> ADGResponse:
+        """Return top bridge/chokepoint nodes from the graph projection."""
+        rows = self._sqlite.get_top_bridges(limit=limit)
+        return ADGResponse(
+            status="ok",
+            data={"bridges": rows, "count": len(rows)},
+            backend_used="projection",
+        )
+
+    def get_top_regressions(
+        self,
+        metric: str = "blast_radius_direct",
+        limit: int = 20,
+    ) -> ADGResponse:
+        """Return top metric regressions from the graph projection."""
+        rows = self._sqlite.get_top_regressions(metric=metric, limit=limit)
+        return ADGResponse(
+            status="ok",
+            data={"regressions": rows, "count": len(rows)},
+            backend_used="projection",
+        )
+
+    def get_reachability(self, src_adg_name: str, limit: int = 50) -> ADGResponse:
+        """Return reachability rows for a seed module from the graph projection."""
+        rows = self._sqlite.get_reachability(src_adg_name, limit=limit)
+        return ADGResponse(
+            status="ok",
+            data={"reachability": rows, "count": len(rows), "src": src_adg_name},
+            backend_used="projection",
+        )
+
     def find_node(self, name: str, limit: int = 10) -> ADGResponse:
         """Find nodes by exact or prefix adg_name match."""
         nodes = self._sqlite.find_node(name, limit)
