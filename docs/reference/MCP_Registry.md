@@ -30,7 +30,7 @@ explicit authority assignment.
 | Redis operations | `redis` | — | Cache inspection and key management |
 | Test execution | `pytest_mcp` | — | Test discovery, coverage, execution |
 | Deep repo Q&A | `deepwiki` | — | AI-powered repo documentation queries |
-| Notion workspace | `notion` | — | Notion read/write via hosted MCP |
+| Notion workspace | `notion` | — | Notion read/write via local stdio MCP |
 
 ---
 
@@ -97,10 +97,10 @@ explicit authority assignment.
 - **Capability**: `ask_question`, `read_wiki_contents`, `read_wiki_structure`
 
 ### `notion` — Notion Workspace
-- **Transport**: Hosted serverUrl (`https://mcp.notion.com/mcp`)
+- **Transport**: Local stdio (`npx @notionhq/notion-mcp-server`)
 - **Authority**: Notion workspace read/write — pages, databases, comments, search
 - **Capability**: `notion-fetch`, `notion-create-pages`, `notion-update-page`, `notion-search`, `notion-create-database`
-- **Note**: Added 2026-04-10. Uses `serverUrl` transport (Windsurf hosted MCP pattern). Requires OAuth.
+- **Note**: Updated 2026-04-12. Uses local stdio transport. Auth via `NOTION_TOKEN` OS environment variable (internal integration token, format `ntn_...` or `secret_...`).
 
 ---
 

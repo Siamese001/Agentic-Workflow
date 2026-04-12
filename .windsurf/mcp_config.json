@@ -120,7 +120,8 @@
       "disabled": false
     },
     "notion": {
-      "serverUrl": "https://mcp.notion.com/mcp",
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
       "disabled": false
     }
   }
