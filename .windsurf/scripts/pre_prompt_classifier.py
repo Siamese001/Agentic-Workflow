@@ -18,6 +18,7 @@ Zero hardcoded paths.
 """
 
 import json
+import os
 import socket
 import subprocess
 import sys
@@ -27,7 +28,9 @@ from pathlib import Path
 FAIL_POLICY = "closed_for_t2t3_adg"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
+# Namespaced per logical session — matches pre_mcp_gate.py and post_mcp_audit.py.
+_SESSION_ID = os.environ.get("VSCODE_PID") or str(os.getppid())
+SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
 
 T3_KEYWORDS = {
     "architecture",
@@ -88,6 +91,83 @@ T0_KEYWORDS = {
     "what are",
 }
 
+# Tight keyword set — only prompts explicitly about Notion workspace trigger the hint.
+# Single-word trigger is sufficient; all notion-intent prompts contain "notion".
+NOTION_KEYWORDS: frozenset[str] = frozenset({"notion"})
+
+# Keywords that indicate pytest / test-execution intent — route to pytest_mcp, not run_command.
+_PYTEST_SIGNALS: frozenset[str] = frozenset(
+    {
+        "pytest",
+        "run test",
+        "run tests",
+        "discover test",
+        "discover tests",
+        "test coverage",
+        "coverage report",
+        "pytest config",
+        "test suite",
+        "failing test",
+        "failing tests",
+        "test output",
+        "test results",
+        "collect tests",
+        "test discovery",
+        "run suite",
+    }
+)
+
+
+def _detect_pytest_intent(prompt: str) -> bool:
+    """Return True when the prompt signals a pytest/test-execution need that pytest_mcp should serve."""
+    lower = prompt.lower()
+    return any(sig in lower for sig in _PYTEST_SIGNALS)
+
+
+# Keywords that indicate semantic / meaning-based retrieval need (not structural deps, not literal text).
+_SEMANTIC_SIGNALS: frozenset[str] = frozenset(
+    {
+        "semantic",
+        "similar",
+        "conceptually",
+        "concept",
+        "meaning",
+        "related content",
+        "cross-file",
+        "find passages",
+        "what talks about",
+        "embedding",
+        "retrieve context",
+        "search for",
+        "look for",
+        "find similar",
+        "grounded retrieval",
+        "rag",
+    }
+)
+# Signals that indicate ADG structural territory — exclude to avoid false positives.
+_STRUCTURAL_SIGNALS: frozenset[str] = frozenset(
+    {
+        "imports",
+        "depends on",
+        "who uses",
+        "blast radius",
+        "consumers of",
+        "import graph",
+        "fanin",
+        "fanout",
+    }
+)
+
+
+def _detect_semantic_retrieval(prompt: str) -> bool:
+    """Return True when the prompt signals a semantic/concept search need that vector_db should serve."""
+    lower = prompt.lower()
+    if any(sig in lower for sig in _STRUCTURAL_SIGNALS):
+        return False  # ADG territory, not vector_db
+    return any(sig in lower for sig in _SEMANTIC_SIGNALS)
+
+
 # Structured reasoning mandate injected into Cascade context for every T2/T3 prompt.
 # show_output: true ensures Cascade sees this output before responding.
 _SR_MANDATE = """
@@ -99,6 +179,9 @@ _SR_MANDATE = """
        mcp1_adg_edge_fanout(src_id, relation_type="imports") for outgoing deps
      IF query targets a function/class/constant name in Python files → USE ADG MCP (not grep)
      IF query is about TODOs/FIXMEs/literal strings/non-Python content → grep_search OK
+     IF query involves semantic retrieval, cross-file concept search, or meaning-based lookup
+        (NOT structural deps, NOT episodic memory, NOT direct file read) → USE vector_db MCP:
+       mcp11_semantic_search(query=...) or mcp11_query_collection(collection_name=..., query_text=...)
      The graph-analysis skill has the full decision tree in tool_routing_decision_tree.md.
      NEVER grep_search for dependency analysis. Constitutional §ADG-First — no exceptions.
   1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
@@ -112,12 +195,58 @@ _SR_MANDATE = """
 """.strip()
 
 
+_MEMORY_MANDATE = """\
+[pre_prompt_classifier] MEMORY RECALL REQUIRED (first turn / new session):
+  Call mem_recall_session_start NOW — this MUST be the first MCP tool call.
+  Server: memory | Tool: mem_recall_session_start | Parameters: none
+  Loads: ArchitectureLayer, ConstitutionalRule, ProjectContext (durable across restarts).
+  Do NOT proceed with file reads, ADG queries, or task creation before this call.
+""".strip()
+
+
+def _should_emit_memory_mandate() -> bool:
+    """
+    Return True if mem_recall_session_start has not been called this session.
+
+    Reads memory_recalled from session_state.json.  Returns True when the file
+    is absent (new session), the field is absent (pre-fix state), or the field
+    is False (not yet called this turn).  Fail-open on any I/O or parse error.
+    """
+    try:
+        if not SESSION_STATE.exists():
+            return True
+        state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        return not state.get("memory_recalled", False)
+    except (OSError, json.JSONDecodeError):
+        return True  # fail-open: emit mandate if state unreadable
+
+
+_NOTION_SR_HINT = (
+    "  NOTION INTENT DETECTED: use the notion MCP directly for Notion workspace operations.\n"
+    "    Read  \u2192 mcp6_API-retrieve-a-page(page_id=...)  /  mcp6_API-post-search(query=...)\n"
+    "    Write \u2192 mcp6_API-post-page(parent=..., properties=...)  /  mcp6_API-patch-page(page_id=...)\n"
+    "  Auth: NOTION_TOKEN must be set in OS env (pre_mcp_gate blocks with setup instructions if absent)."
+)
+
+_PYTEST_SR_HINT = (
+    "  PYTEST INTENT DETECTED: use pytest_mcp tools instead of run_command for test operations.\n"
+    "    Run tests       \u2192 mcp8_run_tests(path=..., keywords=..., verbose=True)\n"
+    '    Discover tests  \u2192 mcp8_discover_tests(path="tests")\n'
+    '    Coverage        \u2192 mcp8_analyze_test_coverage(path="agentic_core")\n'
+    "    Config          \u2192 mcp8_list_pytest_config()\n"
+    "    Test details    \u2192 mcp8_get_test_details(test_path=...)\n"
+    "  IMPORTANT: pytest_mcp is preferred over run_command for all pytest-specific intents."
+)
+
+
 _TASK_LIFECYCLE_FIELDS = (
     "task_created",
     "task_started",
     "task_decomposed",
     "update_task_count",
     "lessons_captured",
+    "memory_recalled",
+    "max_memory_block_attempts",
 )
 
 
@@ -141,6 +270,8 @@ def _write_session_state(tier: str) -> None:
                 "task_decomposed": False,
                 "update_task_count": 0,
                 "lessons_captured": False,
+                "memory_recalled": False,
+                "max_memory_block_attempts": 0,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         else:
@@ -153,7 +284,7 @@ def _write_session_state(tier: str) -> None:
                 existing = {}
             state = {"current_tier": tier, "timestamp": datetime.now(timezone.utc).isoformat()}
             for field in _TASK_LIFECYCLE_FIELDS:
-                default = 0 if field == "update_task_count" else False
+                default = 0 if field in ("update_task_count", "max_memory_block_attempts") else False
                 state[field] = existing.get(field, default)
         SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
     except OSError:
@@ -333,12 +464,44 @@ def main() -> int:
     tier = classify_tier(prompt)
     print(f"[pre_prompt_classifier] Tier: {tier}", file=sys.stderr)
 
+    # vector_db routing trace: emitted for every prompt so selection vs non-selection is observable.
+    if _detect_semantic_retrieval(prompt):
+        print(
+            "[pre_prompt_classifier] vector_db: semantic_retrieval=DETECTED "
+            "— candidate: mcp11_semantic_search / mcp11_query_collection",
+            file=sys.stderr,
+        )
+    else:
+        print("[pre_prompt_classifier] vector_db: semantic_retrieval=NOT_DETECTED", file=sys.stderr)
+
+    # pytest_mcp routing trace: emitted for every prompt so pytest_mcp candidate visibility is observable.
+    if _detect_pytest_intent(prompt):
+        print(
+            "[pre_prompt_classifier] PYTEST_MCP_TRACE: pytest_intent=DETECTED "
+            "— candidate: mcp8_run_tests / mcp8_discover_tests / mcp8_list_pytest_config "
+            "/ mcp8_analyze_test_coverage / mcp8_get_test_details. "
+            "PREFER pytest_mcp over run_command for pytest-specific intents.",
+            file=sys.stderr,
+        )
+    else:
+        print("[pre_prompt_classifier] PYTEST_MCP_TRACE: pytest_intent=NOT_DETECTED", file=sys.stderr)
+
+    # Read BEFORE the state write: T0/T1 reset would otherwise shadow a True
+    # value and incorrectly re-emit the mandate on a turn where memory was
+    # already recalled.
+    emit_memory_mandate = _should_emit_memory_mandate()
+
     # Advisory: warn before state update so we read the prior turn's lifecycle state.
     if tier in ("T2", "T3"):
         _warn_open_task(tier)
 
     # Persist tier; preserve or reset lifecycle fields per approved design.
     _write_session_state(tier)
+
+    # Memory mandate: fires for ALL tiers on the first turn of each session.
+    # Suppressed once post_mcp_audit marks memory_recalled=True in session state.
+    if emit_memory_mandate:
+        print(_MEMORY_MANDATE, file=sys.stderr)
 
     if tier in ("T2", "T3"):
         if not check_plan_exists(tier):
@@ -386,7 +549,12 @@ def main() -> int:
 
         # Infrastructure healthy — inject structured reasoning mandate into Cascade context.
         # show_output: true in hooks.json ensures Cascade sees this before responding.
-        print(_SR_MANDATE.format(tier=tier), file=sys.stderr)
+        mandate = _SR_MANDATE.format(tier=tier)
+        if any(kw in prompt.lower() for kw in NOTION_KEYWORDS):
+            mandate = mandate + "\n" + _NOTION_SR_HINT
+        if _detect_pytest_intent(prompt):
+            mandate = mandate + "\n" + _PYTEST_SR_HINT
+        print(mandate, file=sys.stderr)
 
     return 0
 

@@ -31,9 +31,11 @@ Zero hardcoded paths — REPO_ROOT resolved from __file__.
 """
 
 import json
+import os
 import sqlite3
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -50,6 +52,7 @@ VECTOR_DB_SERVER_NAME = "vector_db"
 OTEL_MCP_SERVER_NAME = "otel_mcp"
 DEEPWIKI_SERVER_NAME = "deepwiki"
 GITKRAKEN_SERVER_NAME = "GitKraken"
+NOTION_SERVER_NAME = "notion"
 
 # Recovery tools that MUST pass even when MCP is unhealthy.
 # Without this whitelist, the gate blocks the very tools needed to recover.
@@ -61,8 +64,8 @@ ADG_RECOVERY_TOOLS = {
 }
 
 PYTEST_RECOVERY_TOOLS = {
-    "list_pytest_config",  # mcp12_list_pytest_config — health probe
-    "discover_tests",  # mcp12_discover_tests — basic discovery
+    "list_pytest_config",  # mcp8_list_pytest_config — health probe
+    "discover_tests",  # mcp8_discover_tests — basic discovery
 }
 
 REDIS_RECOVERY_TOOLS = {
@@ -121,6 +124,32 @@ FILESYSTEM_WRITE_TOOLS = {
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
+# Session-state isolation boundary
+#
+# Current isolation unit: one IDE window / one VS Code process.
+# We derive _SESSION_ID from VSCODE_PID when present, with os.getppid()
+# as the fallback for pytest / CLI contexts.
+#
+# This solves:
+# - multiple Windsurf / VS Code windows clobbering each other
+# - parallel pytest workers sharing one session_state file
+#
+# This does NOT solve:
+# - per-chat / per-tab isolation inside the same IDE window
+#
+# Per-chat isolation requires Windsurf to expose a conversation-scoped
+# identifier, for example WINDSURF_CHAT_ID. If such an ID becomes available,
+# replace VSCODE_PID in the _SESSION_ID derivation and keep the rest of the
+# session-state mechanism unchanged.
+_SESSION_ID = os.environ.get("VSCODE_PID") or str(os.getppid())
+SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
+
+# After this many consecutive blocks without a successful memory recall,
+# the gate degrades to open so Cascade is never permanently stuck.
+MAX_MEMORY_BLOCK_ATTEMPTS = 3
+
+# Stale session-state files older than this are removed on each gate startup.
+_SESSION_STATE_MAX_AGE_HOURS = 24
 
 # Launcher script path — validated by check_filesystem_startup_gate() on first use.
 # The launcher resolves node + npm global prefix dynamically; no version-pinned paths.
@@ -165,6 +194,85 @@ GITKRAKEN_PUSH_TOOLS: set[str] = {"git_push", "pull_request_create"}
 def _exit_block(reason: str) -> int:
     print(f"[pre_mcp_gate] BLOCKED: {reason}", file=sys.stderr)
     return 2
+
+
+def _read_session_state() -> dict:
+    """Read session_state.json and return its contents. Return {} on any error (fail-open)."""
+    try:
+        if SESSION_STATE.exists():
+            data = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+            return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        pass
+    return {}
+
+
+def _increment_memory_block_attempts() -> int:
+    """
+    Increment max_memory_block_attempts in session state and return the new count.
+    Fail-open: returns MAX_MEMORY_BLOCK_ATTEMPTS on any I/O error so the gate
+    immediately degrades rather than looping.
+    """
+    try:
+        state = _read_session_state()
+        count = int(state.get("max_memory_block_attempts", 0)) + 1
+        state["max_memory_block_attempts"] = count
+        SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
+        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+        return count
+    except (OSError, json.JSONDecodeError):
+        return MAX_MEMORY_BLOCK_ATTEMPTS  # fail-open: treat counter as exhausted
+
+
+def check_memory_first_gate(server_name: str, tool_name: str) -> int:
+    """
+    Hard gate: block non-memory MCP tool calls until mem_recall_session_start
+    has been called this session.
+
+    Rules (checked in order):
+    1. memory server calls always pass — never deadlock recall itself.
+    2. memory_recalled=True in session state → gate satisfied, allow.
+    3. Memory MCP unhealthy → degrade-open to avoid full-system blockage.
+    4. max_memory_block_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS → degrade-open.
+    5. Otherwise: increment attempt counter and block with redirect message.
+
+    Return 0 (allow) or 2 (block).
+    """
+    # Rule 1: never block the memory server itself
+    if server_name == MEMORY_SERVER_NAME:
+        return 0
+
+    state = _read_session_state()
+
+    # Rule 2: memory already recalled this session — gate satisfied.
+    if state.get("memory_recalled", False):
+        return 0
+
+    # Rule 3: degrade-open if memory MCP is unhealthy (SQLite inaccessible)
+    if check_memory_gate(REPO_ROOT) != 0:
+        print(
+            "[pre_mcp_gate] memory-first gate: memory MCP unhealthy — degrading to open.",
+            file=sys.stderr,
+        )
+        return 0
+
+    # Rule 4: degrade-open after too many consecutive blocks (prevent infinite loop)
+    current_attempts = state.get("max_memory_block_attempts", 0)
+    if current_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS:
+        print(
+            f"[pre_mcp_gate] memory-first gate: max_memory_block_attempts={current_attempts} "
+            f">= {MAX_MEMORY_BLOCK_ATTEMPTS} — degrading to open.",
+            file=sys.stderr,
+        )
+        return 0
+
+    # Rule 5: block and redirect
+    attempts = _increment_memory_block_attempts()
+    return _exit_block(
+        f"memory-first gate: call mem_recall_session_start (memory MCP) before any other "
+        f"MCP tool [attempt {attempts}/{MAX_MEMORY_BLOCK_ATTEMPTS}]. "
+        "Server: memory | Tool: mem_recall_session_start | Parameters: none."
+    )
 
 
 def _has_adg_sqlite(repo_root: Path) -> bool:
@@ -490,6 +598,7 @@ def check_pytest_gate(repo_root: Path) -> int:
     Result is cached per process — subprocess only runs once.
     Return 0 (allow) or 2 (block).
     """
+    print("[pre_mcp_gate] PYTEST_MCP_TRACE: entered check_pytest_gate", file=sys.stderr)
     cache_key = "pytest_importable"
     if cache_key not in _PROBE_CACHE:
         try:
@@ -506,6 +615,10 @@ def check_pytest_gate(repo_root: Path) -> int:
             _PROBE_CACHE[cache_key] = False
 
     if not _PROBE_CACHE[cache_key]:
+        print(
+            "[pre_mcp_gate] PYTEST_MCP_TRACE: REJECT reason=pytest_not_importable",
+            file=sys.stderr,
+        )
         return _exit_block(
             "Pytest MCP health check failed: pytest not installed or importable. "
             "Install with: pip install pytest",
@@ -519,6 +632,11 @@ def check_pytest_gate(repo_root: Path) -> int:
             "pytest configuration may be incomplete.",
             file=sys.stderr,
         )
+    print(
+        "[pre_mcp_gate] PYTEST_MCP_TRACE: ALLOW reason=pytest_importable "
+        f"pytest_ini={pytest_ini.exists()} pyproject_toml={pyproject_toml.exists()}",
+        file=sys.stderr,
+    )
     return 0
 
 
@@ -533,8 +651,6 @@ def check_redis_gate(repo_root: Path) -> int:
 
     Return 0 (allow) or 2 (block).
     """
-    import os
-
     host = os.getenv("REDIS_HOST", "localhost")
     port = int(os.getenv("REDIS_PORT", "6379"))
     db = int(os.getenv("REDIS_DB", "0"))
@@ -682,7 +798,6 @@ def check_vector_db_gate() -> int:
 
     Return 0 (allow) or 2 (block).
     """
-    import os
     import socket as _socket
 
     # Stage 1: library importable? (cached)
@@ -738,7 +853,6 @@ def check_otel_gate() -> int:
 
     Return 0 (allow) or 2 (block).
     """
-    import os
     import socket as _socket
 
     # Stage 1: SDK importable? (cached)
@@ -961,6 +1075,29 @@ def check_gitkraken_gate(tool_name: str, payload: dict) -> int:
     return 0
 
 
+def check_notion_gate() -> int:
+    """
+    Check Notion MCP auth gate.
+
+    The notion MCP subprocess (@notionhq/notion-mcp-server) inherits NOTION_TOKEN
+    from the OS environment.  An empty or absent token causes the server to start
+    normally (green) but every API call returns HTTP 401 — a silent failure.
+    This gate makes the failure loud and actionable before any tool call fires.
+
+    Return 0 (allow) or 2 (block with actionable message).
+    """
+    token = os.environ.get("NOTION_TOKEN", "").strip()
+    if not token:
+        return _exit_block(
+            "Notion MCP auth gate failed: NOTION_TOKEN is not set or is empty. "
+            "Create an Internal integration token at https://www.notion.so/my-integrations "
+            "and register it as a Windows environment variable: "
+            "  setx NOTION_TOKEN secret_...  (then restart Windsurf). "
+            "See .env for the expected format (NOTION_TOKEN=secret_... or ntn_...)."
+        )
+    return 0
+
+
 def check_deepwiki_gate() -> int:
     """
     Check DeepWiki MCP health (remote URL MCP).
@@ -990,7 +1127,22 @@ def check_deepwiki_gate() -> int:
     return 0  # always fail-open — remote availability is not Cascade's fault
 
 
+def _purge_stale_session_states() -> None:
+    """Delete session_state_{pid}.json files older than _SESSION_STATE_MAX_AGE_HOURS."""
+    windsurf_dir = REPO_ROOT / "artifacts" / "windsurf"
+    if not windsurf_dir.exists():
+        return
+    cutoff = time.time() - _SESSION_STATE_MAX_AGE_HOURS * 3600
+    for f in windsurf_dir.glob("session_state_*.json"):
+        try:
+            if f.stat().st_mtime < cutoff:
+                f.unlink(missing_ok=True)
+        except OSError:
+            pass  # best-effort cleanup — never block the gate
+
+
 def main() -> int:
+    _purge_stale_session_states()
     raw = sys.stdin.read()
     if not raw.strip():
         print("[pre_mcp_gate] WARNING: empty stdin payload — allowing (non-ADG assumed).", file=sys.stderr)
@@ -1013,6 +1165,12 @@ def main() -> int:
     server_name = tool_info.get("mcp_server_name", "")
     tool_name = tool_info.get("mcp_tool_name", "")
 
+    # Memory-first gate: blocks non-memory tools until mem_recall_session_start is called.
+    # Degrades to open if memory MCP is unhealthy or attempt limit is reached.
+    rc = check_memory_first_gate(server_name, tool_name)
+    if rc != 0:
+        return rc
+
     # Filesystem MCP: startup health check then write-tool block
     if server_name == FILESYSTEM_SERVER_NAME:
         rc = check_filesystem_startup_gate()
@@ -1029,7 +1187,16 @@ def main() -> int:
 
     # Pytest MCP: verify pytest is available
     if server_name == PYTEST_SERVER_NAME:
+        print(
+            f"[pre_mcp_gate] PYTEST_MCP_TRACE: candidate=entered server={server_name!r} "
+            f"tool={tool_name!r} recovery={tool_name in PYTEST_RECOVERY_TOOLS}",
+            file=sys.stderr,
+        )
         if tool_name in PYTEST_RECOVERY_TOOLS:
+            print(
+                "[pre_mcp_gate] PYTEST_MCP_TRACE: ALLOW reason=recovery_tool",
+                file=sys.stderr,
+            )
             return 0
         return check_pytest_gate(REPO_ROOT)
 
@@ -1070,6 +1237,10 @@ def main() -> int:
     # GitKraken MCP: write-tool preflight + repo confinement
     if server_name == GITKRAKEN_SERVER_NAME:
         return check_gitkraken_gate(tool_name, payload)
+
+    # Notion MCP: verify NOTION_TOKEN is set in OS env before any API call
+    if server_name == NOTION_SERVER_NAME:
+        return check_notion_gate()
 
     # All other MCPs (enhanced_http, etc.): fail-open
     return 0
