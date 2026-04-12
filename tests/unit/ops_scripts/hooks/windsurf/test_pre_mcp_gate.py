@@ -1106,6 +1106,44 @@ class TestCheckPytestGate:
 
 
 # ---------------------------------------------------------------------------
+# pytest_server.py protocol-level naming — contract pin
+# ---------------------------------------------------------------------------
+
+
+class TestPytestServerNaming:
+    """Pin the protocol-level server name in pytest_server.py to 'pytest_mcp'.
+
+    Reads the source file directly to avoid mcp SDK import dependency.
+    Regression guard: Server("pytest") and server_name="pytest" must not reappear.
+    """
+
+    _SERVER_FILE = Path(__file__).resolve().parents[5] / "tools" / "mcp" / "pytest_server.py"
+
+    def _src(self) -> str:
+        return self._SERVER_FILE.read_text(encoding="utf-8")
+
+    def test_server_class_uses_pytest_mcp_name(self):
+        """Server('pytest_mcp') must appear; stale Server('pytest') must not."""
+        src = self._src()
+        assert 'Server("pytest_mcp")' in src, (
+            "PytestMCPServer.__init__ must use Server('pytest_mcp') to match config key"
+        )
+        assert 'Server("pytest")' not in src, (
+            "Stale Server('pytest') found — protocol name reverted to pre-fix value"
+        )
+
+    def test_initialization_options_uses_pytest_mcp_name(self):
+        """server_name='pytest_mcp' must appear in InitializationOptions; stale 'pytest' must not."""
+        src = self._src()
+        assert 'server_name="pytest_mcp"' in src, (
+            "InitializationOptions must use server_name='pytest_mcp' to match config key"
+        )
+        assert 'server_name="pytest",' not in src, (
+            "Stale server_name='pytest' found — InitializationOptions name reverted to pre-fix value"
+        )
+
+
+# ---------------------------------------------------------------------------
 # check_gitkraken_gate — unit tests
 # ---------------------------------------------------------------------------
 
@@ -1574,32 +1612,36 @@ class TestCheckMemoryFirstGate:
 
     def test_blocked_when_not_recalled_and_memory_healthy(self, tmp_path):
         f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
-        with patch("pre_mcp_gate.SESSION_STATE", f):
-            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                assert check_memory_first_gate("task_manager", "create_task") == 2
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    assert check_memory_first_gate("task_manager", "create_task") == 2
 
     def test_block_message_mentions_redirect(self, tmp_path, capsys):
         f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
-        with patch("pre_mcp_gate.SESSION_STATE", f):
-            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                check_memory_first_gate("adg_sqlite", "adg_health")
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    check_memory_first_gate("adg_sqlite", "adg_health")
         captured = capsys.readouterr()
         assert "mem_recall_session_start" in captured.err
         assert "memory" in captured.err
 
     def test_attempt_counter_incremented_on_block(self, tmp_path):
         f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
-        with patch("pre_mcp_gate.SESSION_STATE", f):
-            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                check_memory_first_gate("task_manager", "create_task")
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    check_memory_first_gate("task_manager", "create_task")
         state = json.loads(f.read_text(encoding="utf-8"))
         assert state["max_memory_block_attempts"] == 1
 
     def test_second_block_increments_to_two(self, tmp_path):
         f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=1)
-        with patch("pre_mcp_gate.SESSION_STATE", f):
-            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                assert check_memory_first_gate("filesystem", "read_text_file") == 2
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    assert check_memory_first_gate("filesystem", "read_text_file") == 2
         state = json.loads(f.read_text(encoding="utf-8"))
         assert state["max_memory_block_attempts"] == 2
 
@@ -1630,9 +1672,10 @@ class TestCheckMemoryFirstGate:
         f = self._state_file(
             tmp_path, memory_recalled=False, max_memory_block_attempts=MAX_MEMORY_BLOCK_ATTEMPTS
         )
-        with patch("pre_mcp_gate.SESSION_STATE", f):
-            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                check_memory_first_gate("task_manager", "create_task")
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    check_memory_first_gate("task_manager", "create_task")
         captured = capsys.readouterr()
         assert "degrading to open" in captured.err
 
@@ -1662,10 +1705,11 @@ class TestMemoryFirstGateIntegration:
     def test_first_non_memory_call_blocked(self, tmp_path):
         """Turn 1: task_manager.create_task before memory recall → BLOCKED."""
         f = self._write_state(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
-        with patch("pre_mcp_gate.SESSION_STATE", f):
-            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                with patch("sys.stdin", self._stdin("task_manager", "create_task")):
-                    assert main() == 2
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    with patch("sys.stdin", self._stdin("task_manager", "create_task")):
+                        assert main() == 2
 
     def test_memory_server_call_always_passes(self, tmp_path):
         """memory.mem_recall_session_start is never blocked (Rule 1)."""
@@ -1694,10 +1738,11 @@ class TestMemoryFirstGateIntegration:
         f = self._write_state(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
 
         # Step 1: first non-memory call blocked
-        with patch("pre_mcp_gate.SESSION_STATE", f):
-            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                with patch("sys.stdin", self._stdin("task_manager", "create_task")):
-                    rc1 = main()
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    with patch("sys.stdin", self._stdin("task_manager", "create_task")):
+                        rc1 = main()
         assert rc1 == 2
         captured1 = capsys.readouterr()
         assert "mem_recall_session_start" in captured1.err

@@ -670,3 +670,15 @@ class TestPytestMcpRoutingTrace:
         err = capsys.readouterr().err
         assert "PYTEST_MCP_TRACE: pytest_intent=NOT_DETECTED" in err
         assert "PYTEST INTENT DETECTED" not in err
+
+    def test_pytest_sr_hint_not_injected_for_t0_prompt(self, capsys, tmp_path):
+        """T0 pytest prompt: routing TRACE fires (all tiers) but SR_MANDATE hint must NOT appear.
+
+        Guard at pre_prompt_classifier.py:506 — `if tier in ('T2', 'T3'):` — prevents
+        SR_MANDATE + hint emission for T0.  'explain how to run pytest' hits T0_KEYWORDS
+        ('explain') so tier=T0; pytest intent is DETECTED but hint is suppressed.
+        """
+        self._run("explain how to run pytest", capsys, tmp_path)
+        err = capsys.readouterr().err
+        assert "PYTEST_MCP_TRACE: pytest_intent=DETECTED" in err, "routing trace must fire at T0"
+        assert "PYTEST INTENT DETECTED" not in err, "SR_MANDATE hint must NOT fire at T0"
