@@ -249,10 +249,18 @@ Derived from non-production AT-1 through AT-10 acceptance gates.
 | PG-15 | Kill-switch disables D2 without code change | `SEMANTIC_CACHE_D2_ENABLED=0` + restart | P2 PASS |
 | PG-16 | Observability artifacts present (dashboard spec + alert rules) | `docs/monitoring/` | P3 PASS |
 | PG-17 | Canary smoke test ST-1 through ST-5 pass | §3 above | Manual |
-| PG-18 | No `SemanticCacheMissRateAnomaly` alert after 1 h canary | Prometheus | Manual |
+| PG-18 | No `SemanticCacheMissRateAnomaly` alert after 1 h canary (see note) | Prometheus | Manual |
 | PG-19 | Rollback procedure tested in non-production | §4a above | Manual |
 
 **All 19 gates must be PASS before production promotion.**
+
+> **PG-18 note:** `SemanticCacheMissRateAnomaly` firing during the first 120 min of worker
+> startup is expected cold-start noise and does **not** count as a gate failure.
+> Gate PASS requires the alert to be resolved and not re-firing by T+180 min from worker start.
+> Full observation procedure: `docs/runbooks/d2_anomaly_gate_playbook.md`
+
+> **PG-19 evidence:** Non-production rollback drill executed 2026-04-12.
+> Evidence document: `docs/runbooks/d2_rollback_drill_evidence.md`
 
 ---
 

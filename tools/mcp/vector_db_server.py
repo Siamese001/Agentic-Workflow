@@ -141,6 +141,33 @@ def _check_embedding_alignment(chroma_client: "chromadb.PersistentClient", model
     )
 
 
+_COUNT_CACHE_TTL: float = 60.0  # seconds — collection counts are cached this long in vector_stats
+
+
+def _validate_startup_config() -> None:
+    """Log resolved config and warn on obvious misconfigurations at startup."""
+    if not CHROMA_PATH.exists():
+        logger.warning(
+            "STARTUP_WARN: CHROMA_PATH does not exist: %s — will be created on first write.", CHROMA_PATH
+        )
+    else:
+        logger.info("STARTUP: CHROMA_PATH resolved to %s", CHROMA_PATH)
+
+    if DEFAULT_EMBEDDING_MODEL not in _KNOWN_MODEL_DIMS:
+        logger.warning(
+            "STARTUP_WARN: VECTOR_DB_EMBEDDING_MODEL=%r is not in _KNOWN_MODEL_DIMS; "
+            "embedding dimension parity check is disabled. "
+            "Add it to _KNOWN_MODEL_DIMS to enable the check.",
+            DEFAULT_EMBEDDING_MODEL,
+        )
+    else:
+        logger.info(
+            "STARTUP: VECTOR_DB_EMBEDDING_MODEL=%r expected_dim=%d",
+            DEFAULT_EMBEDDING_MODEL,
+            _KNOWN_MODEL_DIMS[DEFAULT_EMBEDDING_MODEL],
+        )
+
+
 _log_level_name: str = os.environ.get("VECTOR_DB_LOG_LEVEL", "INFO").upper()
 _log_level: int = getattr(logging, _log_level_name, logging.INFO)
 if not isinstance(_log_level, int):
@@ -156,12 +183,14 @@ class VectorDBMCPServer:
         self.embedding_model = None
         self._embedding_model_loading = False
         self._model_lock = asyncio.Lock()
+        self._count_cache: dict[str, tuple[int, float]] = {}  # name -> (count, fetched_at)
         self._setup_handlers()
         # Fast initialization - defer heavy loading
         self._initialize_chroma_only()
 
     def _initialize_chroma_only(self):
         """Initialize only ChromaDB for fast startup"""
+        _validate_startup_config()
         try:
             CHROMA_PATH.mkdir(parents=True, exist_ok=True)
             self.chroma_client = chromadb.PersistentClient(
@@ -173,13 +202,53 @@ class VectorDBMCPServer:
         except Exception as e:  # guardian: allow-broad-exception -- chromadb.PersistentClient raises heterogeneous errors from SQLite/HNSW/hnswlib with no shared catchable base
             logger.error(f"Failed to initialize ChromaDB: {e}")
 
+    def _get_cached_count(self, collection_name: str, collection: Any) -> int | None:
+        """Return cached document count or fetch with a 2 s timeout.
+
+        Returns None when the count cannot be obtained within the timeout or
+        an error occurs.  Caches successful results for _COUNT_CACHE_TTL seconds
+        so repeated calls to vector_stats never re-block on a slow segment.
+        """
+        import concurrent.futures as _cf
+
+        now = time.time()
+        cached = self._count_cache.get(collection_name)
+        if cached is not None:
+            count, fetched_at = cached
+            if now - fetched_at < _COUNT_CACHE_TTL:
+                return count
+
+        try:
+            with _cf.ThreadPoolExecutor(max_workers=1) as _ex:
+                count = _ex.submit(collection.count).result(timeout=2.0)
+            self._count_cache[collection_name] = (count, now)
+            return count
+        except _cf.TimeoutError:
+            logger.warning(
+                "COUNT_TIMEOUT: collection=%r count() did not complete within 2 s; "
+                "returning None. Use get_collection_info for an explicit count.",
+                collection_name,
+            )
+            return None
+        except Exception as exc:  # guardian: allow-broad-exception -- ChromaDB count() raises heterogeneous internal errors with no shared catchable base
+            logger.warning("COUNT_ERROR: collection=%r error=%s", collection_name, exc)
+            return None
+
     async def _ensure_embedding_model(self):
-        """Lazy load embedding model on first use (async-safe via Lock)"""
+        """Load embedding model on first use, non-blocking via thread executor.
+
+        SentenceTransformer.__init__ is CPU-bound and holds the GIL.  Running it
+        in an executor releases the asyncio event loop so the MCP handshake and
+        other coroutines (including the prewarm background task) can proceed.
+        """
         async with self._model_lock:
             if self.embedding_model is None:
                 try:
-                    logger.info("Loading embedding model (lazy init)...")
-                    self.embedding_model = SentenceTransformer(DEFAULT_EMBEDDING_MODEL)
+                    logger.info("Loading embedding model in thread executor...")
+                    loop = asyncio.get_event_loop()
+                    self.embedding_model = await loop.run_in_executor(
+                        None, lambda: SentenceTransformer(DEFAULT_EMBEDDING_MODEL)
+                    )
                     logger.info(f"Embedding model loaded: {DEFAULT_EMBEDDING_MODEL}")
                 except Exception as e:  # guardian: allow-broad-exception -- SentenceTransformer raises heterogeneous errors from torch/transformers/safetensors with no shared base
                     logger.error(f"Failed to load embedding model: {e}")
@@ -461,23 +530,12 @@ class VectorDBMCPServer:
 
             result = f"Vector Collections ({len(collections)} total):\n\n"
 
-            import concurrent.futures as _cf
-
-            for collection in tqdm(collections, desc="list-collections", leave=False, disable=True):
+            for collection in collections:
                 result += f"📁 {collection.name}\n"
                 result += f"   ID: {collection.id}\n"
                 if collection.metadata:
                     result += f"   Metadata: {json.dumps(collection.metadata, indent=6)}\n"
-                # count() can block >10 s on large/fragmented segments — run with timeout
-                try:
-                    with _cf.ThreadPoolExecutor(max_workers=1) as _ex:
-                        _fut = _ex.submit(collection.count)
-                        count = _fut.result(timeout=1.0)
-                    result += f"   Count: {count}\n"
-                except _cf.TimeoutError:
-                    result += "   Count: N/A (timeout — collection may be large or segment not loaded)\n"
-                except Exception as count_err:  # guardian: allow-broad-exception -- ChromaDB count() surfaces heterogeneous internal errors with no shared catchable base type
-                    result += f"   Count: null (count_error: {count_err})\n"
+                result += "   Count: use get_collection_info or vector_stats\n"
                 result += "\n"
 
             return CallToolResult(
@@ -915,16 +973,19 @@ class VectorDBMCPServer:
             stats += "\nCollection Details:\n"
 
             total_documents = 0
-            for collection in collections:
-                try:
-                    count = collection.count()
+            for collection in tqdm(
+                collections, desc="Collection stats", unit="col", leave=False, disable=True
+            ):
+                count = self._get_cached_count(collection.name, collection)
+                if count is not None:
                     total_documents += count
-                    stats += f"  📁 {collection.name}: {count} documents"
-                    if collection.metadata:
-                        stats += f" ({json.dumps(collection.metadata)})"
-                    stats += "\n"
-                except Exception:  # guardian: allow-broad-exception -- ChromaDB count() surfaces heterogeneous internal errors with no shared catchable base type
-                    stats += f"  📁 {collection.name}: Unable to get count\n"
+                    count_str = str(count)
+                else:
+                    count_str = "N/A (timeout — retry or call get_collection_info)"
+                stats += f"  📁 {collection.name}: {count_str} documents"
+                if collection.metadata:
+                    stats += f" ({json.dumps(collection.metadata)})"
+                stats += "\n"
 
             stats += f"\nTotal documents across all collections: {total_documents}\n"
 
@@ -951,6 +1012,10 @@ class VectorDBMCPServer:
 async def main():
     """Main entry point"""
     server_instance = VectorDBMCPServer()
+
+    # Prewarm: start loading the embedding model in the background so the first
+    # semantic_search call does not bear the full cold-start latency (~4 s).
+    asyncio.create_task(server_instance._ensure_embedding_model())
 
     # Run the server
     async with stdio_server() as (read_stream, write_stream):

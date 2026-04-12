@@ -60,6 +60,9 @@ def test_cs2_mixin_semantic_recall_threads_flow_class_bypass() -> None:
         result = host.semantic_recall("ctx", "ns", flow_class="D4_ACTION")
 
     mock_scm.recall.assert_called_once_with("ctx", "ns", flow_class="D4_ACTION", replay_mode=False)
+    assert result == mock_scm.recall.return_value, (
+        "CS-2 FAIL: semantic_recall() must propagate SCM.recall() return value"
+    )
 
 
 def test_cs2_mixin_semantic_recall_threads_replay_mode() -> None:
@@ -70,9 +73,10 @@ def test_cs2_mixin_semantic_recall_threads_replay_mode() -> None:
     mock_scm = _scm_mock()
 
     with patch.object(type(host), "semantic_cache", new_callable=lambda: property(lambda _: mock_scm)):
-        host.semantic_recall("ctx", "ns", replay_mode=True)
+        result = host.semantic_recall("ctx", "ns", replay_mode=True)
 
     mock_scm.recall.assert_called_once_with("ctx", "ns", flow_class=None, replay_mode=True)
+    assert result is None, "CS-2 FAIL: semantic_recall(replay_mode=True) must propagate None from SCM"
 
 
 def test_cs2_mixin_semantic_recall_default_args_explicit() -> None:
@@ -124,6 +128,43 @@ def test_cs4_meta_learning_storage_recall_explicit_offline_path() -> None:
     assert "replay_mode=False" in source, (
         "CS-4 FAIL: MetaLearningStorage.recall() must explicitly pass replay_mode=False"
     )
+
+
+def test_cs4_meta_learning_storage_recall_lobotomized_returns_none() -> None:
+    """CS-4 failure path: recall() must return None immediately when _lobotomized=True."""
+    from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
+
+    mock_scm = _scm_mock(hit_value=_HIT_JSON)
+    original_lob = MetaLearningStorage._lobotomized
+    original_mem = MetaLearningStorage._memory
+    try:
+        MetaLearningStorage._lobotomized = True
+        MetaLearningStorage._memory = mock_scm
+        result = MetaLearningStorage.recall("context", "ns")
+        assert result is None, "CS-4 FAIL: lobotomized path must return None"
+        mock_scm.recall.assert_not_called()
+    finally:
+        MetaLearningStorage._lobotomized = original_lob
+        MetaLearningStorage._memory = original_mem
+
+
+def test_cs4_meta_learning_storage_recall_exception_returns_none() -> None:
+    """CS-4 failure path: when SCM.recall() raises, recall() must swallow and return None."""
+    from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
+
+    mock_scm = MagicMock()
+    mock_scm.recall.side_effect = RuntimeError("simulated SCM error")
+    original_lob = MetaLearningStorage._lobotomized
+    original_mem = MetaLearningStorage._memory
+    try:
+        MetaLearningStorage._lobotomized = False
+        MetaLearningStorage._memory = mock_scm
+        result = MetaLearningStorage.recall("context", "ns")
+        assert result is None, "CS-4 FAIL: exception path must return None"
+        mock_scm.recall.assert_called_once_with("context", "ns", flow_class=None, replay_mode=False)
+    finally:
+        MetaLearningStorage._lobotomized = original_lob
+        MetaLearningStorage._memory = original_mem
 
 
 def test_cs4_meta_learning_storage_recall_does_not_bypass_by_default() -> None:

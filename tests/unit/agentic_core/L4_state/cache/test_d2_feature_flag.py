@@ -91,7 +91,12 @@ def _minimal_orchestrator():
     risk = MagicMock()
     risk.allow = True
 
-    orch.routing_engine = MagicMock()
+    mock_path = MagicMock()
+    mock_path.value = "D"
+    orch.assembler = MagicMock()
+    orch.assembler.assemble.return_value = MagicMock(d0_injections={})
+    orch.path_router = MagicMock()
+    orch.path_router.select_path.return_value = mock_path
     orch.d0_engine = MagicMock()
     orch.d0_engine.render_d0.return_value = {}
     orch.risk_gate = MagicMock()
@@ -102,6 +107,68 @@ def _minimal_orchestrator():
     orch._L3_PATHS = frozenset()
 
     return orch
+
+
+_EO_MOD = "agentic_core.L0_routing.reasoning.execution_orchestrator"
+_TRACE_MOD = "agentic_core.runtime.types.execution_trace"
+_SCM_MOD = "agentic_core.L4_state.utils.memory.semantic_cache_manager"
+
+
+def _run_orch_execute(orch, intent_input: dict, env: dict):
+    """Run orchestrator.execute() with all infrastructure patches applied."""
+    with patch.dict(os.environ, env):
+        with patch(f"{_EO_MOD}._emit_signs_execution_trace"):
+            with patch(f"{_EO_MOD}._emit_records_execution_trace"):
+                with patch(f"{_EO_MOD}.emit_replay_key"):
+                    with patch(f"{_EO_MOD}.emit_determinism_digest"):
+                        with patch(f"{_EO_MOD}._get_routing_gateway"):
+                            with patch(f"{_EO_MOD}.ProposalCommitter"):
+                                with patch(f"{_EO_MOD}.create_and_commit_routing_contract"):
+                                    with patch(
+                                        f"{_TRACE_MOD}.get_active_execution_trace",
+                                        return_value=None,
+                                    ):
+                                        return orch.execute(intent_input)
+
+
+def test_gate_b_runtime_flag_off_scm_not_called() -> None:
+    """Gate B runtime: SEMANTIC_CACHE_D2_ENABLED=0 → SCM.recall() never called on Path D."""
+    orch = _minimal_orchestrator()
+    mock_scm_instance = MagicMock()
+
+    with patch(f"{_SCM_MOD}.SemanticCacheManager.get_instance", return_value=mock_scm_instance):
+        result = _run_orch_execute(orch, {"intent": "test"}, {"SEMANTIC_CACHE_D2_ENABLED": "0"})
+
+    mock_scm_instance.recall.assert_not_called()
+    assert result.get("state") == "success", f"expected success state, got {result}"
+
+
+def test_gate_b_runtime_flag_on_path_d_calls_scm() -> None:
+    """Gate B runtime: SEMANTIC_CACHE_D2_ENABLED=1 + Path D → SCM.recall() called; hit short-circuits."""
+    orch = _minimal_orchestrator()
+    hit_payload = {"answer": "cached", "_metadata": {"namespace": "default"}}
+    mock_scm_instance = MagicMock()
+    mock_scm_instance.recall.return_value = hit_payload
+
+    with patch(f"{_SCM_MOD}.SemanticCacheManager.get_instance", return_value=mock_scm_instance):
+        result = _run_orch_execute(orch, {"intent": "test"}, {"SEMANTIC_CACHE_D2_ENABLED": "1"})
+
+    mock_scm_instance.recall.assert_called_once()
+    assert result.get("state") == "d2_cache_hit", f"expected d2_cache_hit, got {result}"
+    assert result.get("result") is hit_payload
+
+
+def test_gate_b_runtime_flag_on_non_d_path_scm_not_called() -> None:
+    """Gate B edge: SEMANTIC_CACHE_D2_ENABLED=1 + non-D path → SCM.recall() NOT called."""
+    orch = _minimal_orchestrator()
+    orch.path_router.select_path.return_value.value = "A"
+    mock_scm_instance = MagicMock()
+
+    with patch(f"{_SCM_MOD}.SemanticCacheManager.get_instance", return_value=mock_scm_instance):
+        result = _run_orch_execute(orch, {"intent": "test"}, {"SEMANTIC_CACHE_D2_ENABLED": "1"})
+
+    mock_scm_instance.recall.assert_not_called()
+    assert result.get("state") == "success", f"expected success for non-D path, got {result}"
 
 
 def test_gate_b_flag_off_skipped_in_source() -> None:
