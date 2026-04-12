@@ -74,6 +74,64 @@
 ╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 
 ==============================================================================================================================
+                              LIVE RUNTIME BGE EMBEDDING PATH  (repaired 2025)
+==============================================================================================================================
+
+C8. SHARED SYNCHRONOUS BGE RUNTIME HELPER
+──────────────────────────────────────────
+Module  : agentic_core/embeddings/bge_runtime.py
+Model   : BAAI/bge-m3  (1024-dim, L2-normalised, CPU)
+Pattern : Process-level singleton — one SentenceTransformer load per OS process, thread-safe (double-checked lock)
+
+                          [ query string ]
+                                │
+                                ▼
+                  ┌─────────────────────────────┐
+                  │  bge_runtime._get_model()    │
+                  │  (lazy load, lock-guarded)   │
+                  │  Raises BGEInstallError if   │
+                  │  sentence-transformers absent │
+                  └──────────────┬──────────────┘
+                                 │ singleton reuse after first call
+                                 ▼
+                  ┌─────────────────────────────┐
+                  │  bge_embed_query(text)       │
+                  │  model.encode([text],        │
+                  │    normalize_embeddings=True │
+                  │    convert_to_numpy=True)    │
+                  │  Raises RuntimeError on      │
+                  │  BGE_DIM_MISMATCH (loud)     │
+                  └──────────────┬──────────────┘
+                                 │ list[float], len=1024
+                    ┌────────────┴────────────┐
+                    ▼                         ▼
+       SemanticRetriever            HybridSearchEngine
+       (L1 cognition)               (L3 orchestration)
+       _query_collection()          _generate_query_embedding()
+       direct import                catches BGEInstallError +
+       of bge_embed_query           ImportError → returns None
+                    └────────────┬────────────┘
+                                 ▼
+                     TitaniumRAGPipeline
+                     (L3 orchestration)
+                     delegates to HybridSearchEngine
+                     via get_global_hybrid_engine()
+
+WHAT WAS INTENTIONALLY NOT CHANGED:
+- Async embedding factory  : agentic_core/embeddings/embedding_factory.py
+  Still owns the async + sovereignty allowlist path used by ingestion scripts.
+  bge_runtime is a separate sync-only runtime surface.
+- Ingestion scripts        : ingest_code_chunks.py / ingest_symbols.py
+  Continue using SentenceTransformer directly with device="cuda" for batch work.
+- Sovereignty redesign     : EmbeddingSovereignAgent allowlist not extended.
+  Runtime sync path currently bypasses allowlist by design (Prompt 5 governance item).
+
+BENCHMARK (CPU, local dev, 2025):
+  Cold model load : ~4 200 ms
+  Warm query avg  : ~29 ms / call   (10 queries, BAAI/bge-m3, 1024-dim)
+  Singleton check : True — SR and HSE share identical model object
+
+==============================================================================================================================
 [ DRILL-DOWN RELATION ]
 [00A] End-to-end implementation bridge
   │

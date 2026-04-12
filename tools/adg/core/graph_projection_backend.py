@@ -489,6 +489,224 @@ class GraphProjectionBackend:
             "node_count": self._proj_node_count,
         }
 
+    def get_diff(
+        self,
+        metric: str | None = None,
+        direction: str | None = None,
+        layer: str | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        """Return cross-run metric deltas from proj_diff.
+
+        Filters to changed rows only (direction != 'unchanged') unless
+        direction is explicitly passed. Returns [] if unavailable.
+
+        Args:
+            metric:    One of fan_in, fan_out, blast_radius_direct, blast_radius_2hop.
+                       None = all metrics.
+            direction: 'increased', 'decreased', 'unchanged', or None (changed only).
+            layer:     Layer prefix filter (e.g. 'L0', 'L3').
+            limit:     Maximum rows to return (default 100).
+
+        Return shape (each item):
+            {
+                "adg_name": str,
+                "metric": str,
+                "prev_value": float,
+                "curr_value": float,
+                "delta": float,
+                "delta_pct": float,
+                "direction": str,
+                "layer": str,
+                "prev_snapshot_id": str,
+                "curr_snapshot_id": str,
+                "derived_from": str,
+                "stale": bool,
+            }
+        """
+        if not self._available or self._conn is None:
+            return []
+
+        conditions: list[str] = []
+        params: list[Any] = []
+
+        if direction is not None:
+            conditions.append("direction = ?")
+            params.append(direction)
+        else:
+            conditions.append("direction != 'unchanged'")
+
+        if metric is not None:
+            conditions.append("metric = ?")
+            params.append(metric)
+
+        if layer is not None:
+            conditions.append("layer = ?")
+            params.append(layer)
+
+        where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        params.append(limit)
+
+        sql = (
+            f"SELECT adg_name, metric, prev_value, curr_value, delta, delta_pct, "
+            f"direction, layer, prev_snapshot_id, curr_snapshot_id "
+            f"FROM proj_diff {where} "
+            f"ORDER BY ABS(delta) DESC "
+            f"LIMIT ?"
+        )
+
+        try:
+            rows = self._conn.execute(sql, params).fetchall()
+        except sqlite3.Error as exc:
+            logger.debug("GraphProjectionBackend.get_diff failed: %s", exc)
+            return []
+
+        result = []
+        for row in rows:
+            item = dict(row)
+            item["derived_from"] = self._source_artifact_digest[:16]
+            item["stale"] = self._stale
+            result.append(item)
+        return result
+
+    def get_top_bridges(self, limit: int = 20) -> list[dict[str, Any]]:
+        """Return the top bridge/chokepoint nodes by bridge_score descending.
+
+        Bridge nodes are critical connectors whose removal would fragment the
+        dependency graph. Returns [] if unavailable or no bridge data exists.
+
+        Return shape (each item):
+            {
+                "adg_name": str,
+                "bridge_score": float,
+                "bridge_type": str,
+                "fan_in": int,
+                "fan_out": int,
+                "blast_radius_direct": int,
+                "layer": str,
+                "derived_from": str,
+                "stale": bool,
+            }
+        """
+        if not self._available or self._conn is None:
+            return []
+
+        try:
+            rows = self._conn.execute(
+                "SELECT c.adg_name, c.bridge_score, c.bridge_type, "
+                "c.fan_in, c.fan_out, c.blast_radius_direct, n.layer "
+                "FROM proj_centrality c "
+                "JOIN proj_nodes n ON c.adg_name = n.adg_name "
+                "WHERE c.bridge_score > 0 "
+                "ORDER BY c.bridge_score DESC "
+                "LIMIT ?",
+                (limit,),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            logger.debug("GraphProjectionBackend.get_top_bridges failed: %s", exc)
+            return []
+
+        result = []
+        for row in rows:
+            item = dict(row)
+            item["derived_from"] = self._source_artifact_digest[:16]
+            item["stale"] = self._stale
+            result.append(item)
+        return result
+
+    def get_top_regressions(
+        self,
+        metric: str = "blast_radius_direct",
+        limit: int = 20,
+    ) -> list[dict[str, Any]]:
+        """Return the top regressions (largest increases) from proj_diff.
+
+        Args:
+            metric: Metric to rank by (default: blast_radius_direct).
+            limit:  Maximum rows (default 20).
+
+        Return shape (each item):
+            {
+                "adg_name": str,
+                "metric": str,
+                "prev_value": float,
+                "curr_value": float,
+                "delta": float,
+                "delta_pct": float,
+                "layer": str,
+                "derived_from": str,
+                "stale": bool,
+            }
+        """
+        if not self._available or self._conn is None:
+            return []
+
+        try:
+            rows = self._conn.execute(
+                "SELECT adg_name, metric, prev_value, curr_value, delta, delta_pct, layer "
+                "FROM proj_diff "
+                "WHERE metric = ? AND direction = 'increased' "
+                "ORDER BY delta DESC "
+                "LIMIT ?",
+                (metric, limit),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            logger.debug("GraphProjectionBackend.get_top_regressions failed: %s", exc)
+            return []
+
+        result = []
+        for row in rows:
+            item = dict(row)
+            item["derived_from"] = self._source_artifact_digest[:16]
+            item["stale"] = self._stale
+            result.append(item)
+        return result
+
+    def get_reachability(
+        self,
+        src_adg_name: str,
+        limit: int = 50,
+    ) -> list[dict[str, Any]]:
+        """Return proj_reachability rows for a given seed module.
+
+        These represent nodes reachable from src_adg_name within the hop
+        budget used at build time (_REACHABILITY_MAX_HOPS).
+
+        Returns [] if unavailable or the node is not a reachability seed.
+
+        Return shape (each item):
+            {
+                "src_adg_name": str,
+                "dst_adg_name": str,
+                "hop_count": int,
+                "path_weight": float,
+                "derived_from": str,
+                "stale": bool,
+            }
+        """
+        if not self._available or self._conn is None:
+            return []
+
+        try:
+            rows = self._conn.execute(
+                "SELECT src_adg_name, dst_adg_name, hop_count, path_weight "
+                "FROM proj_reachability WHERE src_adg_name = ? "
+                "ORDER BY hop_count ASC, dst_adg_name ASC "
+                "LIMIT ?",
+                (src_adg_name, limit),
+            ).fetchall()
+        except sqlite3.Error as exc:
+            logger.debug("GraphProjectionBackend.get_reachability failed: %s", exc)
+            return []
+
+        result = []
+        for row in rows:
+            item = dict(row)
+            item["derived_from"] = self._source_artifact_digest[:16]
+            item["stale"] = self._stale
+            result.append(item)
+        return result
+
     # ------------------------------------------------------------------
     # Resource lifecycle
     # ------------------------------------------------------------------
