@@ -228,6 +228,11 @@ jobs:
         env:
           PYTHONPATH: .
 
+      - name: M13 — Evidence Governance Regression Gate
+        run: python tools/eval/retrieval_benchmark.py --regression-check
+        env:
+          PYTHONPATH: .
+
       - name: Full gate summary (exit 1 if any enforce-mode gate fails)
         run: python ops_scripts/ci/_adg_ci_gates.py
         env:

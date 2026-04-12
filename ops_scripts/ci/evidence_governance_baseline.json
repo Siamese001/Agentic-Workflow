@@ -1,0 +1,48 @@
+{
+  "_description": "Evidence-governance regression baseline — sealed thresholds for CI gate.",
+  "_version": 1,
+  "_updated": "2026-04-12",
+  "_doc": "Thresholds derived from live proof run (P6–P11, 29/29 PASS). Update only after intentional quality improvement.",
+  "gate_mode": "enforce",
+  "thresholds": {
+    "weak_support_all_4_dispositions_correct": 1.0,
+    "exit_artifact_minimum_field_count": 5,
+    "exit_artifact_required_keys": [
+      "rules_compliant",
+      "answer_fit",
+      "safety_clear",
+      "grounded_replayable",
+      "confidence_score"
+    ],
+    "bus_t_messages_per_evidenced_call_min": 1,
+    "legacy_caller_bus_t_evidence_messages_max": 0,
+    "abstain_coverage_threshold": 0.30,
+    "refine_coverage_threshold": 0.60,
+    "grounded_citation_threshold": 0.50,
+    "exact_match_baseline_ratio": 0.0,
+    "evaluate_and_emit_returns_2_tuple": true,
+    "classify_evidence_support_is_deterministic": true,
+    "bus_t_payload_no_durable_write_keys": true,
+    "disposition_never_none": true,
+    "l6_shadow_eval_packet_fields": [
+      "packet_id", "run_id", "lane_id", "collection", "policy_hash",
+      "citation_completeness", "support_coverage", "provenance_completeness",
+      "exact_match_ratio", "grounded_replayable", "contradiction_present",
+      "query_hash", "retrieval_id", "exit_disposition", "exit_trace_id",
+      "exit_reason", "weak_support_disposition", "sealed_at"
+    ]
+  },
+  "regression_commands": {
+    "unit_tests": "pytest tests/unit/agentic_core/L3_orchestration/reasoning/engines/test_evidence_governance_regression.py -m regression -v",
+    "benchmark_check": "python tools/eval/retrieval_benchmark.py --regression-check",
+    "shadow_eval_proof": "python tools/eval/retrieval_benchmark.py --shadow-eval-proof"
+  },
+  "boundary_cases": {
+    "abstain_at_coverage_0.10_contradiction_false": "ABSTAIN",
+    "escalate_at_contradiction_true": "ESCALATE",
+    "refine_at_coverage_0.45": "REFINE",
+    "proceed_at_coverage_0.75_citation_0.8": "PROCEED",
+    "boundary_at_abstain_threshold_grounded_false": "ABSTAIN",
+    "boundary_just_above_refine_threshold": "PROCEED"
+  }
+}
