@@ -1,7 +1,7 @@
 """
 GovernedRgRun — apps_rg on the shared GovernedAppRunner substrate.
 
-Migrates apps_rg onto the formal governed-app standard (Phase 4 target in registry).
+apps_rg on the formal governed-app standard. Migration complete; status = GOVERNED.
 Reuses the full L1 → L0 → C0 → L2 → L5 + L6 pipeline from the shared base;
 only the query-construction one-liner and the record mapper are RG-specific.
 
