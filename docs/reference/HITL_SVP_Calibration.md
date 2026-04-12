@@ -75,10 +75,15 @@ When presenting HITL options, the SVP Engineering ⭐ recommendation MUST priori
 Every HITL prompt MUST use `ask_user_question` tool with:
 
 ```
-question: Clear decision point (1 sentence)
-options: 2-4 items, each with:
+question: Must include header packet:
+  Recommended: <option_title>
+  Why it wins: <one sentence, case-specific, not generic>
+  What you are optimizing for: <the actual goal this decision serves>
+  What is being traded off: <the precise cost of the winning path>
+  Candidates evaluated: N | Surfaced: M | Suppressed (low confidence): X | Suppressed (non-distinct): Y
+options: 2-4 items (HITL-10 shape, see hitl-decision-points.md)
   label: Short name (≤6 words)
-  description: What it does + Pros + Cons + ⭐ if recommended
+  description: Architecture-specific justification, not generic pros/cons
 allowMultiple: false
 ```
 
@@ -88,7 +93,32 @@ allowMultiple: false
 - More than 4 options (forces analysis paralysis)
 - No ⭐ recommendation (abdicates SVP responsibility)
 - Stopping without a real decision point ("just checking in")
-- Options without pros/cons (incomplete information)
+- Generic pros/cons without architecture-specific justification
+- Bare `ask_user_question` after analysis prose (analysis belongs inside description field)
+
+---
+
+## Confidence Scoring Pipeline
+
+Before surfacing any HITL prompt, score all candidates:
+
+| Parameter | Value |
+|-----------|-------|
+| `surface_threshold` | 0.72 — suppress below this |
+| `dominance_score_threshold` | 0.85 — top score must reach this |
+| `dominance_delta` | 0.12 — gap to next must exceed this |
+| `max_surface_options` | 4 |
+
+If top scores ≥ 0.85 AND gap to next ≥ 0.12 → surface only the top option (dominance rule).
+If no candidate clears 0.72 → emit `LOW_CONFIDENCE_AMBIGUITY`, do not fabricate options.
+
+For **refactor-class decisions** (`architecture_choice`, `refactor_scope`, `anti_pattern`,
+`deletion_strategy`, `dependency_addition`, `test_strategy`, `error_handling`), emit after
+user selection — as the **first plain-text line** of the response, before any tool calls:
+
+```
+DECISION_CAPTURED: type=<type>, repo_area=<area>, selected=<chosen_label>, outcome=executed
+```
 
 ---
 
@@ -103,7 +133,7 @@ interruption. The correct cadence for a T3 task:
 → [AUTO] Query ADG for blast radius
 → [AUTO] Make edits
 → [AUTO] Run scoped tests
-→ [AUTO] Commit with --no-verify if green
+→ [AUTO] Commit (pre-commit hooks run normally)
 → [AUTO] Push
 → [HITL] Next decision point (if any)
 ```
