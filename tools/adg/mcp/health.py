@@ -14,19 +14,24 @@ class HealthDiagnostics:
     def __init__(self, service: ADGService):
         self._service = service
 
+    def _safe_projection_status(self) -> dict[str, Any]:
+        """Return projection status without letting health checks fail closed."""
+        try:
+            proj = self._service.get_projection_status()
+            data = proj.data if isinstance(proj.data, dict) else {}
+            return {
+                "available": data.get("available", False),
+                "stale": data.get("stale", False),
+                "projection_path": data.get("projection_path"),
+            }
+        except Exception as exc:  # guardian: allow-broad-exception -- projection table absent on older snapshots; health report must never crash
+            logger.warning("Projection status unavailable during health report: %s", exc)
+            return {"available": False, "stale": False, "projection_path": None}
+
     def full_report(self) -> dict[str, Any]:
         """Complete health report."""
         health = self._service.health()
         status = self._service.get_status()
-        try:
-            proj = self._service.get_projection_status()
-            graph_projection = {
-                "available": proj.data.get("available", False),
-                "stale": proj.data.get("stale", False),
-                "projection_path": proj.data.get("projection_path"),
-            }
-        except Exception:  # guardian: allow-broad-exception -- projection table absent on older snapshots; health report must never crash
-            graph_projection = {"available": False, "stale": False, "projection_path": None}
 
         return {
             "mode": health.mode,
@@ -36,7 +41,7 @@ class HealthDiagnostics:
             "schema_version": health.schema_version,
             "adg_snapshot_id": health.adg_snapshot_id,
             "adg": status.data if status.status == "ok" else None,
-            "graph_projection": graph_projection,
+            "graph_projection": self._safe_projection_status(),
         }
 
     def quick_check(self) -> dict[str, str]:
