@@ -36,6 +36,7 @@ Wire in mcp_config.json as "memory" — disable marketplace "@modelcontextprotoc
 
 from __future__ import annotations
 
+import logging
 import os
 import sys
 from pathlib import Path
@@ -55,212 +56,69 @@ if str(_REPO_ROOT) not in sys.path:
 
 from mcp.server.fastmcp import FastMCP
 
+logger = logging.getLogger(__name__)
+
 try:
     from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-        _emit_agent_executes_agent,
-        _emit_applies_guardrail,  # noqa: E402
+        _emit_applies_guardrail,
         _emit_authorize_and_execute,
         _emit_blocks_direct_write,
         _emit_captures_evaluation_metric,
         _emit_captures_execution_output,
-        _emit_checks_agent_registry,
-        _emit_coordinates_agents,
-        _emit_dispatches_agent,
-        _emit_dispatches_execution_plan,
-        _emit_dispatches_healing_run,
-        _emit_escalates_failure,
-        _emit_escalates_to_human,
-        _emit_gated_by_confidence,
-        _emit_hard_fails_untranscripted,
         _emit_invokes_evaluation,
         _emit_links_execution_to_snapshot,
-        _emit_observes_runtime_state,
-        _emit_orchestrates_workflow,
-        _emit_reads_policy_state,  # noqa: E402
-        _emit_reads_through,
-        _emit_records_execution_trace,  # noqa: E402
-        _emit_records_healing_outcome,
+        _emit_reads_policy_state,
+        _emit_records_execution_trace,
         _emit_records_telemetry_event,
         _emit_records_tool_invocation,
-        _emit_records_workflow_lineage,
-        _emit_routes_through,
-        _emit_routes_to_agent,
         _emit_routes_to_capability,
-        _emit_signs_execution_trace,  # noqa: E402
-        _emit_snapshots_state,  # noqa: E402
+        _emit_snapshots_state,
         _emit_stores_embedding,
-        _emit_transcripts_response,
         _emit_updates_meta_learning_state,
-        _emit_validates_agent_capability,
         _emit_validates_capability,
-        _emit_verifies_boundary,
-        _emit_verifies_policy,
         _emit_writes_via_uwg,
-        emit_determinism_digest,  # noqa: E402
-        emit_replay_key,  # noqa: E402
+        emit_determinism_digest,
+        emit_replay_key,
     )
-except ImportError as _ltc_err:
-    print(
-        f"[adg_memory_server] FATAL: lifecycle_trace_contract import failed: {_ltc_err}\n"
-        "  Check that agentic_core is on PYTHONPATH and the contract module has not been moved.\n"
-        f"  PYTHONPATH={__import__('os').environ.get('PYTHONPATH', '<unset>')}",
-        file=__import__("sys").stderr,
-        flush=True,
-    )
-    __import__("sys").exit(1)
 
-_emit_authorize_and_execute("p2", "adg_memory_server", "execution_auth")
-_emit_validates_capability("p2", "adg_memory_server", "capability_check")
-_emit_routes_to_capability("p2", "adg_memory_server", "capability_route")
-_emit_writes_via_uwg("p2", "adg_memory_server", "uwg_write")
-_emit_blocks_direct_write("p2", "adg_memory_server", "direct_write_block")
-_emit_records_tool_invocation("p2", "adg_memory_server", "tool_invocation")
-_emit_captures_execution_output("p2", "adg_memory_server", "exec_output")
-_emit_dispatches_agent("p3", "adg_memory_server", "agent_dispatch")
-_emit_coordinates_agents("p3", "adg_memory_server", "agent_coordination")
-_emit_records_workflow_lineage("p3", "adg_memory_server", "workflow_lineage")
-_emit_records_healing_outcome("p3", "adg_memory_server", "healing_outcome")
-_emit_escalates_failure("p3", "adg_memory_server", "failure_escalation")
-_emit_orchestrates_workflow("p3", "adg_memory_server", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "adg_memory_server", "healing_dispatch")
-_emit_invokes_evaluation("p3", "adg_memory_server", "evaluation_signal")
-_emit_records_telemetry_event("p4", "adg_memory_server", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "adg_memory_server", "eval_metric")
-_emit_stores_embedding("p4", "adg_memory_server", "embedding_store")
-_emit_updates_meta_learning_state("p4", "adg_memory_server", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "adg_memory_server", "exec_snapshot_link")
+    _LIFECYCLE_AVAILABLE = True
+except ImportError as exc:
+    _LIFECYCLE_AVAILABLE = False
+    logger.warning(
+        "lifecycle_trace_contract unavailable, continuing without lifecycle emission: %s",
+        exc,
+    )
+
 from tools.memory.sqlite_memory_store import SqliteMemoryStore
 
-_emit_records_execution_trace("p0", "evidence", "adg_memory_server")
-_emit_applies_guardrail("p0", "adg_memory_server", "p0_governance")
-_emit_reads_policy_state("p0", "adg_memory_server", "policy_binding")
-_emit_snapshots_state("p0", "adg_memory_server", "state_snapshot")
-try:
-    from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-        _emit_captures_pattern,
-        _emit_captures_runtime_anomaly,
-        _emit_emits_metric_event,
-        _emit_execution_terminates_at_uwg,
-        _emit_feeds_meta_learning,
-        _emit_improves_agent_policy,
-        _emit_invokes_eval,
-        _emit_links_incident_trace,
-        _emit_proposal_commits_routing,
-        _emit_pulls_context,
-        _emit_reads_environ,
-        _emit_reads_runtime_state,
-        _emit_records_execution_trace,
-        _emit_records_incident_event,
-        _emit_records_learning_event,
-        _emit_stores_learning_state,
-        _emit_triggers_alert,
-        _emit_updates_monitoring_state,
-        _emit_updates_routing_strategy,
-        _emit_validated_by_safety_plane,
-        _emit_writes_learning_snapshot,
-        _emit_writes_observability_log,
-        _emit_writes_through,
-    )
-except ImportError as _ltc_err2:
-    print(
-        f"[adg_memory_server] FATAL: lifecycle_trace_contract (second import) failed: {_ltc_err2}\n"
-        "  Check that agentic_core is on PYTHONPATH and the contract module has not been moved.",
-        file=__import__("sys").stderr,
-        flush=True,
-    )
-    __import__("sys").exit(1)
+_LIFECYCLE_REGISTERED = False
 
-_emit_emits_metric_event("adg_memory_server", "p4obs", "metric_1")
-_emit_emits_metric_event("adg_memory_server", "p4obs", "metric_2")
-_emit_emits_metric_event("adg_memory_server", "p4obs", "metric_3")
-_emit_emits_metric_event("adg_memory_server", "p4obs", "metric_4")
-_emit_emits_metric_event("adg_memory_server", "p4obs", "metric_5")
-_emit_emits_metric_event("adg_memory_server", "p4obs", "metric_6")
-_emit_records_incident_event("adg_memory_server", "p4obs", "incident")
-_emit_captures_runtime_anomaly("adg_memory_server", "p4obs", "anomaly")
-_emit_writes_observability_log("adg_memory_server", "p4obs", "obs_log")
-_emit_updates_monitoring_state("adg_memory_server", "p4obs", "mon_state")
-_emit_triggers_alert("adg_memory_server", "p4obs", "alert")
-_emit_links_incident_trace("adg_memory_server", "p4obs", "trace_link")
-_emit_captures_pattern("adg_memory_server", "p3lm", "pattern")
-_emit_records_learning_event("adg_memory_server", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("adg_memory_server", "p3lm", "snapshot")
-_emit_feeds_meta_learning("adg_memory_server", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("adg_memory_server", "p3lm", "routing")
-_emit_improves_agent_policy("adg_memory_server", "p3lm", "policy")
-_emit_stores_learning_state("adg_memory_server", "p3lm", "state")
-_emit_records_execution_trace("adg_memory_server", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("adg_memory_server", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("adg_memory_server", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("adg_memory_server", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("adg_memory_server", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("adg_memory_server", "env_read", "p2_env_1")
-_emit_reads_environ("adg_memory_server", "env_read", "p2_env_2")
-_emit_reads_runtime_state("adg_memory_server", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("adg_memory_server", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "adg_memory_server", "context_pull")
-_emit_pulls_context("p1", "adg_memory_server", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "adg_memory_server", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "adg_memory_server", "uwg_term_2")
-_emit_writes_through("p1", "adg_memory_server", "write_through")
-_emit_writes_through("p1", "adg_memory_server", "write_through_2")
-_emit_validated_by_safety_plane("p1", "adg_memory_server", "safety_validation")
-_emit_invokes_eval("p1", "adg_memory_server", "eval_call")
-_emit_proposal_commits_routing("p1", "adg_memory_server", "routing_commit")
-_emit_escalates_to_human("p1", "adg_memory_server", "human_escalation")
-_emit_routes_through("p1", "adg_memory_server", "route_through")
-_emit_checks_agent_registry("p1", "adg_memory_server", "agent_registry")
-_emit_validates_agent_capability("p1", "adg_memory_server", "capability")
-_emit_dispatches_execution_plan("p1", "adg_memory_server", "exec_plan")
-_emit_agent_executes_agent("p1", "adg_memory_server", "sub_agent")
-_emit_routes_to_agent("p1", "adg_memory_server", "target_agent")
-_emit_verifies_policy("p1", "adg_memory_server", "policy_check")
-_emit_observes_runtime_state("p1", "adg_memory_server", "runtime_state")
-_emit_verifies_boundary("p1", "adg_memory_server", "boundary_check")
-_emit_transcripts_response("p1", "adg_memory_server", "transcript")
-_emit_hard_fails_untranscripted("p1", "adg_memory_server")
-_emit_gated_by_confidence("p1", "adg_memory_server", "confidence_gate")
-emit_replay_key("p0", "adg_memory_server")
-emit_determinism_digest("p0", "adg_memory_server")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_reads_through("l4", "adg_memory_server", "urg_read_1")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_2")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_3")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_4")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_5")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_6")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_7")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_8")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_9")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_10")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_11")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_12")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_13")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_14")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_15")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_16")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_17")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_18")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_19")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_20")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_21")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_22")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_23")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_24")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_25")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_26")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_27")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_28")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_29")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_30")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_31")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_32")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_33")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_34")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_35")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_36")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_37")
-_emit_reads_through("l4", "adg_memory_server", "urg_read_38")
+
+def _register_lifecycle_traces_once() -> None:
+    global _LIFECYCLE_REGISTERED
+    if _LIFECYCLE_REGISTERED or not _LIFECYCLE_AVAILABLE:
+        return
+    emit_replay_key("p0", "adg_memory_server")
+    emit_determinism_digest("p0", "adg_memory_server")
+    _emit_records_execution_trace("p0", "evidence", "adg_memory_server")
+    _emit_applies_guardrail("p0", "adg_memory_server", "p0_governance")
+    _emit_reads_policy_state("p0", "adg_memory_server", "policy_binding")
+    _emit_snapshots_state("p0", "adg_memory_server", "state_snapshot")
+    _emit_authorize_and_execute("p2", "adg_memory_server", "execution_auth")
+    _emit_validates_capability("p2", "adg_memory_server", "capability_check")
+    _emit_routes_to_capability("p2", "adg_memory_server", "capability_route")
+    _emit_writes_via_uwg("p2", "adg_memory_server", "uwg_write")
+    _emit_blocks_direct_write("p2", "adg_memory_server", "direct_write_block")
+    _emit_records_tool_invocation("p2", "adg_memory_server", "tool_invocation")
+    _emit_captures_execution_output("p2", "adg_memory_server", "exec_output")
+    _emit_invokes_evaluation("p3", "adg_memory_server", "evaluation_signal")
+    _emit_records_telemetry_event("p4", "adg_memory_server", "telemetry_event")
+    _emit_captures_evaluation_metric("p4", "adg_memory_server", "eval_metric")
+    _emit_stores_embedding("p4", "adg_memory_server", "embedding_store")
+    _emit_updates_meta_learning_state("p4", "adg_memory_server", "meta_learning")
+    _emit_links_execution_to_snapshot("p4", "adg_memory_server", "exec_snapshot_link")
+    _LIFECYCLE_REGISTERED = True
+
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -277,6 +135,13 @@ _PROTECTED_TYPES = (
     "EpisodicEvent",
     "ProceduralPattern",
     "ArchitecturalDecision",
+)
+_SESSION_RECALL_TYPES = (
+    "ArchitectureLayer",
+    "ProjectContext",
+    "ConstitutionalRule",
+    "ArchitecturalDecision",
+    "ProceduralPattern",
 )
 
 _store = SqliteMemoryStore(_DB_PATH)
@@ -308,6 +173,7 @@ def create_entities(entities: list[dict]) -> dict[str, Any]:
     Entities that already exist are skipped (use add_observations to extend them).
     Observations are deduplicated — exact duplicates are silently ignored.
     """
+    _register_lifecycle_traces_once()
     return _store.create_entities(entities)
 
 
@@ -347,6 +213,7 @@ def search_nodes(query: str) -> dict[str, Any]:
 
     Case-insensitive substring match. Returns matching entities with all context.
     """
+    _register_lifecycle_traces_once()
     entities = _store.search_nodes(query)
     return {"query": query, "count": len(entities), "entities": entities}
 
@@ -407,11 +274,12 @@ def delete_relations(relations: list[dict]) -> dict[str, Any]:
 def mem_recall_session_start() -> dict[str, Any]:
     """Return all persistent project context — call this at the start of every session.
 
-    Returns entities typed as ArchitectureLayer, ProjectContext, and ConstitutionalRule.
-    These are durable entities that survive cleanup and represent the long-lived
-    knowledge base: ADG metadata, layer structure, and constitutional rules.
+    Returns durable entities used to reconstruct project memory at session start.
+    This includes layers, constitutional rules, project context, and curated
+    architectural patterns or decisions that should survive cleanup.
     """
-    entities = _store.get_entities_by_type(_PROTECTED_TYPES)
+    _register_lifecycle_traces_once()
+    entities = _store.get_entities_by_type(_SESSION_RECALL_TYPES)
     return {
         "count": len(entities),
         "note": "These are durable entities — they persist across Windsurf restarts.",
@@ -431,10 +299,17 @@ def mem_import_adg_context() -> dict[str, Any]:
     Requires Redis running with ADG cache loaded.
     If Redis is unavailable: python tools/adg/adg_redis_ingest.py --force
     """
+    _register_lifecycle_traces_once()
     try:
         import redis as _rlib  # noqa: PLC0415
 
-        r = _rlib.from_url(_ADG_REDIS_URL, decode_responses=True)
+        r = _rlib.from_url(
+            _ADG_REDIS_URL,
+            decode_responses=True,
+            socket_timeout=2.0,
+            socket_connect_timeout=2.0,
+            retry_on_timeout=False,
+        )
         r.ping()
 
         meta = r.hgetall("adg:meta")
@@ -476,7 +351,7 @@ def mem_import_adg_context() -> dict[str, Any]:
             if _tqdm is not None
             else layer_descriptions.items()
         )
-        for layer, desc in _iter:
+        for layer, desc in _iter:  # progress: tqdm wraps _iter above
             count = r.scard(f"adg:nodes:by_layer:{layer}")
             ename = f"Layer:{layer}"
             _store.upsert_entity(
@@ -497,6 +372,7 @@ def mem_import_adg_context() -> dict[str, Any]:
             "adg_timestamp": timestamp,
         }
     except Exception as exc:  # guardian: allow-broad-exception -- Redis/import errors from optional dependency; all failure modes returned as structured {"status":"error"} response to caller, never swallowed
+        logger.exception("mem_import_adg_context failed")
         return {"status": "error", "message": str(exc)}
 
 
@@ -507,6 +383,7 @@ def mem_get_stats() -> dict[str, Any]:
     Counts entities, observations, and relations by type.
     Shows top entities by observation count and database age.
     """
+    _register_lifecycle_traces_once()
     return _store.get_stats()
 
 
@@ -519,6 +396,7 @@ def mem_cleanup_stale(older_than_days: float = 30.0) -> dict[str, Any]:
 
     Use this to prune session-scoped observations that are no longer relevant.
     """
+    _register_lifecycle_traces_once()
     return _store.cleanup_stale(older_than_days, _PROTECTED_TYPES)
 
 
@@ -536,4 +414,5 @@ def mem_cleanup_stale(older_than_days: float = 30.0) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stderr)
     mcp.run(transport="stdio")

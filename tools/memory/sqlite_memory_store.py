@@ -22,7 +22,13 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
 
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ImportError:
+
+    def tqdm(iterable, **_kwargs):
+        return iterable
+
 
 _DEFAULT_DB = Path(__file__).resolve().parents[2] / "artifacts" / "memory" / "knowledge_graph.sqlite"
 
@@ -34,6 +40,7 @@ ALLOWED_ENTITY_TYPES: frozenset[str] = frozenset(
         "EpisodicEvent",
         "ProceduralPattern",
         "ArchitecturalDecision",
+        "general",
     }
 )
 
@@ -94,6 +101,8 @@ class SqliteMemoryStore:
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=WAL")
         conn.execute("PRAGMA foreign_keys=ON")
+        conn.execute("PRAGMA busy_timeout=5000")
+        conn.execute("PRAGMA synchronous=NORMAL")
         try:
             with conn:
                 yield conn
@@ -116,10 +125,13 @@ class SqliteMemoryStore:
 
     def _add_obs(self, conn: sqlite3.Connection, name: str, content: str, now: float) -> bool:
         """Insert observation; return True if inserted, False if duplicate."""
+        content = content.strip()
+        if not content:
+            return False
         try:
             conn.execute(
                 "INSERT INTO observations (entity_name, content, created_at) VALUES (?, ?, ?)",
-                (name, content.strip(), now),
+                (name, content, now),
             )
             return True
         except sqlite3.IntegrityError:
@@ -144,7 +156,7 @@ class SqliteMemoryStore:
                 name = (e.get("name") or "").strip()
                 if not name:
                     continue
-                etype = e.get("entityType") or "general"
+                etype = (e.get("entityType") or "general").strip()
                 if etype not in ALLOWED_ENTITY_TYPES:
                     rejected.append(
                         {
@@ -206,6 +218,8 @@ class SqliteMemoryStore:
                 rel_type = (rel.get("relationType") or "related_to").strip()
                 if not from_e or not to_e:
                     continue
+                if not rel_type:
+                    continue
                 for name in (from_e, to_e):
                     self._upsert_entity(conn, name, "general", now)
                 try:
@@ -233,6 +247,9 @@ class SqliteMemoryStore:
 
     def search_nodes(self, query: str) -> list[dict[str, Any]]:
         """Full-text search across entity names, types, and observations."""
+        query = (query or "").strip()
+        if not query:
+            return []
         pat = f"%{query}%"
         with self.connection() as conn:
             direct = {
@@ -376,6 +393,8 @@ class SqliteMemoryStore:
 
     def add_observation(self, entity_name: str, content: str) -> bool:
         """Add a single observation to an entity. Returns True if inserted."""
+        if not entity_name or not entity_name.strip():
+            return False
         now = time.time()
         with self.connection() as conn:
             self._upsert_entity(conn, entity_name, "general", now)
@@ -383,6 +402,8 @@ class SqliteMemoryStore:
 
     def insert_relation(self, from_e: str, rel_type: str, to_e: str) -> bool:
         """Insert a single relation. Returns True if inserted, False if duplicate."""
+        if not from_e or not to_e or not rel_type or not rel_type.strip():
+            return False
         now = time.time()
         with self.connection() as conn:
             for name in (from_e, to_e):
@@ -436,6 +457,8 @@ class SqliteMemoryStore:
         protected_types: tuple[str, ...] = (),
     ) -> dict[str, Any]:
         """Delete entities not updated in N days, excluding protected types."""
+        if older_than_days < 0:
+            raise ValueError("older_than_days must be >= 0")
         cutoff = time.time() - (older_than_days * 86400)
         with self.connection() as conn:
             if protected_types:

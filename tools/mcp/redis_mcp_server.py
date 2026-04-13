@@ -34,10 +34,9 @@ from __future__ import annotations
 import logging
 import os
 import sys
-from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from tools.mcp.mcp_bootstrap import create_mcp_server, run_server
 
 try:
     import redis as redis_lib
@@ -45,15 +44,12 @@ except ImportError:
     print("redis package not found. Install with: pip install redis", file=sys.stderr)
     sys.exit(1)
 
-try:
-    from mcp.server.fastmcp import FastMCP
-except ImportError:
-    print("mcp package not found. Install with: pip install mcp", file=sys.stderr)
-    sys.exit(1)
-
 logger = logging.getLogger(__name__)
 
-mcp = FastMCP("redis-mcp")
+mcp = create_mcp_server(
+    "redis-mcp",
+    "Redis cache/state inspection and bounded invalidation tools.",
+)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Connection pool (lazy singleton — P3-A)
@@ -463,6 +459,5 @@ def redis_stats() -> dict[str, Any]:
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stderr)
     logger.info("Starting Redis MCP Server")
-    mcp.run()
+    run_server(mcp)

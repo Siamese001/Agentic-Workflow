@@ -9,6 +9,7 @@ ProceduralPattern, ArchitecturalDecision) are never deleted.
 
 import argparse
 import json
+import os
 import sqlite3
 import sys
 from datetime import datetime, timezone
@@ -17,7 +18,12 @@ from typing import Dict, List
 
 # Repository root
 REPO_ROOT = Path(__file__).parent.parent.parent
-MEMORY_DB = REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"
+MEMORY_DB = Path(
+    os.environ.get(
+        "MEMORY_DB",
+        str(REPO_ROOT / "artifacts" / "memory" / "knowledge_graph.sqlite"),
+    )
+)
 TELEMETRY_DIR = REPO_ROOT / "docs" / "reports" / "telemetry"
 
 PROTECTED_TYPES = {
@@ -30,12 +36,37 @@ PROTECTED_TYPES = {
 }
 
 
+def _coerce_epoch_seconds(value) -> float | None:
+    """Accept REAL epoch seconds or ISO-8601 text timestamps."""
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        value = value.strip()
+        if not value:
+            return None
+        try:
+            return float(value)
+        except ValueError:
+            pass
+        try:
+            return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+        except ValueError:
+            return None
+    return None
+
+
 def get_db_connection() -> sqlite3.Connection:
     """Get connection to memory database."""
     if not MEMORY_DB.exists():
         print(f"Error: Memory database not found at {MEMORY_DB}", file=sys.stderr)
         sys.exit(1)
-    return sqlite3.connect(MEMORY_DB)
+    conn = sqlite3.connect(MEMORY_DB)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys=ON")
+    conn.execute("PRAGMA busy_timeout=5000")
+    return conn
 
 
 def get_current_stats(conn: sqlite3.Connection) -> Dict:
@@ -62,12 +93,10 @@ def get_current_stats(conn: sqlite3.Connection) -> Dict:
     cursor.execute("SELECT MIN(created_at) FROM entities")
     oldest = cursor.fetchone()[0]
     oldest_days = None
-    if oldest:
-        try:
-            oldest_dt = datetime.fromisoformat(oldest.replace("Z", "+00:00"))
-            oldest_days = (datetime.now(timezone.utc) - oldest_dt).days
-        except (ValueError, AttributeError):
-            pass
+    oldest_ts = _coerce_epoch_seconds(oldest)
+    if oldest_ts is not None:
+        oldest_dt = datetime.fromtimestamp(oldest_ts, tz=timezone.utc)
+        oldest_days = (datetime.now(timezone.utc) - oldest_dt).days
 
     return {
         "total_entities": total_entities,
@@ -81,26 +110,30 @@ def get_current_stats(conn: sqlite3.Connection) -> Dict:
 
 def get_stale_entities(conn: sqlite3.Connection, older_than_days: int) -> List[str]:
     """Get entity names that are stale (older than threshold) and not protected."""
-    cursor = conn.cursor()
+    if older_than_days < 0:
+        raise ValueError("older_than_days must be >= 0")
 
+    cursor = conn.cursor()
+    placeholders = ",".join("?" for _ in PROTECTED_TYPES)
     cursor.execute(
-        """
-        SELECT name, entity_type, created_at FROM entities
-        WHERE entity_type NOT IN ({})
-    """.format(",".join("'" + t + "'" for t in PROTECTED_TYPES))
+        f"""
+        SELECT name, entity_type, updated_at FROM entities
+        WHERE entity_type NOT IN ({placeholders})
+        """,
+        tuple(PROTECTED_TYPES),
     )
 
     stale = []
-    for name, _, created_at in cursor.fetchall():
-        if not created_at:
+    for row in cursor.fetchall():
+        name = row[0]
+        updated_at = row[2]
+        updated_ts = _coerce_epoch_seconds(updated_at)
+        if updated_ts is None:
             continue
-        try:
-            created_dt = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
-            age_days = (datetime.now(timezone.utc) - created_dt).days
-            if age_days > older_than_days:
-                stale.append(name)
-        except (ValueError, AttributeError):
-            pass
+        updated_dt = datetime.fromtimestamp(updated_ts, tz=timezone.utc)
+        age_days = (datetime.now(timezone.utc) - updated_dt).days
+        if age_days > older_than_days:
+            stale.append(name)
 
     return stale
 
@@ -113,7 +146,7 @@ def purge_entities(conn: sqlite3.Connection, entity_names: List[str], dry_run: b
     cursor = conn.cursor()
     count = 0
 
-    for name in entity_names:
+    for name in sorted(set(entity_names)):
         if dry_run:
             print(f"  [DRY-RUN] Would delete: {name}")
             count += 1
@@ -199,6 +232,9 @@ def cmd_purge(args):
 
 def cmd_full_sync(args):
     """Execute full purge sync workflow."""
+    if args.older_than_days < 0:
+        print("older-than-days must be >= 0", file=sys.stderr)
+        return 2
     conn = get_db_connection()
 
     # Pre-purge stats

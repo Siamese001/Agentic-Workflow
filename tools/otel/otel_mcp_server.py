@@ -45,6 +45,7 @@ import os
 import subprocess
 import sys
 import time
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any
 
@@ -145,7 +146,10 @@ RUNTIME_ADG_DIR = _REPO_ROOT / "agentic_core" / "L4_state" / "memory" / "runtime
 RUNTIME_ADG_STORE = RUNTIME_ADG_DIR
 
 # Cache for recent traces (in production, use Redis or similar)
-_trace_cache: dict[str, dict[str, Any]] = {}
+_trace_cache: "OrderedDict[str, dict[str, Any]]" = OrderedDict()
+_CACHE_MAX_TRACES = max(16, int(os.environ.get("OTEL_MCP_MAX_TRACE_CACHE", "256")))
+_ALLOW_MOCK_TRACES = os.environ.get("OTEL_MCP_ALLOW_MOCK_TRACES", "0") == "1"
+_LIFECYCLE_REGISTERED = False
 
 # Server identity — captured once at process startup for stale-process detection.
 _SERVER_PID: int = os.getpid()
@@ -190,6 +194,32 @@ def _get_tracer():
     return _tracer_loader.get()
 
 
+def _register_lifecycle_traces_once() -> None:
+    global _LIFECYCLE_REGISTERED
+    if _LIFECYCLE_REGISTERED or not _LIFECYCLE_AVAILABLE:
+        return
+    _register_lifecycle_traces()
+    _LIFECYCLE_REGISTERED = True
+
+
+def _safe_loader_get(getter, label: str):
+    try:
+        return getter(), None
+    except (
+        Exception
+    ) as exc:  # guardian: allow-broad-exception -- loader errors are non-fatal for status reporting
+        logger.warning("%s loader failed: %s", label, exc)
+        _metrics_cache["error_count"] += 1
+        return None, str(exc)
+
+
+def _cache_trace(trace_id: str, payload: dict[str, Any]) -> None:
+    _trace_cache[trace_id] = payload
+    _trace_cache.move_to_end(trace_id)
+    while len(_trace_cache) > _CACHE_MAX_TRACES:
+        _trace_cache.popitem(last=False)
+
+
 @mcp.tool()
 def otel_status() -> dict[str, Any]:
     """Check OpenTelemetry collector health and runtime ADG freshness.
@@ -197,8 +227,9 @@ def otel_status() -> dict[str, Any]:
     Returns:
         Dictionary with collector status, last trace timestamp, and cache stats.
     """
-    tracer = _get_tracer()
-    store = _get_runtime_adg_store()
+    _register_lifecycle_traces_once()
+    tracer, tracer_error = _safe_loader_get(_get_tracer, "tracer")
+    store, store_error = _safe_loader_get(_get_runtime_adg_store, "runtime_adg_store")
 
     status = {
         "collector_available": tracer is not None and tracer.is_enabled(),
@@ -210,6 +241,8 @@ def otel_status() -> dict[str, Any]:
         "error_count": _metrics_cache.get("error_count", 0),
         "anomaly_count": _metrics_cache.get("anomaly_count", 0),
         "runtime_adg_snapshots": len(list(RUNTIME_ADG_DIR.glob("*.json"))) if RUNTIME_ADG_DIR.exists() else 0,
+        "tracer_error": tracer_error,
+        "store_error": store_error,
     }
 
     logger.info("otel_status_checked", extra=status)
@@ -260,6 +293,8 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
     Args:
         trace_id: OpenTelemetry trace ID (CID format)
     """
+    _register_lifecycle_traces_once()
+    trace_id = trace_id.strip()
     if not trace_id or not trace_id.strip():
         return {"success": False, "error": "trace_id cannot be empty"}
 
@@ -268,11 +303,12 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
 
     # Check in-process cache first
     if trace_id in _trace_cache:
+        _trace_cache.move_to_end(trace_id)
         logger.info("otel_trace_cache_hit", extra={"trace_id": trace_id})
         return _trace_cache[trace_id]
 
     # Try to load from FileBackedRuntimeADGStore (canonical L4 store)
-    store = _get_runtime_adg_store()
+    store, store_error = _safe_loader_get(_get_runtime_adg_store, "runtime_adg_store")
     if store is not None:
         try:
             version_id = store.get_version_id_for_trace(trace_id)
@@ -292,7 +328,7 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
                         "adg_edges": adg_edges,
                         "source": "file_backed_runtime_adg_store",
                     }
-                    _trace_cache[trace_id] = result
+                    _cache_trace(trace_id, result)
                     logger.info("otel_trace_loaded_from_store", extra={"trace_id": trace_id})
                     return result
         except Exception as e:
@@ -320,7 +356,7 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
             }
 
             # Cache result
-            _trace_cache[trace_id] = result
+            _cache_trace(trace_id, result)
 
             logger.info(
                 "otel_trace_loaded",
@@ -337,12 +373,19 @@ def otel_trace(trace_id: str) -> dict[str, Any]:
             logger.error("otel_trace_load_error", extra={"trace_id": trace_id, "error": str(e)})
             _metrics_cache["error_count"] += 1
 
-    # Fallback: create mock trace for demonstration
-    mock_trace = _create_mock_trace(trace_id)
-    _trace_cache[trace_id] = mock_trace
+    # Fallback: mock trace only if explicitly enabled
+    if _ALLOW_MOCK_TRACES:
+        mock_trace = _create_mock_trace(trace_id)
+        _cache_trace(trace_id, mock_trace)
+        logger.info("otel_trace_mock_created", extra={"trace_id": trace_id})
+        return mock_trace
 
-    logger.info("otel_trace_mock_created", extra={"trace_id": trace_id})
-    return mock_trace
+    return {
+        "success": False,
+        "error": "trace not found",
+        "trace_id": trace_id,
+        "store_error": store_error,
+    }
 
 
 @mcp.tool()
@@ -558,6 +601,9 @@ def otel_anomalies(severity: str = "any") -> dict[str, Any]:
     Returns:
         Dictionary with anomalous spans and analysis.
     """
+    if severity not in {"any", "low", "medium", "high"}:
+        return {"success": False, "error": "severity must be one of: any, low, medium, high"}
+
     anomalies = []
 
     # Search through cached traces for anomalies — progress_bar: in-memory cache, bounded
@@ -625,19 +671,27 @@ def otel_ingest_to_runtime_adg(trace_data: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Dictionary with ingestion result and runtime ADG snapshot ID.
     """
-    store = _get_runtime_adg_store()
+    _register_lifecycle_traces_once()
+    if not isinstance(trace_data, dict):
+        return {"success": False, "error": "trace_data must be a dict"}
+
+    spans = trace_data.get("spans", [])
+    if not isinstance(spans, list):
+        return {"success": False, "error": "trace_data['spans'] must be a list"}
+
+    store, store_error = _safe_loader_get(_get_runtime_adg_store, "runtime_adg_store")
 
     if not store:
         return {
             "success": False,
             "error": "Runtime ADG store not available",
+            "store_error": store_error,
             "trace_id": trace_data.get("trace_id", "unknown"),
         }
 
     try:
         from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
 
-        spans = trace_data.get("spans", [])
         if len(spans) > 1000:
             return {"success": False, "error": "Too many spans for single ingestion (max 1000)"}
 
@@ -757,7 +811,7 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
 
     # Convert to ADG edges — progress_bar: fixed 3-item mock, bounded
     adg_edges = []
-    for i, span in enumerate(mock_spans):  # progress_bar: fixed 3-item mock list
+    for span in mock_spans:  # progress_bar: fixed 3-item mock list
         if span["parent_span_id"]:
             parent_span = next((s for s in mock_spans if s["span_id"] == span["parent_span_id"]), None)
             if parent_span:

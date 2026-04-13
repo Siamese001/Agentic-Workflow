@@ -1,44 +1,31 @@
 #!/usr/bin/env python3
 """
-Pytest MCP Server - Test discovery, execution, and analysis
-Provides pytest integration for Windsurf with comprehensive test management
+Pytest MCP Server - Test discovery, execution, and analysis.
+
+Provides pytest integration for Windsurf with comprehensive test management.
+Uses the canonical mcp_bootstrap pattern (FastMCP + @mcp.tool() + run_server)
+to avoid the Windows stdio transport hangs caused by low-level Server + anyio.run.
+Subprocess calls use safe_run() to enforce stdin=DEVNULL / stdout=PIPE / stderr=PIPE.
 """
+
+from __future__ import annotations
 
 import json
 import logging
 import re
 import subprocess
-import sys
 import time
 import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
 
-import anyio
+from tools.mcp.mcp_bootstrap import REPO_ROOT, create_mcp_server, run_server
+from tools.mcp.mcp_subprocess import safe_run
 
-# MCP imports
-try:
-    from mcp.server import Server
-    from mcp.server.lowlevel.server import NotificationOptions
-    from mcp.server.models import InitializationOptions
-    from mcp.server.stdio import stdio_server
-    from mcp.types import (
-        CallToolResult,
-        ListToolsResult,
-        TextContent,
-        Tool,
-    )
-except ImportError:
-    print("MCP SDK not found. Install with: pip install mcp", file=sys.stderr)
-    sys.exit(1)
-
-# Configure logging - use stderr to avoid interfering with MCP protocol on stdout
-logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 # Configuration
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 TESTS_DIR = REPO_ROOT / "tests"
 PYTEST_CONFIG = REPO_ROOT / "pytest.ini"
 PYPROJECT_TOML = REPO_ROOT / "pyproject.toml"
@@ -72,635 +59,356 @@ def _validate_expr(value: str, param_name: str) -> str:
     return value
 
 
-class PytestMCPServer:
-    def __init__(self):
-        self.server = Server("pytest_mcp")
-        self._setup_handlers()
+mcp = create_mcp_server(
+    "pytest-mcp",
+    "Test discovery, execution, coverage analysis, and pytest config inspection.",
+)
 
-    def _setup_handlers(self):
-        @self.server.list_tools()
-        async def list_tools() -> ListToolsResult:
-            """List available pytest tools"""
-            return ListToolsResult(
-                tools=[
-                    Tool(
-                        name="discover_tests",
-                        description="Discover all tests in the repository",
-                        inputSchema={
-                            "type": "object",
-                            "properties": {
-                                "path": {
-                                    "type": "string",
-                                    "description": "Path to search for tests (default: tests/)",
-                                    "default": "tests",
-                                },
-                                "pattern": {
-                                    "type": "string",
-                                    "description": "Test file pattern (default: test_*.py)",
-                                    "default": "test_*.py",
-                                },
-                            },
-                        },
-                    ),
-                    Tool(
-                        name="run_tests",
-                        description="Run pytest with specified options",
-                        inputSchema={
-                            "type": "object",
-                            "properties": {
-                                "path": {
-                                    "type": "string",
-                                    "description": "Test path or file",
-                                    "default": "tests",
-                                },
-                                "keywords": {
-                                    "type": "string",
-                                    "description": "Run tests matching keywords",
-                                },
-                                "markers": {
-                                    "type": "string",
-                                    "description": "Run tests with specific markers",
-                                },
-                                "verbose": {
-                                    "type": "boolean",
-                                    "description": "Verbose output",
-                                    "default": True,
-                                },
-                                "coverage": {
-                                    "type": "boolean",
-                                    "description": "Generate coverage report",
-                                    "default": False,
-                                },
-                                "timeout": {
-                                    "type": "integer",
-                                    "description": "Timeout in seconds (max 300)",
-                                    "default": 60,
-                                    "maximum": 300,
-                                },
-                            },
-                        },
-                    ),
-                    Tool(
-                        name="get_test_details",
-                        description="Get detailed information about a specific test",
-                        inputSchema={
-                            "type": "object",
-                            "properties": {
-                                "test_path": {
-                                    "type": "string",
-                                    "description": "Path to test file",
-                                },
-                                "test_name": {
-                                    "type": "string",
-                                    "description": "Specific test function name",
-                                },
-                            },
-                            "required": ["test_path"],
-                        },
-                    ),
-                    Tool(
-                        name="analyze_test_coverage",
-                        description="Analyze test coverage for the repository",
-                        inputSchema={
-                            "type": "object",
-                            "properties": {
-                                "path": {
-                                    "type": "string",
-                                    "description": "Path to analyze coverage for",
-                                    "default": "agentic_core",
-                                },
-                                "format": {
-                                    "type": "string",
-                                    "description": "Output format (text, json, html)",
-                                    "default": "text",
-                                },
-                            },
-                        },
-                    ),
-                    Tool(
-                        name="list_pytest_config",
-                        description="Show pytest configuration",
-                        inputSchema={
-                            "type": "object",
-                            "properties": {},
-                        },
-                    ),
-                ],
-            )
 
-        @self.server.call_tool()
-        async def call_tool(name: str, arguments: dict[str, Any]) -> CallToolResult:
-            """Handle tool calls"""
+# ── Tools ────────────────────────────────────────────────────────────────────
+
+
+@mcp.tool()
+def discover_tests(
+    path: str = "tests",
+    pattern: str = "test_*.py",
+) -> str:
+    """Discover all tests in the repository"""
+    try:
+        search_path = _resolve_confined_path(path, REPO_ROOT)
+    except ValueError as exc:
+        raise ValueError(f"Invalid path: {exc}") from exc
+
+    if not search_path.exists():
+        raise ValueError(f"Test path {search_path} does not exist")
+
+    cmd = ["python", "-m", "pytest", "--collect-only", "-q", str(search_path)]
+
+    try:
+        result = safe_run(cmd, cwd=REPO_ROOT, timeout=30)
+
+        # exit code 5 = no tests collected — not an error, return zero-test result
+        if result.returncode not in (0, 5):
+            return f"Error collecting tests (exit {result.returncode}):\n{result.stderr or result.stdout}"
+
+        # Parse the collection output
+        output = result.stdout
+        # Count node ids: lines containing '::' that look like test node ids
+        test_count = sum(1 for ln in output.splitlines() if "::" in ln and not ln.startswith(" "))
+
+        # Get file list
+        test_files = list(search_path.rglob(pattern))
+        file_count = len(test_files)
+
+        summary = f"Discovered {test_count} tests in {file_count} files\n\n"
+        summary += f"Search path: {search_path}\n"
+        summary += f"Pattern: {pattern}\n\n"
+        summary += "Test files:\n"
+
+        for test_file in sorted(test_files):
+            rel_path = test_file.relative_to(REPO_ROOT)
+            summary += f"- {rel_path}\n"
+
+        return summary
+
+    except subprocess.TimeoutExpired:
+        return "Error: Test discovery timed out"
+    except (ValueError, RuntimeError, OSError, subprocess.SubprocessError) as e:
+        return f"Discovery error: {e}"
+
+
+@mcp.tool()
+def run_tests(
+    path: str = "tests",
+    keywords: str | None = None,
+    markers: str | None = None,
+    verbose: bool = True,
+    coverage: bool = False,
+    timeout: int = 60,
+) -> str:
+    """Run pytest with specified options"""
+    try:
+        resolved_test_path = _resolve_confined_path(path, REPO_ROOT)
+    except ValueError as exc:
+        raise ValueError(f"Invalid path: {exc}") from exc
+
+    timeout = min(timeout, MAX_EXECUTION_TIME)
+
+    if keywords:
+        keywords = _validate_expr(keywords, "keywords")
+    if markers:
+        markers = _validate_expr(markers, "markers")
+
+    # Build pytest command
+    cmd = ["python", "-m", "pytest"]
+
+    if verbose:
+        cmd.append("-v")
+
+    if keywords:
+        cmd.extend(["-k", keywords])
+
+    if markers:
+        cmd.extend(["-m", markers])
+
+    if coverage:
+        cmd.extend(["--cov=.", "--cov-report=term-missing"])
+
+    cmd.append(str(resolved_test_path))
+
+    # Use a unique JUnit XML path to avoid collisions between concurrent runs
+    junit_xml = REPO_ROOT / f".pytest_results_{uuid.uuid4().hex}.xml"
+    cmd.extend(["--junit-xml", str(junit_xml)])
+
+    try:
+        start_time = time.time()
+        result = safe_run(cmd, cwd=REPO_ROOT, timeout=timeout)
+        execution_time = time.time() - start_time
+
+        # Parse JUnit XML if available
+        junit_summary = ""
+        if junit_xml.exists():
             try:
-                if name == "discover_tests":
-                    return await self._discover_tests(arguments)
-                elif name == "run_tests":
-                    return await self._run_tests(arguments)
-                elif name == "get_test_details":
-                    return await self._get_test_details(arguments)
-                elif name == "analyze_test_coverage":
-                    return await self._analyze_test_coverage(arguments)
-                elif name == "list_pytest_config":
-                    return await self._list_pytest_config(arguments)
-                else:
-                    raise ValueError(f"Unknown tool: {name}")
-            except Exception as e:
-                logger.error(f"Error in tool {name}: {e}")
-                return CallToolResult(
-                    content=[TextContent(type="text", text=f"Error: {str(e)}")],
-                    isError=True,
-                )
+                tree = ET.parse(junit_xml)
+                root = tree.getroot()
 
-    async def _discover_tests(self, args: dict[str, Any]) -> CallToolResult:
-        """Discover all tests in the repository"""
+                tests = int(root.get("tests", 0))
+                failures = int(root.get("failures", 0))
+                errors = int(root.get("errors", 0))
+                skipped = int(root.get("skipped", 0))
+                time_taken = float(root.get("time", 0))
+
+                junit_summary = "\nJUnit XML Results:\n"
+                junit_summary += f"Tests: {tests}\n"
+                junit_summary += f"Failures: {failures}\n"
+                junit_summary += f"Errors: {errors}\n"
+                junit_summary += f"Skipped: {skipped}\n"
+                junit_summary += f"Time: {time_taken:.2f}s\n"
+
+                # Clean up
+                junit_xml.unlink()
+            except ET.ParseError:
+                logger.warning("Failed to parse JUnit XML")
+
+        # Prepare output
+        output = f"Command: {' '.join(cmd)}\n"
+        output += f"Execution time: {execution_time:.2f}s\n"
+        output += f"Exit code: {result.returncode}\n\n"
+
+        if result.stdout:
+            output += f"STDOUT:\n{result.stdout}\n"
+
+        if result.stderr:
+            output += f"STDERR:\n{result.stderr}\n"
+
+        output += junit_summary
+
+        # Truncate if too large
+        if len(output) > MAX_OUTPUT_SIZE:
+            output = output[:MAX_OUTPUT_SIZE] + "\n... (output truncated)"
+
+        # pytest exit codes: 0=all passed, 1=some failed, 2=interrupted,
+        # 3=internal error, 4=usage error, 5=no tests collected
+        if result.returncode not in (0, 1, 5):
+            output = f"ERROR (exit {result.returncode}):\n{output}"
+
+        return output
+
+    except subprocess.TimeoutExpired:
+        # Best-effort cleanup of junit xml on timeout
         try:
-            search_path = _resolve_confined_path(args.get("path", "tests"), REPO_ROOT)
-        except ValueError as exc:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Invalid path: {exc}")],
-                isError=True,
-            )
-        pattern = args.get("pattern", "test_*.py")
-
-        if not search_path.exists():
-            return CallToolResult(
-                content=[
-                    TextContent(
-                        type="text",
-                        text=f"Test path {search_path} does not exist",
-                    )
-                ],
-                isError=True,
-            )
-
-        # Use pytest to collect tests
-        cmd = ["python", "-m", "pytest", "--collect-only", "-q", str(search_path)]
-
-        try:
-            result = subprocess.run(
-                cmd,
-                cwd=REPO_ROOT,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                timeout=30,
-            )
-
-            # exit code 5 = no tests collected — not an error, return zero-test result
-            if result.returncode not in (0, 5):
-                return CallToolResult(
-                    content=[
-                        TextContent(
-                            type="text",
-                            text=(
-                                f"Error collecting tests (exit {result.returncode}):\n"
-                                f"{result.stderr or result.stdout}"
-                            ),
-                        )
-                    ],
-                    isError=True,
-                )
-
-            # Parse the collection output
-            output = result.stdout
-            # Count node ids: lines containing '::' that look like test node ids
-            test_count = sum(1 for ln in output.splitlines() if "::" in ln and not ln.startswith(" "))
-
-            # Get file list
-            test_files = list(search_path.rglob(pattern))
-            file_count = len(test_files)
-
-            summary = f"Discovered {test_count} tests in {file_count} files\n\n"
-            summary += f"Search path: {search_path}\n"
-            summary += f"Pattern: {pattern}\n\n"
-            summary += "Test files:\n"
-
-            for test_file in sorted(test_files):
-                rel_path = test_file.relative_to(REPO_ROOT)
-                summary += f"- {rel_path}\n"
-
-            return CallToolResult(
-                content=[TextContent(type="text", text=summary)],
-            )
-
-        except subprocess.TimeoutExpired:
-            return CallToolResult(
-                content=[TextContent(type="text", text="Test discovery timed out")],
-                isError=True,
-            )
-        except Exception as e:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Discovery error: {str(e)}")],
-                isError=True,
-            )
-
-    async def _run_tests(self, args: dict[str, Any]) -> CallToolResult:
-        """Run pytest with specified options"""
-        try:
-            _raw_path = args.get("path", "tests")
-            # Resolve and confine the test path
-            resolved_test_path = _resolve_confined_path(str(_raw_path), REPO_ROOT)
-        except ValueError as exc:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Invalid path: {exc}")],
-                isError=True,
-            )
-
-        keywords = args.get("keywords")
-        markers = args.get("markers")
-        verbose = args.get("verbose", True)
-        coverage = args.get("coverage", False)
-        timeout = min(args.get("timeout", 60), MAX_EXECUTION_TIME)
-
-        try:
-            if keywords:
-                keywords = _validate_expr(keywords, "keywords")
-            if markers:
-                markers = _validate_expr(markers, "markers")
-        except ValueError as exc:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Invalid argument: {exc}")],
-                isError=True,
-            )
-
-        # Build pytest command
-        cmd = ["python", "-m", "pytest"]
-
-        if verbose:
-            cmd.append("-v")
-
-        if keywords:
-            cmd.extend(["-k", keywords])
-
-        if markers:
-            cmd.extend(["-m", markers])
-
-        if coverage:
-            cmd.extend(["--cov=.", "--cov-report=term-missing"])
-
-        cmd.append(str(resolved_test_path))
-
-        # Use a unique JUnit XML path to avoid collisions between concurrent runs
-        junit_xml = REPO_ROOT / f".pytest_results_{uuid.uuid4().hex}.xml"
-        cmd.extend(["--junit-xml", str(junit_xml)])
-
-        try:
-            start_time = time.time()
-            result = subprocess.run(
-                cmd,
-                cwd=REPO_ROOT,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                timeout=timeout,
-            )
-            execution_time = time.time() - start_time
-
-            # Parse JUnit XML if available
-            junit_summary = ""
             if junit_xml.exists():
-                try:
-                    tree = ET.parse(junit_xml)
-                    root = tree.getroot()
+                junit_xml.unlink()
+        except OSError:
+            pass
+        return f"Error: Tests timed out after {timeout} seconds"
+    except (OSError, ValueError) as e:
+        return f"Test execution error: {e}"
 
-                    tests = int(root.get("tests", 0))
-                    failures = int(root.get("failures", 0))
-                    errors = int(root.get("errors", 0))
-                    skipped = int(root.get("skipped", 0))
-                    time_taken = float(root.get("time", 0))
 
-                    junit_summary = "\nJUnit XML Results:\n"
-                    junit_summary += f"Tests: {tests}\n"
-                    junit_summary += f"Failures: {failures}\n"
-                    junit_summary += f"Errors: {errors}\n"
-                    junit_summary += f"Skipped: {skipped}\n"
-                    junit_summary += f"Time: {time_taken:.2f}s\n"
+@mcp.tool()
+def get_test_details(
+    test_path: str,
+    test_name: str | None = None,
+) -> str:
+    """Get detailed information about a specific test"""
+    try:
+        resolved = _resolve_confined_path(test_path, REPO_ROOT)
+    except ValueError as exc:
+        raise ValueError(f"Invalid test_path: {exc}") from exc
 
-                    # Clean up
-                    junit_xml.unlink()
-                except ET.ParseError:
-                    logger.warning("Failed to parse JUnit XML")
+    if not resolved.exists():
+        raise ValueError(f"Test file {resolved} does not exist")
 
-            # Prepare output
-            output = f"Command: {' '.join(cmd)}\n"
-            output += f"Execution time: {execution_time:.2f}s\n"
-            output += f"Exit code: {result.returncode}\n\n"
+    try:
+        # Read the test file
+        with open(resolved, encoding="utf-8") as f:
+            content = f.read()
 
-            if result.stdout:
-                output += f"STDOUT:\n{result.stdout}\n"
+        # Basic analysis
+        lines = content.split("\n")
+        total_lines = len(lines)
+        import_lines = len([line for line in lines if line.strip().startswith("import")])
+        function_count = len([line for line in lines if line.strip().startswith("def test_")])
 
-            if result.stderr:
-                output += f"STDERR:\n{result.stderr}\n"
+        details = f"Test File: {resolved.relative_to(REPO_ROOT)}\n"
+        details += f"Total lines: {total_lines}\n"
+        details += f"Import statements: {import_lines}\n"
+        details += f"Test functions: {function_count}\n\n"
 
-            output += junit_summary
+        if test_name:
+            # Find specific test function
+            test_start = None
+            for i, line in enumerate(lines):
+                if f"def {test_name}(" in line:
+                    test_start = i
+                    break
 
-            # Truncate if too large
-            if len(output) > MAX_OUTPUT_SIZE:
-                output = output[:MAX_OUTPUT_SIZE] + "\n... (output truncated)"
+            if test_start is not None:
+                details += f"Test function: {test_name}\n"
+                details += f"Line: {test_start + 1}\n"
 
-            # pytest exit codes: 0=all passed, 1=some failed, 2=interrupted,
-            # 3=internal error, 4=usage error, 5=no tests collected
-            is_error = result.returncode not in (0, 1, 5)
-            return CallToolResult(
-                content=[TextContent(type="text", text=output)],
-                isError=is_error,
-            )
+                # Extract function content (simple approach)
+                func_lines = []
+                indent_level = None
 
-        except subprocess.TimeoutExpired:
-            # Best-effort cleanup of junit xml on timeout
-            try:
-                if junit_xml.exists():
-                    junit_xml.unlink()
-            except OSError:
-                pass
-            return CallToolResult(
-                content=[
-                    TextContent(
-                        type="text",
-                        text=f"Tests timed out after {timeout} seconds",
-                    )
-                ],
-                isError=True,
-            )
-        except (OSError, ValueError) as e:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Test execution error: {str(e)}")],
-                isError=True,
-            )
+                for line in lines[test_start:]:  # progress_bar: in-memory line scan, bounded
+                    if line.strip() == "":
+                        func_lines.append(line)
+                        continue
 
-    async def _get_test_details(self, args: dict[str, Any]) -> CallToolResult:
-        """Get detailed information about a specific test"""
-        try:
-            test_path = _resolve_confined_path(args["test_path"], REPO_ROOT)
-        except (ValueError, KeyError) as exc:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Invalid test_path: {exc}")],
-                isError=True,
-            )
-        test_name = args.get("test_name")
+                    current_indent = len(line) - len(line.lstrip())
 
-        if not test_path.exists():
-            return CallToolResult(
-                content=[
-                    TextContent(
-                        type="text",
-                        text=f"Test file {test_path} does not exist",
-                    )
-                ],
-                isError=True,
-            )
-
-        try:
-            # Read the test file
-            with open(test_path, encoding="utf-8") as f:
-                content = f.read()
-
-            # Basic analysis
-            lines = content.split("\n")
-            total_lines = len(lines)
-            import_lines = len([line for line in lines if line.strip().startswith("import")])
-            function_count = len([line for line in lines if line.strip().startswith("def test_")])
-
-            details = f"Test File: {test_path.relative_to(REPO_ROOT)}\n"
-            details += f"Total lines: {total_lines}\n"
-            details += f"Import statements: {import_lines}\n"
-            details += f"Test functions: {function_count}\n\n"
-
-            if test_name:
-                # Find specific test function
-                test_start = None
-                for i, line in enumerate(lines):
-                    if f"def {test_name}(" in line:
-                        test_start = i
+                    if indent_level is None:
+                        indent_level = current_indent
+                    elif current_indent <= indent_level and line.strip():
                         break
 
-                if test_start is not None:
-                    details += f"Test function: {test_name}\n"
-                    details += f"Line: {test_start + 1}\n"
+                    func_lines.append(line)
 
-                    # Extract function content (simple approach)
-                    func_lines = []
-                    indent_level = None
-
-                    for line in lines[test_start:]:  # progress_bar: in-memory line scan, bounded
-                        if line.strip() == "":
-                            func_lines.append(line)
-                            continue
-
-                        current_indent = len(line) - len(line.lstrip())
-
-                        if indent_level is None:
-                            indent_level = current_indent
-                        elif current_indent <= indent_level and line.strip():
-                            break
-
-                        func_lines.append(line)
-
-                    func_content = "".join(func_lines)
-                    details += f"\nFunction content:\n{func_content}"
-                else:
-                    details += f"Test function '{test_name}' not found"
+                func_content = "".join(func_lines)
+                details += f"\nFunction content:\n{func_content}"
             else:
-                # List all test functions
-                test_functions = []
-                for line in lines:
-                    if line.strip().startswith("def test_"):
-                        func_name = line.strip().split("(")[0].replace("def ", "")
-                        test_functions.append(func_name)
-
-                details += "Test functions:\n"
-                for func in test_functions:
-                    details += f"- {func}\n"
-
-            return CallToolResult(
-                content=[TextContent(type="text", text=details)],
-            )
-
-        except Exception as e:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Error reading test file: {str(e)}")],
-                isError=True,
-            )
-
-    async def _analyze_test_coverage(self, args: dict[str, Any]) -> CallToolResult:
-        """Analyze test coverage for the repository"""
-        path = args.get("path", "agentic_core")
-        format_type = args.get("format", "text")
-
-        # Check if coverage is available
-        try:
-            subprocess.run(
-                ["coverage", "--version"],
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                check=True,
-                timeout=10,
-            )
-        except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
-            return CallToolResult(
-                content=[
-                    TextContent(
-                        type="text",
-                        text="Coverage tool not found. Install with: pip install coverage",
-                    )
-                ],
-                isError=True,
-            )
-
-        try:
-            target_path = _resolve_confined_path(path, REPO_ROOT)
-        except ValueError as exc:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Invalid path: {exc}")],
-                isError=True,
-            )
-        if not target_path.exists():
-            return CallToolResult(
-                content=[
-                    TextContent(
-                        type="text",
-                        text=f"Path {target_path} does not exist",
-                    )
-                ],
-                isError=True,
-            )
-
-        cmd = [
-            "python",
-            "-m",
-            "pytest",
-            f"--cov={path}",
-            f"--cov-report={format_type}",
-            "--cov-report=term",
-            "tests",
-        ]
-
-        try:
-            result = subprocess.run(
-                cmd,
-                cwd=REPO_ROOT,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                timeout=120,
-            )
-
-            output = f"Coverage analysis for: {path}\n"
-            output += f"Format: {format_type}\n"
-            output += f"Command: {' '.join(cmd)}\n\n"
-
-            if result.stdout:
-                output += result.stdout
-
-            if result.stderr:
-                output += f"\nSTDERR:\n{result.stderr}"
-
-            return CallToolResult(
-                content=[TextContent(type="text", text=output)],
-            )
-
-        except subprocess.TimeoutExpired:
-            return CallToolResult(
-                content=[TextContent(type="text", text="Coverage analysis timed out")],
-                isError=True,
-            )
-        except Exception as e:
-            return CallToolResult(
-                content=[TextContent(type="text", text=f"Coverage error: {str(e)}")],
-                isError=True,
-            )
-
-    async def _list_pytest_config(self, args: dict[str, Any]) -> CallToolResult:
-        """Show pytest configuration"""
-        config_info = "Pytest Configuration:\n\n"
-
-        # Check for pytest.ini
-        if PYTEST_CONFIG.exists():
-            config_info += f"pytest.ini found: {PYTEST_CONFIG}\n"
-            try:
-                with open(PYTEST_CONFIG, encoding="utf-8") as f:
-                    config_info += f.read()
-            except OSError as e:
-                config_info += f"Error reading pytest.ini: {e}\n"
+                details += f"Test function '{test_name}' not found"
         else:
-            config_info += "pytest.ini: not found\n"
+            # List all test functions
+            test_functions = []
+            for line in lines:
+                if line.strip().startswith("def test_"):
+                    func_name = line.strip().split("(")[0].replace("def ", "")
+                    test_functions.append(func_name)
 
-        config_info += "\n"
+            details += "Test functions:\n"
+            for func in test_functions:
+                details += f"- {func}\n"
 
-        # Check for pyproject.toml
-        if PYPROJECT_TOML.exists():
-            config_info += f"pyproject.toml found: {PYPROJECT_TOML}\n"
-            try:
-                import tomllib
+        return details
 
-                with open(PYPROJECT_TOML, "rb") as f:
-                    data = tomllib.load(f)
-                    if "tool" in data and "pytest" in data["tool"]:
-                        config_info += "[tool.pytest]:\n"
-                        config_info += json.dumps(data["tool"]["pytest"], indent=2)
-                    else:
-                        config_info += "No [tool.pytest] section found\n"
-            except ImportError:
-                config_info += "tomllib not available, cannot parse pyproject.toml\n"
-            except Exception as e:
-                config_info += f"Error reading pyproject.toml: {e}\n"
-        else:
-            config_info += "pyproject.toml: not found\n"
+    except (ValueError, RuntimeError, OSError) as e:
+        return f"Error reading test file: {e}"
 
-        # Show pytest location and version
+
+@mcp.tool()
+def analyze_test_coverage(
+    path: str = "agentic_core",
+    format: str = "text",
+) -> str:
+    """Analyze test coverage for the repository"""
+    # Check if coverage is available
+    try:
+        safe_run(["coverage", "--version"], timeout=10, check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
+        return "Error: Coverage tool not found. Install with: pip install coverage"
+
+    try:
+        target_path = _resolve_confined_path(path, REPO_ROOT)
+    except ValueError as exc:
+        raise ValueError(f"Invalid path: {exc}") from exc
+    if not target_path.exists():
+        raise ValueError(f"Path {target_path} does not exist")
+
+    cmd = [
+        "python",
+        "-m",
+        "pytest",
+        f"--cov={path}",
+        f"--cov-report={format}",
+        "--cov-report=term",
+        "tests",
+    ]
+
+    try:
+        result = safe_run(cmd, cwd=REPO_ROOT, timeout=120)
+
+        output = f"Coverage analysis for: {path}\n"
+        output += f"Format: {format}\n"
+        output += f"Command: {' '.join(cmd)}\n\n"
+
+        if result.stdout:
+            output += result.stdout
+
+        if result.stderr:
+            output += f"\nSTDERR:\n{result.stderr}"
+
+        return output
+
+    except subprocess.TimeoutExpired:
+        return "Error: Coverage analysis timed out"
+    except (ValueError, RuntimeError, OSError, subprocess.SubprocessError) as e:
+        return f"Coverage error: {e}"
+
+
+@mcp.tool()
+def list_pytest_config() -> str:
+    """Show pytest configuration"""
+    config_info = "Pytest Configuration:\n\n"
+
+    # Check for pytest.ini
+    if PYTEST_CONFIG.exists():
+        config_info += f"pytest.ini found: {PYTEST_CONFIG}\n"
         try:
-            result = subprocess.run(
-                ["python", "-m", "pytest", "--version"],
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                timeout=15,
-            )
-            config_info += f"\nPytest version:\n{result.stdout}"
-        except subprocess.TimeoutExpired:
-            config_info += "\nError getting pytest version: timed out"
+            with open(PYTEST_CONFIG, encoding="utf-8") as f:
+                config_info += f.read()
         except OSError as e:
-            config_info += f"\nError getting pytest version: {e}"
+            config_info += f"Error reading pytest.ini: {e}\n"
+    else:
+        config_info += "pytest.ini: not found\n"
 
-        return CallToolResult(
-            content=[TextContent(type="text", text=config_info)],
-        )
+    config_info += "\n"
+
+    # Check for pyproject.toml
+    if PYPROJECT_TOML.exists():
+        config_info += f"pyproject.toml found: {PYPROJECT_TOML}\n"
+        try:
+            import tomllib
+
+            with open(PYPROJECT_TOML, "rb") as f:
+                data = tomllib.load(f)
+                if "tool" in data and "pytest" in data["tool"]:
+                    config_info += "[tool.pytest]:\n"
+                    config_info += json.dumps(data["tool"]["pytest"], indent=2)
+                else:
+                    config_info += "No [tool.pytest] section found\n"
+        except ImportError:
+            config_info += "tomllib not available, cannot parse pyproject.toml\n"
+        except (OSError, ValueError, KeyError) as e:
+            config_info += f"Error reading pyproject.toml: {e}\n"
+    else:
+        config_info += "pyproject.toml: not found\n"
+
+    # Show pytest location and version
+    try:
+        result = safe_run(["python", "-m", "pytest", "--version"], timeout=15)
+        config_info += f"\nPytest version:\n{result.stdout}"
+    except subprocess.TimeoutExpired:
+        config_info += "\nError getting pytest version: timed out"
+    except OSError as e:
+        config_info += f"\nError getting pytest version: {e}"
+
+    return config_info
 
 
-async def main():
-    """Main entry point"""
-    server_instance = PytestMCPServer()
-
-    # Run the server
-    async with stdio_server() as (read_stream, write_stream):
-        await server_instance.server.run(
-            read_stream,
-            write_stream,
-            InitializationOptions(
-                server_name="pytest_mcp",
-                server_version="1.0.0",
-                capabilities=server_instance.server.get_capabilities(
-                    notification_options=NotificationOptions(
-                        prompts_changed=False,
-                        resources_changed=False,
-                        tools_changed=False,
-                    ),
-                    experimental_capabilities=None,
-                ),
-            ),
-        )
-
+# ── Entry point ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    try:
-        anyio.run(main)
-    except KeyboardInterrupt:
-        logger.info("Pytest MCP Server stopped by user")
-    except Exception as e:
-        logger.error(f"Server error: {e}")
-        sys.exit(1)
+    run_server(mcp)
