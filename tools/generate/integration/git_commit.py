@@ -5,6 +5,14 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 
+
+def _format_subprocess_failure(exc: subprocess.SubprocessError) -> tuple[str, str]:
+    """Return bounded stdout/stderr fragments for logging."""
+    stdout = getattr(exc, "stdout", "") or ""
+    stderr = getattr(exc, "stderr", "") or ""
+    return stdout.strip()[:200], stderr.strip()[:200]
+
+
 ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -25,7 +33,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
         staged_count = 0
         skipped_ignored_count = 0
 
-        for pattern in artifact_patterns:
+        for pattern in artifact_patterns:  # tqdm: bounded ~6-item list, no bar needed
             artifact_path = adg_dir / pattern
             if artifact_path.exists():
                 # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
@@ -39,6 +47,15 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
                 if check_ignore.returncode == 0:
                     skipped_ignored_count += 1
                     continue
+                if check_ignore.returncode != 1:
+                    _stdout = (check_ignore.stdout or "").strip()[:200]
+                    _stderr = (check_ignore.stderr or "").strip()[:200]
+                    print("[ADG] WARNING: git check-ignore failed; skipping auto-commit")
+                    if _stdout:
+                        print(f"      stdout: {_stdout}")
+                    if _stderr:
+                        print(f"      stderr: {_stderr}")
+                    return
 
                 # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
                 subprocess.run(
@@ -80,7 +97,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
             print("[ADG] Git: no staged artifact changes to commit")
             return
 
-        commit_msg = f"ADG: regenerate artifacts {ts} — {node_count} modules, {edge_count} edges"
+        commit_msg = f"ADG: regenerate artifacts {ts} - {node_count} modules, {edge_count} edges"
         # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
         result = subprocess.run(
             ["git", "commit", "--no-verify", "-m", commit_msg],
@@ -91,12 +108,19 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
             timeout=30,
         )
 
-        print(f"[ADG] [OK] Git commit complete — {commit_msg}")
+        print(f"[ADG] [OK] Git commit complete - {commit_msg}")
 
-    except (ValueError, TypeError, RuntimeError) as e:
-        if "nothing to commit" in e.stdout or "nothing to commit" in e.stderr:
+    except subprocess.CalledProcessError as e:
+        stdout, stderr = _format_subprocess_failure(e)
+        if "nothing to commit" in stdout or "nothing to commit" in stderr:
             print("[ADG] Git: no changes to commit (artifacts already committed)")
         else:
             print(f"[ADG] WARNING: Git commit failed (exit {e.returncode}):")
-            print(f"      stdout: {e.stdout.strip()[:200]}")
-            print(f"      stderr: {e.stderr.strip()[:200]}")
+            if stdout:
+                print(f"      stdout: {stdout}")
+            if stderr:
+                print(f"      stderr: {stderr}")
+    except subprocess.TimeoutExpired as e:
+        print(f"[ADG] WARNING: Git command timed out after {e.timeout}s")
+    except FileNotFoundError:
+        print("[ADG] WARNING: Git executable not found; skipping auto-commit")

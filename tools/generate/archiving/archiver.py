@@ -7,6 +7,8 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
+from tqdm import tqdm
+
 from tools.generate.utils.file_utils import _is_file_locked
 
 
@@ -68,6 +70,52 @@ def _parse_timestamp(ts: str) -> datetime:
     return datetime.strptime(ts, "%Y%m%dT%H%M%SZ")
 
 
+_SQLITE_SIDE_SUFFIXES = (".sqlite", ".sqlite-wal", ".sqlite-shm")
+
+
+def _sqlite_family_root(path: Path) -> Path:
+    """Return the primary .sqlite file for a SQLite sidecar family."""
+    if path.name.endswith(".sqlite-wal"):
+        return path.with_name(path.name[: -len("-wal")])
+    if path.name.endswith(".sqlite-shm"):
+        return path.with_name(path.name[: -len("-shm")])
+    return path
+
+
+def _sqlite_family_locked(path: Path) -> bool:
+    """Treat a SQLite family as locked if its primary database file is locked."""
+    root_path = _sqlite_family_root(path)
+    return root_path.exists() and _is_file_locked(root_path)
+
+
+def _unlink_sqlite_family(file_path: Path) -> int:
+    """Delete a SQLite file and its sidecars as one unit. Returns deleted file count."""
+    deleted = 0
+    root_path = _sqlite_family_root(file_path)
+    targets = [root_path, root_path.with_suffix(".sqlite-wal"), root_path.with_suffix(".sqlite-shm")]
+
+    if _sqlite_family_locked(root_path):
+        raise OSError(f"SQLite family locked: {root_path.name}")
+
+    if root_path.exists():
+        temp_conn = None
+        try:
+            temp_conn = sqlite3.connect(str(root_path))
+            temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        except sqlite3.Error:
+            pass
+        finally:
+            if temp_conn is not None:
+                temp_conn.close()
+
+    for target in targets:
+        if target.exists():
+            target.unlink()
+            deleted += 1
+
+    return deleted
+
+
 def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -> None:
     """Archive old ADG runs to keep artifacts directory clean.
 
@@ -96,7 +144,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         "p1_ratchet.json",
         "p2_ratchet.json",
     ]:
-        for path in adg_dir.glob(pattern):
+        for path in adg_dir.glob(pattern):  # tqdm: pre-scan accumulation, no display needed
             if "LATEST" in path.name or "latest" in path.name:
                 continue
             if "_archive" in str(path):
@@ -125,7 +173,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     bytes_original = 0
     bytes_archived = 0
 
-    for ts in to_archive:
+    for ts in tqdm(to_archive, desc="[ADG] Archiving old runs", unit="run"):
         files = runs[ts]
 
         try:
@@ -148,41 +196,35 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             bytes_original += zip_bytes_original
             bytes_archived += zip_bytes_archived
 
-            for file_path in files:
+            for file_path in files:  # tqdm: inner cleanup, progress shown by outer run loop
                 if file_path not in zip_files and file_path.exists():
                     try:
                         file_size = file_path.stat().st_size
                     except OSError:
                         file_size = 0
                     try:
-                        if file_path.suffix == ".sqlite":
-                            try:
-                                temp_conn = sqlite3.connect(str(file_path))
-                                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-                                temp_conn.close()
-                            except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure should not block archive deletion
-                                pass
-                        file_path.unlink()
-                        if file_path.suffix == ".sqlite":
-                            for _aux in [
-                                file_path.with_suffix(".sqlite-wal"),
-                                file_path.with_suffix(".sqlite-shm"),
-                            ]:
-                                if _aux.exists():
-                                    try:
-                                        _aux.unlink()
-                                    except OSError:
-                                        pass
+                        if file_path.name.endswith(_SQLITE_SIDE_SUFFIXES):
+                            if _sqlite_family_locked(file_path):
+                                print(
+                                    f"[WARNING] Archive: locked SQLite family skipped {_sqlite_family_root(file_path).name}"
+                                )
+                                print(
+                                    "[WARNING]   Main database is held by another process - sidecars preserved"
+                                )
+                                continue
+                            archived_count += _unlink_sqlite_family(file_path)
+                        else:
+                            file_path.unlink()
+                            archived_count += 1
                     except OSError as e:
                         print(f"[ADG] Archive: failed to remove {file_path.name}: {e}")
                         continue
-                    archived_count += 1
                     bytes_original += file_size
         else:
             print(
                 f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files - DELETING (no longer archiving individual files)",
             )
-            for file_path in files:
+            for file_path in files:  # tqdm: inner cleanup, progress shown by outer run loop
                 if file_path.exists():
                     try:
                         file_size = file_path.stat().st_size
@@ -190,43 +232,22 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                     except OSError:
                         file_size = 0
                     try:
-                        if _is_file_locked(file_path):
-                            print(f"[WARNING] Archive: locked file skipped {file_path.name}")
-                            print("[WARNING]   File held by another process — will be cleaned up on next run")
-                            # Still clean up unlocked sidecars even if main file is locked
-                            if file_path.suffix == ".sqlite":
-                                for _aux in [
-                                    file_path.with_suffix(".sqlite-wal"),
-                                    file_path.with_suffix(".sqlite-shm"),
-                                ]:
-                                    if _aux.exists():
-                                        try:
-                                            _aux.unlink()
-                                            archived_count += 1
-                                        except OSError:
-                                            pass
+                        if file_path.name.endswith(_SQLITE_SIDE_SUFFIXES) and _sqlite_family_locked(
+                            file_path
+                        ):
+                            print(
+                                f"[WARNING] Archive: locked SQLite family skipped {_sqlite_family_root(file_path).name}"
+                            )
+                            print(
+                                "[WARNING]   File held by another process - family will be cleaned up on next run"
+                            )
                             continue
 
-                        if file_path.suffix == ".sqlite":
-                            try:
-                                temp_conn = sqlite3.connect(str(file_path))
-                                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-                                temp_conn.close()
-                            except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure should not block orphan deletion
-                                pass
-                        file_path.unlink()
-
-                        if file_path.suffix == ".sqlite":
-                            wal_path = file_path.with_suffix(".sqlite-wal")
-                            shm_path = file_path.with_suffix(".sqlite-shm")
-                            for aux_file in [wal_path, shm_path]:
-                                if aux_file.exists():
-                                    try:
-                                        aux_file.unlink()
-                                    except OSError:
-                                        pass
-
-                        archived_count += 1
+                        if file_path.name.endswith(_SQLITE_SIDE_SUFFIXES):
+                            archived_count += _unlink_sqlite_family(file_path)
+                        else:
+                            file_path.unlink()
+                            archived_count += 1
                     except OSError as e:
                         if "being used by another process" in str(e):
                             print(f"[WARNING] Archive: locked file skipped {file_path.name}")

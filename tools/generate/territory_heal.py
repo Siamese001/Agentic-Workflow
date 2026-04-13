@@ -7,8 +7,11 @@ tool that can heal any territory without bypasses or complex workarounds.
 
 import argparse
 import logging
+import re
 import sys
 from pathlib import Path
+
+from tqdm import tqdm
 
 # Add project root to path if needed
 REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent.resolve()
@@ -18,6 +21,33 @@ if str(REPO_ROOT) not in sys.path:
 from agentic_core.L3_orchestration.reasoning.territory_healing.territory_healer_adapters import (
     create_adapter_coordinator,
 )
+
+
+_TERRITORY_RE = re.compile(r"^[A-Za-z0-9_.\-/]+$")
+
+
+def _resolve_project_root(project_root_arg: str) -> Path:
+    """Resolve and validate the project root supplied via CLI."""
+    project_root = Path(project_root_arg).expanduser().resolve()
+    if not project_root.exists():
+        raise FileNotFoundError(f"Project root does not exist: {project_root}")
+    if not project_root.is_dir():
+        raise NotADirectoryError(f"Project root is not a directory: {project_root}")
+    return project_root
+
+
+def _validate_territory_name(territory: str) -> str:
+    """Reject unsafe territory names before they reach lower layers."""
+    if not territory:
+        raise ValueError("Territory name cannot be empty")
+    if not _TERRITORY_RE.fullmatch(territory):
+        raise ValueError(f"Unsafe territory name: {territory}")
+    normalized = territory.strip()
+    if normalized.startswith("/") or normalized.startswith("\\"):
+        raise ValueError(f"Absolute territory paths are not allowed: {territory}")
+    if ".." in Path(normalized).parts:
+        raise ValueError(f"Parent traversal is not allowed in territory name: {territory}")
+    return normalized
 
 
 def setup_logging(verbose: bool = False) -> None:
@@ -91,25 +121,39 @@ Examples:
         sys.exit(1)
 
     # Create coordinator with all agents
-    project_root = Path(args.project_root)
+    try:
+        project_root = _resolve_project_root(args.project_root)
+    except (FileNotFoundError, NotADirectoryError, OSError, ValueError) as e:
+        logger.error(f"Invalid --project-root: {e}")
+        sys.exit(1)
+
     logger.info(f"Initializing coordinator for project: {project_root}")
 
     try:
         coordinator = create_adapter_coordinator(project_root)
-    except Exception as e:
+    except (ImportError, AttributeError, OSError, ValueError) as e:
         logger.exception(f"Failed to create coordinator: {e}")
         sys.exit(1)
 
     # Determine territories to process
     if args.all:
-        territories = coordinator._auto_detect_territories()
+        auto_detected = coordinator._auto_detect_territories()
+        try:
+            territories = [_validate_territory_name(t) for t in auto_detected]
+        except ValueError as e:
+            logger.error(f"Unsafe auto-detected territory: {e}")
+            sys.exit(1)
         logger.info(f"Auto-detected territories: {territories}")
     else:
-        territories = [args.territory]
+        try:
+            territories = [_validate_territory_name(args.territory)]
+        except ValueError as e:
+            logger.error(str(e))
+            sys.exit(1)
 
     # Process territories
     exit_code = 0
-    for territory in territories:
+    for territory in tqdm(territories, desc="[ADG] Healing territories", unit="territory"):
         try:
             if args.scan_only:
                 report = coordinator.validate_territory(territory)
@@ -136,7 +180,7 @@ Examples:
                 if not report.success:
                     exit_code = 1
 
-        except Exception as e:
+        except (AttributeError, OSError, RuntimeError, ValueError) as e:
             logger.exception(f"Failed to process territory {territory}: {e}")
             exit_code = 1
 

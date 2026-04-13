@@ -20,6 +20,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from tqdm import tqdm
+
+
+_ALLOWED_PERCENTILE_TABLES = frozenset({"mv_hotspot_centrality", "mv_dependency_cone_risk"})
+_ALLOWED_PERCENTILE_COLUMNS = frozenset({"fan_in", "cone_risk_score"})
+
 
 @dataclass
 class WatchlistItem:
@@ -47,7 +53,8 @@ class ADGWatchlistBuilder:
 
     def __init__(self, sqlite_path: Path):
         self.sqlite_path = sqlite_path
-        self.conn = sqlite3.connect(str(sqlite_path))
+        db_uri = f"file:{sqlite_path.resolve()}?mode=ro"
+        self.conn = sqlite3.connect(db_uri, uri=True)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
 
@@ -58,13 +65,26 @@ class ADGWatchlistBuilder:
         self.conn.close()
 
     def _get_percentile_threshold(self, table: str, column: str, percentile: int) -> float:
-        """Get threshold for top Nth percentile."""
+        """Get threshold for top Nth percentile from an allow-listed table/column pair."""
+        if table not in _ALLOWED_PERCENTILE_TABLES:
+            raise ValueError(f"Unexpected percentile table: {table}")
+        if column not in _ALLOWED_PERCENTILE_COLUMNS:
+            raise ValueError(f"Unexpected percentile column: {column}")
+        if not 0 <= percentile <= 100:
+            raise ValueError(f"Percentile must be between 0 and 100: {percentile}")
+
+        self.cur.execute(f"SELECT COUNT(*) FROM {table}")
+        total_rows = int(self.cur.fetchone()[0] or 0)
+        if total_rows == 0:
+            return 0.0
+
+        offset = max(int(total_rows * (100 - percentile) / 100), 0)
         self.cur.execute(
-            f"SELECT {column} FROM {table} ORDER BY {column} DESC "
-            f"LIMIT 1 OFFSET (SELECT COUNT(*) FROM {table}) * {percentile} / 100"
+            f"SELECT {column} FROM {table} ORDER BY {column} DESC LIMIT 1 OFFSET ?",
+            (offset,),
         )
         row = self.cur.fetchone()
-        return row[0] if row else 0.0
+        return float(row[0]) if row else 0.0
 
     def _get_top_hotspots(self, threshold: int) -> list[dict[str, Any]]:
         """Get modules with fan-in above threshold."""
@@ -211,7 +231,7 @@ class ADGWatchlistBuilder:
         # Build watchlist items
         items: list[tuple[float, WatchlistItem]] = []
 
-        for file_path in all_files:
+        for file_path in tqdm(all_files, desc="[ADG] Building watchlist", unit="module"):
             # Get data for this file
             hotspot = next((h for h in hotspots if h["resolved_path"] == file_path), None)
             cone = next((c for c in cone_risks if c["resolved_path"] == file_path), None)

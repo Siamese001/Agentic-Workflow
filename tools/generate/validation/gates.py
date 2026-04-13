@@ -20,6 +20,12 @@ CLASS_AGENTIC = "agentic_antipattern"
 VALID_VIOLATION_CLASSES = frozenset({CLASS_HYGIENE, CLASS_STRUCTURAL, CLASS_AGENTIC})
 
 
+def _fail_closed_gate(gate_name: str, exc: Exception) -> None:
+    """Abort the run when a gate cannot be evaluated reliably."""
+    print(f"[ERROR] {gate_name} failed closed: {exc}")
+    sys.exit(1)
+
+
 def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | None = None) -> None:
     """Fail if P0 layer violations, circular imports, or dynamic_exec are present (unconditional fail-fast).
 
@@ -54,7 +60,7 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                             f"[DEBUG] Guardian check: file not found or invalid line_no: {source_file}:{line_no}"
                         )
                         unapproved.append((source_file, line_no))
-                except Exception as e:  # guardian: allow-silent-swallow -- non-critical: file read failure during exemption check
+                except (OSError, UnicodeDecodeError, ValueError) as e:
                     print(f"[DEBUG] Guardian check exception for {source_file}:{line_no}: {e}")
                     unapproved.append((source_file, line_no))
 
@@ -68,8 +74,8 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                 sys.exit(1)
         except SystemExit:
             raise
-        except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during P0 check falls back gracefully
-            pass
+        except sqlite3.Error as exc:
+            _fail_closed_gate("P0 violation query", exc)
     else:
         p0_count = routing_summary.get("by_severity", {}).get("critical", 0)
         if p0_count > 0:
@@ -89,8 +95,8 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                     print("[ERROR] ADG generation failed - graph topology corrupted by cycles")
                     print("[ERROR] Fix circular imports before regenerating ADG")
                     sys.exit(1)
-        except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during Tier 1A check falls back gracefully
-            pass
+        except sqlite3.Error as exc:
+            _fail_closed_gate("P0 Tier 1A circular import query", exc)
 
     if sqlite_path is not None and sqlite_path.exists():
         try:
@@ -103,8 +109,8 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                     print("[ERROR] ADG generation failed - graph is provably incomplete")
                     print("[ERROR] Replace eval/exec/dynamic imports with static alternatives")
                     sys.exit(1)
-        except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during Tier 1B check falls back gracefully
-            pass
+        except sqlite3.Error as exc:
+            _fail_closed_gate("P0 Tier 1B dynamic execution query", exc)
 
 
 def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None = None) -> None:
@@ -134,7 +140,7 @@ def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             current_count = cursor.fetchone()[0]
 
         if ratchet_file.exists():
-            with open(ratchet_file) as f:
+            with open(ratchet_file, encoding="utf-8") as f:
                 ratchet_data = json.load(f)
             ceiling = ratchet_data.get(
                 "high_severity_ceiling", ratchet_data.get("p2_antipattern_ceiling", current_count)
@@ -142,7 +148,7 @@ def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
         else:
             ceiling = current_count
             ratchet_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(ratchet_file, "w") as f:
+            with open(ratchet_file, "w", encoding="utf-8") as f:
                 json.dump({"high_severity_ceiling": ceiling}, f, indent=2)
             print(f"[INFO] Initialized P1 ratchet ceiling: {ceiling}")
 
@@ -152,15 +158,15 @@ def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             print(f"[ERROR] Fix new exception swallows or update ceiling: {ratchet_file}")
             sys.exit(1)
         elif current_count < ceiling:
-            with open(ratchet_file, "w") as f:
+            with open(ratchet_file, "w", encoding="utf-8") as f:
                 json.dump({"high_severity_ceiling": current_count}, f, indent=2)
             print(f"[INFO] P1 ratchet: Reduced ceiling from {ceiling} to {current_count}")
         else:
             print(f"[INFO] P1 ratchet: Current count {current_count} at ceiling {ceiling}")
     except SystemExit:
         raise
-    except Exception:  # guardian: allow-silent-swallow -- non-critical: SQLite query failure during P1 ratchet falls back gracefully
-        pass
+    except (sqlite3.Error, OSError, json.JSONDecodeError, ValueError) as exc:
+        _fail_closed_gate("P1 ratchet", exc)
 
 
 def _check_p2_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None = None) -> None:
@@ -190,13 +196,13 @@ def _check_p2_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             current_count = cursor.fetchone()[0]
 
         if ratchet_file.exists():
-            with open(ratchet_file) as f:
+            with open(ratchet_file, encoding="utf-8") as f:
                 ratchet_data = json.load(f)
                 ceiling = ratchet_data.get("exception_swallow_ceiling", current_count)
         else:
             ceiling = current_count
             ratchet_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(ratchet_file, "w") as f:
+            with open(ratchet_file, "w", encoding="utf-8") as f:
                 json.dump({"exception_swallow_ceiling": ceiling}, f, indent=2)
             print(f"[INFO] Initialized P2 ratchet ceiling: {ceiling}")
 
@@ -207,15 +213,15 @@ def _check_p2_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             print(f"[ERROR] Fix antipatterns or update ceiling: {ratchet_file}")
             sys.exit(1)
         elif current_count < ceiling:
-            with open(ratchet_file, "w") as f:
+            with open(ratchet_file, "w", encoding="utf-8") as f:
                 json.dump({"exception_swallow_ceiling": current_count}, f, indent=2)
             print(f"[INFO] P2 ratchet: Reduced ceiling from {ceiling} to {current_count}")
         else:
             print(f"[INFO] P2 ratchet: Current count {current_count} at ceiling {ceiling}")
-    except (
-        Exception
-    ):  # guardian: allow-silent-swallow -- non-critical: Ratchet check failure falls back gracefully
-        pass
+    except SystemExit:
+        raise
+    except (sqlite3.Error, OSError, json.JSONDecodeError, ValueError) as exc:
+        _fail_closed_gate("P2 ratchet", exc)
 
 
 def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
@@ -266,10 +272,10 @@ def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
                 sys.exit(1)
             else:
                 print("[INFO] Dead production import gate: PASSED (no dead modules in L4_state/cache)")
-    except (
-        Exception
-    ):  # guardian: allow-silent-swallow -- non-critical: Gate query failure falls back gracefully
-        pass
+    except SystemExit:
+        raise
+    except sqlite3.Error as exc:
+        _fail_closed_gate("Dead production import gate", exc)
 
 
 # ---------------------------------------------------------------------------
