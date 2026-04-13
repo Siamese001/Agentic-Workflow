@@ -17,8 +17,12 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from tqdm import tqdm
+
 if TYPE_CHECKING:
     from typing import Sequence
+
+_REPO_ROOT = Path(__file__).parent.parent.parent
 
 
 # Header for generated .gitignore
@@ -31,7 +35,7 @@ GITIGNORE_HEADER = """# Generated from config/excluded_paths.yaml
 
 def load_exclusions() -> tuple[set[str], set[str], set[str]]:
     """Load exclusions from YAML config."""
-    config_path = Path(__file__).parent.parent.parent / "config" / "excluded_paths.yaml"
+    config_path = _REPO_ROOT / "config" / "excluded_paths.yaml"
 
     try:
         import yaml
@@ -123,7 +127,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     vendor = {"google", "gapic", "pip", "dist-info", "licenses", "src"}
     data = {"data", "docs", "logs", "raw", "shared"}
 
-    for d in sorted(dirs):
+    for d in tqdm(sorted(dirs), desc="Categorizing dirs", unit="dir", leave=False):
         if d in build_cache:
             groups["Build & Cache"].append(d)
         elif d in version_control:
@@ -147,7 +151,7 @@ def generate_gitignore_content(dirs: set[str], patterns: set[str]) -> str:
     groups["File Patterns"] = sorted(patterns)
 
     # Generate content
-    for group_name, entries in groups.items():
+    for group_name, entries in tqdm(groups.items(), desc="Building groups", unit="group", leave=False):
         if not entries:
             continue
         lines.append(f"# {group_name}")
@@ -192,7 +196,7 @@ def generate_precommit_exclude(precommit_patterns: set[str]) -> str:
 
 def read_current_gitignore() -> str | None:
     """Read current .gitignore content."""
-    gitignore_path = Path(__file__).parent.parent.parent / ".gitignore"
+    gitignore_path = _REPO_ROOT / ".gitignore"
     if gitignore_path.exists():
         return gitignore_path.read_text(encoding="utf-8")
     return None
@@ -200,7 +204,7 @@ def read_current_gitignore() -> str | None:
 
 def write_gitignore(content: str) -> None:
     """Write .gitignore file."""
-    gitignore_path = Path(__file__).parent.parent.parent / ".gitignore"
+    gitignore_path = _REPO_ROOT / ".gitignore"
     gitignore_path.write_text(content, encoding="utf-8")
     print(f"Updated: {gitignore_path}")
 

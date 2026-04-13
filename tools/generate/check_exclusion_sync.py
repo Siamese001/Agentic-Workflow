@@ -22,10 +22,12 @@ except ImportError:
     print("Error: PyYAML required (pip install pyyaml)")
     sys.exit(1)
 
+_REPO_ROOT = Path(__file__).parent.parent.parent
+
 
 def load_excluded_paths() -> Any:
     """Load exclusions from config/excluded_paths.yaml."""
-    config_path = Path(__file__).parent.parent.parent / "config" / "excluded_paths.yaml"
+    config_path = _REPO_ROOT / "config" / "excluded_paths.yaml"
 
     if not config_path.exists():
         print(f"Error: Config not found: {config_path}")
@@ -37,7 +39,7 @@ def load_excluded_paths() -> Any:
 
 def load_precommit_excludes() -> list[str]:
     """Load exclude patterns from .pre-commit-config.yaml."""
-    precommit_path = Path(__file__).parent.parent.parent / ".pre-commit-config.yaml"
+    precommit_path = _REPO_ROOT / ".pre-commit-config.yaml"
 
     if not precommit_path.exists():
         print("Error: .pre-commit-config.yaml not found")
