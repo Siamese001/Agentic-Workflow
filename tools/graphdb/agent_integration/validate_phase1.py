@@ -1,12 +1,24 @@
 """Simple Phase 1 validation script without complex dependencies."""
 
-import sys
+from __future__ import annotations
+
 import subprocess
+import sys
 from pathlib import Path
 
-# Add repo root to path
-repo_root = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(repo_root))
+
+def _resolve_project_root() -> Path:
+    current_file = Path(__file__).resolve()
+    project_root = next((parent for parent in current_file.parents if (parent / "graphdb").is_dir()), None)
+    if project_root is None:
+        raise RuntimeError("Could not locate project root containing the graphdb package")
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    return project_root
+
+
+PROJECT_ROOT = _resolve_project_root()
+GRAPHDB_ROOT = PROJECT_ROOT / "graphdb"
 
 
 def validate_phase1():
@@ -18,17 +30,17 @@ def validate_phase1():
     # Check 1: Core modules exist
     print("\n1. Checking core modules...")
     modules_to_check = [
-        "tools/graphdb/agent_integration/__init__.py",
-        "tools/graphdb/agent_integration/decision_engine.py",
-        "tools/graphdb/agent_integration/guardrails.py",
-        "tools/graphdb/agent_integration/cache.py",
-        "tools/graphdb/agent_integration/validators.py",
-        "tools/graphdb/agent_integration/cli.py",
+        "graphdb/agent_integration/__init__.py",
+        "graphdb/agent_integration/decision_engine.py",
+        "graphdb/agent_integration/guardrails.py",
+        "graphdb/agent_integration/cache.py",
+        "graphdb/agent_integration/validators.py",
+        "graphdb/agent_integration/cli.py",
     ]
 
     missing_modules = []
     for module in modules_to_check:
-        if not Path(module).exists():
+        if not (PROJECT_ROOT / module).exists():
             missing_modules.append(module)
         else:
             print(f"   ✓ {module}")
@@ -48,7 +60,7 @@ def validate_phase1():
 
     missing_tests = []
     for test_file in test_files_to_check:
-        if not Path(test_file).exists():
+        if not (PROJECT_ROOT / test_file).exists():
             missing_tests.append(test_file)
         else:
             print(f"   ✓ {test_file}")
@@ -60,14 +72,14 @@ def validate_phase1():
     # Check 3: Basic import test
     print("\n3. Testing basic imports...")
     try:
-        from tools.graphdb.agent_integration.decision_engine import (
+        from graphdb.agent_integration.decision_engine import (
             AgentDecisionEngine,
             ArchitecturalContext,
             RiskLevel,
         )
-        from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails, GuardrailAction
-        from tools.graphdb.agent_integration.cache import QueryCache, SmartQueryCache
-        from tools.graphdb.agent_integration.validators import CompletionGates, GateStatus
+        from graphdb.agent_integration.guardrails import ArchitecturalGuardrails, GuardrailAction
+        from graphdb.agent_integration.cache import QueryCache, SmartQueryCache
+        from graphdb.agent_integration.validators import CompletionGates, GateStatus
 
         print("   ✓ All imports successful")
     except ImportError as e:
@@ -134,7 +146,7 @@ def validate_phase1():
             ],
             capture_output=True,
             text=True,
-            cwd=str(repo_root),
+            cwd=str(PROJECT_ROOT),
             timeout=30,
         )
 

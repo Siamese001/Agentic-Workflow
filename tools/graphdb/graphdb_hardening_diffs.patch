@@ -1,0 +1,941 @@
+--- graphdb/agent_integration/decision_engine.py
++++ graphdb/agent_integration/decision_engine.py
+@@ -11,8 +11,8 @@
+ from dataclasses import dataclass
+ from enum import Enum
+
+-from tools.graphdb.queries.structural import StructuralQueries
+-from tools.graphdb.queries.blast_radius import BlastRadiusQueries
++from ..queries.structural import StructuralQueries
++from ..queries.blast_radius import BlastRadiusQueries
+ from .cache import QueryCache
+
+ logger = logging.getLogger(__name__)
+--- graphdb/agent_integration/validators.py
++++ graphdb/agent_integration/validators.py
+@@ -12,13 +12,13 @@
+ from dataclasses import dataclass
+ from enum import Enum
+
+-from tools.graphdb.agent_integration.decision_engine import (
++from .decision_engine import (
+     AgentDecisionEngine,
+     ArchitecturalContext,
+     RiskLevel,
+ )
+-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+-from tools.graphdb.agent_integration.cache import QueryCache
++from .guardrails import ArchitecturalGuardrails
++from .cache import QueryCache
+
+ logger = logging.getLogger(__name__)
+
+--- graphdb/agent_integration/phase3/phase3_validators.py
++++ graphdb/agent_integration/phase3/phase3_validators.py
+@@ -8,13 +8,13 @@
+ from dataclasses import dataclass
+ from enum import Enum
+
+-from tools.graphdb.agent_integration.decision_engine import (
++from ..decision_engine import (
+     AgentDecisionEngine,
+     ArchitecturalContext,
+     RiskLevel,
+ )
+-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+-from tools.graphdb.agent_integration.cache import QueryCache
++from ..guardrails import ArchitecturalGuardrails
++from ..cache import QueryCache
+ from .ecosystem_intelligence import EcosystemIntelligenceEngine
+ from .adaptive_learning import AdaptiveLearningEngine
+ from .health_monitoring import ArchitecturalHealthMonitor, HealthStatus
+@@ -64,7 +64,7 @@
+         self.cache = cache
+
+         # Initialize Phase 3 components
+-        from .phase2.contextual_engine import ContextualIntelligenceEngine
++        from ..phase2.contextual_engine import ContextualIntelligenceEngine
+
+         self.contextual_engine = ContextualIntelligenceEngine(decision_engine, cache)
+
+@@ -208,7 +208,7 @@
+                 session_id="test_session",
+             )
+
+-            from .phase2.contextual_engine import AnalysisResult
++            from ..phase2.contextual_engine import AnalysisResult
+
+             mock_result = AnalysisResult(
+                 base_result=self.decision_engine.analyze_action(context),
+--- graphdb/agent_integration/phase4/phase4_validators.py
++++ graphdb/agent_integration/phase4/phase4_validators.py
+@@ -8,13 +8,13 @@
+ from dataclasses import dataclass
+ from enum import Enum
+
+-from tools.graphdb.agent_integration.decision_engine import (
++from ..decision_engine import (
+     AgentDecisionEngine,
+     ArchitecturalContext,
+     RiskLevel,
+ )
+-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+-from tools.graphdb.agent_integration.cache import QueryCache
++from ..guardrails import ArchitecturalGuardrails
++from ..cache import QueryCache
+ from .quantum_intelligence import QuantumIntelligenceEngine
+ from .multi_dimensional_analysis import MultiDimensionalAnalyzer
+ from .temporal_intelligence import TemporalIntelligenceEngine
+--- graphdb/agent_integration/phase2/__init__.py
++++ graphdb/agent_integration/phase2/__init__.py
+@@ -8,10 +8,12 @@
+ from .collaborative_intelligence import CollaborativeIntelligence
+ from .predictive_analytics import PredictiveAnalytics
+ from .explanation_generator import ExplanationGenerator
++from .phase2_validators import Phase2CompletionGates
+
+ __all__ = [
+     "ContextualIntelligenceEngine",
+     "CollaborativeIntelligence",
+     "PredictiveAnalytics",
+     "ExplanationGenerator",
++    "Phase2CompletionGates",
+ ]
+--- graphdb/agent_integration/cli.py
++++ graphdb/agent_integration/cli.py
+@@ -3,21 +3,39 @@
+ This module provides command-line interface for testing and validating
+ the Phase 1 GraphDB agent integration implementation.
+ """
++
++from __future__ import annotations
+
+ import argparse
+ import logging
+ import sys
+ from pathlib import Path
+
+-# Add repo root to path for imports
+-repo_root = Path(__file__).resolve().parents[4]
+-sys.path.insert(0, str(repo_root))
+-
+-from tools.graphdb.project_graph import project_graph
+-from tools.graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
+-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+-from tools.graphdb.agent_integration.cache import QueryCache
+-from tools.graphdb.agent_integration.validators import CompletionGates
++
++def _bootstrap_for_script() -> None:
++    current_file = Path(__file__).resolve()
++    project_root = next((parent for parent in current_file.parents if (parent / "graphdb").is_dir()), None)
++    if project_root is None:
++        raise RuntimeError("Could not locate project root containing the graphdb package")
++    if str(project_root) not in sys.path:
++        sys.path.insert(0, str(project_root))
++
++
++if __package__ in {None, ""}:
++    _bootstrap_for_script()
++    from graphdb.project_graph import project_graph
++    from graphdb.projection import GraphProjector
++    from graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
++    from graphdb.agent_integration.guardrails import ArchitecturalGuardrails
++    from graphdb.agent_integration.cache import QueryCache
++    from graphdb.agent_integration.validators import CompletionGates
++else:
++    from ..project_graph import project_graph
++    from ..projection import GraphProjector
++    from .decision_engine import AgentDecisionEngine, ArchitecturalContext
++    from .guardrails import ArchitecturalGuardrails
++    from .cache import QueryCache
++    from .validators import CompletionGates
+
+ logger = logging.getLogger(__name__)
+
+@@ -51,8 +69,6 @@
+         if graph_path.suffix == ".sqlite":
+             # Load existing SQLite
+             logger.info(f"Loading graph from SQLite: {graph_path}")
+-            from tools.graphdb.projection import GraphProjector
+-
+             projector = GraphProjector(graph_path)
+             graph = projector.project_graph()
+         else:
+@@ -131,8 +147,6 @@
+
+     try:
+         # Load graph
+-        from tools.graphdb.projection import GraphProjector
+-
+         projector = GraphProjector(graph_path)
+         graph = projector.project_graph()
+
+@@ -208,14 +222,14 @@
+
+             # Check if scenario behaved as expected
+             if scenario["name"] == "Low Risk File Read":
+-                if decision_result.risk_level not in ["low", "medium"] or not decision_result.approved:
++                if decision_result.risk_level.value not in ["low", "medium"] or not decision_result.approved:
+                     print(f"    ❌ Unexpected: Low risk scenario should be approved")
+                     all_passed = False
+                 else:
+                     print(f"    ✓ Expected: Low risk scenario approved")
+
+             elif scenario["name"] == "High Risk Direct Write":
+-                if decision_result.risk_level not in ["high", "critical"]:
++                if decision_result.risk_level.value not in ["high", "critical"]:
+                     print(f"    ❌ Unexpected: High risk scenario should be flagged")
+                     all_passed = False
+                 else:
+--- graphdb/agent_integration/validate_phase1.py
++++ graphdb/agent_integration/validate_phase1.py
+@@ -1,12 +1,24 @@
+ """Simple Phase 1 validation script without complex dependencies."""
+
++from __future__ import annotations
++
++import subprocess
+ import sys
+-import subprocess
+ from pathlib import Path
+
+-# Add repo root to path
+-repo_root = Path(__file__).resolve().parents[4]
+-sys.path.insert(0, str(repo_root))
++
++def _resolve_project_root() -> Path:
++    current_file = Path(__file__).resolve()
++    project_root = next((parent for parent in current_file.parents if (parent / "graphdb").is_dir()), None)
++    if project_root is None:
++        raise RuntimeError("Could not locate project root containing the graphdb package")
++    if str(project_root) not in sys.path:
++        sys.path.insert(0, str(project_root))
++    return project_root
++
++
++PROJECT_ROOT = _resolve_project_root()
++GRAPHDB_ROOT = PROJECT_ROOT / "graphdb"
+
+
+ def validate_phase1():
+@@ -18,17 +30,17 @@
+     # Check 1: Core modules exist
+     print("\n1. Checking core modules...")
+     modules_to_check = [
+-        "tools/graphdb/agent_integration/__init__.py",
+-        "tools/graphdb/agent_integration/decision_engine.py",
+-        "tools/graphdb/agent_integration/guardrails.py",
+-        "tools/graphdb/agent_integration/cache.py",
+-        "tools/graphdb/agent_integration/validators.py",
+-        "tools/graphdb/agent_integration/cli.py",
++        "graphdb/agent_integration/__init__.py",
++        "graphdb/agent_integration/decision_engine.py",
++        "graphdb/agent_integration/guardrails.py",
++        "graphdb/agent_integration/cache.py",
++        "graphdb/agent_integration/validators.py",
++        "graphdb/agent_integration/cli.py",
+     ]
+
+     missing_modules = []
+     for module in modules_to_check:
+-        if not Path(module).exists():
++        if not (PROJECT_ROOT / module).exists():
+             missing_modules.append(module)
+         else:
+             print(f"   ✓ {module}")
+@@ -48,7 +60,7 @@
+
+     missing_tests = []
+     for test_file in test_files_to_check:
+-        if not Path(test_file).exists():
++        if not (PROJECT_ROOT / test_file).exists():
+             missing_tests.append(test_file)
+         else:
+             print(f"   ✓ {test_file}")
+@@ -60,14 +72,14 @@
+     # Check 3: Basic import test
+     print("\n3. Testing basic imports...")
+     try:
+-        from tools.graphdb.agent_integration.decision_engine import (
++        from graphdb.agent_integration.decision_engine import (
+             AgentDecisionEngine,
+             ArchitecturalContext,
+             RiskLevel,
+         )
+-        from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails, GuardrailAction
+-        from tools.graphdb.agent_integration.cache import QueryCache, SmartQueryCache
+-        from tools.graphdb.agent_integration.validators import CompletionGates, GateStatus
++        from graphdb.agent_integration.guardrails import ArchitecturalGuardrails, GuardrailAction
++        from graphdb.agent_integration.cache import QueryCache, SmartQueryCache
++        from graphdb.agent_integration.validators import CompletionGates, GateStatus
+
+         print("   ✓ All imports successful")
+     except ImportError as e:
+@@ -134,7 +146,7 @@
+             ],
+             capture_output=True,
+             text=True,
+-            cwd=str(repo_root),
++            cwd=str(PROJECT_ROOT),
+             timeout=30,
+         )
+
+--- graphdb/agent_integration/phase2/validate_phase2.py
++++ graphdb/agent_integration/phase2/validate_phase2.py
+@@ -1,11 +1,22 @@
+ """Simple Phase 2 validation script."""
++
++from __future__ import annotations
+
+ import sys
+ from pathlib import Path
+
+-# Add repo root to path
+-repo_root = Path(__file__).resolve().parents[4]
+-sys.path.insert(0, str(repo_root))
++
++def _resolve_project_root() -> Path:
++    current_file = Path(__file__).resolve()
++    project_root = next((parent for parent in current_file.parents if (parent / "graphdb").is_dir()), None)
++    if project_root is None:
++        raise RuntimeError("Could not locate project root containing the graphdb package")
++    if str(project_root) not in sys.path:
++        sys.path.insert(0, str(project_root))
++    return project_root
++
++
++PROJECT_ROOT = _resolve_project_root()
+
+
+ def validate_phase2():
+@@ -17,17 +28,17 @@
+     # Check 1: Phase 2 modules exist
+     print("\n1. Checking Phase 2 modules...")
+     modules_to_check = [
+-        "tools/graphdb/agent_integration/phase2/__init__.py",
+-        "tools/graphdb/agent_integration/phase2/contextual_engine.py",
+-        "tools/graphdb/agent_integration/phase2/collaborative_intelligence.py",
+-        "tools/graphdb/agent_integration/phase2/predictive_analytics.py",
+-        "tools/graphdb/agent_integration/phase2/explanation_generator.py",
+-        "tools/graphdb/agent_integration/phase2/phase2_validators.py",
++        "graphdb/agent_integration/phase2/__init__.py",
++        "graphdb/agent_integration/phase2/contextual_engine.py",
++        "graphdb/agent_integration/phase2/collaborative_intelligence.py",
++        "graphdb/agent_integration/phase2/predictive_analytics.py",
++        "graphdb/agent_integration/phase2/explanation_generator.py",
++        "graphdb/agent_integration/phase2/phase2_validators.py",
+     ]
+
+     missing_modules = []
+     for module in modules_to_check:
+-        if not Path(module).exists():
++        if not (PROJECT_ROOT / module).exists():
+             missing_modules.append(module)
+         else:
+             print(f"   ✓ {module}")
+@@ -39,13 +50,13 @@
+     # Check 2: Basic import test
+     print("\n2. Testing basic imports...")
+     try:
+-        from tools.graphdb.agent_integration.phase2.contextual_engine import ContextualIntelligenceEngine
+-        from tools.graphdb.agent_integration.phase2.collaborative_intelligence import (
++        from graphdb.agent_integration.phase2.contextual_engine import ContextualIntelligenceEngine
++        from graphdb.agent_integration.phase2.collaborative_intelligence import (
+             CollaborativeIntelligence,
+         )
+-        from tools.graphdb.agent_integration.phase2.predictive_analytics import PredictiveAnalytics
+-        from tools.graphdb.agent_integration.phase2.explanation_generator import ExplanationGenerator
+-        from tools.graphdb.agent_integration.phase2.phase2_validators import Phase2CompletionGates
++        from graphdb.agent_integration.phase2.predictive_analytics import PredictiveAnalytics
++        from graphdb.agent_integration.phase2.explanation_generator import ExplanationGenerator
++        from graphdb.agent_integration.phase2.phase2_validators import Phase2CompletionGates
+
+         print("   ✓ All Phase 2 imports successful")
+     except ImportError as e:
+@@ -62,8 +73,8 @@
+         graph.add_node("test_node", name="test_module", graph_type="Module", properties={"layer": "L2"})
+
+         # Import Phase 1 components
+-        from tools.graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
+-        from tools.graphdb.agent_integration.cache import QueryCache
++        from graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
++        from graphdb.agent_integration.cache import QueryCache
+
+         # Initialize Phase 1 components
+         cache = QueryCache(max_size=10, default_ttl=60.0)
+@@ -101,7 +112,7 @@
+         print("   ✓ Explanation Generator working")
+
+         # Test Phase 2 Completion Gates
+-        from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
++        from graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+
+         guardrails = ArchitecturalGuardrails(decision_engine)
+
+--- graphdb/agent_integration/phase3/validate_phase3.py
++++ graphdb/agent_integration/phase3/validate_phase3.py
+@@ -1,11 +1,22 @@
+ """Simple Phase 3 validation script."""
++
++from __future__ import annotations
+
+ import sys
+ from pathlib import Path
+
+-# Add repo root to path
+-repo_root = Path(__file__).resolve().parents[4]
+-sys.path.insert(0, str(repo_root))
++
++def _resolve_project_root() -> Path:
++    current_file = Path(__file__).resolve()
++    project_root = next((parent for parent in current_file.parents if (parent / "graphdb").is_dir()), None)
++    if project_root is None:
++        raise RuntimeError("Could not locate project root containing the graphdb package")
++    if str(project_root) not in sys.path:
++        sys.path.insert(0, str(project_root))
++    return project_root
++
++
++PROJECT_ROOT = _resolve_project_root()
+
+
+ def validate_phase3():
+@@ -17,17 +28,17 @@
+     # Check 1: Phase 3 modules exist
+     print("\n1. Checking Phase 3 modules...")
+     modules_to_check = [
+-        "tools/graphdb/agent_integration/phase3/__init__.py",
+-        "tools/graphdb/agent_integration/phase3/ecosystem_intelligence.py",
+-        "tools/graphdb/agent_integration/phase3/adaptive_learning.py",
+-        "tools/graphdb/agent_integration/phase3/health_monitoring.py",
+-        "tools/graphdb/agent_integration/phase3/autonomous_governance.py",
+-        "tools/graphdb/agent_integration/phase3/phase3_validators.py",
++        "graphdb/agent_integration/phase3/__init__.py",
++        "graphdb/agent_integration/phase3/ecosystem_intelligence.py",
++        "graphdb/agent_integration/phase3/adaptive_learning.py",
++        "graphdb/agent_integration/phase3/health_monitoring.py",
++        "graphdb/agent_integration/phase3/autonomous_governance.py",
++        "graphdb/agent_integration/phase3/phase3_validators.py",
+     ]
+
+     missing_modules = []
+     for module in modules_to_check:
+-        if not Path(module).exists():
++        if not (PROJECT_ROOT / module).exists():
+             missing_modules.append(module)
+         else:
+             print(f"   ✓ {module}")
+@@ -39,11 +50,11 @@
+     # Check 2: Basic import test
+     print("\n2. Testing basic imports...")
+     try:
+-        from tools.graphdb.agent_integration.phase3.ecosystem_intelligence import EcosystemIntelligenceEngine
+-        from tools.graphdb.agent_integration.phase3.adaptive_learning import AdaptiveLearningEngine
+-        from tools.graphdb.agent_integration.phase3.health_monitoring import ArchitecturalHealthMonitor
+-        from tools.graphdb.agent_integration.phase3.autonomous_governance import AutonomousGovernanceEngine
+-        from tools.graphdb.agent_integration.phase3.phase3_validators import Phase3CompletionGates
++        from graphdb.agent_integration.phase3.ecosystem_intelligence import EcosystemIntelligenceEngine
++        from graphdb.agent_integration.phase3.adaptive_learning import AdaptiveLearningEngine
++        from graphdb.agent_integration.phase3.health_monitoring import ArchitecturalHealthMonitor
++        from graphdb.agent_integration.phase3.autonomous_governance import AutonomousGovernanceEngine
++        from graphdb.agent_integration.phase3.phase3_validators import Phase3CompletionGates
+
+         print("   ✓ All Phase 3 imports successful")
+     except ImportError as e:
+@@ -60,15 +71,15 @@
+         graph.add_node("test_node", name="test_module", graph_type="Module", properties={"layer": "L2"})
+
+         # Import Phase 1 components
+-        from tools.graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
+-        from tools.graphdb.agent_integration.cache import QueryCache
++        from graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
++        from graphdb.agent_integration.cache import QueryCache
+
+         # Initialize Phase 1 components
+         cache = QueryCache(max_size=10, default_ttl=60.0)
+         decision_engine = AgentDecisionEngine(graph, cache)
+
+         # Initialize Phase 2 components
+-        from tools.graphdb.agent_integration.phase2.contextual_engine import ContextualIntelligenceEngine
++        from graphdb.agent_integration.phase2.contextual_engine import ContextualIntelligenceEngine
+
+         contextual_engine = ContextualIntelligenceEngine(decision_engine, cache)
+
+@@ -106,7 +117,7 @@
+         print("   ✓ Autonomous Governance working")
+
+         # Test Phase 3 Completion Gates
+-        from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
++        from graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+
+         guardrails = ArchitecturalGuardrails(decision_engine)
+
+--- graphdb/agent_integration/phase2/phase2_validators.py
++++ graphdb/agent_integration/phase2/phase2_validators.py
+@@ -0,0 +1,344 @@
++"""Phase 2 Completion Gates - Validation for contextual intelligence and predictive insights."""
++
++from __future__ import annotations
++
++import logging
++import time
++from dataclasses import dataclass
++from enum import Enum
++from typing import Any, Dict, List, Tuple
++
++from ..cache import QueryCache
++from ..decision_engine import AgentDecisionEngine, ArchitecturalContext
++from ..guardrails import ArchitecturalGuardrails
++from .collaborative_intelligence import AgentProfile, CollaborationMode, CollaborativeIntelligence
++from .contextual_engine import AnalysisDepth, ContextualIntelligenceEngine
++from .explanation_generator import ExplanationGenerator
++from .predictive_analytics import PredictiveAnalytics
++
++logger = logging.getLogger(__name__)
++
++
++class Phase2GateStatus(Enum):
++    """Status of a Phase 2 completion gate."""
++
++    PENDING = "pending"
++    IN_PROGRESS = "in_progress"
++    PASSED = "passed"
++    FAILED = "failed"
++    BLOCKED = "blocked"
++
++
++@dataclass
++class Phase2GateResult:
++    """Result of a Phase 2 completion gate validation."""
++
++    gate_name: str
++    status: Phase2GateStatus
++    score: float
++    details: Dict[str, Any]
++    issues: List[str]
++    recommendations: List[str]
++    execution_time_seconds: float = 0.0
++
++
++class Phase2CompletionGates:
++    """Comprehensive validation gates for Phase 2 completion."""
++
++    def __init__(
++        self,
++        decision_engine: AgentDecisionEngine,
++        guardrails: ArchitecturalGuardrails,
++        cache: QueryCache,
++    ) -> None:
++        self.decision_engine = decision_engine
++        self.guardrails = guardrails
++        self.cache = cache
++
++        self.contextual_engine = ContextualIntelligenceEngine(decision_engine, cache)
++        self.collaborative_intelligence = CollaborativeIntelligence(self.contextual_engine)
++        self.predictive_analytics = PredictiveAnalytics(self.contextual_engine)
++        self.explanation_generator = ExplanationGenerator(self.contextual_engine)
++
++        self.collaborative_intelligence.register_agent(
++            AgentProfile(
++                agent_id="phase2-validator",
++                agent_type="validator",
++                capabilities=["architecture", "risk", "analysis"],
++                experience_level="expert",
++                domain_expertise={"architecture": 1.0, "safety": 0.9},
++            )
++        )
++
++        self.gates = {
++            "contextual_intelligence": self._validate_contextual_intelligence,
++            "collaborative_intelligence": self._validate_collaborative_intelligence,
++            "predictive_analytics": self._validate_predictive_analytics,
++            "explanation_generation": self._validate_explanation_generation,
++            "cross_component_integration": self._validate_cross_component_integration,
++            "performance_benchmarks": self._validate_performance_benchmarks,
++        }
++
++        logger.info("Phase2CompletionGates initialized with %d validation gates", len(self.gates))
++
++    def run_all_gates(self) -> Dict[str, Phase2GateResult]:
++        """Run all Phase 2 completion gates."""
++        logger.info("Running all Phase 2 completion gates")
++        results: Dict[str, Phase2GateResult] = {}
++        overall_start = time.time()
++
++        for gate_name, gate_func in self.gates.items():
++            logger.info("Running Phase 2 gate: %s", gate_name)
++            start = time.time()
++            try:
++                result = gate_func()
++                result.execution_time_seconds = time.time() - start
++                results[gate_name] = result
++                logger.info("Phase 2 gate %s: %s (score: %.2f)", gate_name, result.status.value, result.score)
++            except (ValueError, RuntimeError, KeyError, AttributeError, TypeError) as exc:
++                logger.error("Phase 2 gate %s failed with exception: %s", gate_name, exc)
++                results[gate_name] = Phase2GateResult(
++                    gate_name=gate_name,
++                    status=Phase2GateStatus.FAILED,
++                    score=0.0,
++                    details={"error": str(exc)},
++                    issues=[f"Gate execution failed: {exc}"],
++                    recommendations=["Fix gate implementation and retry"],
++                    execution_time_seconds=time.time() - start,
++                )
++
++        logger.info("All Phase 2 gates completed in %.2f seconds", time.time() - overall_start)
++        return results
++
++    def get_overall_status(self, results: Dict[str, Phase2GateResult]) -> Tuple[Phase2GateStatus, float]:
++        """Compute overall status and mean score from all gate results."""
++        if not results:
++            return Phase2GateStatus.PENDING, 0.0
++
++        scores = [r.score for r in results.values()]
++        overall_score = sum(scores) / len(scores)
++
++        terminal_bad = {Phase2GateStatus.FAILED, Phase2GateStatus.BLOCKED}
++        if any(r.status in terminal_bad for r in results.values()):
++            return Phase2GateStatus.FAILED, overall_score
++        if any(r.status == Phase2GateStatus.PENDING for r in results.values()):
++            return Phase2GateStatus.PENDING, overall_score
++        if any(r.status == Phase2GateStatus.IN_PROGRESS for r in results.values()):
++            return Phase2GateStatus.IN_PROGRESS, overall_score
++        return Phase2GateStatus.PASSED, overall_score
++
++    def _make_test_context(self) -> ArchitecturalContext:
++        return ArchitecturalContext(
++            agent_type="test",
++            action_type="analyze_code",
++            target_modules=["test_module"],
++            proposed_changes={"type": "test"},
++            session_id="phase2_validation",
++        )
++
++    def _validate_contextual_intelligence(self) -> Phase2GateResult:
++        issues: List[str] = []
++        recommendations: List[str] = []
++        score = 1.0
++
++        try:
++            result = self.contextual_engine.analyze_with_context(self._make_test_context())
++
++            if not hasattr(result, "base_result"):
++                issues.append("Missing base_result in contextual analysis output")
++                score -= 0.25
++            if not hasattr(result, "contextual_insights"):
++                issues.append("Missing contextual_insights in contextual analysis output")
++                score -= 0.25
++            if result.analysis_depth not in set(AnalysisDepth):
++                issues.append("Analysis depth is not a valid AnalysisDepth enum")
++                score -= 0.2
++            if result.confidence_score < 0.0 or result.confidence_score > 1.0:
++                issues.append("Confidence score must be normalized to [0.0, 1.0]")
++                score -= 0.15
++
++        except (ValueError, RuntimeError, KeyError, AttributeError, TypeError) as exc:
++            issues.append(f"Contextual intelligence test failed: {exc}")
++            recommendations.append("Fix contextual analysis result assembly")
++            score -= 0.5
++
++        return Phase2GateResult(
++            gate_name="contextual_intelligence",
++            status=Phase2GateStatus.PASSED if score >= 0.8 else Phase2GateStatus.FAILED,
++            score=max(score, 0.0),
++            details={"test_completed": True},
++            issues=issues,
++            recommendations=recommendations,
++        )
++
++    def _validate_collaborative_intelligence(self) -> Phase2GateResult:
++        issues: List[str] = []
++        recommendations: List[str] = []
++        score = 1.0
++
++        try:
++            result = self.collaborative_intelligence.analyze_collaboratively(
++                self._make_test_context(),
++                requesting_agent="phase2-validator",
++                collaboration_mode=CollaborationMode.INDEPENDENT,
++            )
++
++            if "phase2-validator" not in result.participating_agents:
++                issues.append("Requesting agent missing from participating_agents")
++                score -= 0.2
++            if not isinstance(result.collaborative_insights, list):
++                issues.append("collaborative_insights should be a list")
++                score -= 0.2
++            if result.confidence_boost < 0.0:
++                issues.append("confidence_boost should not be negative")
++                score -= 0.1
++
++        except (ValueError, RuntimeError, KeyError, AttributeError, TypeError) as exc:
++            issues.append(f"Collaborative intelligence test failed: {exc}")
++            recommendations.append("Fix collaboration orchestration and result normalization")
++            score -= 0.5
++
++        return Phase2GateResult(
++            gate_name="collaborative_intelligence",
++            status=Phase2GateStatus.PASSED if score >= 0.8 else Phase2GateStatus.FAILED,
++            score=max(score, 0.0),
++            details={"test_completed": True},
++            issues=issues,
++            recommendations=recommendations,
++        )
++
++    def _validate_predictive_analytics(self) -> Phase2GateResult:
++        issues: List[str] = []
++        recommendations: List[str] = []
++        score = 1.0
++
++        try:
++            result = self.predictive_analytics.analyze_impact(self._make_test_context())
++
++            if not isinstance(result.affected_modules, list):
++                issues.append("affected_modules should be a list")
++                score -= 0.2
++            if not isinstance(result.blast_radius, int):
++                issues.append("blast_radius should be an integer")
++                score -= 0.2
++            if not hasattr(result.risk_level, "value"):
++                issues.append("risk_level should be an enum-like object")
++                score -= 0.15
++            if not isinstance(result.ecosystem_implications, dict):
++                issues.append("ecosystem_implications should be a dictionary")
++                score -= 0.15
++
++        except (ValueError, RuntimeError, KeyError, AttributeError, TypeError) as exc:
++            issues.append(f"Predictive analytics test failed: {exc}")
++            recommendations.append("Fix impact prediction result generation")
++            score -= 0.5
++
++        return Phase2GateResult(
++            gate_name="predictive_analytics",
++            status=Phase2GateStatus.PASSED if score >= 0.8 else Phase2GateStatus.FAILED,
++            score=max(score, 0.0),
++            details={"test_completed": True},
++            issues=issues,
++            recommendations=recommendations,
++        )
++
++    def _validate_explanation_generation(self) -> Phase2GateResult:
++        issues: List[str] = []
++        recommendations: List[str] = []
++        score = 1.0
++
++        try:
++            context = self._make_test_context()
++            decision = self.decision_engine.analyze_action(context)
++            explanation = self.explanation_generator.explain_decision(context, decision)
++
++            if not hasattr(explanation, "components"):
++                issues.append("Explanation missing components")
++                score -= 0.25
++            if not hasattr(explanation, "summary"):
++                issues.append("Explanation missing summary")
++                score -= 0.2
++            if not isinstance(explanation.components, list) or not explanation.components:
++                issues.append("Explanation should include at least one component")
++                score -= 0.2
++
++        except (ValueError, RuntimeError, KeyError, AttributeError, TypeError) as exc:
++            issues.append(f"Explanation generation test failed: {exc}")
++            recommendations.append("Fix explanation builder and component rendering")
++            score -= 0.5
++
++        return Phase2GateResult(
++            gate_name="explanation_generation",
++            status=Phase2GateStatus.PASSED if score >= 0.8 else Phase2GateStatus.FAILED,
++            score=max(score, 0.0),
++            details={"test_completed": True},
++            issues=issues,
++            recommendations=recommendations,
++        )
++
++    def _validate_cross_component_integration(self) -> Phase2GateResult:
++        issues: List[str] = []
++        recommendations: List[str] = []
++        score = 1.0
++
++        try:
++            context = self._make_test_context()
++            analysis = self.contextual_engine.analyze_with_context(context)
++            prediction = self.predictive_analytics.analyze_impact(context)
++            explanation = self.explanation_generator.explain_decision(context, analysis.base_result)
++
++            if analysis.base_result.risk_level != prediction.risk_level:
++                issues.append("Prediction risk_level drifted from base contextual analysis")
++                score -= 0.2
++            if not explanation.summary:
++                issues.append("Integrated explanation should generate a summary")
++                score -= 0.15
++            if not analysis.contextual_insights:
++                issues.append("Integrated contextual analysis produced no insights")
++                score -= 0.15
++
++        except (ValueError, RuntimeError, KeyError, AttributeError, TypeError) as exc:
++            issues.append(f"Cross-component integration test failed: {exc}")
++            recommendations.append("Fix data contracts between Phase 2 components")
++            score -= 0.5
++
++        return Phase2GateResult(
++            gate_name="cross_component_integration",
++            status=Phase2GateStatus.PASSED if score >= 0.8 else Phase2GateStatus.FAILED,
++            score=max(score, 0.0),
++            details={"test_completed": True},
++            issues=issues,
++            recommendations=recommendations,
++        )
++
++    def _validate_performance_benchmarks(self) -> Phase2GateResult:
++        issues: List[str] = []
++        recommendations: List[str] = []
++        score = 1.0
++
++        try:
++            context = self._make_test_context()
++            start = time.time()
++            analysis = self.contextual_engine.analyze_with_context(context)
++            elapsed = time.time() - start
++
++            if elapsed > 2.0:
++                issues.append(f"Contextual analysis exceeded benchmark: {elapsed:.3f}s > 2.000s")
++                score -= 0.3
++            if analysis.execution_time_seconds < 0.0:
++                issues.append("Reported execution_time_seconds must be non-negative")
++                score -= 0.2
++
++        except (ValueError, RuntimeError, KeyError, AttributeError, TypeError) as exc:
++            issues.append(f"Performance benchmark test failed: {exc}")
++            recommendations.append("Profile contextual analysis hot paths and cache misses")
++            score -= 0.5
++
++        return Phase2GateResult(
++            gate_name="performance_benchmarks",
++            status=Phase2GateStatus.PASSED if score >= 0.8 else Phase2GateStatus.FAILED,
++            score=max(score, 0.0),
++            details={"test_completed": True},
++            issues=issues,
++            recommendations=recommendations,
++        )
+--- graphdb/snapshot.py
++++ graphdb/snapshot.py
+@@ -8,12 +8,15 @@
+
+ import hashlib
+ import json
+-import pickle
++import logging
+ from dataclasses import dataclass, field
+ from pathlib import Path
+ from typing import Any, Dict, Optional
+
+ import networkx as nx
++from networkx.readwrite import json_graph
++
++logger = logging.getLogger(__name__)
+
+
+ @dataclass
+@@ -81,7 +84,7 @@
+             try:
+                 self.index = json.loads(self.index_file.read_text(encoding="utf-8"))
+             except (json.JSONDecodeError, OSError) as e:
+-                print(f"Warning: Failed to load snapshot index: {e}")
++                logger.warning("Failed to load snapshot index: %s", e)
+                 self.index = {}
+         else:
+             self.index = {}
+@@ -96,9 +99,14 @@
+     def _get_snapshot_paths(self, commit_sha: str) -> tuple[Path, Path]:
+         """Get file paths for a snapshot."""
+         snapshot_dir = self.projections_dir / commit_sha
+-        graph_file = snapshot_dir / "graph.pkl"
++        graph_file = snapshot_dir / "graph.json"
+         metadata_file = self.metadata_dir / f"{commit_sha}.json"
+         return graph_file, metadata_file
++
++    def _get_legacy_pickle_path(self, commit_sha: str) -> Path:
++        """Get the legacy pickle path for backward-compatibility checks and cleanup."""
++        snapshot_dir = self.projections_dir / commit_sha
++        return snapshot_dir / "graph.pkl"
+
+     def _calculate_artifact_digest(self, sqlite_path: Path) -> str:
+         """Calculate SHA256 digest of the source SQLite file."""
+@@ -131,11 +139,11 @@
+         # Create snapshot directory
+         graph_file.parent.mkdir(parents=True, exist_ok=True)
+
+-        # Save graph as pickle
+-        try:
+-            with open(graph_file, "wb") as f:
+-                pickle.dump(graph, f, protocol=pickle.HIGHEST_PROTOCOL)
+-        except (OSError, pickle.PickleError) as e:
++        # Save graph as JSON node-link data to avoid unsafe pickle deserialization.
++        try:
++            graph_payload = json_graph.node_link_data(graph)
++            graph_file.write_text(json.dumps(graph_payload, indent=2), encoding="utf-8")
++        except (OSError, TypeError, ValueError) as e:
+             raise RuntimeError(f"Failed to save graph: {e}")
+
+         # Save metadata
+@@ -168,14 +176,24 @@
+         """
+         graph_file, metadata_file = self._get_snapshot_paths(commit_sha)
+
+-        if not graph_file.exists() or not metadata_file.exists():
+-            raise FileNotFoundError(f"Snapshot not found for commit {commit_sha}")
++        legacy_graph_file = self._get_legacy_pickle_path(commit_sha)
++
++        if not metadata_file.exists():
++            raise FileNotFoundError(f"Snapshot metadata not found for commit {commit_sha}")
++
++        if not graph_file.exists():
++            if legacy_graph_file.exists():
++                raise RuntimeError(
++                    "Legacy pickle snapshots are no longer loaded automatically. "
++                    f"Regenerate or migrate snapshot for commit {commit_sha}."
++                )
++            raise FileNotFoundError(f"Snapshot graph not found for commit {commit_sha}")
+
+         # Load graph
+         try:
+-            with open(graph_file, "rb") as f:
+-                graph = pickle.load(f)
+-        except (OSError, pickle.PickleError) as e:
++            graph_payload = json.loads(graph_file.read_text(encoding="utf-8"))
++            graph = json_graph.node_link_graph(graph_payload)
++        except (OSError, json.JSONDecodeError, TypeError, ValueError) as e:
+             raise RuntimeError(f"Failed to load graph: {e}")
+
+         # Load metadata
+@@ -215,13 +233,20 @@
+             try:
+                 graph_file.unlink()
+             except OSError as e:
+-                print(f"Warning: Failed to delete graph file: {e}")
++                logger.warning("Failed to delete graph file: %s", e)
+
+         if metadata_file.exists():
+             try:
+                 metadata_file.unlink()
+             except OSError as e:
+-                print(f"Warning: Failed to delete metadata file: {e}")
++                logger.warning("Failed to delete metadata file: %s", e)
++
++        legacy_graph_file = self._get_legacy_pickle_path(commit_sha)
++        if legacy_graph_file.exists():
++            try:
++                legacy_graph_file.unlink()
++            except OSError as e:
++                logger.warning("Failed to delete legacy pickle graph file: %s", e)
+
+         # Clean up empty directory
+         try:
+@@ -265,7 +290,7 @@
+                 # Already deleted, skip
+                 continue
+             except (OSError, RuntimeError) as e:
+-                print(f"Warning: Failed to delete snapshot {commit_sha}: {e}")
++                logger.warning("Failed to delete snapshot %s: %s", commit_sha, e)
+
+         return deleted

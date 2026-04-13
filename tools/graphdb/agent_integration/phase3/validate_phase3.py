@@ -1,11 +1,22 @@
 """Simple Phase 3 validation script."""
 
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 
-# Add repo root to path
-repo_root = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(repo_root))
+
+def _resolve_project_root() -> Path:
+    current_file = Path(__file__).resolve()
+    project_root = next((parent for parent in current_file.parents if (parent / "graphdb").is_dir()), None)
+    if project_root is None:
+        raise RuntimeError("Could not locate project root containing the graphdb package")
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+    return project_root
+
+
+PROJECT_ROOT = _resolve_project_root()
 
 
 def validate_phase3():
@@ -17,17 +28,17 @@ def validate_phase3():
     # Check 1: Phase 3 modules exist
     print("\n1. Checking Phase 3 modules...")
     modules_to_check = [
-        "tools/graphdb/agent_integration/phase3/__init__.py",
-        "tools/graphdb/agent_integration/phase3/ecosystem_intelligence.py",
-        "tools/graphdb/agent_integration/phase3/adaptive_learning.py",
-        "tools/graphdb/agent_integration/phase3/health_monitoring.py",
-        "tools/graphdb/agent_integration/phase3/autonomous_governance.py",
-        "tools/graphdb/agent_integration/phase3/phase3_validators.py",
+        "graphdb/agent_integration/phase3/__init__.py",
+        "graphdb/agent_integration/phase3/ecosystem_intelligence.py",
+        "graphdb/agent_integration/phase3/adaptive_learning.py",
+        "graphdb/agent_integration/phase3/health_monitoring.py",
+        "graphdb/agent_integration/phase3/autonomous_governance.py",
+        "graphdb/agent_integration/phase3/phase3_validators.py",
     ]
 
     missing_modules = []
     for module in modules_to_check:
-        if not Path(module).exists():
+        if not (PROJECT_ROOT / module).exists():
             missing_modules.append(module)
         else:
             print(f"   ✓ {module}")
@@ -39,11 +50,11 @@ def validate_phase3():
     # Check 2: Basic import test
     print("\n2. Testing basic imports...")
     try:
-        from tools.graphdb.agent_integration.phase3.ecosystem_intelligence import EcosystemIntelligenceEngine
-        from tools.graphdb.agent_integration.phase3.adaptive_learning import AdaptiveLearningEngine
-        from tools.graphdb.agent_integration.phase3.health_monitoring import ArchitecturalHealthMonitor
-        from tools.graphdb.agent_integration.phase3.autonomous_governance import AutonomousGovernanceEngine
-        from tools.graphdb.agent_integration.phase3.phase3_validators import Phase3CompletionGates
+        from graphdb.agent_integration.phase3.ecosystem_intelligence import EcosystemIntelligenceEngine
+        from graphdb.agent_integration.phase3.adaptive_learning import AdaptiveLearningEngine
+        from graphdb.agent_integration.phase3.health_monitoring import ArchitecturalHealthMonitor
+        from graphdb.agent_integration.phase3.autonomous_governance import AutonomousGovernanceEngine
+        from graphdb.agent_integration.phase3.phase3_validators import Phase3CompletionGates
 
         print("   ✓ All Phase 3 imports successful")
     except ImportError as e:
@@ -60,15 +71,15 @@ def validate_phase3():
         graph.add_node("test_node", name="test_module", graph_type="Module", properties={"layer": "L2"})
 
         # Import Phase 1 components
-        from tools.graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
-        from tools.graphdb.agent_integration.cache import QueryCache
+        from graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
+        from graphdb.agent_integration.cache import QueryCache
 
         # Initialize Phase 1 components
         cache = QueryCache(max_size=10, default_ttl=60.0)
         decision_engine = AgentDecisionEngine(graph, cache)
 
         # Initialize Phase 2 components
-        from tools.graphdb.agent_integration.phase2.contextual_engine import ContextualIntelligenceEngine
+        from graphdb.agent_integration.phase2.contextual_engine import ContextualIntelligenceEngine
 
         contextual_engine = ContextualIntelligenceEngine(decision_engine, cache)
 
@@ -106,7 +117,7 @@ def validate_phase3():
         print("   ✓ Autonomous Governance working")
 
         # Test Phase 3 Completion Gates
-        from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+        from graphdb.agent_integration.guardrails import ArchitecturalGuardrails
 
         guardrails = ArchitecturalGuardrails(decision_engine)
 

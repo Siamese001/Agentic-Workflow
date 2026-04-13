@@ -4,20 +4,40 @@ This module provides command-line interface for testing and validating
 the Phase 1 GraphDB agent integration implementation.
 """
 
+from __future__ import annotations
+
 import argparse
 import logging
 import sys
 from pathlib import Path
 
-# Add repo root to path for imports
-repo_root = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(repo_root))
+from tqdm import tqdm
 
-from tools.graphdb.project_graph import project_graph
-from tools.graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
-from tools.graphdb.agent_integration.cache import QueryCache
-from tools.graphdb.agent_integration.validators import CompletionGates
+
+def _bootstrap_for_script() -> None:
+    current_file = Path(__file__).resolve()
+    project_root = next((parent for parent in current_file.parents if (parent / "graphdb").is_dir()), None)
+    if project_root is None:
+        raise RuntimeError("Could not locate project root containing the graphdb package")
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
+
+if __package__ in {None, ""}:
+    _bootstrap_for_script()
+    from graphdb.project_graph import project_graph
+    from graphdb.projection import GraphProjector
+    from graphdb.agent_integration.decision_engine import AgentDecisionEngine, ArchitecturalContext
+    from graphdb.agent_integration.guardrails import ArchitecturalGuardrails
+    from graphdb.agent_integration.cache import QueryCache
+    from graphdb.agent_integration.validators import CompletionGates
+else:
+    from ..project_graph import project_graph
+    from ..projection import GraphProjector
+    from .decision_engine import AgentDecisionEngine, ArchitecturalContext
+    from .guardrails import ArchitecturalGuardrails
+    from .cache import QueryCache
+    from .validators import CompletionGates
 
 logger = logging.getLogger(__name__)
 
@@ -51,8 +71,6 @@ def run_completion_gates(graph_path: Path, verbose: bool = False) -> int:
         if graph_path.suffix == ".sqlite":
             # Load existing SQLite
             logger.info(f"Loading graph from SQLite: {graph_path}")
-            from tools.graphdb.projection import GraphProjector
-
             projector = GraphProjector(graph_path)
             graph = projector.project_graph()
         else:
@@ -81,7 +99,7 @@ def run_completion_gates(graph_path: Path, verbose: bool = False) -> int:
         print("PHASE 1 COMPLETION GATE RESULTS")
         print("=" * 80)
 
-        for gate_name, result in results.items():
+        for gate_name, result in tqdm(results.items(), desc="gates", unit="gate"):
             status_symbol = "✓" if result.status.value == "passed" else "✗"
             print(
                 f"{status_symbol} {gate_name}: {result.status.value} (score: {result.score:.2f}, time: {result.execution_time_seconds:.3f}s)"
@@ -131,8 +149,6 @@ def test_agent_integration(graph_path: Path, verbose: bool = False) -> int:
 
     try:
         # Load graph
-        from tools.graphdb.projection import GraphProjector
-
         projector = GraphProjector(graph_path)
         graph = projector.project_graph()
 
@@ -181,7 +197,7 @@ def test_agent_integration(graph_path: Path, verbose: bool = False) -> int:
 
         all_passed = True
 
-        for scenario in scenarios:
+        for scenario in tqdm(scenarios, desc="scenarios", unit="scenario"):
             print(f"\n📋 Testing: {scenario['name']}")
 
             # Test decision engine
@@ -208,14 +224,14 @@ def test_agent_integration(graph_path: Path, verbose: bool = False) -> int:
 
             # Check if scenario behaved as expected
             if scenario["name"] == "Low Risk File Read":
-                if decision_result.risk_level not in ["low", "medium"] or not decision_result.approved:
+                if decision_result.risk_level.value not in ["low", "medium"] or not decision_result.approved:
                     print(f"    ❌ Unexpected: Low risk scenario should be approved")
                     all_passed = False
                 else:
                     print(f"    ✓ Expected: Low risk scenario approved")
 
             elif scenario["name"] == "High Risk Direct Write":
-                if decision_result.risk_level not in ["high", "critical"]:
+                if decision_result.risk_level.value not in ["high", "critical"]:
                     print(f"    ❌ Unexpected: High risk scenario should be flagged")
                     all_passed = False
                 else:

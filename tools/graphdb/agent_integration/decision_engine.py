@@ -11,8 +11,10 @@ from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-from tools.graphdb.queries.structural import StructuralQueries
-from tools.graphdb.queries.blast_radius import BlastRadiusQueries
+from tqdm import tqdm
+
+from ..queries.structural import StructuralQueries
+from ..queries.blast_radius import BlastRadiusQueries
 from .cache import QueryCache
 
 logger = logging.getLogger(__name__)
@@ -148,7 +150,7 @@ class AgentDecisionEngine:
         blast_analysis = {}
         total_impact = 0
 
-        for module in context.target_modules:
+        for module in tqdm(context.target_modules, desc="blast radius", unit="module"):
             try:
                 # Find node ID for module (simplified)
                 node_id = self._find_node_by_module(module)

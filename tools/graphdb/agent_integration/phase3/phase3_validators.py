@@ -8,13 +8,15 @@ from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-from tools.graphdb.agent_integration.decision_engine import (
+from tqdm import tqdm
+
+from ..decision_engine import (
     AgentDecisionEngine,
     ArchitecturalContext,
     RiskLevel,
 )
-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
-from tools.graphdb.agent_integration.cache import QueryCache
+from ..guardrails import ArchitecturalGuardrails
+from ..cache import QueryCache
 from .ecosystem_intelligence import EcosystemIntelligenceEngine
 from .adaptive_learning import AdaptiveLearningEngine
 from .health_monitoring import ArchitecturalHealthMonitor, HealthStatus
@@ -64,7 +66,7 @@ class Phase3CompletionGates:
         self.cache = cache
 
         # Initialize Phase 3 components
-        from .phase2.contextual_engine import ContextualIntelligenceEngine
+        from ..phase2.contextual_engine import ContextualIntelligenceEngine
 
         self.contextual_engine = ContextualIntelligenceEngine(decision_engine, cache)
 
@@ -92,8 +94,8 @@ class Phase3CompletionGates:
         results = {}
         overall_start = time.time()
 
-        for gate_name, gate_func in self.gates.items():
-            logger.info("Running Phase 3 gate: %s", gate_name)
+        for gate_name, gate_func in tqdm(self.gates.items(), desc="gates", unit="gate"):
+            logger.info("Progress: running Phase 3 gate: %s", gate_name)
             start_time = time.time()
 
             try:
@@ -208,7 +210,7 @@ class Phase3CompletionGates:
                 session_id="test_session",
             )
 
-            from .phase2.contextual_engine import AnalysisResult
+            from ..phase2.contextual_engine import AnalysisResult
 
             mock_result = AnalysisResult(
                 base_result=self.decision_engine.analyze_action(context),

@@ -8,12 +8,15 @@ from __future__ import annotations
 
 import hashlib
 import json
-import pickle
+import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import networkx as nx
+from networkx.readwrite import json_graph
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -81,7 +84,7 @@ class SnapshotManager:
             try:
                 self.index = json.loads(self.index_file.read_text(encoding="utf-8"))
             except (json.JSONDecodeError, OSError) as e:
-                print(f"Warning: Failed to load snapshot index: {e}")
+                logger.warning("Failed to load snapshot index: %s", e)
                 self.index = {}
         else:
             self.index = {}
@@ -96,9 +99,14 @@ class SnapshotManager:
     def _get_snapshot_paths(self, commit_sha: str) -> tuple[Path, Path]:
         """Get file paths for a snapshot."""
         snapshot_dir = self.projections_dir / commit_sha
-        graph_file = snapshot_dir / "graph.pkl"
+        graph_file = snapshot_dir / "graph.json"
         metadata_file = self.metadata_dir / f"{commit_sha}.json"
         return graph_file, metadata_file
+
+    def _get_legacy_pickle_path(self, commit_sha: str) -> Path:
+        """Get the legacy pickle path for backward-compatibility checks and cleanup."""
+        snapshot_dir = self.projections_dir / commit_sha
+        return snapshot_dir / "graph.pkl"
 
     def _calculate_artifact_digest(self, sqlite_path: Path) -> str:
         """Calculate SHA256 digest of the source SQLite file."""
@@ -131,11 +139,11 @@ class SnapshotManager:
         # Create snapshot directory
         graph_file.parent.mkdir(parents=True, exist_ok=True)
 
-        # Save graph as pickle
+        # Save graph as JSON node-link data to avoid unsafe pickle deserialization.
         try:
-            with open(graph_file, "wb") as f:
-                pickle.dump(graph, f, protocol=pickle.HIGHEST_PROTOCOL)
-        except (OSError, pickle.PickleError) as e:
+            graph_payload = json_graph.node_link_data(graph)
+            graph_file.write_text(json.dumps(graph_payload, indent=2), encoding="utf-8")
+        except (OSError, TypeError, ValueError) as e:
             raise RuntimeError(f"Failed to save graph: {e}")
 
         # Save metadata
@@ -168,14 +176,24 @@ class SnapshotManager:
         """
         graph_file, metadata_file = self._get_snapshot_paths(commit_sha)
 
-        if not graph_file.exists() or not metadata_file.exists():
-            raise FileNotFoundError(f"Snapshot not found for commit {commit_sha}")
+        legacy_graph_file = self._get_legacy_pickle_path(commit_sha)
+
+        if not metadata_file.exists():
+            raise FileNotFoundError(f"Snapshot metadata not found for commit {commit_sha}")
+
+        if not graph_file.exists():
+            if legacy_graph_file.exists():
+                raise RuntimeError(
+                    "Legacy pickle snapshots are no longer loaded automatically. "
+                    f"Regenerate or migrate snapshot for commit {commit_sha}."
+                )
+            raise FileNotFoundError(f"Snapshot graph not found for commit {commit_sha}")
 
         # Load graph
         try:
-            with open(graph_file, "rb") as f:
-                graph = pickle.load(f)
-        except (OSError, pickle.PickleError) as e:
+            graph_payload = json.loads(graph_file.read_text(encoding="utf-8"))
+            graph = json_graph.node_link_graph(graph_payload)
+        except (OSError, json.JSONDecodeError, TypeError, ValueError) as e:
             raise RuntimeError(f"Failed to load graph: {e}")
 
         # Load metadata
@@ -215,13 +233,20 @@ class SnapshotManager:
             try:
                 graph_file.unlink()
             except OSError as e:
-                print(f"Warning: Failed to delete graph file: {e}")
+                logger.warning("Failed to delete graph file: %s", e)
 
         if metadata_file.exists():
             try:
                 metadata_file.unlink()
             except OSError as e:
-                print(f"Warning: Failed to delete metadata file: {e}")
+                logger.warning("Failed to delete metadata file: %s", e)
+
+        legacy_graph_file = self._get_legacy_pickle_path(commit_sha)
+        if legacy_graph_file.exists():
+            try:
+                legacy_graph_file.unlink()
+            except OSError as e:
+                logger.warning("Failed to delete legacy pickle graph file: %s", e)
 
         # Clean up empty directory
         try:
@@ -265,7 +290,7 @@ class SnapshotManager:
                 # Already deleted, skip
                 continue
             except (OSError, RuntimeError) as e:
-                print(f"Warning: Failed to delete snapshot {commit_sha}: {e}")
+                logger.warning("Failed to delete snapshot %s: %s", commit_sha, e)
 
         return deleted
 

@@ -8,13 +8,15 @@ from typing import Any, Dict, List, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-from tools.graphdb.agent_integration.decision_engine import (
+from tqdm import tqdm
+
+from ..decision_engine import (
     AgentDecisionEngine,
     ArchitecturalContext,
     RiskLevel,
 )
-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
-from tools.graphdb.agent_integration.cache import QueryCache
+from ..guardrails import ArchitecturalGuardrails
+from ..cache import QueryCache
 from .quantum_intelligence import QuantumIntelligenceEngine
 from .multi_dimensional_analysis import MultiDimensionalAnalyzer
 from .temporal_intelligence import TemporalIntelligenceEngine
@@ -103,8 +105,8 @@ class Phase4CompletionGates:
         results: Dict[str, Phase4GateResult] = {}
         overall_start = time.time()
 
-        for gate_name, gate_func in self.gates.items():
-            logger.info("Running Phase 4 gate: %s", gate_name)
+        for gate_name, gate_func in tqdm(self.gates.items(), desc="gates", unit="gate"):
+            logger.info("Progress: running Phase 4 gate: %s", gate_name)
             start = time.time()
             try:
                 result = gate_func()

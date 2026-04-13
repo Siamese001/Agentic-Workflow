@@ -12,13 +12,15 @@ from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 
-from tools.graphdb.agent_integration.decision_engine import (
+from tqdm import tqdm
+
+from .decision_engine import (
     AgentDecisionEngine,
     ArchitecturalContext,
     RiskLevel,
 )
-from tools.graphdb.agent_integration.guardrails import ArchitecturalGuardrails
-from tools.graphdb.agent_integration.cache import QueryCache
+from .guardrails import ArchitecturalGuardrails
+from .cache import QueryCache
 
 logger = logging.getLogger(__name__)
 
@@ -86,8 +88,8 @@ class CompletionGates:
         results = {}
         overall_start = time.time()
 
-        for gate_name, method_name in self.gates.items():
-            logger.info(f"Running gate: {gate_name}")
+        for gate_name, method_name in tqdm(self.gates.items(), desc="gates", unit="gate"):
+            logger.info(f"Progress: running gate: {gate_name}")
             start_time = time.time()
 
             try:
@@ -240,7 +242,7 @@ class CompletionGates:
             ("high_risk", {"target_modules": ["critical_spine"], "action_type": "write_file"}),
         ]
 
-        for case_name, case_data in test_cases:
+        for case_name, case_data in tqdm(test_cases, desc="guardrail cases", unit="case"):
             try:
                 context = ArchitecturalContext(
                     agent_type="test",
