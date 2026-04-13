@@ -461,3 +461,35 @@ def test_semantic_search_isolates_per_collection_errors():
     assert "broken" in text and ("error" in text.lower() or "simulated" in text.lower()), (
         f"Broken collection must appear in error section; got: {text}"
     )
+
+
+# ---------------------------------------------------------------------------
+# Module-level ALLOW_MODEL_DOWNLOAD constant: env var parsing
+# ---------------------------------------------------------------------------
+
+
+def test_allow_model_download_defaults_to_false(monkeypatch):
+    """ALLOW_MODEL_DOWNLOAD must be False when env var is absent (safe default — download is opt-in)."""
+    monkeypatch.delenv("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", raising=False)
+    mod = _load_server_module()
+    assert mod.ALLOW_MODEL_DOWNLOAD is False, (
+        "ALLOW_MODEL_DOWNLOAD must default to False — online model download must be opt-in"
+    )
+
+
+def test_allow_model_download_true_when_env_is_1(monkeypatch):
+    """ALLOW_MODEL_DOWNLOAD must be True when VECTOR_DB_ALLOW_MODEL_DOWNLOAD='1'."""
+    monkeypatch.setenv("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "1")
+    mod = _load_server_module()
+    assert mod.ALLOW_MODEL_DOWNLOAD is True, (
+        "ALLOW_MODEL_DOWNLOAD must be True when env var is '1'"
+    )
+
+
+def test_allow_model_download_false_when_env_is_0(monkeypatch):
+    """ALLOW_MODEL_DOWNLOAD must be False when VECTOR_DB_ALLOW_MODEL_DOWNLOAD='0'."""
+    monkeypatch.setenv("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "0")
+    mod = _load_server_module()
+    assert mod.ALLOW_MODEL_DOWNLOAD is False, (
+        "ALLOW_MODEL_DOWNLOAD must be False when env var is '0'"
+    )

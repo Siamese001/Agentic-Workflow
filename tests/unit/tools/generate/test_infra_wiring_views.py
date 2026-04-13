@@ -9,6 +9,7 @@ import pytest
 
 from tools.generate.infra_wiring_views import (
     _APPROVED_ADAPTER_PATHS,
+    _PROCESS_BOUNDARY_ADAPTERS,
     _RAW_INFRA_PACKAGES,
     materialize_infra_views,
 )
@@ -502,6 +503,19 @@ class TestP1NotOnSpine:
         conn.close()
         counts = materialize_infra_views(db_path)
         assert counts["v_p1_not_on_spine"] == 0
+
+    def test_process_boundary_adapter_not_flagged(self, tmp_path: Path) -> None:
+        """Process-boundary adapters must be exempt from v_p1_not_on_spine even with zero callers."""
+        pb_path = _PROCESS_BOUNDARY_ADAPTERS[0]  # infrastructure/sdks_mcps/__init__.py
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(conn, 1, f"ADG::Module::{pb_path}", "module", "L_INFRA", "repo_module", pb_path)
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p1_not_on_spine"] == 0, (
+            f"Process-boundary adapter {pb_path!r} must not be flagged by v_p1_not_on_spine"
+        )
 
 
 class TestP1AdHocImports:

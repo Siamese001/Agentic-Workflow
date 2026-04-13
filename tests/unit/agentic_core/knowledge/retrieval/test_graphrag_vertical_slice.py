@@ -277,6 +277,16 @@ class TestHybridRecallStage:
         # Content should prefer sparse
         assert doc_a.content == "content_doc_a"
 
+    def test_sparse_content_preferred_over_dense(self):
+        """When same doc_id appears in both pools, merged content must come from sparse record."""
+        stage = HybridRecallStage(vector_weight=0.5, sparse_weight=0.5)
+        dense = [RecallResult(doc_id="shared", score=0.9, source="dense", content="dense_text")]
+        sparse = [RecallResult(doc_id="shared", score=0.7, source="sparse", content="sparse_text")]
+        merged = stage._merge_results(dense, sparse)
+        shared = next(r for r in merged if r.doc_id == "shared")
+        assert shared.content == "sparse_text", "Sparse content must win over dense for overlapping doc_id"
+        assert shared.source == "both"
+
     def test_merge_sort_descending(self):
         stage = HybridRecallStage(vector_weight=0.6, sparse_weight=0.4)
         dense = [
@@ -289,23 +299,19 @@ class TestHybridRecallStage:
         assert scores == sorted(scores, reverse=True)
 
     def test_replay_metadata_stamped(self):
-        stage = HybridRecallStage()
+        """recall() must stamp replay_key and policy_hash from the plan onto every returned result."""
+        mock_store = MagicMock()
+        mock_store.query.return_value = [{"id": "d1", "score": 0.8, "content": "ctx"}]
+        stage = HybridRecallStage(vector_store=mock_store)
         plan = _make_plan(replay_key="rk_replay", policy_hash="ph_hash")
         results = stage.recall(
             query_vector=[0.1],
             query_terms=["term"],
             plan=plan,
         )
-        # No backends → empty, but if we inject fake dense results and call directly:
-        # Test the stamping path by direct merge + stamp
-        fake = [RecallResult(doc_id="d1", score=0.5, source="dense")]
-        stage._merge_results([], fake)
-        # Stamp manually (mirrors what recall() does)
-        for r in fake:
-            r.metadata["replay_key"] = plan.replay_key
-            r.metadata["policy_hash"] = plan.policy_hash
-        assert fake[0].metadata["replay_key"] == "rk_replay"
-        assert fake[0].metadata["policy_hash"] == "ph_hash"
+        assert len(results) == 1
+        assert results[0].metadata["replay_key"] == "rk_replay"
+        assert results[0].metadata["policy_hash"] == "ph_hash"
 
     def test_dense_backend_fails_gracefully(self):
         """OSError from vector store → empty dense, no crash."""
@@ -402,6 +408,26 @@ class TestParentChildHydrator:
         result = hydrator.hydrate("missing", "content")
         assert result.parent_content is None
         assert not result.is_expanded
+
+    def test_parent_unit_fetch_fails_returns_partial(self):
+        """_fetch_parent second get_unit (for parent_id) raises → parent_id known, content None."""
+        child_unit = MagicMock()
+        child_unit.lineage = MagicMock()
+        child_unit.lineage.parent_id = "p_001"
+
+        def _get(uid: str):
+            if uid == "child_doc":
+                return child_unit
+            raise KeyError(uid)
+
+        store = MagicMock()
+        store.get_unit.side_effect = _get
+        hydrator = ParentChildHydrator(canonical_store=store)
+        result = hydrator.hydrate("child_doc", "child content", fetch_parent=True)
+        assert result.parent_id == "p_001"
+        assert result.parent_content is None
+        assert not result.is_expanded
+        assert result.content == "child content"
 
     def test_hydrate_batch(self):
         hydrator = ParentChildHydrator()

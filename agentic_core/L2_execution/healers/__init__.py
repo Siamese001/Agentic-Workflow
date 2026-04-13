@@ -16,17 +16,34 @@ from .healing_router import HealingRouter
 from .sovereign_gateway import SovereignGateway
 from .secure_reading_room import SecureReadingRoom, HITLDecision
 from .zero_loss_containment import ZeroLossContainment
+from .activation_criteria import (
+    ActivationCriteria,
+    CriteriaEvidence,
+    CriteriaResult,
+    RollbackMonitor,
+    check_activation_criteria,
+)
+from .activation_state import ActivationMode, ActivationRecord
+from .governed_scorer import GovernedConfidenceScorer
 
 __all__ = [
+    "ActivationCriteria",
+    "ActivationMode",
+    "ActivationRecord",
+    "CriteriaEvidence",
+    "CriteriaResult",
+    "ConfidenceScorer",
     "FailureSignal",
     "FailureSignalBuilder",
-    "LocalHealer",
+    "GovernedConfidenceScorer",
     "HealResult",
-    "ConfidenceScorer",
     "HealTier",
     "HealingRouter",
-    "SovereignGateway",
-    "SecureReadingRoom",
     "HITLDecision",
+    "LocalHealer",
+    "RollbackMonitor",
+    "SecureReadingRoom",
+    "SovereignGateway",
     "ZeroLossContainment",
+    "check_activation_criteria",
 ]

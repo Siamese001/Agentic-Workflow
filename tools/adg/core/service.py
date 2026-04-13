@@ -84,19 +84,15 @@ class ADGService:
         # Fall back to SQLite
         result = sqlite_query()
 
-        # Optionally backfill cache (only if result is valid and non-empty)
-        if self._redis._available and result is not None:
-            # Validate result before caching (don't cache None or invalid data)
-            is_valid = True
-            if isinstance(result, list) and not result:
-                # Empty list is valid but may not be worth caching
-                pass  # Still cache empty results to avoid repeated misses
-
-            if is_valid:
-                try:
-                    cache_set(result)
-                except Exception as e:
-                    logger.debug(f"Cache backfill failed: {e}")
+        # Optionally backfill cache (non-None, non-empty results only).
+        # Empty lists are excluded: the hit-check above treats [] as a miss, so
+        # caching [] would write a Redis entry that is immediately ignored on
+        # re-read, creating a wasted write on every repeated empty-result call.
+        if self._redis._available and result:
+            try:
+                cache_set(result)
+            except Exception as e:  # guardian: allow-broad-exception -- cache_set delegates to RedisCache which raises heterogeneous transport/serialization errors; backfill is best-effort and must not crash the request
+                logger.debug(f"Cache backfill failed: {e}")
 
         logger.debug(
             "adg.backend method=%s snapshot=%s cache=%s backend=sqlite",

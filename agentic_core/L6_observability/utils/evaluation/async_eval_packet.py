@@ -16,8 +16,8 @@ from __future__ import annotations
 import queue
 import threading
 import uuid
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, ClassVar
 
 from agentic_core.L2_execution.utils.providers import get_clock
 
@@ -176,10 +176,102 @@ def ingest_eval_packet(
     return packet
 
 
+# ---------------------------------------------------------------------------
+# ShadowEvalPacket and supporting sub-types
+# ---------------------------------------------------------------------------
+# Maps to: [6] S1 OBSERVABILITY — S1C REVIEW BUNDLE
+# Full async shadow eval input; broader than AsyncEvalPacket.
+# Produced by: Exit control closure after current-run boundary is crossed.
+# Consumed by: L6ShadowEvalPipeline (future-run only; no live mutation).
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class HumanFeedbackRecord:
+    """Human adjudication record for S2D calibration.
+
+    Captures a single reviewer verdict on a shadow eval result.
+    reviewer_id — opaque identifier for the human reviewer.
+    verdict     — 'correct' | 'incorrect' | 'partial'.
+    reviewed_at — monotonic epoch tick of the review.
+    """
+
+    reviewer_id: str = ""
+    verdict: str = ""
+    notes: str = ""
+    reviewed_at: float = 0.0
+
+
+@dataclass(frozen=True)
+class CommitReceipt:
+    """Receipt from a UWG commit attempt (if any commit occurred this run).
+
+    committed    — True only if the durable ledger write succeeded.
+    ledger_index — Index in the hash-chain ledger (0 = not committed).
+    commit_hash  — SHA-256 hash of the committed record.
+    """
+
+    commit_id: str = ""
+    committed: bool = False
+    ledger_index: int = 0
+    commit_hash: str = ""
+    committed_at: float = 0.0
+
+
+@dataclass(frozen=True)
+class ShadowEvalPacket:
+    """Full shadow evaluation input packet for L6 async grading (S1 REVIEW BUNDLE).
+
+    Maps to: docs/reference/06_Shadow_Evaluation_System_Learning.md — S1C REVIEW BUNDLE
+    Produced by: Exit control closure after current-run boundary is crossed.
+    Consumed by: L6ShadowEvalPipeline.run_cycle() — future-run only.
+
+    Layer authority: L6 (Observability — read-only, no mutations)
+    No business logic.  No persistence.  No live-run mutation.
+
+    Relationship to AsyncEvalPacket
+    --------------------------------
+    AsyncEvalPacket  — narrow BUS T join seam (evidence metrics + exit outcome)
+                       for RAG-lane runs; created inline at evaluate_and_emit().
+    ShadowEvalPacket — full S1 review bundle; broader scope; includes human
+                       feedback, commit receipts, lineage, and baseline anchors
+                       for the async multi-dimensional learning pipeline.
+
+    Architectural invariant
+    -----------------------
+    run_scope = 'FUTURE_RUN' (ClassVar).  This packet must never influence the
+    already-completed current run.  It is created only AFTER the current-run
+    boundary has been crossed and all dispositions are final.
+    """
+
+    run_scope: ClassVar[str] = "FUTURE_RUN"
+
+    packet_id: str
+    run_id: str
+
+    exit_disposition: str = ""
+    exit_trace_id: str = ""
+    exit_reason: str = ""
+
+    exec_traces: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+    telemetry: dict[str, Any] = field(default_factory=dict)
+
+    human_feedback: tuple[HumanFeedbackRecord, ...] = field(default_factory=tuple)
+    commit_receipts: tuple[CommitReceipt, ...] = field(default_factory=tuple)
+
+    lineage_ids: tuple[str, ...] = field(default_factory=tuple)
+    baseline_ids: tuple[str, ...] = field(default_factory=tuple)
+
+    sealed_at: float = 0.0
+
+
 __all__ = [
     "AsyncEvalPacket",
     "AsyncEvalIngester",
     "get_async_eval_ingester",
     "reset_async_eval_ingester",
     "ingest_eval_packet",
+    "HumanFeedbackRecord",
+    "CommitReceipt",
+    "ShadowEvalPacket",
 ]

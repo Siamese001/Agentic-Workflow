@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, ClassVar, Optional
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -110,3 +110,103 @@ class ExitGateResult:
             },
             "metadata": self.metadata,
         }
+
+
+# ---------------------------------------------------------------------------
+# CurrentRunEvaluationResult and supporting sub-types
+# ---------------------------------------------------------------------------
+# Maps to: [5] X1 CURRENT-RUN EVALUATION (X1A–X1D) + X2 FINAL EXIT GATES
+# Produced by: ExitControlGate.evaluate_sealed()
+# Consumed by: Exit dispatch → (UWG, HITL, deny, allow response)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class RubricScores:
+    """X1A: Rubric and policy-compliance scores for the current run.
+
+    All scores in [0.0, 1.0].  Default 0.0 = not evaluated.
+    """
+
+    rules_compliance_score: float = 0.0
+    policy_adherence_score: float = 0.0
+    format_fit_score: float = 0.0
+    schema_completion_score: float = 0.0
+
+
+@dataclass(frozen=True)
+class QualityChecks:
+    """X1B + X1D: Answer quality, groundedness, and abstain/escalation checks.
+
+    groundedness_score  — 0.0–1.0 evidence coverage for the answer.
+    support_coverage    — 0.0–1.0 fraction of claims with citation support.
+    relevance_score     — 0.0–1.0 answer relevance to the original query.
+    abstain_correct     — True when the agent correctly abstained (or did not
+                          need to).
+    escalation_correct  — True when the agent correctly escalated (or did not
+                          need to).
+    """
+
+    answer_fit: bool = False
+    groundedness_score: float = 0.0
+    support_coverage: float = 0.0
+    relevance_score: float = 0.0
+    abstain_correct: bool = True
+    escalation_correct: bool = True
+
+
+@dataclass(frozen=True)
+class IntegrityChecks:
+    """X1C: Safety, policy, and environment-integrity checks.
+
+    safety_clear        — no secrets, PII, unsafe content, or injection residue.
+    policy_pass         — output does not violate any active policy rule.
+    mutation_authorized — all proposed state mutations carry valid write auth.
+    env_integrity       — execution environment passed isolation verification.
+    replay_env_complete — all inputs needed for deterministic replay are present.
+    """
+
+    safety_clear: bool = False
+    policy_pass: bool = False
+    mutation_authorized: bool = False
+    env_integrity: bool = False
+    replay_env_complete: bool = False
+
+
+@dataclass(frozen=True)
+class CurrentRunEvaluationResult:
+    """Typed output of X1 CURRENT-RUN EVALUATION (four-dimensional gate).
+
+    Maps to: docs/reference/05_Live_Runtime_Exit_Control.md X1 + X2
+    Produced by: ExitControlGate.evaluate_sealed()
+    Consumed by: Exit dispatch → (UWG router, HITL trigger, deny path, allow path)
+
+    Layer authority: L5 (cross-cutting policy plane)
+    No business logic.  No persistence.  Pure typed result carrier.
+
+    Architectural invariant
+    -----------------------
+    run_scope = 'CURRENT_RUN' (ClassVar) makes this incompatible with
+    PromotionPacket (run_scope='FUTURE_RUN') at the type level.
+    A function that accepts CurrentRunEvaluationResult cannot accept a
+    PromotionPacket without an explicit cast — which is intentionally disallowed.
+    """
+
+    run_scope: ClassVar[str] = "CURRENT_RUN"
+
+    eval_id: str
+    artifact_id: str
+    trace_id: str
+
+    rubric_scores: RubricScores = field(default_factory=RubricScores)
+    quality_checks: QualityChecks = field(default_factory=QualityChecks)
+    integrity_checks: IntegrityChecks = field(default_factory=IntegrityChecks)
+
+    confidence_score: float = 0.0
+
+    disposition: ExitDisposition = ExitDisposition.DENY_RETURN
+    disposition_reason: str = ""
+
+    policy_hash: Optional[str] = None
+    compliance_hash: Optional[str] = None
+    evaluated_at: float = 0.0

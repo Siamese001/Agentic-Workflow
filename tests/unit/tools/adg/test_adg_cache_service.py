@@ -251,6 +251,23 @@ class TestNegativePaths:
         assert resp.backend_used == "sqlite"
         assert resp.data["nodes"][0]["id"] == "new_snap_node"
 
+    def test_empty_sqlite_result_not_backfilled_to_redis(self):
+        """When SQLite returns [], backfill must NOT be called.
+
+        The hit-check in _query_with_fallback treats [] as a miss (result != []).
+        Caching [] would write a Redis entry that is immediately ignored on
+        re-read, creating a perpetual wasted write on every empty-result call.
+        """
+        svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
+        mock_redis.get_nodes_by_layer.return_value = None   # cache miss
+        mock_sqlite.get_nodes_by_layer.return_value = []    # empty layer
+
+        resp = svc.get_nodes_by_layer("EMPTY_LAYER")
+
+        assert resp.status == "ok"
+        assert resp.data["count"] == 0
+        mock_redis.set_nodes_by_layer.assert_not_called()
+
 
 # ===========================================================================
 # P23 — Completeness-check regression tests
@@ -386,3 +403,46 @@ class TestFaninCompletenessCheck:
         assert resp.backend_used == "sqlite"
         assert resp.data["count"] == 1
         mock_sqlite.get_edge_fanin.assert_called_once()
+
+
+# ===========================================================================
+# P25 — get_node failure-path coverage
+# ===========================================================================
+
+class TestGetNodeFailurePath:
+
+    def test_node_not_found_returns_error_status(self):
+        """get_node: both Redis and SQLite return None -> ADGResponse(status='error')."""
+        svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
+        mock_redis.get_node.return_value = None
+        mock_sqlite.get_node.return_value = None
+
+        resp = svc.get_node("nonexistent_node_99")
+
+        assert resp.status == "error"
+        assert "nonexistent_node_99" in resp.data["message"]
+        assert resp.backend_used == "sqlite"
+
+    def test_node_not_found_redis_unavailable_still_returns_error(self):
+        """get_node with Redis down and missing node -> status='error', Redis not queried."""
+        svc, mock_sqlite, mock_redis = _make_service(redis_available=False)
+        mock_sqlite.get_node.return_value = None
+
+        resp = svc.get_node("missing_node_in_sqlite")
+
+        assert resp.status == "error"
+        assert "missing_node_in_sqlite" in resp.data["message"]
+        mock_redis.get_node.assert_not_called()
+
+    def test_node_found_returns_ok_status(self):
+        """get_node happy path: Redis hit returns ADGResponse(status='ok')."""
+        svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
+        node = _make_node(id="42", adg_name="ADG::Module::bar.py")
+        mock_redis.get_node.return_value = node
+
+        resp = svc.get_node("42")
+
+        assert resp.status == "ok"
+        assert resp.backend_used == "redis"
+        assert resp.data["id"] == "42"
+        mock_sqlite.get_node.assert_not_called()

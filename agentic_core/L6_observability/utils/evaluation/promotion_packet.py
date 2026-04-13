@@ -25,7 +25,8 @@ from __future__ import annotations
 import hashlib
 import uuid
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from enum import Enum
+from typing import TYPE_CHECKING, ClassVar
 
 from agentic_core.L2_execution.utils.providers import get_clock
 
@@ -33,6 +34,26 @@ if TYPE_CHECKING:
     from agentic_core.L6_observability.utils.evaluation.promotion_gauntlet import GauntletResult
     from agentic_core.L6_observability.utils.evaluation.promotion_stager import PromotionCandidate
     from agentic_core.L6_observability.utils.evaluation.rca_aggregator import RcaCluster
+
+
+class ApprovalState(str, Enum):
+    """Approval lifecycle state of a PromotionPacket.
+
+    PENDING   — Staged; awaiting commandant gauntlet review.
+    APPROVED  — Gauntlet approved; ready for GovernedHandoffAgent / UWG commit.
+    REJECTED  — Commandant rejected; no future-run change will be applied.
+    COMMITTED — UWG commit completed; future-run parameter updated.
+
+    State transitions (enforced by callers, not by this type):
+        PENDING → APPROVED | REJECTED
+        APPROVED → COMMITTED | REJECTED
+    """
+
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    COMMITTED = "COMMITTED"
+
 
 # Destination class map: failure_mode → parameter category
 _DEST_CLASS_MAP: dict[str, str] = {
@@ -83,6 +104,8 @@ class PromotionPacket:
         Monotonic epoch tick at packetization time.
     """
 
+    run_scope: ClassVar[str] = "FUTURE_RUN"
+
     packet_id: str
     edition: str
     version_tag: str
@@ -96,6 +119,8 @@ class PromotionPacket:
     rollback_metadata: dict
     replay_digest: str
     sealed_at: float
+    approval_state: ApprovalState = ApprovalState.PENDING
+    target_surface: str = ""
 
 
 class PromotionPacketizer:
@@ -202,4 +227,4 @@ def _build_rollback_metadata(rollout_meta: dict) -> dict:
     }
 
 
-__all__ = ["PromotionPacket", "PromotionPacketizer"]
+__all__ = ["ApprovalState", "PromotionPacket", "PromotionPacketizer"]
