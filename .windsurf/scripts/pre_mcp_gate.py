@@ -415,49 +415,50 @@ def _check_sqlite_access(repo_root: Path, needs_write: bool) -> tuple[bool, str]
     if not adg_dir.exists():
         return False, "no_artifacts_dir"
 
-    sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
+    sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
     if not sqlite_files:
         return False, "no_sqlite_files"
 
-    for db_path in sqlite_files:
-        canonical = db_path.resolve()
-        diag = _get_sidecar_diagnostics(canonical)
+    # Probe only the latest snapshot — older files may be locked/corrupt from prior runs
+    # and must not block access to the active snapshot.
+    canonical = sqlite_files[-1].resolve()
+    diag = _get_sidecar_diagnostics(canonical)
 
-        # Read probe (required for all tools)
-        read_ok, read_reason = _probe_sqlite_read(canonical)
+    # Read probe (required for all tools)
+    read_ok, read_reason = _probe_sqlite_read(canonical)
 
-        # Determine journal_mode for diagnostics
-        journal_mode = "unknown"
-        try:
-            c = sqlite3.connect(str(canonical), timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0)
-            row = c.execute("PRAGMA journal_mode").fetchone()
-            journal_mode = row[0] if row else "unknown"
-            c.close()
-        except Exception:  # guardian: allow-broad-exception -- diagnostic only, must not crash
-            pass
+    # Determine journal_mode for diagnostics
+    journal_mode = "unknown"
+    try:
+        c = sqlite3.connect(str(canonical), timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0)
+        row = c.execute("PRAGMA journal_mode").fetchone()
+        journal_mode = row[0] if row else "unknown"
+        c.close()
+    except Exception:  # guardian: allow-broad-exception -- diagnostic only, must not crash
+        pass
 
-        diag["journal_mode"] = journal_mode
-        diag["read_probe"] = read_reason
+    diag["journal_mode"] = journal_mode
+    diag["read_probe"] = read_reason
+    diag["snapshot"] = canonical.name
 
-        if not read_ok:
+    if not read_ok:
+        diag["decision"] = "BLOCK"
+        print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
+        return True, f"read probe failed on latest snapshot {canonical.name}: {read_reason}"
+
+    if needs_write:
+        write_ok, write_reason = _probe_sqlite_write(canonical)
+        diag["write_probe"] = write_reason
+        if not write_ok:
             diag["decision"] = "BLOCK"
             print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
-            return True, f"read probe failed on {canonical.name}: {read_reason}"
+            return True, f"write contention on latest snapshot {canonical.name}: {write_reason}"
+        diag["decision"] = "ALLOW"
+    else:
+        diag["write_probe"] = "skipped (read-only tool)"
+        diag["decision"] = "ALLOW"
 
-        if needs_write:
-            write_ok, write_reason = _probe_sqlite_write(canonical)
-            diag["write_probe"] = write_reason
-            if not write_ok:
-                diag["decision"] = "BLOCK"
-                print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
-                return True, f"write contention on {canonical.name}: {write_reason}"
-            diag["decision"] = "ALLOW"
-        else:
-            diag["write_probe"] = "skipped (read-only tool)"
-            diag["decision"] = "ALLOW"
-
-        print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
-
+    print(f"[pre_mcp_gate] DIAG: {json.dumps(diag)}", file=sys.stderr)
     return False, "all_probes_passed"
 
 

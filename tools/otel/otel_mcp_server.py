@@ -17,7 +17,7 @@ This server provides:
 - Integration with existing open_telemetry_tracing_adapter_util.py
 - Healing chain and policy decision traceability
 
-Tools (8 core)
+Tools (9 core)
 -------------
 - otel_status: Collector health + freshness
 - otel_trace: Fetch trace by CID as ADG edges
@@ -27,6 +27,7 @@ Tools (8 core)
 - otel_metrics_summary: Aggregated runtime edge counters
 - otel_anomalies: Spans flagged by circuit breaker/safety plane
 - otel_ingest_to_runtime_adg: Push collected spans to runtime_adg_*.sqlite
+- otel_server_info: Process identity for stale-process detection
 
 Integration
 -----------
@@ -40,6 +41,8 @@ from __future__ import annotations
 
 import json
 import logging
+import os
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -141,6 +144,17 @@ RUNTIME_ADG_STORE = RUNTIME_ADG_DIR
 
 # Cache for recent traces (in production, use Redis or similar)
 _trace_cache: dict[str, dict[str, Any]] = {}
+
+# Cached runtime ADG store — avoids repeated ~0.6s import chain per tool call.
+# Empty list = not yet initialized; populated on first successful init.
+_RUNTIME_ADG_STORE_INSTANCE: list[Any] = []
+_STORE_INIT_TIMEOUT_S: int = 8  # prevents hang on slow filesystem or locked SQLite
+
+# Server identity — captured once at process startup for stale-process detection.
+_SERVER_PID: int = os.getpid()
+_SERVER_START_TIME: float = time.time()
+_SERVER_SOURCE_FILE: str = str(_SELF)
+_SERVER_SOURCE_MTIME: float = _SELF.stat().st_mtime
 _metrics_cache: dict[str, Any] = {
     "last_updated": int(time.time()),
     "total_traces": 0,
@@ -151,17 +165,41 @@ _metrics_cache: dict[str, Any] = {
 
 
 def _get_runtime_adg_store():
-    """Get runtime ADG store instance — uses FileBackedRuntimeADGStore (L4 canonical)."""
-    try:
+    """Get runtime ADG store instance — cached after first successful init.
+
+    Uses FileBackedRuntimeADGStore (L4 canonical). Initialization is bounded
+    by _STORE_INIT_TIMEOUT_S to prevent hangs on slow filesystems or locked
+    SQLite. Successful result is cached to avoid repeated ~0.6s import chains.
+    """
+    import concurrent.futures
+
+    if _RUNTIME_ADG_STORE_INSTANCE:
+        return _RUNTIME_ADG_STORE_INSTANCE[0]
+
+    def _create_store():
         from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
 
-        store = FileBackedRuntimeADGStore(RUNTIME_ADG_STORE)
+        return FileBackedRuntimeADGStore(RUNTIME_ADG_STORE)
+
+    try:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            future = executor.submit(_create_store)
+            store = future.result(timeout=_STORE_INIT_TIMEOUT_S)
+        _RUNTIME_ADG_STORE_INSTANCE.append(store)
         return store
+    except concurrent.futures.TimeoutError:
+        logger.warning(
+            "Runtime ADG store init timed out after %ss — using fallback",
+            _STORE_INIT_TIMEOUT_S,
+        )
+        return None
     except ImportError:
         logger.warning("Runtime ADG store not available, using fallback")
         return None
-    except Exception as e:
-        logger.error(f"Failed to initialize runtime ADG store: {e}")
+    except (
+        Exception
+    ) as e:  # guardian: allow-broad-exception -- store init probe must not crash the tool layer
+        logger.error("Failed to initialize runtime ADG store: %s", e)
         return None
 
 
@@ -200,6 +238,41 @@ def otel_status() -> dict[str, Any]:
 
     logger.info("otel_status_checked", extra=status)
     return status
+
+
+@mcp.tool()
+def otel_server_info() -> dict[str, Any]:
+    """Return process identity for stale-process detection.
+
+    Compare pid and source_mtime_utc against expected values after code edits.
+    If source_mtime_utc is older than the file\'s current mtime on disk, the
+    running process has NOT picked up recent changes and must be restarted.
+    """
+    git_sha = "unavailable"
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=3,
+            cwd=str(_REPO_ROOT),
+        )
+        if proc.returncode == 0:
+            git_sha = proc.stdout.strip()
+    except Exception:  # guardian: allow-broad-exception -- git hash is optional, must not crash identity tool
+        pass
+
+    current_mtime = Path(_SERVER_SOURCE_FILE).stat().st_mtime
+    return {
+        "pid": _SERVER_PID,
+        "start_time_utc": int(_SERVER_START_TIME),
+        "source_file": _SERVER_SOURCE_FILE,
+        "source_mtime_utc": int(_SERVER_SOURCE_MTIME),
+        "current_mtime_utc": int(current_mtime),
+        "source_is_stale": current_mtime > _SERVER_SOURCE_MTIME,
+        "git_sha": git_sha,
+        "store_cache_populated": bool(_RUNTIME_ADG_STORE_INSTANCE),
+    }
 
 
 @mcp.tool()

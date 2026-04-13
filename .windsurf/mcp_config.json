@@ -19,6 +19,7 @@
       "disabled": false,
       "env": {
         "ADG_DIR": "C:/Git/Agentic-Workflow/artifacts/adg",
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
         "ADG_MCP_PAGE_SIZE": "500",
         "ADG_MCP_CACHE_META_TTL": "5",
         "PYTHONPATH": "C:/Git/Agentic-Workflow"

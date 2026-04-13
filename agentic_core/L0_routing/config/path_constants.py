@@ -279,6 +279,7 @@ L4_APPROVED_FOLDERS: Final[frozenset[str]] = frozenset(
         "config",
         "reasoning",
         "utils",
+        "agentic_core/L4_state/memory",  # runtime ADG store: otel_mcp + FileBackedRuntimeADGStore
     },
 )
 
@@ -598,7 +599,7 @@ def validate_flat_directory(path_parts: Sequence[str]) -> dict[str, Any] | None:
         - illegal_child: the subdirectory found inside it
         - message: human-readable explanation
     """
-    for i, part in enumerate(path_parts):
+    for i, part in enumerate(path_parts):  # progress_bar: bounded path-parts loop, max ~10 items, no I/O
         if part in FLAT_DIRECTORIES:
             remaining = path_parts[i + 1 :]
             if len(remaining) > 1:
