@@ -10,10 +10,13 @@ from pathlib import Path
 
 import pytest
 
-TOKEN_ESTIMATOR_AVAILABLE = (
-    find_spec("agentic_core.planning.token_estimator") is not None
-    and find_spec("agentic_core.planning.preflight_hook") is not None
-)
+try:
+    TOKEN_ESTIMATOR_AVAILABLE = (
+        find_spec("tools.utils.planning.token_estimator") is not None
+        and find_spec("tools.utils.planning.preflight_hook") is not None
+    )
+except ModuleNotFoundError:
+    TOKEN_ESTIMATOR_AVAILABLE = False
 
 
 pytestmark = pytest.mark.skipif(
