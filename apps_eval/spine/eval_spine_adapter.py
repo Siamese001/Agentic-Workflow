@@ -4,6 +4,12 @@ Evaluation Lab Spine Adapter — apps_eval.
 Provides deterministic CID derivation and call-order invariants
 for the apps_eval pipeline. Subclasses BaseSpineAdapter with
 prefix "eval-".
+
+EVAL-PIPELINE SCOPE: NON_CANONICAL_EVAL_LAB
+This module is intentionally outside the canonical runtime evaluation pipeline.
+EvalSpineAdapter.execute() delegates spine CID management to BaseSpineAdapter;
+it does not invoke ExitControlGate, build shadow packets, or perform UWG handoff.
+Do not add canonical pipeline wiring here.
 """
 
 from __future__ import annotations

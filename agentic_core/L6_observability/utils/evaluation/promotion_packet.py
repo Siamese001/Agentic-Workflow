@@ -22,6 +22,7 @@ Non-mutating until handed to the governed seam via GovernedHandoffAgent.
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import uuid
 from dataclasses import dataclass
@@ -188,6 +189,60 @@ class PromotionPacketizer:
             sealed_at=get_clock().now_epoch(),
         )
 
+    def packetize_pending(
+        self,
+        candidate: "PromotionCandidate",
+        cluster: "RcaCluster",
+    ) -> PromotionPacket:
+        """Create a PENDING PromotionPacket from a staged candidate without gauntlet approval.
+
+        Produces a packet with approval_state=PENDING.  No gauntlet check is performed.
+        The packet must pass the PromotionGauntlet and reach APPROVED state before any
+        UWG commit is attempted.
+
+        Future-run only.  No durable writes.  No UWG call.
+
+        Args:
+            candidate: PromotionCandidate from PromotionStager.stage().
+            cluster:   Source RcaCluster from RcaAggregator.clusters().
+
+        Returns:
+            PromotionPacket with approval_state=PENDING. Not yet committed through UWG.
+        """
+        dest_class = _DEST_CLASS_MAP.get(cluster.failure_mode, "evidence_threshold.generic")
+        rollout_meta = _build_rollout_metadata(candidate, cluster)
+        rollback_meta = _build_rollback_metadata(rollout_meta)
+        replay_refs = candidate.replay_references
+        if replay_refs:
+            replay_digest = hashlib.sha256("|".join(sorted(replay_refs)).encode("utf-8")).hexdigest()[:16]
+        else:
+            replay_digest = "0" * 16
+        baseline_refs = (
+            f"cluster_key={cluster.cluster_key}",
+            f"failure_mode={cluster.failure_mode}",
+            f"severity={cluster.severity}",
+        )
+        digest_short = replay_digest[:8]
+        version_tag = f"{candidate.candidate_id[:8]}-{digest_short}"
+        edition = f"future-run/pending/{version_tag}"
+
+        return PromotionPacket(
+            packet_id=f"pp-{uuid.uuid4().hex[:12]}",
+            edition=edition,
+            version_tag=version_tag,
+            candidate_id=candidate.candidate_id,
+            cluster_key=candidate.cluster_key,
+            target_destination_class=dest_class,
+            rationale=candidate.rationale,
+            evidence_replay_references=replay_refs,
+            baseline_regression_refs=tuple(baseline_refs),
+            rollout_metadata=rollout_meta,
+            rollback_metadata=rollback_meta,
+            replay_digest=replay_digest,
+            sealed_at=get_clock().now_epoch(),
+            approval_state=ApprovalState.PENDING,
+        )
+
 
 def _build_rollout_metadata(
     candidate: "PromotionCandidate",
@@ -227,4 +282,57 @@ def _build_rollback_metadata(rollout_meta: dict) -> dict:
     }
 
 
-__all__ = ["ApprovalState", "PromotionPacket", "PromotionPacketizer"]
+# ── Approval state transition machinery ─────────────────────────────────────
+# Valid transitions enforce the lifecycle contract without touching live data.
+_VALID_TRANSITIONS: frozenset[tuple[ApprovalState, ApprovalState]] = frozenset(
+    {
+        (ApprovalState.PENDING, ApprovalState.APPROVED),
+        (ApprovalState.PENDING, ApprovalState.REJECTED),
+        (ApprovalState.APPROVED, ApprovalState.COMMITTED),
+        (ApprovalState.APPROVED, ApprovalState.REJECTED),
+    }
+)
+
+
+def transition_approval_state(
+    packet: PromotionPacket,
+    new_state: ApprovalState,
+) -> PromotionPacket:
+    """Return a new PromotionPacket with approval_state advanced to new_state.
+
+    Valid transitions
+    ----------------
+    PENDING  → APPROVED   — explicit commandant/system approval.
+    PENDING  → REJECTED   — explicit rejection before any handoff attempt.
+    APPROVED → COMMITTED  — only after GovernedHandoffAgent.handoff() succeeds.
+    APPROVED → REJECTED   — rejection after approval but before commit.
+
+    All other transitions raise ValueError.
+
+    Args:
+        packet:    Source PromotionPacket (any approval_state).
+        new_state: Target ApprovalState.
+
+    Returns:
+        New PromotionPacket with approval_state=new_state.  All other fields
+        are preserved exactly (frozen dataclass replacement via dataclasses.replace).
+
+    Raises:
+        ValueError: If the transition is not in _VALID_TRANSITIONS.
+    """
+    current = packet.approval_state
+    if (current, new_state) not in _VALID_TRANSITIONS:
+        valid_targets = [t[1].value for t in _VALID_TRANSITIONS if t[0] == current]
+        raise ValueError(
+            f"Invalid approval state transition: {current.value!r} → {new_state.value!r}. "
+            f"Valid targets from {current.value!r}: {valid_targets}"
+        )
+    return dataclasses.replace(packet, approval_state=new_state)
+
+
+__all__ = [
+    "ApprovalState",
+    "PromotionPacket",
+    "PromotionPacketizer",
+    "transition_approval_state",
+]

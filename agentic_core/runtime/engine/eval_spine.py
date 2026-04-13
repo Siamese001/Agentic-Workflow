@@ -4,6 +4,12 @@ Models the live evaluation bus with groundedness, P@K, MRR, NDCG, completeness
 scoring, drift alerts, DPO batch building, and controlled proposal/commit stages.
 
 Data structures only — no side-effects on import.
+
+EVAL-PIPELINE SCOPE: NON_CANONICAL_EVAL_LAB
+This module is intentionally outside the canonical runtime evaluation pipeline
+(evaluate_and_emit → ShadowEvalIngester → L6ShadowEvalPipeline → GovernedHandoff).
+commit_optimization() mutates in-memory OptimizationProposal stage only;
+no durable writes, no UWG handoff, no L5 exit gate.
 """
 
 from __future__ import annotations

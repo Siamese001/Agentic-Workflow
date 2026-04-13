@@ -215,6 +215,17 @@ class FeatureFlagManager:
             description="Enable structured detection signal emission",
             required_for_healing=False,
         ),
+        "COVERAGE_SCORER_MODE": FeatureFlag(
+            name="COVERAGE_SCORER_MODE",
+            default=False,
+            description=(
+                "Advisory retrieval coverage scorer sentinel. "
+                "Mode string is read by get_coverage_scorer_mode() in retrieval_coverage_scorer.py: "
+                "'off' | 'shadow' (default) | 'advisory_active'. "
+                "This boolean flag is a presence sentinel only; never gates hard paths."
+            ),
+            required_for_healing=False,
+        ),
     }
 
     _override_cache: dict[str, bool] = {}

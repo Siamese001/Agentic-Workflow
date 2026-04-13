@@ -5,6 +5,12 @@ SVP Standards:
 - Explicit request contracts
 - No silent failures
 - Full provenance capture
+
+EVAL-PIPELINE SCOPE: NON_CANONICAL_EVAL_LAB
+This module is intentionally outside the canonical runtime evaluation pipeline.
+ExecutionAdapter.submit() is an eval-lab internal execution tracker;
+it does not invoke ExitControlGate, build shadow packets, or perform UWG handoff.
+Do not add canonical pipeline wiring here.
 """
 
 from __future__ import annotations

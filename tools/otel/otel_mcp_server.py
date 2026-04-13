@@ -54,6 +54,8 @@ _REPO_ROOT_BOOTSTRAP = _SELF.parents[2]
 if str(_REPO_ROOT_BOOTSTRAP) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT_BOOTSTRAP))
 
+from tools.mcp.mcp_deferred_loader import DeferredLoader
+
 try:
     from mcp.server.fastmcp import FastMCP
 except ImportError as _e:
@@ -145,11 +147,6 @@ RUNTIME_ADG_STORE = RUNTIME_ADG_DIR
 # Cache for recent traces (in production, use Redis or similar)
 _trace_cache: dict[str, dict[str, Any]] = {}
 
-# Cached runtime ADG store — avoids repeated ~0.6s import chain per tool call.
-# Empty list = not yet initialized; populated on first successful init.
-_RUNTIME_ADG_STORE_INSTANCE: list[Any] = []
-_STORE_INIT_TIMEOUT_S: int = 8  # prevents hang on slow filesystem or locked SQLite
-
 # Server identity — captured once at process startup for stale-process detection.
 _SERVER_PID: int = os.getpid()
 _SERVER_START_TIME: float = time.time()
@@ -164,54 +161,33 @@ _metrics_cache: dict[str, Any] = {
 }
 
 
+def _create_runtime_adg_store():
+    """Factory for FileBackedRuntimeADGStore (L4 canonical)."""
+    from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+
+    return FileBackedRuntimeADGStore(RUNTIME_ADG_STORE)
+
+
+def _create_tracer():
+    """Factory for OpenTelemetry tracer — imports gRPC C extensions."""
+    from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
+
+    return get_tracer("otel-mcp-server")
+
+
+# Thread-safe deferred loaders — prevent duplicate ThreadPoolExecutors (MCP SDK #817)
+_store_loader = DeferredLoader("runtime-adg-store", _create_runtime_adg_store, timeout=8.0)
+_tracer_loader = DeferredLoader("otel-tracer", _create_tracer, timeout=10.0)
+
+
 def _get_runtime_adg_store():
-    """Get runtime ADG store instance — cached after first successful init.
-
-    Uses FileBackedRuntimeADGStore (L4 canonical). Initialization is bounded
-    by _STORE_INIT_TIMEOUT_S to prevent hangs on slow filesystems or locked
-    SQLite. Successful result is cached to avoid repeated ~0.6s import chains.
-    """
-    import concurrent.futures
-
-    if _RUNTIME_ADG_STORE_INSTANCE:
-        return _RUNTIME_ADG_STORE_INSTANCE[0]
-
-    def _create_store():
-        from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
-
-        return FileBackedRuntimeADGStore(RUNTIME_ADG_STORE)
-
-    try:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            future = executor.submit(_create_store)
-            store = future.result(timeout=_STORE_INIT_TIMEOUT_S)
-        _RUNTIME_ADG_STORE_INSTANCE.append(store)
-        return store
-    except concurrent.futures.TimeoutError:
-        logger.warning(
-            "Runtime ADG store init timed out after %ss — using fallback",
-            _STORE_INIT_TIMEOUT_S,
-        )
-        return None
-    except ImportError:
-        logger.warning("Runtime ADG store not available, using fallback")
-        return None
-    except (
-        Exception
-    ) as e:  # guardian: allow-broad-exception -- store init probe must not crash the tool layer
-        logger.error("Failed to initialize runtime ADG store: %s", e)
-        return None
+    """Get runtime ADG store — thread-safe, cached after first load."""
+    return _store_loader.get()
 
 
 def _get_tracer():
-    """Get OpenTelemetry tracer instance."""
-    try:
-        from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
-
-        return get_tracer("otel-mcp-server")
-    except ImportError:
-        logger.warning("OpenTelemetry adapter not available")
-        return None
+    """Get OpenTelemetry tracer — thread-safe, cached after first load."""
+    return _tracer_loader.get()
 
 
 @mcp.tool()
@@ -252,7 +228,9 @@ def otel_server_info() -> dict[str, Any]:
     try:
         proc = subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
-            capture_output=True,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
             timeout=3,
             cwd=str(_REPO_ROOT),
@@ -271,7 +249,7 @@ def otel_server_info() -> dict[str, Any]:
         "current_mtime_utc": int(current_mtime),
         "source_is_stale": current_mtime > _SERVER_SOURCE_MTIME,
         "git_sha": git_sha,
-        "store_cache_populated": bool(_RUNTIME_ADG_STORE_INSTANCE),
+        "store_cache_populated": _store_loader.is_loaded(),
     }
 
 
@@ -815,5 +793,6 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stderr)
     logger.info("Starting OpenTelemetry MCP Server")
-    _register_lifecycle_traces()
-    mcp.run()
+    # NOTE: _register_lifecycle_traces() deferred to first tool call to avoid
+    # blocking MCP handshake — same pattern as other working MCP servers.
+    mcp.run(transport="stdio")

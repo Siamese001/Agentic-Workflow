@@ -231,6 +231,7 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
 
     Rules (checked in order):
     1. memory server calls always pass — never deadlock recall itself.
+    1a. filesystem read tools always pass — pure stateless reads need no session context.
     2. memory_recalled=True in session state → gate satisfied, allow.
     3. Memory MCP unhealthy → degrade-open to avoid full-system blockage.
     4. max_memory_block_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS → degrade-open.
@@ -242,22 +243,16 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     if server_name == MEMORY_SERVER_NAME:
         return 0
 
+    # Rule 1a: never block filesystem read tools — pure stateless reads need no session context.
+    # Write tools (write_file, edit_file, move_file) are still blocked by check_filesystem_write_gate.
+    if server_name == FILESYSTEM_SERVER_NAME and tool_name not in FILESYSTEM_WRITE_TOOLS:
+        return 0
+
     state = _read_session_state()
 
     # Rule 2: memory already recalled this session — gate satisfied.
-    # Also check the plain session_state.json written by pre_prompt_classifier +
-    # post_mcp_audit, because PPID instability gives each hook spawn a fresh
-    # PID-namespaced file that never carries memory_recalled from the audit path.
     if state.get("memory_recalled", False):
         return 0
-    _plain = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
-    try:
-        if _plain.exists():
-            _ps = json.loads(_plain.read_text(encoding="utf-8"))
-            if isinstance(_ps, dict) and _ps.get("memory_recalled", False):
-                return 0
-    except (OSError, json.JSONDecodeError):
-        pass
 
     # Rule 3: degrade-open if memory MCP is unhealthy (SQLite inaccessible)
     if check_memory_gate(REPO_ROOT) != 0:
@@ -911,7 +906,7 @@ def check_otel_gate() -> int:
     return 0
 
 
-def _run_git(args: list[str], cwd: Path, timeout: int = 10) -> tuple[int, str, str]:
+def _run_git(args: list[str], cwd: Path, timeout: int = 5) -> tuple[int, str, str]:
     """
     Run a git subprocess safely. Returns (returncode, stdout, stderr).
     Constitutional §14: timeout= required. §0: shell=False.
@@ -992,7 +987,7 @@ def _check_gitkraken_dirty_tree(repo: Path) -> tuple[bool, str]:
     Return (is_dirty, description).
     Uses `git status --porcelain` — non-empty output = dirty tree.
     """
-    rc, stdout, _ = _run_git(["status", "--porcelain"], repo)
+    rc, stdout, _ = _run_git(["status", "--porcelain", "--no-optional-locks"], repo)
     if rc != 0:
         return False, "status probe failed — treating as clean"
     if stdout:
@@ -1114,29 +1109,16 @@ def check_deepwiki_gate() -> int:
     """
     Check DeepWiki MCP health (remote URL MCP).
 
-    DeepWiki is accessed via HTTPS to mcp.deepwiki.com — advisory connectivity
-    check only (fail-open). Cannot hard-block since DNS/firewall is user-env
-    dependent, but warn so Cascade knows remote queries will fail.
+    DeepWiki is accessed via HTTPS to mcp.deepwiki.com — fail-open always.
+    No TCP probe is performed: socket.create_connection timeout= only guards the
+    TCP handshake, NOT DNS resolution. On Windows, getaddrinfo() for external
+    hostnames can block for 30+ seconds with no Python-level interrupt, causing
+    a gate-level hang on every DeepWiki call (before the probe is cached).
+    Since this gate always returns 0, the probe risk outweighs any advisory value.
 
     Return 0 always (fail-open — remote availability is not Cascade's fault).
     """
-    import socket as _socket
-
-    cache_key = "deepwiki_reachable"
-    if cache_key not in _PROBE_CACHE:
-        try:
-            with _socket.create_connection(("mcp.deepwiki.com", 443), timeout=3):
-                _PROBE_CACHE[cache_key] = True
-        except OSError:
-            _PROBE_CACHE[cache_key] = False
-
-    if not _PROBE_CACHE[cache_key]:
-        print(
-            "[pre_mcp_gate] WARNING: mcp.deepwiki.com not reachable — "
-            "DeepWiki queries will fail. Check network/firewall.",
-            file=sys.stderr,
-        )
-    return 0  # always fail-open — remote availability is not Cascade's fault
+    return 0  # always fail-open — no DNS probe to avoid Windows getaddrinfo hang
 
 
 def _purge_stale_session_states() -> None:

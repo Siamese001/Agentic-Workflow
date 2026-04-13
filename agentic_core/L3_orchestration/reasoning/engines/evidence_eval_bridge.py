@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import enum
 import hashlib
+import time
 import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -321,6 +322,90 @@ def classify_evidence_support(metrics: EvidenceMetrics) -> WeakSupportDispositio
     return WeakSupportDisposition.PROCEED
 
 
+def _build_sealed_l2_artifact(
+    bundle: "EvidenceBundle",
+    execution_context: Any,
+    *,
+    gate_result: Any = None,
+) -> Any:
+    """Build a SealedL2Artifact from an evidence bundle + execution context.
+
+    Translates the evidence-bridge context into the typed sealed L2 artifact
+    required by ExitControlGate.evaluate_sealed() and build_shadow_eval_packet().
+    """
+    from agentic_core.L2_execution.types.sealed_l2_artifact import (  # noqa: PLC0415
+        ReplayMetadata,
+        SealedL2Artifact,
+        TerminalClassification,
+        ValidationCounters,
+    )
+
+    metrics = _compute_metrics(bundle)
+    run_id = getattr(execution_context, "run_id", "") or ""
+    trace_id = getattr(execution_context, "trace_id", "") or run_id or uuid.uuid4().hex
+    policy_hash = getattr(execution_context, "policy_hash", "") or ""
+
+    disposition_val = ""
+    if gate_result is not None:
+        disp = getattr(gate_result, "disposition", None)
+        disposition_val = str(getattr(disp, "value", disp) or "").lower()
+
+    if "deny" in disposition_val:
+        terminal = TerminalClassification.FAILURE
+    elif "escalate" in disposition_val:
+        terminal = TerminalClassification.NEEDS_HELP
+    else:
+        terminal = TerminalClassification.SUCCESS
+
+    escalation_reason: str | None = None
+    if bundle.contradiction_flags:
+        escalation_reason = f"evidence_contradictions:{len(bundle.contradiction_flags)}"
+
+    return SealedL2Artifact(
+        artifact_id=f"sla-{uuid.uuid4().hex[:16]}",
+        trace_id=trace_id,
+        exec_trace={
+            "run_id": run_id,
+            "trace_id": trace_id,
+            "policy_hash": policy_hash,
+        },
+        state_diff={},
+        evidence_bundle={
+            "collection": bundle.collection,
+            "ranked_chunk_count": len(bundle.ranked_chunks),
+            "citation_anchor_count": len(bundle.citation_anchors),
+            "grounded_replayable": metrics.grounded_replayable,
+            "support_coverage": float(metrics.support_coverage),
+        },
+        validation_counters=ValidationCounters(
+            policy_checks_passed=1 if metrics.grounded_replayable else 0,
+            policy_checks_failed=0 if metrics.grounded_replayable else 1,
+        ),
+        terminal_classification=terminal,
+        replay_metadata=ReplayMetadata(
+            replay_completeness=float(metrics.support_coverage),
+        ),
+        has_commit_payload="commit" in disposition_val,
+        escalation_reason=escalation_reason,
+        sealed_at=time.time(),
+    )
+
+
+def _run_sealed_exit_gate(
+    sealed: Any,
+    policy_hash: str | None = None,
+) -> Any:
+    """Call ExitControlGate.evaluate_sealed() on a SealedL2Artifact.
+
+    Returns CurrentRunEvaluationResult or raises on failure.
+    Callers MUST wrap in try/except to keep this non-blocking.
+    """
+    from agentic_core.L5_safety.enforcement.exit_control_gate import ExitControlGate  # noqa: PLC0415
+
+    gate = ExitControlGate(policy_hash=policy_hash)
+    return gate.evaluate_sealed(sealed)
+
+
 def evaluate_and_emit(
     bundle: "EvidenceBundle",
     execution_context: Any,
@@ -331,6 +416,10 @@ def evaluate_and_emit(
     Single shared function used by all evidence-upgraded execution lanes
     (ExecutionGateway, ToolIntentExecutor, ActionNode).  Replaces per-lane
     duplication of build_exit_artifact + run_live_exit_gate + emit_bundle_telemetry.
+
+    This is the **only authorized live evaluation + L6 shadow seam** in the codebase.
+    New execution lanes MUST route through this function rather than calling
+    ExitControlGate.evaluate() or build_shadow_eval_packet() directly.
 
     Non-blocking sidecar: disposition is returned for caller awareness but does
     NOT interrupt execution.  No durable writes.  No UWG bypass.
@@ -357,7 +446,7 @@ def evaluate_and_emit(
     )
     disposition = classify_evidence_support(metrics)
 
-    # L6 shadow eval ingestion seam — future-run only, non-blocking.
+    # L6 shadow eval ingestion seam (AsyncEvalPacket path) — future-run only, non-blocking.
     # All three artifacts (gate_result, metrics, disposition) are captured here
     # simultaneously: the real BUS T + exit + sealed-artifact join point.
     try:
@@ -374,6 +463,26 @@ def evaluate_and_emit(
         )
     except (ImportError, RuntimeError, ValueError):
         pass  # guardian: allow-silent-swallow -- L6 ingestion must not block live execution
+
+    # Canonical ShadowEvalPacket path — cross the CURRENT_RUN→FUTURE_RUN boundary.
+    # Builds a typed SealedL2Artifact, calls evaluate_sealed() for a
+    # CurrentRunEvaluationResult, then enqueues a ShadowEvalPacket for the
+    # L6ShadowEvalPipeline.  Non-blocking; never interrupts live execution.
+    try:
+        from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # noqa: PLC0415
+            build_shadow_eval_packet,
+            enqueue_shadow_eval_packet,
+        )
+
+        sealed = _build_sealed_l2_artifact(bundle, execution_context, gate_result=gate_result)
+        current_run_result = _run_sealed_exit_gate(
+            sealed,
+            policy_hash=getattr(execution_context, "policy_hash", None),
+        )
+        shadow_pkt = build_shadow_eval_packet(sealed, current_run_result)
+        enqueue_shadow_eval_packet(shadow_pkt)
+    except (ImportError, RuntimeError, ValueError, AttributeError, TypeError):
+        pass  # guardian: allow-silent-swallow -- ShadowEvalPacket build must not block live execution
 
     return gate_result, disposition
 

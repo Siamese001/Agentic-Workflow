@@ -1641,7 +1641,7 @@ class TestCheckMemoryFirstGate:
         with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
             with patch("pre_mcp_gate.SESSION_STATE", f):
                 with patch("pre_mcp_gate.check_memory_gate", return_value=0):
-                    assert check_memory_first_gate("filesystem", "read_text_file") == 2
+                    assert check_memory_first_gate("task_manager", "create_task") == 2
         state = json.loads(f.read_text(encoding="utf-8"))
         assert state["max_memory_block_attempts"] == 2
 
@@ -1684,6 +1684,83 @@ class TestCheckMemoryFirstGate:
         with patch("pre_mcp_gate.SESSION_STATE", state_file):
             with patch("pre_mcp_gate.check_memory_gate", return_value=2):
                 assert check_memory_first_gate("task_manager", "create_task") == 0
+
+    def test_blocks_when_no_session_file_and_memory_healthy(self, tmp_path):
+        """Fresh session (PID-scoped file absent) must block non-memory MCP call."""
+        absent = tmp_path / "session_state_absent.json"  # never created
+        with patch("pre_mcp_gate.SESSION_STATE", absent):
+            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                assert check_memory_first_gate("task_manager", "create_task") == 2
+
+    def test_stale_plain_fallback_not_consulted(self, tmp_path):
+        """Fix 2 regression: plain session_state.json with memory_recalled=True must not unblock gate.
+
+        Pre-fix: gate read REPO_ROOT/artifacts/windsurf/session_state.json as a fallback and
+        would have returned 0.  Post-fix: only SESSION_STATE (PID-scoped) is consulted.
+        """
+        artifacts_dir = tmp_path / "artifacts" / "windsurf"
+        artifacts_dir.mkdir(parents=True)
+        plain_file = artifacts_dir / "session_state.json"
+        plain_file.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
+        absent = tmp_path / "session_state_9999.json"  # PID-scoped file never created
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", absent):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    assert check_memory_first_gate("task_manager", "create_task") == 2
+
+    # --- Rule 1a: filesystem read tools bypass memory-first gate ---
+
+    def test_filesystem_read_tool_bypasses_gate_when_not_recalled(self, tmp_path):
+        """Rule 1a: filesystem read tools pass even when memory_recalled=False."""
+        f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
+        with patch("pre_mcp_gate.SESSION_STATE", f):
+            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                assert check_memory_first_gate("filesystem", "read_text_file") == 0
+
+    def test_filesystem_list_directory_bypasses_gate(self, tmp_path):
+        """Rule 1a: list_directory bypasses gate regardless of memory state."""
+        f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
+        with patch("pre_mcp_gate.SESSION_STATE", f):
+            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                assert check_memory_first_gate("filesystem", "list_directory") == 0
+
+    def test_filesystem_all_read_tools_bypass_gate(self, tmp_path):
+        """Rule 1a: every non-write filesystem tool bypasses the memory-first gate."""
+        f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
+        read_tools = [
+            "read_text_file",
+            "list_directory",
+            "directory_tree",
+            "search_files",
+            "get_file_info",
+            "read_multiple_files",
+            "read_media_file",
+            "list_directory_with_sizes",
+        ]
+        with patch("pre_mcp_gate.SESSION_STATE", f):
+            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                for tool in read_tools:
+                    if tool not in FILESYSTEM_WRITE_TOOLS:
+                        assert check_memory_first_gate("filesystem", tool) == 0, (
+                            f"filesystem read tool '{tool}' should bypass memory-first gate"
+                        )
+
+    def test_filesystem_write_tool_not_bypassed_by_rule_1a(self, tmp_path):
+        """Rule 1a exemption does NOT apply to write tools — they still hit the gate."""
+        f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
+        with patch("pre_mcp_gate.REPO_ROOT", tmp_path):
+            with patch("pre_mcp_gate.SESSION_STATE", f):
+                with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                    assert check_memory_first_gate("filesystem", "write_file") == 2
+
+    def test_filesystem_read_bypass_does_not_increment_attempt_counter(self, tmp_path):
+        """Rule 1a short-circuits before _increment_memory_block_attempts — counter must stay 0."""
+        f = self._state_file(tmp_path, memory_recalled=False, max_memory_block_attempts=0)
+        with patch("pre_mcp_gate.SESSION_STATE", f):
+            with patch("pre_mcp_gate.check_memory_gate", return_value=0):
+                check_memory_first_gate("filesystem", "read_text_file")
+        state = json.loads(f.read_text(encoding="utf-8"))
+        assert state["max_memory_block_attempts"] == 0
 
 
 # ---------------------------------------------------------------------------

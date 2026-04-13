@@ -276,10 +276,11 @@ class GovernedAppRunner:
 
             try:
                 from agentic_core.L6_observability.utils.evaluation.async_eval_packet import (  # noqa: PLC0415
-                    _EVAL_PACKET_QUEUE,
+                    get_async_eval_ingester,
+                    get_shadow_eval_ingester,
                 )
 
-                l6_ingested = len(_EVAL_PACKET_QUEUE) > 0
+                l6_ingested = get_async_eval_ingester().qsize() > 0 or get_shadow_eval_ingester().qsize() > 0
             except (ImportError, AttributeError):
                 l6_ingested = True
 

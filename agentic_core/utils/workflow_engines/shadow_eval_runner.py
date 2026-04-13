@@ -216,6 +216,18 @@ class ShadowEvaluationRunner:
         )
         baseline_report = self._run_single(self.baseline_config, dataset)
         candidate_report = self._run_single(self.candidate_config, dataset)
+
+        # Drain coverage scorer shadow buffer BEFORE building snapshots so
+        # per-example captures are correlated into the candidate snapshot metadata.
+        try:
+            from agentic_core.L3_orchestration.reasoning.engines.retrieval_coverage_scorer import (  # noqa: PLC0415
+                drain_shadow_buffer,
+            )
+
+            coverage_captures = drain_shadow_buffer()
+        except ImportError:
+            coverage_captures = []
+
         baseline_retrieval_snapshot = self._build_retrieval_snapshot(
             baseline_report,
             version=self.baseline_config.version,
@@ -223,10 +235,12 @@ class ShadowEvaluationRunner:
         candidate_retrieval_snapshot = self._build_retrieval_snapshot(
             candidate_report,
             version=self.candidate_config.version,
+            coverage_captures=coverage_captures,
         )
         candidate_alerts = []
         if self.retrieval_monitor is not None:
             candidate_alerts.extend(self.retrieval_monitor.check_alerts(candidate_retrieval_snapshot))
+
         return ShadowEvaluationResult(
             delta_report=delta_report,
             baseline_report=baseline_report,
@@ -234,6 +248,7 @@ class ShadowEvaluationRunner:
             baseline_retrieval_snapshot=baseline_retrieval_snapshot,
             candidate_retrieval_snapshot=candidate_retrieval_snapshot,
             candidate_alerts=candidate_alerts,
+            coverage_captures=coverage_captures,
         )
 
     def _run_single(self, config: SystemConfig, dataset: EvaluationDataset) -> EvaluationReport:
@@ -245,9 +260,28 @@ class ShadowEvaluationRunner:
         )
         return runner.run(dataset)
 
-    def _build_retrieval_snapshot(self, report: EvaluationReport, version: str) -> RetrievalDriftSnapshot:
+    def _build_retrieval_snapshot(
+        self,
+        report: EvaluationReport,
+        version: str,
+        coverage_captures: list | None = None,
+    ) -> RetrievalDriftSnapshot:
         """Build a lightweight retrieval snapshot from an eval report."""
         scores = report.aggregate_scores
+        metadata: dict[str, Any] = {}
+        if coverage_captures:
+            metadata["coverage_per_example"] = [
+                {
+                    "coverage_score": c.coverage_score,
+                    "should_rerank": c.should_rerank,
+                    "rerank_triggered": c.rerank_triggered,
+                    "gap_signal": c.gap_signal,
+                    "evaluator_version": c.evaluator_version,
+                    "latency_ms": c.latency_ms,
+                    "budget_status": c.budget_status,
+                }
+                for c in coverage_captures
+            ]
         return RetrievalDriftSnapshot(
             timestamp=datetime.utcnow().isoformat() + "Z",
             system_version=version,
@@ -256,6 +290,7 @@ class ShadowEvaluationRunner:
             score_distribution_std=0.0,
             top_k_stability=scores.get("MRR", 0.0),
             sample_size=len(report.per_example_results),
+            metadata=metadata,
         )
 
 
@@ -270,6 +305,7 @@ class ShadowEvaluationResult:
         baseline_retrieval_snapshot: RetrievalDriftSnapshot,
         candidate_retrieval_snapshot: RetrievalDriftSnapshot,
         candidate_alerts: list,
+        coverage_captures: list | None = None,
     ):
         self.delta_report = delta_report
         self.baseline_report = baseline_report
@@ -277,6 +313,7 @@ class ShadowEvaluationResult:
         self.baseline_retrieval_snapshot = baseline_retrieval_snapshot
         self.candidate_retrieval_snapshot = candidate_retrieval_snapshot
         self.candidate_alerts = candidate_alerts
+        self.coverage_captures: list = coverage_captures if coverage_captures is not None else []
 
     @property
     def is_improvement(self) -> bool:
@@ -284,6 +321,20 @@ class ShadowEvaluationResult:
         return sum(self.delta_report.metric_deltas.values()) > 0
 
     def to_dict(self) -> dict[str, Any]:
+        coverage_summary: dict[str, Any] = {}
+        if self.coverage_captures:
+            scores = [c.coverage_score for c in self.coverage_captures]
+            rerank_count = sum(1 for c in self.coverage_captures if c.rerank_triggered)
+            budget_exceeded = sum(1 for c in self.coverage_captures if c.budget_status == "budget_exceeded")
+            coverage_summary = {
+                "capture_count": len(scores),
+                "score_mean": round(sum(scores) / len(scores), 4),
+                "score_min": round(min(scores), 4),
+                "score_max": round(max(scores), 4),
+                "rerank_triggered_count": rerank_count,
+                "budget_exceeded_count": budget_exceeded,
+                "evaluator_versions": list({c.evaluator_version for c in self.coverage_captures}),
+            }
         return {
             "delta_report": self.delta_report.to_dict(),
             "baseline_scores": self.baseline_report.aggregate_scores,
@@ -291,6 +342,8 @@ class ShadowEvaluationResult:
             "is_improvement": self.is_improvement,
             "candidate_alert_count": len(self.candidate_alerts),
             "candidate_alerts": [a.to_dict() for a in self.candidate_alerts],
+            "coverage_capture_count": len(self.coverage_captures),
+            "coverage_summary": coverage_summary,
         }
 
 

@@ -278,10 +278,19 @@ _promotion_authority = None
 
 
 def get_promotion_authority() -> PromotionAuthority:
-    """Get the singleton promotion authority instance."""
+    """Get the singleton promotion authority instance.
+
+    Auto-wires a PromotionWriteGateway on first creation so that
+    update_pointer_via_gateway() is durable out of the box.
+    """
     global _promotion_authority
     if _promotion_authority is None:
         _promotion_authority = PromotionAuthority()
+        from agentic_core.L4_state.enforcement.promotion_write_gateway import (  # noqa: PLC0415
+            PromotionWriteGateway,
+        )
+
+        _promotion_authority.set_write_gateway(PromotionWriteGateway())
     return _promotion_authority
 
 

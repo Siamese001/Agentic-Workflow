@@ -240,7 +240,9 @@ class PytestMCPServer:
             result = subprocess.run(
                 cmd,
                 cwd=REPO_ROOT,
-                capture_output=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
                 timeout=30,
             )
@@ -348,7 +350,9 @@ class PytestMCPServer:
             result = subprocess.run(
                 cmd,
                 cwd=REPO_ROOT,
-                capture_output=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
                 timeout=timeout,
             )
@@ -527,7 +531,14 @@ class PytestMCPServer:
 
         # Check if coverage is available
         try:
-            subprocess.run(["coverage", "--version"], capture_output=True, check=True, timeout=10)
+            subprocess.run(
+                ["coverage", "--version"],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=True,
+                timeout=10,
+            )
         except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
             return CallToolResult(
                 content=[
@@ -571,7 +582,9 @@ class PytestMCPServer:
             result = subprocess.run(
                 cmd,
                 cwd=REPO_ROOT,
-                capture_output=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
                 timeout=120,
             )
@@ -642,7 +655,9 @@ class PytestMCPServer:
         try:
             result = subprocess.run(
                 ["python", "-m", "pytest", "--version"],
-                capture_output=True,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
                 timeout=15,
             )
@@ -685,7 +700,7 @@ if __name__ == "__main__":
     try:
         anyio.run(main)
     except KeyboardInterrupt:
-        print("Pytest MCP Server stopped by user")
+        logger.info("Pytest MCP Server stopped by user")
     except Exception as e:
         logger.error(f"Server error: {e}")
         sys.exit(1)

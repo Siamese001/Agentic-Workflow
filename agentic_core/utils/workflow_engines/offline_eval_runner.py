@@ -76,13 +76,13 @@ _emit_captures_evaluation_metric("p4", "offline_eval_runner", "eval_metric")
 _emit_stores_embedding("p4", "offline_eval_runner", "embedding_store")
 _emit_updates_meta_learning_state("p4", "offline_eval_runner", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "offline_eval_runner", "exec_snapshot_link")
-from ..metrics.answer_correctness import AnswerCorrectness
-from ..metrics.base import EvaluationMetric
-from ..metrics.groundedness import Groundedness
-from ..metrics.mrr import MeanReciprocalRank
-from ..metrics.ndcg import NDCG
-from ..metrics.precision_at_k import PrecisionAtK
-from ..metrics.recall_at_k import RecallAtK
+from .answer_correctness import AnswerCorrectness
+from .base import EvaluationMetric
+from .groundedness import Groundedness
+from .mrr import MeanReciprocalRank
+from .ndcg import NDCG
+from .precision_at_k import PrecisionAtK
+from .recall_at_k import RecallAtK
 from ..schemas.evaluation_dataset_schema import EvaluationDataset, EvaluationExample
 from ..schemas.evaluation_result_schema import (
     EvaluationReport,
@@ -255,7 +255,7 @@ class OfflineEvaluationRunner:
         generated_answer = self.generation_fn(example.query, retrieved_docs)
 
         metric_scores: dict[str, float] = {}
-        for metric in self.metrics:
+        for metric in self.metrics:  # progress_bar: bounded metric list
             if hasattr(metric, "compute"):
                 # Retrieval metrics receive (retrieved_docs, ground_truth_docs)
                 # Generation metrics receive (generated_answer, expected_answer, context)

@@ -147,6 +147,13 @@ class GovernedHandoffAgent:
         Returns:
             HandoffRecord — sealed outcome record.
         """
+        # Scope invariant: only future-run packets may be handed off.
+        if getattr(packet, "run_scope", None) != "FUTURE_RUN":
+            raise ValueError(
+                f"GovernedHandoffAgent.handoff: packet must have run_scope='FUTURE_RUN', "
+                f"got {getattr(packet, 'run_scope', None)!r}"
+            )
+
         namespace = packet.target_destination_class
 
         # ── Gate: non-dry-run requires explicit approval ───────────────────────
@@ -166,6 +173,26 @@ class GovernedHandoffAgent:
                 handoff_at=get_clock().now_epoch(),
                 error="Commit blocked: explicit approval required (pass approved=True)",
             )
+
+        # ── Gate: non-dry-run commit requires packet.approval_state = APPROVED ───
+        if not dry_run and approved and hasattr(packet, "approval_state"):
+            actual_state = getattr(packet.approval_state, "value", str(packet.approval_state))
+            if actual_state != "APPROVED":
+                return HandoffRecord(
+                    record_id=f"hr-{uuid.uuid4().hex[:12]}",
+                    packet_id=packet.packet_id,
+                    token_id="UNISSUED",
+                    token_valid=False,
+                    approved=False,
+                    commit_attempted=False,
+                    committed=False,
+                    rollout_published=False,
+                    rollback_metadata_valid=False,
+                    dry_run=False,
+                    destination_namespace=namespace,
+                    handoff_at=get_clock().now_epoch(),
+                    error=f"Commit blocked: packet.approval_state must be APPROVED, got {actual_state!r}",
+                )
 
         token_id = "UNISSUED"
         token_valid = False

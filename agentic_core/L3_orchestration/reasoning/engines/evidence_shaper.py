@@ -30,6 +30,9 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import HybridSearchResult
+    from agentic_core.L3_orchestration.reasoning.engines.retrieval_coverage_scorer import (
+        RetrievalCoverageResult,
+    )
 
 _log = logging.getLogger(__name__)
 
@@ -110,6 +113,7 @@ class EvidenceBundle:
     exact_match_winners: list[str]  # chunk_ids that won via sparse leg
     expanded_chunk_ids: list[str]  # chunk_ids added by sibling expansion
     shaping_stats: dict[str, Any] = field(default_factory=dict)
+    retrieval_coverage: "RetrievalCoverageResult | None" = None
 
     def provenance_summary(self) -> dict[str, Any]:
         """Compact provenance report for the bundle."""
@@ -208,11 +212,11 @@ def _detect_contradictions(results: list[Any]) -> list[ContradictionFlag]:
         if fp:
             by_file.setdefault(fp, []).append(r)
 
-    for fp, group in by_file.items():
+    for fp, group in by_file.items():  # progress_bar: bounded in-memory dict
         if len(group) < 2:
             continue
-        for i in range(len(group)):
-            for j in range(i + 1, len(group)):
+        for i in range(len(group)):  # progress_bar: bounded group pairs
+            for j in range(i + 1, len(group)):  # progress_bar: bounded pair combo
                 a, b = group[i], group[j]
                 if a.combined_score < MIN_SCORE or b.combined_score < MIN_SCORE:
                     continue
@@ -262,7 +266,7 @@ def _expand_siblings(
     new_chunks: list[Any] = []
     seen_new: set[str] = set()
 
-    for r in results:
+    for r in results:  # progress_bar: bounded result list
         idx_str = r.metadata.get("chunk_index")
         fp = r.metadata.get("file_path", "")
         if not idx_str or not fp:
@@ -272,7 +276,7 @@ def _expand_siblings(
         except (ValueError, TypeError):
             continue
 
-        for delta in range(-_MAX_SIBLINGS, _MAX_SIBLINGS + 1):
+        for delta in range(-_MAX_SIBLINGS, _MAX_SIBLINGS + 1):  # progress_bar: bounded sibling window
             if delta == 0:
                 continue
             target_idx = idx + delta
@@ -289,7 +293,7 @@ def _expand_siblings(
                     include=["documents", "metadatas"],
                     limit=1,
                 )
-                for cid, doc, meta in zip(
+                for cid, doc, meta in zip(  # progress_bar: bounded query result
                     hits.get("ids", []),
                     hits.get("documents", []),
                     hits.get("metadatas", []),
@@ -460,6 +464,30 @@ class EvidenceShaper:
             stats["contradiction_count"],
         )
 
+        # 7b. Advisory retrieval coverage scoring (fail-closed; no gate dependency)
+        from agentic_core.L3_orchestration.reasoning.engines.retrieval_coverage_scorer import (  # noqa: PLC0415
+            score_coverage,
+        )
+
+        coverage_result, rerank_triggered = score_coverage(scored)
+        if coverage_result is not None:
+            stats["coverage"] = {
+                "score": coverage_result.coverage_score,
+                "should_rerank": coverage_result.should_rerank,
+                "rerank_triggered": rerank_triggered,
+                "gap_signal": coverage_result.gap_signal,
+                "evaluator_version": coverage_result.evaluator_version,
+                "latency_ms": coverage_result.latency_ms,
+                "budget_status": coverage_result.budget_status,
+            }
+            _log.debug(
+                "coverage_scorer score=%.3f should_rerank=%s triggered=%s gap=%s",
+                coverage_result.coverage_score,
+                coverage_result.should_rerank,
+                rerank_triggered,
+                coverage_result.gap_signal,
+            )
+
         return EvidenceBundle(
             query=query,
             collection=collection_name,
@@ -469,4 +497,5 @@ class EvidenceShaper:
             exact_match_winners=list(exact_ids),
             expanded_chunk_ids=expanded_ids,
             shaping_stats=stats,
+            retrieval_coverage=coverage_result,
         )

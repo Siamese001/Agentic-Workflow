@@ -563,6 +563,16 @@ class TestMain:
         assert state["task_started"] is False
         assert state["update_task_count"] == 0
 
+    def test_t0_corrupt_session_file_yields_memory_recalled_false(self, tmp_path):
+        """T0 with corrupt session file falls back to memory_recalled=False (fail-safe path)."""
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text("{{not valid json", encoding="utf-8")
+        payload = {"tool_info": {"user_prompt": "explain how routing works"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        assert state["memory_recalled"] is False
+
 
 # ---------------------------------------------------------------------------
 # _should_emit_memory_mandate

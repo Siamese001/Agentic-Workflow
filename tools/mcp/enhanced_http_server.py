@@ -983,7 +983,7 @@ if __name__ == "__main__":
     try:
         anyio.run(main)
     except KeyboardInterrupt:
-        print("Enhanced HTTP MCP Server stopped by user")
+        logger.info("Enhanced HTTP MCP Server stopped by user")
     except (OSError, RuntimeError) as e:
         logger.error("Server error: %s", e)
         sys.exit(1)

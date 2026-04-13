@@ -104,6 +104,19 @@ class EnvelopeBuilder:
         self._ml_model_hashes[role] = hash_value
         return self
 
+    def with_coverage_scorer(self, evaluator_version: str) -> EnvelopeBuilder:
+        """Bind the retrieval coverage scorer version under the 'coverage_scorer' role.
+
+        Derives a 16-character hex digest from *evaluator_version* and stores it
+        via ``with_ml_model_hash`` so the replay envelope hash changes whenever the
+        scorer artifact changes — satisfying C1 determinism invariant.
+
+        Advisory-only: this binding records which scorer ran; it does not gate or
+        influence the disposition decision.
+        """
+        version_hash = hashlib.sha256(evaluator_version.encode()).hexdigest()[:16]
+        return self.with_ml_model_hash("coverage_scorer", version_hash)
+
     def build(self) -> ReplayEnvelope:
         """Build the replay envelope."""
         if not all([self._replay_key, self._policy_hash, self._run_id]):
