@@ -572,6 +572,24 @@ class TestP1MisLayeredInfra:
         counts = materialize_infra_views(db_path)
         assert counts["v_p1_mis_layered_infra"] == 1
 
+    def test_redis_in_l_shared_compliant(self, tmp_path: Path) -> None:
+        """Redis adapter in L_SHARED is compliant (second allowed layer per SQL)."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::agentic_core/cache/redis_cache_client.py",
+            "module",
+            "L_SHARED",
+            "repo_module",
+            "agentic_core/cache/redis_cache_client.py",
+        )
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p1_mis_layered_infra"] == 0
+
     def test_redis_in_l2_compliant(self, tmp_path: Path) -> None:
         """Redis adapter in L2 is compliant."""
         db_path = _create_test_db(tmp_path)

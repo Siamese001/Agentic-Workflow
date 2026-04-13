@@ -148,6 +148,16 @@ class TestGeneratePrecommitExclude:
         assert "(?x)^(" in content
         assert "artifacts/adg_ci_lane_gate_result.json" in content
         assert "pytestdebug.log" in content
+        # Last content line must NOT end with | (line-190 strip)
+        content_lines = [
+            ln.rstrip()
+            for ln in content.split("\n")
+            if ln.strip()
+            and not ln.strip().startswith("#")
+            and ln.strip() not in ("exclude: |", "(?x)^(", ")")
+        ]
+        assert content_lines, "Expected at least one pattern line"
+        assert not content_lines[-1].endswith("|"), f"Last pattern must not end with |: {content_lines[-1]!r}"
 
     def test_generate_precommit_exclude_sorted(self) -> None:
         """Test that patterns are sorted for consistency."""
@@ -237,9 +247,24 @@ class TestCheckSync:
 
     def test_check_sync_missing_gitignore(self) -> None:
         """Test check when .gitignore does not exist."""
-        with patch.object(generate_gitignore, "read_current_gitignore", return_value=None):
-            result = generate_gitignore.check_sync()
-            assert result is False
+        with patch.object(generate_gitignore, "load_exclusions", return_value=(set(), set(), set())):
+            with patch.object(generate_gitignore, "generate_gitignore_content", return_value="# Generated\n"):
+                with patch.object(generate_gitignore, "read_current_gitignore", return_value=None):
+                    result = generate_gitignore.check_sync()
+                    assert result is False
+
+    def test_check_sync_non_generated_gitignore(self) -> None:
+        """Test check when current .gitignore was not generated (else branch in line-224)."""
+        hand_written = "/hand_written/\n*.pyc\n"
+        generated_content = "# Generated from config/excluded_paths.yaml\n# header\n# ts\n\n/other/\n"
+
+        with patch.object(generate_gitignore, "load_exclusions", return_value=({"other"}, set(), set())):
+            with patch.object(
+                generate_gitignore, "generate_gitignore_content", return_value=generated_content
+            ):
+                with patch.object(generate_gitignore, "read_current_gitignore", return_value=hand_written):
+                    result = generate_gitignore.check_sync()
+                    assert result is False
 
 
 class TestWriteGitignore:

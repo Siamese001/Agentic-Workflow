@@ -129,6 +129,40 @@ exclude: invalid
             check_exclusion_sync.load_precommit_excludes()
         assert exc_info.value.code == 1
 
+    def test_load_precommit_excludes_no_regex_block(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test error when exclude: | is present but (?x)^( is missing (line-61 branch)."""
+        precommit_content = """# Test config
+exclude: |
+  some_text_without_regex_pattern
+"""
+        precommit_path = tmp_path / ".pre-commit-config.yaml"
+        precommit_path.write_text(precommit_content)
+
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        with pytest.raises(SystemExit) as exc_info:
+            check_exclusion_sync.load_precommit_excludes()
+        assert exc_info.value.code == 1
+
+    def test_load_precommit_excludes_unclosed_parens(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Test error when (?x)^( regex block has no matching closing ) (line-83 branch)."""
+        precommit_content = """# Test config
+exclude: |
+  (?x)^(
+    pattern_one|
+    pattern_two
+"""
+        precommit_path = tmp_path / ".pre-commit-config.yaml"
+        precommit_path.write_text(precommit_content)
+
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        with pytest.raises(SystemExit) as exc_info:
+            check_exclusion_sync.load_precommit_excludes()
+        assert exc_info.value.code == 1
+
 
 class TestNormalizePattern:
     """Test pattern normalization for comparison."""
