@@ -64,8 +64,7 @@ exclude: |
     tmp.*|
     v15_d_evidence_.*\.json|
     v15_d_inventory_p4\.json|
-    v15_p2_evidence_temp\.json|
-    ops_scripts/archives/.*
+    v15_p2_evidence_temp\.json
   )
 
 repos:

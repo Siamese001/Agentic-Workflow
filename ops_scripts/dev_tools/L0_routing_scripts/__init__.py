@@ -74,8 +74,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 
 # execute_ssot_* modules archived 2026-04-10 (zero production fan-in).
-# See ops_scripts/archives/execute_ssot_pipeline/README.md
-# __getattr__ below provides stub fallbacks for any residual callers.
+# Archive deleted 2026-04-13. __getattr__ below provides stub fallbacks for any residual callers.
 
 __all__ = [
     "emit_determinism_digest",
