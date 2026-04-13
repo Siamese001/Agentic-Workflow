@@ -251,6 +251,13 @@ class TestComparePatterns:
         assert result["total_precommit"] == 0
         assert result["common_count"] == 0
 
+    def test_compare_patterns_missing_precommit_excludes_key(self) -> None:
+        """YAML dict with no 'precommit_excludes' key — get() default path returns zero YAML patterns."""
+        result = check_exclusion_sync.compare_patterns({}, ["test.json"])
+        assert result["total_yaml"] == 0
+        assert result["in_yaml_not_precommit"] == []
+        assert len(result["in_precommit_not_yaml"]) == 1
+
 
 class TestMain:
     """Test main function and CLI interface."""

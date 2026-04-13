@@ -192,6 +192,20 @@ class TestGeneratePrecommitExclude:
         assert "# Generated from config/excluded_paths.yaml" in content
         assert "exclude: |" in content
 
+    def test_generate_precommit_exclude_single_pattern(self) -> None:
+        """Single-pattern set: the sole pattern line must NOT end with |."""
+        content = generate_gitignore.generate_precommit_exclude({"only_pattern"})
+        pattern_lines = [
+            ln.rstrip()
+            for ln in content.split("\n")
+            if ln.strip()
+            and not ln.strip().startswith("#")
+            and ln.strip() not in ("exclude: |", "(?x)^(", ")")
+        ]
+        assert len(pattern_lines) == 1
+        assert not pattern_lines[0].endswith("|"), f"Single pattern must not end with |: {pattern_lines[0]!r}"
+        assert "only_pattern" in pattern_lines[0]
+
 
 class TestCheckSync:
     """Test .gitignore sync checking."""

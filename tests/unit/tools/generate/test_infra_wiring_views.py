@@ -293,6 +293,27 @@ class TestP0WriteBypassUWG:
         counts = materialize_infra_views(db_path)
         assert counts["v_p0_write_bypass_uwg"] == 0
 
+    def test_writes_through_edge_flagged(self, tmp_path: Path) -> None:
+        """writes_through edge (alternate durable write relation) must also be flagged."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::apps_eval/engine.py",
+            "module",
+            "L_APP",
+            "repo_module",
+            "apps_eval/engine.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::redis", "external", "external", "external_module", "redis")
+        _insert_edge(conn, 1, 2, "imports", "apps_eval/engine.py", 1, "redis")
+        _insert_edge(conn, 1, 1, "writes_through", "apps_eval/engine.py", 105, "conn.execute")
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p0_write_bypass_uwg"] == 1
+
 
 class TestP0L1DirectInfra:
     """Tests for v_p0_l1_direct_infra."""
@@ -625,6 +646,98 @@ class TestP1MisLayeredInfra:
         conn.close()
         counts = materialize_infra_views(db_path)
         assert counts["v_p1_mis_layered_infra"] == 0
+
+
+class TestP1RawHttpOutsideSeam:
+    """Tests for v_p1_raw_http_outside_seam."""
+
+    def test_httpx_in_non_exempt_layer_flagged(self, tmp_path: Path) -> None:
+        """Non-exempt module importing httpx should be flagged."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::agentic_core/L2_execution/services/caller.py",
+            "module",
+            "L2",
+            "repo_module",
+            "agentic_core/L2_execution/services/caller.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::httpx", "external", "external", "external_module", "httpx")
+        _insert_edge(conn, 1, 2, "imports", "agentic_core/L2_execution/services/caller.py", 3, "httpx")
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p1_raw_http_outside_seam"] == 1
+
+    def test_httpx_from_tools_exempt(self, tmp_path: Path) -> None:
+        """tools/ importing httpx is exempt from the seam check."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::tools/mcp/http_client.py",
+            "module",
+            "L_TOOLS",
+            "repo_module",
+            "tools/mcp/http_client.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::httpx", "external", "external", "external_module", "httpx")
+        _insert_edge(conn, 1, 2, "imports", "tools/mcp/http_client.py", 1, "httpx")
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p1_raw_http_outside_seam"] == 0
+
+    def test_httpx_from_apps_shared_exempt(self, tmp_path: Path) -> None:
+        """apps_shared/ importing httpx is exempt from the seam check."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::apps_shared/utils/http_util.py",
+            "module",
+            "L_SHARED",
+            "repo_module",
+            "apps_shared/utils/http_util.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::httpx", "external", "external", "external_module", "httpx")
+        _insert_edge(conn, 1, 2, "imports", "apps_shared/utils/http_util.py", 1, "httpx")
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p1_raw_http_outside_seam"] == 0
+
+    def test_api_gateway_integration_exempt(self, tmp_path: Path) -> None:
+        """api_gateway_integration path pattern is exempt."""
+        db_path = _create_test_db(tmp_path)
+        conn = sqlite3.connect(str(db_path))
+        _insert_node(
+            conn,
+            1,
+            "ADG::Module::agentic_core/L0_routing/api_gateway_integration.py",
+            "module",
+            "L0",
+            "repo_module",
+            "agentic_core/L0_routing/api_gateway_integration.py",
+        )
+        _insert_node(conn, 2, "ADG::Symbol::httpx", "external", "external", "external_module", "httpx")
+        _insert_edge(
+            conn,
+            1,
+            2,
+            "imports",
+            "agentic_core/L0_routing/api_gateway_integration.py",
+            5,
+            "httpx",
+        )
+        conn.commit()
+        conn.close()
+        counts = materialize_infra_views(db_path)
+        assert counts["v_p1_raw_http_outside_seam"] == 0
 
 
 class TestP2DuplicatedAdapters:
