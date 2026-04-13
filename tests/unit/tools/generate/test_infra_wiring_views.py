@@ -159,7 +159,7 @@ class TestMaterializeInfraViews:
         assert counts1 == counts2
 
     def test_views_exist_in_sqlite(self, tmp_path: Path) -> None:
-        """Verification: all 15 views are registered in sqlite_master."""
+        """Verification: all 16 views are registered in sqlite_master."""
         db_path = _create_test_db(tmp_path)
         materialize_infra_views(db_path)
         conn = sqlite3.connect(str(db_path))
@@ -178,6 +178,7 @@ class TestMaterializeInfraViews:
             "v_p1_not_on_spine",
             "v_p1_ad_hoc_imports",
             "v_p1_mis_layered_infra",
+            "v_p1_raw_http_outside_seam",
             "v_p2_mixed_usage",
             "v_p2_duplicated_adapters",
             "v_p2_dormant_ambiguous",
@@ -227,6 +228,8 @@ class TestP0WriteBypassUWG:
             "repo_module",
             "apps_eval/engine.py",
         )
+        _insert_node(conn, 2, "ADG::Symbol::redis", "external", "external", "external_module", "redis")
+        _insert_edge(conn, 1, 2, "imports", "apps_eval/engine.py", 1, "redis")
         _insert_edge(conn, 1, 1, "writes_to", "apps_eval/engine.py", 100, "open")
         conn.commit()
         conn.close()
@@ -351,6 +354,8 @@ class TestP0L6Mutation:
             "repo_module",
             "agentic_core/L6_observability/store.py",
         )
+        _insert_node(conn, 2, "ADG::Symbol::redis", "external", "external", "external_module", "redis")
+        _insert_edge(conn, 1, 2, "imports", "agentic_core/L6_observability/store.py", 1, "redis")
         _insert_edge(conn, 1, 1, "writes_to", "agentic_core/L6_observability/store.py", 42, "f.write")
         conn.commit()
         conn.close()
@@ -550,7 +555,7 @@ class TestP1MisLayeredInfra:
     """Tests for v_p1_mis_layered_infra."""
 
     def test_redis_in_wrong_layer_flagged(self, tmp_path: Path) -> None:
-        """Redis adapter in L_SHARED instead of L2 should be flagged."""
+        """Redis adapter in wrong layer (L6) should be flagged."""
         db_path = _create_test_db(tmp_path)
         conn = sqlite3.connect(str(db_path))
         _insert_node(
@@ -558,7 +563,7 @@ class TestP1MisLayeredInfra:
             1,
             "ADG::Module::agentic_core/cache/redis_cache_client.py",
             "module",
-            "L_SHARED",
+            "L6",
             "repo_module",
             "agentic_core/cache/redis_cache_client.py",
         )

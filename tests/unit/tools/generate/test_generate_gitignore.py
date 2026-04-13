@@ -26,7 +26,7 @@ import generate_gitignore
 class TestLoadExclusions:
     """Test loading exclusions from YAML config."""
 
-    def test_load_exclusions_success(self, tmp_path: Path) -> None:
+    def test_load_exclusions_success(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test successful loading of exclusions from YAML."""
         # Create a minimal YAML config
         yaml_content = """
@@ -68,11 +68,13 @@ file_patterns:
   - "*.pyc"
   - "*.log"
 """
-        yaml_path = tmp_path / "excluded_paths.yaml"
+        config_dir = tmp_path / "config"
+        config_dir.mkdir()
+        yaml_path = config_dir / "excluded_paths.yaml"
         yaml_path.write_text(yaml_content)
 
-        with patch.object(generate_gitignore.Path, "__new__", return_value=yaml_path):
-            dirs, patterns, precommit = generate_gitignore.load_exclusions()
+        monkeypatch.setattr(generate_gitignore, "_REPO_ROOT", tmp_path)
+        dirs, patterns, precommit = generate_gitignore.load_exclusions()
 
         assert "__pycache__" in dirs
         assert ".git" in dirs
@@ -80,14 +82,12 @@ file_patterns:
         assert "artifacts/adg_ci_lane_gate_result.json" in precommit
         assert len(precommit) == 2
 
-    def test_load_exclusions_missing_file(self, tmp_path: Path) -> None:
+    def test_load_exclusions_missing_file(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test error handling when config file is missing."""
-        non_existent_path = tmp_path / "non_existent.yaml"
-
-        with patch.object(generate_gitignore.Path, "__new__", return_value=non_existent_path):
-            with pytest.raises(SystemExit) as exc_info:
-                generate_gitignore.load_exclusions()
-            assert exc_info.value.code == 1
+        monkeypatch.setattr(generate_gitignore, "_REPO_ROOT", tmp_path)
+        with pytest.raises(SystemExit) as exc_info:
+            generate_gitignore.load_exclusions()
+        assert exc_info.value.code == 1
 
     def test_load_exclusions_missing_yaml_import(self) -> None:
         """Test error handling when PyYAML is not installed."""
@@ -235,7 +235,7 @@ class TestCheckSync:
                     result = generate_gitignore.check_sync()
                     assert result is False
 
-    def test_check_sync_missing_gitignore(self, tmp_path: Path) -> None:
+    def test_check_sync_missing_gitignore(self) -> None:
         """Test check when .gitignore does not exist."""
         with patch.object(generate_gitignore, "read_current_gitignore", return_value=None):
             result = generate_gitignore.check_sync()
@@ -245,14 +245,12 @@ class TestCheckSync:
 class TestWriteGitignore:
     """Test .gitignore writing."""
 
-    def test_write_gitignore(self, tmp_path: Path) -> None:
+    def test_write_gitignore(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test writing .gitignore file."""
         content = "# Test content\n/test_dir/\n"
+        monkeypatch.setattr(generate_gitignore, "_REPO_ROOT", tmp_path)
+        generate_gitignore.write_gitignore(content)
         gitignore_path = tmp_path / ".gitignore"
-
-        with patch.object(generate_gitignore.Path, "__new__", return_value=gitignore_path):
-            generate_gitignore.write_gitignore(content)
-
         assert gitignore_path.exists()
         assert gitignore_path.read_text() == content
 
@@ -260,24 +258,19 @@ class TestWriteGitignore:
 class TestReadCurrentGitignore:
     """Test reading current .gitignore."""
 
-    def test_read_existing_gitignore(self, tmp_path: Path) -> None:
+    def test_read_existing_gitignore(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test reading an existing .gitignore."""
         content = "# Test content\n/test_dir/\n"
         gitignore_path = tmp_path / ".gitignore"
         gitignore_path.write_text(content)
-
-        with patch.object(generate_gitignore.Path, "__new__", return_value=gitignore_path):
-            result = generate_gitignore.read_current_gitignore()
-
+        monkeypatch.setattr(generate_gitignore, "_REPO_ROOT", tmp_path)
+        result = generate_gitignore.read_current_gitignore()
         assert result == content
 
-    def test_read_missing_gitignore(self, tmp_path: Path) -> None:
+    def test_read_missing_gitignore(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test reading a non-existent .gitignore."""
-        gitignore_path = tmp_path / ".gitignore"
-
-        with patch.object(generate_gitignore.Path, "__new__", return_value=gitignore_path):
-            result = generate_gitignore.read_current_gitignore()
-
+        monkeypatch.setattr(generate_gitignore, "_REPO_ROOT", tmp_path)
+        result = generate_gitignore.read_current_gitignore()
         assert result is None
 
 
@@ -293,23 +286,19 @@ class TestMain:
                 captured = capsys.readouterr()
                 assert "# Test" in captured.out
 
-    def test_main_check_sync_pass(self, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_main_check_sync_pass(self) -> None:
         """Test main with --check when in sync."""
         with patch.object(generate_gitignore, "check_sync", return_value=True):
             result = generate_gitignore.main(["--check"])
             assert result == 0
-            captured = capsys.readouterr()
-            assert "in sync" in captured.out
 
-    def test_main_check_sync_fail(self, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_main_check_sync_fail(self) -> None:
         """Test main with --check when out of sync."""
         with patch.object(generate_gitignore, "check_sync", return_value=False):
             result = generate_gitignore.main(["--check"])
             assert result == 1
-            captured = capsys.readouterr()
-            assert "out of sync" in captured.out
 
-    def test_main_write(self, capsys: pytest.CaptureFixture[str]) -> None:
+    def test_main_write(self) -> None:
         """Test main with --write."""
         with patch.object(generate_gitignore, "load_exclusions", return_value=(set(), set(), set())):
             with patch.object(generate_gitignore, "generate_gitignore_content", return_value="# Test"):

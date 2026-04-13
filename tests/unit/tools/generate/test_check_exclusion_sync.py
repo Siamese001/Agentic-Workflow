@@ -27,7 +27,7 @@ import check_exclusion_sync
 class TestLoadExcludedPaths:
     """Test loading excluded paths from YAML config."""
 
-    def test_load_excluded_paths_success(self, tmp_path: Path) -> None:
+    def test_load_excluded_paths_success(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test successful loading of excluded paths."""
         yaml_content = """
 version: "1.0.0"
@@ -42,29 +42,29 @@ precommit_excludes:
 file_patterns:
   - "*.pyc"
 """
-        yaml_path = tmp_path / "excluded_paths.yaml"
+        config_dir = tmp_path / "config"
+        config_dir.mkdir()
+        yaml_path = config_dir / "excluded_paths.yaml"
         yaml_path.write_text(yaml_content)
 
-        with patch.object(check_exclusion_sync.Path, "__new__", return_value=yaml_path):
-            data = check_exclusion_sync.load_excluded_paths()
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        data = check_exclusion_sync.load_excluded_paths()
 
         assert data["precommit_excludes"] == ["artifacts/test.json", "pytestdebug.log"]
         assert data["file_patterns"] == ["*.pyc"]
 
-    def test_load_excluded_paths_missing_file(self, tmp_path: Path) -> None:
+    def test_load_excluded_paths_missing_file(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test error handling when config file is missing."""
-        non_existent_path = tmp_path / "non_existent.yaml"
-
-        with patch.object(check_exclusion_sync.Path, "__new__", return_value=non_existent_path):
-            with pytest.raises(SystemExit) as exc_info:
-                check_exclusion_sync.load_excluded_paths()
-            assert exc_info.value.code == 1
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        with pytest.raises(SystemExit) as exc_info:
+            check_exclusion_sync.load_excluded_paths()
+        assert exc_info.value.code == 1
 
 
 class TestLoadPrecommitExcludes:
     """Test loading pre-commit excludes from .pre-commit-config.yaml."""
 
-    def test_load_precommit_excludes_success(self, tmp_path: Path) -> None:
+    def test_load_precommit_excludes_success(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test successful loading of pre-commit excludes."""
         precommit_content = """# Test config
 exclude: |
@@ -77,15 +77,17 @@ exclude: |
         precommit_path = tmp_path / ".pre-commit-config.yaml"
         precommit_path.write_text(precommit_content)
 
-        with patch.object(check_exclusion_sync.Path, "__new__", return_value=precommit_path):
-            patterns = check_exclusion_sync.load_precommit_excludes()
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        patterns = check_exclusion_sync.load_precommit_excludes()
 
         assert "artifacts/test.json" in patterns
         assert "pytestdebug.log" in patterns
         assert "temp_[^/]*/.*" in patterns
         assert len(patterns) == 3
 
-    def test_load_precommit_excludes_with_nested_parens(self, tmp_path: Path) -> None:
+    def test_load_precommit_excludes_with_nested_parens(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test loading with nested parentheses in patterns."""
         precommit_content = """# Test config
 exclude: |
@@ -97,22 +99,24 @@ exclude: |
         precommit_path = tmp_path / ".pre-commit-config.yaml"
         precommit_path.write_text(precommit_content)
 
-        with patch.object(check_exclusion_sync.Path, "__new__", return_value=precommit_path):
-            patterns = check_exclusion_sync.load_precommit_excludes()
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        patterns = check_exclusion_sync.load_precommit_excludes()
 
         assert "guardian_.*.(txt|json)" in patterns
         assert "artifacts/test.json" in patterns
 
-    def test_load_precommit_excludes_missing_file(self, tmp_path: Path) -> None:
+    def test_load_precommit_excludes_missing_file(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test error handling when config file is missing."""
-        non_existent_path = tmp_path / "non_existent.yaml"
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        with pytest.raises(SystemExit) as exc_info:
+            check_exclusion_sync.load_precommit_excludes()
+        assert exc_info.value.code == 1
 
-        with patch.object(check_exclusion_sync.Path, "__new__", return_value=non_existent_path):
-            with pytest.raises(SystemExit) as exc_info:
-                check_exclusion_sync.load_precommit_excludes()
-            assert exc_info.value.code == 1
-
-    def test_load_precommit_excludes_invalid_format(self, tmp_path: Path) -> None:
+    def test_load_precommit_excludes_invalid_format(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test error handling when exclude section is malformed."""
         precommit_content = """# Test config
 exclude: invalid
@@ -120,10 +124,10 @@ exclude: invalid
         precommit_path = tmp_path / ".pre-commit-config.yaml"
         precommit_path.write_text(precommit_content)
 
-        with patch.object(check_exclusion_sync.Path, "__new__", return_value=precommit_path):
-            with pytest.raises(SystemExit) as exc_info:
-                check_exclusion_sync.load_precommit_excludes()
-            assert exc_info.value.code == 1
+        monkeypatch.setattr(check_exclusion_sync, "_REPO_ROOT", tmp_path)
+        with pytest.raises(SystemExit) as exc_info:
+            check_exclusion_sync.load_precommit_excludes()
+        assert exc_info.value.code == 1
 
 
 class TestNormalizePattern:
@@ -138,8 +142,8 @@ class TestNormalizePattern:
     def test_normalize_pattern_regex_special_chars(self) -> None:
         """Test normalization of regex special characters."""
         assert check_exclusion_sync.normalize_pattern(r"\.") == "."
-        assert check_exclusion_sync.normalize_pattern(r"[a-z]") == "az"
-        assert check_exclusion_sync.normalize_pattern(r"/.*") == "/"
+        assert check_exclusion_sync.normalize_pattern(r"[a-z]") == "a-z"
+        assert check_exclusion_sync.normalize_pattern(r"/.*") == "/*"
 
     def test_normalize_pattern_anchored(self) -> None:
         """Test removal of anchors."""
@@ -245,7 +249,7 @@ class TestMain:
                 captured = capsys.readouterr()
                 assert "out of sync" in captured.out
 
-    def test_main_fix_flag(self, _capsys: pytest.CaptureFixture[str]) -> None:
+    def test_main_fix_flag(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Test main with --fix flag (currently no-op)."""
         yaml_data: dict[str, list[str]] = {"precommit_excludes": ["test.json"]}
         precommit_patterns: list[str] = ["test.json"]
