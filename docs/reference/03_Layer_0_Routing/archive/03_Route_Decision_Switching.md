@@ -63,7 +63,7 @@
 │ - source scope             - freshness window         - access / security filters             │                       │                 │
 │ - retrieval mode           - ACL prefilter            - version / tenant bind                 │                       │                 │
 │ C0.2 EVIDENCE FETCH                                                                           │                       │                 │
-│ - dense recall: 🔵 query_vec against 🟠 raw_text_vector and contextual_text_vector            │                       │                 │
+│ - dense recall: 🔵 query_vec against 🟠 raw_text_vector and contextual_text_vector           │                       │                 │
 │ - sparse recall: exact term / code / schema match                                             │                       │                 │
 │ - metadata hydration       - parent lookup keys       - cache reuse where allowed             │                       │                 │
 │ C0.3 EVIDENCE SHAPING                                                                         │                       │                 │
