@@ -449,3 +449,58 @@ class TestGetNodeFailurePath:
         assert resp.backend_used == "redis"
         assert resp.data["id"] == "42"
         mock_sqlite.get_node.assert_not_called()
+
+
+# ===========================================================================
+# P26 — clear_snapshot direct coverage
+# ===========================================================================
+
+
+class TestClearSnapshot:
+    """Direct tests for clear_snapshot — server-level tests mock the whole method;
+    these prove the guard and scan loop actually execute."""
+
+    def test_clear_snapshot_noop_when_unavailable(self):
+        """G1: _available=False → early return, no SCAN or DELETE calls."""
+        cache, mock_client = _make_redis_cache()
+        cache._available = False
+
+        cache.clear_snapshot("snap_old_123")
+
+        mock_client.scan.assert_not_called()
+        mock_client.delete.assert_not_called()
+
+    def test_clear_snapshot_scans_and_deletes_single_page(self):
+        """G2a: Single-page SCAN (cursor=0 on first return) deletes all matched keys."""
+        cache, mock_client = _make_redis_cache()
+        mock_client.scan.return_value = (0, ["adg:v1:snap_old:node:1", "adg:v1:snap_old:node:2"])
+
+        cache.clear_snapshot("snap_old")
+
+        mock_client.scan.assert_called_once_with(cursor=0, match="adg:v1:snap_old:*", count=100)
+        mock_client.delete.assert_called_once_with("adg:v1:snap_old:node:1", "adg:v1:snap_old:node:2")
+
+    def test_clear_snapshot_iterates_multi_page_scan(self):
+        """G2b: Multi-page SCAN loop continues until cursor returns 0."""
+        cache, mock_client = _make_redis_cache()
+        mock_client.scan.side_effect = [
+            (42, ["key_page1"]),
+            (0, ["key_page2"]),
+        ]
+
+        cache.clear_snapshot("snap_multi")
+
+        assert mock_client.scan.call_count == 2
+        assert mock_client.delete.call_count == 2
+        mock_client.delete.assert_any_call("key_page1")
+        mock_client.delete.assert_any_call("key_page2")
+
+    def test_clear_snapshot_no_delete_when_scan_returns_empty_keys(self):
+        """G2c: SCAN returning empty key list must not call delete."""
+        cache, mock_client = _make_redis_cache()
+        mock_client.scan.return_value = (0, [])
+
+        cache.clear_snapshot("snap_empty")
+
+        mock_client.scan.assert_called_once()
+        mock_client.delete.assert_not_called()

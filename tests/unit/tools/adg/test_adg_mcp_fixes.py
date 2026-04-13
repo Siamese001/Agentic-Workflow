@@ -95,6 +95,22 @@ class TestRedisUrlEnvOverride:
 
         mock_redis_cls.assert_called_once_with("redis://localhost:6379/0")
 
+    def test_empty_env_var_falls_through_to_localhost_default(self, monkeypatch):
+        """ADG_REDIS_URL='' must fall through to localhost default, not pass '' to RedisCache."""
+        monkeypatch.setenv("ADG_REDIS_URL", "")
+
+        mock_sqlite = MagicMock()
+        mock_sqlite.get_status.return_value = {"timestamp": "ts_004"}
+
+        with patch("tools.adg.core.service.SQLiteBackend", return_value=mock_sqlite):
+            with patch("tools.adg.core.service.RedisCache") as mock_redis_cls:
+                mock_redis_cls.return_value._available = False
+                from tools.adg.core.service import ADGService
+
+                ADGService()
+
+        mock_redis_cls.assert_called_once_with("redis://localhost:6379/0")
+
 
 # ---------------------------------------------------------------------------
 # Test 2 — Latest-snapshot-only gate probe
@@ -233,6 +249,21 @@ class TestAdgReloadHygiene:
         assert result["data"]["redis_cleared"] is False
         svc._redis.clear_snapshot.assert_not_called()
 
+    def test_reload_redis_cleared_false_when_clear_snapshot_raises(self):
+        """clear_snapshot() exception must not prevent reload succeeding — redis_cleared=False."""
+        import tools.adg.mcp.server as server_module
+
+        svc = self._make_mock_service(old_id="snap_old", new_id="snap_new")
+        svc._redis.clear_snapshot.side_effect = RuntimeError("Redis SCAN failed")
+
+        with patch.object(server_module, "_init_service", return_value=svc):
+            result = server_module.adg_reload()
+
+        assert result["status"] == "ok"
+        assert result["data"]["reloaded"] is True
+        assert result["data"]["redis_cleared"] is False
+        assert result["data"]["redis_cache_state"] == "cold"
+
 
 # ---------------------------------------------------------------------------
 # Test 4 — Redis availability recovers without server restart
@@ -241,14 +272,15 @@ class TestAdgReloadHygiene:
 
 class TestRedisAvailabilityRefresh:
     def test_maybe_reconnect_fires_after_backoff_window(self):
-        """_maybe_reconnect() must re-probe Redis once the 30s backoff elapses."""
+        """_maybe_reconnect() must re-probe Redis once the 30s backoff elapses
+        and reset consecutive_errors to 0 on successful reconnect."""
         from tools.adg.cache.redis_cache import RedisCache, _RECONNECT_BACKOFF_S
 
         cache = RedisCache.__new__(RedisCache)
         cache._redis_url = "redis://initially-down:9999/0"
         cache._available = False
         cache._client = None
-        cache._consecutive_errors = 0
+        cache._consecutive_errors = 3  # non-zero: proves reset fires, not just initial state
         # Place last attempt far enough in the past to trigger reconnect
         cache._last_reconnect_attempt = time.monotonic() - (_RECONNECT_BACKOFF_S + 1)
 
@@ -257,6 +289,7 @@ class TestRedisAvailabilityRefresh:
             cache._maybe_reconnect()
 
         assert cache._available is True
+        assert cache._consecutive_errors == 0  # reset fires on successful reconnect
 
     def test_maybe_reconnect_respects_backoff_window(self):
         """_maybe_reconnect() must NOT re-probe within the backoff window."""
@@ -276,7 +309,7 @@ class TestRedisAvailabilityRefresh:
         assert cache._available is False
 
     def test_record_error_marks_unavailable_after_threshold(self):
-        """After _MAX_CONSECUTIVE_ERRORS failures, _available becomes False."""
+        """After _MAX_CONSECUTIVE_ERRORS failures, _available becomes False and counter resets to 0."""
         from tools.adg.cache.redis_cache import RedisCache, _MAX_CONSECUTIVE_ERRORS
 
         cache = RedisCache.__new__(RedisCache)
@@ -287,6 +320,7 @@ class TestRedisAvailabilityRefresh:
             cache._record_error()
 
         assert cache._available is False
+        assert cache._consecutive_errors == 0  # reset fires after marking unavailable
 
     def test_get_node_calls_maybe_reconnect_when_unavailable(self):
         """get_node must trigger _maybe_reconnect when _available is False."""
@@ -314,6 +348,22 @@ class TestRedisAvailabilityRefresh:
         # Result is None (cache miss) but connection was re-established
         assert result is None
         assert cache._available is True
+
+    def test_get_nodes_by_layer_exception_increments_consecutive_errors(self):
+        """get_nodes_by_layer exception path must call _record_error() (diff-added line)."""
+        from tools.adg.cache.redis_cache import RedisCache
+
+        cache = RedisCache.__new__(RedisCache)
+        cache._available = True
+        cache._client = MagicMock()
+        cache._client.get.side_effect = RuntimeError("connection timeout")
+        cache._consecutive_errors = 0
+        cache._last_reconnect_attempt = 0.0
+
+        result = cache.get_nodes_by_layer("L0", "snap_test")
+
+        assert result is None
+        assert cache._consecutive_errors == 1
 
 
 # ---------------------------------------------------------------------------
@@ -378,6 +428,19 @@ class TestHealthGraphProjectionVisibility:
         svc = self._make_service_mock(proj_available=False)
         report = HealthDiagnostics(svc).full_report()
 
+        assert report["graph_projection"]["available"] is False
+        assert report["graph_projection"]["projection_path"] is None
+
+    def test_full_report_degrades_gracefully_when_projection_raises(self):
+        """full_report() must return degraded graph_projection when get_projection_status() raises."""
+        from tools.adg.mcp.health import HealthDiagnostics
+
+        svc = self._make_service_mock(proj_available=True)
+        svc.get_projection_status.side_effect = RuntimeError("projection table missing")
+
+        report = HealthDiagnostics(svc).full_report()
+
+        assert "graph_projection" in report
         assert report["graph_projection"]["available"] is False
         assert report["graph_projection"]["projection_path"] is None
 
@@ -449,6 +512,20 @@ class TestSilentDegradedFallbackDetection:
         response = 'grep_search Query: "TODO" in tests/'
         violations = detect_violations(response)
         assert violations == [], f"unexpected violations for literal grep: {violations}"
+
+    def test_adg_mcp_used_wins_when_health_also_checked(self):
+        """adg_mcp_used=True takes precedence over adg_health_checked=True → severity: warning."""
+        detect_violations = self._get_detect_violations()
+        response = (
+            "mcp1_adg_health() called. mcp1_adg_edge_fanin returned results. "
+            "grep_search imports from redis_cache.py in *.py files"
+        )
+        violations = detect_violations(response)
+        assert violations, "expected at least one violation"
+        assert violations[0]["severity"] == "warning"
+        assert violations[0]["adg_mcp_also_used"] is True
+        assert violations[0]["adg_health_checked"] is True
+        assert violations[0]["silent_fallback"] is False
 
 
 # ---------------------------------------------------------------------------
