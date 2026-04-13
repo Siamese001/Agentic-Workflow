@@ -71,8 +71,9 @@ class TestRedisFailureModes:
         resp = svc.get_status()
         assert resp.status == "ok"
 
-    def test_none_url(self):
-        """None Redis URL handled gracefully."""
+    def test_none_url(self, monkeypatch):
+        """None Redis URL resolved via env var; degrades gracefully when env resolves to invalid host."""
+        monkeypatch.setenv("ADG_REDIS_URL", "redis://invalid-host:9999/0")
         svc = ADGService(redis_url=None)
 
         health = svc.health()

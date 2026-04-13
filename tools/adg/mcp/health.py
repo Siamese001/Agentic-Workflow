@@ -18,6 +18,15 @@ class HealthDiagnostics:
         """Complete health report."""
         health = self._service.health()
         status = self._service.get_status()
+        try:
+            proj = self._service.get_projection_status()
+            graph_projection = {
+                "available": proj.data.get("available", False),
+                "stale": proj.data.get("stale", False),
+                "projection_path": proj.data.get("projection_path"),
+            }
+        except Exception:  # guardian: allow-broad-exception -- projection table absent on older snapshots; health report must never crash
+            graph_projection = {"available": False, "stale": False, "projection_path": None}
 
         return {
             "mode": health.mode,
@@ -27,6 +36,7 @@ class HealthDiagnostics:
             "schema_version": health.schema_version,
             "adg_snapshot_id": health.adg_snapshot_id,
             "adg": status.data if status.status == "ok" else None,
+            "graph_projection": graph_projection,
         }
 
     def quick_check(self) -> dict[str, str]:

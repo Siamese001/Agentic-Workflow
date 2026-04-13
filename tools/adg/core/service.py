@@ -1,6 +1,7 @@
 """ADG Service — Query orchestration with mandatory SQLite + optional Redis."""
 
 import logging
+import os
 from typing import Any, Callable
 
 from tools.adg.cache.redis_cache import RedisCache
@@ -29,13 +30,18 @@ class ADGService:
     _redis: RedisCache
     _adg_snapshot_id: str
 
-    def __init__(self, redis_url: str | None = "redis://localhost:6379/0"):
+    def __init__(self, redis_url: str | None = None):
         # SQLite is mandatory — fail fast if unavailable
         self._sqlite = SQLiteBackend()
 
         # Get snapshot ID from SQLite
         status = self._sqlite.get_status()
         self._adg_snapshot_id = status["timestamp"]
+
+        # Redis URL resolution: env var (ADG_REDIS_URL) → explicit arg → localhost default
+        # Use `or` so an empty-string env var falls through to the localhost default.
+        if redis_url is None:
+            redis_url = os.getenv("ADG_REDIS_URL") or "redis://localhost:6379/0"
 
         # Redis is optional — gracefully degrade
         self._redis = RedisCache(redis_url)

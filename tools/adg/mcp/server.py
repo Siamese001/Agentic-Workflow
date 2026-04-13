@@ -402,8 +402,12 @@ def adg_reload() -> dict[str, Any]:
                     "reloaded": False,
                     "message": "Already using latest snapshot.",
                     "current_path": current_path,
+                    "redis_cleared": False,
                 },
             }
+
+        # Capture old snapshot id before reopen so we can clean Redis
+        old_snapshot_id = svc._adg_snapshot_id
 
         # Reload to latest snapshot
         _log.info(f"Reloading ADG from {current_path} to {latest_path}")
@@ -411,6 +415,18 @@ def adg_reload() -> dict[str, Any]:
 
         # Verify reload
         _sqlite_status_new, new_meta = svc._sqlite.health()
+        new_snapshot_id = svc._adg_snapshot_id
+
+        # Clear old Redis snapshot keys to free memory and prevent stale-key confusion.
+        # Best-effort — reload must succeed even if Redis clear fails.
+        redis_cleared = False
+        if old_snapshot_id != new_snapshot_id and svc._redis._available:
+            try:
+                svc._redis.clear_snapshot(old_snapshot_id)
+                redis_cleared = True
+                _log.info("Cleared Redis keys for old snapshot %s", old_snapshot_id)
+            except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: Redis clear is best-effort; reload succeeds regardless
+                _log.warning("Redis clear_snapshot failed for %s: %s", old_snapshot_id, e)
 
         return {
             "status": "ok",
@@ -419,6 +435,10 @@ def adg_reload() -> dict[str, Any]:
                 "message": "Reloaded to latest snapshot.",
                 "old_path": current_path,
                 "new_path": new_meta.get("path"),
+                "old_snapshot_id": old_snapshot_id,
+                "new_snapshot_id": new_snapshot_id,
+                "redis_cleared": redis_cleared,
+                "redis_cache_state": "cleared_old_snapshot" if redis_cleared else "cold",
             },
         }
     except Exception as e:  # guardian: allow-broad-exception -- MCP tool resilience: log error and return error object to prevent server crash

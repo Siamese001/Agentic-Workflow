@@ -63,6 +63,8 @@ ELSE (TODOs, FIXMEs, literal strings, non-Python content)  → grep_search OK
 
 **Why grep fails at dependency analysis**: false positives (comments, dead code), false negatives (re-exports, aliases), no transitive closure, no layer awareness, context window pollution (70-80% of tokens wasted per OpenDev §3.1).
 
+**Degraded fallback rule**: Before using `grep_search` for any graph query, call `mcp1_adg_health`. Fallback allowed only when health is red AND response contains `DEGRADED_FALLBACK: reason=<...>`. Silent fallback (no health check, no reason code) = `severity: critical` in `adg_first_violations.jsonl`.
+
 Enforcement chain (4 layers):
 1. `graph-analysis` skill auto-invokes → loads `tool_routing_decision_tree.md` at maximum recency
 2. `pre_prompt_classifier.py` step 0 in SR_MANDATE (T2/T3 prompts)

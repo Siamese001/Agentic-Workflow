@@ -105,9 +105,15 @@ _GREP_DEP_HEURISTIC_PATTERNS = [
 
 # Check if ADG MCP calls were also present (mitigating factor)
 _ADG_MCP_CALL_RE = re.compile(
-    r"mcp1_adg_(?:nodes_by_file|edge_fanin|edge_fanout|node|nodes_by_layer|health)",
+    r"mcp1_adg_(?:nodes_by_file|edge_fanin|edge_fanout|node|nodes_by_layer)",
     re.IGNORECASE,
 )
+
+# Check if adg_health was called (required before any grep degraded fallback)
+_ADG_HEALTH_CALL_RE = re.compile(r"mcp1_adg_health", re.IGNORECASE)
+
+# Check if a DEGRADED_FALLBACK reason was emitted (required when falling back from adg_sqlite)
+_DEGRADED_FALLBACK_RE = re.compile(r"DEGRADED_FALLBACK\s*:", re.IGNORECASE)
 
 
 def _is_dep_analysis_query(query: str) -> bool:
@@ -134,6 +140,8 @@ def detect_violations(response_text: str) -> list[dict]:
 
     # Check if ADG MCP was also used (mitigating factor)
     adg_mcp_used = bool(_ADG_MCP_CALL_RE.search(response_text))
+    adg_health_checked = bool(_ADG_HEALTH_CALL_RE.search(response_text))
+    degraded_fallback_declared = bool(_DEGRADED_FALLBACK_RE.search(response_text))
 
     # Heuristic detection: grep_search near dependency-analysis terms
     # Check all patterns; deduplicate by start position
@@ -155,16 +163,31 @@ def detect_violations(response_text: str) -> list[dict]:
         context_end = min(len(response_text), match.end() + 100)
         context = response_text[context_start:context_end].strip()
 
+        # Determine severity: critical when no ADG tool, no health check, and no reason code.
+        if adg_mcp_used:
+            sev = "warning"  # ADG was also used — grep may have been supplementary
+        elif adg_health_checked or degraded_fallback_declared:
+            sev = "error"  # partial compliance: health checked or reason emitted but ADG skipped
+        else:
+            sev = "critical"  # silent fallback: no ADG, no health check, no reason code
+
         violation = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "violation_type": "grep_for_dependency_analysis",
-            "severity": "warning" if adg_mcp_used else "error",
+            "severity": sev,
+            "silent_fallback": not adg_mcp_used and not adg_health_checked and not degraded_fallback_declared,
             "context_snippet": context[:300],
             "adg_mcp_also_used": adg_mcp_used,
+            "adg_health_checked": adg_health_checked,
+            "degraded_fallback_declared": degraded_fallback_declared,
             "mitigation": (
                 "ADG MCP was also used — grep may have been supplementary"
                 if adg_mcp_used
-                else "ADG MCP was NOT used — pure grep-for-deps violation"
+                else (
+                    "Health checked or DEGRADED_FALLBACK emitted — partial compliance"
+                    if adg_health_checked or degraded_fallback_declared
+                    else "Silent fallback: no ADG, no health check, no reason code"
+                )
             ),
             "rule": "constitutional.md §ADG-First, global_rules.md §ADG-First Analysis",
         }

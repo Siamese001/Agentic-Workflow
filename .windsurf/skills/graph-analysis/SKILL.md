@@ -13,7 +13,19 @@ metadata:
 
 Unified skill that consolidates `dependency-graph-analysis`, `scope-guard`, and `dedup-guard` into a single comprehensive graph-first analysis framework.
 
-## CRITICAL: Retrieval-Tool Routing (read FIRST)
+## CRITICAL: Retrieval-Tool Routing Matrix (read FIRST)
+
+| Query type | Required tool | grep allowed? | Degraded fallback |
+|---|---|---|---|
+| imports / consumers / blast radius / fanin / fanout | `adg_sqlite` fanin/fanout | **FORBIDDEN** | Only after `mcp1_adg_health` red — emit `DEGRADED_FALLBACK: reason=...` |
+| function / class / constant name in `*.py` | `adg_sqlite` find_node | **FORBIDDEN** | Same |
+| Layer analysis (L0–L6) | `adg_sqlite` nodes_by_layer | **FORBIDDEN** | Same |
+| Semantic / concept / meaning | `vector_db` semantic_search | explicit only | Explicit reason required |
+| Runtime traces / anomalies / spans | `otel_mcp` | — | — |
+| Literal text / TODOs / comments / non-Python | `grep_search` / `filesystem` | ✅ ALWAYS OK | — |
+
+**Health-first rule**: if `adg_sqlite` may be unhealthy, call `mcp1_adg_health` BEFORE any grep fallback.
+**Silent degraded fallback** (grep for graph queries without health check + reason code) = **policy violation** (`severity: critical`).
 
 **Before calling `grep_search` for ANY dependency/import/consumer/reference query, STOP.**
 **Read `tool_routing_decision_tree.md` and use ADG MCP tools instead.**

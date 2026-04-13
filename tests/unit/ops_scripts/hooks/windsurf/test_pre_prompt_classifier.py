@@ -34,6 +34,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[5] / ".windsurf" / "scripts"))
 
 from pre_prompt_classifier import (
+    _detect_adg_graph_intent,
     _detect_pytest_intent,
     _should_emit_memory_mandate,
     check_plan_exists,
@@ -481,44 +482,43 @@ class TestMain:
     # --- memory mandate ---
 
     def test_memory_mandate_emitted_when_no_session_state(self, capsys, tmp_path):
-        """Mandate fires on first turn (no session_state.json)."""
+        """Mandate fires on first turn (no session_state.json) as a human-diagnostic advisory."""
         state_path = tmp_path / "session_state.json"
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
         with patch("pre_prompt_classifier.SESSION_STATE", state_path):
             self._run(payload)
         captured = capsys.readouterr()
-        assert "MEMORY RECALL REQUIRED" in captured.err
-        assert "mem_recall_session_start" in captured.err
+        assert "mem_recall_session_start not yet called" in captured.err
 
     def test_memory_mandate_emitted_when_not_recalled(self, capsys, tmp_path):
-        """Mandate fires when memory_recalled=False in session state."""
+        """Advisory fires when memory_recalled=False in session state."""
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": False}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
         with patch("pre_prompt_classifier.SESSION_STATE", state_path):
             self._run(payload)
         captured = capsys.readouterr()
-        assert "MEMORY RECALL REQUIRED" in captured.err
+        assert "mem_recall_session_start not yet called" in captured.err
 
     def test_memory_mandate_suppressed_when_recalled(self, capsys, tmp_path):
-        """Mandate is NOT emitted when memory_recalled=True in session state."""
+        """Advisory is NOT emitted when memory_recalled=True in session state."""
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
         with patch("pre_prompt_classifier.SESSION_STATE", state_path):
             self._run(payload)
         captured = capsys.readouterr()
-        assert "MEMORY RECALL REQUIRED" not in captured.err
+        assert "mem_recall_session_start not yet called" not in captured.err
 
-    def test_t0_resets_memory_recalled_in_session_state(self, tmp_path):
-        """T0 prompt resets memory_recalled=False in session_state.json."""
+    def test_t0_preserves_memory_recalled_in_session_state(self, tmp_path):
+        """T0 prompt preserves memory_recalled flag (session-level, not task-level)."""
         state_path = tmp_path / "session_state.json"
         state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
         payload = {"tool_info": {"user_prompt": "explain how routing works"}}
         with patch("pre_prompt_classifier.SESSION_STATE", state_path):
             self._run(payload)
         state = json.loads(state_path.read_text(encoding="utf-8"))
-        assert state["memory_recalled"] is False
+        assert state["memory_recalled"] is True
 
     def test_t2_preserves_memory_recalled_true(self, tmp_path):
         """T2 continuation preserves memory_recalled=True once set."""
@@ -529,6 +529,39 @@ class TestMain:
             self._run(payload)
         state = json.loads(state_path.read_text(encoding="utf-8"))
         assert state["memory_recalled"] is True
+
+    def test_t1_preserves_memory_recalled_in_session_state(self, tmp_path):
+        """T1 prompt must preserve memory_recalled=True (Fix 1 regression — T1 was not covered)."""
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(json.dumps({"memory_recalled": True}), encoding="utf-8")
+        payload = {"tool_info": {"user_prompt": "fix the typo in the docstring"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        assert state["memory_recalled"] is True
+
+    def test_t0_task_lifecycle_fields_reset_preserves_memory_recalled(self, tmp_path):
+        """T0 reset must clear task lifecycle fields without clearing memory_recalled."""
+        state_path = tmp_path / "session_state.json"
+        state_path.write_text(
+            json.dumps(
+                {
+                    "memory_recalled": True,
+                    "task_created": True,
+                    "task_started": True,
+                    "update_task_count": 5,
+                }
+            ),
+            encoding="utf-8",
+        )
+        payload = {"tool_info": {"user_prompt": "explain how routing works"}}
+        with patch("pre_prompt_classifier.SESSION_STATE", state_path):
+            self._run(payload)
+        state = json.loads(state_path.read_text(encoding="utf-8"))
+        assert state["memory_recalled"] is True
+        assert state["task_created"] is False
+        assert state["task_started"] is False
+        assert state["update_task_count"] == 0
 
 
 # ---------------------------------------------------------------------------
@@ -682,3 +715,100 @@ class TestPytestMcpRoutingTrace:
         err = capsys.readouterr().err
         assert "PYTEST_MCP_TRACE: pytest_intent=DETECTED" in err, "routing trace must fire at T0"
         assert "PYTEST INTENT DETECTED" not in err, "SR_MANDATE hint must NOT fire at T0"
+
+
+# ---------------------------------------------------------------------------
+# ADG graph intent detection
+# ---------------------------------------------------------------------------
+
+
+class TestDetectAdgGraphIntent:
+    def test_who_imports_detected(self):
+        assert _detect_adg_graph_intent("who imports the redis cache module") is True
+
+    def test_blast_radius_detected(self):
+        assert _detect_adg_graph_intent("check blast radius of this change") is True
+
+    def test_blast_radius_hyphen_detected(self):
+        assert _detect_adg_graph_intent("analyze blast-radius for ADGService") is True
+
+    def test_fanin_detected(self):
+        assert _detect_adg_graph_intent("show fanin for service.py") is True
+
+    def test_fanout_detected(self):
+        assert _detect_adg_graph_intent("list fanout edges from sqlite_backend") is True
+
+    def test_dependency_graph_detected(self):
+        assert _detect_adg_graph_intent("build the dependency graph for this module") is True
+
+    def test_what_depends_on_detected(self):
+        assert _detect_adg_graph_intent("what depends on ADGService class") is True
+
+    def test_impact_analysis_detected(self):
+        assert _detect_adg_graph_intent("run impact analysis on redis_cache.py") is True
+
+    def test_unrelated_prompt_not_detected(self):
+        assert _detect_adg_graph_intent("fix the typo in the docstring") is False
+
+    def test_literal_text_prompt_not_detected(self):
+        assert _detect_adg_graph_intent("find all TODO comments in tests/") is False
+
+    def test_semantic_prompt_not_detected(self):
+        assert _detect_adg_graph_intent("find semantically similar passages about caching") is False
+
+    def test_pytest_prompt_not_detected(self):
+        assert _detect_adg_graph_intent("run the failing test suite") is False
+
+
+# ---------------------------------------------------------------------------
+# ADG graph SR hint injection
+# ---------------------------------------------------------------------------
+
+
+class TestAdgGraphSrHint:
+    """ADG graph intent triggers routing trace + SR hint for T2/T3; not for T0."""
+
+    @staticmethod
+    def _run(prompt: str, tmp_path, *, redis_up: bool = False):
+        payload = {"tool_info": {"user_prompt": prompt}}
+        plan_file = tmp_path / "plan.md"
+        plan_file.write_text("# plan", encoding="utf-8")
+        state_dir = tmp_path / "state"
+        state_dir.mkdir()
+        with (
+            patch("pre_prompt_classifier.REPO_ROOT", tmp_path),
+            patch("pre_prompt_classifier.SESSION_STATE", state_dir / "session_state.json"),
+            patch("pre_prompt_classifier.check_redis_up", return_value=redis_up),
+            patch("pre_prompt_classifier.check_redis_adg_hot", return_value=redis_up),
+            patch("pre_prompt_classifier.check_adg_health_red", return_value=False),
+        ):
+            sys.stdin = __import__("io").StringIO(json.dumps(payload))
+            main()
+
+    def test_adg_graph_trace_emitted_for_graph_prompt(self, capsys, tmp_path):
+        """ADG_GRAPH_TRACE must appear for every graph-intent prompt regardless of tier."""
+        self._run("show blast radius of this change", tmp_path)
+        err = capsys.readouterr().err
+        assert "ADG_GRAPH_TRACE: adg_graph_intent=DETECTED" in err
+
+    def test_adg_graph_trace_not_detected_for_literal_prompt(self, capsys, tmp_path):
+        """ADG_GRAPH_TRACE must report NOT_DETECTED for non-graph prompts."""
+        self._run("find all TODO comments", tmp_path)
+        err = capsys.readouterr().err
+        assert "ADG_GRAPH_TRACE: adg_graph_intent=NOT_DETECTED" in err
+
+    def test_adg_graph_sr_hint_injected_for_t2_graph_prompt(self, capsys, tmp_path):
+        """ADG GRAPH INTENT DETECTED hint must appear in SR_MANDATE for T2/T3 graph prompts."""
+        self._run("implement fanout analysis for blast radius reporting", tmp_path, redis_up=True)
+        err = capsys.readouterr().err
+        assert "ADG GRAPH INTENT DETECTED" in err
+        assert "mcp1_adg_edge_fanin" in err
+        assert "Health-first rule" in err
+        assert "DEGRADED_FALLBACK" in err
+
+    def test_adg_graph_sr_hint_not_injected_for_t0(self, capsys, tmp_path):
+        """T0 graph prompt: routing TRACE fires but SR_MANDATE hint must NOT appear."""
+        self._run("explain fanout edges", tmp_path)
+        err = capsys.readouterr().err
+        assert "ADG_GRAPH_TRACE: adg_graph_intent=DETECTED" in err
+        assert "ADG GRAPH INTENT DETECTED" not in err

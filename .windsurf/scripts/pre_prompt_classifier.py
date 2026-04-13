@@ -187,6 +187,39 @@ _STRUCTURAL_SIGNALS: frozenset[str] = frozenset(
     }
 )
 
+# Keywords that indicate ADG structural graph-query intent — route to adg_sqlite first.
+_ADG_GRAPH_SIGNALS: frozenset[str] = frozenset(
+    {
+        "who imports",
+        "who uses",
+        "who calls",
+        "depends on",
+        "blast radius",
+        "blast-radius",
+        "fanin",
+        "fanout",
+        "fan-in",
+        "fan-out",
+        "consumers of",
+        "consumers",
+        "import graph",
+        "importers of",
+        "dependency graph",
+        "which files import",
+        "what imports",
+        "what depends on",
+        "impact analysis",
+        "graph query",
+        "adg query",
+    }
+)
+
+
+def _detect_adg_graph_intent(prompt: str) -> bool:
+    """Return True when the prompt signals an ADG structural graph query."""
+    lower = prompt.lower()
+    return any(sig in lower for sig in _ADG_GRAPH_SIGNALS)
+
 
 def _detect_semantic_retrieval(prompt: str) -> bool:
     """Return True when the prompt signals a semantic/concept search need that vector_db should serve."""
@@ -212,6 +245,9 @@ _SR_MANDATE = """
        mcp11_semantic_search(query=...) or mcp11_query_collection(collection_name=..., query_text=...)
      The graph-analysis skill has the full decision tree in tool_routing_decision_tree.md.
      NEVER grep_search for dependency analysis. Constitutional §ADG-First — no exceptions.
+     DEGRADED FALLBACK (graph queries only): grep is ONLY allowed after mcp1_adg_health confirms red.
+       Required: call mcp1_adg_health first → if red, emit DEGRADED_FALLBACK: reason=<adg_red|snapshot_missing|...>
+       Silent grep-for-graph (no health check + no reason code) = POLICY VIOLATION.
   1. Call mem_recall_session_start (Memory MCP) — load persistent project context (ArchitectureLayer, ConstitutionalRule)
   2. Call create_task (task_manager MCP) to register this task with goal + definitions of done
   3. Emit SR_INTAKE block: Objective / Constraints / Assumptions / Tier / Complexity
@@ -223,13 +259,10 @@ _SR_MANDATE = """
 """.strip()
 
 
-_MEMORY_MANDATE = """\
-[pre_prompt_classifier] MEMORY RECALL REQUIRED (first turn / new session):
-  Call mem_recall_session_start NOW — this MUST be the first MCP tool call.
-  Server: memory | Tool: mem_recall_session_start | Parameters: none
-  Loads: ArchitectureLayer, ConstitutionalRule, ProjectContext (durable across restarts).
-  Do NOT proceed with file reads, ADG queries, or task creation before this call.
-""".strip()
+_MEMORY_MANDATE = (
+    "[pre_prompt_classifier] memory: mem_recall_session_start not yet called this session"
+    " (human diagnostic — pre_mcp_gate enforces via exit 2)."
+)
 
 
 def _should_emit_memory_mandate() -> bool:
@@ -248,6 +281,18 @@ def _should_emit_memory_mandate() -> bool:
     except (OSError, json.JSONDecodeError):
         return True  # fail-open: emit mandate if state unreadable
 
+
+_ADG_GRAPH_SR_HINT = (
+    "  ADG GRAPH INTENT DETECTED: adg_sqlite tools REQUIRED for this query.\n"
+    "    Routing matrix:\n"
+    "      imports/consumers/blast-radius/fanin/fanout → mcp1_adg_edge_fanin / mcp1_adg_edge_fanout\n"
+    "      function/class/constant name in *.py       → mcp1_adg_find_node → mcp1_adg_edge_fanin\n"
+    "      layer analysis (L0-L6)                     → mcp1_adg_nodes_by_layer\n"
+    "      file-level deps                            → mcp1_adg_nodes_by_file\n"
+    "  Health-first rule: if adg_sqlite may be red, call mcp1_adg_health BEFORE any grep fallback.\n"
+    "  Degraded fallback: ONLY after health red — emit DEGRADED_FALLBACK: reason=<adg_red|...>\n"
+    "  Silent grep-for-graph (no health check, no reason code) is a POLICY VIOLATION."
+)
 
 _NOTION_SR_HINT = (
     "  NOTION INTENT DETECTED: use the notion MCP directly for Notion workspace operations.\n"
@@ -302,7 +347,14 @@ def _write_session_state(tier: str) -> None:
     try:
         SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
         if tier in ("T0", "T1"):
-            # Independent non-task prompt — full reset is safe.
+            # Independent non-task prompt — task lifecycle reset is safe.
+            # Preserve memory_recalled: it is a session-level flag, not a task flag.
+            try:
+                _prior = (
+                    json.loads(SESSION_STATE.read_text(encoding="utf-8")) if SESSION_STATE.exists() else {}
+                )
+            except (OSError, json.JSONDecodeError):
+                _prior = {}
             state = {
                 "current_tier": tier,
                 "task_created": False,
@@ -310,7 +362,7 @@ def _write_session_state(tier: str) -> None:
                 "task_decomposed": False,
                 "update_task_count": 0,
                 "lessons_captured": False,
-                "memory_recalled": False,
+                "memory_recalled": _prior.get("memory_recalled", False),
                 "max_memory_block_attempts": 0,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
@@ -537,6 +589,18 @@ def main() -> int:
     else:
         print("[pre_prompt_classifier] PYTEST_MCP_TRACE: pytest_intent=NOT_DETECTED", file=sys.stderr)
 
+    # adg_sqlite graph routing trace: emitted for every prompt for observability.
+    if _detect_adg_graph_intent(prompt):
+        print(
+            "[pre_prompt_classifier] ADG_GRAPH_TRACE: adg_graph_intent=DETECTED "
+            "\u2014 required: mcp1_adg_edge_fanin / mcp1_adg_edge_fanout / "
+            "mcp1_adg_nodes_by_file / mcp1_adg_nodes_by_layer. "
+            "Health-first: call mcp1_adg_health before any grep fallback.",
+            file=sys.stderr,
+        )
+    else:
+        print("[pre_prompt_classifier] ADG_GRAPH_TRACE: adg_graph_intent=NOT_DETECTED", file=sys.stderr)
+
     # Read BEFORE the state write: T0/T1 reset would otherwise shadow a True
     # value and incorrectly re-emit the mandate on a turn where memory was
     # already recalled.
@@ -549,8 +613,8 @@ def main() -> int:
     # Persist tier; preserve or reset lifecycle fields per approved design.
     _write_session_state(tier)
 
-    # Memory mandate: fires for ALL tiers on the first turn of each session.
-    # Suppressed once post_mcp_audit marks memory_recalled=True in session state.
+    # Human diagnostic (exit 0 stderr — not injected into Cascade context).
+    # Gate enforces recall via exit 2 in pre_mcp_gate.py.
     if emit_memory_mandate:
         print(_MEMORY_MANDATE, file=sys.stderr)
 
@@ -607,6 +671,8 @@ def main() -> int:
             mandate = mandate + "\n" + _OTEL_SR_HINT
         if _detect_pytest_intent(prompt):
             mandate = mandate + "\n" + _PYTEST_SR_HINT
+        if _detect_adg_graph_intent(prompt):
+            mandate = mandate + "\n" + _ADG_GRAPH_SR_HINT
         print(mandate, file=sys.stderr)
 
     return 0

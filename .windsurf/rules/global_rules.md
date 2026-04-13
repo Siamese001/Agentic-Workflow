@@ -33,8 +33,11 @@ Dependency analysis MUST use ADG MCP tools - NOT grep or text search.
 | Outgoing deps | `mcp1_adg_edge_fanout` |
 | Incoming deps | `mcp1_adg_edge_fanin` |
 | Node details | `mcp1_adg_node` |
+| Health check (before fallback) | `mcp1_adg_health` |
+| Degraded fallback | grep allowed ONLY after health red — emit `DEGRADED_FALLBACK: reason=<...>` |
 
 `grep_search` for dependency analysis is FORBIDDEN. Use it only to confirm literals.
+Silent degraded fallback (grep without health check + reason code) = `severity: critical` violation.
 
 **Why this matters**: `grep_search` is a native Cascade tool with NO pre-execution hook.
 Windsurf cannot programmatically block it. Enforcement relies on:

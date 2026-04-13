@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
-"""ADG MCP Server launcher with proper path setup."""
+# DEPRECATED: canonical launch path is `python -m tools.adg.mcp.server`
+# (configured in .windsurf/mcp_config.json).  This file is retained for
+# emergency manual use only.  Do not reference from mcp_config.json.
+"""ADG MCP Server launcher — DEPRECATED thin wrapper (use -m tools.adg.mcp.server)."""
 
 import os
 import sys
 
-# Ensure proper path
-os.chdir(r"C:\Git\Agentic-Workflow")
-sys.path.insert(0, r"C:\Git\Agentic-Workflow")
+# Resolve repo root dynamically (this file is at tools/adg/mcp/server_launcher.py)
+_REPO_ROOT = str(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+)
+os.chdir(_REPO_ROOT)
+sys.path.insert(0, _REPO_ROOT)
 
 # Import and run server
 from tools.adg.mcp.server import _init_service, _log, mcp

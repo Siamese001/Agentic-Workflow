@@ -285,6 +285,8 @@ def _make_redis_cache():
     cache._available = True
     cache._cache_version = "v1"
     cache._redis_url = "redis://localhost:6379/0"
+    cache._consecutive_errors = 0
+    cache._last_reconnect_attempt = 0.0
     return cache, mock_client
 
 

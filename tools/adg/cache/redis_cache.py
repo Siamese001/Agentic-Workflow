@@ -1,6 +1,7 @@
 """Redis Cache — Optional read-through accelerator, non-authoritative."""
 
 import logging
+import time
 from typing import Any
 
 import redis
@@ -11,6 +12,10 @@ logger = logging.getLogger(__name__)
 
 # Strict timeout budget for Redis (ms)
 REDIS_TIMEOUT_MS = 75
+# Backoff between reconnect attempts when Redis is down
+_RECONNECT_BACKOFF_S: float = 30.0
+# Mark Redis unavailable after this many consecutive query failures
+_MAX_CONSECUTIVE_ERRORS: int = 5
 
 
 class RedisCache:
@@ -22,6 +27,8 @@ class RedisCache:
 
     def __init__(self, redis_url: str = "redis://localhost:6379/0"):
         self._redis_url = redis_url
+        self._last_reconnect_attempt: float = 0.0
+        self._consecutive_errors: int = 0
         self._attempt_connect()
 
     def _attempt_connect(self) -> None:
@@ -36,10 +43,41 @@ class RedisCache:
             self._client.ping()
             self._available = True
             logger.info("Redis cache available")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises diverse connection/auth/protocol errors; all suppressed to keep Redis optional
             logger.warning(f"Redis unavailable: {e}")
             self._available = False
             self._client = None
+
+    def _maybe_reconnect(self) -> None:
+        """Re-probe Redis if down and backoff window has elapsed.
+
+        Called lazily from read methods when _available is False.
+        Bounded to one attempt per _RECONNECT_BACKOFF_S seconds.
+        """
+        now = time.monotonic()
+        if now - self._last_reconnect_attempt < _RECONNECT_BACKOFF_S:
+            return
+        self._last_reconnect_attempt = now
+        previously_available = self._available
+        self._attempt_connect()
+        if self._available and not previously_available:
+            logger.info("Redis reconnected after recovery")
+            self._consecutive_errors = 0
+
+    def _record_error(self) -> None:
+        """Track consecutive Redis query failures.
+
+        After _MAX_CONSECUTIVE_ERRORS failures, marks Redis unavailable so
+        subsequent reads skip the 75ms timeout until _maybe_reconnect() fires.
+        """
+        self._consecutive_errors += 1
+        if self._consecutive_errors >= _MAX_CONSECUTIVE_ERRORS:
+            logger.warning(
+                "Redis: %d consecutive errors — marking unavailable until reconnect",
+                self._consecutive_errors,
+            )
+            self._available = False
+            self._consecutive_errors = 0
 
     def health(self) -> tuple[str, dict[str, Any]]:
         """Return Redis health status."""
@@ -52,7 +90,7 @@ class RedisCache:
                 "version": info.get("redis_version"),
                 "used_memory_human": info.get("used_memory_human"),
             }
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Redis info() can fail with varied transport/server errors; degraded status is the safe response
             return "degraded", {"reason": str(e)}
 
     def _key(self, base: str, adg_snapshot_id: str) -> str:
@@ -62,6 +100,8 @@ class RedisCache:
     def get_node(self, node_id: str, adg_snapshot_id: str) -> ADGNode | None:
         """Try Redis first, return None on miss or timeout."""
         if not self._available:
+            self._maybe_reconnect()
+        if not self._available:
             return None
 
         try:
@@ -69,8 +109,9 @@ class RedisCache:
             data = self._client.hgetall(key)
             if data:
                 return ADGNode(**data)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout errors; all are non-fatal cache misses
             logger.debug(f"Redis get_node miss: {e}")
+            self._record_error()
 
         return None
 
@@ -88,6 +129,8 @@ class RedisCache:
 
     def get_edge_fanout(self, src_id: str, relation_type: str, adg_snapshot_id: str) -> list[ADGEdge] | None:
         """Try Redis for edges. Returns None on cache miss, empty list if no edges exist."""
+        if not self._available:
+            self._maybe_reconnect()
         if not self._available:
             return None
 
@@ -114,6 +157,7 @@ class RedisCache:
             return edges
         except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
             logger.debug(f"Redis get_edge_fanout miss: {e}")
+            self._record_error()
 
         return None
 
@@ -136,6 +180,8 @@ class RedisCache:
 
     def get_edge_fanin(self, tgt_id: str, relation_type: str, adg_snapshot_id: str) -> list[ADGEdge] | None:
         """Try Redis for fanin edges. Returns None on cache miss, list on hit (may be empty)."""
+        if not self._available:
+            self._maybe_reconnect()
         if not self._available:
             return None
 
@@ -160,6 +206,7 @@ class RedisCache:
             return edges
         except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
             logger.debug(f"Redis get_edge_fanin miss: {e}")
+            self._record_error()
 
         return None
 
@@ -183,6 +230,8 @@ class RedisCache:
     def get_nodes_by_file(self, file_path: str, adg_snapshot_id: str) -> list[ADGNode] | None:
         """Try Redis for file-path->nodes list. Returns None on cache miss."""
         if not self._available:
+            self._maybe_reconnect()
+        if not self._available:
             return None
         try:
             import hashlib, json
@@ -195,6 +244,7 @@ class RedisCache:
             return [ADGNode(**n) for n in json.loads(raw)]
         except Exception as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
             logger.debug(f"Redis get_nodes_by_file miss: {e}")
+            self._record_error()
         return None
 
     def set_nodes_by_file(self, file_path: str, nodes: list[ADGNode], adg_snapshot_id: str) -> None:
@@ -214,6 +264,8 @@ class RedisCache:
     def get_nodes_by_layer(self, layer: str, adg_snapshot_id: str) -> list[ADGNode] | None:
         """Try Redis for layer->nodes list. Returns None on cache miss."""
         if not self._available:
+            self._maybe_reconnect()
+        if not self._available:
             return None
         try:
             import json
@@ -225,6 +277,7 @@ class RedisCache:
             return [ADGNode(**n) for n in json.loads(raw)]
         except Exception as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
             logger.debug(f"Redis get_nodes_by_layer miss: {e}")
+            self._record_error()
         return None
 
     def set_nodes_by_layer(self, layer: str, nodes: list[ADGNode], adg_snapshot_id: str) -> None:
@@ -254,7 +307,7 @@ class RedisCache:
                     self._client.delete(*keys)
                 if cursor == 0:
                     break
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Redis scan/delete raises varied errors; clear_snapshot is best-effort cleanup, never blocks caller
             logger.warning(f"Redis clear_snapshot failed: {e}")
 
     def close(self) -> None:
