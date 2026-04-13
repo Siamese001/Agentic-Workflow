@@ -41,7 +41,8 @@ from typing import Any
 from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     get_global_hybrid_engine,
@@ -243,11 +244,14 @@ def _baseline_citation_completeness(results: list[Any], top_k: int = 5) -> float
     top = results[:top_k]
     if not top:
         return 0.0
-    complete = sum(
-        1
-        for r in top
-        if r.metadata.get("canonical_digest") and r.metadata.get("file_path") or r.metadata.get("source_url")
-    )
+    complete = 0
+    for result in top:
+        metadata = getattr(result, "metadata", {}) or {}
+        if metadata.get("canonical_digest") and (
+            metadata.get("file_path")
+            or metadata.get("source_url")
+        ):
+            complete += 1
     return complete / len(top)
 
 
@@ -363,6 +367,9 @@ def report(results: list[QueryResult], top_k: int = 5) -> bool:
     """Print before/after table. Returns True if shaped is materially better."""
 
     n = len(results)
+    if n == 0:
+        print("\nNo benchmark results to report.")
+        return False
     print(f"\n{'=' * 100}")
     print(f"  RETRIEVAL BENCHMARK REPORT  —  {n} queries  top_k={top_k}")
     print(f"{'=' * 100}")
@@ -2242,7 +2249,9 @@ def run_promotion_commit_proof() -> bool:
     )
     gauntlet = PromotionGauntlet()
     g_result = gauntlet.evaluate(candidate, cluster)
-    assert g_result.verdict == VERDICT_APPROVE, f"Unexpected gauntlet verdict: {g_result.verdict}"
+    if g_result.verdict != VERDICT_APPROVE:
+        print(f"Unexpected gauntlet verdict: {g_result.verdict}")
+        return False
     packetizer = PromotionPacketizer()
     valid_packet = packetizer.packetize(candidate, cluster, g_result)
 

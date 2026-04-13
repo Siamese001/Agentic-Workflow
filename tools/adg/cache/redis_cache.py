@@ -1,5 +1,7 @@
 """Redis Cache — Optional read-through accelerator, non-authoritative."""
 
+import hashlib
+import json
 import logging
 import time
 from typing import Any
@@ -16,6 +18,7 @@ REDIS_TIMEOUT_MS = 75
 _RECONNECT_BACKOFF_S: float = 30.0
 # Mark Redis unavailable after this many consecutive query failures
 _MAX_CONSECUTIVE_ERRORS: int = 5
+_EMPTY_SET_SENTINEL = "__empty__"
 
 
 class RedisCache:
@@ -44,7 +47,7 @@ class RedisCache:
             self._available = True
             logger.info("Redis cache available")
         except Exception as e:  # guardian: allow-broad-exception -- Redis client raises diverse connection/auth/protocol errors; all suppressed to keep Redis optional
-            logger.warning(f"Redis unavailable: {e}")
+            logger.warning("Redis unavailable: %s", e)
             self._available = False
             self._client = None
 
@@ -79,6 +82,16 @@ class RedisCache:
             self._available = False
             self._consecutive_errors = 0
 
+    def _record_success(self) -> None:
+        """Reset consecutive error budget after a successful Redis operation."""
+        if self._consecutive_errors:
+            self._consecutive_errors = 0
+
+    @staticmethod
+    def _strip_empty_sentinel(values: set[str]) -> set[str]:
+        """Remove the empty-set sentinel from a Redis set payload."""
+        return {value for value in values if value != _EMPTY_SET_SENTINEL}
+
     def health(self) -> tuple[str, dict[str, Any]]:
         """Return Redis health status."""
         if not self._available or not self._client:
@@ -107,10 +120,11 @@ class RedisCache:
         try:
             key = self._key(f"node:{node_id}", adg_snapshot_id)
             data = self._client.hgetall(key)
+            self._record_success()
             if data:
                 return ADGNode(**data)
         except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout errors; all are non-fatal cache misses
-            logger.debug(f"Redis get_node miss: {e}")
+            logger.debug("Redis get_node miss: %s", e)
             self._record_error()
 
         return None
@@ -123,9 +137,11 @@ class RedisCache:
         try:
             key = self._key(f"node:{node.id}", adg_snapshot_id)
             mapping = {k: str(v) for k, v in node.model_dump().items() if v is not None}
-            self._client.hmset(key, mapping)
-        except Exception as e:
-            logger.debug(f"Redis set_node failed: {e}")
+            self._client.hset(key, mapping=mapping)
+            self._record_success()
+        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
+            logger.debug("Redis set_node failed: %s", e)
+            self._record_error()
 
     def get_edge_fanout(self, src_id: str, relation_type: str, adg_snapshot_id: str) -> list[ADGEdge] | None:
         """Try Redis for edges. Returns None on cache miss, empty list if no edges exist."""
@@ -136,13 +152,11 @@ class RedisCache:
 
         try:
             key = self._key(f"edge:{src_id}:{relation_type}", adg_snapshot_id)
-            edge_ids = self._client.smembers(key)
-
-            # Check if key exists (distinguish empty set from key not existing)
             if not self._client.exists(key):
                 return None  # Cache miss - key doesn't exist
 
-            # Key exists but may be empty (no edges for this relation)
+            edge_ids = self._strip_empty_sentinel(self._client.smembers(key))
+            self._record_success()
             if not edge_ids:
                 return []  # Cache hit, but no edges
 
@@ -156,7 +170,7 @@ class RedisCache:
                 return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
         except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
-            logger.debug(f"Redis get_edge_fanout miss: {e}")
+            logger.debug("Redis get_edge_fanout miss: %s", e)
             self._record_error()
 
         return None
@@ -170,13 +184,20 @@ class RedisCache:
 
         try:
             key = self._key(f"edge:{src_id}:{relation_type}", adg_snapshot_id)
-            for edge in edges:
-                detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
-                mapping = {k: str(v) for k, v in edge.model_dump().items() if v is not None}
-                self._client.hmset(detail_key, mapping)
-                self._client.sadd(key, edge.id)
-        except Exception as e:
-            logger.debug(f"Redis set_edge_fanout failed: {e}")
+            with self._client.pipeline(transaction=False) as pipe:
+                pipe.delete(key)
+                if not edges:
+                    pipe.sadd(key, _EMPTY_SET_SENTINEL)
+                for edge in edges:
+                    detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
+                    mapping = {k: str(v) for k, v in edge.model_dump().items() if v is not None}
+                    pipe.hset(detail_key, mapping=mapping)
+                    pipe.sadd(key, edge.id)
+                pipe.execute()
+            self._record_success()
+        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
+            logger.debug("Redis set_edge_fanout failed: %s", e)
+            self._record_error()
 
     def get_edge_fanin(self, tgt_id: str, relation_type: str, adg_snapshot_id: str) -> list[ADGEdge] | None:
         """Try Redis for fanin edges. Returns None on cache miss, list on hit (may be empty)."""
@@ -191,7 +212,8 @@ class RedisCache:
             if not self._client.exists(key):
                 return None  # Cache miss -- key not present
 
-            edge_ids = self._client.smembers(key)
+            edge_ids = self._strip_empty_sentinel(self._client.smembers(key))
+            self._record_success()
             if not edge_ids:
                 return []  # Cache hit, no incoming edges for this relation
 
@@ -205,7 +227,7 @@ class RedisCache:
                 return None  # partial: some edge_detail hashes missing — force SQLite fallback
             return edges
         except Exception as e:  # guardian: allow-broad-exception -- Redis client raises varied transport/timeout/serialization errors; all are non-fatal cache misses
-            logger.debug(f"Redis get_edge_fanin miss: {e}")
+            logger.debug("Redis get_edge_fanin miss: %s", e)
             self._record_error()
 
         return None
@@ -219,13 +241,20 @@ class RedisCache:
 
         try:
             key = self._key(f"fanin:{tgt_id}:{relation_type}", adg_snapshot_id)
-            for edge in edges:
-                detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
-                mapping = {k: str(v) for k, v in edge.model_dump().items() if v is not None}
-                self._client.hmset(detail_key, mapping)
-                self._client.sadd(key, edge.id)
-        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort, silent skip is intentional
-            logger.debug(f"Redis set_edge_fanin failed: {e}")
+            with self._client.pipeline(transaction=False) as pipe:
+                pipe.delete(key)
+                if not edges:
+                    pipe.sadd(key, _EMPTY_SET_SENTINEL)
+                for edge in edges:
+                    detail_key = self._key(f"edge_detail:{edge.id}", adg_snapshot_id)
+                    mapping = {k: str(v) for k, v in edge.model_dump().items() if v is not None}
+                    pipe.hset(detail_key, mapping=mapping)
+                    pipe.sadd(key, edge.id)
+                pipe.execute()
+            self._record_success()
+        except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; cache backfill is best-effort
+            logger.debug("Redis set_edge_fanin failed: %s", e)
+            self._record_error()
 
     def get_nodes_by_file(self, file_path: str, adg_snapshot_id: str) -> list[ADGNode] | None:
         """Try Redis for file-path->nodes list. Returns None on cache miss."""
@@ -234,16 +263,15 @@ class RedisCache:
         if not self._available:
             return None
         try:
-            import hashlib, json
-
-            path_hash = hashlib.sha1(file_path.encode()).hexdigest()[:16]
+            path_hash = hashlib.sha1(file_path.encode("utf-8")).hexdigest()[:16]
             key = self._key(f"file_nodes:{path_hash}", adg_snapshot_id)
             raw = self._client.get(key)
             if raw is None:
                 return None
+            self._record_success()
             return [ADGNode(**n) for n in json.loads(raw)]
         except Exception as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
-            logger.debug(f"Redis get_nodes_by_file miss: {e}")
+            logger.debug("Redis get_nodes_by_file miss: %s", e)
             self._record_error()
         return None
 
@@ -252,14 +280,14 @@ class RedisCache:
         if not self._available:
             return
         try:
-            import hashlib, json
-
-            path_hash = hashlib.sha1(file_path.encode()).hexdigest()[:16]
+            path_hash = hashlib.sha1(file_path.encode("utf-8")).hexdigest()[:16]
             key = self._key(f"file_nodes:{path_hash}", adg_snapshot_id)
             payload = [{k: str(v) for k, v in n.model_dump().items() if v is not None} for n in nodes]
             self._client.set(key, json.dumps(payload))
+            self._record_success()
         except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
-            logger.debug(f"Redis set_nodes_by_file failed: {e}")
+            logger.debug("Redis set_nodes_by_file failed: %s", e)
+            self._record_error()
 
     def get_nodes_by_layer(self, layer: str, adg_snapshot_id: str) -> list[ADGNode] | None:
         """Try Redis for layer->nodes list. Returns None on cache miss."""
@@ -268,15 +296,14 @@ class RedisCache:
         if not self._available:
             return None
         try:
-            import json
-
             key = self._key(f"layer_nodes:{layer}", adg_snapshot_id)
             raw = self._client.get(key)
             if raw is None:
                 return None
+            self._record_success()
             return [ADGNode(**n) for n in json.loads(raw)]
         except Exception as e:  # guardian: allow-broad-exception -- Redis raises varied transport/deserialization errors; miss is non-fatal
-            logger.debug(f"Redis get_nodes_by_layer miss: {e}")
+            logger.debug("Redis get_nodes_by_layer miss: %s", e)
             self._record_error()
         return None
 
@@ -285,13 +312,13 @@ class RedisCache:
         if not self._available:
             return
         try:
-            import json
-
             key = self._key(f"layer_nodes:{layer}", adg_snapshot_id)
             payload = [{k: str(v) for k, v in n.model_dump().items() if v is not None} for n in nodes]
             self._client.set(key, json.dumps(payload))
+            self._record_success()
         except Exception as e:  # guardian: allow-broad-exception -- Redis write failure is non-fatal; backfill is best-effort
-            logger.debug(f"Redis set_nodes_by_layer failed: {e}")
+            logger.debug("Redis set_nodes_by_layer failed: %s", e)
+            self._record_error()
 
     def clear_snapshot(self, adg_snapshot_id: str) -> None:
         """Clear all cache entries for a snapshot."""
@@ -307,8 +334,10 @@ class RedisCache:
                     self._client.delete(*keys)
                 if cursor == 0:
                     break
+            self._record_success()
         except Exception as e:  # guardian: allow-broad-exception -- Redis scan/delete raises varied errors; clear_snapshot is best-effort cleanup, never blocks caller
-            logger.warning(f"Redis clear_snapshot failed: {e}")
+            logger.warning("Redis clear_snapshot failed: %s", e)
+            self._record_error()
 
     def close(self) -> None:
         """Close Redis connection."""
@@ -317,7 +346,7 @@ class RedisCache:
                 self._client.close()
                 logger.info("Redis connection closed")
             except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
-                logger.error(f"Error closing Redis connection: {e}")
+                logger.error("Error closing Redis connection: %s", e)
             finally:
                 self._client = None
                 self._available = False
