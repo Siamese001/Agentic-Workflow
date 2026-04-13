@@ -243,11 +243,7 @@ def get_governed_apps() -> list[GovernedAppEntry]:
 
 def get_exception_apps() -> list[ExceptionAppEntry | FormalExceptionEntry]:
     """Return all exception/candidate app entries (both legacy and formal)."""
-    return [
-        e
-        for e in APP_REGISTRY.values()
-        if isinstance(e, (ExceptionAppEntry, FormalExceptionEntry))
-    ]
+    return [e for e in APP_REGISTRY.values() if isinstance(e, (ExceptionAppEntry, FormalExceptionEntry))]
 
 
 def get_formal_exception_apps() -> list[FormalExceptionEntry]:

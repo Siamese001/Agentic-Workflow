@@ -25,13 +25,28 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import time
 import uuid
-from typing import Any
+from typing import Any, Union
 
+from agentic_core.L2_execution.types.sealed_l2_artifact import (
+    SealedL2Artifact,
+    TerminalClassification,
+)
 from agentic_core.L5_safety.types.exit_disposition_types import (
+    CurrentRunEvaluationResult,
     ExitDisposition,
     ExitEvaluationDimensions,
     ExitGateResult,
+    IntegrityChecks,
+    QualityChecks,
+    RubricScores,
+)
+from agentic_core.L5_safety.types.exit_outcome_types import (
+    AllowResponsePayload,
+    CommitToUWGRequest,
+    DenyReturnPayload,
+    EscalateToHITLPacket,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
@@ -63,6 +78,9 @@ _emit_invokes_eval("p1", "exit_control_gate", "exit_eval")
 logger = logging.getLogger(__name__)
 
 _CONFIDENCE_ESCALATION_THRESHOLD = 0.70
+_GROUNDED_THRESHOLD = 0.60
+_RULES_COMPLIANCE_THRESHOLD = 0.50
+_REPLAY_COMPLETENESS_THRESHOLD = 0.80
 
 
 class ExitControlGate:
@@ -216,6 +234,286 @@ class ExitControlGate:
             )
 
         if dims.has_commit_payload:
+            return (
+                ExitDisposition.COMMIT_TO_UWG,
+                "All four dimensions pass; has_commit_payload=True → route to UWG",
+            )
+
+        return (
+            ExitDisposition.ALLOW_RESPONSE,
+            "All four dimensions pass (X1A rules_compliant, X1B answer_fit, X1C safety_clear, X1D grounded_replayable)",
+        )
+
+    # ------------------------------------------------------------------
+    # Sealed-artifact evaluation path (evaluate_sealed + shape_outcome)
+    # ------------------------------------------------------------------
+
+    def evaluate_sealed(self, artifact: SealedL2Artifact) -> CurrentRunEvaluationResult:
+        """Run X1A–X1D evaluation on a typed SealedL2Artifact.
+
+        Primary entry point for post-L2 current-run evaluation.
+        Never raises — evaluation errors produce DENY_RETURN (fail closed).
+        Shadow-eval packetization MUST NOT be called from this method.
+        """
+        eval_id = str(uuid.uuid4())
+        trace_id = artifact.trace_id or str(uuid.uuid4())
+
+        _emit_snapshots_state(trace_id, "ExitControlGate.evaluate_sealed", "exit_state")
+        _emit_applies_guardrail(trace_id, "ExitControlGate.evaluate_sealed", "X1A_X1D_exit")
+        _emit_records_execution_trace(trace_id, "L5_POLICY", "ExitControlGate.evaluate_sealed")
+
+        try:
+            rubric = self._eval_rubrics(artifact)
+            quality = self._eval_quality(artifact)
+            integrity = self._eval_integrity(artifact)
+            confidence_score = self._compute_confidence_from_checks(rubric, quality, integrity)
+            disposition, reason = self._decide_from_evaluation(
+                rubric, quality, integrity, confidence_score, artifact
+            )
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.error("[ExitControlGate.evaluate_sealed] Evaluation failed: %s", exc)
+            rubric = RubricScores()
+            quality = QualityChecks()
+            integrity = IntegrityChecks()
+            confidence_score = 0.0
+            disposition = ExitDisposition.DENY_RETURN
+            reason = f"Artifact evaluation failed — fail closed: {exc}"
+
+        _emit_transcripts_response(trace_id, "ExitControlGate", disposition.value)
+        logger.info(
+            "[ExitControlGate.evaluate_sealed] eval_id=%s trace_id=%s disposition=%s",
+            eval_id,
+            trace_id,
+            disposition.value,
+        )
+
+        return CurrentRunEvaluationResult(
+            eval_id=eval_id,
+            artifact_id=artifact.artifact_id,
+            trace_id=trace_id,
+            rubric_scores=rubric,
+            quality_checks=quality,
+            integrity_checks=integrity,
+            confidence_score=confidence_score,
+            disposition=disposition,
+            disposition_reason=reason,
+            policy_hash=self._policy_hash,
+            compliance_hash=self._compliance_hash,
+            evaluated_at=time.monotonic(),
+        )
+
+    def shape_outcome(
+        self,
+        result: CurrentRunEvaluationResult,
+        artifact: SealedL2Artifact,
+    ) -> Union[
+        AllowResponsePayload,
+        DenyReturnPayload,
+        EscalateToHITLPacket,
+        CommitToUWGRequest,
+    ]:
+        """Map a CurrentRunEvaluationResult to its minimal live outcome payload.
+
+        Dispatches to one of four path-specific outcome stubs.  No silent
+        fallback — raises ValueError for any unhandled ExitDisposition value
+        (guarded by the enum; unreachable in practice).
+        Shadow-eval code MUST NOT be called from this method.
+        """
+        if result.disposition is ExitDisposition.ALLOW_RESPONSE:
+            return AllowResponsePayload(
+                eval_id=result.eval_id,
+                trace_id=result.trace_id,
+                artifact_id=result.artifact_id,
+                confidence_score=result.confidence_score,
+                policy_hash=result.policy_hash,
+                compliance_hash=result.compliance_hash,
+            )
+
+        if result.disposition is ExitDisposition.DENY_RETURN:
+            return DenyReturnPayload(
+                eval_id=result.eval_id,
+                trace_id=result.trace_id,
+                artifact_id=result.artifact_id,
+                reason=result.disposition_reason,
+                policy_hash=result.policy_hash,
+            )
+
+        if result.disposition is ExitDisposition.ESCALATE_TO_HITL:
+            return EscalateToHITLPacket(
+                eval_id=result.eval_id,
+                trace_id=result.trace_id,
+                artifact_id=result.artifact_id,
+                reason=result.disposition_reason,
+                confidence_score=result.confidence_score,
+                bounded_context={
+                    "artifact_id": result.artifact_id,
+                    "rubric_scores": {
+                        "rules_compliance_score": result.rubric_scores.rules_compliance_score,
+                        "schema_completion_score": result.rubric_scores.schema_completion_score,
+                    },
+                    "integrity_checks": {
+                        "safety_clear": result.integrity_checks.safety_clear,
+                        "policy_pass": result.integrity_checks.policy_pass,
+                        "replay_env_complete": result.integrity_checks.replay_env_complete,
+                    },
+                    "terminal_classification": artifact.terminal_classification.value,
+                },
+                policy_hash=result.policy_hash,
+            )
+
+        if result.disposition is ExitDisposition.COMMIT_TO_UWG:
+            return CommitToUWGRequest(
+                eval_id=result.eval_id,
+                trace_id=result.trace_id,
+                artifact_id=result.artifact_id,
+                state_diff=dict(artifact.state_diff),
+                replay_key=artifact.replay_metadata.replay_key,
+                policy_hash=result.policy_hash,
+                compliance_hash=result.compliance_hash,
+            )
+
+        raise ValueError(  # pragma: no cover — ExitDisposition is exhaustive
+            f"Unhandled ExitDisposition: {result.disposition!r}"
+        )
+
+    # ------------------------------------------------------------------
+    # Private helpers for evaluate_sealed
+    # ------------------------------------------------------------------
+
+    def _eval_rubrics(self, artifact: SealedL2Artifact) -> RubricScores:
+        """Derive X1A rubric scores from validation counters and terminal state."""
+        v = artifact.validation_counters
+        total_policy = v.policy_checks_passed + v.policy_checks_failed
+        rules_score = (v.policy_checks_passed / total_policy) if total_policy > 0 else 0.0
+        total_schema = v.schema_checks_passed + v.schema_checks_failed
+        schema_score = (v.schema_checks_passed / total_schema) if total_schema > 0 else 0.0
+        format_fit = 1.0 if artifact.terminal_classification is TerminalClassification.SUCCESS else 0.0
+        return RubricScores(
+            rules_compliance_score=rules_score,
+            policy_adherence_score=rules_score,
+            format_fit_score=format_fit,
+            schema_completion_score=schema_score,
+        )
+
+    def _eval_quality(self, artifact: SealedL2Artifact) -> QualityChecks:
+        """Derive X1B + X1D quality checks from evidence bundle and terminal state."""
+        eb = artifact.evidence_bundle
+        return QualityChecks(
+            answer_fit=(artifact.terminal_classification is TerminalClassification.SUCCESS),
+            groundedness_score=float(eb.get("groundedness_score", 0.0)),
+            support_coverage=float(eb.get("support_coverage", 0.0)),
+            relevance_score=float(eb.get("relevance_score", 0.0)),
+            abstain_correct=bool(eb.get("abstain_correct", True)),
+            escalation_correct=bool(eb.get("escalation_correct", True)),
+        )
+
+    def _eval_integrity(self, artifact: SealedL2Artifact) -> IntegrityChecks:
+        """Derive X1C integrity checks from validation counters and replay metadata."""
+        v = artifact.validation_counters
+        rm = artifact.replay_metadata
+        eb = artifact.evidence_bundle
+        return IntegrityChecks(
+            safety_clear=bool(eb.get("safety_clear", False)),
+            policy_pass=v.policy_checks_failed == 0,
+            mutation_authorized=v.mutation_auth_checks_failed == 0,
+            env_integrity=rm.isolation_verified,
+            replay_env_complete=(rm.replay_completeness >= _REPLAY_COMPLETENESS_THRESHOLD),
+        )
+
+    def _compute_confidence_from_checks(
+        self,
+        rubric: RubricScores,
+        quality: QualityChecks,
+        integrity: IntegrityChecks,
+    ) -> float:
+        """Weighted confidence score from evaluation sub-results.
+
+        Weights: rules 0.25, schema 0.10, groundedness 0.25, support 0.15,
+                 relevance 0.15, safety binary 0.10.  Total = 1.00.
+        """
+        safety_weight = 1.0 if integrity.safety_clear else 0.0
+        raw = (
+            rubric.rules_compliance_score * 0.25
+            + rubric.schema_completion_score * 0.10
+            + quality.groundedness_score * 0.25
+            + quality.support_coverage * 0.15
+            + quality.relevance_score * 0.15
+            + safety_weight * 0.10
+        )
+        return min(1.0, max(0.0, raw))
+
+    def _decide_from_evaluation(
+        self,
+        rubric: RubricScores,
+        quality: QualityChecks,
+        integrity: IntegrityChecks,
+        confidence_score: float,
+        artifact: SealedL2Artifact,
+    ) -> tuple[ExitDisposition, str]:
+        """Priority-ordered disposition tree for typed evaluation results.
+
+        Decision order (mirrors _decide priority contract):
+        1. DENY  — X1C safety_clear=False (hard fail; no override)
+        2. DENY  — unauthorized commit payload (has_commit_payload + not mutation_authorized)
+        3. DENY  — X1A rules / policy check failed
+        4. ESCALATE — explicit escalation_reason
+        5. ESCALATE — confidence below threshold
+        6. DENY  — X1B answer_fit=False
+        7. DENY  — X1D grounded_replayable=False
+        8. COMMIT — all pass + authorized commit payload
+        9. ALLOW  — all pass, no commit payload
+
+        No branch produces None.  No silent fallback.
+        """
+        if not integrity.safety_clear:
+            return (
+                ExitDisposition.DENY_RETURN,
+                "X1C failed: safety_clear=False (secrets, PII, unsafe content, or injection residue detected)",
+            )
+
+        if artifact.has_commit_payload and not integrity.mutation_authorized:
+            return (
+                ExitDisposition.DENY_RETURN,
+                "X1A failed: mutation_authorized=False (commit payload present but write not authorized)",
+            )
+
+        rules_compliant = (
+            integrity.policy_pass and rubric.rules_compliance_score >= _RULES_COMPLIANCE_THRESHOLD
+        )
+        if not rules_compliant:
+            return (
+                ExitDisposition.DENY_RETURN,
+                "X1A failed: rules_compliant=False (policy-rule violation detected)",
+            )
+
+        if artifact.escalation_reason:
+            return (
+                ExitDisposition.ESCALATE_TO_HITL,
+                f"Explicit escalation_reason: {artifact.escalation_reason}",
+            )
+
+        if confidence_score < self._confidence_threshold:
+            return (
+                ExitDisposition.ESCALATE_TO_HITL,
+                f"Confidence {confidence_score:.3f} below threshold {self._confidence_threshold:.3f}",
+            )
+
+        if not quality.answer_fit:
+            return (
+                ExitDisposition.DENY_RETURN,
+                "X1B failed: answer_fit=False (output does not answer the question asked)",
+            )
+
+        grounded_replayable = (
+            integrity.replay_env_complete and quality.groundedness_score >= _GROUNDED_THRESHOLD
+        )
+        if not grounded_replayable:
+            return (
+                ExitDisposition.DENY_RETURN,
+                "X1D failed: grounded_replayable=False (output not grounded or not reproducible)",
+            )
+
+        if artifact.has_commit_payload:
             return (
                 ExitDisposition.COMMIT_TO_UWG,
                 "All four dimensions pass; has_commit_payload=True → route to UWG",

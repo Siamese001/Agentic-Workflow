@@ -32,9 +32,7 @@ def _sha256_file(path: Path) -> str:
 
 def compute_model_version_hash(artifact_dir: Path) -> str:
     """SHA-256( bytes(model.pkl) || bytes(ood_detector.pkl) || bytes(feature_schema.json) )[:16]."""
-    content = b"".join(
-        (artifact_dir / fname).read_bytes() for fname in HASH_INPUT_FILES
-    )
+    content = b"".join((artifact_dir / fname).read_bytes() for fname in HASH_INPUT_FILES)
     return hashlib.sha256(content).hexdigest()[:16]
 
 

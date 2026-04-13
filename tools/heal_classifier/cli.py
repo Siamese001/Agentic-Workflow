@@ -33,11 +33,7 @@ def _cmd_train(args: argparse.Namespace) -> int:
     print(f"  After exclusions/dedup: {len(df)}  (excluded: {len(excluded)})")
 
     split = make_split(df)
-    print(
-        f"  Split: train={len(split.X_train)}"
-        f"  calib={len(split.X_calib)}"
-        f"  val={len(split.X_val)}"
-    )
+    print(f"  Split: train={len(split.X_train)}  calib={len(split.X_calib)}  val={len(split.X_val)}")
 
     trainer = HealClassifierTrainer(TrainerConfig())
     print("Training GBDT + calibration + OOD detector ...")
@@ -112,14 +108,10 @@ def _cmd_report(args: argparse.Namespace) -> int:
     artifact_meta = PackageMetadata(
         artifact_dir=artifact_dir,
         model_version_hash=mvh,
-        hash_manifest=json.loads(
-            (artifact_dir / "hash_manifest.json").read_text(encoding="utf-8")
-        ),
+        hash_manifest=json.loads((artifact_dir / "hash_manifest.json").read_text(encoding="utf-8")),
     )
 
-    EvalReportGenerator().generate(
-        packet_dir, artifact_dir, threshold_result, shadow_data=shadow_data
-    )
+    EvalReportGenerator().generate(packet_dir, artifact_dir, threshold_result, shadow_data=shadow_data)
 
     result = PromotionPacketBuilder().build(
         artifact_meta=artifact_meta,

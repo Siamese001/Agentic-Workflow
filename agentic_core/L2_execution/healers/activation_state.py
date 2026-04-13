@@ -36,9 +36,9 @@ ACTIVATION_RECORD_FILENAME: str = "activation_record.json"
 class ActivationMode(Enum):
     """Runtime activation state of the heal-classifier."""
 
-    ABSENT = auto()   # No artifact; heuristic-only
-    SHADOW = auto()   # Artifact present; heuristic routing; ML telemetry-only
-    ACTIVE = auto()   # Artifact present; ML tier drives routing
+    ABSENT = auto()  # No artifact; heuristic-only
+    SHADOW = auto()  # Artifact present; heuristic routing; ML telemetry-only
+    ACTIVE = auto()  # Artifact present; ML tier drives routing
 
 
 @dataclass
@@ -50,8 +50,8 @@ class ActivationRecord:
     tools/heal_classifier promotion workflow.
     """
 
-    activation_mode: str        # "shadow" or "active"
-    artifact_hash: str          # Must equal verified model_version_hash
+    activation_mode: str  # "shadow" or "active"
+    artifact_hash: str  # Must equal verified model_version_hash
     shadow_event_count: int = 0
     divergence_rate: float = 0.0
     repair_success_rate: float = 1.0

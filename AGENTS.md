@@ -56,6 +56,10 @@ Keep these four layers separate at all times:
 | Tests | `run_tests` (server: `pytest_mcp`) — prefer `mcp8_run_tests`; fallback `run_command` only when pytest_mcp is unavailable |
 | Git state | `git_status` (server: `GitKraken`) or `run_command` with git |
 | Notion pages/databases | `API-post-page`, `API-patch-page`, `API-post-search`, `API-retrieve-a-page` (server: `notion`; Windsurf prefixes all tools with `mcp6_`) |
+| OTel traces / anomalies | `otel_status`, `otel_trace`, `otel_spans_by_agent`, `otel_anomalies`, `otel_healing_chain`, `otel_policy_decisions`, `otel_metrics_summary` (server: `otel_mcp`) — use for runtime observability: live spans, telemetry, anomalies, healing chains, policy decisions, "what happened at runtime?" asks |
+| HTTP requests (programmatic) | `http_get`, `http_post`, `http_put`, `http_delete`, `http_head`, `test_connectivity`, `batch_requests` (server: `enhanced_http`) — sole authority for ALL autonomous HTTP calls; use `read_url_content` ONLY when explicit user approval of the URL is required before fetching |
+| Redis cache | `redis_health`, `redis_keys`, `redis_get`, `redis_hgetall`, `redis_namespace_stats`, `redis_dbsize`, `redis_ttl`, `redis_del_key`, `redis_flush_namespace` (server: `redis`) — use for ADG hot-cache inspection, coord fabric state, and cache invalidation |
+| GitHub repo docs | `ask_question`, `read_wiki_contents`, `read_wiki_structure` (server: `deepwiki`) — use for AI-powered Q&A and documentation lookup on any GitHub repository |
 
 If any MCP hangs: STOP, do not retry, route around it, note `[MCP UNAVAILABLE]`.
 

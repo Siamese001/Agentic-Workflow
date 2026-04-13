@@ -48,7 +48,9 @@ _EXCLUSION_RULES: list[tuple[str, Callable[[pd.DataFrame], pd.Series]]] = [
     ),
     (
         "stale_excluded_flag",
-        lambda df: df["excluded"].astype(bool) if "excluded" in df.columns else pd.Series(False, index=df.index),
+        lambda df: (
+            df["excluded"].astype(bool) if "excluded" in df.columns else pd.Series(False, index=df.index)
+        ),
     ),
 ]
 
@@ -95,9 +97,7 @@ def apply_exclusions(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 def deduplicate(df: pd.DataFrame) -> pd.DataFrame:
     """Keep first occurrence of each (run_id, signal_hash) pair."""
     sort_col = "run_clock" if "run_clock" in df.columns else "run_id"
-    return df.sort_values(sort_col).drop_duplicates(
-        subset=["run_id", "signal_hash"], keep="first"
-    )
+    return df.sort_values(sort_col).drop_duplicates(subset=["run_id", "signal_hash"], keep="first")
 
 
 def encode_features(df: pd.DataFrame) -> np.ndarray:
@@ -139,11 +139,11 @@ def make_split(
     y_pool = le.transform(train_pool["repair_outcome"])
 
     n_calib = max(1, int(len(train_pool) * calib_fraction))
-    sss = StratifiedShuffleSplit(
-        n_splits=1, test_size=n_calib, random_state=random_state
-    )
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=n_calib, random_state=random_state)
 
-    for train_idx, calib_idx in sss.split(np.zeros(len(train_pool)), y_pool):
+    for train_idx, calib_idx in sss.split(
+        np.zeros(len(train_pool)), y_pool
+    ):  # progress_bar: n_splits=1, single iteration
         train_df = train_pool.iloc[train_idx].copy()
         calib_df = train_pool.iloc[calib_idx].copy()
 

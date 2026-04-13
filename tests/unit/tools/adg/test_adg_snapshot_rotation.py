@@ -23,6 +23,7 @@ from unittest.mock import MagicMock
 # Helpers (duplicated locally to keep this file self-contained)
 # ---------------------------------------------------------------------------
 
+
 def _make_service_with_snap(snap: str, redis_available: bool = True):
     from tools.adg.core.service import ADGService
 
@@ -50,8 +51,8 @@ def _make_redis_cache_with_snap(snap: str):
 # Key-namespace isolation unit tests
 # ===========================================================================
 
-class TestSnapshotKeyNamespaceIsolation:
 
+class TestSnapshotKeyNamespaceIsolation:
     def test_different_snapshots_produce_different_key_prefixes(self):
         """_key() embeds snapshot_id: two snapshots share zero key namespace."""
         from tools.adg.cache.redis_cache import RedisCache
@@ -87,10 +88,12 @@ class TestSnapshotRotationFallback:
 
     def _edge(self):
         from tools.adg.core.models import ADGEdge
+
         return ADGEdge(id="1", src_id="a", dst_id="b", relation_type="imports", edge_kind="from_import")
 
     def _node(self):
         from tests.unit.tools.adg.test_adg_cache_service import _make_node
+
         return _make_node(id="1")
 
     def test_adg_edge_fanin_misses_after_rotation(self):
@@ -141,7 +144,7 @@ class TestSnapshotRotationFallback:
         # Backfill must be called with the correct file_path AND the new snapshot_id
         call_args = svc._redis.set_nodes_by_file.call_args
         assert call_args is not None
-        written_path = call_args[0][0]   # positional: (file_path, nodes, snapshot_id)
+        written_path = call_args[0][0]  # positional: (file_path, nodes, snapshot_id)
         written_snap = call_args[0][2]
         assert written_path == "bar.py"
         assert written_snap == "04122026_9999"

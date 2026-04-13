@@ -64,6 +64,7 @@ from tools.heal_classifier.trainer import HealClassifierTrainer, TrainerConfig
 # Shared helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_synthetic_df(n: int = 500, seed: int = 0) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
     outcomes = np.tile(REPAIR_OUTCOME_CLASSES, n // 4 + 1)[:n]
@@ -171,14 +172,13 @@ def _write_active_record(artifact_dir: Path, mvh: str, **overrides: Any) -> None
         "replay_binding_present": True,
     }
     record.update(overrides)
-    (artifact_dir / "activation_record.json").write_text(
-        json.dumps(record), encoding="utf-8"
-    )
+    (artifact_dir / "activation_record.json").write_text(json.dumps(record), encoding="utf-8")
 
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(scope="module")
 def real_artifact_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
@@ -187,9 +187,12 @@ def real_artifact_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     split = make_split(df)
     trainer = HealClassifierTrainer(_fast_config())
     result = trainer.train(
-        split.X_train, split.y_train,
-        split.X_calib, split.y_calib,
-        split.X_val, split.y_val,
+        split.X_train,
+        split.y_train,
+        split.X_calib,
+        split.y_calib,
+        split.X_val,
+        split.y_val,
         list(split.label_encoder.classes_),
         failure_class_train=split.failure_class_train,
         failure_class_val=split.failure_class_val,
@@ -211,6 +214,7 @@ def active_artifact_dir(real_artifact_dir: Path, tmp_path: Path) -> Path:
 # ---------------------------------------------------------------------------
 # TestActivationCriteria
 # ---------------------------------------------------------------------------
+
 
 class TestActivationCriteria:
     def test_all_criteria_pass(self) -> None:
@@ -259,9 +263,7 @@ class TestActivationCriteria:
         assert any("manual_review_passed" in f for f in result.failures)
 
     def test_multiple_criteria_fail_all_reported(self) -> None:
-        result = check_activation_criteria(
-            _valid_evidence(shadow_event_count=1, repair_success_rate=0.1)
-        )
+        result = check_activation_criteria(_valid_evidence(shadow_event_count=1, repair_success_rate=0.1))
         assert not result.passed
         assert len(result.failures) >= 2
 
@@ -277,6 +279,7 @@ class TestActivationCriteria:
 # ---------------------------------------------------------------------------
 # TestActivationState
 # ---------------------------------------------------------------------------
+
 
 class TestActivationState:
     def test_no_record_returns_shadow(self, tmp_path: Path) -> None:
@@ -324,9 +327,7 @@ class TestActivationState:
         assert mode == ActivationMode.SHADOW
 
     def test_malformed_record_returns_shadow(self, tmp_path: Path) -> None:
-        (tmp_path / "activation_record.json").write_text(
-            "not valid json {{{{", encoding="utf-8"
-        )
+        (tmp_path / "activation_record.json").write_text("not valid json {{{{", encoding="utf-8")
         mode, _ = resolve_activation_mode(tmp_path, "somehash")
         assert mode == ActivationMode.SHADOW
 
@@ -348,6 +349,7 @@ class TestActivationState:
 # TestWireGoverneScorer
 # ---------------------------------------------------------------------------
 
+
 class TestWireGoverneScorer:
     def test_no_artifact_returns_absent_mode(self) -> None:
         scorer = wire_governed_scorer(None)
@@ -360,32 +362,24 @@ class TestWireGoverneScorer:
         assert scorer.activation_mode == ActivationMode.SHADOW
         assert scorer._shadow_mode is True
 
-    def test_active_record_returns_active_mode(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_active_record_returns_active_mode(self, active_artifact_dir: Path) -> None:
         scorer = wire_governed_scorer(active_artifact_dir)
         assert scorer.activation_mode == ActivationMode.ACTIVE
         assert scorer._shadow_mode is False
 
-    def test_active_mode_requires_second_activation_evidence(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_active_mode_requires_second_activation_evidence(self, real_artifact_dir: Path) -> None:
         """Without activation_record.json, ACTIVE is impossible regardless of artifact."""
         scorer = wire_governed_scorer(real_artifact_dir)
         assert scorer.activation_mode != ActivationMode.ACTIVE
 
-    def test_hash_mismatch_in_record_forces_shadow(
-        self, real_artifact_dir: Path, tmp_path: Path
-    ) -> None:
+    def test_hash_mismatch_in_record_forces_shadow(self, real_artifact_dir: Path, tmp_path: Path) -> None:
         art = tmp_path / "hash_mismatch"
         shutil.copytree(real_artifact_dir, art)
         _write_active_record(art, "wrong_hash_00000000")
         scorer = wire_governed_scorer(art)
         assert scorer.activation_mode == ActivationMode.SHADOW
 
-    def test_failing_criteria_in_record_forces_shadow(
-        self, real_artifact_dir: Path, tmp_path: Path
-    ) -> None:
+    def test_failing_criteria_in_record_forces_shadow(self, real_artifact_dir: Path, tmp_path: Path) -> None:
         art = tmp_path / "bad_criteria"
         shutil.copytree(real_artifact_dir, art)
         mvh = (art / "model_version_hash").read_text(encoding="utf-8").strip()
@@ -393,42 +387,27 @@ class TestWireGoverneScorer:
         scorer = wire_governed_scorer(art)
         assert scorer.activation_mode == ActivationMode.SHADOW
 
-    def test_active_mode_sets_shadow_false(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_active_mode_sets_shadow_false(self, active_artifact_dir: Path) -> None:
         scorer = wire_governed_scorer(active_artifact_dir)
         assert scorer._shadow_mode is False
 
-    def test_active_mode_has_rollback_monitor(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_active_mode_has_rollback_monitor(self, active_artifact_dir: Path) -> None:
         scorer = wire_governed_scorer(active_artifact_dir)
         assert scorer._rollback_monitor is not None
 
-    def test_shadow_mode_has_no_rollback_monitor(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_shadow_mode_has_no_rollback_monitor(self, real_artifact_dir: Path) -> None:
         scorer = wire_governed_scorer(real_artifact_dir)
         assert scorer._rollback_monitor is None
 
-    def test_active_mode_expected_hash_bound(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_active_mode_expected_hash_bound(self, active_artifact_dir: Path) -> None:
         stored = (active_artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
         scorer = wire_governed_scorer(active_artifact_dir)
         assert scorer._expected_model_hash == stored
 
-    def test_active_mode_envelope_bound(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_active_mode_envelope_bound(self, active_artifact_dir: Path) -> None:
         from agentic_core.L2_execution.determinism.replay_envelope import EnvelopeBuilder
 
-        builder = (
-            EnvelopeBuilder()
-            .with_replay_key("rk")
-            .with_policy_hash("ph")
-            .with_run_id("rid")
-        )
+        builder = EnvelopeBuilder().with_replay_key("rk").with_policy_hash("ph").with_run_id("rid")
         wire_governed_scorer(active_artifact_dir, envelope_builder=builder)
         envelope = builder.build()
         stored = (active_artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
@@ -438,6 +417,7 @@ class TestWireGoverneScorer:
 # ---------------------------------------------------------------------------
 # TestActiveModeRouting
 # ---------------------------------------------------------------------------
+
 
 class TestActiveModeRouting:
     """Active mode ML routing tests using the deterministic stub model.
@@ -540,12 +520,11 @@ class TestActiveModeRouting:
 # TestRollbackControls
 # ---------------------------------------------------------------------------
 
+
 class TestRollbackControls:
     """Tests for RollbackMonitor in isolation."""
 
-    def _make_monitor(
-        self, window_size: int = 20, max_fallback_rate: float = 0.10
-    ) -> RollbackMonitor:
+    def _make_monitor(self, window_size: int = 20, max_fallback_rate: float = 0.10) -> RollbackMonitor:
         criteria = ActivationCriteria(
             max_fallback_rate=max_fallback_rate,
             max_latency_p99_us=500,
@@ -646,6 +625,7 @@ class TestRollbackControls:
 # TestGovernedScorerRollback
 # ---------------------------------------------------------------------------
 
+
 class TestGovernedScorerRollback:
     """Tests for GovernedConfidenceScorer rollback behavior at score() time."""
 
@@ -682,9 +662,7 @@ class TestGovernedScorerRollback:
         scorer = self._make_active_scorer_with_monitor(window_size=20)
         # Trigger rollback via 10 fallback telemetry events
         for _ in range(10):
-            scorer.record_outcome(
-                _make_telemetry(source=ClassifierSource.HEURISTIC_FALLBACK)
-            )
+            scorer.record_outcome(_make_telemetry(source=ClassifierSource.HEURISTIC_FALLBACK))
 
         assert scorer.is_rolled_back
 
@@ -697,9 +675,7 @@ class TestGovernedScorerRollback:
         scorer = self._make_active_scorer_with_monitor(window_size=20)
         assert scorer.rollback_reason == ""
         for _ in range(10):
-            scorer.record_outcome(
-                _make_telemetry(source=ClassifierSource.HEURISTIC_FALLBACK)
-            )
+            scorer.record_outcome(_make_telemetry(source=ClassifierSource.HEURISTIC_FALLBACK))
         assert "fallback_rate" in scorer.rollback_reason
 
     def test_shadow_mode_scorer_never_has_rollback_monitor(self) -> None:
@@ -767,10 +743,9 @@ class TestGovernedScorerRollback:
 # TestTelemetryActivationMode
 # ---------------------------------------------------------------------------
 
+
 class TestTelemetryActivationMode:
-    def test_active_mode_emits_telemetry_on_score(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_active_mode_emits_telemetry_on_score(self, active_artifact_dir: Path) -> None:
         events: list[HealClassifierTelemetry] = []
         scorer = wire_governed_scorer(
             active_artifact_dir,
@@ -782,9 +757,7 @@ class TestTelemetryActivationMode:
         scorer.score(signal)
         assert len(events) == 1
 
-    def test_shadow_mode_emits_telemetry_unchanged(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_shadow_mode_emits_telemetry_unchanged(self, real_artifact_dir: Path) -> None:
         events: list[HealClassifierTelemetry] = []
         scorer = wire_governed_scorer(
             real_artifact_dir,
@@ -816,9 +789,7 @@ class TestTelemetryActivationMode:
 
         # Trigger rollback
         for _ in range(10):
-            scorer.record_outcome(
-                _make_telemetry(source=ClassifierSource.HEURISTIC_FALLBACK)
-            )
+            scorer.record_outcome(_make_telemetry(source=ClassifierSource.HEURISTIC_FALLBACK))
         assert scorer.is_rolled_back
 
         # Score after rollback — heuristic_fallback has no sink → no new events
@@ -826,9 +797,7 @@ class TestTelemetryActivationMode:
         scorer.score(_make_signal())
         assert len(events) == pre_count
 
-    def test_active_telemetry_run_id_bound(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_active_telemetry_run_id_bound(self, active_artifact_dir: Path) -> None:
         events: list[HealClassifierTelemetry] = []
         scorer = wire_governed_scorer(
             active_artifact_dir,
@@ -838,14 +807,10 @@ class TestTelemetryActivationMode:
         scorer.score(_make_signal())
         assert events[0].run_id == "run-id-check"
 
-    def test_activation_mode_reported_by_scorer(
-        self, active_artifact_dir: Path
-    ) -> None:
+    def test_activation_mode_reported_by_scorer(self, active_artifact_dir: Path) -> None:
         scorer = wire_governed_scorer(active_artifact_dir)
         assert scorer.activation_mode == ActivationMode.ACTIVE
 
-    def test_shadow_activation_mode_reported_by_scorer(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_shadow_activation_mode_reported_by_scorer(self, real_artifact_dir: Path) -> None:
         scorer = wire_governed_scorer(real_artifact_dir)
         assert scorer.activation_mode == ActivationMode.SHADOW

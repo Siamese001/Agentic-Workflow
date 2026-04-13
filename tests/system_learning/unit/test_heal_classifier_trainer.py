@@ -52,7 +52,7 @@ def _make_synthetic_df(n: int = 600, seed: int = 42) -> pd.DataFrame:
         {
             "run_id": [f"run-{i}" for i in range(n)],
             "signal_hash": [f"sig-{i}" for i in range(n)],
-            "failure_class": rng.integers(0, 4, size=n),       # 0–3, no UNKNOWN
+            "failure_class": rng.integers(0, 4, size=n),  # 0–3, no UNKNOWN
             "retry_count": rng.integers(0, 5, size=n),
             "error_code_hash": rng.integers(0, 2**16, size=n).astype(int),
             "lineage_hash_prefix": rng.integers(0, 2**16, size=n).astype(int),
@@ -108,8 +108,7 @@ def packed_artifact(tmp_path_factory: pytest.TempPathFactory) -> dict:
         total_rows_before_filter=len(df),
         inference_latency_us=50.0,
         rows_per_failure_class={"0": 150, "1": 150, "2": 150, "3": 150},
-        rows_per_repair_outcome={"HEALED_LOCAL": 150, "HEALED_LLM": 150,
-                                 "HEALED_HITL": 150, "FAILED": 150},
+        rows_per_repair_outcome={"HEALED_LOCAL": 150, "HEALED_LLM": 150, "HEALED_HITL": 150, "FAILED": 150},
     )
 
     return {
@@ -126,6 +125,7 @@ def packed_artifact(tmp_path_factory: pytest.TempPathFactory) -> dict:
 # ---------------------------------------------------------------------------
 # TestArtifactStructure
 # ---------------------------------------------------------------------------
+
 
 class TestArtifactStructure:
     def test_all_required_files_present(self, packed_artifact: dict) -> None:
@@ -157,6 +157,7 @@ class TestArtifactStructure:
 # TestModelVersionHash
 # ---------------------------------------------------------------------------
 
+
 class TestModelVersionHash:
     def test_hash_is_16_hex_chars(self, packed_artifact: dict) -> None:
         mvh: str = packed_artifact["meta"].model_version_hash
@@ -171,16 +172,12 @@ class TestModelVersionHash:
 
     def test_hash_derives_from_correct_inputs(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        content = b"".join(
-            (artifact_dir / f).read_bytes() for f in HASH_INPUT_FILES
-        )
+        content = b"".join((artifact_dir / f).read_bytes() for f in HASH_INPUT_FILES)
         expected = hashlib.sha256(content).hexdigest()[:16]
         stored = (artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
         assert stored == expected
 
-    def test_hash_changes_when_feature_schema_changes(
-        self, packed_artifact: dict, tmp_path: Path
-    ) -> None:
+    def test_hash_changes_when_feature_schema_changes(self, packed_artifact: dict, tmp_path: Path) -> None:
         """Mutating feature_schema.json must produce a different hash."""
         artifact_dir: Path = packed_artifact["artifact_dir"]
         import shutil
@@ -190,9 +187,7 @@ class TestModelVersionHash:
 
         schema = json.loads((alt_dir / "feature_schema.json").read_text(encoding="utf-8"))
         schema["schema_version"] = "MUTATED"
-        (alt_dir / "feature_schema.json").write_text(
-            json.dumps(schema, sort_keys=True), encoding="utf-8"
-        )
+        (alt_dir / "feature_schema.json").write_text(json.dumps(schema, sort_keys=True), encoding="utf-8")
 
         original_hash = (artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
         mutated_hash = compute_model_version_hash(alt_dir)
@@ -209,39 +204,30 @@ class TestModelVersionHash:
 # TestFeatureSchemaContract
 # ---------------------------------------------------------------------------
 
+
 class TestFeatureSchemaContract:
-    def test_feature_order_matches_classifier_features(
-        self, packed_artifact: dict
-    ) -> None:
+    def test_feature_order_matches_classifier_features(self, packed_artifact: dict) -> None:
         from agentic_core.L2_execution.healers.heal_classifier_model import ClassifierFeatures
 
         expected = list(ClassifierFeatures.__dataclass_fields__.keys())
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        schema = json.loads(
-            (artifact_dir / "feature_schema.json").read_text(encoding="utf-8")
-        )
+        schema = json.loads((artifact_dir / "feature_schema.json").read_text(encoding="utf-8"))
         assert schema["feature_order"] == expected
 
     def test_feature_order_matches_constants(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        schema = json.loads(
-            (artifact_dir / "feature_schema.json").read_text(encoding="utf-8")
-        )
+        schema = json.loads((artifact_dir / "feature_schema.json").read_text(encoding="utf-8"))
         assert schema["feature_order"] == FEATURE_ORDER
 
     def test_schema_version_present(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        schema = json.loads(
-            (artifact_dir / "feature_schema.json").read_text(encoding="utf-8")
-        )
+        schema = json.loads((artifact_dir / "feature_schema.json").read_text(encoding="utf-8"))
         assert "schema_version" in schema
         assert schema["schema_version"] == "1.0"
 
     def test_label_classes_present_and_sorted(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        schema = json.loads(
-            (artifact_dir / "feature_schema.json").read_text(encoding="utf-8")
-        )
+        schema = json.loads((artifact_dir / "feature_schema.json").read_text(encoding="utf-8"))
         assert "label_classes" in schema
         # Label classes should match REPAIR_OUTCOME_CLASSES (sorted by LabelEncoder)
         assert set(schema["label_classes"]) == set(REPAIR_OUTCOME_CLASSES)
@@ -251,40 +237,37 @@ class TestFeatureSchemaContract:
 # TestMetadataConsistency
 # ---------------------------------------------------------------------------
 
+
 class TestMetadataConsistency:
     def test_row_counts_sum_correctly(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        meta = json.loads(
-            (artifact_dir / "training_meta.json").read_text(encoding="utf-8")
-        )
+        meta = json.loads((artifact_dir / "training_meta.json").read_text(encoding="utf-8"))
         total = meta["total_rows_after_filter"]
         assert total == meta["n_train"] + meta["n_calib"] + meta["n_val"]
 
     def test_row_counts_match_training_result(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        meta = json.loads(
-            (artifact_dir / "training_meta.json").read_text(encoding="utf-8")
-        )
+        meta = json.loads((artifact_dir / "training_meta.json").read_text(encoding="utf-8"))
         assert meta["n_train"] == packed_artifact["n_train"]
         assert meta["n_calib"] == packed_artifact["n_calib"]
         assert meta["n_val"] == packed_artifact["n_val"]
 
     def test_model_config_fields_present(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        meta = json.loads(
-            (artifact_dir / "training_meta.json").read_text(encoding="utf-8")
-        )
+        meta = json.loads((artifact_dir / "training_meta.json").read_text(encoding="utf-8"))
         required = {
-            "n_estimators", "max_depth", "learning_rate",
-            "subsample", "min_samples_leaf", "random_state",
+            "n_estimators",
+            "max_depth",
+            "learning_rate",
+            "subsample",
+            "min_samples_leaf",
+            "random_state",
         }
         assert required.issubset(set(meta["model_config"].keys()))
 
     def test_artifact_version_is_v1(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        meta = json.loads(
-            (artifact_dir / "training_meta.json").read_text(encoding="utf-8")
-        )
+        meta = json.loads((artifact_dir / "training_meta.json").read_text(encoding="utf-8"))
         assert meta["artifact_version"] == "v1"
 
 
@@ -292,59 +275,61 @@ class TestMetadataConsistency:
 # TestCalibrationAndOodMeta
 # ---------------------------------------------------------------------------
 
+
 class TestCalibrationAndOodMeta:
     def test_calibration_meta_required_fields(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        calib = json.loads(
-            (artifact_dir / "calibration_meta.json").read_text(encoding="utf-8")
-        )
-        required = {"ece", "macro_f1", "macro_auroc", "method", "n_calib",
-                    "per_class_f1", "per_failure_class_f1", "classification_report"}
+        calib = json.loads((artifact_dir / "calibration_meta.json").read_text(encoding="utf-8"))
+        required = {
+            "ece",
+            "macro_f1",
+            "macro_auroc",
+            "method",
+            "n_calib",
+            "per_class_f1",
+            "per_failure_class_f1",
+            "classification_report",
+        }
         assert required.issubset(set(calib.keys()))
 
     def test_calibration_method_is_isotonic(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        calib = json.loads(
-            (artifact_dir / "calibration_meta.json").read_text(encoding="utf-8")
-        )
+        calib = json.loads((artifact_dir / "calibration_meta.json").read_text(encoding="utf-8"))
         assert calib["method"] == "isotonic"
 
     def test_ece_is_non_negative(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        calib = json.loads(
-            (artifact_dir / "calibration_meta.json").read_text(encoding="utf-8")
-        )
+        calib = json.loads((artifact_dir / "calibration_meta.json").read_text(encoding="utf-8"))
         assert calib["ece"] >= 0.0
 
     def test_ood_meta_required_fields(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        ood = json.loads(
-            (artifact_dir / "ood_meta.json").read_text(encoding="utf-8")
-        )
-        required = {"fpr_train", "method", "nu", "kernel", "threshold",
-                    "sentinel_budget_remaining", "sentinel_failure_class_unknown_index"}
+        ood = json.loads((artifact_dir / "ood_meta.json").read_text(encoding="utf-8"))
+        required = {
+            "fpr_train",
+            "method",
+            "nu",
+            "kernel",
+            "threshold",
+            "sentinel_budget_remaining",
+            "sentinel_failure_class_unknown_index",
+        }
         assert required.issubset(set(ood.keys()))
 
     def test_ood_method_is_svm(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        ood = json.loads(
-            (artifact_dir / "ood_meta.json").read_text(encoding="utf-8")
-        )
+        ood = json.loads((artifact_dir / "ood_meta.json").read_text(encoding="utf-8"))
         assert ood["method"] == "OneClassSVM"
 
     def test_ood_sentinel_values_correct(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        ood = json.loads(
-            (artifact_dir / "ood_meta.json").read_text(encoding="utf-8")
-        )
+        ood = json.loads((artifact_dir / "ood_meta.json").read_text(encoding="utf-8"))
         assert ood["sentinel_budget_remaining"] == 1.0
         assert ood["sentinel_failure_class_unknown_index"] == 4
 
     def test_hash_manifest_covers_model_pkl(self, packed_artifact: dict) -> None:
         artifact_dir: Path = packed_artifact["artifact_dir"]
-        manifest = json.loads(
-            (artifact_dir / "hash_manifest.json").read_text(encoding="utf-8")
-        )
+        manifest = json.loads((artifact_dir / "hash_manifest.json").read_text(encoding="utf-8"))
         assert "model.pkl" in manifest
         assert len(manifest["model.pkl"]) == 64  # SHA-256 hex = 64 chars
 
@@ -352,6 +337,7 @@ class TestCalibrationAndOodMeta:
 # ---------------------------------------------------------------------------
 # TestExclusionRules
 # ---------------------------------------------------------------------------
+
 
 class TestExclusionRules:
     def test_ood_flag_rows_excluded(self) -> None:

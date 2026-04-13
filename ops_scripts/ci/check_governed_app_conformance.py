@@ -184,9 +184,7 @@ def _check_formal_exception_entry(  # noqa: PLR0912
     except (AttributeError, ValueError) as exc:
         excf02_pass = False
         excf02_detail = str(exc)[:40]
-    results.append(
-        (f"EXCF02 [{entry.app_name}] exception_reason_code valid", excf02_pass, excf02_detail)
-    )
+    results.append((f"EXCF02 [{entry.app_name}] exception_reason_code valid", excf02_pass, excf02_detail))
 
     # EXCF03: blocked_layers non-empty
     excf03_pass = len(entry.blocked_layers) > 0

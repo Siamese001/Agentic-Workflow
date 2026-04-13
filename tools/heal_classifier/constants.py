@@ -44,11 +44,11 @@ INFERENCE_LATENCY_US_BUDGET: int = 1_000  # 1 ms hard budget
 
 # Failure class names — index must match HealFailureClass enum declaration order
 FAILURE_CLASS_NAMES: list[str] = [
-    "DRIFT_DETECTION",   # index 0
-    "IMPORT_BOUNDARY",   # index 1
-    "LAYER_INVERSION",   # index 2
-    "SSOT_DRIFT",        # index 3
-    "UNKNOWN",           # index 4 — excluded from training
+    "DRIFT_DETECTION",  # index 0
+    "IMPORT_BOUNDARY",  # index 1
+    "LAYER_INVERSION",  # index 2
+    "SSOT_DRIFT",  # index 3
+    "UNKNOWN",  # index 4 — excluded from training
 ]
 
 NON_UNKNOWN_CLASSES: list[str] = FAILURE_CLASS_NAMES[:4]

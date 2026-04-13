@@ -75,6 +75,7 @@ _HEALED_LABELS: frozenset[str] = frozenset({"HEALED_LOCAL", "HEALED_LLM"})
 # Production HealClassifierModel implementation
 # ---------------------------------------------------------------------------
 
+
 class _PackagedHealClassifierModel(HealClassifierModel):
     """Production HealClassifierModel backed by a loaded sklearn GBDT + OOD detector.
 
@@ -106,14 +107,16 @@ class _PackagedHealClassifierModel(HealClassifierModel):
         import numpy as np
 
         X = np.array(
-            [[
-                float(features.failure_class),
-                float(features.retry_count),
-                float(features.error_code_hash),
-                float(features.lineage_hash_prefix),
-                float(features.budget_remaining),
-                float(features.source_layer_id),
-            ]]
+            [
+                [
+                    float(features.failure_class),
+                    float(features.retry_count),
+                    float(features.error_code_hash),
+                    float(features.lineage_hash_prefix),
+                    float(features.budget_remaining),
+                    float(features.source_layer_id),
+                ]
+            ]
         )
 
         t_start = time.perf_counter()
@@ -124,11 +127,7 @@ class _PackagedHealClassifierModel(HealClassifierModel):
         pred_label = self._label_classes[pred_idx]
 
         heal_confidence = float(
-            sum(
-                p
-                for lbl, p in zip(self._label_classes, probs_row)
-                if lbl in _HEALED_LABELS
-            )
+            sum(p for lbl, p in zip(self._label_classes, probs_row) if lbl in _HEALED_LABELS)
         )
 
         recommended_tier = _OUTCOME_TO_TIER.get(pred_label, "LOW")
@@ -139,9 +138,7 @@ class _PackagedHealClassifierModel(HealClassifierModel):
         return HealClassifierResult(
             heal_confidence=heal_confidence,
             recommended_tier=recommended_tier,
-            confidence_per_tier={
-                lbl: float(p) for lbl, p in zip(self._label_classes, probs_row)
-            },
+            confidence_per_tier={lbl: float(p) for lbl, p in zip(self._label_classes, probs_row)},
             ood_flag=ood_flag,
             source=ClassifierSource.ML_CLASSIFIER,
             model_version_hash=self._mvh,
@@ -153,6 +150,7 @@ class _PackagedHealClassifierModel(HealClassifierModel):
 # Artifact verification helpers
 # ---------------------------------------------------------------------------
 
+
 def _verify_completeness(artifact_dir: Path) -> list[str]:
     """Return list of missing required files; empty list = complete."""
     return [f for f in _REQUIRED_FILES if not (artifact_dir / f).exists()]
@@ -160,15 +158,14 @@ def _verify_completeness(artifact_dir: Path) -> list[str]:
 
 def _compute_model_version_hash(artifact_dir: Path) -> str:
     """SHA-256(model.pkl || ood_detector.pkl || feature_schema.json)[:16]."""
-    content = b"".join(
-        (artifact_dir / f).read_bytes() for f in _HASH_INPUT_FILES
-    )
+    content = b"".join((artifact_dir / f).read_bytes() for f in _HASH_INPUT_FILES)
     return hashlib.sha256(content).hexdigest()[:16]
 
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def load_artifact(artifact_dir: Path) -> tuple[HealClassifierModel, str]:
     """Load and fully verify a packaged artifact.
@@ -181,16 +178,12 @@ def load_artifact(artifact_dir: Path) -> tuple[HealClassifierModel, str]:
     """
     missing = _verify_completeness(artifact_dir)
     if missing:
-        raise HealClassifierLoadError(
-            f"Artifact incomplete — missing files: {missing}"
-        )
+        raise HealClassifierLoadError(f"Artifact incomplete — missing files: {missing}")
 
     computed = _compute_model_version_hash(artifact_dir)
     stored = (artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
     if stored != computed:
-        raise HealClassifierLoadError(
-            f"model_version_hash mismatch: stored={stored!r} computed={computed!r}"
-        )
+        raise HealClassifierLoadError(f"model_version_hash mismatch: stored={stored!r} computed={computed!r}")
 
     try:
         with (artifact_dir / "model.pkl").open("rb") as fh:
@@ -198,16 +191,10 @@ def load_artifact(artifact_dir: Path) -> tuple[HealClassifierModel, str]:
         with (artifact_dir / "ood_detector.pkl").open("rb") as fh:
             ood_detector = pickle.load(fh)
     except (pickle.UnpicklingError, AttributeError, ImportError) as exc:
-        raise HealClassifierLoadError(
-            f"Failed to unpickle model files: {exc}"
-        ) from exc
+        raise HealClassifierLoadError(f"Failed to unpickle model files: {exc}") from exc
 
-    feature_schema = json.loads(
-        (artifact_dir / "feature_schema.json").read_text(encoding="utf-8")
-    )
-    ood_meta = json.loads(
-        (artifact_dir / "ood_meta.json").read_text(encoding="utf-8")
-    )
+    feature_schema = json.loads((artifact_dir / "feature_schema.json").read_text(encoding="utf-8"))
+    ood_meta = json.loads((artifact_dir / "ood_meta.json").read_text(encoding="utf-8"))
 
     model = _PackagedHealClassifierModel(
         raw_model=raw_model,

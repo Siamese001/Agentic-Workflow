@@ -95,6 +95,28 @@ T0_KEYWORDS = {
 # Single-word trigger is sufficient; all notion-intent prompts contain "notion".
 NOTION_KEYWORDS: frozenset[str] = frozenset({"notion"})
 
+# Keywords that indicate runtime observability intent — route to otel_mcp.
+_OTEL_SIGNALS: frozenset[str] = frozenset(
+    {
+        "otel",
+        "opentelemetry",
+        "runtime trace",
+        "runtime traces",
+        "live span",
+        "live spans",
+        "telemetry",
+        "healing chain",
+        "policy decision",
+        "policy decisions",
+        "circuit breaker",
+        "safety plane",
+        "runtime anomal",
+        "runtime rca",
+        "what happened at runtime",
+        "what happened during",
+    }
+)
+
 # Keywords that indicate pytest / test-execution intent — route to pytest_mcp, not run_command.
 _PYTEST_SIGNALS: frozenset[str] = frozenset(
     {
@@ -116,6 +138,12 @@ _PYTEST_SIGNALS: frozenset[str] = frozenset(
         "run suite",
     }
 )
+
+
+def _detect_otel_intent(prompt: str) -> bool:
+    """Return True when the prompt signals a runtime observability need that otel_mcp should serve."""
+    lower = prompt.lower()
+    return any(sig in lower for sig in _OTEL_SIGNALS)
 
 
 def _detect_pytest_intent(prompt: str) -> bool:
@@ -226,6 +254,18 @@ _NOTION_SR_HINT = (
     "    Read  \u2192 mcp6_API-retrieve-a-page(page_id=...)  /  mcp6_API-post-search(query=...)\n"
     "    Write \u2192 mcp6_API-post-page(parent=..., properties=...)  /  mcp6_API-patch-page(page_id=...)\n"
     "  Auth: NOTION_TOKEN must be set in OS env (pre_mcp_gate blocks with setup instructions if absent)."
+)
+
+_OTEL_SR_HINT = (
+    "  OTEL INTENT DETECTED: use otel_mcp tools for runtime observability.\n"
+    "    Health / freshness  \u2192 mcp7_otel_status()\n"
+    "    Fetch trace         \u2192 mcp7_otel_trace(trace_id=...)\n"
+    "    Agent spans         \u2192 mcp7_otel_spans_by_agent(agent_class=...)\n"
+    "    Anomalies           \u2192 mcp7_otel_anomalies(severity='any')\n"
+    "    Healing chain       \u2192 mcp7_otel_healing_chain(trace_id=...)\n"
+    "    Policy decisions    \u2192 mcp7_otel_policy_decisions(time_window_hours=24)\n"
+    "    Metrics             \u2192 mcp7_otel_metrics_summary()\n"
+    "  Note: mcp7_ prefix may shift on server add/remove — server name otel_mcp is the SSOT."
 )
 
 _PYTEST_SR_HINT = (
@@ -474,6 +514,17 @@ def main() -> int:
     else:
         print("[pre_prompt_classifier] vector_db: semantic_retrieval=NOT_DETECTED", file=sys.stderr)
 
+    # otel_mcp routing trace: emitted for every prompt so otel_mcp candidate visibility is observable.
+    if _detect_otel_intent(prompt):
+        print(
+            "[pre_prompt_classifier] OTEL_MCP_TRACE: otel_intent=DETECTED "
+            "\u2014 candidate: mcp7_otel_status / mcp7_otel_trace / mcp7_otel_spans_by_agent "
+            "/ mcp7_otel_anomalies / mcp7_otel_healing_chain / mcp7_otel_policy_decisions.",
+            file=sys.stderr,
+        )
+    else:
+        print("[pre_prompt_classifier] OTEL_MCP_TRACE: otel_intent=NOT_DETECTED", file=sys.stderr)
+
     # pytest_mcp routing trace: emitted for every prompt so pytest_mcp candidate visibility is observable.
     if _detect_pytest_intent(prompt):
         print(
@@ -552,6 +603,8 @@ def main() -> int:
         mandate = _SR_MANDATE.format(tier=tier)
         if any(kw in prompt.lower() for kw in NOTION_KEYWORDS):
             mandate = mandate + "\n" + _NOTION_SR_HINT
+        if _detect_otel_intent(prompt):
+            mandate = mandate + "\n" + _OTEL_SR_HINT
         if _detect_pytest_intent(prompt):
             mandate = mandate + "\n" + _PYTEST_SR_HINT
         print(mandate, file=sys.stderr)

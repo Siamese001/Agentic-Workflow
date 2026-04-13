@@ -37,9 +37,7 @@ class _IsotonicCalibratedModel:
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         raw = self._base.predict_proba(X)
-        calibrated = np.column_stack(
-            [cal.predict(raw[:, i]) for i, cal in enumerate(self._calibrators)]
-        )
+        calibrated = np.column_stack([cal.predict(raw[:, i]) for i, cal in enumerate(self._calibrators)])
         # Renormalise rows to sum to 1
         row_sums = calibrated.sum(axis=1, keepdims=True)
         row_sums[row_sums == 0.0] = 1.0
@@ -85,8 +83,8 @@ class EvalMetrics:
 
 @dataclass
 class TrainingResult:
-    model: Any                    # CalibratedClassifierCV
-    ood_detector: Any             # OneClassSVM
+    model: Any  # CalibratedClassifierCV
+    ood_detector: Any  # OneClassSVM
     config: TrainerConfig
     train_metrics: EvalMetrics
     val_metrics: EvalMetrics
@@ -101,6 +99,7 @@ class TrainingResult:
 # ---------------------------------------------------------------------------
 # Metric helpers
 # ---------------------------------------------------------------------------
+
 
 def compute_ece(probs: np.ndarray, y_true: np.ndarray, n_bins: int = 10) -> float:
     """Expected Calibration Error — multi-class via max-confidence binning."""
@@ -119,16 +118,12 @@ def compute_ece(probs: np.ndarray, y_true: np.ndarray, n_bins: int = 10) -> floa
     return float(ece)
 
 
-def compute_macro_auroc(
-    probs: np.ndarray, y_true: np.ndarray, n_classes: int
-) -> float:
+def compute_macro_auroc(probs: np.ndarray, y_true: np.ndarray, n_classes: int) -> float:
     try:
         y_bin = label_binarize(y_true, classes=list(range(n_classes)))
         if n_classes == 2:
             y_bin = np.hstack([1 - y_bin, y_bin])
-        return float(
-            roc_auc_score(y_bin, probs, multi_class="ovr", average="macro")
-        )
+        return float(roc_auc_score(y_bin, probs, multi_class="ovr", average="macro"))
     except (ValueError, TypeError):
         return 0.0
 
@@ -146,16 +141,12 @@ def compute_eval_metrics(
 
     macro_f1 = float(f1_score(y, preds, average="macro", zero_division=0))
     per_class_f1 = {
-        cls: float(
-            f1_score(y, preds, labels=[i], average="macro", zero_division=0)
-        )
+        cls: float(f1_score(y, preds, labels=[i], average="macro", zero_division=0))
         for i, cls in enumerate(label_classes)
     }
     ece = compute_ece(probs, y)
     macro_auroc = compute_macro_auroc(probs, y, n_classes)
-    report = classification_report(
-        y, preds, target_names=label_classes, zero_division=0
-    )
+    report = classification_report(y, preds, target_names=label_classes, zero_division=0)
 
     per_failure_class_f1: dict[str, float] = {}
     if failure_class_col is not None:
@@ -179,6 +170,7 @@ def compute_eval_metrics(
 # ---------------------------------------------------------------------------
 # Trainer
 # ---------------------------------------------------------------------------
+
 
 class HealClassifierTrainer:
     def __init__(self, config: TrainerConfig | None = None) -> None:
@@ -219,12 +211,8 @@ class HealClassifierTrainer:
         ood_threshold = float(np.percentile(train_scores, 1))
         ood_fpr_train = float((train_scores < ood_threshold).mean())
 
-        train_metrics = compute_eval_metrics(
-            calibrated, X_train, y_train, label_classes, failure_class_train
-        )
-        val_metrics = compute_eval_metrics(
-            calibrated, X_val, y_val, label_classes, failure_class_val
-        )
+        train_metrics = compute_eval_metrics(calibrated, X_train, y_train, label_classes, failure_class_train)
+        val_metrics = compute_eval_metrics(calibrated, X_val, y_val, label_classes, failure_class_val)
 
         return TrainingResult(
             model=calibrated,

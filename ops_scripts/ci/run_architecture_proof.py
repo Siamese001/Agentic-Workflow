@@ -138,10 +138,16 @@ def _print_summary(
     print("  ARCHITECTURE PROOF SUMMARY")
     print("=" * width)
     print(f"  {'Suite':<4}  {'Label':<36}  {'Status':>6}  {'Time':>7}")
-    print(f"  {'─'*4}  {'─'*36}  {'─'*6}  {'─'*7}")
+    print(f"  {'─' * 4}  {'─' * 36}  {'─' * 6}  {'─' * 7}")
 
     all_required_pass = True
-    for suite_id, label, passed, elapsed, skipped in results:
+    for (
+        suite_id,
+        label,
+        passed,
+        elapsed,
+        skipped,
+    ) in results:  # progress_bar: display-only, iterates pre-computed results
         if skipped:
             status_str = SKIP_MARK
             time_str = "  —"
@@ -182,6 +188,7 @@ def run_architecture_proof(
     target_ids = set(suites) if suites else {s["id"] for s in _SUITES}
     results: list[tuple[str, str, bool, float, bool]] = []
 
+    suite_count = len([s for s in _SUITES if s["id"] in target_ids])
     for suite in _SUITES:
         sid = suite["id"]
         if sid not in target_ids:
@@ -189,8 +196,9 @@ def run_architecture_proof(
 
         skip = (suite["skippable"] and skip_regression) or sid not in target_ids
         label = suite["label"]
+        progress_bar = f"[{len(results) + 1}/{suite_count}]"
 
-        print(f"  ── Running {sid}: {label} {'(skipping)' if skip else ''}")
+        print(f"  ── {progress_bar} Running {sid}: {label} {'(skipping)' if skip else ''}")
         if not skip:
             print(f"     $ python {' '.join(suite['cmd'])}")
         print()

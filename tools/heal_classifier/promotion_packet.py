@@ -42,13 +42,9 @@ class PromotionPacketBuilder:
             shutil.rmtree(artifact_dest)
         shutil.copytree(artifact_meta.artifact_dir, artifact_dest)
 
-        training_meta = json.loads(
-            (artifact_dest / "training_meta.json").read_text(encoding="utf-8")
-        )
+        training_meta = json.loads((artifact_dest / "training_meta.json").read_text(encoding="utf-8"))
 
-        uwg_packet_id = (
-            f"uwg-heal-classifier-v1-{artifact_meta.model_version_hash}"
-        )
+        uwg_packet_id = f"uwg-heal-classifier-v1-{artifact_meta.model_version_hash}"
 
         # promotion_record.json — proposed_activation_mode invariant enforced here
         promotion_record: dict = {
@@ -72,7 +68,7 @@ class PromotionPacketBuilder:
             "artifact_name": "heal_classifier",
             "artifact_version": "v1",
             "binding_instruction": (
-                'Bind model_version_hash into '
+                "Bind model_version_hash into "
                 'EnvelopeBuilder.with_ml_model_hash("heal_classifier", <model_version_hash>) '
                 "at E1 startup. "
                 "Set ConfidenceScorer(shadow_mode=True, "
@@ -120,8 +116,7 @@ def verify_promotion_packet(packet_dir: Path) -> tuple[bool, list[str]]:
         mode = record.get("proposed_activation_mode")
         if mode != _FIRST_PACKET_ACTIVATION_MODE:
             issues.append(
-                f"invalid: proposed_activation_mode='{mode}'"
-                f" (must be '{_FIRST_PACKET_ACTIVATION_MODE}')"
+                f"invalid: proposed_activation_mode='{mode}' (must be '{_FIRST_PACKET_ACTIVATION_MODE}')"
             )
 
     return len(issues) == 0, issues

@@ -4233,9 +4233,7 @@ def run_exception_framework_proof() -> bool:
     ]
     no_adhoc_pass = len(ad_hoc) == 0
     formal_exceptions = [
-        name
-        for name, entry in APP_REGISTRY.items()
-        if isinstance(entry, FormalExceptionEntry)
+        name for name, entry in APP_REGISTRY.items() if isinstance(entry, FormalExceptionEntry)
     ]
 
     overall = penta_pass and eval_pass and uw_pass and no_adhoc_pass

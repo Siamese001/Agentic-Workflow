@@ -54,6 +54,7 @@ from tools.heal_classifier.constants import REPAIR_OUTCOME_CLASSES
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 def _make_synthetic_df(n: int = 500, seed: int = 0) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
     outcomes = np.tile(REPAIR_OUTCOME_CLASSES, n // 4 + 1)[:n]
@@ -101,9 +102,12 @@ def real_artifact_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
     trainer = HealClassifierTrainer(_fast_config())
     result = trainer.train(
-        split.X_train, split.y_train,
-        split.X_calib, split.y_calib,
-        split.X_val, split.y_val,
+        split.X_train,
+        split.y_train,
+        split.X_calib,
+        split.y_calib,
+        split.X_val,
+        split.y_val,
         list(split.label_encoder.classes_),
         failure_class_train=split.failure_class_train,
         failure_class_val=split.failure_class_val,
@@ -133,6 +137,7 @@ def _make_signal(
 # ---------------------------------------------------------------------------
 # TestArtifactLoading
 # ---------------------------------------------------------------------------
+
 
 class TestArtifactLoading:
     def test_valid_artifact_loads_successfully(self, real_artifact_dir: Path) -> None:
@@ -169,9 +174,7 @@ class TestArtifactLoading:
         assert result.recommended_tier in ("HIGH", "MEDIUM", "LOW", "HITL")
         assert 0.0 <= result.heal_confidence <= 1.0
 
-    def test_incomplete_artifact_raises_load_error(
-        self, real_artifact_dir: Path, tmp_path: Path
-    ) -> None:
+    def test_incomplete_artifact_raises_load_error(self, real_artifact_dir: Path, tmp_path: Path) -> None:
         incomplete = tmp_path / "incomplete"
         shutil.copytree(real_artifact_dir, incomplete)
         (incomplete / "ood_detector.pkl").unlink()
@@ -179,9 +182,7 @@ class TestArtifactLoading:
         with pytest.raises(HealClassifierLoadError, match="incomplete"):
             load_artifact(incomplete)
 
-    def test_tampered_hash_raises_load_error(
-        self, real_artifact_dir: Path, tmp_path: Path
-    ) -> None:
+    def test_tampered_hash_raises_load_error(self, real_artifact_dir: Path, tmp_path: Path) -> None:
         tampered = tmp_path / "tampered"
         shutil.copytree(real_artifact_dir, tampered)
         (tampered / "model_version_hash").write_text("0000000000000000", encoding="utf-8")
@@ -189,9 +190,7 @@ class TestArtifactLoading:
         with pytest.raises(HealClassifierLoadError, match="mismatch"):
             load_artifact(tampered)
 
-    def test_corrupted_model_pkl_raises_load_error(
-        self, real_artifact_dir: Path, tmp_path: Path
-    ) -> None:
+    def test_corrupted_model_pkl_raises_load_error(self, real_artifact_dir: Path, tmp_path: Path) -> None:
         corrupt = tmp_path / "corrupt"
         shutil.copytree(real_artifact_dir, corrupt)
         # Overwrite model.pkl with garbage — this changes the hash too so we
@@ -201,6 +200,7 @@ class TestArtifactLoading:
         # but model.pkl is still unloadable.
         import hashlib
         from tools.heal_classifier.constants import HASH_INPUT_FILES
+
         (corrupt / "model.pkl").write_bytes(b"not-a-pickle")
         content = b"".join((corrupt / f).read_bytes() for f in HASH_INPUT_FILES)
         (corrupt / "model_version_hash").write_text(
@@ -213,6 +213,7 @@ class TestArtifactLoading:
 # ---------------------------------------------------------------------------
 # TestTryLoadArtifact  (fail-closed)
 # ---------------------------------------------------------------------------
+
 
 class TestTryLoadArtifact:
     def test_none_path_returns_none_and_empty(self) -> None:
@@ -236,9 +237,7 @@ class TestTryLoadArtifact:
         assert model is None
         assert mvh == ""
 
-    def test_tampered_hash_returns_none_and_empty(
-        self, real_artifact_dir: Path, tmp_path: Path
-    ) -> None:
+    def test_tampered_hash_returns_none_and_empty(self, real_artifact_dir: Path, tmp_path: Path) -> None:
         tampered = tmp_path / "tampered"
         shutil.copytree(real_artifact_dir, tampered)
         (tampered / "model_version_hash").write_text("aaaaaaaaaaaaaaaa", encoding="utf-8")
@@ -257,6 +256,7 @@ class TestTryLoadArtifact:
 # TestReplayEnvelopeBinding
 # ---------------------------------------------------------------------------
 
+
 class TestReplayEnvelopeBinding:
     def _make_builder(self) -> EnvelopeBuilder:
         return (
@@ -266,13 +266,9 @@ class TestReplayEnvelopeBinding:
             .with_run_id("run-test-wiring")
         )
 
-    def test_valid_artifact_binds_hash_into_envelope(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_valid_artifact_binds_hash_into_envelope(self, real_artifact_dir: Path) -> None:
         builder = self._make_builder()
-        wire_shadow_mode_scorer(
-            real_artifact_dir, run_id="r1", envelope_builder=builder
-        )
+        wire_shadow_mode_scorer(real_artifact_dir, run_id="r1", envelope_builder=builder)
         envelope = builder.build()
         assert "heal_classifier" in envelope.ml_model_hashes
         assert len(envelope.ml_model_hashes["heal_classifier"]) == 16
@@ -283,20 +279,14 @@ class TestReplayEnvelopeBinding:
         envelope = builder.build()
         assert "heal_classifier" not in envelope.ml_model_hashes
 
-    def test_hash_in_envelope_matches_artifact_file(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_hash_in_envelope_matches_artifact_file(self, real_artifact_dir: Path) -> None:
         builder = self._make_builder()
-        wire_shadow_mode_scorer(
-            real_artifact_dir, run_id="r1", envelope_builder=builder
-        )
+        wire_shadow_mode_scorer(real_artifact_dir, run_id="r1", envelope_builder=builder)
         envelope = builder.build()
         stored = (real_artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
         assert envelope.ml_model_hashes["heal_classifier"] == stored
 
-    def test_envelope_hash_differs_with_vs_without_model(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_envelope_hash_differs_with_vs_without_model(self, real_artifact_dir: Path) -> None:
         b1 = self._make_builder()
         wire_shadow_mode_scorer(real_artifact_dir, run_id="r1", envelope_builder=b1)
         e1 = b1.build()
@@ -307,13 +297,9 @@ class TestReplayEnvelopeBinding:
 
         assert e1.envelope_hash() != e2.envelope_hash()
 
-    def test_scorer_expected_hash_matches_envelope_hash(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_scorer_expected_hash_matches_envelope_hash(self, real_artifact_dir: Path) -> None:
         builder = self._make_builder()
-        scorer = wire_shadow_mode_scorer(
-            real_artifact_dir, run_id="r1", envelope_builder=builder
-        )
+        scorer = wire_shadow_mode_scorer(real_artifact_dir, run_id="r1", envelope_builder=builder)
         envelope = builder.build()
         # Both scorer and envelope must carry the same verified hash
         assert scorer._expected_model_hash == envelope.ml_model_hashes["heal_classifier"]
@@ -323,10 +309,9 @@ class TestReplayEnvelopeBinding:
 # TestHashMismatchFallback
 # ---------------------------------------------------------------------------
 
+
 class TestHashMismatchFallback:
-    def test_scorer_falls_back_to_heuristic_when_hash_mismatch(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_scorer_falls_back_to_heuristic_when_hash_mismatch(self, real_artifact_dir: Path) -> None:
         """Per-inference fallback: wrong expected_model_hash → heuristic tier used."""
         model, real_mvh = load_artifact(real_artifact_dir)
 
@@ -344,9 +329,7 @@ class TestHashMismatchFallback:
         if score.ml_result is not None:
             assert score.ml_result.source == ClassifierSource.HEURISTIC_FALLBACK
 
-    def test_scorer_uses_ml_when_hash_matches(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_scorer_uses_ml_when_hash_matches(self, real_artifact_dir: Path) -> None:
         model, real_mvh = load_artifact(real_artifact_dir)
 
         scorer = ConfidenceScorer(
@@ -366,9 +349,7 @@ class TestHashMismatchFallback:
             ClassifierSource.HEURISTIC_FALLBACK,  # OOD possible
         )
 
-    def test_wire_scorer_has_correct_expected_hash(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_wire_scorer_has_correct_expected_hash(self, real_artifact_dir: Path) -> None:
         scorer = wire_shadow_mode_scorer(real_artifact_dir, run_id="r1")
         stored = (real_artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
         assert scorer._expected_model_hash == stored
@@ -378,16 +359,13 @@ class TestHashMismatchFallback:
 # TestShadowModeBehavior
 # ---------------------------------------------------------------------------
 
+
 class TestShadowModeBehavior:
-    def test_shadow_mode_is_always_true_from_wire(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_shadow_mode_is_always_true_from_wire(self, real_artifact_dir: Path) -> None:
         scorer = wire_shadow_mode_scorer(real_artifact_dir, run_id="r1")
         assert scorer._shadow_mode is True
 
-    def test_routing_tier_is_from_heuristic_in_shadow_mode(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_routing_tier_is_from_heuristic_in_shadow_mode(self, real_artifact_dir: Path) -> None:
         """In shadow mode: score.tier must equal the heuristic tier, not ML tier."""
         model, mvh = load_artifact(real_artifact_dir)
         scorer = ConfidenceScorer(
@@ -406,9 +384,7 @@ class TestShadowModeBehavior:
         # Routing tier must match heuristic
         assert ml_score.tier == heuristic_score.tier
 
-    def test_ml_result_is_attached_in_shadow_mode(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_ml_result_is_attached_in_shadow_mode(self, real_artifact_dir: Path) -> None:
         """score.ml_result must be populated when model is present."""
         model, mvh = load_artifact(real_artifact_dir)
         scorer = ConfidenceScorer(
@@ -420,9 +396,7 @@ class TestShadowModeBehavior:
         score = scorer.score(signal)
         assert score.ml_result is not None
 
-    def test_telemetry_carries_real_model_version_hash(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_telemetry_carries_real_model_version_hash(self, real_artifact_dir: Path) -> None:
         events: list[HealClassifierTelemetry] = []
         model, mvh = load_artifact(real_artifact_dir)
         scorer = ConfidenceScorer(
@@ -440,9 +414,7 @@ class TestShadowModeBehavior:
         assert event.run_id == "run-wiring-e2e"
         assert event.model_version_hash == mvh
 
-    def test_telemetry_records_divergence_flag(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_telemetry_records_divergence_flag(self, real_artifact_dir: Path) -> None:
         """divergence_flag reflects whether ML and heuristic tiers disagree."""
         events: list[HealClassifierTelemetry] = []
         model, mvh = load_artifact(real_artifact_dir)
@@ -458,9 +430,7 @@ class TestShadowModeBehavior:
         # divergence_flag is a bool — must be present
         assert isinstance(events[0].divergence_flag, bool)
 
-    def test_telemetry_check_id_matches_signal(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_telemetry_check_id_matches_signal(self, real_artifact_dir: Path) -> None:
         events: list[HealClassifierTelemetry] = []
         model, mvh = load_artifact(real_artifact_dir)
         scorer = ConfidenceScorer(
@@ -472,9 +442,7 @@ class TestShadowModeBehavior:
         scorer.score(_make_signal())
         assert events[0].check_id == "check-e2e-001"
 
-    def test_heuristic_tier_field_in_telemetry(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_heuristic_tier_field_in_telemetry(self, real_artifact_dir: Path) -> None:
         """HealClassifierTelemetry.heuristic_tier must be a valid HealTier name."""
         events: list[HealClassifierTelemetry] = []
         model, mvh = load_artifact(real_artifact_dir)
@@ -492,6 +460,7 @@ class TestShadowModeBehavior:
 # ---------------------------------------------------------------------------
 # TestNoArtifactRegression
 # ---------------------------------------------------------------------------
+
 
 class TestNoArtifactRegression:
     def test_heuristic_only_scorer_works_without_artifact(self) -> None:
@@ -516,19 +485,12 @@ class TestNoArtifactRegression:
         assert score is not None
 
     def test_no_artifact_no_envelope_mutation(self) -> None:
-        builder = (
-            EnvelopeBuilder()
-            .with_replay_key("rk")
-            .with_policy_hash("ph")
-            .with_run_id("rid")
-        )
+        builder = EnvelopeBuilder().with_replay_key("rk").with_policy_hash("ph").with_run_id("rid")
         wire_shadow_mode_scorer(None, run_id="r0", envelope_builder=builder)
         envelope = builder.build()
         assert envelope.ml_model_hashes == {}
 
-    def test_heuristic_score_consistent_with_without_artifact(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_heuristic_score_consistent_with_without_artifact(self, real_artifact_dir: Path) -> None:
         """Routing tier must be identical regardless of whether ML model is loaded."""
         signal = _make_signal(retry_count=2, error_code="network_error")
 
@@ -546,10 +508,9 @@ class TestNoArtifactRegression:
 # TestEndToEndRun
 # ---------------------------------------------------------------------------
 
+
 class TestEndToEndRun:
-    def test_full_e2e_run_emits_telemetry_with_real_hash(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_full_e2e_run_emits_telemetry_with_real_hash(self, real_artifact_dir: Path) -> None:
         """Full E1 startup → scoring → telemetry → envelope verification.
 
         The telemetry model_version_hash is either the real artifact hash
@@ -560,10 +521,7 @@ class TestEndToEndRun:
         events: list[HealClassifierTelemetry] = []
 
         builder = (
-            EnvelopeBuilder()
-            .with_replay_key("rk-e2e")
-            .with_policy_hash("ph-e2e")
-            .with_run_id("run-e2e-full")
+            EnvelopeBuilder().with_replay_key("rk-e2e").with_policy_hash("ph-e2e").with_run_id("run-e2e-full")
         )
 
         scorer = wire_shadow_mode_scorer(
@@ -603,9 +561,7 @@ class TestEndToEndRun:
         # Envelope hash is deterministic SHA-256 (64 hex chars)
         assert len(envelope.envelope_hash()) == 64
 
-    def test_model_predict_directly_carries_real_hash(
-        self, real_artifact_dir: Path
-    ) -> None:
+    def test_model_predict_directly_carries_real_hash(self, real_artifact_dir: Path) -> None:
         """model.predict() always reports the real artifact hash — no OOD path involved."""
         from agentic_core.L2_execution.healers.heal_classifier_model import ClassifierFeatures
 

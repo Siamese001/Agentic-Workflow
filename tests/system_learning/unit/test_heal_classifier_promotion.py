@@ -39,6 +39,7 @@ from tools.heal_classifier.report_generator import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _passing_thresholds() -> dict:
     return dict(
         macro_f1=0.75,
@@ -71,6 +72,7 @@ def _minimal_artifact_dir(tmp_path: Path) -> Path:
 
     # feature_schema.json
     from tools.heal_classifier.constants import FEATURE_ORDER, FAILURE_CLASS_NAMES, REPAIR_OUTCOME_CLASSES
+
     feature_schema = {
         "schema_version": "1.0",
         "feature_order": FEATURE_ORDER,
@@ -85,9 +87,9 @@ def _minimal_artifact_dir(tmp_path: Path) -> Path:
 
     # Derive model_version_hash and hash_manifest
     import hashlib
+
     content = b"".join(
-        (artifact_dir / f).read_bytes()
-        for f in ["model.pkl", "ood_detector.pkl", "feature_schema.json"]
+        (artifact_dir / f).read_bytes() for f in ["model.pkl", "ood_detector.pkl", "feature_schema.json"]
     )
     mvh = hashlib.sha256(content).hexdigest()[:16]
 
@@ -112,8 +114,14 @@ def _minimal_artifact_dir(tmp_path: Path) -> Path:
     training_meta = {
         "artifact_version": "v1",
         "inference_latency_us_median": t["inference_latency_us"],
-        "model_config": {"n_estimators": 10, "max_depth": 2, "learning_rate": 0.1,
-                         "subsample": 1.0, "min_samples_leaf": 1, "random_state": 0},
+        "model_config": {
+            "n_estimators": 10,
+            "max_depth": 2,
+            "learning_rate": 0.1,
+            "subsample": 1.0,
+            "min_samples_leaf": 1,
+            "random_state": 0,
+        },
         "n_calib": 60,
         "n_train": 400,
         "n_val": 120,
@@ -139,9 +147,7 @@ def _minimal_artifact_dir(tmp_path: Path) -> Path:
         "sentinel_failure_class_unknown_index": 4,
         "threshold": -0.5,
     }
-    (artifact_dir / "ood_meta.json").write_text(
-        json.dumps(ood_meta, sort_keys=True), encoding="utf-8"
-    )
+    (artifact_dir / "ood_meta.json").write_text(json.dumps(ood_meta, sort_keys=True), encoding="utf-8")
 
     # hash_manifest.json + model_version_hash
     skip = {"hash_manifest.json", "model_version_hash"}
@@ -150,9 +156,7 @@ def _minimal_artifact_dir(tmp_path: Path) -> Path:
         for fname in ARTIFACT_FILES
         if fname not in skip and (artifact_dir / fname).exists()
     }
-    (artifact_dir / "hash_manifest.json").write_text(
-        json.dumps(manifest, sort_keys=True), encoding="utf-8"
-    )
+    (artifact_dir / "hash_manifest.json").write_text(json.dumps(manifest, sort_keys=True), encoding="utf-8")
     (artifact_dir / "model_version_hash").write_text(mvh, encoding="utf-8")
 
     return artifact_dir
@@ -160,9 +164,7 @@ def _minimal_artifact_dir(tmp_path: Path) -> Path:
 
 def _make_artifact_meta(artifact_dir: Path) -> PackageMetadata:
     mvh = (artifact_dir / "model_version_hash").read_text(encoding="utf-8").strip()
-    manifest = json.loads(
-        (artifact_dir / "hash_manifest.json").read_text(encoding="utf-8")
-    )
+    manifest = json.loads((artifact_dir / "hash_manifest.json").read_text(encoding="utf-8"))
     return PackageMetadata(
         artifact_dir=artifact_dir,
         model_version_hash=mvh,
@@ -173,6 +175,7 @@ def _make_artifact_meta(artifact_dir: Path) -> PackageMetadata:
 # ---------------------------------------------------------------------------
 # TestThresholdChecks
 # ---------------------------------------------------------------------------
+
 
 class TestThresholdChecks:
     def test_all_passing_thresholds_yields_passed_true(self) -> None:
@@ -245,15 +248,14 @@ class TestThresholdChecks:
 # TestReportGeneration
 # ---------------------------------------------------------------------------
 
+
 class TestReportGeneration:
     def test_all_report_files_generated(self, tmp_path: Path) -> None:
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
         threshold_result = check_promotion_thresholds(**_passing_thresholds())
 
-        EvalReportGenerator().generate(
-            packet_dir, artifact_dir, threshold_result
-        )
+        EvalReportGenerator().generate(packet_dir, artifact_dir, threshold_result)
 
         assert (packet_dir / "offline_eval_report.md").exists()
         assert (packet_dir / "shadow_divergence_report.md").exists()
@@ -268,9 +270,7 @@ class TestReportGeneration:
         content = (packet_dir / "offline_eval_report.md").read_text(encoding="utf-8")
         assert "PASS" in content
 
-    def test_offline_eval_report_shows_fail_on_failing_thresholds(
-        self, tmp_path: Path
-    ) -> None:
+    def test_offline_eval_report_shows_fail_on_failing_thresholds(self, tmp_path: Path) -> None:
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
         kw = _passing_thresholds()
@@ -281,9 +281,7 @@ class TestReportGeneration:
         content = (packet_dir / "offline_eval_report.md").read_text(encoding="utf-8")
         assert "FAIL" in content
 
-    def test_shadow_report_shows_placeholder_when_no_data(
-        self, tmp_path: Path
-    ) -> None:
+    def test_shadow_report_shows_placeholder_when_no_data(self, tmp_path: Path) -> None:
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
         threshold_result = check_promotion_thresholds(**_passing_thresholds())
@@ -292,9 +290,7 @@ class TestReportGeneration:
         content = (packet_dir / "shadow_divergence_report.md").read_text(encoding="utf-8")
         assert "shadow_rows_analyzed" in content
 
-    def test_shadow_report_shows_data_when_provided(
-        self, tmp_path: Path
-    ) -> None:
+    def test_shadow_report_shows_data_when_provided(self, tmp_path: Path) -> None:
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
         threshold_result = check_promotion_thresholds(**_passing_thresholds())
@@ -303,9 +299,7 @@ class TestReportGeneration:
             "divergence_rate": 0.15,
             "divergence_by_failure_class": {"DRIFT_DETECTION": 0.12},
         }
-        EvalReportGenerator().generate(
-            packet_dir, artifact_dir, threshold_result, shadow_data=shadow_data
-        )
+        EvalReportGenerator().generate(packet_dir, artifact_dir, threshold_result, shadow_data=shadow_data)
         content = (packet_dir / "shadow_divergence_report.md").read_text(encoding="utf-8")
         assert "512" in content
         assert "0.15" in content
@@ -314,6 +308,7 @@ class TestReportGeneration:
 # ---------------------------------------------------------------------------
 # TestPromotionPacketContents
 # ---------------------------------------------------------------------------
+
 
 class TestPromotionPacketContents:
     def test_all_required_top_level_items_present(self, tmp_path: Path) -> None:
@@ -330,9 +325,7 @@ class TestPromotionPacketContents:
         for item in PROMOTION_PACKET_FILES:
             assert (packet_dir / item).exists(), f"Missing: {item}"
 
-    def test_artifact_subdir_contains_all_artifact_files(
-        self, tmp_path: Path
-    ) -> None:
+    def test_artifact_subdir_contains_all_artifact_files(self, tmp_path: Path) -> None:
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
         threshold_result = check_promotion_thresholds(**_passing_thresholds())
@@ -357,13 +350,17 @@ class TestPromotionPacketContents:
             packet_dir=packet_dir,
         )
 
-        record = json.loads(
-            (packet_dir / "promotion_record.json").read_text(encoding="utf-8")
-        )
+        record = json.loads((packet_dir / "promotion_record.json").read_text(encoding="utf-8"))
         required = {
-            "model_version_hash", "artifact_window_start", "artifact_window_end",
-            "offline_eval_passed", "proposed_activation_mode", "promotion_author",
-            "shadow_divergence_rate", "shadow_rows_analyzed", "uwg_packet_id",
+            "model_version_hash",
+            "artifact_window_start",
+            "artifact_window_end",
+            "offline_eval_passed",
+            "proposed_activation_mode",
+            "promotion_author",
+            "shadow_divergence_rate",
+            "shadow_rows_analyzed",
+            "uwg_packet_id",
         }
         assert required.issubset(set(record.keys()))
 
@@ -378,15 +375,11 @@ class TestPromotionPacketContents:
             packet_dir=packet_dir,
         )
 
-        proposal = json.loads(
-            (packet_dir / "uwg_proposal.json").read_text(encoding="utf-8")
-        )
+        proposal = json.loads((packet_dir / "uwg_proposal.json").read_text(encoding="utf-8"))
         assert "binding_instruction" in proposal
         assert "EnvelopeBuilder" in proposal["binding_instruction"]
 
-    def test_uwg_proposal_requires_second_proposal_for_active_mode(
-        self, tmp_path: Path
-    ) -> None:
+    def test_uwg_proposal_requires_second_proposal_for_active_mode(self, tmp_path: Path) -> None:
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
         threshold_result = check_promotion_thresholds(**_passing_thresholds())
@@ -397,9 +390,7 @@ class TestPromotionPacketContents:
             packet_dir=packet_dir,
         )
 
-        proposal = json.loads(
-            (packet_dir / "uwg_proposal.json").read_text(encoding="utf-8")
-        )
+        proposal = json.loads((packet_dir / "uwg_proposal.json").read_text(encoding="utf-8"))
         assert proposal["requires_second_proposal_for_active_mode"] is True
 
 
@@ -407,10 +398,9 @@ class TestPromotionPacketContents:
 # TestShadowModeInvariant
 # ---------------------------------------------------------------------------
 
+
 class TestShadowModeInvariant:
-    def test_proposed_activation_mode_is_always_shadow(
-        self, tmp_path: Path
-    ) -> None:
+    def test_proposed_activation_mode_is_always_shadow(self, tmp_path: Path) -> None:
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
         threshold_result = check_promotion_thresholds(**_passing_thresholds())
@@ -422,18 +412,12 @@ class TestShadowModeInvariant:
         )
 
         assert result.activation_mode == "shadow"
-        record = json.loads(
-            (packet_dir / "promotion_record.json").read_text(encoding="utf-8")
-        )
+        record = json.loads((packet_dir / "promotion_record.json").read_text(encoding="utf-8"))
         assert record["proposed_activation_mode"] == "shadow"
-        proposal = json.loads(
-            (packet_dir / "uwg_proposal.json").read_text(encoding="utf-8")
-        )
+        proposal = json.loads((packet_dir / "uwg_proposal.json").read_text(encoding="utf-8"))
         assert proposal["proposed_activation_mode"] == "shadow"
 
-    def test_shadow_mode_invariant_survives_failing_thresholds(
-        self, tmp_path: Path
-    ) -> None:
+    def test_shadow_mode_invariant_survives_failing_thresholds(self, tmp_path: Path) -> None:
         """proposed_activation_mode must be 'shadow' even when thresholds fail."""
         artifact_dir = _minimal_artifact_dir(tmp_path)
         packet_dir = tmp_path / "packet"
@@ -448,9 +432,7 @@ class TestShadowModeInvariant:
         )
 
         assert result.activation_mode == "shadow"
-        record = json.loads(
-            (packet_dir / "promotion_record.json").read_text(encoding="utf-8")
-        )
+        record = json.loads((packet_dir / "promotion_record.json").read_text(encoding="utf-8"))
         assert record["proposed_activation_mode"] == "shadow"
         assert record["offline_eval_passed"] is False
 
@@ -458,6 +440,7 @@ class TestShadowModeInvariant:
 # ---------------------------------------------------------------------------
 # TestVerifyPromotionPacket
 # ---------------------------------------------------------------------------
+
 
 class TestVerifyPromotionPacket:
     def _build_complete_packet(self, tmp_path: Path) -> Path:
@@ -492,16 +475,12 @@ class TestVerifyPromotionPacket:
         assert complete is False
         assert any("model.pkl" in i for i in issues)
 
-    def test_wrong_activation_mode_fails_verification(
-        self, tmp_path: Path
-    ) -> None:
+    def test_wrong_activation_mode_fails_verification(self, tmp_path: Path) -> None:
         packet_dir = self._build_complete_packet(tmp_path)
         record_path = packet_dir / "promotion_record.json"
         record = json.loads(record_path.read_text(encoding="utf-8"))
         record["proposed_activation_mode"] = "active"  # tampered
-        record_path.write_text(
-            json.dumps(record, sort_keys=True), encoding="utf-8"
-        )
+        record_path.write_text(json.dumps(record, sort_keys=True), encoding="utf-8")
         complete, issues = verify_promotion_packet(packet_dir)
         assert complete is False
         assert any("proposed_activation_mode" in i for i in issues)

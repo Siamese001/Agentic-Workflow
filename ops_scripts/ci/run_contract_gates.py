@@ -24,21 +24,22 @@ def validate_pre_write_hooks():
     skills_dir = Path(".windsurf/skills")
     failed_skills = []
 
-    for skill_dir in skills_dir.iterdir():
-        if skill_dir.is_dir():
-            main_script = skill_dir / "main.py"
-            if main_script.exists():
-                try:
-                    result = subprocess.run(
-                        ["python", str(main_script), "--health-check"],
-                        capture_output=True,
-                        text=True,
-                        timeout=10,
-                    )
-                    if result.returncode != 0:
-                        failed_skills.append(skill_dir.name)
-                except Exception:
+    skill_dirs = [d for d in skills_dir.iterdir() if d.is_dir()]
+    for idx, skill_dir in enumerate(skill_dirs, 1):  # progress_bar: skill health checks
+        print(f"  [{idx}/{len(skill_dirs)}] checking skill: {skill_dir.name}")
+        main_script = skill_dir / "main.py"
+        if main_script.exists():
+            try:
+                result = subprocess.run(
+                    ["python", str(main_script), "--health-check"],
+                    capture_output=True,
+                    text=True,
+                    timeout=10,
+                )
+                if result.returncode != 0:
                     failed_skills.append(skill_dir.name)
+            except Exception:  # guardian: allow-broad-exception -- skill health-check scripts raise heterogeneous errors across plugins; no shared catchable base
+                failed_skills.append(skill_dir.name)
 
     if failed_skills:
         print(f"❌ Failed skills: {', '.join(failed_skills)}")
@@ -111,6 +112,18 @@ def validate_mcp_health():
         return False
 
     print("✅ MCP hung process check passed")
+
+    # Gate: AGENTS.md Quick Reference must document every server in mcp_config.json
+    returncode, stdout, stderr = run_cmd(
+        ["python", "ops_scripts/ci/check_agents_mcp_coverage.py"],
+        cwd=ROOT,
+    )
+    if returncode != 0:
+        print("❌ AGENTS.md MCP coverage check failed")
+        print(stdout or stderr)
+        return False
+    print("✅ AGENTS.md MCP coverage validated")
+
     return True
 
 

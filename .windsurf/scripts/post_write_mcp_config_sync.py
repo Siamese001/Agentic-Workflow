@@ -250,16 +250,47 @@ def main() -> int:
     notion_token = os.environ.get("NOTION_TOKEN", "").strip()
     if not notion_token:
         print("[mcp_sync] Notion sync skipped: NOTION_TOKEN not set.", flush=True)
-        return 0
-
-    if not servers:
+    elif not servers:
         print("[mcp_sync] Notion sync skipped: no servers parsed from config.", flush=True)
-        return 0
+    else:
+        notion_db_id = os.environ.get("NOTION_MCP_DATABASE_ID", _DEFAULT_DB_ID).strip()
+        _sync_notion_mcp_registry(servers, notion_token, notion_db_id)
 
-    notion_db_id = os.environ.get("NOTION_MCP_DATABASE_ID", _DEFAULT_DB_ID).strip()
-    _sync_notion_mcp_registry(servers, notion_token, notion_db_id)
+    # Phase 3 — AGENTS.md Quick Reference coverage check (advisory — never blocks write)
+    _check_agents_md_coverage(servers)
 
     return 0
+
+
+def _check_agents_md_coverage(servers: dict) -> None:
+    """Advisory check: warn if any registered MCP server is absent from AGENTS.md."""
+    import re as _re
+
+    agents_md = REPO_ROOT / "AGENTS.md"
+    if not agents_md.exists():
+        print("[mcp_sync] WARNING: AGENTS.md not found — skipping coverage check.", flush=True)
+        return
+
+    text = agents_md.read_text(encoding="utf-8")
+    documented = set(_re.findall(r"server:\s*`([^`]+)`", text))
+    missing = [name for name in servers if name not in documented]
+
+    if missing:
+        print(
+            f"[mcp_sync] WARNING — AGENTS.md Quick Reference is missing {len(missing)} server(s):",
+            flush=True,
+        )
+        for name in missing:
+            print(f"  MISSING: {name}", flush=True)
+        print(
+            "[mcp_sync] Add a row per missing server to AGENTS.md '## MCP Quick Reference'.",
+            flush=True,
+        )
+    else:
+        print(
+            f"[mcp_sync] AGENTS.md coverage OK: all {len(servers)} server(s) documented.",
+            flush=True,
+        )
 
 
 if __name__ == "__main__":

@@ -136,9 +136,7 @@ class EvalReportGenerator:
                 "```",
             ]
 
-        (packet_dir / "offline_eval_report.md").write_text(
-            "\n".join(lines), encoding="utf-8"
-        )
+        (packet_dir / "offline_eval_report.md").write_text("\n".join(lines), encoding="utf-8")
 
     def _write_shadow_divergence_report(
         self,
@@ -151,8 +149,7 @@ class EvalReportGenerator:
         ]
         if shadow_data is None:
             lines += [
-                "_No shadow telemetry data provided._"
-                " Complete after shadow-mode activation.",
+                "_No shadow telemetry data provided._ Complete after shadow-mode activation.",
                 "",
                 "Required fields:",
                 "- `shadow_rows_analyzed`",
@@ -176,9 +173,7 @@ class EvalReportGenerator:
             for fc, rate in shadow_data.get("divergence_by_failure_class", {}).items():
                 lines.append(f"| {fc} | {rate} |")
 
-        (packet_dir / "shadow_divergence_report.md").write_text(
-            "\n".join(lines), encoding="utf-8"
-        )
+        (packet_dir / "shadow_divergence_report.md").write_text("\n".join(lines), encoding="utf-8")
 
     def _write_hitl_cohort_review(
         self,
@@ -191,8 +186,7 @@ class EvalReportGenerator:
         ]
         if hitl_data is None:
             lines += [
-                "_No HITL cohort data provided._"
-                " Required before mixing HITL examples into main training.",
+                "_No HITL cohort data provided._ Required before mixing HITL examples into main training.",
                 "",
                 "Required fields:",
                 "- `hitl_rows_reviewed`",
@@ -211,6 +205,4 @@ class EvalReportGenerator:
                 hitl_data.get("systematic_pattern_summary", "_No summary provided._"),
             ]
 
-        (packet_dir / "hitl_cohort_review.md").write_text(
-            "\n".join(lines), encoding="utf-8"
-        )
+        (packet_dir / "hitl_cohort_review.md").write_text("\n".join(lines), encoding="utf-8")

@@ -14,6 +14,7 @@ from tools.adg.core.models import ADGNode, ADGEdge
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_node(**kwargs) -> ADGNode:
     defaults = dict(
         id="1",
@@ -66,8 +67,8 @@ def _make_service(redis_available: bool = True):
 # P21 — get_nodes_by_layer Redis-first tests
 # ===========================================================================
 
-class TestGetNodesByLayerRedisFirst:
 
+class TestGetNodesByLayerRedisFirst:
     def test_redis_hit_returns_redis_backend(self):
         """Cache hit: backend_used should be 'redis'."""
         svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
@@ -98,7 +99,7 @@ class TestGetNodesByLayerRedisFirst:
         """Empty list from Redis falls through to SQLite (intentional: indistinguishable from miss)."""
         svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
         node = _make_node(id="3", layer="L1")
-        mock_redis.get_nodes_by_layer.return_value = []   # cached empty — treated as miss
+        mock_redis.get_nodes_by_layer.return_value = []  # cached empty — treated as miss
         mock_sqlite.get_nodes_by_layer.return_value = [node]
 
         resp = svc.get_nodes_by_layer("L1", limit=100)
@@ -138,8 +139,8 @@ class TestGetNodesByLayerRedisFirst:
 # P22 — Negative-path hardening
 # ===========================================================================
 
-class TestNegativePaths:
 
+class TestNegativePaths:
     def test_redis_exception_falls_through_to_sqlite(self):
         """Redis raises exception during query → falls through to SQLite, backend_used='sqlite'."""
         svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
@@ -217,7 +218,7 @@ class TestNegativePaths:
         # Now verify _query_with_fallback treats None as a miss and goes to SQLite
         svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
         edge = _make_edge(id="59999", src_id="1", dst_id="tgt_77")
-        mock_redis.get_edge_fanin.return_value = []   # simulate the partial cache
+        mock_redis.get_edge_fanin.return_value = []  # simulate the partial cache
         mock_sqlite.get_edge_fanin.return_value = [edge]
 
         resp = svc.get_edge_fanin("tgt_77", "imports")
@@ -228,7 +229,7 @@ class TestNegativePaths:
         """Cache backfill failure must not crash the request."""
         svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
         node = _make_node()
-        mock_redis.get_nodes_by_layer.return_value = None   # cache miss
+        mock_redis.get_nodes_by_layer.return_value = None  # cache miss
         mock_sqlite.get_nodes_by_layer.return_value = [node]
         mock_redis.set_nodes_by_layer.side_effect = RuntimeError("write failed")
 
@@ -259,8 +260,8 @@ class TestNegativePaths:
         re-read, creating a perpetual wasted write on every empty-result call.
         """
         svc, mock_sqlite, mock_redis = _make_service(redis_available=True)
-        mock_redis.get_nodes_by_layer.return_value = None   # cache miss
-        mock_sqlite.get_nodes_by_layer.return_value = []    # empty layer
+        mock_redis.get_nodes_by_layer.return_value = None  # cache miss
+        mock_sqlite.get_nodes_by_layer.return_value = []  # empty layer
 
         resp = svc.get_nodes_by_layer("EMPTY_LAYER")
 
@@ -272,6 +273,7 @@ class TestNegativePaths:
 # ===========================================================================
 # P23 — Completeness-check regression tests
 # ===========================================================================
+
 
 def _make_redis_cache():
     """Build a bare RedisCache with a MagicMock client."""
@@ -297,7 +299,6 @@ def _edge_detail(edge_id: str, src: str = "1", dst: str = "2") -> dict:
 
 
 class TestFaninCompletenessCheck:
-
     def test_fanin_all_details_present_returns_full_list(self):
         """All edge_detail hashes present: full edge list returned (no completeness failure)."""
         cache, mock_client = _make_redis_cache()
@@ -409,8 +410,8 @@ class TestFaninCompletenessCheck:
 # P25 — get_node failure-path coverage
 # ===========================================================================
 
-class TestGetNodeFailurePath:
 
+class TestGetNodeFailurePath:
     def test_node_not_found_returns_error_status(self):
         """get_node: both Redis and SQLite return None -> ADGResponse(status='error')."""
         svc, mock_sqlite, mock_redis = _make_service(redis_available=True)

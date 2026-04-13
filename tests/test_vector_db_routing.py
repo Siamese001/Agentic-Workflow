@@ -267,6 +267,7 @@ def test_get_cached_count_caches_result():
 def test_validate_startup_config_warns_unknown_model(caplog):
     """_validate_startup_config() must emit STARTUP_WARN when the model is not in _KNOWN_MODEL_DIMS."""
     import logging
+
     mod = _load_server_module()
     orig = mod.DEFAULT_EMBEDDING_MODEL
     try:
@@ -298,6 +299,7 @@ def _make_load_model_fn(mod, *, allow_download: bool, cache_hit: bool):
 
     def _load_model():
         import time as _time
+
         t0 = _time.monotonic()
         try:
             if not cache_hit:
@@ -305,7 +307,8 @@ def _make_load_model_fn(mod, *, allow_download: bool, cache_hit: bool):
             elapsed = _time.monotonic() - t0
             mod.logger.info(
                 "MODEL_LOAD_CACHE: model=%r loaded from local cache in %.2fs (no HTTP)",
-                mod.DEFAULT_EMBEDDING_MODEL, elapsed,
+                mod.DEFAULT_EMBEDDING_MODEL,
+                elapsed,
             )
             return sentinel
         except (OSError, ValueError):
@@ -313,9 +316,10 @@ def _make_load_model_fn(mod, *, allow_download: bool, cache_hit: bool):
                 mod.logger.error(
                     "MODEL_LOAD_BLOCKED: model=%r not in local cache and "
                     "VECTOR_DB_ALLOW_MODEL_DOWNLOAD=0. "
-                    "Pre-cache with: python -c \"from sentence_transformers import "
+                    'Pre-cache with: python -c "from sentence_transformers import '
                     "SentenceTransformer; SentenceTransformer('%s')\"",
-                    mod.DEFAULT_EMBEDDING_MODEL, mod.DEFAULT_EMBEDDING_MODEL,
+                    mod.DEFAULT_EMBEDDING_MODEL,
+                    mod.DEFAULT_EMBEDDING_MODEL,
                 )
                 raise RuntimeError(
                     f"model {mod.DEFAULT_EMBEDDING_MODEL!r} not in local cache; "
@@ -328,7 +332,8 @@ def _make_load_model_fn(mod, *, allow_download: bool, cache_hit: bool):
             )
             mod.logger.info(
                 "MODEL_LOAD_ONLINE: model=%r download complete in %.2fs",
-                mod.DEFAULT_EMBEDDING_MODEL, 0.0,
+                mod.DEFAULT_EMBEDDING_MODEL,
+                0.0,
             )
             return sentinel
 
@@ -338,6 +343,7 @@ def _make_load_model_fn(mod, *, allow_download: bool, cache_hit: bool):
 def test_model_load_uses_local_cache(caplog):
     """_load_model must emit MODEL_LOAD_CACHE and NOT make online calls when cache is warm."""
     import logging
+
     mod = _load_server_module()
     fn = _make_load_model_fn(mod, allow_download=False, cache_hit=True)
     with caplog.at_level(logging.INFO, logger="vector_db_server"):
@@ -354,6 +360,7 @@ def test_model_load_uses_local_cache(caplog):
 def test_model_load_online_fallback_when_allowed(caplog):
     """_load_model must emit MODEL_LOAD_ONLINE and succeed when download is allowed and cache misses."""
     import logging
+
     mod = _load_server_module()
     fn = _make_load_model_fn(mod, allow_download=True, cache_hit=False)
     with caplog.at_level(logging.WARNING, logger="vector_db_server"):
@@ -368,6 +375,7 @@ def test_model_load_fail_fast_when_download_disabled(caplog):
     """_load_model must emit MODEL_LOAD_BLOCKED and raise RuntimeError when cache is absent and download is off."""
     import logging
     import pytest
+
     mod = _load_server_module()
     fn = _make_load_model_fn(mod, allow_download=False, cache_hit=False)
     with caplog.at_level(logging.ERROR, logger="vector_db_server"):
@@ -386,11 +394,13 @@ def test_model_load_fail_fast_when_download_disabled(caplog):
 def test_semantic_search_empty_collections_returns_zero_results():
     """_semantic_search must handle zero collections without ValueError from ThreadPoolExecutor."""
     import asyncio, types
+
     mod = _load_server_module()
 
     class _FakeModel:
         def encode(self, texts):
             import numpy as np
+
             return np.zeros((len(texts), 1024))
 
     class _FakeClient:
@@ -415,10 +425,12 @@ def test_semantic_search_empty_collections_returns_zero_results():
 def test_semantic_search_isolates_per_collection_errors():
     """A failing collection must not prevent results from healthy collections."""
     import asyncio, types, numpy as np
+
     mod = _load_server_module()
 
     class _HealthyCol:
         name = "healthy"
+
         def query(self, **_kw):
             return {
                 "documents": [["doc1"]],
@@ -428,6 +440,7 @@ def test_semantic_search_isolates_per_collection_errors():
 
     class _BadCol:
         name = "broken"
+
         def query(self, **_kw):
             raise RuntimeError("simulated HNSW corruption")
 
@@ -438,6 +451,7 @@ def test_semantic_search_isolates_per_collection_errors():
     class _FakeClient:
         def list_collections(self):
             return []
+
         def get_collection(self, name):
             return {"healthy": _HealthyCol(), "broken": _BadCol()}[name]
 
@@ -481,15 +495,11 @@ def test_allow_model_download_true_when_env_is_1(monkeypatch):
     """ALLOW_MODEL_DOWNLOAD must be True when VECTOR_DB_ALLOW_MODEL_DOWNLOAD='1'."""
     monkeypatch.setenv("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "1")
     mod = _load_server_module()
-    assert mod.ALLOW_MODEL_DOWNLOAD is True, (
-        "ALLOW_MODEL_DOWNLOAD must be True when env var is '1'"
-    )
+    assert mod.ALLOW_MODEL_DOWNLOAD is True, "ALLOW_MODEL_DOWNLOAD must be True when env var is '1'"
 
 
 def test_allow_model_download_false_when_env_is_0(monkeypatch):
     """ALLOW_MODEL_DOWNLOAD must be False when VECTOR_DB_ALLOW_MODEL_DOWNLOAD='0'."""
     monkeypatch.setenv("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "0")
     mod = _load_server_module()
-    assert mod.ALLOW_MODEL_DOWNLOAD is False, (
-        "ALLOW_MODEL_DOWNLOAD must be False when env var is '0'"
-    )
+    assert mod.ALLOW_MODEL_DOWNLOAD is False, "ALLOW_MODEL_DOWNLOAD must be False when env var is '0'"

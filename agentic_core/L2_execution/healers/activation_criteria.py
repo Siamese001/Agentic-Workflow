@@ -38,6 +38,7 @@ ROLLBACK_WINDOW: int = 200
 # Criteria data contracts
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ActivationCriteria:
     """Configurable thresholds for shadow→active promotion and runtime rollback."""
@@ -76,6 +77,7 @@ class CriteriaResult:
 # Criteria evaluation
 # ---------------------------------------------------------------------------
 
+
 def check_activation_criteria(
     evidence: CriteriaEvidence,
     criteria: ActivationCriteria | None = None,
@@ -107,14 +109,10 @@ def check_activation_criteria(
         )
 
     if evidence.ood_rate > criteria.max_ood_rate:
-        failures.append(
-            f"ood_rate={evidence.ood_rate:.4f} > max={criteria.max_ood_rate:.4f}"
-        )
+        failures.append(f"ood_rate={evidence.ood_rate:.4f} > max={criteria.max_ood_rate:.4f}")
 
     if evidence.latency_p99_us > criteria.max_latency_p99_us:
-        failures.append(
-            f"latency_p99_us={evidence.latency_p99_us} > max={criteria.max_latency_p99_us}"
-        )
+        failures.append(f"latency_p99_us={evidence.latency_p99_us} > max={criteria.max_latency_p99_us}")
 
     if not evidence.artifact_hash_valid:
         failures.append("artifact_hash_valid=False")
@@ -131,6 +129,7 @@ def check_activation_criteria(
 # ---------------------------------------------------------------------------
 # Runtime rollback monitor
 # ---------------------------------------------------------------------------
+
 
 class RollbackMonitor:
     """Sliding window monitor for automatic rollback triggering.
@@ -208,18 +207,13 @@ class RollbackMonitor:
             if p99 > c.max_latency_p99_us:
                 return True, f"latency_p99={p99}us > max={c.max_latency_p99_us}us"
 
-        repairs = [
-            e["repair_succeeded"]
-            for e in self._events
-            if e["repair_succeeded"] is not None
-        ]
+        repairs = [e["repair_succeeded"] for e in self._events if e["repair_succeeded"] is not None]
         if len(repairs) >= 10:
             success_rate = sum(1 for r in repairs if r) / len(repairs)
             if success_rate < c.min_repair_success_rate:
                 return (
                     True,
-                    f"repair_success={success_rate:.3f} < "
-                    f"min={c.min_repair_success_rate:.3f}",
+                    f"repair_success={success_rate:.3f} < min={c.min_repair_success_rate:.3f}",
                 )
 
         return False, ""

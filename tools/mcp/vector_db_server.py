@@ -255,13 +255,15 @@ class VectorDBMCPServer:
                     def _load_model() -> SentenceTransformer:
                         """Load from local cache first; policy controls online fallback."""
                         import time as _time
+
                         t0 = _time.monotonic()
                         try:
                             model = SentenceTransformer(DEFAULT_EMBEDDING_MODEL, local_files_only=True)
                             elapsed = _time.monotonic() - t0
                             logger.info(
                                 "MODEL_LOAD_CACHE: model=%r loaded from local cache in %.2fs (no HTTP)",
-                                DEFAULT_EMBEDDING_MODEL, elapsed,
+                                DEFAULT_EMBEDDING_MODEL,
+                                elapsed,
                             )
                             return model
                         except (OSError, ValueError):  # HF Hub raises these on cache miss
@@ -269,9 +271,10 @@ class VectorDBMCPServer:
                                 logger.error(
                                     "MODEL_LOAD_BLOCKED: model=%r not in local cache and "
                                     "VECTOR_DB_ALLOW_MODEL_DOWNLOAD=0. "
-                                    "Pre-cache with: python -c \"from sentence_transformers import "
+                                    'Pre-cache with: python -c "from sentence_transformers import '
                                     "SentenceTransformer; SentenceTransformer('%s')\"",
-                                    DEFAULT_EMBEDDING_MODEL, DEFAULT_EMBEDDING_MODEL,
+                                    DEFAULT_EMBEDDING_MODEL,
+                                    DEFAULT_EMBEDDING_MODEL,
                                 )
                                 raise RuntimeError(
                                     f"model {DEFAULT_EMBEDDING_MODEL!r} not in local cache; "
@@ -286,7 +289,8 @@ class VectorDBMCPServer:
                             model = SentenceTransformer(DEFAULT_EMBEDDING_MODEL)
                             logger.info(
                                 "MODEL_LOAD_ONLINE: model=%r download complete in %.2fs",
-                                DEFAULT_EMBEDDING_MODEL, _time.monotonic() - t1,
+                                DEFAULT_EMBEDDING_MODEL,
+                                _time.monotonic() - t1,
                             )
                             return model
 
@@ -918,9 +922,7 @@ class VectorDBMCPServer:
 
             # Generate query embedding — run in executor to keep event loop free
             loop = asyncio.get_event_loop()
-            query_embedding = await loop.run_in_executor(
-                None, lambda: self.embedding_model.encode([query])
-            )
+            query_embedding = await loop.run_in_executor(None, lambda: self.embedding_model.encode([query]))
 
             merged: list[dict] = []
             collection_errors: dict[str, str] = {}
@@ -956,7 +958,9 @@ class VectorDBMCPServer:
                 with _cf.ThreadPoolExecutor(max_workers=min(len(collections), 4)) as pool:
                     futs = {pool.submit(_query_one, cn): cn for cn in collections}
                     try:
-                        for fut in _cf.as_completed(futs, timeout=30.0):
+                        for fut in _cf.as_completed(
+                            futs, timeout=30.0
+                        ):  # progress_bar: concurrent futures completion
                             cn = futs[fut]
                             try:
                                 _, hits, elapsed = fut.result(timeout=_PER_COL_TIMEOUT)
