@@ -7,6 +7,7 @@ Blocks commits if violations are found.
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import logging
 import sys
@@ -218,15 +219,17 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
         return {}
     db_path = candidates[0]
     try:
-        _repo_root = str(root_dir)
-        if _repo_root not in sys.path:
-            sys.path.insert(0, _repo_root)
-        from tools.generate.infra_wiring_views import materialize_infra_views
-
-        return materialize_infra_views(db_path)
-    except (ImportError, RuntimeError, OSError):
+        module_path = root_dir / "tools" / "generate" / "infra_wiring_views.py"
+        spec = importlib.util.spec_from_file_location("infra_wiring_views", module_path)
+        if spec is None or spec.loader is None:
+            raise RuntimeError(f"Could not load {module_path}")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.materialize_infra_views(db_path)
+    except (AttributeError, RuntimeError, OSError):
         _log.warning("Could not materialize infra views — falling back to raw view query")
         import sqlite3 as _sqlite3
+        from contextlib import closing
 
         view_names = (
             "v_p0_apps_direct_infra",
@@ -246,8 +249,8 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
             "v_p3_isolated_experimental",
         )
         counts: dict[str, int] = {}
-        try:
-            conn = _sqlite3.connect(str(db_path), timeout=5)
+        db_uri = f"file:{db_path.as_posix()}?mode=ro"
+        with closing(_sqlite3.connect(db_uri, uri=True, timeout=5)) as conn:
             cur = conn.cursor()
             for vname in view_names:
                 try:
@@ -256,9 +259,6 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
                     counts[vname] = count
                 except _sqlite3.OperationalError:
                     pass
-            conn.close()
-        except _sqlite3.Error:
-            pass
         return counts
 
 

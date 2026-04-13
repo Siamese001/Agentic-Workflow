@@ -10,36 +10,49 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_SUBPROCESS_TIMEOUT = 300
 
 
-def run_cmd(args, cwd=None):
+def run_cmd(args, cwd=None, timeout: int = DEFAULT_SUBPROCESS_TIMEOUT):
     """Run a command and return result."""
-    result = subprocess.run(args, capture_output=True, text=True, cwd=cwd)
+    result = subprocess.run(
+        args,
+        capture_output=True,
+        text=True,
+        cwd=cwd,
+        timeout=timeout,
+        check=False,
+    )
     return result.returncode, result.stdout, result.stderr
 
 
 # PRE-WRITE HOOKS INTEGRATION
 def validate_pre_write_hooks():
     """Validate all pre-write hook skills."""
-    skills_dir = Path(".windsurf/skills")
-    failed_skills = []
+    skills_dir = ROOT / ".windsurf" / "skills"
+    failed_skills: list[str] = []
+    if not skills_dir.is_dir():
+        print(f"❌ Skills directory missing: {skills_dir}")
+        return False
 
-    skill_dirs = [d for d in skills_dir.iterdir() if d.is_dir()]
+    skill_dirs = sorted((d for d in skills_dir.iterdir() if d.is_dir()), key=lambda p: p.name)
     for idx, skill_dir in enumerate(skill_dirs, 1):  # progress_bar: skill health checks
         print(f"  [{idx}/{len(skill_dirs)}] checking skill: {skill_dir.name}")
         main_script = skill_dir / "main.py"
         if main_script.exists():
             try:
                 result = subprocess.run(
-                    ["python", str(main_script), "--health-check"],
+                    [sys.executable, str(main_script), "--health-check"],
                     capture_output=True,
                     text=True,
                     timeout=10,
+                    check=False,
+                    cwd=ROOT,
                 )
                 if result.returncode != 0:
-                    failed_skills.append(skill_dir.name)
-            except Exception:  # guardian: allow-broad-exception -- skill health-check scripts raise heterogeneous errors across plugins; no shared catchable base
-                failed_skills.append(skill_dir.name)
+                    failed_skills.append(f"{skill_dir.name} (rc={result.returncode})")
+            except (subprocess.TimeoutExpired, OSError) as exc:
+                failed_skills.append(f"{skill_dir.name} ({type(exc).__name__})")
 
     if failed_skills:
         print(f"❌ Failed skills: {', '.join(failed_skills)}")
@@ -56,7 +69,7 @@ def validate_mcp_health():
 
     # Gate: AGENTS.md Quick Reference must document every server in mcp_config.json
     returncode, stdout, stderr = run_cmd(
-        ["python", "ops_scripts/ci/check_agents_mcp_coverage.py"],
+        [sys.executable, "ops_scripts/ci/check_agents_mcp_coverage.py"],
         cwd=ROOT,
     )
     if returncode != 0:
@@ -116,7 +129,8 @@ def main():
         else:
             print("✅ P0 two-pass gate passed")
     except ImportError as exc:
-        print(f"⚠️  P0 runner import failed — {exc} (continuing as warn)")
+        print(f"❌ P0 runner import failed: {exc}")
+        sys.exit(1)
 
     # Gate: P3 trend tracking (watch-only, never blocks)
     print("\n[P3 TREND RUNNER]")

@@ -17,6 +17,7 @@ Usage:
 import functools
 import signal
 import sys
+import threading
 import time
 import traceback
 from datetime import datetime
@@ -54,28 +55,25 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs) -> Any:
-            start_time = time.time()
+            start_time = time.monotonic()
+            old_handler = None
+            use_signal_timeout = (
+                sys.platform != "win32" and threading.current_thread() is threading.main_thread()
+            )
 
             # Set up timeout signal (Unix-like systems)
-            if sys.platform != "win32":
+            if use_signal_timeout:
                 old_handler = signal.signal(signal.SIGALRM, timeout_handler)
                 signal.alarm(seconds)
 
             try:
                 result = func(*args, **kwargs)
-
-                # Cancel timeout
-                if sys.platform != "win32":
-                    signal.alarm(0)
-                    signal.signal(signal.SIGALRM, old_handler)
-
-                elapsed = time.time() - start_time
+                elapsed = time.monotonic() - start_time
                 print(f"✅ {operation_name} completed in {elapsed:.2f}s")
-
                 return result
 
             except TimeoutError as e:  # guardian: TimeoutError should be handled with specific context
-                elapsed = time.time() - start_time
+                elapsed = time.monotonic() - start_time
 
                 # Generate RCA for timeout
                 rca_path = generate_rca(
@@ -93,16 +91,10 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
 
                 print(f"❌ {operation_name} TIMEOUT after {elapsed:.2f}s")
                 print(f"📄 RCA generated: {rca_path}")
-
-                # Cancel timeout
-                if sys.platform != "win32":
-                    signal.alarm(0)
-                    signal.signal(signal.SIGALRM, old_handler)
-
                 raise
 
-            except Exception as e:
-                elapsed = time.time() - start_time
+            except Exception as e:  # guardian: allow-broad-exception -- timeout decorator must catch all exception types to generate RCA before re-raising; no shared catchable base exists across decorated functions
+                elapsed = time.monotonic() - start_time
 
                 # Generate RCA for error
                 rca_path = generate_rca(
@@ -120,13 +112,11 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
 
                 print(f"❌ {operation_name} FAILED after {elapsed:.2f}s")
                 print(f"📄 RCA generated: {rca_path}")
-
-                # Cancel timeout
-                if sys.platform != "win32":
+                raise
+            finally:
+                if use_signal_timeout and old_handler is not None:
                     signal.alarm(0)
                     signal.signal(signal.SIGALRM, old_handler)
-
-                raise
 
         return wrapper
 

@@ -163,9 +163,10 @@ class ADGGateBase(ABC):
 
     def _connect(self) -> None:
         """Establish SQLite connection."""
-        self.conn = sqlite3.connect(str(self.sqlite_path))
+        db_uri = f"file:{self.sqlite_path.as_posix()}?mode=ro"
+        self.conn = sqlite3.connect(db_uri, uri=True, timeout=5)
         self.conn.row_factory = sqlite3.Row
-        self.conn.execute("PRAGMA journal_mode=WAL")
+        self.conn.execute("PRAGMA query_only = ON")
 
     def _close(self) -> None:
         """Close SQLite connection."""
@@ -207,24 +208,32 @@ class ADGGateBase(ABC):
         """Save ratchet baseline atomically."""
         CI_RATchet_DIR.mkdir(parents=True, exist_ok=True)
         baseline_file = CI_RATchet_DIR / f"{baseline_name}_baseline.json"
-
         content = json.dumps(data, indent=2, sort_keys=True) + "\n"
-        fd, tmp = tempfile.mkstemp(dir=str(CI_RATchet_DIR), prefix=f".{baseline_name}_", suffix=".tmp")
+        tmp_path: Path | None = None
         try:
-            os.write(fd, content.encode("utf-8"))
-            os.close(fd)
+            with tempfile.NamedTemporaryFile(
+                "w",
+                encoding="utf-8",
+                dir=CI_RATchet_DIR,
+                prefix=f".{baseline_name}_",
+                suffix=".tmp",
+                delete=False,
+            ) as fh:
+                fh.write(content)
+                fh.flush()
+                os.fsync(fh.fileno())
+                tmp_path = Path(fh.name)
             if sys.platform == "win32" and baseline_file.exists():
                 baseline_file.unlink()
-            Path(tmp).replace(baseline_file)
+            if tmp_path is None:
+                raise OSError("Failed to create temporary baseline file")
+            tmp_path.replace(baseline_file)
         except OSError:
-            try:
-                os.close(fd)
-            except OSError:
-                pass
-            try:
-                os.unlink(tmp)
-            except OSError:
-                pass
+            if tmp_path is not None:
+                try:
+                    tmp_path.unlink()
+                except OSError:
+                    pass
             raise
 
     def _load_trend(self, trend_name: str) -> dict[str, Any]:
@@ -239,27 +248,35 @@ class ADGGateBase(ABC):
             return {"history": [], "consecutive_increases": 0}
 
     def _save_trend(self, trend_name: str, data: dict[str, Any]) -> None:
-        """Save trend tracking data atomically."""
+        """Save trend data atomically."""
         CI_RATchet_DIR.mkdir(parents=True, exist_ok=True)
         trend_file = CI_RATchet_DIR / f"{trend_name}_trend.json"
-
         content = json.dumps(data, indent=2, sort_keys=True) + "\n"
-        fd, tmp = tempfile.mkstemp(dir=str(CI_RATchet_DIR), prefix=f".{trend_name}_", suffix=".tmp")
+        tmp_path: Path | None = None
         try:
-            os.write(fd, content.encode("utf-8"))
-            os.close(fd)
+            with tempfile.NamedTemporaryFile(
+                "w",
+                encoding="utf-8",
+                dir=CI_RATchet_DIR,
+                prefix=f".{trend_name}_",
+                suffix=".tmp",
+                delete=False,
+            ) as fh:
+                fh.write(content)
+                fh.flush()
+                os.fsync(fh.fileno())
+                tmp_path = Path(fh.name)
             if sys.platform == "win32" and trend_file.exists():
                 trend_file.unlink()
-            Path(tmp).replace(trend_file)
+            if tmp_path is None:
+                raise OSError("Failed to create temporary trend file")
+            tmp_path.replace(trend_file)
         except OSError:
-            try:
-                os.close(fd)
-            except OSError:
-                pass
-            try:
-                os.unlink(tmp)
-            except OSError:
-                pass
+            if tmp_path is not None:
+                try:
+                    tmp_path.unlink()
+                except OSError:
+                    pass
             raise
 
     def _write_artifacts(self, result: GateResult) -> Path:

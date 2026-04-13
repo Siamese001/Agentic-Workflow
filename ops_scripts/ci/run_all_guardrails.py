@@ -345,6 +345,7 @@ class GuardrailOrchestrator:
                 text=True,
                 timeout=timeout,
                 cwd=PROJECT_ROOT,
+                check=False,
             )
             elapsed = clock_provider.time() - start_time
             passed = result.returncode == 0
@@ -414,8 +415,7 @@ class GuardrailOrchestrator:
                 error=f"Timeout after {timeout}s",
                 rca_path=rca_path,
             )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
+        except (OSError, ValueError, subprocess.SubprocessError) as e:
             elapsed = clock_provider.time() - start_time
             print(f"💥 {name} EXCEPTION: {e}")
             rca_path = generate_rca(
@@ -470,7 +470,7 @@ class GuardrailOrchestrator:
         print()
         print("DETAILED RESULTS:")
         print("-" * 80)
-        for result in self.results:
+        for result in self.results:  # progress_bar: CI results summary loop
             status_icon = "✅" if result.passed else "⏱️" if result.timeout else "❌"
             print(f"{status_icon} {result.name}")
             print(f"   Time: {result.elapsed_time:.2f}s")

@@ -121,11 +121,11 @@ def _get_executor_bearing_files() -> list[tuple[str, set[str]]]:
     Returns list of (relative_path, {executor_names_found}).
     """
     results = []
-    for prod_root in PRODUCTION_ROOTS:
+    for prod_root in PRODUCTION_ROOTS:  # progress_bar: CI production root scan
         root_path = ROOT / prod_root
         if not root_path.exists():
             continue
-        for py_file in root_path.rglob("*.py"):
+        for py_file in root_path.rglob("*.py"):  # progress_bar: CI file scan
             if "__pycache__" in str(py_file):
                 continue
             rel = str(py_file.relative_to(ROOT))
@@ -137,7 +137,7 @@ def _get_executor_bearing_files() -> list[tuple[str, set[str]]]:
             except (OSError, SyntaxError):
                 continue
             found = set()
-            for node in ast.walk(tree):
+            for node in ast.walk(tree):  # progress_bar: CI AST walk
                 # Detect: from concurrent.futures import ThreadPoolExecutor
                 if isinstance(node, ast.ImportFrom) and node.module:
                     for alias in node.names:
@@ -173,33 +173,35 @@ def gate_g1_reachability(sqlite_path: Path) -> list[str]:
     if not sqlite_path.exists():
         return [f"G1: ADG SQLite not found: {sqlite_path}"]
 
-    conn = sqlite3.connect(str(sqlite_path))
+    db_uri = f"file:{sqlite_path.as_posix()}?mode=ro"
+    conn = sqlite3.connect(db_uri, uri=True, timeout=5)
     conn.row_factory = sqlite3.Row
 
-    for rel_path, executors in executor_files:
-        # Convert file path to module path for ADG lookup
-        try:
-            cur = conn.execute(
-                """
-                SELECT COUNT(*) AS fan_in FROM edges e
-                JOIN nodes src ON e.src_id = src.id
-                JOIN nodes tgt ON e.dst_id = tgt.id
-                WHERE e.relation_type = 'imports'
-                  AND tgt.resolved_path = ?
-                  AND src.layer NOT IN ('L_TEST', 'L_OPS', 'L_TOOLS')
-                """,
-                (rel_path,),
-            )
-            row = cur.fetchone()
-            fan_in = row["fan_in"] if row else 0
-        except sqlite3.Error:
-            fan_in = 0
+    try:
+        for rel_path, executors in executor_files:  # progress_bar: CI ADG reachability scan
+            try:
+                cur = conn.execute(
+                    """
+                    SELECT COUNT(*) AS fan_in FROM edges e
+                    JOIN nodes src ON e.src_id = src.id
+                    JOIN nodes tgt ON e.dst_id = tgt.id
+                    WHERE e.relation_type = 'imports'
+                      AND tgt.resolved_path = ?
+                      AND src.layer NOT IN ('L_TEST', 'L_OPS', 'L_TOOLS')
+                    """,
+                    (rel_path,),
+                )
+                row = cur.fetchone()
+                fan_in = row["fan_in"] if row else 0
+            except sqlite3.Error as exc:
+                violations.append(f"G1: ADG query failed for {rel_path}: {exc}")
+                continue
 
-        if fan_in == 0:
-            exec_str = ", ".join(sorted(executors))
-            violations.append(f"G1: {rel_path} bears [{exec_str}] but has 0 production callers")
-
-    conn.close()
+            if fan_in == 0:
+                exec_str = ", ".join(sorted(executors))
+                violations.append(f"G1: {rel_path} bears [{exec_str}] but has 0 production callers")
+    finally:
+        conn.close()
     return violations
 
 
@@ -290,7 +292,7 @@ def gate_g4_classification() -> list[str]:
     violations: list[str] = []
     executor_files = _get_executor_bearing_files()
 
-    for rel_path, executors in executor_files:
+    for rel_path, executors in executor_files:  # progress_bar: CI classification check
         full_path = ROOT / rel_path
         try:
             source = full_path.read_text(encoding="utf-8", errors="ignore")
@@ -359,10 +361,10 @@ def run_all_gates(
     all_violations: list[str] = []
     json_results: dict = {}
 
-    for key, (label, fn) in gates_to_run.items():
+    for key, (label, fn) in gates_to_run.items():  # progress_bar: CI gate runner
         try:
             violations = fn()
-        except Exception as e:  # guardian: allow-broad-exception -- CI gate must not crash; report error and continue to next gate
+        except (OSError, ValueError, RuntimeError, sqlite3.Error) as e:
             violations = [f"{key.upper()}: Gate error: {e}"]
 
         passed = not violations

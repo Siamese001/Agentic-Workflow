@@ -30,6 +30,9 @@ from __future__ import annotations
 
 import subprocess
 import sys
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _EVAL_PIPELINE_TESTS = [
     "tests/unit/agentic_core/L6_observability/utils/evaluation/test_pipeline_integration.py",
@@ -67,7 +70,32 @@ def main(verbose: bool = False) -> int:
     print(f"Known excluded (pre-existing, unrelated): {len(_KNOWN_EXCLUDED)}")
     print("=" * 70)
 
-    result = subprocess.run(cmd, shell=False, timeout=180, check=False)
+    try:
+        result = subprocess.run(
+            cmd,
+            shell=False,
+            timeout=180,
+            check=False,
+            cwd=_REPO_ROOT,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.TimeoutExpired as exc:
+        print(f"\n[FAIL] Eval pipeline acceptance timed out after {exc.timeout}s.")
+        if exc.stdout:
+            print(exc.stdout)
+        if exc.stderr:
+            print(exc.stderr, file=sys.stderr)
+        return 124
+    except OSError as exc:
+        print(f"\n[FAIL] Could not launch pytest: {exc}", file=sys.stderr)
+        return 2
+
+    if verbose or result.returncode != 0:
+        if result.stdout:
+            print(result.stdout, end="" if result.stdout.endswith("\n") else "\n")
+        if result.stderr:
+            print(result.stderr, file=sys.stderr, end="" if result.stderr.endswith("\n") else "\n")
 
     if result.returncode == 0:
         print("\n[PASS] All eval_pipeline tests passed.")

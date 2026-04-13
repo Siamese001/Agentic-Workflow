@@ -58,22 +58,31 @@ def _save_trend(gate_key: str, trend: TrendResult) -> None:
     CI_RATCHET_DIR.mkdir(parents=True, exist_ok=True)
     trend_file = CI_RATCHET_DIR / f"{gate_key}_trend.json"
     content = json.dumps(trend.to_dict(), indent=2) + "\n"
-    fd, tmp = tempfile.mkstemp(dir=str(CI_RATCHET_DIR), prefix=f".{gate_key}_", suffix=".tmp")
+    tmp_path: Path | None = None
     try:
-        os.write(fd, content.encode("utf-8"))
-        os.close(fd)
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=CI_RATCHET_DIR,
+            prefix=f".{gate_key}_",
+            suffix=".tmp",
+            delete=False,
+        ) as fh:
+            fh.write(content)
+            fh.flush()
+            os.fsync(fh.fileno())
+            tmp_path = Path(fh.name)
         if sys.platform == "win32" and trend_file.exists():
             trend_file.unlink()
-        Path(tmp).replace(trend_file)
+        if tmp_path is None:
+            raise OSError("Failed to create temporary trend file")
+        tmp_path.replace(trend_file)
     except OSError:
-        try:
-            os.close(fd)
-        except OSError:
-            pass
-        try:
-            os.unlink(tmp)
-        except OSError:
-            pass
+        if tmp_path is not None:
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
         raise
 
 

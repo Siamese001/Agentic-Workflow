@@ -210,6 +210,16 @@ _DEFAULT_MODES = dict.fromkeys(GATE_DEFS, "warn")
 # ---------------------------------------------------------------------------
 
 
+def _load_json_object(raw: str, *, source: str) -> dict:
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"{source} contained invalid JSON") from exc
+    if not isinstance(parsed, dict):
+        raise RuntimeError(f"{source} must decode to a JSON object")
+    return parsed
+
+
 def _get_gpc() -> dict[str, int]:
     """Fetch graph_plane_counts from Redis ADG snapshot. Raises on failure."""
     try:
@@ -223,8 +233,11 @@ def _get_gpc() -> dict[str, int]:
         raise RuntimeError(
             "adg:snapshot key missing from Redis — run: python tools/adg/adg_redis_ingest.py --force"
         )
-    snap = json.loads(raw)
-    return snap.get("graph_plane_counts", {})
+    snap = _load_json_object(raw, source="Redis key adg:snapshot")
+    counts = snap.get("graph_plane_counts", {})
+    if not isinstance(counts, dict):
+        raise RuntimeError("Redis key adg:snapshot.graph_plane_counts must be an object")
+    return counts
 
 
 # ---------------------------------------------------------------------------
@@ -236,7 +249,7 @@ def _load_baseline() -> dict:
     if not BASELINE_FILE.exists():
         return {}
     try:
-        return json.loads(BASELINE_FILE.read_text(encoding="utf-8"))
+        return _load_json_object(BASELINE_FILE.read_text(encoding="utf-8"), source=str(BASELINE_FILE))
     except (OSError, json.JSONDecodeError) as exc:  # guardian: Add error context logging
         print(f"ERROR: baseline file corrupt: {exc}", file=sys.stderr)
         return {}
@@ -246,22 +259,32 @@ def _write_baseline(data: dict) -> None:
     """Write baseline data to file with atomic replace."""
     # guardian: allow-global-mutation
     content = json.dumps(data, indent=2, sort_keys=True) + "\n"
-    fd, tmp = tempfile.mkstemp(dir=str(BASELINE_FILE.parent), prefix=".wave0_baseline_", suffix=".tmp")
+    BASELINE_FILE.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path: Path | None = None
     try:
-        os.write(fd, content.encode("utf-8"))
-        os.close(fd)
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=BASELINE_FILE.parent,
+            prefix=".wave0_baseline_",
+            suffix=".tmp",
+            delete=False,
+        ) as fh:
+            fh.write(content)
+            fh.flush()
+            os.fsync(fh.fileno())
+            tmp_path = Path(fh.name)
         if sys.platform == "win32" and BASELINE_FILE.exists():
             BASELINE_FILE.unlink()
-        Path(tmp).replace(BASELINE_FILE)
-    except BaseException:  # guardian: BaseException should be handled with specific context
-        try:
-            os.close(fd)
-        except OSError:  # guardian: Add error context logging
-            pass
-        try:
-            os.unlink(tmp)
-        except OSError:  # guardian: Add error context logging
-            pass
+        if tmp_path is None:
+            raise OSError("Failed to create temporary baseline file")
+        tmp_path.replace(BASELINE_FILE)
+    except OSError:
+        if tmp_path is not None:
+            try:
+                tmp_path.unlink()
+            except OSError:
+                pass
         raise
 
 
@@ -548,7 +571,7 @@ def cmd_check() -> int:
     failed_enforce: list[str] = []
     warned: list[str] = []
 
-    for gid, evaluator in _EVALUATORS.items():
+    for gid, evaluator in _EVALUATORS.items():  # progress_bar: bounded CI evaluator loop
         passed, msg = evaluator(cur, base_snap)
         effective_mode = "warn" if warn_all else modes.get(gid, "warn")
         label = GATE_DEFS[gid]["label"]
@@ -670,7 +693,7 @@ def check_banned_patterns(file_path: str, patterns: dict | None = None) -> list[
     violations = []
     try:
         with open(file_path, encoding="utf-8") as f:
-            for line_no, line in enumerate(f, 1):
+            for line_no, line in enumerate(f, 1):  # progress_bar: per-line banned-pattern scan
                 for pattern_name, pattern in patterns.items():
                     if re.search(pattern, line):
                         violations.append(
@@ -681,8 +704,8 @@ def check_banned_patterns(file_path: str, patterns: dict | None = None) -> list[
                                 "file_path": file_path,
                             }
                         )
-    except Exception:
-        pass
+    except (OSError, UnicodeDecodeError, re.error) as exc:
+        print(f"WARNING: skipped banned-pattern scan for {file_path}: {exc}", file=sys.stderr)
     return violations
 
 
@@ -695,7 +718,7 @@ def scan_for_banned(
     if patterns is None:
         patterns = BANNED_PATTERNS
     all_violations = []
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory):  # progress_bar: directory walk scan
         dirs[:] = [d for d in dirs if d not in exclude_patterns]
         for file in files:
             if file.endswith(".py"):
