@@ -1,39 +1,20 @@
 """
-Gatekeeper Protection: Block commits that modify protected files
+Gatekeeper Protection: Block commits that modify protected files.
 
 This script prevents accidental modifications to critical infrastructure files
-like ArchivalGatekeeper.py unless an explicit override is present in the commit message.
-
-PROTECTED FILES:
-    - agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py (The Executioner)
-    - agentic_core/L5_safety/validators/decorators.py (The Normalizer)
-
-OVERRIDE:
-    Include '#gatekeeper-override' in your commit message to bypass protection.
-
-USAGE:
-    python scripts/maintenance/check_protected_files.py
-
-EXIT CODES:
-    0 - No protected files modified OR override present
-    1 - Protected files modified without override
+unless an explicit override is present in the commit message.
 """
+
+from __future__ import annotations
 
 import subprocess
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
+
+PROJECT_ROOT = get_validated_project_root()
 PROTECTED_FILES = [
     "agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py",
     "agentic_core/L5_safety/validators/decorators.py",
@@ -41,58 +22,73 @@ PROTECTED_FILES = [
 OVERRIDE_FLAG = "#gatekeeper-override"
 
 
+def run_git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", *args],
+        cwd=PROJECT_ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=30,
+        check=check,
+    )
+
+
 def get_staged_files() -> list[str]:
-    """Get list of files staged for commit."""
     try:
-        result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"], capture_output=True, text=True, check=True
-        )
-        return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
-    except subprocess.CalledProcessError:
+        result = run_git("diff", "--cached", "--name-only")
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return []
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
 
 def get_commit_message() -> str:
-    """Get the commit message if available."""
     try:
-        commit_msg_file = Path(".git/COMMIT_EDITMSG")
-        if commit_msg_file.exists():
-            return commit_msg_file.read_text()
-        return ""
-    except (
-        OSError,
-        UnicodeDecodeError,
-    ):  # guardian: File operations with encoding need error-specific handling
+        result = run_git("rev-parse", "--git-path", "COMMIT_EDITMSG")
+        commit_msg_path = PROJECT_ROOT / result.stdout.strip()
+        return (
+            commit_msg_path.read_text(encoding="utf-8", errors="replace") if commit_msg_path.exists() else ""
+        )
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return ""
 
 
-def main():
-    staged_files = get_staged_files()
-    if not staged_files:
-        sys.exit(0)
-    modified_protected = []
+def find_modified_protected_files(staged_files: list[str]) -> list[str]:
+    modified: list[str] = []
     for protected in PROTECTED_FILES:
         protected_path = Path(protected).as_posix()
         for staged in staged_files:
             staged_path = Path(staged).as_posix()
             if staged_path == protected_path or staged_path.endswith(protected_path):
-                modified_protected.append(protected)
+                modified.append(protected)
                 break
+    return modified
+
+
+def main() -> int:
+    staged_files = get_staged_files()
+    if not staged_files:
+        return 0
+
+    modified_protected = find_modified_protected_files(staged_files)
     if not modified_protected:
-        sys.exit(0)
+        return 0
+
     commit_message = get_commit_message()
     if OVERRIDE_FLAG in commit_message:
         print(f"\n[OK] Gatekeeper override detected: {OVERRIDE_FLAG}")
         print("   Allowing modifications to protected files:")
-        for f in modified_protected:
-            print(f"     - {f}")
-        sys.exit(0)
+        for file_name in modified_protected:
+            print(f"     - {file_name}")
+        return 0
+
     print(f"\n{'=' * 70}")
     print("[GATEKEEPER PROTECTION] PROTECTED FILE MODIFICATION BLOCKED")
     print(f"{'=' * 70}")
     print("\nThe following protected files are being modified:")
-    for f in modified_protected:
-        print(f"  [X] {f}")
+    for file_name in modified_protected:
+        print(f"  [X] {file_name}")
     print(f"\n{'=' * 70}")
     print("WHY THIS MATTERS:")
     print("  These files are critical infrastructure components:")
@@ -103,8 +99,8 @@ def main():
     print("\nEXAMPLE:")
     print(f"  git commit -m 'Fix gatekeeper bug {OVERRIDE_FLAG}'")
     print(f"{'=' * 70}\n")
-    sys.exit(1)
+    return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

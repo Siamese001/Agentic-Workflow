@@ -1,41 +1,60 @@
+from __future__ import annotations
+
+import argparse
 import re
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
-def add_status_if_missing(file_path: Path):
-    """Adds 'Status: RESOLVED' to an RCA file if it's missing."""
-    content = file_path.read_text(encoding="utf-8")
-    if not re.search(r"^Status:", content, re.MULTILINE):
-        # Add status after the Date line, or at the top if Date is not found
-        if re.search(r"^Date:", content, re.MULTILINE):
-            new_content = re.sub(r"(Date:.*)", r"\1\nStatus: RESOLVED", content, 1, re.MULTILINE)
-        else:
-            new_content = "Status: RESOLVED\n" + content
 
-        file_path.write_text(new_content, encoding="utf-8")
-        print(f"Patched {file_path}")
-        return True
-    else:
-        print(f"Skipped {file_path} (status already present)")
+PROJECT_ROOT = get_validated_project_root()
+PLANS_DIR = PROJECT_ROOT / "docs" / "reports" / "plans"
+STATUS_PATTERN = re.compile(r"^Status:", re.MULTILINE)
+DATE_PATTERN = re.compile(r"^(Date:.*)$", re.MULTILINE)
+
+
+def add_status_if_missing(file_path: Path, execute: bool) -> bool:
+    """Add 'Status: RESOLVED' to an RCA file if it is missing."""
+    content = file_path.read_text(encoding="utf-8", errors="replace")
+    if STATUS_PATTERN.search(content):
+        print(f"Skipped {file_path.relative_to(PROJECT_ROOT)} (status already present)")
         return False
 
+    if DATE_PATTERN.search(content):
+        new_content = DATE_PATTERN.sub(r"\1\nStatus: RESOLVED", content, count=1)
+    else:
+        new_content = "Status: RESOLVED\n" + content
 
-def main():
-    """Main function to patch all RCA files in the plans directory."""
-    plans_dir = Path("docs/reports/plans")
-    if not plans_dir.is_dir():
-        print(f"ERROR: Directory not found: {plans_dir}")
-        sys.exit(1)
+    if execute:
+        file_path.write_text(new_content, encoding="utf-8")
+        print(f"Patched {file_path.relative_to(PROJECT_ROOT)}")
+    else:
+        print(f"[DRY-RUN] Would patch {file_path.relative_to(PROJECT_ROOT)}")
+    return True
 
-    rca_files = list(plans_dir.glob("RCA_*.md"))
+
+def main(execute: bool = False) -> int:
+    if not PLANS_DIR.is_dir():
+        print(f"ERROR: Directory not found: {PLANS_DIR}")
+        return 1
+
+    rca_files = sorted(PLANS_DIR.glob("RCA_*.md"))
     patched_count = 0
     for file_path in rca_files:
-        if add_status_if_missing(file_path):
-            patched_count += 1
+        try:
+            if add_status_if_missing(file_path, execute=execute):
+                patched_count += 1
+        except OSError as exc:
+            print(f"ERROR: Could not process {file_path.relative_to(PROJECT_ROOT)}: {exc}")
+            return 1
 
-    print(f"\nPatching complete. {patched_count} of {len(rca_files)} files were updated.")
+    mode = "EXECUTE" if execute else "DRY-RUN"
+    print(f"\nPatching complete ({mode}). {patched_count} of {len(rca_files)} files would be updated.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Add missing status fields to RCA markdown files.")
+    parser.add_argument("--execute", action="store_true", help="Write changes to disk. Default is dry-run.")
+    sys.exit(main(execute=parser.parse_args().execute))

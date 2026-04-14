@@ -131,7 +131,7 @@ def fix_imports(content: str) -> str:
     }
 
     fixed_content = content
-    for pascal, snake in tqdm(replacements.items(), desc="Fixing imports", unit="import", leave=False):
+    for pascal, snake in replacements.items():
         fixed_content = re.sub(
             rf"from (agentic_core\.[^\s]*){pascal}(\s+import)",
             rf"from \1{snake}\2",
