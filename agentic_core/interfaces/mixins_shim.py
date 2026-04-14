@@ -1,20 +1,13 @@
 """
-agentic_core/interfaces/mixins.py
-
-Sovereign mixin interface for apps_* consumption.
+agentic_core/interfaces/mixins_shim.py
 
 Re-exports HealerMixin and MetaLearningMixin so apps_* utility files
 can import from the approved interface boundary rather than directly
 from L5_safety or L1_cognition.
 
-# Configuration constants
-
 AUTHORITY CONSTRAINTS:
 - Mixin re-exports only
 - Missing optional dependencies fail fast with a clear error
-
-USAGE (apps_*):
-    from agentic_core.interfaces.mixins_shim import HealerMixin, MetaLearningMixin
 """
 
 from __future__ import annotations

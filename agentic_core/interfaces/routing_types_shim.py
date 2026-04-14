@@ -1,17 +1,7 @@
 """
-agentic_core/interfaces/routing_types.py
+agentic_core/interfaces/routing_types_shim.py
 
-Sovereign routing types interface for apps_* consumption.
-
-Re-exports L0 routing type definitions so apps_* reasoning files
-can import from the approved interface boundary (TYPE_CHECKING use).
-
-AUTHORITY CONSTRAINTS:
-- Type re-exports only — no routing authority granted
-- No access to routing logic or tier selection
-
-USAGE (apps_*):
-    from agentic_core.interfaces.routing_types_shim import ReasoningIntensityProfile
+Sovereign routing types interface shim for apps_* consumption.
 """
 
 from __future__ import annotations

@@ -1,11 +1,5 @@
 """
-Chaos Healing Integration Module - Phase 1 Foundation
-
-Registers ChaosEngineeringAgent as a healing strategy in the
-HealingSovereignOrchestrator.
-
-This module adapts the ChaosEngineeringAgent to the HealingStrategy
-protocol, enabling resilience testing after healing operations.
+Healing strategy integration module.
 """
 
 from __future__ import annotations
@@ -22,8 +16,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 Logger = logging.getLogger(__name__)
 
 
-def _run_agent(agent) -> dict:
-    """Run an async agent's act() method in a dedicated event loop."""
+def _run_agent(agent) -> dict[str, Any]:
     loop = asyncio.new_event_loop()
     try:
         return loop.run_until_complete(agent.act())
@@ -32,80 +25,45 @@ def _run_agent(agent) -> dict:
 
 
 class IHealingStrategyProtocol(Protocol):
-    """Protocol for healing strategies - matches HealingSovereignOrchestrator interface."""
+    def can_heal(self, violation: dict[str, Any]) -> bool: ...
 
-    def can_heal(self, violation: dict) -> bool:
-        """Check if this strategy can heal the violation."""
-        ...
-
-    def heal(self, violation: dict, context: dict) -> dict:
-        """Execute healing and return result."""
-        ...
+    def heal(self, violation: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]: ...
 
 
 class ChaosResilienceStrategy:
-    """
-    Healing strategy that validates system resilience after healing.
-
-    Use case: After a healing operation completes, run chaos tests
-    to verify the system can handle failures gracefully.
-    """
-
     SUPPORTED_VIOLATIONS = frozenset(
         {"resilience_check", "post_healing_validation", "chaos_test_required", "system_stability_check"},
     )
 
     def __init__(self) -> None:
-        """Initialize the chaos resilience strategy."""
         self._agent = None
         self._initialized = False
 
     def _ensure_initialized(self) -> None:
-        """Lazy initialization to avoid import cycles."""
         if self._initialized:
             return
         try:
             from agentic_core.L4_state.memory import ValidationContext
             from agentic_core.L5_safety.reasoning.ChaosEngineeringAgent_validator import ChaosEngineeringAgent
-
-            ctx = ValidationContext()
-            self._agent = ChaosEngineeringAgent(ctx=ctx)
+        except ImportError as exc:
+            Logger.warning("[ChaosResilienceStrategy] Could not import agent: %s", exc)
             self._initialized = True
-        except ImportError as e:
-            Logger.warning(f"[ChaosResilienceStrategy] Could not import agent: {e}")
-            self._initialized = True
+            return
 
-    def can_heal(self, violation: dict) -> bool:
-        """
-        Check if this strategy can handle the violation.
+        self._agent = ChaosEngineeringAgent(ctx=ValidationContext())
+        self._initialized = True
 
-        Args:
-            violation: Violation details with 'type' key
-
-        Returns:
-            True if this strategy can handle the violation type
-        """
+    def can_heal(self, violation: dict[str, Any]) -> bool:
         import uuid as _uuid  # noqa: PLC0415
 
-        _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L3_ORCHESTRATION, "ChaosResilienceStrategy.can_heal"
+            str(_uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            "ChaosResilienceStrategy.can_heal",
         )
+        return str(violation.get("type", "")) in self.SUPPORTED_VIOLATIONS
 
-        violation_type = violation.get("type", "")
-        return violation_type in self.SUPPORTED_VIOLATIONS
-
-    def heal(self, violation: dict, context: dict) -> dict:
-        """
-        Run chaos tests and report resilience status.
-
-        Args:
-            violation: Violation details
-            context: Healing context (may include dry_run flag)
-
-        Returns:
-            dict with healing results
-        """
+    def heal(self, violation: dict[str, Any], context: dict[str, Any]) -> dict[str, Any]:
         self._ensure_initialized()
         if self._agent is None:
             return {
@@ -114,28 +72,29 @@ class ChaosResilienceStrategy:
                 "status": "agent_unavailable",
                 "scenarios_tested": 0,
             }
+
         try:
             result = _run_agent(self._agent)
-            failures = result.get("failures_detected", 0)
-            tests_executed = max(1, result.get("tests_executed", 1))
-            recovery_metrics = result.get("recovery_metrics", {})
-            return {
-                "success": failures == 0,
-                "resilience_score": 1.0 - failures / tests_executed,
-                "recovery_metrics": recovery_metrics,
-                "scenarios_tested": len(result.get("scenarios_tested", [])),
-                "failures_detected": failures,
-            }
-        except (ValueError, TypeError, RuntimeError) as e:
-            Logger.error(f"[ChaosResilienceStrategy] Healing failed: {e}")
-            return {"success": False, "resilience_score": 0.0, "error": str(e), "scenarios_tested": 0}
+        except Exception as exc:  # guardian: allow-broad-exception -- _run_agent wraps arbitrary async agent code that may raise any exception type
+            Logger.error("[ChaosResilienceStrategy] Healing failed: %s", exc)
+            return {"success": False, "resilience_score": 0.0, "error": str(exc), "scenarios_tested": 0}
+
+        failures = result.get("failures_detected", 0)
+        tests_executed = max(1, result.get("tests_executed", 1))
+        recovery_metrics = result.get("recovery_metrics", {})
+        return {
+            "success": failures == 0,
+            "resilience_score": 1.0 - failures / tests_executed,
+            "recovery_metrics": recovery_metrics,
+            "scenarios_tested": len(result.get("scenarios_tested", [])),
+            "failures_detected": failures,
+        }
 
 
 _chaos_strategy: ChaosResilienceStrategy | None = None
 
 
 def get_chaos_strategy() -> ChaosResilienceStrategy:
-    """Get or create the chaos resilience strategy instance."""
     global _chaos_strategy
     if _chaos_strategy is None:
         _chaos_strategy = ChaosResilienceStrategy()
@@ -143,12 +102,6 @@ def get_chaos_strategy() -> ChaosResilienceStrategy:
 
 
 def register_chaos_healing() -> dict[str, Any]:
-    """
-    Register chaos engineering as a healing strategy.
-
-    Returns:
-        dict with registration status
-    """
     registered: list[str] = []
     errors: list[str] = []
 
@@ -172,7 +125,6 @@ def register_chaos_healing() -> dict[str, Any]:
 
 
 def get_integration_status() -> dict[str, Any]:
-    """Get the current status of chaos healing integration."""
     return {
         "chaos_strategy_initialized": _chaos_strategy is not None,
         "strategies_available": ["chaos_resilience"],
