@@ -19,8 +19,27 @@ import sqlite3
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Any
 from tqdm import tqdm
+
+
+def _validate_sqlite_path(sqlite_path: Path) -> Path:
+    sqlite_path = sqlite_path.expanduser().resolve()
+    if not sqlite_path.exists():
+        raise FileNotFoundError(f"ADG SQLite not found: {sqlite_path}")
+    if not sqlite_path.is_file():
+        raise ValueError(f"ADG SQLite path is not a file: {sqlite_path}")
+    return sqlite_path
+
+
+def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as tmp:
+        json.dump(payload, tmp, indent=2)
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(path)
 
 
 @dataclass
@@ -287,7 +306,7 @@ class ADGGraphWatchlistBuilder:
 
     def __init__(self, sqlite_path: Path):
         self.sqlite_path = sqlite_path
-        self.conn = sqlite3.connect(str(sqlite_path))
+        self.conn = sqlite3.connect(str(_validate_sqlite_path(sqlite_path)), timeout=30)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
 
@@ -1140,8 +1159,7 @@ class ADGGraphWatchlistBuilder:
             ],
         }
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(artifact, f, indent=2)
+        _atomic_json_write(artifact_path, artifact)
 
         return artifact_path
 
@@ -1295,8 +1313,7 @@ class ADGGraphWatchlistBuilder:
             "watchlist": [asdict(item) for item in watchlist[:30]],  # Cap at 30
         }
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(artifact, f, indent=2)
+        _atomic_json_write(artifact_path, artifact)
 
         return artifact_path
 
@@ -1739,8 +1756,7 @@ class ADGProposalPromotionManager:
                     for e in self.queue
                 ],
             }
-            with open(queue_path, "w", encoding="utf-8") as f:
-                json.dump(queue_data, f, indent=2)
+            _atomic_json_write(queue_path, queue_data)
             paths["queue"] = queue_path
 
         # Promotion actions artifact
@@ -1763,8 +1779,7 @@ class ADGProposalPromotionManager:
                     for a in self.promotions
                 ],
             }
-            with open(promo_path, "w", encoding="utf-8") as f:
-                json.dump(promo_data, f, indent=2)
+            _atomic_json_write(promo_path, promo_data)
             paths["promotions"] = promo_path
 
         # Rollbacks artifact
@@ -1784,8 +1799,7 @@ class ADGProposalPromotionManager:
                     for r in self.rollbacks
                 ],
             }
-            with open(rollback_path, "w", encoding="utf-8") as f:
-                json.dump(rollback_data, f, indent=2)
+            _atomic_json_write(rollback_path, rollback_data)
             paths["rollbacks"] = rollback_path
 
         return paths
@@ -1985,8 +1999,7 @@ class AcceptedBaselineManager:
             "metadata": baseline.metadata,
         }
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2)
+        _atomic_json_write(artifact_path, data)
 
         return artifact_path
 
@@ -2004,8 +2017,7 @@ class AcceptedBaselineManager:
             "last_updated_by": self.active_state.last_updated_by,
         }
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2)
+        _atomic_json_write(artifact_path, data)
 
         return artifact_path
 
@@ -2148,8 +2160,7 @@ class GovernedPromotionApplicator:
             "active": application.active,
         }
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2)
+        _atomic_json_write(artifact_path, data)
 
         return artifact_path
 
@@ -2189,8 +2200,7 @@ class GovernedPromotionApplicator:
         }
 
         rollback_path = self.output_dir / f"adg_promotion_rollback_{rollback_data['rollback_id']}.json"
-        with open(rollback_path, "w", encoding="utf-8") as f:
-            json.dump(rollback_data, f, indent=2)
+        _atomic_json_write(rollback_path, rollback_data)
 
         # Re-emit updated application artifact
         self._emit_application_artifact(application)
@@ -2532,8 +2542,7 @@ class ADGGovernanceDashboard:
         timestamp = dashboard["timestamp"]
         artifact_path = self.output_dir / f"adg_governance_dashboard_{timestamp}.json"
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(dashboard, f, indent=2)
+        _atomic_json_write(artifact_path, dashboard)
 
         return artifact_path
 
@@ -3155,8 +3164,7 @@ class ADGPolicyReviewPack:
         review_pack_id = review_pack["review_pack_id"]
         artifact_path = self.output_dir / f"adg_policy_review_pack_{review_pack_id}.json"
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(review_pack, f, indent=2)
+        _atomic_json_write(artifact_path, review_pack)
 
         return artifact_path
 

@@ -9,6 +9,10 @@ from pathlib import Path
 from tqdm import tqdm
 
 
+def _connect_sqlite(path: Path) -> sqlite3.Connection:
+    return sqlite3.connect(str(path), timeout=30)
+
+
 def _check_artifact_validity(paths: object) -> None:
     """Verify all required artifacts exist and are valid.
 
@@ -37,7 +41,7 @@ def _check_artifact_validity(paths: object) -> None:
 
         if name == "sqlite":
             try:
-                conn = sqlite3.connect(str(path))
+                conn = _connect_sqlite(path)
                 conn.execute("SELECT 1 FROM nodes LIMIT 1")
                 conn.close()
             except sqlite3.Error as e:
@@ -70,7 +74,7 @@ def _check_sqlite_integrity(sqlite_path: Path) -> None:
         sqlite_path: Path to the SQLite database
     """
     try:
-        conn = sqlite3.connect(str(sqlite_path))
+        conn = _connect_sqlite(sqlite_path)
         cur = conn.cursor()
 
         integrity_result = cur.execute("PRAGMA integrity_check").fetchone()[0]
@@ -109,7 +113,7 @@ def _check_artifact_consistency(paths: object, artifact: object) -> None:
         print("[ADG] Skipping artifact consistency check (JSON graphs disabled)")
         return
 
-    conn = sqlite3.connect(str(paths.sqlite))
+    conn = _connect_sqlite(paths.sqlite)
     try:
         cursor = conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM nodes")

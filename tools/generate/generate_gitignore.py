@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import TYPE_CHECKING
 
 from tqdm import tqdm
@@ -22,7 +23,20 @@ from tqdm import tqdm
 if TYPE_CHECKING:
     from typing import Sequence
 
-_REPO_ROOT = Path(__file__).parent.parent.parent
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "config").exists() and (
+            (candidate / ".git").exists() or (candidate / "agentic_core").exists()
+        ):
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[2] if len(start.parents) > 2 else start.parent
+
+
+_REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 # Header for generated .gitignore
@@ -48,7 +62,10 @@ def load_exclusions() -> tuple[set[str], set[str], set[str]]:
         sys.exit(1)
 
     with open(config_path, "r", encoding="utf-8") as f:
-        data = yaml.safe_load(f)
+        data = yaml.safe_load(f) or {}
+    if not isinstance(data, dict):
+        print(f"Error: Invalid YAML structure in {config_path}")
+        sys.exit(1)
 
     # Collect directory exclusions
     all_dirs: set[str] = set()
@@ -205,7 +222,12 @@ def read_current_gitignore() -> str | None:
 def write_gitignore(content: str) -> None:
     """Write .gitignore file."""
     gitignore_path = _REPO_ROOT / ".gitignore"
-    gitignore_path.write_text(content, encoding="utf-8")
+    gitignore_path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", dir=gitignore_path.parent, delete=False) as tmp:
+        tmp.write(content)
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(gitignore_path)
     print(f"Updated: {gitignore_path}")
 
 

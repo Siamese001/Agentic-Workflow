@@ -5,19 +5,32 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT))
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 import chromadb
 from agentic_core.embeddings.bge_runtime import bge_embed_query
 
 STORE = REPO_ROOT / "data" / "cache" / "chromadb"
-client = chromadb.PersistentClient(path=str(STORE))
-
-all_pass = True
 
 
-def smoke(collection_name: str, query: str, n: int = 3) -> bool:
+def _get_client() -> chromadb.PersistentClient:
+    return chromadb.PersistentClient(path=str(STORE))
+
+
+def smoke(client: chromadb.PersistentClient, collection_name: str, query: str, n: int = 3) -> bool:
     print(f"\n=== SMOKE: {collection_name!r} | query: {query!r} ===")
     emb = bge_embed_query(query)
     col = client.get_collection(collection_name)

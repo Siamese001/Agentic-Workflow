@@ -16,8 +16,33 @@ import argparse
 import logging
 import sys
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
-sys.path.append(str(Path(__file__).parent.parent))
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parent.parent
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+
+def _atomic_write_text(path: Path, content: str) -> None:
+    """Write text atomically to avoid truncated docs on interruption."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as tmp:
+        tmp.write(content)
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(path)
+
 
 from agentic_core.core.documentation_framework import (
     DocumentationType,
@@ -57,6 +82,7 @@ def generate_api_documentation(source_paths: list[Path], output_dir: Path) -> bo
                 output_path = output_dir / "api" / relative_path.with_suffix(".md")
 
                 logger.info(f"Generating API docs for: {py_file}")
+                output_path.parent.mkdir(parents=True, exist_ok=True)
 
                 # Generate documentation
                 artifact = documentation_manager.generate_documentation(
@@ -68,7 +94,7 @@ def generate_api_documentation(source_paths: list[Path], output_dir: Path) -> bo
                 logger.info(f"✅ Generated: {output_path}")
 
             except Exception as e:
-                logger.error(f"Failed to generate API docs for {py_file}: {e}")
+                logger.exception("Failed to generate API docs for %s", py_file)
                 success = False
 
     return success
@@ -81,6 +107,7 @@ def generate_architecture_documentation(source_path: Path, output_dir: Path) -> 
     try:
         output_path = output_dir / "architecture" / "system_overview.md"
 
+        output_path.parent.mkdir(parents=True, exist_ok=True)
         artifact = documentation_manager.generate_documentation(
             DocumentationType.ARCHITECTURAL_OVERVIEW,
             source_path,
@@ -974,8 +1001,7 @@ If you need help with the documentation:
         index_path = docs_dir / "README.md"
         index_path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(index_path, "w", encoding="utf-8") as f:
-            f.write(index_content)
+        _atomic_write_text(index_path, index_content)
 
         logger.info(f"✅ Generated documentation index: {index_path}")
         return True

@@ -21,6 +21,18 @@ import re
 import sys
 import time
 from pathlib import Path
+
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
 from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -244,7 +256,8 @@ def run(store_path: Path, dry_run: bool = False) -> None:
         print("ERROR: chromadb not installed.")
         raise SystemExit(1) from exc
 
-    sys.path.insert(0, str(REPO_ROOT))
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
     from tools.progress_display import ProgressReporter
 
     print(f"Loading embedding model: {EMBEDDING_MODEL}")

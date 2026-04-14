@@ -57,8 +57,21 @@ class TerritoryHealingCoordinator:
 
     def register_agent(self, agent: TerritoryHealerProtocol) -> None:
         """Register a healing agent."""
+        if any(existing.agent_name == agent.agent_name for existing in self.agents):
+            logger.debug(f"Skipping duplicate agent registration: {agent.agent_name}")
+            return
         self.agents.append(agent)
         logger.debug(f"Registered agent: {agent.agent_name}")
+
+    def _normalize_territory(self, territory: str) -> str:
+        """Normalize user-supplied territory names and prevent path traversal."""
+        territory_path = Path(territory)
+        if territory_path.is_absolute() or ".." in territory_path.parts:
+            raise ValueError(f"Invalid territory: {territory}")
+        normalized = str(territory_path).replace("\\", "/").strip("./")
+        if not normalized:
+            raise ValueError("Territory must not be empty")
+        return normalized
 
     def validate_territory(self, territory: str) -> TerritoryHealingReport:
         """
@@ -110,13 +123,17 @@ class TerritoryHealingCoordinator:
         Returns:
             TerritoryHealingReport
         """
+        territory = self._normalize_territory(territory)
         report = TerritoryHealingReport(territory=territory)
         mode = "HEALING" if context.heal else "SCAN-ONLY"
 
         logger.info(f"=== TERRITORY {mode}: {territory} ===")
 
         # Find agents that can handle this territory
-        applicable_agents = [agent for agent in self.agents if agent.can_handle(territory)]
+        applicable_agents = sorted(
+            (agent for agent in self.agents if agent.can_handle(territory)),
+            key=lambda agent: agent.agent_name,
+        )
 
         if not applicable_agents:
             logger.warning(f"No agents can handle territory: {territory}")
@@ -205,7 +222,7 @@ class TerritoryHealingCoordinator:
             territories = self._auto_detect_territories()
 
         results = {}
-        for territory in territories:
+        for territory in sorted(dict.fromkeys(territories)):
             results[territory] = self.heal_territory(territory, verbose)
 
         return results

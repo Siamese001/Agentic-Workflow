@@ -13,8 +13,18 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-# Add project root to path if needed
-REPO_ROOT = Path(__file__).parent.parent.parent.parent.parent.resolve()
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parent
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -60,7 +70,7 @@ def setup_logging(verbose: bool = False) -> None:
     )
 
 
-def main():
+def main() -> None:
     """Main entry point for territory healing."""
     parser = argparse.ArgumentParser(
         description="Simplified territory-level healing orchestrator",
@@ -139,7 +149,7 @@ Examples:
     if args.all:
         auto_detected = coordinator._auto_detect_territories()
         try:
-            territories = [_validate_territory_name(t) for t in auto_detected]
+            territories = sorted({_validate_territory_name(t) for t in auto_detected})
         except ValueError as e:
             logger.error(f"Unsafe auto-detected territory: {e}")
             sys.exit(1)

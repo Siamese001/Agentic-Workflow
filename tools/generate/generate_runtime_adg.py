@@ -23,11 +23,23 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from tqdm import tqdm
 
-# Add project root to path
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parent.parent
+
+
+PROJECT_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 
 @dataclass
@@ -171,10 +183,13 @@ def create_runtime_adg() -> None:
 
     # Create SQLite
     output_dir = PROJECT_ROOT / "artifacts" / "adg_runtime"
-    output_dir.mkdir(exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    est = timezone(timedelta(hours=-4))
-    now_est = datetime.now(est)
+    try:
+        eastern = ZoneInfo("America/New_York")
+    except ZoneInfoNotFoundError:
+        eastern = timezone(timedelta(hours=-4))
+    now_est = datetime.now(eastern)
     ts = now_est.strftime("%m%d%Y_%H%M")
 
     sqlite_path = output_dir / f"adg_runtime_{ts}.sqlite"

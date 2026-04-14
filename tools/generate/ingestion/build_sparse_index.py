@@ -27,7 +27,26 @@ from collections import Counter
 from pathlib import Path
 from tqdm import tqdm
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+def _safe_unlink(path: Path) -> None:
+    try:
+        if path.exists():
+            path.unlink()
+    except OSError:
+        pass
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
 SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse"
 

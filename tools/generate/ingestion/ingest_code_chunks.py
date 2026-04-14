@@ -19,7 +19,31 @@ import sys
 import time
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+def _ensure_repo_on_syspath(repo_root: Path) -> None:
+    repo_root_str = str(repo_root)
+    if repo_root_str not in sys.path:
+        sys.path.insert(0, repo_root_str)
+
+
+def _relative_to_repo(path: Path, repo_root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(repo_root.resolve())).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "code_chunks"
 EMBEDDING_MODEL = "BAAI/bge-m3"
@@ -92,7 +116,7 @@ def extract_entities(source: str, file_path: Path) -> list[dict]:
     except SyntaxError:
         return entities
 
-    rel_path = str(file_path.relative_to(REPO_ROOT))
+    rel_path = _relative_to_repo(file_path, REPO_ROOT)
     module_name = rel_path.replace("\\", "/").replace("/", ".").removesuffix(".py")
 
     for node in ast.walk(tree):  # tqdm: AST walk, no bar needed
@@ -140,7 +164,7 @@ def chunk_file(source: str, file_path: Path, chunk_size: int = 60) -> list[dict]
     if not lines:
         return []
 
-    rel_path = str(file_path.relative_to(REPO_ROOT))
+    rel_path = _relative_to_repo(file_path, REPO_ROOT)
     chunks = []
     step = max(1, chunk_size - 10)
 
@@ -278,7 +302,7 @@ def run(store_path: Path, dry_run: bool = False) -> None:
         print("ERROR: chromadb not installed.")
         raise SystemExit(1) from exc
 
-    sys.path.insert(0, str(REPO_ROOT))
+    _ensure_repo_on_syspath(REPO_ROOT)
     from tools.progress_display import ProgressReporter
 
     print(f"Loading embedding model: {EMBEDDING_MODEL}")
@@ -297,6 +321,7 @@ def run(store_path: Path, dry_run: bool = False) -> None:
         print("DRY RUN — stopping before Chroma write.")
         return
 
+    store_path.mkdir(parents=True, exist_ok=True)
     print(f"Connecting to Chroma store: {store_path}")
     client = chromadb.PersistentClient(path=str(store_path))
 

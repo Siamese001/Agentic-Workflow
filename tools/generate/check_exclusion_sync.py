@@ -16,13 +16,26 @@ import sys
 from pathlib import Path
 from typing import Any
 
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "config").exists() and (
+            (candidate / ".git").exists() or (candidate / "agentic_core").exists()
+        ):
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[2] if len(start.parents) > 2 else start.parent
+
+
 try:
     import yaml
 except ImportError:
     print("Error: PyYAML required (pip install pyyaml)")
     sys.exit(1)
 
-_REPO_ROOT = Path(__file__).parent.parent.parent
+_REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def load_excluded_paths() -> Any:
@@ -34,7 +47,11 @@ def load_excluded_paths() -> Any:
         sys.exit(1)
 
     with open(config_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        data = yaml.safe_load(f) or {}
+    if not isinstance(data, dict):
+        print(f"Error: Invalid YAML structure in {config_path}")
+        sys.exit(1)
+    return data
 
 
 def load_precommit_excludes() -> list[str]:

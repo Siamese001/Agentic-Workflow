@@ -5,7 +5,26 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+def _load_mcp_servers(path: Path) -> set[str]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    servers = data.get("mcpServers", {}) if isinstance(data, dict) else {}
+    if not isinstance(servers, dict):
+        raise ValueError(f"mcpServers must be a mapping in {path}")
+    return set(servers.keys())
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def _check_mcp_config_drift() -> None:
@@ -26,11 +45,8 @@ def _check_mcp_config_drift() -> None:
         return
 
     try:
-        repo_cfg = json.loads(repo_ssot.read_text(encoding="utf-8"))
-        global_cfg = json.loads(global_config_path.read_text(encoding="utf-8"))
-
-        repo_servers = set(repo_cfg.get("mcpServers", {}).keys())
-        global_servers = set(global_cfg.get("mcpServers", {}).keys())
+        repo_servers = _load_mcp_servers(repo_ssot)
+        global_servers = _load_mcp_servers(global_config_path)
 
         added = repo_servers - global_servers
         removed = global_servers - repo_servers
@@ -48,6 +64,7 @@ def _check_mcp_config_drift() -> None:
     except (
         json.JSONDecodeError,
         OSError,
+        ValueError,
     ) as exc:  # guardian: allow-broad-exception -- non-critical: drift check failure must not block ADG generation
         print(f"[WARNING] Could not check MCP config drift: {exc}")
         print("[WARNING]   Proceeding with ADG generation...")

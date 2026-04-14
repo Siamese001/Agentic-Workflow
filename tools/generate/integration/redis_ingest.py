@@ -7,7 +7,18 @@ import sys
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
@@ -52,6 +63,9 @@ def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
         return
     except FileNotFoundError:
         print("[ADG] WARNING: Python executable not found for Redis ingest; skipping")
+        return
+    except OSError as exc:
+        print(f"[ADG] WARNING: Redis ingest could not start: {exc}")
         return
 
     elapsed = time.monotonic() - start_time

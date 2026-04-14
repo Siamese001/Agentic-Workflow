@@ -9,7 +9,10 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from tools.generate.utils.file_utils import _is_file_locked
+try:
+    from tools.generate.utils.file_utils import _is_file_locked
+except ImportError:
+    from utils.file_utils import _is_file_locked
 
 
 def _extract_timestamp(filename: str) -> str | None:
@@ -98,15 +101,11 @@ def _unlink_sqlite_family(file_path: Path) -> int:
         raise OSError(f"SQLite family locked: {root_path.name}")
 
     if root_path.exists():
-        temp_conn = None
         try:
-            temp_conn = sqlite3.connect(str(root_path))
-            temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            with sqlite3.connect(str(root_path)) as temp_conn:
+                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         except sqlite3.Error:
             pass
-        finally:
-            if temp_conn is not None:
-                temp_conn.close()
 
     for target in targets:
         if target.exists():
@@ -161,13 +160,22 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
     if len(runs) <= keep_runs:
         return
 
-    sorted_timestamps = sorted(runs.keys(), key=_parse_timestamp, reverse=True)
+    valid_timestamps = []
+    for ts in runs.keys():
+        try:
+            valid_timestamps.append((ts, _parse_timestamp(ts)))
+        except ValueError as exc:
+            print(f"[ADG] Archive: skipping malformed timestamp {ts}: {exc}")
+    sorted_timestamps = [ts for ts, _dt in sorted(valid_timestamps, key=lambda item: item[1], reverse=True)]
     to_archive = sorted_timestamps[keep_runs:]
 
     if not to_archive:
         return
 
-    from tools.generate.archiving.zipper import _archive_zip_files
+    try:
+        from tools.generate.archiving.zipper import _archive_zip_files
+    except ImportError:
+        from archiving.zipper import _archive_zip_files
 
     archived_count = 0
     bytes_original = 0
@@ -262,6 +270,9 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         print(f"[ADG] Archive: archived {len(to_archive)} runs, {archived_count} files (saved {pct:.0f}%)")
 
     # Delegate cleanup of validation packages and MANIFEST files
-    from tools.generate.reporting.analysis import _cleanup_validation_files
+    try:
+        from tools.generate.reporting.analysis import _cleanup_validation_files
+    except ImportError:
+        from reporting.analysis import _cleanup_validation_files
 
     _cleanup_validation_files(adg_dir, current_ts)

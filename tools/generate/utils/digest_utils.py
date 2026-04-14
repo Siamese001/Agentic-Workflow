@@ -8,6 +8,15 @@ import sqlite3
 from pathlib import Path
 
 
+def _validate_sqlite_path(sqlite_path: Path) -> Path:
+    sqlite_path = sqlite_path.expanduser().resolve()
+    if not sqlite_path.exists():
+        raise FileNotFoundError(f"SQLite artifact not found: {sqlite_path}")
+    if not sqlite_path.is_file():
+        raise ValueError(f"SQLite artifact is not a file: {sqlite_path}")
+    return sqlite_path
+
+
 def _ratio(numerator: int, denominator: int) -> float:
     if denominator <= 0:
         return 1.0
@@ -25,14 +34,13 @@ def _stable_digest(payload: object) -> str:
 
 
 def _sqlite_table_digest(sqlite_path: Path, table_name: str) -> str:
-    conn = sqlite3.connect(sqlite_path)
-    cur = conn.cursor()
-    col_rows = cur.execute(f"PRAGMA table_info({table_name})").fetchall()
-    columns = [row[1] for row in col_rows]
-    if not columns:
-        conn.close()
-        return ""
-    order_by = "id" if "id" in columns else ", ".join(columns)
-    rows = cur.execute(f"SELECT {', '.join(columns)} FROM {table_name} ORDER BY {order_by}").fetchall()
-    conn.close()
+    sqlite_path = _validate_sqlite_path(sqlite_path)
+    with sqlite3.connect(str(sqlite_path), timeout=30) as conn:
+        cur = conn.cursor()
+        col_rows = cur.execute(f"PRAGMA table_info({table_name})").fetchall()
+        columns = [row[1] for row in col_rows]
+        if not columns:
+            return ""
+        order_by = "id" if "id" in columns else ", ".join(columns)
+        rows = cur.execute(f"SELECT {', '.join(columns)} FROM {table_name} ORDER BY {order_by}").fetchall()
     return _stable_digest(rows)

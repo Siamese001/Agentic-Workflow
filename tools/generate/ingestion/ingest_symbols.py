@@ -22,7 +22,31 @@ import sys
 import time
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+def _ensure_repo_on_syspath(repo_root: Path) -> None:
+    repo_root_str = str(repo_root)
+    if repo_root_str not in sys.path:
+        sys.path.insert(0, repo_root_str)
+
+
+def _relative_to_repo(path: Path, repo_root: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(repo_root.resolve())).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
 COLLECTION_NAME = "symbols"
 EMBEDDING_MODEL = "BAAI/bge-m3"
@@ -91,41 +115,39 @@ def load_from_adg(adg_path: Path) -> list[dict]:
     """Load symbol records from ADG SQLite. Returns empty list on any failure."""
     docs = []
     try:
-        conn = sqlite3.connect(str(adg_path), timeout=10)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
+        with sqlite3.connect(str(adg_path), timeout=10) as conn:
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
 
-        # Nodes table columns vary by ADG version — probe first
-        cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
-        tables = {row[0] for row in cur.fetchall()}
-        if "nodes" not in tables:
-            conn.close()
-            return []
+            # Nodes table columns vary by ADG version — probe first
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            tables = {row[0] for row in cur.fetchall()}
+            if "nodes" not in tables:
+                return []
 
-        cur.execute("PRAGMA table_info(nodes)")
-        cols = {row[1] for row in cur.fetchall()}
+            cur.execute("PRAGMA table_info(nodes)")
+            cols = {row[1] for row in cur.fetchall()}
 
-        # node_type column name varies by ADG version — probe
-        node_type_col = None
-        for candidate in ("node_type", "kind", "type", "entity_type"):
-            if candidate in cols:
-                node_type_col = candidate
-                break
+            # node_type column name varies by ADG version — probe
+            node_type_col = None
+            for candidate in ("node_type", "kind", "type", "entity_type"):
+                if candidate in cols:
+                    node_type_col = candidate
+                    break
 
-        select_cols = ["id", "adg_name", "layer"]
-        if node_type_col:
-            select_cols.append(node_type_col)
-        if "file_path" in cols:
-            select_cols.append("file_path")
-        if "canonical_digest" in cols:
-            select_cols.append("canonical_digest")
-        if "confidence" in cols:
-            select_cols.append("confidence")
+            select_cols = ["id", "adg_name", "layer"]
+            if node_type_col:
+                select_cols.append(node_type_col)
+            if "file_path" in cols:
+                select_cols.append("file_path")
+            if "canonical_digest" in cols:
+                select_cols.append("canonical_digest")
+            if "confidence" in cols:
+                select_cols.append("confidence")
 
-        query = f"SELECT {', '.join(select_cols)} FROM nodes LIMIT 200000"
-        cur.execute(query)
-        rows = cur.fetchall()
-        conn.close()
+            query = f"SELECT {', '.join(select_cols)} FROM nodes LIMIT 200000"
+            cur.execute(query)
+            rows = cur.fetchall()
 
         for row in rows:  # tqdm: DB result rows, no bar needed
             adg_name = row["adg_name"] or ""
@@ -190,7 +212,7 @@ def load_from_ast(repo_root: Path) -> list[dict]:
                 continue
 
             canonical_digest = compute_digest(source)
-            rel_path = str(py_file.relative_to(repo_root))
+            rel_path = _relative_to_repo(py_file, repo_root)
             module_name = rel_path.replace("\\", "/").replace("/", ".").removesuffix(".py")
             layer = detect_layer(rel_path)
 
@@ -292,7 +314,7 @@ def run(store_path: Path, dry_run: bool = False) -> None:
         print("ERROR: chromadb not installed.")
         raise SystemExit(1) from exc
 
-    sys.path.insert(0, str(REPO_ROOT))
+    _ensure_repo_on_syspath(REPO_ROOT)
     from tools.progress_display import ProgressReporter
 
     print(f"Loading embedding model: {EMBEDDING_MODEL}")
@@ -323,6 +345,7 @@ def run(store_path: Path, dry_run: bool = False) -> None:
         print("DRY RUN — stopping before Chroma write.")
         return
 
+    store_path.mkdir(parents=True, exist_ok=True)
     print(f"Connecting to Chroma store: {store_path}")
     client = chromadb.PersistentClient(path=str(store_path))
 

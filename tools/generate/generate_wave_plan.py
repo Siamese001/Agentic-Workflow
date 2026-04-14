@@ -1,29 +1,57 @@
 #!/usr/bin/env python3
 """Generate wave plan for placeholder test conversions."""
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 
-# Load remaining placeholders
-with open("remaining_placeholders.json") as f:
-    all_files = json.load(f)
-
-# Organize into waves of 38 files each
 WAVE_SIZE = 38
-waves = {}
-wave_num = 13  # Starting from Wave 13
+STARTING_WAVE = 13
 
-for i in range(0, len(all_files), WAVE_SIZE):
-    wave_files = all_files[i : i + WAVE_SIZE]
-    waves[wave_num] = {
-        "files": wave_files,
-        "count": len(wave_files),
-    }
-    wave_num += 1
 
-# Create wave plan document
-plan_content = f"""# Wave 13-30: Placeholder Test Conversion Plan
-## Generated: {Path.cwd()}
+def _atomic_write_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as tmp:
+        tmp.write(content)
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(path)
+
+
+def _atomic_write_json(path: Path, payload: dict[int, dict[str, object]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as tmp:
+        json.dump(payload, tmp, indent=2)
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(path)
+
+
+def main() -> int:
+    repo_root = Path.cwd()
+    placeholders_path = repo_root / "remaining_placeholders.json"
+    if not placeholders_path.exists():
+        raise FileNotFoundError(f"Missing input file: {placeholders_path}")
+
+    all_files = json.loads(placeholders_path.read_text(encoding="utf-8"))
+    if not isinstance(all_files, list):
+        raise ValueError("remaining_placeholders.json must contain a JSON list")
+
+    waves: dict[int, dict[str, object]] = {}
+    wave_num = STARTING_WAVE
+
+    for i in range(0, len(all_files), WAVE_SIZE):
+        wave_files = all_files[i : i + WAVE_SIZE]
+        waves[wave_num] = {
+            "files": wave_files,
+            "count": len(wave_files),
+        }
+        wave_num += 1
+
+    plan_content = f"""# Wave 13-30: Placeholder Test Conversion Plan
+## Generated: {repo_root}
 
 ## Summary
 - **Total Remaining Placeholder Files:** {len(all_files)}
@@ -34,25 +62,26 @@ plan_content = f"""# Wave 13-30: Placeholder Test Conversion Plan
 
 """
 
-for wave_num, wave_data in waves.items():
-    plan_content += f"### Wave {wave_num} ({wave_data['count']} files)\n"
-    for f in wave_data["files"]:
-        plan_content += f"- [ ] `{f}`\n"
-    plan_content += "\n"
+    for current_wave_num, wave_data in waves.items():
+        plan_content += f"### Wave {current_wave_num} ({wave_data['count']} files)\n"
+        for file_path in wave_data["files"]:
+            plan_content += f"- [ ] `{file_path}`\n"
+        plan_content += "\n"
 
-# Save plan to proper SSOT location
-plan_path = Path("docs/reports/plans/wave_13_30_placeholder_conversion_plan.md")
-plan_path.parent.mkdir(parents=True, exist_ok=True)
-with open(plan_path, "w") as f:
-    f.write(plan_content)
+    plan_path = repo_root / "docs" / "reports" / "plans" / "wave_13_30_placeholder_conversion_plan.md"
+    _atomic_write_text(plan_path, plan_content)
 
-# Save waves as JSON for execution
-with open("wave_assignments.json", "w") as f:
-    json.dump(waves, f, indent=2)
+    assignments_path = repo_root / "wave_assignments.json"
+    _atomic_write_json(assignments_path, waves)
 
-print(f"Plan saved to: {plan_path}")
-print(f"Total waves: {len(waves)}")
+    print(f"Plan saved to: {plan_path}")
+    print(f"Total waves: {len(waves)}")
 
-# Print wave summary
-for wave_num, wave_data in waves.items():
-    print(f"Wave {wave_num}: {wave_data['count']} files")
+    for current_wave_num, wave_data in waves.items():
+        print(f"Wave {current_wave_num}: {wave_data['count']} files")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

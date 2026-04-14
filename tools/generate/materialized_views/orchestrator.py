@@ -8,11 +8,27 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tools.generate.materialized_views.phase_a_path_authority import materialize_phase_a
-from tools.generate.materialized_views.phase_b_capability_tool_task import materialize_phase_b
-from tools.generate.materialized_views.phase_c_trace_drift_debt import materialize_phase_c
-from tools.generate.materialized_views.phase_d_snapshot_regression import materialize_phase_d
-from tools.generate.materialized_views.phase_e_graph_intelligence import materialize_phase_e
+try:
+    from tools.generate.materialized_views.phase_a_path_authority import materialize_phase_a
+    from tools.generate.materialized_views.phase_b_capability_tool_task import materialize_phase_b
+    from tools.generate.materialized_views.phase_c_trace_drift_debt import materialize_phase_c
+    from tools.generate.materialized_views.phase_d_snapshot_regression import materialize_phase_d
+    from tools.generate.materialized_views.phase_e_graph_intelligence import materialize_phase_e
+except ImportError:
+    from materialized_views.phase_a_path_authority import materialize_phase_a
+    from materialized_views.phase_b_capability_tool_task import materialize_phase_b
+    from materialized_views.phase_c_trace_drift_debt import materialize_phase_c
+    from materialized_views.phase_d_snapshot_regression import materialize_phase_d
+    from materialized_views.phase_e_graph_intelligence import materialize_phase_e
+
+
+def _validate_sqlite_path(sqlite_path: Path) -> Path:
+    sqlite_path = sqlite_path.expanduser().resolve()
+    if not sqlite_path.exists():
+        raise FileNotFoundError(f"ADG SQLite not found: {sqlite_path}")
+    if not sqlite_path.is_file():
+        raise ValueError(f"ADG SQLite path is not a file: {sqlite_path}")
+    return sqlite_path
 
 
 def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
@@ -28,6 +44,7 @@ def materialize_all_views(sqlite_path: Path) -> dict[str, int]:
     Returns:
         dict mapping every materialized table name to its post-refresh row count.
     """
+    sqlite_path = _validate_sqlite_path(sqlite_path)
     all_counts: dict[str, int] = {}
 
     counts_a = materialize_phase_a(sqlite_path)

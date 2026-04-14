@@ -20,8 +20,20 @@ import argparse
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
+SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse"
 DEFAULT_DIM = 1024
 DEFAULT_SAMPLE = 10
 
@@ -45,12 +57,21 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
         return False
 
     ok = True
+    sample_size = max(1, sample_size)
 
     print(f"\n=== VALIDATE: {collection_name} @ {store_path} ===")
 
+    if not store_path.exists():
+        print(f"  [FAIL] Chroma store path does not exist: {store_path}")
+        return False
+
     # 1. Collection exists
-    client = chromadb.PersistentClient(path=str(store_path))
-    existing = {c.name for c in client.list_collections()}
+    try:
+        client = chromadb.PersistentClient(path=str(store_path))
+        existing = {c.name for c in client.list_collections()}
+    except Exception as exc:
+        print(f"  [FAIL] Could not open Chroma store: {exc}")
+        return False
     if collection_name not in existing:
         print(f"  [FAIL] Collection '{collection_name}' does not exist.")
         return False
@@ -95,9 +116,7 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
     n = min(sample_size, count)
     result = collection.get(limit=n, include=["embeddings", "documents", "metadatas"])
 
-    embeddings = result.get("embeddings")
-    if embeddings is None:
-        embeddings = []
+    embeddings = result.get("embeddings") or []
     documents = result.get("documents") or []
     metadatas = result.get("metadatas") or []
 
@@ -105,8 +124,11 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
     empty_doc_errors = 0
     meta_errors = 0
     required_keys = REQUIRED_META_KEYS.get(collection_name, set())
+    observed = max(len(embeddings), len(documents), len(metadatas))
+    if observed < n:
+        print(f"  [WARN] Requested sample={n}, but collection returned only {observed} rows")
 
-    for i in range(len(embeddings)):  # tqdm: sampled embedding check, no bar needed
+    for i in range(observed):  # tqdm: sampled embedding check, no bar needed
         emb = embeddings[i]
         if emb is None:
             dim_errors += 1
@@ -157,8 +179,7 @@ def validate(store_path: Path, collection_name: str, expected_dim: int, sample_s
         "incidents_rca",
     }
     if collection_name in _SPARSE_TARGET_COLLECTIONS:
-        sparse_dir = REPO_ROOT / "data" / "cache" / "sparse"
-        sidecar = sparse_dir / f"{collection_name}.db"
+        sidecar = SPARSE_PATH / f"{collection_name}.db"
         if sidecar.exists():
             print(f"  [OK]   Sparse sidecar present: {sidecar.name}")
         else:

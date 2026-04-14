@@ -17,6 +17,22 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+
+def _validate_sqlite_path(sqlite_path: Path) -> Path:
+    sqlite_path = sqlite_path.expanduser().resolve()
+    if not sqlite_path.exists():
+        raise FileNotFoundError(f"ADG SQLite not found: {sqlite_path}")
+    if not sqlite_path.is_file():
+        raise ValueError(f"ADG SQLite path is not a file: {sqlite_path}")
+    return sqlite_path
+
+
+def _connect_sqlite(sqlite_path: Path) -> sqlite3.Connection:
+    conn = sqlite3.connect(str(_validate_sqlite_path(sqlite_path)), timeout=30)
+    conn.execute("PRAGMA journal_mode=WAL")
+    return conn
+
+
 _PHASE_C_TABLES: tuple[str, ...] = (
     "mv_trace_replay_eval_gaps",
     "mv_eval_coverage_by_path",
@@ -51,8 +67,7 @@ def materialize_phase_c(sqlite_path: Path) -> dict[str, int]:
     Returns:
         dict mapping table_name -> row_count for each Phase C table.
     """
-    conn = sqlite3.connect(str(sqlite_path))
-    conn.execute("PRAGMA journal_mode=WAL")
+    conn = _connect_sqlite(sqlite_path)
     conn.execute("PRAGMA cache_size = -64000")
     conn.execute("PRAGMA temp_store = MEMORY")
     cur = conn.cursor()

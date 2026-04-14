@@ -11,6 +11,15 @@ from pathlib import Path
 from tqdm import tqdm
 
 
+def _safe_unlink(path: Path) -> None:
+    """Best-effort unlink for temp files and archived sources."""
+    try:
+        if path.exists():
+            path.unlink()
+    except OSError:
+        pass
+
+
 def _replace_atomically(temp_path: Path, final_path: Path) -> None:
     """Atomically replace final_path with temp_path on the same filesystem."""
     os.replace(temp_path, final_path)
@@ -43,14 +52,14 @@ def _archive_zip_files(zip_files: list[Path], archive_month_dir: Path) -> tuple[
             if temp_archive_path.exists() and temp_archive_path.stat().st_size > 0:
                 _replace_atomically(temp_archive_path, archive_path)
                 bytes_archived += archive_path.stat().st_size
-                zip_file.unlink()
+                _safe_unlink(zip_file)
                 archived_count += 1
             elif temp_archive_path.exists():
-                temp_archive_path.unlink()
+                _safe_unlink(temp_archive_path)
 
         except OSError as e:
             if temp_archive_path.exists():
-                temp_archive_path.unlink()
+                _safe_unlink(temp_archive_path)
             print(f"[ADG] Archive: error archiving {zip_file.name}: {e}")
             continue
 
@@ -84,14 +93,14 @@ def _archive_individual_files(files: list[Path], archive_month_dir: Path) -> tup
             if temp_archive_path.exists() and temp_archive_path.stat().st_size > 0:
                 _replace_atomically(temp_archive_path, archive_path)
                 bytes_archived += archive_path.stat().st_size
-                file_path.unlink()
+                _safe_unlink(file_path)
                 archived_count += 1
             elif temp_archive_path.exists():
-                temp_archive_path.unlink()
+                _safe_unlink(temp_archive_path)
 
         except OSError as e:
             if temp_archive_path.exists():
-                temp_archive_path.unlink()
+                _safe_unlink(temp_archive_path)
             print(f"[ADG] Archive: error archiving {file_path.name}: {e}")
             continue
 
@@ -117,9 +126,10 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
     temp_zip_path = zip_path.with_suffix(".zip.tmp")
 
     try:
+        unique_artifact_paths = list(dict.fromkeys(artifact_paths))
         with zipfile.ZipFile(temp_zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=1) as zf:
             missing_artifacts = []
-            for artifact_path in artifact_paths:
+            for artifact_path in unique_artifact_paths:
                 if artifact_path.exists():
                     zf.write(artifact_path, f"adg/{artifact_path.name}")
                 else:
@@ -134,17 +144,17 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
     except (OSError, ValueError, zipfile.BadZipFile) as e:
         print(f"[ADG] CRITICAL: Zip creation failed: {e}")
         if temp_zip_path.exists():
-            temp_zip_path.unlink()
+            _safe_unlink(temp_zip_path)
         if zip_path.exists():
-            zip_path.unlink()
+            _safe_unlink(zip_path)
         raise RuntimeError(f"Zip creation failed for {ts}: {e}") from e
 
     if not zip_path.exists():
         raise RuntimeError(f"Zip file not created after successful completion for {ts}")
 
     zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
-    report_count = len([p for p in artifact_paths if "report" in p.name.lower()])
-    adg_count = len(artifact_paths) - report_count
+    report_count = len([p for p in unique_artifact_paths if "report" in p.name.lower()])
+    adg_count = len(unique_artifact_paths) - report_count
     print(
         f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, {adg_count} ADG + {report_count} reports)",
     )

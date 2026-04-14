@@ -72,23 +72,18 @@ class TestStubGenerator:
         """Convert file path to module name."""
         # Convert path to module import string
         parts = source_path.with_suffix("").parts
-        for anchor in tqdm(
-            (
-                "agentic_core",
-                "apps_eval",
-                "apps_exec",
-                "apps_lic",
-                "apps_research",
-                "apps_rfp",
-                "apps_rg",
-                "apps_shared",
-                "system_learning",
-                "tools",
-                "tests",
-            ),
-            desc="Resolving module anchor",
-            unit="anchor",
-            leave=False,
+        for anchor in (
+            "agentic_core",
+            "apps_eval",
+            "apps_exec",
+            "apps_lic",
+            "apps_research",
+            "apps_rfp",
+            "apps_rg",
+            "apps_shared",
+            "system_learning",
+            "tools",
+            "tests",
         ):
             if anchor in parts:
                 idx = parts.index(anchor)

@@ -9,7 +9,18 @@ import sys
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def _is_file_locked(filepath: Path) -> bool:
@@ -39,7 +50,11 @@ def _is_file_locked(filepath: Path) -> bool:
             return True  # Another process holds an exclusive write lock
         ctypes.windll.kernel32.CloseHandle(handle)
         return False
-    except Exception:  # guardian: allow-broad-exception -- Windows API best-effort: file lock check may fail unpredictably, treat failure as locked
+    except (
+        ImportError,
+        AttributeError,
+        OSError,
+    ):  # guardian: allow-broad-exception -- Windows API best-effort: file lock check may fail unpredictably, treat failure as locked
         return True
 
 
@@ -48,22 +63,22 @@ def _perform_wal_checkpoint(adg_dir: Path | None = None) -> None:
     print("[ADG] Pre-flight: attempting best-effort SQLite WAL checkpoint...")
     try:
         adg_dir = adg_dir if adg_dir is not None else ROOT / "artifacts" / "adg"
+        if not adg_dir.exists():
+            return
         sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
 
         for sqlite_file in sqlite_files:
             try:
-                temp_conn = sqlite3.connect(str(sqlite_file))
-                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
-                temp_conn.close()
-                del temp_conn
+                with sqlite3.connect(str(sqlite_file)) as temp_conn:
+                    temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                 print(f"[ADG] WAL checkpoint attempted for: {sqlite_file.name}")
-            except Exception:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure during lock check
-                pass
+            except sqlite3.Error as exc:  # guardian: allow-broad-exception -- best-effort cleanup: WAL checkpoint failure during lock check
+                print(f"[ADG] WAL checkpoint skipped for {sqlite_file.name}: {exc}")
 
         gc.collect()
         time.sleep(0.5)
-    except Exception:  # guardian: allow-silent-swallow -- best-effort lock check: failure caught by subsequent pre-generation check
-        pass
+    except OSError as exc:  # guardian: allow-silent-swallow -- best-effort lock check: failure caught by subsequent pre-generation check
+        print(f"[ADG] Warning: unable to enumerate SQLite artifacts for WAL checkpoint: {exc}")
 
 
 def _check_locked_files(adg_dir: Path | None = None) -> None:
@@ -71,6 +86,9 @@ def _check_locked_files(adg_dir: Path | None = None) -> None:
     print("[ADG] Checking for remaining locked SQLite files...")
     try:
         adg_dir = adg_dir if adg_dir is not None else ROOT / "artifacts" / "adg"
+        if not adg_dir.exists():
+            print("[ADG] No ADG artifact directory found; skipping lock check")
+            return
         sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
         locked_count = 0
         locked_files_list = []

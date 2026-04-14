@@ -6,9 +6,23 @@ import asyncio
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(REPO_ROOT))
-sys.path.insert(0, str(REPO_ROOT / "agentic_core" / "L4_state" / "utils"))
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+L4_UTILS = REPO_ROOT / "agentic_core" / "L4_state" / "utils"
+if str(L4_UTILS) not in sys.path:
+    sys.path.insert(0, str(L4_UTILS))
 
 import chromadb
 from agentic_core.L1_cognition.reasoning.query_router import QueryRouter
@@ -117,4 +131,5 @@ async def main() -> None:
     sys.exit(0 if all_pass else 1)
 
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

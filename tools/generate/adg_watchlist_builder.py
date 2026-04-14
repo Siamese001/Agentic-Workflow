@@ -18,9 +18,28 @@ import sqlite3
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Any
 
 from tqdm import tqdm
+
+
+def _validate_sqlite_path(sqlite_path: Path) -> Path:
+    sqlite_path = sqlite_path.expanduser().resolve()
+    if not sqlite_path.exists():
+        raise FileNotFoundError(f"ADG SQLite not found: {sqlite_path}")
+    if not sqlite_path.is_file():
+        raise ValueError(f"ADG SQLite path is not a file: {sqlite_path}")
+    return sqlite_path
+
+
+def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as tmp:
+        json.dump(payload, tmp, indent=2)
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(path)
 
 
 _ALLOWED_PERCENTILE_TABLES = frozenset({"mv_hotspot_centrality", "mv_dependency_cone_risk"})
@@ -52,9 +71,9 @@ class ADGWatchlistBuilder:
     CRITICAL_LAYERS = {"L0", "L1", "L2", "L3", "L4", "L5", "L6"}
 
     def __init__(self, sqlite_path: Path):
-        self.sqlite_path = sqlite_path
-        db_uri = f"file:{sqlite_path.resolve()}?mode=ro"
-        self.conn = sqlite3.connect(db_uri, uri=True)
+        self.sqlite_path = _validate_sqlite_path(sqlite_path)
+        db_uri = f"file:{self.sqlite_path}?mode=ro"
+        self.conn = sqlite3.connect(db_uri, uri=True, timeout=30)
         self.conn.row_factory = sqlite3.Row
         self.cur = self.conn.cursor()
 
@@ -293,8 +312,7 @@ class ADGWatchlistBuilder:
             "watchlist": [asdict(item) for item in watchlist[:50]],  # Cap at 50
         }
 
-        with open(artifact_path, "w", encoding="utf-8") as f:
-            json.dump(artifact, f, indent=2)
+        _atomic_json_write(artifact_path, artifact)
 
         return artifact_path
 

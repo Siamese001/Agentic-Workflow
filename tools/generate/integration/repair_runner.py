@@ -4,13 +4,28 @@ from __future__ import annotations
 
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def _run_p1_p2_auto_fix(adg_artifacts_dir: Path, ts: str) -> None:
     """Run P1/P2 auto-fix via repair orchestrator."""
-    from tools.adg.repair import ADGRepairOrchestrator
-    from tools.adg.repair.rule_engine import register_builtin_rules
+    try:
+        from tools.adg.repair import ADGRepairOrchestrator
+        from tools.adg.repair.rule_engine import register_builtin_rules
+    except ImportError:
+        from adg.repair import ADGRepairOrchestrator
+        from adg.repair.rule_engine import register_builtin_rules
 
     register_builtin_rules()
 
@@ -32,5 +47,11 @@ def _run_p1_p2_auto_fix(adg_artifacts_dir: Path, ts: str) -> None:
         print(f"[ADG]   AUTO_FIX: {result.fixes_applied}")
         print(f"[ADG]   SUGGEST_FIX: {result.fixes_suggested}")
         print(f"[ADG]   BLOCK_FIX: {result.fixes_blocked}")
-    except Exception as e:  # guardian: allow-broad-exception -- non-critical: repair orchestrator failure should not block ADG generation
+    except (
+        ImportError,
+        AttributeError,
+        OSError,
+        RuntimeError,
+        ValueError,
+    ) as e:  # guardian: allow-broad-exception -- non-critical: repair orchestrator failure should not block ADG generation
         print(f"[WARNING] Repair orchestrator failed: {e}")

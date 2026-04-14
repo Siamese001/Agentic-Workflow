@@ -49,6 +49,11 @@ from typing import Any
 
 from tqdm import tqdm
 
+
+def _connect_sqlite(path: Path, timeout: int = 10, *, uri: bool = False) -> sqlite3.Connection:
+    return sqlite3.connect(str(path), timeout=timeout, uri=uri)
+
+
 _PROJECTION_SCHEMA_VERSION = "1.1"
 
 _REACHABILITY_SEED_THRESHOLD = 10
@@ -307,7 +312,7 @@ def _load_graph(
         precision_type). The returned DiGraph may contain additional symbol
         nodes as graph intermediaries.
     """
-    conn = sqlite3.connect(str(canonical_sqlite), timeout=10)
+    conn = _connect_sqlite(canonical_sqlite, timeout=10)
     conn.row_factory = sqlite3.Row
 
     _verify_canonical_tables(conn)
@@ -565,7 +570,7 @@ def _compute_diff(
     print(f"[graph_projection] Diff base  : {prev_path.name}")
 
     try:
-        prev_conn = sqlite3.connect(str(prev_path), timeout=5)
+        prev_conn = _connect_sqlite(prev_path, timeout=5)
         prev_conn.row_factory = sqlite3.Row
 
         prev_centrality: dict[str, dict] = {}
@@ -651,7 +656,7 @@ def _write_projection_sqlite(
     Reads lineage fields from canonical sqlite meta table.
     All writes happen with MEMORY journal for speed on a temp file.
     """
-    canon_conn = sqlite3.connect(str(canonical_sqlite), timeout=10)
+    canon_conn = _connect_sqlite(canonical_sqlite, timeout=10)
     canon_conn.row_factory = sqlite3.Row
 
     meta_rows_raw = canon_conn.execute("SELECT key, value FROM meta").fetchall()
@@ -668,7 +673,7 @@ def _write_projection_sqlite(
     snapshot_id = source_artifact_digest[:16] if source_artifact_digest else "unknown"
     generated_ts = datetime.now(tz=timezone.utc).isoformat()
 
-    conn = sqlite3.connect(str(db_path))
+    conn = _connect_sqlite(db_path, timeout=30)
     try:
         conn.execute("PRAGMA journal_mode=MEMORY")
         conn.execute("PRAGMA synchronous=OFF")

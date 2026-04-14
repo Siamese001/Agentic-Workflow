@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import re
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
@@ -336,6 +337,20 @@ def _artifact_determinism_probe(
     return proof
 
 
+_TS_SUFFIX_RE = re.compile(r"_\d{8}_\d{4}$")
+
+
+def _safe_unlink(path: Path) -> bool:
+    """Best-effort unlink returning whether a file was removed."""
+    try:
+        if path.exists():
+            path.unlink()
+            return True
+    except OSError as e:
+        print(f"[ADG] Cleanup: error removing {path.name}: {e}")
+    return False
+
+
 def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
     """Clean up old validation packages, MANIFEST files, and non-timestamped reports.
 
@@ -355,37 +370,23 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
     # Remove all MANIFEST files (low value)    # guardian: Add error context logging
     for manifest_file in adg_dir.glob("MANIFEST_*.txt"):
         # guardian: allow-silent-swallow - acceptable exception handling
-        try:
-            manifest_file.unlink()
+        if _safe_unlink(manifest_file):
             cleaned_count += 1
-        except OSError as e:
-            print(f"[ADG] Cleanup: error removing {manifest_file.name}: {e}")
 
     # Remove non-timestamped report files (legacy cleanup)
     for report_file in tqdm(adg_dir.glob("*_report.json"), desc="Processing", unit="item"):
-        # Skip if it has a timestamp (format: *_report_MMDDYYYY_HHMM.json)    # guardian: Add error context logging
-        if "_" in report_file.stem and len(report_file.stem.split("_")) >= 3:
-            # Check if the last part looks like a timestamp
-            last_part = report_file.stem.split("_")[-1]
-            if len(last_part) == 13 and "_" in last_part:  # MMDDYYYY_HHMM format
-                continue  # This is a timestamped file, keep it
-        # guardian: allow-silent-swallow - acceptable exception handling
-        try:
-            report_file.unlink()
+        if _TS_SUFFIX_RE.search(report_file.stem):
+            continue
+        if _safe_unlink(report_file):
             cleaned_count += 1
             print(f"[ADG] Cleanup: removed legacy report {report_file.name}")
-        except OSError as e:
-            print(f"[ADG] Cleanup: error removing {report_file.name}: {e}")
 
     # Remove non-timestamped test_surface_coverage files (legacy cleanup)
     # guardian: allow-silent-swallow - acceptable exception handling
     for test_file in adg_dir.glob("test_surface_coverage.json"):
-        try:
-            test_file.unlink()
+        if _safe_unlink(test_file):
             cleaned_count += 1
             print("[ADG] Cleanup: removed legacy test_surface_coverage.json")
-        except OSError as e:
-            print(f"[ADG] Cleanup: error removing {test_file.name}: {e}")
 
     # Clean up old validation packages (keep only current timestamp)
     validation_patterns = [
@@ -399,11 +400,8 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
             # Extract timestamp from validation package filename
             # e.g., chatgpt_validation_package_03132026_0427.zip
             if current_ts not in val_file.name:
-                try:
-                    val_file.unlink()
+                if _safe_unlink(val_file):
                     cleaned_count += 1
-                except OSError as e:
-                    print(f"[ADG] Cleanup: error removing {val_file.name}: {e}")
 
     if cleaned_count > 0:  # guardian: Add error context logging
         print(f"[ADG] Cleanup: removed {cleaned_count} old validation/manifest files")

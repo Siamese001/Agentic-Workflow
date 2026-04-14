@@ -17,10 +17,37 @@ import sys
 from pathlib import Path
 from tqdm import tqdm
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+def _parse_int(value: object, default: int = 0) -> int:
+    try:
+        return int(str(value))
+    except (TypeError, ValueError):
+        return default
+
+
+REPO_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse"
 
-TARGET_COLLECTIONS = ["code_chunks", "symbols", "arch_docs", "tests_guardrails"]
+TARGET_COLLECTIONS = [
+    "code_chunks",
+    "symbols",
+    "arch_docs",
+    "tests_guardrails",
+    "runtime_evidence",
+    "process_docs",
+    "ext_knowledge",
+    "incidents_rca",
+]
 
 # ---------------------------------------------------------------------------
 # Exact-match probe queries per collection
@@ -151,56 +178,54 @@ def validate_collection(collection_name: str, verbose: bool = False) -> bool:
         print(f"  [FAIL] Sidecar DB not found: {db_path}")
         return False
 
-    conn = sqlite3.connect(str(db_path))
+    try:
+        with sqlite3.connect(str(db_path)) as conn:
+            # 1. Meta check
+            meta = check_meta(conn)
+            doc_count = _parse_int(meta.get("doc_count"), 0)
+            term_count = _parse_int(meta.get("term_count"), 0)
+            print(f"  [OK]   Meta: doc_count={doc_count} term_rows={term_count}")
 
-    # 1. Meta check
-    meta = check_meta(conn)
-    doc_count = int(meta.get("doc_count", 0))
-    term_count = int(meta.get("term_count", 0))
-    print(f"  [OK]   Meta: doc_count={doc_count} term_rows={term_count}")
+            if doc_count == 0:
+                print("  [FAIL] doc_count=0 — index is empty")
+                return False
 
-    if doc_count == 0:
-        print("  [FAIL] doc_count=0 — index is empty")
-        conn.close()
+            # 2. FTS5 table exists
+            fts_tables = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='docs_fts'"
+            ).fetchall()
+            if not fts_tables:
+                print("  [FAIL] docs_fts virtual table missing")
+                return False
+            print("  [OK]   FTS5 table present")
+
+            # 3. term_freq populated
+            tf_count = _parse_int(conn.execute("SELECT COUNT(*) FROM term_freq").fetchone()[0], 0)
+            if tf_count == 0:
+                print("  [FAIL] term_freq table is empty")
+                return False
+            print(f"  [OK]   term_freq rows={tf_count}")
+
+            # 4. Probe queries
+            probes = PROBES.get(collection_name, [])
+            passed = 0
+            failed = 0
+            for label, fts_query, expect_min in tqdm(probes, desc="Processing", unit="item"):
+                hits = fts5_search(conn, fts_query, limit=3)
+                ok = len(hits) >= expect_min
+                status = "[OK]  " if ok else "[FAIL]"
+                if ok:
+                    passed += 1
+                else:
+                    failed += 1
+                snip = hits[0]["snippet"][:80].replace("\n", " ") if hits else "—no results—"
+                print(f"  {status} {label}: {len(hits)} hit(s) | {snip!r}")
+                if verbose and hits:
+                    for h in hits[:2]:
+                        print(f"         id={h['id'][:60]}")
+    except sqlite3.Error as exc:
+        print(f"  [FAIL] SQLite validation error: {exc}")
         return False
-
-    # 2. FTS5 table exists
-    fts_tables = conn.execute(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='docs_fts'"
-    ).fetchall()
-    if not fts_tables:
-        print("  [FAIL] docs_fts virtual table missing")
-        conn.close()
-        return False
-    print("  [OK]   FTS5 table present")
-
-    # 3. term_freq populated
-    tf_count = conn.execute("SELECT COUNT(*) FROM term_freq").fetchone()[0]
-    if tf_count == 0:
-        print("  [FAIL] term_freq table is empty")
-        conn.close()
-        return False
-    print(f"  [OK]   term_freq rows={tf_count}")
-
-    # 4. Probe queries
-    probes = PROBES.get(collection_name, [])
-    passed = 0
-    failed = 0
-    for label, fts_query, expect_min in tqdm(probes, desc="Processing", unit="item"):
-        hits = fts5_search(conn, fts_query, limit=3)
-        ok = len(hits) >= expect_min
-        status = "[OK]  " if ok else "[FAIL]"
-        if ok:
-            passed += 1
-        else:
-            failed += 1
-        snip = hits[0]["snippet"][:80].replace("\n", " ") if hits else "—no results—"
-        print(f"  {status} {label}: {len(hits)} hit(s) | {snip!r}")
-        if verbose and hits:
-            for h in hits[:2]:
-                print(f"         id={h['id'][:60]}")
-
-    conn.close()
 
     total_probes = passed + failed
     print(f"\n  Probes: {passed}/{total_probes} passed")
