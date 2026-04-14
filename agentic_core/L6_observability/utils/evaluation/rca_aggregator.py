@@ -12,8 +12,8 @@ Future-run only.  In-memory only.  No durable writes.  No L4 access.
 
 from __future__ import annotations
 
+import hashlib
 import threading
-import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -22,7 +22,6 @@ from agentic_core.L2_execution.utils.providers import get_clock
 
 if TYPE_CHECKING:
     from agentic_core.L6_observability.utils.evaluation.shadow_eval_grader import ShadowEvalResult
-from tqdm import tqdm
 
 
 @dataclass
@@ -93,9 +92,7 @@ class RcaAggregator:
             groups[key].append(r)
 
         clusters: list[RcaCluster] = []
-        for key, members in tqdm(
-            groups.items(), desc="Processing", unit="item"
-        ):  # progress: building RCA cluster per lane+tag group
+        for key, members in groups.items():
             lane_id = members[0].lane_id or "unknown"
             tag = members[0].lane_regression_tag or "UNKNOWN"
             collections = sorted({m.collection for m in members if m.collection})
@@ -113,7 +110,7 @@ class RcaAggregator:
 
             clusters.append(
                 RcaCluster(
-                    cluster_id=f"rca-{uuid.uuid4().hex[:12]}",
+                    cluster_id=f"rca-{hashlib.sha256(key.encode()).hexdigest()[:12]}",
                     cluster_key=key,
                     lane_id=lane_id,
                     failure_mode=tag,

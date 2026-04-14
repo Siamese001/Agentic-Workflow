@@ -136,7 +136,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tqdm import tqdm
 
 record_execution_trace("semantic_clock_validator", "semantic_clock_validator_trace")
 
@@ -217,21 +216,20 @@ def validate_artifact(artifact: Any) -> SemanticClockValidationResult:
     Raises:
         SemanticClockHashMismatch: if stored != computed hash.
     """
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_snapshots_state(str(_uuid.uuid4()), "validate_artifact", "state_snapshot")
-    import hashlib as _hashlib  # noqa: PLC0415
-    import uuid as _uuid  # noqa: PLC0415
-
-    _tid = str(_uuid.uuid4())
-    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_applies_guardrail(str(_uuid.uuid4()), "validate_artifact", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415
-
-    _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "validate_artifact")
+    trace_material = "|".join(
+        [
+            str(artifact.advancement_id),
+            str(artifact.previous_tick),
+            str(artifact.new_tick),
+            str(artifact.provider_id),
+            str(artifact.timestamp),
+        ]
+    )
+    trace_id = hashlib.sha256(trace_material.encode("utf-8", errors="ignore")).hexdigest()[:32]
+    _emit_snapshots_state(trace_id, "validate_artifact", "state_snapshot")
+    _emit_signs_execution_trace(trace_id, hashlib.sha256(trace_id.encode()).hexdigest()[:12], "p0_trace", 0)
+    _emit_applies_guardrail(trace_id, "validate_artifact", "p0_governance")
+    _emit_records_execution_trace(trace_id, LayerSegment.L6_OBSERVABILITY, "validate_artifact")
     material = {
         "advancement_id": str(artifact.advancement_id),
         "advancement_reason": str(artifact.advancement_reason),
@@ -275,7 +273,7 @@ def scan_module_for_wallclock(module_path: Path) -> list[str]:
     except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError at line {exc.lineno}: {exc.msg}"]
     violations: list[str] = []
-    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
+    for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         func = node.func

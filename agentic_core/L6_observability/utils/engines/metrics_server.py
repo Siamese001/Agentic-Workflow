@@ -67,6 +67,38 @@ emit_replay_key("metrics_server", "L6")
 emit_determinism_digest("metrics_server", "metrics_server_digest")
 
 
+def _coerce_server_handle(httpd_tuple: Any, addr: str, port: int) -> dict[str, Any]:
+    """Normalize prometheus_client return value into a consistent handle."""
+    if isinstance(httpd_tuple, tuple):
+        server_obj, thread_obj = httpd_tuple
+    else:
+        server_obj, thread_obj = httpd_tuple, None
+
+    return {
+        "server": server_obj,
+        "thread": thread_obj,
+        "addr": addr,
+        "port": port,
+    }
+
+
+def _find_bind_key_for_server(server: Any) -> tuple[str, int] | None:
+    """Resolve a tracked bind key for a server handle."""
+    if isinstance(server, dict):
+        addr = server.get("addr")
+        port = server.get("port")
+        if isinstance(addr, str) and isinstance(port, int):
+            bind_key = (addr, port)
+            if bind_key in _running_servers:
+                return bind_key
+
+    for bind_key, srv in _running_servers.items():
+        if srv is server:
+            return bind_key
+
+    return None
+
+
 def start_metrics_server(
     port: int = 8000,
     addr: str = "127.0.0.1",
@@ -99,28 +131,22 @@ def start_metrics_server(
 
     try:
         bind_key = _validate_bind(addr, port)
-        # Check if server already running on this port
         with _server_lock:
             if bind_key in _running_servers:
                 logger.info("Metrics server already running on %s:%s", addr, port)
                 return _running_servers[bind_key]
 
-        # Start the server using prometheus_client's built-in server
-        httpd_tuple = _prom_start_server(port=port, addr=addr, registry=registry)
-        handle = (
-            {"server": httpd_tuple[0], "thread": httpd_tuple[1], "addr": addr, "port": port}
-            if isinstance(httpd_tuple, tuple)
-            else {"server": httpd_tuple, "thread": None, "addr": addr, "port": port}
-        )
-
-        with _server_lock:
+            # Start the server using prometheus_client's built-in server while holding the
+            # lock so concurrent callers cannot race into a double bind on the same socket.
+            httpd_tuple = _prom_start_server(port=port, addr=addr, registry=registry)
+            handle = _coerce_server_handle(httpd_tuple, addr, port)
             _running_servers[bind_key] = handle
 
         logger.info(
             "metrics_server_started port=%s addr=%s endpoint=%s",
             port,
             addr,
-            f"http://{addr}:{port}/metrics",
+            get_metrics_endpoint_url(port=port, addr=addr),
         )
 
         _emit_records_execution_trace(
@@ -153,19 +179,22 @@ def stop_metrics_server(server: Any) -> bool:
         return False
 
     try:
-        # Find and remove from tracking
         with _server_lock:
-            for bind_key, srv in list(_running_servers.items()):
-                if srv is server:
-                    del _running_servers[bind_key]
-                    break
+            bind_key = _find_bind_key_for_server(server)
 
         # Shutdown the server
         server_obj = server.get("server") if isinstance(server, dict) else server
+        thread_obj = server.get("thread") if isinstance(server, dict) else None
         if hasattr(server_obj, "shutdown"):
             server_obj.shutdown()
         if hasattr(server_obj, "server_close"):
             server_obj.server_close()
+        if thread_obj is not None and hasattr(thread_obj, "join") and thread_obj.is_alive():
+            thread_obj.join(timeout=5.0)
+
+        if bind_key is not None:
+            with _server_lock:
+                _running_servers.pop(bind_key, None)
 
         logger.info("metrics_server_stopped")
         _emit_records_execution_trace(
@@ -185,16 +214,17 @@ def stop_metrics_server(server: Any) -> bool:
         return False
 
 
-def get_metrics_endpoint_url(port: int = 8000) -> str:
+def get_metrics_endpoint_url(port: int = 8000, addr: str = "127.0.0.1") -> str:
     """Get the URL for the metrics endpoint.
 
     Args:
         port: Port the metrics server is running on
+        addr: Address the metrics server is bound to
 
     Returns:
         Full URL to the metrics endpoint
     """
-    return f"http://localhost:{port}/metrics"
+    return f"http://{addr}:{port}/metrics"
 
 
 def is_metrics_server_running(port: int = 8000) -> bool:

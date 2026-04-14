@@ -34,7 +34,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
-from tqdm import tqdm
 
 emit_determinism_digest("enhanced_observability", "enhanced_observability_digest")
 record_execution_trace("enhanced_observability", "enhanced_observability_trace")
@@ -144,6 +143,13 @@ class EnhancedObservability:
 
         # Performance tracking
         self._performance_trends: dict[str, list[float]] = defaultdict(list)
+
+        # Prime non-blocking CPU counters to avoid 1s blocking samples in the monitor loop
+        try:
+            psutil.cpu_percent(interval=None)
+            psutil.Process().cpu_percent(interval=None)
+        except Exception:
+            pass
 
         # Initialize default health checks and alert thresholds
         self._initialize_health_checks()
@@ -268,14 +274,14 @@ class EnhancedObservability:
 
         try:
             # System metrics
-            cpu_percent = psutil.cpu_percent(interval=1)
+            cpu_percent = psutil.cpu_percent(interval=None)
             memory = psutil.virtual_memory()
             disk = psutil.disk_usage("/")
 
             # Process metrics
             process = psutil.Process()
             process_memory = process.memory_info()
-            process_cpu = process.cpu_percent()
+            process_cpu = process.cpu_percent(interval=None)
 
             # Store metrics
             metrics = {
@@ -477,7 +483,7 @@ class EnhancedObservability:
     def _check_cpu_usage(self) -> dict[str, Any]:
         """Check CPU usage health."""
         try:
-            cpu_percent = psutil.cpu_percent(interval=1)
+            cpu_percent = psutil.cpu_percent(interval=None)
 
             if cpu_percent > 90:
                 status = HealthStatus.CRITICAL
@@ -739,7 +745,10 @@ class EnhancedObservability:
 
     def _check_alerts(self) -> None:
         """Check for alert conditions."""
-        for metric_name, metric in self._current_metrics.items():
+        with self._lock:
+            metric_items = list(self._current_metrics.items())
+
+        for metric_name, metric in metric_items:
             if metric_name in self._alert_thresholds:
                 threshold = self._alert_thresholds[metric_name]
                 self._check_metric_alert(metric_name, metric, threshold)
@@ -813,7 +822,8 @@ class EnhancedObservability:
     def _update_performance_trends(self) -> None:
         """Update performance trend data."""
         with self._lock:
-            for metric_name, metric in self._current_metrics.items():
+            metric_items = list(self._current_metrics.items())
+            for metric_name, metric in metric_items:
                 self._performance_trends[metric_name].append(metric.value)
                 if len(self._performance_trends[metric_name]) > 100:
                     self._performance_trends[metric_name] = self._performance_trends[metric_name][-100:]
@@ -851,9 +861,14 @@ class EnhancedObservability:
 
     def get_performance_trends(self) -> dict[str, dict[str, Any]]:
         """Get performance trend analysis."""
+        with self._lock:
+            trend_items = {
+                metric_name: list(values) for metric_name, values in self._performance_trends.items()
+            }
+
         trends = {}
 
-        for metric_name, values in tqdm(self._performance_trends.items(), desc="Processing", unit="item"):
+        for metric_name, values in trend_items.items():
             if len(values) >= 2:
                 # Calculate trend
                 recent_avg = sum(values[-10:]) / min(10, len(values))
@@ -879,6 +894,17 @@ class EnhancedObservability:
     def get_dashboard_data(self) -> dict[str, Any]:
         """Get comprehensive dashboard data."""
         current_health = self.get_system_health()
+        active_alerts = self.get_active_alerts()
+        with self._lock:
+            current_metrics = {
+                name: {
+                    "value": metric.value,
+                    "unit": metric.unit,
+                    "timestamp": metric.timestamp,
+                }
+                for name, metric in self._current_metrics.items()
+            }
+            monitoring_active = self._monitoring_active
 
         return {
             "system_health": {
@@ -894,16 +920,9 @@ class EnhancedObservability:
                     "severity": alert.severity.value,
                     "timestamp": alert.timestamp,
                 }
-                for alert in self.get_active_alerts()
+                for alert in active_alerts
             ],
-            "current_metrics": {
-                name: {
-                    "value": metric.value,
-                    "unit": metric.unit,
-                    "timestamp": metric.timestamp,
-                }
-                for name, metric in self._current_metrics.items()
-            },
+            "current_metrics": current_metrics,
             "performance_trends": self.get_performance_trends(),
             "health_checks": [
                 {
@@ -914,19 +933,22 @@ class EnhancedObservability:
                 }
                 for check in (current_health.checks if current_health else [])
             ],
-            "monitoring_active": self._monitoring_active,
+            "monitoring_active": monitoring_active,
         }
 
 
 # Global observability instance
 _global_observability: EnhancedObservability | None = None
+_global_observability_lock = threading.Lock()
 
 
 def get_global_observability() -> EnhancedObservability:
     """Get the global enhanced observability instance."""
     global _global_observability
     if _global_observability is None:
-        _global_observability = EnhancedObservability()
+        with _global_observability_lock:
+            if _global_observability is None:
+                _global_observability = EnhancedObservability()
     return _global_observability
 
 

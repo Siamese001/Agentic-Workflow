@@ -8,11 +8,11 @@ outcomes influence future calibration, not current execution.
 from __future__ import annotations
 
 import json
+import threading
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
-from tqdm import tqdm
 
 
 @dataclass
@@ -94,27 +94,32 @@ class ReasoningOutcomeTracker:
         """Initialize the outcome tracker."""
         self._outcomes_dir = outcomes_dir or self._OUTCOMES_DIR
         self._outcomes_dir.mkdir(parents=True, exist_ok=True)
+        self._lock = threading.RLock()
         self._outcomes: list[ReasoningOutcome] = []
         self._last_aggregate_time: float = 0.0
 
     def record_outcome(self, outcome: ReasoningOutcome) -> None:
         """Record a single reasoning outcome."""
-        self._outcomes.append(outcome)
+        with self._lock:
+            self._outcomes.append(outcome)
+
+            # Prune if too many outcomes in memory
+            if len(self._outcomes) > self._MAX_OUTCOMES:
+                self._outcomes = self._outcomes[-self._MAX_OUTCOMES // 2 :]
 
         # Persist to disk for durability
         self._persist_outcome(outcome)
-
-        # Prune if too many outcomes in memory
-        if len(self._outcomes) > self._MAX_OUTCOMES:
-            self._outcomes = self._outcomes[-self._MAX_OUTCOMES // 2 :]
 
     def _persist_outcome(self, outcome: ReasoningOutcome) -> None:
         """Persist outcome to disk."""
         date_str = time.strftime("%Y%m%d")
         daily_file = self._outcomes_dir / f"outcomes_{date_str}.jsonl"
 
-        with open(daily_file, "a", encoding="utf-8") as f:
-            f.write(json.dumps(asdict(outcome), default=str) + "\n")
+        line = json.dumps(asdict(outcome), default=str, sort_keys=True) + "\n"
+        with self._lock:
+            with open(daily_file, "a", encoding="utf-8") as f:
+                f.write(line)
+                f.flush()
 
     def get_aggregates(
         self,
@@ -131,8 +136,11 @@ class ReasoningOutcomeTracker:
         Returns:
             List of OutcomeAggregate by complexity_tier/path_id
         """
+        window_seconds = max(0.0, window_seconds)
+        min_samples = max(1, min_samples)
         cutoff_time = time.time() - window_seconds
-        recent_outcomes = [o for o in self._outcomes if o.timestamp >= cutoff_time]
+        with self._lock:
+            recent_outcomes = [o for o in self._outcomes if o.timestamp >= cutoff_time]
 
         # Group by (complexity_tier, path_id)
         groups: dict[tuple[str, str], list[ReasoningOutcome]] = {}
@@ -141,7 +149,7 @@ class ReasoningOutcomeTracker:
             groups.setdefault(key, []).append(o)
 
         aggregates = []
-        for (tier, path_id), outcomes in tqdm(groups.items(), desc="Processing", unit="item"):
+        for (tier, path_id), outcomes in groups.items():
             if len(outcomes) < min_samples:
                 continue
 
@@ -169,7 +177,8 @@ class ReasoningOutcomeTracker:
                 ),
             )
 
-        self._last_aggregate_time = time.time()
+        with self._lock:
+            self._last_aggregate_time = time.time()
         return aggregates
 
     def export_aggregates_json(self, aggregates: list[OutcomeAggregate] | None = None) -> str:
@@ -185,8 +194,12 @@ class ReasoningOutcomeTracker:
 
     def get_outcome_stats(self) -> dict[str, Any]:
         """Get basic stats about recorded outcomes."""
+        with self._lock:
+            total_outcomes = len(self._outcomes)
+            last_aggregate_time = self._last_aggregate_time
+
         return {
-            "total_outcomes_in_memory": len(self._outcomes),
-            "last_aggregate_time": self._last_aggregate_time,
+            "total_outcomes_in_memory": total_outcomes,
+            "last_aggregate_time": last_aggregate_time,
             "outcomes_dir": str(self._outcomes_dir),
         }

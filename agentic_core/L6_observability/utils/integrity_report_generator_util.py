@@ -157,7 +157,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tqdm import tqdm
 
 record_execution_trace("integrity_report_generator_util", "integrity_report_generator_util_trace")
 
@@ -240,22 +239,20 @@ class IntegrityReportResult:
     @property
     def overall_health_score(self) -> float:
         """Calculate overall health score (0-100)."""
-        import uuid as _uuid  # noqa: PLC0415
-
+        score_seed = (
+            f"{self.total_agents}|{self.registry_coverage_pass}|{len(self.gap_items)}|{len(self.errors)}"
+        )
+        trace_id = hashlib.sha256(score_seed.encode("utf-8", errors="ignore")).hexdigest()[:32]
         _emit_snapshots_state(
-            str(_uuid.uuid4()),
+            trace_id,
             "IntegrityReportResult.overall_health_score",
             "state_snapshot",
         )
-        import hashlib as _hashlib  # noqa: PLC0415
-        import uuid as _uuid  # noqa: PLC0415
-
-        _tid = str(_uuid.uuid4())
-        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-        import uuid as _uuid  # noqa: PLC0415
-
+        _emit_signs_execution_trace(
+            trace_id, hashlib.sha256(trace_id.encode()).hexdigest()[:12], "p0_trace", 0
+        )
         _emit_applies_guardrail(
-            str(_uuid.uuid4()),
+            trace_id,
             "IntegrityReportResult.overall_health_score",
             "p0_governance",
         )
@@ -307,7 +304,7 @@ class AgentIntegrityReporter:
         gaps: list[GapAnalysisItem] = []
 
         # Gap items from Phase 1: Missing from registry
-        for agent in tqdm(registry_result.missing_agents, desc="Processing", unit="item"):
+        for agent in registry_result.missing_agents:
             gaps.append(
                 GapAnalysisItem(
                     agent_class=agent.class_name,
@@ -321,7 +318,7 @@ class AgentIntegrityReporter:
             )
 
         # Gap items from Phase 1: Orphan agents
-        for orphan in tqdm(registry_result.orphan_agents, desc="Processing", unit="item"):
+        for orphan in registry_result.orphan_agents:
             gaps.append(
                 GapAnalysisItem(
                     agent_class=orphan["class_name"],
@@ -335,7 +332,7 @@ class AgentIntegrityReporter:
             )
 
         # Gap items from Phase 2: Missing Soul tier (unit tests)
-        for compliance in tqdm(compliance_result.agent_compliance, desc="Processing", unit="item"):
+        for compliance in compliance_result.agent_compliance:
             if not compliance.soul_tier.is_covered:
                 gaps.append(
                     GapAnalysisItem(
@@ -350,7 +347,7 @@ class AgentIntegrityReporter:
                 )
 
         # Gap items from Phase 3: Structure violations
-        for violation in tqdm(structure_result.violations, desc="Processing", unit="item"):
+        for violation in structure_result.violations:
             priority = "medium"
             if violation.severity == "critical":
                 priority = "critical"

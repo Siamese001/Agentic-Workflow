@@ -14,7 +14,9 @@ ADG edges emitted: invokes_eval, feeds_back_signal, evaluates_output,
 
 from __future__ import annotations
 
+import hashlib
 import logging
+import threading
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable
@@ -141,7 +143,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tqdm import tqdm
 
 _emit_emits_metric_event("evaluation_signal_integrator", "p4obs", "metric_1")
 _emit_emits_metric_event("evaluation_signal_integrator", "p4obs", "metric_2")
@@ -184,6 +185,11 @@ _emit_proposal_commits_routing("p1", "evaluation_signal_integrator", "routing_co
 logger = logging.getLogger(__name__)
 
 
+def _stable_signal_trace_id(*parts: str) -> str:
+    payload = "|".join(parts).encode("utf-8", errors="ignore")
+    return hashlib.sha256(payload).hexdigest()[:32]
+
+
 class EvalSignalKind(str, Enum):
     """Classification of an evaluation signal.
 
@@ -224,17 +230,21 @@ class EvalSignal:
         return self.score >= 0.7
 
     def to_dict(self) -> dict[str, Any]:
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_snapshots_state(str(_uuid.uuid4()), "EvalSignal.to_dict", "state_snapshot")
-        import hashlib as _hashlib  # noqa: PLC0415
-        import uuid as _uuid  # noqa: PLC0415
-
-        _tid = str(_uuid.uuid4())
-        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_applies_guardrail(str(_uuid.uuid4()), "EvalSignal.to_dict", "p0_governance")
+        trace_token = _stable_signal_trace_id(
+            self.trace_id,
+            self.source_module,
+            self.target_layer,
+            self.kind.value,
+            self.label,
+        )
+        _emit_snapshots_state(trace_token, "EvalSignal.to_dict", "state_snapshot")
+        _emit_signs_execution_trace(
+            trace_token,
+            hashlib.sha256(trace_token.encode()).hexdigest()[:12],
+            "p0_trace",
+            0,
+        )
+        _emit_applies_guardrail(trace_token, "EvalSignal.to_dict", "p0_governance")
         return {
             "trace_id": self.trace_id,
             "source_module": self.source_module,
@@ -265,21 +275,24 @@ class EvaluationSignalIntegrator:
     """
 
     def __init__(self) -> None:
+        self._lock = threading.RLock()
         self._subscribers: dict[str, list[Callable[[EvalSignal], None]]] = {}
         self._ledger: list[EvalSignal] = []
 
     def subscribe(self, layer: str, callback: Callable[[EvalSignal], None]) -> None:
         """Register a callback to receive signals destined for ``layer``."""
-        import uuid as _uuid  # noqa: PLC0415
-
-        _trace_id = str(_uuid.uuid4())
+        callback_name = getattr(
+            callback, "__qualname__", getattr(callback, "__name__", callback.__class__.__name__)
+        )
+        _trace_id = _stable_signal_trace_id("subscribe", layer, callback_name)
         _emit_records_execution_trace(
             _trace_id,
             LayerSegment.L6_OBSERVABILITY,
             "EvaluationSignalIntegrator.subscribe",
         )
 
-        self._subscribers.setdefault(layer, []).append(callback)
+        with self._lock:
+            self._subscribers.setdefault(layer, []).append(callback)
         logger.debug("EVAL_INTEGRATOR subscribe layer=%s", layer)
 
     def _trace_id(self) -> str:
@@ -314,7 +327,9 @@ class EvaluationSignalIntegrator:
             label=label,
             metadata=metadata or {},
         )
-        self._ledger.append(signal)
+        with self._lock:
+            self._ledger.append(signal)
+            subscriber_snapshot = list(self._subscribers.get(target_layer, []))
         # P1/L6: bind to trace lineage via evaluate_and_attach
         _stage = (
             EvaluationStage.REASONING_TRACE
@@ -349,7 +364,7 @@ class EvaluationSignalIntegrator:
             score,
             label,
         )
-        for cb in tqdm(self._subscribers.get(target_layer, []), desc="Processing", unit="item"):
+        for cb in subscriber_snapshot:
             try:
                 cb(signal)
                 logger.debug(
@@ -383,10 +398,13 @@ class EvaluationSignalIntegrator:
         )
 
     def ledger(self) -> list[EvalSignal]:
-        return list(self._ledger)
+        with self._lock:
+            return list(self._ledger)
 
     def average_score(self, kind: EvalSignalKind | None = None) -> float:
-        signals = [s for s in self._ledger if kind is None or s.kind == kind]
+        with self._lock:
+            ledger_snapshot = list(self._ledger)
+        signals = [s for s in ledger_snapshot if kind is None or s.kind == kind]
         if not signals:
             return 0.0
         return sum(s.score for s in signals) / len(signals)

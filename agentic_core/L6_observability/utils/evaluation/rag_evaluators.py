@@ -18,7 +18,6 @@ from __future__ import annotations
 import hashlib
 import logging
 import re
-import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
@@ -51,14 +50,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-from tqdm import tqdm
 
 # P0 governance self-bootstrap
 emit_replay_key("p0", "rag_evaluators")
 emit_determinism_digest("p0", "rag_evaluators")
 _emit_applies_guardrail("p0", "rag_evaluators", "p0_governance")
 _emit_snapshots_state("p0", "rag_evaluators", "state_snapshot")
-_tid = str(uuid.uuid4())
+_tid = "rag_evaluators_bootstrap"
 _emit_signs_execution_trace(_tid, hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
 
 # P1-P4 self-bootstrap (abbreviated for brevity)
@@ -155,7 +153,7 @@ class FaithfulnessEvaluator(BaseRAGEvaluator):
         context_text = " ".join(context).lower()
         claims_grounded = 0
 
-        for claim in tqdm(claims, desc="Processing", unit="item"):
+        for claim in claims:
             claim_lower = claim.lower()
             # Simple substring matching (can be enhanced with semantic similarity)
             if claim_lower in context_text:

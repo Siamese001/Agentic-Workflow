@@ -129,7 +129,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tqdm import tqdm
 
 record_execution_trace("tool_use_ground_truth_evaluator", "tool_use_ground_truth_evaluator_trace")
 
@@ -186,6 +185,11 @@ class ToolUseResult:
     error_message: str = ""
 
 
+def _stable_eval_trace_id(data_root: str | None, limit: int | None) -> str:
+    payload = f"tool_use_ground_truth|{data_root or ''}|{limit if limit is not None else 'all'}"
+    return hashlib.sha256(payload.encode("utf-8", errors="ignore")).hexdigest()[:32]
+
+
 def evaluate_tool_use_ground_truth(data_root: str = None, limit: int = None) -> ToolUseResult:
     """Evaluate tool use against golden dataset deterministically.
 
@@ -196,21 +200,14 @@ def evaluate_tool_use_ground_truth(data_root: str = None, limit: int = None) -> 
     Returns:
         ToolUseResult with deterministic certification hash
     """
-    import uuid as _uuid  # noqa: PLC0415
+    trace_id = _stable_eval_trace_id(data_root, limit)
+    _emit_snapshots_state(trace_id, "evaluate_tool_use_ground_truth", "state_snapshot")
+    _emit_signs_execution_trace(trace_id, hashlib.sha256(trace_id.encode()).hexdigest()[:12], "p0_trace", 0)
+    _emit_applies_guardrail(trace_id, "evaluate_tool_use_ground_truth", "p0_governance")
+    _emit_records_execution_trace(trace_id, LayerSegment.L6_OBSERVABILITY, "evaluate_tool_use_ground_truth")
+    if limit is not None and limit <= 0:
+        limit = None
 
-    _emit_snapshots_state(str(_uuid.uuid4()), "evaluate_tool_use_ground_truth", "state_snapshot")
-    import hashlib as _hashlib  # noqa: PLC0415
-    import uuid as _uuid  # noqa: PLC0415
-
-    _tid = str(_uuid.uuid4())
-    _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_applies_guardrail(str(_uuid.uuid4()), "evaluate_tool_use_ground_truth", "p0_governance")
-    import uuid as _uuid  # noqa: PLC0415
-
-    _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "evaluate_tool_use_ground_truth")
     if data_root is None:
         data_root = Path(__file__).parent.parent.parent.parent.parent / "data"
     golden_dir = Path(data_root) / "golden"
@@ -228,15 +225,29 @@ def evaluate_tool_use_ground_truth(data_root: str = None, limit: int = None) -> 
         return result
     samples = []
     with open(tool_file, encoding="utf-8") as f:
-        for line in f:
+        for line_number, line in enumerate(f, start=1):
             if limit and len(samples) >= limit:
                 break
-            samples.append(json.loads(line))
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                samples.append(json.loads(line))
+            except json.JSONDecodeError as exc:
+                return ToolUseResult(
+                    total_samples=0,
+                    correct_tool_selections=0,
+                    certification_hash=hashlib.sha256(f"invalid_json:{line_number}".encode()).hexdigest(),
+                    tool_distribution={},
+                    complex_queries=[],
+                    average_tools_per_query=0.0,
+                    error_message=f"Invalid JSON on line {line_number}: {exc.msg}",
+                )
     correct_count = 0
     tool_dist = {}
     complex_queries = []
     total_tools = 0
-    for sample in tqdm(samples, desc="Processing", unit="item"):
+    for sample in samples:
         expected_calls = sample.get("expected_tool_calls", [])
         scenario = sample.get("scenario", "unknown")
         success_criteria = sample.get("success_criteria", [])
@@ -263,6 +274,7 @@ def evaluate_tool_use_ground_truth(data_root: str = None, limit: int = None) -> 
         "complex_queries_count": len(complex_queries),
         "average_tools_per_query": avg_tools,
     }
+    tool_dist = dict(sorted(tool_dist.items()))
     cert_hash = hashlib.sha256(
         json.dumps(hash_data, sort_keys=True, separators=(",", ":")).encode(),
     ).hexdigest()

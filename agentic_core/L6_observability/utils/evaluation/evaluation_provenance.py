@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import threading
 import time
-import uuid
 from dataclasses import dataclass
 from typing import Any
 
@@ -50,14 +50,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
-from tqdm import tqdm
 
 # P0 governance self-bootstrap
 emit_replay_key("p0", "evaluation_provenance")
 emit_determinism_digest("p0", "evaluation_provenance")
 _emit_applies_guardrail("p0", "evaluation_provenance", "p0_governance")
 _emit_snapshots_state("p0", "evaluation_provenance", "state_snapshot")
-_tid = str(uuid.uuid4())
+_tid = "evaluation_provenance_bootstrap"
 _emit_signs_execution_trace(_tid, hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
 
 # P1-P4 self-bootstrap
@@ -257,7 +256,8 @@ class EvaluationProvenanceStore:
 
     def get_provenance(self, provenance_id: str) -> EvaluationProvenance | None:
         """Get provenance record by ID."""
-        return self._records.get(provenance_id)
+        with self._lock:
+            return self._records.get(provenance_id)
 
     def query_provenance(self, query: ProvenanceQuery) -> list[EvaluationProvenance]:
         """Query provenance records.
@@ -270,17 +270,21 @@ class EvaluationProvenanceStore:
         """
         results = []
 
-        # Start with all records or filter by trace/evaluator
-        if query.trace_id:
-            candidate_ids = self._records_by_trace.get(query.trace_id, [])
-        elif query.evaluator_name:
-            candidate_ids = self._records_by_evaluator.get(query.evaluator_name, [])
-        else:
-            candidate_ids = list(self._records.keys())
+        with self._lock:
+            # Start with all records or filter by trace/evaluator
+            if query.trace_id:
+                candidate_ids = list(self._records_by_trace.get(query.trace_id, []))
+            elif query.evaluator_name:
+                candidate_ids = list(self._records_by_evaluator.get(query.evaluator_name, []))
+            else:
+                candidate_ids = list(self._records.keys())
+            records_snapshot = {pid: self._records[pid] for pid in candidate_ids if pid in self._records}
 
         # Apply filters
-        for provenance_id in tqdm(candidate_ids, desc="Processing", unit="item"):
-            record = self._records[provenance_id]
+        for provenance_id in candidate_ids:
+            record = records_snapshot.get(provenance_id)
+            if record is None:
+                continue
 
             # Evaluation type filter
             if query.evaluation_type and record.evaluation_type != query.evaluation_type:
@@ -308,47 +312,54 @@ class EvaluationProvenanceStore:
 
     def get_trace_provenance(self, trace_id: str) -> list[EvaluationProvenance]:
         """Get all provenance records for a trace."""
-        provenance_ids = self._records_by_trace.get(trace_id, [])
-        return [self._records[pid] for pid in provenance_ids]
+        with self._lock:
+            provenance_ids = list(self._records_by_trace.get(trace_id, []))
+            return [self._records[pid] for pid in provenance_ids if pid in self._records]
 
     def get_evaluator_provenance(self, evaluator_name: str) -> list[EvaluationProvenance]:
         """Get all provenance records for an evaluator."""
-        provenance_ids = self._records_by_evaluator.get(evaluator_name, [])
-        return [self._records[pid] for pid in provenance_ids]
+        with self._lock:
+            provenance_ids = list(self._records_by_evaluator.get(evaluator_name, []))
+            return [self._records[pid] for pid in provenance_ids if pid in self._records]
 
     def get_stats(self) -> dict[str, Any]:
         """Get provenance store statistics."""
-        return {
-            "total_records": len(self._records),
-            "max_records": self._max_records,
-            "unique_traces": len(self._records_by_trace),
-            "unique_evaluators": len(self._records_by_evaluator),
-            "evaluators": list(self._records_by_evaluator.keys()),
-        }
+        with self._lock:
+            return {
+                "total_records": len(self._records),
+                "max_records": self._max_records,
+                "unique_traces": len(self._records_by_trace),
+                "unique_evaluators": len(self._records_by_evaluator),
+                "evaluators": list(self._records_by_evaluator.keys()),
+            }
 
     def clear(self) -> None:
         """Clear all provenance records."""
-        self._records.clear()
-        self._records_by_trace.clear()
-        self._records_by_evaluator.clear()
-        self._insertion_order.clear()
+        with self._lock:
+            self._records.clear()
+            self._records_by_trace.clear()
+            self._records_by_evaluator.clear()
+            self._insertion_order.clear()
 
     @staticmethod
     def _generate_provenance_id(evaluation_id: str, trace_id: str) -> str:
         """Generate provenance ID from evaluation and trace IDs."""
-        combined = f"{evaluation_id}:{trace_id}:{time.time()}"
+        combined = f"{evaluation_id}:{trace_id}"
         return hashlib.sha256(combined.encode()).hexdigest()
 
 
 # Global instance
 _provenance_store: EvaluationProvenanceStore | None = None
+_provenance_store_lock = threading.Lock()
 
 
 def get_provenance_store() -> EvaluationProvenanceStore:
     """Get global provenance store instance."""
     global _provenance_store
     if _provenance_store is None:
-        _provenance_store = EvaluationProvenanceStore()
+        with _provenance_store_lock:
+            if _provenance_store is None:
+                _provenance_store = EvaluationProvenanceStore()
     return _provenance_store
 
 

@@ -21,7 +21,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_snapshots_state,
     record_execution_trace,
 )
-from tqdm import tqdm
 
 record_execution_trace("dashboard_aggregate", "dashboard_aggregate_trace")
 
@@ -223,9 +222,11 @@ class DashboardAggregateRegistry:
 
             # Index by health flags for health queries
             for component, health_flag in snapshot.degraded_component_flags.items():
-                if health_flag not in self._health_index:
-                    self._health_index[health_flag.value] = []
-                self._health_index[health_flag.value].append(snapshot.dashboard_snapshot_id)
+                health_key = health_flag.value
+                if health_key not in self._health_index:
+                    self._health_index[health_key] = []
+                if snapshot.dashboard_snapshot_id not in self._health_index[health_key]:
+                    self._health_index[health_key].append(snapshot.dashboard_snapshot_id)
 
         _DASHBOARD_LOG.debug(
             "dashboard_aggregated snapshot_id=%s tick=%s active_runs=%s",
@@ -297,7 +298,10 @@ class DashboardAggregateRegistry:
             start_key = int(start_tick // 60) * 60
             end_key = int(end_tick // 60) * 60
 
-            for tick_key in tqdm(range(start_key, end_key + 60, 60), desc="Processing", unit="item"):
+            if end_tick < start_tick:
+                return []
+
+            for tick_key in range(start_key, end_key + 60, 60):
                 if tick_key in self._time_index:
                     for snapshot_id in self._time_index[tick_key]:
                         snapshot = self._snapshots.get(snapshot_id)

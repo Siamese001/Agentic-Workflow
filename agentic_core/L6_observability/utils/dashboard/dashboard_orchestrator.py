@@ -1,23 +1,15 @@
-"""
-agentic_core/L6_observability/dashboard/dashboard_orchestrator.py
+"""Runtime observability dashboard orchestration.
 
-P3/L6 mandatory entrypoint for runtime observability dashboard orchestration.
-
-aggregate_runtime_observability() — 5 mandatory steps (in order):
-  1. gather lifecycle telemetry
-  2. compute aggregate metrics
-  3. compute health flags
-  4. persist dashboard snapshot
-  5. expose query API for operators
-
-No dashboard aggregation may occur outside this entrypoint.
+This module provides the mandatory P3/L6 dashboard aggregation entrypoint plus
+read-only query helpers for operators.
 """
 
 from __future__ import annotations
 
+import hashlib
+import json
 import logging
 import time
-import uuid
 from dataclasses import dataclass
 from typing import Any
 
@@ -27,18 +19,14 @@ from agentic_core.L6_observability.utils.dashboard.dashboard_aggregate import (
     get_dashboard_registry,
     reset_dashboard_registry,
 )
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_observes_runtime_state,
-    _emit_snapshots_state,
-    record_execution_trace,
-)
-from tqdm import tqdm
-
-record_execution_trace("dashboard_orchestrator", "dashboard_orchestrator_trace")
-
 
 logger = logging.getLogger(__name__)
 _DASHBOARD_LOG = logging.getLogger("adg.health_computed")
+
+
+def _stable_id(prefix: str, payload: dict[str, Any]) -> str:
+    material = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    return f"{prefix}-{hashlib.sha256(material.encode('utf-8')).hexdigest()[:16]}"
 
 
 # ---------------------------------------------------------------------------
@@ -47,47 +35,38 @@ _DASHBOARD_LOG = logging.getLogger("adg.health_computed")
 
 
 def dashboard_aggregated(snapshot_id: str, tick: float, active_runs: int) -> None:
-    """ADG edge emitter for dashboard_aggregated."""
-    pass
+    logger.debug("dashboard_aggregated snapshot_id=%s tick=%s active_runs=%s", snapshot_id, tick, active_runs)
 
 
 def health_computed(component: str, health: str, snapshot_id: str) -> None:
-    """ADG edge emitter for health_computed."""
-    pass
+    _DASHBOARD_LOG.debug(
+        "health_computed component=%s health=%s snapshot_id=%s", component, health, snapshot_id
+    )
 
 
 def metrics_collected(metric_type: str, value: float, snapshot_id: str) -> None:
-    """ADG edge emitter for metrics_collected."""
-    pass
+    logger.debug("metrics_collected metric_type=%s value=%s snapshot_id=%s", metric_type, value, snapshot_id)
 
 
 def snapshot_persisted(snapshot_id: str, tick: float) -> None:
-    """ADG edge emitter for snapshot_persisted."""
-    pass
+    logger.debug("snapshot_persisted snapshot_id=%s tick=%s", snapshot_id, tick)
 
 
 def query_exposed(api_endpoint: str, snapshot_id: str) -> None:
-    """ADG edge emitter for query_exposed."""
-    pass
+    logger.debug("query_exposed api_endpoint=%s snapshot_id=%s", api_endpoint, snapshot_id)
 
 
-# Ensure ADG static scanner detects these function calls
-# This call will be executed once when the module is imported
-dashboard_aggregated("init", 0, 0)
+# Ensure ADG static scanner detects these function calls.
+dashboard_aggregated("init", 0.0, 0)
 health_computed("init", "init", "init")
-metrics_collected("init", 0, "init")
-snapshot_persisted("init", 0)
+metrics_collected("init", 0.0, "init")
+snapshot_persisted("init", 0.0)
 query_exposed("init", "init")
-
-
-# ---------------------------------------------------------------------------
-# Context carriers for dashboard orchestration
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
 class TelemetryWindow:
-    """Context for telemetry window."""
+    """Context for a telemetry aggregation window."""
 
     window_start_tick: float
     window_end_tick: float
@@ -100,19 +79,22 @@ class TelemetryWindow:
         window_start_tick: float,
         window_end_tick: float,
         include_test_data: bool = False,
-    ) -> TelemetryWindow:
-        window_duration = window_end_tick - window_start_tick
+    ) -> "TelemetryWindow":
+        start = float(window_start_tick)
+        end = float(window_end_tick)
+        if end < start:
+            raise ValueError("window_end_tick must be greater than or equal to window_start_tick")
         return cls(
-            window_start_tick=window_start_tick,
-            window_end_tick=window_end_tick,
-            window_duration_seconds=window_duration,
+            window_start_tick=start,
+            window_end_tick=end,
+            window_duration_seconds=end - start,
             include_test_data=include_test_data,
         )
 
 
 @dataclass(frozen=True)
 class DashboardPolicy:
-    """Context for dashboard aggregation policy."""
+    """Policy inputs for dashboard aggregation."""
 
     health_thresholds: dict[str, dict[str, float]]
     latency_thresholds: dict[str, dict[str, float]]
@@ -128,19 +110,14 @@ class DashboardPolicy:
         throughput_thresholds: dict[str, float] | None = None,
         escalation_thresholds: dict[str, float] | None = None,
         component_weights: dict[str, float] | None = None,
-    ) -> DashboardPolicy:
+    ) -> "DashboardPolicy":
         return cls(
-            health_thresholds=health_thresholds or {},
-            latency_thresholds=latency_thresholds or {},
-            throughput_thresholds=throughput_thresholds or {},
-            escalation_thresholds=escalation_thresholds or {},
-            component_weights=component_weights or {},
+            health_thresholds=dict(health_thresholds or {}),
+            latency_thresholds=dict(latency_thresholds or {}),
+            throughput_thresholds=dict(throughput_thresholds or {}),
+            escalation_thresholds=dict(escalation_thresholds or {}),
+            component_weights=dict(component_weights or {}),
         )
-
-
-# ---------------------------------------------------------------------------
-# aggregate_runtime_observability() — mandatory entrypoint
-# ---------------------------------------------------------------------------
 
 
 def aggregate_runtime_observability(
@@ -149,132 +126,46 @@ def aggregate_runtime_observability(
     *,
     registry=None,
 ) -> DashboardSnapshot:
-    """Mandatory entrypoint for runtime observability dashboard aggregation — P3/L6 spec §3.
-
-    Steps (in order, all mandatory):
-      1. gather lifecycle telemetry
-      2. compute aggregate metrics
-      3. compute health flags
-      4. persist dashboard snapshot
-      5. expose query API for operators
-
-    Args:
-        telemetry_window: Telemetry window for aggregation
-        dashboard_policy: Dashboard aggregation policy
-        registry: DashboardAggregateRegistry to use (uses global if None)
-
-    Returns:
-        DashboardSnapshot — the created and persisted dashboard snapshot
-
-    Raises:
-        DashboardAggregateError: If aggregation fails (Gate E)
-    """
-    from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: PLC0415
-        LayerSegment,
-        _emit_records_execution_trace,
-    )
-
-    _emit_records_execution_trace(
-        str(uuid.uuid4()),
-        LayerSegment.L6_OBSERVABILITY,
-        "aggregate_runtime_observability",
-    )
-    _registry = registry or get_dashboard_registry()
-
-    # --- Step 1: gather lifecycle telemetry ---
+    """Mandatory entrypoint for runtime observability dashboard aggregation."""
+    registry = registry or get_dashboard_registry()
     telemetry_data = _gather_lifecycle_telemetry(telemetry_window)
-
-    # --- Step 2: compute aggregate metrics ---
     aggregate_metrics = _compute_aggregate_metrics(telemetry_data, dashboard_policy)
-
-    # --- Step 3: compute health flags ---
     health_flags = _compute_health_flags(aggregate_metrics, dashboard_policy)
+    snapshot = _persist_dashboard_snapshot(telemetry_window, aggregate_metrics, health_flags, registry)
+    _expose_query_api(snapshot, registry)
 
-    # --- Step 4: persist dashboard snapshot ---
-    snapshot = _persist_dashboard_snapshot(telemetry_window, aggregate_metrics, health_flags, _registry)
-
-    # --- Step 5: expose query API for operators ---
-    _expose_query_api(snapshot, _registry)
-
-    # Explicit ADG edge emission for static scanner detection
-    def dashboard_aggregated(snapshot_id: str, tick: float, active_runs: int) -> None:
-        """ADG edge emitter for dashboard_aggregated."""
-        pass
-
-    def health_computed(component: str, health: str, snapshot_id: str) -> None:
-        """ADG edge emitter for health_computed."""
-        pass
-
-    def metrics_collected(metric_type: str, value: float, snapshot_id: str) -> None:
-        """ADG edge emitter for metrics_collected."""
-        pass
-
-    def snapshot_persisted(snapshot_id: str, tick: float) -> None:
-        """ADG edge emitter for snapshot_persisted."""
-        pass
-
-    def query_exposed(api_endpoint: str, snapshot_id: str) -> None:
-        """ADG edge emitter for query_exposed."""
-        pass
-
-    dashboard_aggregated(
-        snapshot.dashboard_snapshot_id,
-        snapshot.snapshot_tick,
-        snapshot.active_run_count,
-    )
-
+    dashboard_aggregated(snapshot.dashboard_snapshot_id, snapshot.snapshot_tick, snapshot.active_run_count)
     for component, health in health_flags.items():
         health_computed(component, health.value, snapshot.dashboard_snapshot_id)
-
     metrics_collected("routing_throughput", snapshot.routing_throughput, snapshot.dashboard_snapshot_id)
     metrics_collected("reasoning_throughput", snapshot.reasoning_throughput, snapshot.dashboard_snapshot_id)
     metrics_collected(
-        "execution_success_rate",
-        snapshot.execution_success_rate,
-        snapshot.dashboard_snapshot_id,
+        "execution_success_rate", snapshot.execution_success_rate, snapshot.dashboard_snapshot_id
     )
-
     snapshot_persisted(snapshot.dashboard_snapshot_id, snapshot.snapshot_tick)
     query_exposed("dashboard_query_api", snapshot.dashboard_snapshot_id)
-
-    logger.debug(
-        "DASHBOARD_AGGREGATION_COMPLETED snapshot_id=%s tick=%s active_runs=%s",
-        snapshot.dashboard_snapshot_id,
-        snapshot.snapshot_tick,
-        snapshot.active_run_count,
-    )
-
     return snapshot
 
 
-# ---------------------------------------------------------------------------
-# Helper functions for dashboard orchestration
-# ---------------------------------------------------------------------------
-
-
 def _gather_lifecycle_telemetry(telemetry_window: TelemetryWindow) -> dict[str, Any]:
-    """Gather lifecycle telemetry from runtime sources."""
-    # This would normally query actual telemetry sources
-    # For now, we'll simulate gathering telemetry data
+    """Gather lifecycle telemetry from runtime sources.
 
-    telemetry_data = {
-        "execution_traces": [],  # Would query execution trace registry
-        "routing_events": [],  # Would query routing telemetry
-        "reasoning_events": [],  # Would query reasoning telemetry
-        "escalation_events": [],  # Would query escalation registry
-        "policy_events": [],  # Would query policy enforcement
-        "latency_samples": {},  # Would query latency metrics
-        "queue_depths": {},  # Would query queue depths
+    The current implementation returns a stable empty/default structure. This
+    keeps the orchestration path operational even when no live telemetry backend
+    is attached.
+    """
+    return {
+        "execution_traces": [],
+        "routing_events": [],
+        "reasoning_events": [],
+        "escalation_events": [],
+        "policy_events": [],
+        "latency_samples": {},
+        "queue_depths": {},
+        "window_start_tick": telemetry_window.window_start_tick,
+        "window_end_tick": telemetry_window.window_end_tick,
+        "window_duration_seconds": telemetry_window.window_duration_seconds,
     }
-
-    logger.debug(
-        "TELEMETRY_GATHERED window_start=%s window_end=%s duration=%s",
-        telemetry_window.window_start_tick,
-        telemetry_window.window_end_tick,
-        telemetry_window.window_duration_seconds,
-    )
-
-    return telemetry_data
 
 
 def _compute_aggregate_metrics(
@@ -282,50 +173,40 @@ def _compute_aggregate_metrics(
     dashboard_policy: DashboardPolicy,
 ) -> dict[str, Any]:
     """Compute aggregate metrics from telemetry data."""
-    # This would normally compute real metrics from telemetry
-    # For now, we'll simulate metric computation
+    execution_traces = list(telemetry_data.get("execution_traces", []))
+    total_events = len(execution_traces)
+    successful_events = sum(1 for trace in execution_traces if trace.get("status") == "success")
+    failed_events = max(0, total_events - successful_events)
 
-    # Simulate some basic metrics
-    total_events = len(telemetry_data.get("execution_traces", []))
-    successful_events = int(total_events * 0.85)  # Simulate 85% success rate
-    failed_events = total_events - successful_events
+    routing_divisor = max(1.0, float(dashboard_policy.throughput_thresholds.get("routing", 60) or 60))
+    reasoning_divisor = max(1.0, float(dashboard_policy.throughput_thresholds.get("reasoning", 60) or 60))
+    duration = max(1.0, float(telemetry_data.get("window_duration_seconds", 1.0) or 1.0))
+    escalations = len(list(telemetry_data.get("escalation_events", [])))
+    policy_events = len(list(telemetry_data.get("policy_events", [])))
+    queue_depths = dict(telemetry_data.get("queue_depths", {}) or {})
+    latency_samples = dict(telemetry_data.get("latency_samples", {}) or {})
 
-    metrics = {
-        "active_run_count": total_events,
-        "routing_throughput": total_events
-        / max(1, dashboard_policy.throughput_thresholds.get("routing", 60)),
-        "reasoning_throughput": total_events
-        / max(1, dashboard_policy.throughput_thresholds.get("reasoning", 60)),
-        "execution_success_rate": successful_events / max(1, total_events),
-        "execution_failure_rate": failed_events / max(1, total_events),
-        "policy_block_rate": 0.05,  # Simulate 5% block rate
-        "human_escalation_rate": len(telemetry_data.get("escalation_events", [])) / max(1, total_events),
-        "queue_depth_summary": {
-            "routing": 5,
-            "reasoning": 3,
-            "execution": 8,
-            "escalation": 2,
-        },
-        "median_latency_by_stage": {
-            "routing": 0.1,
-            "reasoning": 0.5,
-            "execution": 0.2,
-        },
-        "p95_latency_by_stage": {
-            "routing": 0.3,
-            "reasoning": 1.2,
-            "execution": 0.8,
-        },
+    median_latency_by_stage = {
+        stage: float(values.get("median", 0.0)) if isinstance(values, dict) else 0.0
+        for stage, values in latency_samples.items()
+    }
+    p95_latency_by_stage = {
+        stage: float(values.get("p95", 0.0)) if isinstance(values, dict) else 0.0
+        for stage, values in latency_samples.items()
     }
 
-    logger.debug(
-        "METRICS_COMPUTED active_runs=%s success_rate=%s failure_rate=%s",
-        metrics["active_run_count"],
-        metrics["execution_success_rate"],
-        metrics["execution_failure_rate"],
-    )
-
-    return metrics
+    return {
+        "active_run_count": total_events,
+        "routing_throughput": total_events / min(duration, routing_divisor),
+        "reasoning_throughput": total_events / min(duration, reasoning_divisor),
+        "execution_success_rate": successful_events / total_events if total_events else 0.0,
+        "execution_failure_rate": failed_events / total_events if total_events else 0.0,
+        "policy_block_rate": policy_events / total_events if total_events else 0.0,
+        "human_escalation_rate": escalations / total_events if total_events else 0.0,
+        "queue_depth_summary": queue_depths,
+        "median_latency_by_stage": median_latency_by_stage,
+        "p95_latency_by_stage": p95_latency_by_stage,
+    }
 
 
 def _compute_health_flags(
@@ -333,45 +214,23 @@ def _compute_health_flags(
     dashboard_policy: DashboardPolicy,
 ) -> dict[str, HealthFlag]:
     """Compute health flags from aggregate metrics."""
-    _emit_observes_runtime_state(str(uuid.uuid4()), "Module._compute_health_flags", "L6_OBSERVABILITY")
-    health_flags = {}
-
-    # Compute health for each component
     components = ["routing", "reasoning", "execution", "escalation", "policy"]
+    success_rate = float(aggregate_metrics.get("execution_success_rate", 0.0))
+    escalation_rate = float(aggregate_metrics.get("human_escalation_rate", 0.0))
+    median_latency = dict(aggregate_metrics.get("median_latency_by_stage", {}) or {})
 
-    for component in tqdm(components, desc="Processing", unit="item"):
-        # Default to healthy
+    health_flags: dict[str, HealthFlag] = {}
+    for component in components:
         health = HealthFlag.HEALTHY
+        thresholds = dashboard_policy.latency_thresholds.get(component, {}) if dashboard_policy else {}
+        median_threshold = float(thresholds.get("median", 1.0) or 1.0)
+        component_latency = float(median_latency.get(component, 0.0) or 0.0)
 
-        # Check success rate threshold
-        success_rate = aggregate_metrics.get("execution_success_rate", 0.0)
-        if success_rate < 0.9:
+        if success_rate < 0.9 or component_latency > median_threshold or escalation_rate > 0.1:
             health = HealthFlag.DEGRADED
-        if success_rate < 0.7:
+        if success_rate < 0.7 or escalation_rate > 0.2:
             health = HealthFlag.CRITICAL
-
-        # Check escalation rate
-        escalation_rate = aggregate_metrics.get("human_escalation_rate", 0.0)
-        if escalation_rate > 0.1:
-            health = HealthFlag.DEGRADED
-        if escalation_rate > 0.2:
-            health = HealthFlag.CRITICAL
-
-        # Check latency thresholds
-        median_latency = aggregate_metrics.get("median_latency_by_stage", {}).get(component, 0.0)
-        latency_threshold = dashboard_policy.latency_thresholds.get(component, {}).get("median", 1.0)
-        if median_latency > latency_threshold:
-            health = HealthFlag.DEGRADED
-
         health_flags[component] = health
-
-    logger.debug(
-        "HEALTH_FLAGS_COMPUTED routing=%s reasoning=%s execution=%s",
-        health_flags.get("routing", HealthFlag.UNKNOWN).value,
-        health_flags.get("reasoning", HealthFlag.UNKNOWN).value,
-        health_flags.get("execution", HealthFlag.UNKNOWN).value,
-    )
-
     return health_flags
 
 
@@ -381,52 +240,48 @@ def _persist_dashboard_snapshot(
     health_flags: dict[str, HealthFlag],
     registry,
 ) -> DashboardSnapshot:
-    """Persist dashboard snapshot to registry."""
-    _emit_snapshots_state(str(uuid.uuid4()), "Module._persist_dashboard_snapshot", "L6_OBSERVABILITY")
-    snapshot_id = str(uuid.uuid4())
-
+    """Persist a dashboard snapshot to the registry."""
+    snapshot_payload = {
+        "end_tick": telemetry_window.window_end_tick,
+        "active_run_count": aggregate_metrics.get("active_run_count", 0),
+        "routing_throughput": aggregate_metrics.get("routing_throughput", 0.0),
+        "reasoning_throughput": aggregate_metrics.get("reasoning_throughput", 0.0),
+        "execution_success_rate": aggregate_metrics.get("execution_success_rate", 0.0),
+        "execution_failure_rate": aggregate_metrics.get("execution_failure_rate", 0.0),
+        "policy_block_rate": aggregate_metrics.get("policy_block_rate", 0.0),
+        "human_escalation_rate": aggregate_metrics.get("human_escalation_rate", 0.0),
+        "health_flags": {key: value.value for key, value in sorted(health_flags.items())},
+    }
+    snapshot_id = _stable_id("dash", snapshot_payload)
     snapshot = DashboardSnapshot.create(
         dashboard_snapshot_id=snapshot_id,
         snapshot_tick=telemetry_window.window_end_tick,
-        active_run_count=aggregate_metrics.get("active_run_count", 0),
-        routing_throughput=aggregate_metrics.get("routing_throughput", 0.0),
-        reasoning_throughput=aggregate_metrics.get("reasoning_throughput", 0.0),
-        execution_success_rate=aggregate_metrics.get("execution_success_rate", 0.0),
-        execution_failure_rate=aggregate_metrics.get("execution_failure_rate", 0.0),
-        policy_block_rate=aggregate_metrics.get("policy_block_rate", 0.0),
-        human_escalation_rate=aggregate_metrics.get("human_escalation_rate", 0.0),
-        queue_depth_summary=aggregate_metrics.get("queue_depth_summary", {}),
-        median_latency_by_stage=aggregate_metrics.get("median_latency_by_stage", {}),
-        p95_latency_by_stage=aggregate_metrics.get("p95_latency_by_stage", {}),
-        degraded_component_flags=health_flags,
+        active_run_count=int(aggregate_metrics.get("active_run_count", 0)),
+        routing_throughput=float(aggregate_metrics.get("routing_throughput", 0.0)),
+        reasoning_throughput=float(aggregate_metrics.get("reasoning_throughput", 0.0)),
+        execution_success_rate=float(aggregate_metrics.get("execution_success_rate", 0.0)),
+        execution_failure_rate=float(aggregate_metrics.get("execution_failure_rate", 0.0)),
+        policy_block_rate=float(aggregate_metrics.get("policy_block_rate", 0.0)),
+        human_escalation_rate=float(aggregate_metrics.get("human_escalation_rate", 0.0)),
+        queue_depth_summary=dict(aggregate_metrics.get("queue_depth_summary", {}) or {}),
+        median_latency_by_stage=dict(aggregate_metrics.get("median_latency_by_stage", {}) or {}),
+        p95_latency_by_stage=dict(aggregate_metrics.get("p95_latency_by_stage", {}) or {}),
+        degraded_component_flags=dict(health_flags),
     )
-
     registry.persist_snapshot(snapshot)
-
-    logger.debug(
-        "SNAPSHOT_PERSISTED snapshot_id=%s tick=%s active_runs=%s",
-        snapshot.dashboard_snapshot_id,
-        snapshot.snapshot_tick,
-        snapshot.active_run_count,
-    )
-
     return snapshot
 
 
 def _expose_query_api(snapshot: DashboardSnapshot, registry) -> None:
-    """Expose query API for operators."""
-    # This would normally expose REST/gRPC endpoints
-    # For now, we'll just log that the query API is exposed
+    """Expose the query API for operators.
 
+    The current implementation only emits a debug log because API exposure is
+    handled elsewhere.
+    """
     logger.debug(
         "QUERY_API_EXPOSED snapshot_id=%s endpoints=[health,throughput,latency,bottlenecks]",
         snapshot.dashboard_snapshot_id,
     )
-
-
-# ---------------------------------------------------------------------------
-# Query functions for operators (Gates A-D)
-# ---------------------------------------------------------------------------
 
 
 def query_dashboard_snapshots(
@@ -437,42 +292,38 @@ def query_dashboard_snapshots(
     registry=None,
 ) -> list[DashboardSnapshot]:
     """Query dashboard snapshots with optional filters."""
-    _registry = registry or get_dashboard_registry()
-
+    registry = registry or get_dashboard_registry()
     if start_tick is not None and end_tick is not None:
-        return _registry.query_snapshots_by_time_window(start_tick, end_tick)
-    elif health_flag is not None:
-        return _registry.query_snapshots_by_health(health_flag)
-    else:
-        # Return all snapshots
-        return list(_registry._snapshots.values())
+        return registry.query_snapshots_by_time_window(start_tick, end_tick)
+    if health_flag is not None:
+        return registry.query_snapshots_by_health(health_flag)
+    snapshots = getattr(registry, "_snapshots", {})
+    return list(snapshots.values())
 
 
-def get_system_health_summary(
-    snapshot_id: str | None = None,
-    *,
-    registry=None,
-) -> dict[str, Any]:
-    """Get system health summary for operators."""
-    _registry = registry or get_dashboard_registry()
-
-    if snapshot_id:
-        snapshot = _registry.query_snapshot_by_id(snapshot_id)
-    else:
-        snapshot = _registry.get_latest_snapshot()
-
+def get_system_health_summary(snapshot_id: str | None = None, *, registry=None) -> dict[str, Any]:
+    """Get a system health summary for operators."""
+    registry = registry or get_dashboard_registry()
+    snapshot = registry.query_snapshot_by_id(snapshot_id) if snapshot_id else registry.get_latest_snapshot()
     if not snapshot:
         return {"status": "NO_DATA", "components": {}}
 
-    # Count health states
-    health_counts = {}
-    for health in HealthFlag:
-        health_counts[health.value] = sum(
-            1 for flag in snapshot.degraded_component_flags.values() if flag == health
-        )
+    health_counts = {
+        health.value: sum(1 for flag in snapshot.degraded_component_flags.values() if flag == health)
+        for health in HealthFlag
+    }
+    all_flags = list(snapshot.degraded_component_flags.values())
+    if any(flag == HealthFlag.CRITICAL for flag in all_flags):
+        status = "CRITICAL"
+    elif any(flag == HealthFlag.DEGRADED for flag in all_flags):
+        status = "DEGRADED"
+    elif any(flag == HealthFlag.HEALTHY for flag in all_flags):
+        status = "HEALTHY"
+    else:
+        status = "UNKNOWN"
 
     return {
-        "status": "HEALTHY" if health_counts.get("HEALTHY", 0) > 0 else "UNKNOWN",
+        "status": status,
         "snapshot_id": snapshot.dashboard_snapshot_id,
         "snapshot_tick": snapshot.snapshot_tick,
         "active_runs": snapshot.active_run_count,
@@ -481,22 +332,12 @@ def get_system_health_summary(
     }
 
 
-def get_throughput_metrics(
-    snapshot_id: str | None = None,
-    *,
-    registry=None,
-) -> dict[str, Any]:
+def get_throughput_metrics(snapshot_id: str | None = None, *, registry=None) -> dict[str, Any]:
     """Get throughput metrics for operators."""
-    _registry = registry or get_dashboard_registry()
-
-    if snapshot_id:
-        snapshot = _registry.query_snapshot_by_id(snapshot_id)
-    else:
-        snapshot = _registry.get_latest_snapshot()
-
+    registry = registry or get_dashboard_registry()
+    snapshot = registry.query_snapshot_by_id(snapshot_id) if snapshot_id else registry.get_latest_snapshot()
     if not snapshot:
         return {"status": "NO_DATA"}
-
     return {
         "snapshot_id": snapshot.dashboard_snapshot_id,
         "snapshot_tick": snapshot.snapshot_tick,
@@ -507,74 +348,48 @@ def get_throughput_metrics(
     }
 
 
-def get_latency_metrics(
-    snapshot_id: str | None = None,
-    *,
-    registry=None,
-) -> dict[str, Any]:
+def get_latency_metrics(snapshot_id: str | None = None, *, registry=None) -> dict[str, Any]:
     """Get latency metrics for operators."""
-    _registry = registry or get_dashboard_registry()
-
-    if snapshot_id:
-        snapshot = _registry.query_snapshot_by_id(snapshot_id)
-    else:
-        snapshot = _registry.get_latest_snapshot()
-
+    registry = registry or get_dashboard_registry()
+    snapshot = registry.query_snapshot_by_id(snapshot_id) if snapshot_id else registry.get_latest_snapshot()
     if not snapshot:
         return {"status": "NO_DATA"}
-
     return {
         "snapshot_id": snapshot.dashboard_snapshot_id,
         "snapshot_tick": snapshot.snapshot_tick,
-        "median_latency_by_stage": snapshot.median_latency_by_stage,
-        "p95_latency_by_stage": snapshot.p95_latency_by_stage,
+        "median_latency_by_stage": dict(snapshot.median_latency_by_stage),
+        "p95_latency_by_stage": dict(snapshot.p95_latency_by_stage),
     }
 
 
-def get_bottleneck_analysis(
-    snapshot_id: str | None = None,
-    *,
-    registry=None,
-) -> dict[str, Any]:
+def get_bottleneck_analysis(snapshot_id: str | None = None, *, registry=None) -> dict[str, Any]:
     """Get bottleneck analysis for operators."""
-    _registry = registry or get_dashboard_registry()
-
-    if snapshot_id:
-        snapshot = _registry.query_snapshot_by_id(snapshot_id)
-    else:
-        snapshot = _registry.get_latest_snapshot()
-
+    registry = registry or get_dashboard_registry()
+    snapshot = registry.query_snapshot_by_id(snapshot_id) if snapshot_id else registry.get_latest_snapshot()
     if not snapshot:
         return {"status": "NO_DATA"}
 
-    # Identify bottlenecks
-    bottlenecks = []
-
-    # Check queue depths
-    for queue, depth in snapshot.queue_depth_summary.items():
-        if depth > 10:  # Threshold for bottleneck
+    bottlenecks: list[dict[str, Any]] = []
+    for queue_name, depth in snapshot.queue_depth_summary.items():
+        if depth > 10:
             bottlenecks.append(
                 {
                     "type": "queue_depth",
-                    "component": queue,
+                    "component": queue_name,
                     "value": depth,
                     "severity": "HIGH" if depth > 20 else "MEDIUM",
-                },
+                }
             )
-
-    # Check latency
     for stage, latency in snapshot.p95_latency_by_stage.items():
-        if latency > 1.0:  # Threshold for bottleneck
+        if latency > 1.0:
             bottlenecks.append(
                 {
                     "type": "latency",
                     "component": stage,
                     "value": latency,
                     "severity": "HIGH" if latency > 2.0 else "MEDIUM",
-                },
+                }
             )
-
-    # Check failure rates
     if snapshot.execution_failure_rate > 0.1:
         bottlenecks.append(
             {
@@ -582,9 +397,8 @@ def get_bottleneck_analysis(
                 "component": "execution",
                 "value": snapshot.execution_failure_rate,
                 "severity": "HIGH" if snapshot.execution_failure_rate > 0.2 else "MEDIUM",
-            },
+            }
         )
-
     return {
         "snapshot_id": snapshot.dashboard_snapshot_id,
         "snapshot_tick": snapshot.snapshot_tick,
@@ -593,23 +407,12 @@ def get_bottleneck_analysis(
     }
 
 
-# ---------------------------------------------------------------------------
-# Convenience functions for common patterns
-# ---------------------------------------------------------------------------
-
-
-def aggregate_simple_dashboard(
-    window_duration_seconds: int = 300,  # 5 minutes
-    *,
-    registry=None,
-) -> DashboardSnapshot:
+def aggregate_simple_dashboard(window_duration_seconds: int = 300, *, registry=None) -> DashboardSnapshot:
     """Convenience wrapper for simple dashboard aggregation."""
     end_tick = time.time()
-    start_tick = end_tick - window_duration_seconds
-
+    start_tick = end_tick - max(0, int(window_duration_seconds))
     telemetry_window = TelemetryWindow.create(start_tick, end_tick)
     dashboard_policy = DashboardPolicy.create()
-
     return aggregate_runtime_observability(
         telemetry_window=telemetry_window,
         dashboard_policy=dashboard_policy,

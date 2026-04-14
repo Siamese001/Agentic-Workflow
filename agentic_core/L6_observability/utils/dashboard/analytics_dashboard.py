@@ -19,6 +19,7 @@ USAGE:
     # Access dashboard at http://localhost:8080
 """
 
+import copy
 import logging
 import threading
 import time
@@ -30,7 +31,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
-from tqdm import tqdm
 
 emit_determinism_digest("analytics_dashboard", "analytics_dashboard_digest")
 record_execution_trace("analytics_dashboard", "analytics_dashboard_trace")
@@ -89,6 +89,8 @@ class AnalyticsDashboard:
         self._config = config or DashboardConfig()
 
         # Dashboard state
+        self._lock = threading.RLock()
+        self._stop_event = threading.Event()
         self._dashboard_active: bool = False
         self._dashboard_thread: threading.Thread | None = None
         self._shutdown_requested: bool = False
@@ -212,36 +214,89 @@ class AnalyticsDashboard:
             refresh_rate=60,
         )
 
+    def _default_widget_data(self, widget_id: str, widget_type: str) -> Any:
+        """Return safe default data for a widget."""
+        if widget_id == "system_health":
+            return {"score": 0, "status": "unknown"}
+        if widget_id == "active_traces":
+            return {"count": 0, "rate": 0}
+        if widget_id == "performance_metrics":
+            return ChartData(
+                chart_type="line",
+                title="Performance",
+                data=[],
+                labels=["Time", "Efficiency", "Complexity", "Reliability"],
+                colors=["#00ff00", "#ffff00", "#ff0000"],
+            )
+        if widget_id == "alerts":
+            return {"columns": ["Severity", "Message", "Time"], "rows": []}
+        if widget_id == "service_health":
+            return ChartData(
+                chart_type="pie",
+                title="Service Status",
+                data=[],
+                labels=["Healthy", "Warning", "Critical"],
+                colors=["#00ff00", "#ffff00", "#ff0000"],
+            )
+        if widget_id == "optimization":
+            return {"columns": ["Priority", "Type", "Description"], "rows": []}
+        return (
+            {}
+            if widget_type == "table"
+            else ChartData(chart_type="line", title=widget_id, data=[], labels=[], colors=[])
+            if widget_type == "chart"
+            else {}
+        )
+
+    def _ensure_widget_data_shape(self, widget: DashboardWidget) -> None:
+        """Repair widget data when imported config is incomplete or malformed."""
+        default_data = self._default_widget_data(widget.widget_id, widget.widget_type)
+        if widget.widget_type == "chart" and not isinstance(widget.data, ChartData):
+            widget.data = copy.deepcopy(default_data)
+        elif widget.widget_type == "table":
+            if not isinstance(widget.data, dict):
+                widget.data = copy.deepcopy(default_data)
+            else:
+                widget.data.setdefault("columns", copy.deepcopy(default_data.get("columns", [])))
+                widget.data.setdefault("rows", [])
+        elif widget.widget_type == "metric" and not isinstance(widget.data, dict):
+            widget.data = copy.deepcopy(default_data)
+
     def start_dashboard(self) -> None:
         """Start the analytics dashboard."""
-        if self._dashboard_active:
-            Logger.warning("[DASHBOARD] Dashboard already active")
-            return
+        with self._lock:
+            if self._dashboard_active:
+                Logger.warning("[DASHBOARD] Dashboard already active")
+                return
 
-        self._dashboard_active = True
-        self._shutdown_requested = False
+            self._dashboard_active = True
+            self._shutdown_requested = False
+            self._stop_event.clear()
 
-        # Start dashboard update thread
-        self._dashboard_thread = threading.Thread(
-            target=self._dashboard_loop,
-            daemon=True,
-            name="AnalyticsDashboard",
-        )
-        self._dashboard_thread.start()
+            # Start dashboard update thread
+            self._dashboard_thread = threading.Thread(
+                target=self._dashboard_loop,
+                daemon=True,
+                name="AnalyticsDashboard",
+            )
+            self._dashboard_thread.start()
 
         Logger.info(f"[DASHBOARD] Started analytics dashboard on {self._config.host}:{self._config.port}")
         Logger.info(f"[DASHBOARD] Dashboard URL: http://{self._config.host}:{self._config.port}")
 
     def stop_dashboard(self) -> None:
         """Stop the analytics dashboard."""
-        if not self._dashboard_active:
-            return
+        with self._lock:
+            if not self._dashboard_active:
+                return
 
-        self._shutdown_requested = True
-        self._dashboard_active = False
+            self._shutdown_requested = True
+            self._dashboard_active = False
+            self._stop_event.set()
+            dashboard_thread = self._dashboard_thread
 
-        if self._dashboard_thread and self._dashboard_thread.is_alive():
-            self._dashboard_thread.join(timeout=5.0)
+        if dashboard_thread and dashboard_thread.is_alive():
+            dashboard_thread.join(timeout=5.0)
 
         Logger.info("[DASHBOARD] Stopped analytics dashboard")
 
@@ -260,17 +315,22 @@ class AnalyticsDashboard:
                 # Sleep until next update
                 elapsed = time.time() - start_time
                 sleep_time = max(0.1, self._config.refresh_interval_seconds - elapsed)
-                time.sleep(sleep_time)
+                if self._stop_event.wait(timeout=sleep_time):
+                    break
 
             except Exception as e:
                 Logger.error(f"[DASHBOARD] Dashboard loop error: {e}")
-                time.sleep(5.0)
+                if self._stop_event.wait(timeout=5.0):
+                    break
 
     def _update_all_widgets(self) -> None:
         """Update all dashboard widgets."""
         current_time = time.time()
 
-        for widget_id, widget in self._widgets.items():
+        with self._lock:
+            widget_items = list(self._widgets.items())
+
+        for widget_id, widget in widget_items:
             try:
                 # Check if widget needs update
                 if current_time - getattr(widget, "_last_update", 0) >= widget.refresh_rate:
@@ -282,6 +342,7 @@ class AnalyticsDashboard:
 
     def _update_widget(self, widget: DashboardWidget) -> None:
         """Update a specific widget."""
+        self._ensure_widget_data_shape(widget)
         if widget.widget_type == "metric":
             self._update_metric_widget(widget)
         elif widget.widget_type == "chart":
@@ -371,63 +432,73 @@ class AnalyticsDashboard:
             # System metrics
             if self._observability_system:
                 dashboard_data = self._observability_system.get_dashboard_data()
-                self._real_time_data["system_metrics"] = dashboard_data.get("current_metrics", {})
-                self._real_time_data["system_health"] = dashboard_data.get("system_health", {})
+                with self._lock:
+                    self._real_time_data["system_metrics"] = dashboard_data.get("current_metrics", {})
+                    self._real_time_data["system_health"] = dashboard_data.get("system_health", {})
 
             # Distributed tracing stats
             if self._distributed_coordinator:
-                self._real_time_data["distributed_stats"] = (
-                    self._distributed_coordinator.get_coordination_stats()
-                )
+                with self._lock:
+                    self._real_time_data["distributed_stats"] = (
+                        self._distributed_coordinator.get_coordination_stats()
+                    )
 
             # Performance stats
             try:
                 from agentic_core.mixins.performance_optimized_collector import get_global_optimized_collector
 
                 perf_collector = get_global_optimized_collector()
-                self._real_time_data["performance_stats"] = perf_collector.get_performance_stats()
+                with self._lock:
+                    self._real_time_data["performance_stats"] = perf_collector.get_performance_stats()
             except Exception as e:
                 import logging
 
                 logging.getLogger(__name__).debug("analytics_dashboard: Exception swallowed at L380: %s", e)
 
             # Timestamp
-            self._real_time_data["timestamp"] = time.time()
+            with self._lock:
+                self._real_time_data["timestamp"] = time.time()
 
         except Exception as e:
             Logger.error(f"[DASHBOARD] Failed to update real-time data: {e}")
 
     def get_dashboard_data(self) -> dict[str, Any]:
         """Get complete dashboard data for rendering."""
-        return {
-            "config": {
+        with self._lock:
+            widgets = {
+                widget_id: {
+                    "widget_type": widget.widget_type,
+                    "title": widget.title,
+                    "position": copy.deepcopy(widget.position),
+                    "data": copy.deepcopy(widget.data),
+                    "config": copy.deepcopy(widget.config),
+                }
+                for widget_id, widget in self._widgets.items()
+            }
+            real_time_data = copy.deepcopy(self._real_time_data)
+            config = {
                 "host": self._config.host,
                 "port": self._config.port,
                 "refresh_interval": self._config.refresh_interval_seconds,
                 "dashboard_active": self._dashboard_active,
-            },
-            "widgets": {
-                widget_id: {
-                    "widget_type": widget.widget_type,
-                    "title": widget.title,
-                    "position": widget.position,
-                    "data": widget.data,
-                    "config": widget.config,
-                }
-                for widget_id, widget in self._widgets.items()
-            },
-            "real_time_data": self._real_time_data,
+            }
+
+        return {
+            "config": config,
+            "widgets": widgets,
+            "real_time_data": real_time_data,
             "timestamp": time.time(),
         }
 
     def add_widget(self, widget: DashboardWidget) -> bool:
         """Add a new widget to the dashboard."""
         try:
-            if widget.widget_id in self._widgets:
-                Logger.warning(f"[DASHBOARD] Widget {widget.widget_id} already exists")
-                return False
+            with self._lock:
+                if widget.widget_id in self._widgets:
+                    Logger.warning(f"[DASHBOARD] Widget {widget.widget_id} already exists")
+                    return False
 
-            self._widgets[widget.widget_id] = widget
+                self._widgets[widget.widget_id] = widget
             Logger.info(f"[DASHBOARD] Added widget: {widget.widget_id}")
             return True
 
@@ -438,13 +509,19 @@ class AnalyticsDashboard:
     def remove_widget(self, widget_id: str) -> bool:
         """Remove a widget from the dashboard."""
         try:
-            if widget_id in self._widgets:
-                del self._widgets[widget_id]
+            with self._lock:
+                if widget_id in self._widgets:
+                    del self._widgets[widget_id]
+                    removed = True
+                else:
+                    removed = False
+
+            if removed:
                 Logger.info(f"[DASHBOARD] Removed widget: {widget_id}")
                 return True
-            else:
-                Logger.warning(f"[DASHBOARD] Widget {widget_id} not found")
-                return False
+
+            Logger.warning(f"[DASHBOARD] Widget {widget_id} not found")
+            return False
 
         except Exception as e:
             Logger.error(f"[DASHBOARD] Failed to remove widget: {e}")
@@ -452,19 +529,26 @@ class AnalyticsDashboard:
 
     def get_widget(self, widget_id: str) -> DashboardWidget | None:
         """Get a specific widget."""
-        return self._widgets.get(widget_id)
+        with self._lock:
+            return copy.deepcopy(self._widgets.get(widget_id))
 
     def update_widget_config(self, widget_id: str, config: dict[str, Any]) -> bool:
         """Update widget configuration."""
         try:
-            widget = self._widgets.get(widget_id)
-            if widget:
-                widget.config.update(config)
+            with self._lock:
+                widget = self._widgets.get(widget_id)
+                if widget:
+                    widget.config.update(config)
+                    updated = True
+                else:
+                    updated = False
+
+            if updated:
                 Logger.info(f"[DASHBOARD] Updated config for widget: {widget_id}")
                 return True
-            else:
-                Logger.warning(f"[DASHBOARD] Widget {widget_id} not found")
-                return False
+
+            Logger.warning(f"[DASHBOARD] Widget {widget_id} not found")
+            return False
 
         except Exception as e:
             Logger.error(f"[DASHBOARD] Failed to update widget config: {e}")
@@ -472,27 +556,30 @@ class AnalyticsDashboard:
 
     def export_dashboard_config(self) -> dict[str, Any]:
         """Export dashboard configuration."""
-        return {
-            "config": {
-                "host": self._config.host,
-                "port": self._config.port,
-                "refresh_interval_seconds": self._config.refresh_interval_seconds,
-                "max_data_points": self._config.max_data_points,
-                "enable_real_time": self._config.enable_real_time,
-                "enable_alerts": self._config.enable_alerts,
-                "enable_optimization": self._config.enable_optimization,
-            },
-            "widgets": {
+        with self._lock:
+            widgets = {
                 widget_id: {
                     "widget_type": widget.widget_type,
                     "title": widget.title,
-                    "position": widget.position,
-                    "config": widget.config,
+                    "position": copy.deepcopy(widget.position),
+                    "config": copy.deepcopy(widget.config),
                     "refresh_rate": widget.refresh_rate,
                 }
                 for widget_id, widget in self._widgets.items()
-            },
-        }
+            }
+
+            return {
+                "config": {
+                    "host": self._config.host,
+                    "port": self._config.port,
+                    "refresh_interval_seconds": self._config.refresh_interval_seconds,
+                    "max_data_points": self._config.max_data_points,
+                    "enable_real_time": self._config.enable_real_time,
+                    "enable_alerts": self._config.enable_alerts,
+                    "enable_optimization": self._config.enable_optimization,
+                },
+                "widgets": widgets,
+            }
 
     def import_dashboard_config(self, config: dict[str, Any]) -> bool:
         """Import dashboard configuration."""
@@ -518,18 +605,25 @@ class AnalyticsDashboard:
 
             # Update widgets
             if "widgets" in config:
-                self._widgets.clear()
-                for widget_id, widget_data in tqdm(config["widgets"].items(), desc="Processing", unit="item"):
+                new_widgets: dict[str, DashboardWidget] = {}
+                for widget_id, widget_data in config["widgets"].items():
+                    widget_type = widget_data["widget_type"]
                     widget = DashboardWidget(
                         widget_id=widget_id,
-                        widget_type=widget_data["widget_type"],
+                        widget_type=widget_type,
                         title=widget_data["title"],
-                        position=widget_data["position"],
-                        data={},  # Data will be populated by updates
-                        config=widget_data.get("config", {}),
+                        position=copy.deepcopy(widget_data["position"]),
+                        data=copy.deepcopy(
+                            widget_data.get("data", self._default_widget_data(widget_id, widget_type))
+                        ),
+                        config=copy.deepcopy(widget_data.get("config", {})),
                         refresh_rate=widget_data.get("refresh_rate", 5),
                     )
-                    self._widgets[widget_id] = widget
+                    self._ensure_widget_data_shape(widget)
+                    new_widgets[widget_id] = widget
+
+                with self._lock:
+                    self._widgets = new_widgets
 
             Logger.info("[DASHBOARD] Imported dashboard configuration")
             return True
@@ -540,20 +634,25 @@ class AnalyticsDashboard:
 
     def get_dashboard_summary(self) -> dict[str, Any]:
         """Get dashboard summary information."""
+        with self._lock:
+            widgets = list(self._widgets.values())
+            real_time_data = copy.deepcopy(self._real_time_data)
+            dashboard_active = self._dashboard_active
+
         return {
-            "dashboard_active": self._dashboard_active,
-            "total_widgets": len(self._widgets),
+            "dashboard_active": dashboard_active,
+            "total_widgets": len(widgets),
             "widget_types": {
-                widget_type: sum(1 for w in self._widgets.values() if w.widget_type == widget_type)
-                for widget_type in set(w.widget_type for w in self._widgets.values())
+                widget_type: sum(1 for w in widgets if w.widget_type == widget_type)
+                for widget_type in set(w.widget_type for w in widgets)
             },
-            "real_time_data_points": len(self._real_time_data),
+            "real_time_data_points": len(real_time_data),
             "integrations": {
                 "analytics_engine": self._analytics_engine is not None,
                 "observability_system": self._observability_system is not None,
                 "distributed_coordinator": self._distributed_coordinator is not None,
             },
-            "last_update": self._real_time_data.get("timestamp", time.time()),
+            "last_update": real_time_data.get("timestamp", time.time()),
         }
 
 
