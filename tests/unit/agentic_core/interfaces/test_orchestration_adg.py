@@ -1,32 +1,45 @@
-"""Test OrchestrationAdg functionality."""
+"""Behavioral tests for orchestration.py: ActionRouter export, _MissingOptionalDependency."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
-
 
 @pytest.mark.unit
-class TestOrchestrationAdg:
-    """Test OrchestrationAdg functionality."""
+class TestOrchestrationModule:
+    # --- happy path ---
 
-    def test_orchestration_adg_imports(self):
-        """Test orchestration_adg module imports."""
-        from agentic_core import orchestration_adg
+    def test_module_importable(self):
+        from agentic_core.interfaces import orchestration
 
-        assert orchestration_adg is not None
+        assert orchestration is not None
 
-    def test_orchestration_adg_class(self):
-        """Test OrchestrationAdg class exists."""
-        from agentic_core import OrchestrationAdg
+    def test_exports_action_router(self):
+        from agentic_core.interfaces.orchestration import ActionRouter
 
-        assert OrchestrationAdg is not None
+        assert ActionRouter is not None
 
-    def test_orchestration_adg_callable(self):
-        """Test orchestration_adg functions are callable."""
-        from agentic_core import validate_orchestration_adg
+    # --- failure path ---
 
-        assert callable(validate_orchestration_adg)
+    def test_missing_optional_dependency_call_raises(self):
+        from agentic_core.interfaces.orchestration import _MissingOptionalDependency
+
+        proxy = _MissingOptionalDependency("ActionRouter", "L3 not installed")
+        with pytest.raises(ModuleNotFoundError, match="ActionRouter"):
+            proxy()
+
+    def test_missing_optional_dependency_getattr_raises(self):
+        from agentic_core.interfaces.orchestration import _MissingOptionalDependency
+
+        proxy = _MissingOptionalDependency("ActionRouter", "L3 not installed")
+        with pytest.raises(ModuleNotFoundError, match="ActionRouter"):
+            _ = proxy.route
+
+    # --- edge case ---
+
+    def test_missing_optional_dependency_reason_in_message(self):
+        from agentic_core.interfaces.orchestration import _MissingOptionalDependency
+
+        proxy = _MissingOptionalDependency("ActionRouter", "custom reason text")
+        with pytest.raises(ModuleNotFoundError, match="custom reason text"):
+            proxy()

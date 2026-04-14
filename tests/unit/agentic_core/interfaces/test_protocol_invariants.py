@@ -145,3 +145,111 @@ def test_validation_report_to_markdown_non_compliant():
     assert "75.0%" in markdown
     assert "NON-COMPLIANT" in markdown
     assert "1 violations" in markdown  # Shows len(violations), not total_violations
+
+
+# ---------------------------------------------------------------------------
+# G3: _normalize_top_k boundary cases (phase-added to embeddings.py)
+# ---------------------------------------------------------------------------
+
+
+def test_normalize_top_k_zero_clamps_to_one():
+    """_normalize_top_k(0) must return 1 — no zero-sized result set."""
+    from agentic_core.interfaces.embeddings import _normalize_top_k
+
+    assert _normalize_top_k(0) == 1
+
+
+def test_normalize_top_k_negative_clamps_to_one():
+    """_normalize_top_k(-n) must return 1."""
+    from agentic_core.interfaces.embeddings import _normalize_top_k
+
+    assert _normalize_top_k(-10) == 1
+
+
+def test_normalize_top_k_above_max_clamps_to_max():
+    """_normalize_top_k(n > _MAX_TOP_K) must return _MAX_TOP_K."""
+    from agentic_core.interfaces.embeddings import _MAX_TOP_K, _normalize_top_k
+
+    assert _normalize_top_k(_MAX_TOP_K + 5) == _MAX_TOP_K
+
+
+def test_normalize_top_k_valid_value_unchanged():
+    """_normalize_top_k(n) where 1 <= n <= _MAX_TOP_K must return n unchanged."""
+    from agentic_core.interfaces.embeddings import _normalize_top_k
+
+    assert _normalize_top_k(10) == 10
+
+
+# ---------------------------------------------------------------------------
+# G4: _MissingOptionalDependency fail-fast proxy (safety.py)
+# ---------------------------------------------------------------------------
+
+
+def test_missing_optional_dependency_raises_on_getattr():
+    """_MissingOptionalDependency.__getattr__ must raise ModuleNotFoundError."""
+    from agentic_core.interfaces.safety import _MissingOptionalDependency
+
+    proxy = _MissingOptionalDependency("FakeClass", "test reason")
+    with pytest.raises(ModuleNotFoundError, match="FakeClass is unavailable"):
+        _ = proxy.some_attribute
+
+
+def test_missing_optional_dependency_raises_on_call():
+    """_MissingOptionalDependency.__call__ must raise ModuleNotFoundError."""
+    from agentic_core.interfaces.safety import _MissingOptionalDependency
+
+    proxy = _MissingOptionalDependency("FakeClass", "test reason")
+    with pytest.raises(ModuleNotFoundError, match="FakeClass is unavailable"):
+        proxy()
+
+
+# ---------------------------------------------------------------------------
+# G5: _missing_rule_failure fail-fast stub (validators.py)
+# ---------------------------------------------------------------------------
+
+
+def test_missing_rule_failure_raises_on_instantiation():
+    """Stub class produced by _missing_rule_failure must raise ModuleNotFoundError on __init__."""
+    from agentic_core.interfaces.validators import _missing_rule_failure
+
+    StubClass = _missing_rule_failure("test reason")
+    with pytest.raises(ModuleNotFoundError, match="RuleFailure is unavailable"):
+        StubClass()
+
+
+# ---------------------------------------------------------------------------
+# G6: query_similarity ImportError / empty-query fallback paths (embeddings.py)
+# ---------------------------------------------------------------------------
+
+
+def test_query_similarity_returns_empty_for_empty_string():
+    """query_similarity('') must return [] without touching the cache."""
+    from agentic_core.interfaces.embeddings import query_similarity
+
+    assert query_similarity("") == []
+
+
+def test_query_similarity_returns_empty_for_whitespace():
+    """query_similarity with all-whitespace must return [] (stripped → empty)."""
+    from agentic_core.interfaces.embeddings import query_similarity
+
+    assert query_similarity("   ") == []
+
+
+def test_query_similarity_handles_cache_import_error():
+    """query_similarity must return [] when SovereignSemanticCache is unavailable."""
+    import sys
+
+    from agentic_core.interfaces.embeddings import query_similarity
+
+    cache_key = "agentic_core.L4_state.utils.memory.sovereign_semantic_cache"
+    orig = sys.modules.pop(cache_key, None)
+    try:
+        sys.modules[cache_key] = None  # None entry forces ImportError on next import
+        result = query_similarity("test query text")
+        assert result == []
+    finally:
+        if orig is not None:
+            sys.modules[cache_key] = orig
+        else:
+            sys.modules.pop(cache_key, None)

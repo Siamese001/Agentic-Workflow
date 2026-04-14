@@ -1,32 +1,43 @@
-"""Test Mixins functionality."""
+"""Behavioral tests for mixins.py: HealerMixin, MetaLearningMixin, _missing_dependency."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
-
 
 @pytest.mark.unit
-class TestMixins:
-    """Test Mixins functionality."""
+class TestMixinsModule:
+    # --- happy path ---
 
-    def test_mixins_imports(self):
-        """Test mixins module imports."""
-        from agentic_core import mixins
+    def test_module_importable(self):
+        from agentic_core.interfaces import mixins
 
         assert mixins is not None
 
-    def test_mixins_class(self):
-        """Test Mixins class exists."""
-        from agentic_core import Mixins
+    def test_exports_healer_mixin(self):
+        from agentic_core.interfaces.mixins import HealerMixin
 
-        assert Mixins is not None
+        assert HealerMixin is not None
 
-    def test_mixins_callable(self):
-        """Test mixins functions are callable."""
-        from agentic_core import validate_mixins
+    def test_exports_meta_learning_mixin(self):
+        from agentic_core.interfaces.mixins import MetaLearningMixin
 
-        assert callable(validate_mixins)
+        assert MetaLearningMixin is not None
+
+    # --- failure path ---
+
+    def test_missing_dependency_raises_on_instantiation(self):
+        from agentic_core.interfaces.mixins import _missing_dependency
+
+        stub_cls = _missing_dependency("HealerMixin", "L5 module not found")
+        with pytest.raises(ModuleNotFoundError, match="HealerMixin"):
+            stub_cls()
+
+    # --- edge case ---
+
+    def test_missing_dependency_message_contains_reason(self):
+        from agentic_core.interfaces.mixins import _missing_dependency
+
+        stub_cls = _missing_dependency("MetaLearningMixin", "package x not installed")
+        with pytest.raises(ModuleNotFoundError, match="package x not installed"):
+            stub_cls()
