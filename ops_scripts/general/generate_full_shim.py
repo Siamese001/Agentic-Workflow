@@ -75,6 +75,14 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
+
+def _atomic_write(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(content, encoding="utf-8")
+    tmp_path.replace(path)
+
+
 _emit_emits_metric_event("generate_full_shim", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_full_shim", "p4obs", "metric_2")
 _emit_emits_metric_event("generate_full_shim", "p4obs", "metric_3")
@@ -236,7 +244,7 @@ def main() -> None:
     total = sum(len(v) for v in by_module.values())
     print(f"Collected {total} public names across {len(by_module)} modules")
     shim = generate_shim(by_module)
-    TARGET.write_text(shim, encoding="utf-8")
+    _atomic_write(TARGET, shim)
     print(f"Wrote shim: {len(shim.splitlines())} lines")
     ast.parse(shim)
     print("Syntax OK")

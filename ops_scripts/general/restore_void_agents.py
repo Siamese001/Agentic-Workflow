@@ -33,7 +33,15 @@ from agentic_core.L0_routing.config import (
 )
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).parent.parent
+
+def _resolve_project_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+PROJECT_ROOT = _resolve_project_root()
 VOID_DIR = PROJECT_ROOT / ARCHIVES_DIR / "void_violations"
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 

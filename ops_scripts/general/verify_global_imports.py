@@ -49,8 +49,8 @@ def scan_for_stale_imports():
             with open(file_path, encoding="utf-8", errors="ignore") as f:
                 lines = f.readlines()
             rel_path = str(file_path).replace(ROOT_DIR, "")
-            for line in tqdm(lines, desc="Checking lines", unit="line", leave=False):
-                for agent in tqdm(MOVED_AGENTS, desc="Checking agents", unit="agent", leave=False):
+            for line in lines:
+                for agent in MOVED_AGENTS:
                     if f"from {FORBIDDEN_PATH}" in line and agent in line:
                         print(
                             f"!! STALE   | {rel_path[:60]:<60} | Importing '{agent}' from old path; hint={NEW_PATH_HINT}"

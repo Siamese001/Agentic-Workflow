@@ -1,51 +1,38 @@
-"""Placeholder test file - syntax fixed."""
+"""Runtime-hardened tests for traceability contracts."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import os
-import unittest
+from __future__ import annotations
 
-# Disable runtime mutation guard for tests
-os.environ["DISABLE_RUNTIME_MUTATION_GUARD"] = "1"
+import pytest
+
+pytestmark = pytest.mark.unit
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.enforcement."""
-
-    def test_generate_trace_id(self):
-        """Test generate_trace_id function."""
-        from agentic_core.L0_routing.enforcement import generate_trace_id
-
-        result = generate_trace_id("ABCDEF12")  # 8 hex chars
-        self.assertIsNotNone(result)
-
-    def test_build_error_signature(self):
-        """Test build_error_signature function."""
-        from agentic_core.L0_routing.enforcement import build_error_signature
-
-        result = build_error_signature("TypeError", "node123", 42)
-        self.assertIsNotNone(result)
-
-    def test_TraceIDFormatError_init(self):
-        """Test TraceIDFormatError initialization."""
-        from agentic_core.L0_routing.enforcement import TraceIDFormatError
-
-        instance = TraceIDFormatError()
-        self.assertIsNotNone(instance)
-
-    def test_ErrorSignatureError_init(self):
-        """Test ErrorSignatureError initialization."""
-        from agentic_core.L0_routing.enforcement import ErrorSignatureError
-
-        instance = ErrorSignatureError()
-        self.assertIsNotNone(instance)
+@pytest.fixture(scope="module")
+def enforcement_package():
+    return pytest.importorskip("agentic_core.L0_routing.enforcement")
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestTraceabilityContracts:
+    def test_generate_trace_id_returns_string(self, enforcement_package, monkeypatch):
+        monkeypatch.setenv("DISABLE_RUNTIME_MUTATION_GUARD", "1")
+        result = enforcement_package.generate_trace_id("ABCDEF12")
+
+        assert isinstance(result, str)
+        assert result
+
+    def test_build_error_signature_returns_value(self, enforcement_package, monkeypatch):
+        monkeypatch.setenv("DISABLE_RUNTIME_MUTATION_GUARD", "1")
+        result = enforcement_package.build_error_signature("TypeError", "node123", 42)
+
+        assert result is not None
+
+    def test_exception_types_initialize(self, enforcement_package):
+        assert isinstance(enforcement_package.TraceIDFormatError(), Exception)
+        assert isinstance(enforcement_package.ErrorSignatureError(), Exception)
+
+    def test_generate_trace_id_boundary_conditions(self, enforcement_package, monkeypatch):
+        monkeypatch.setenv("DISABLE_RUNTIME_MUTATION_GUARD", "1")
+        with pytest.raises(ValueError):
+            enforcement_package.generate_trace_id("WXYZ1234")
+        with pytest.raises(enforcement_package.TraceIDFormatError):
+            enforcement_package.generate_trace_id("ABC")

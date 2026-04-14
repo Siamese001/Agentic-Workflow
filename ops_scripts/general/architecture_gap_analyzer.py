@@ -38,6 +38,14 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
+
+def _resolve_repo_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
 _emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write")
 _emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write_2")
 _emit_pulls_context("p1", "architecture_gap_analyzer", "context_retrieval")
@@ -601,7 +609,7 @@ class ArchitectureGapAnalyzer:
 
 def main():
     """Run architecture gap analysis."""
-    repo_root = Path(__file__).parent.parent
+    repo_root = _resolve_repo_root()
     analyzer = ArchitectureGapAnalyzer(repo_root)
     analyzer.analyze()
     report = analyzer.generate_report()

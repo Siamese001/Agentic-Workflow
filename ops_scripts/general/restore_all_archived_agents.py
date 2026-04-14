@@ -30,7 +30,15 @@ from agentic_core.L0_routing.config import (
 )
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).parent.parent
+
+def _resolve_project_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+PROJECT_ROOT = _resolve_project_root()
 ARCHIVES = PROJECT_ROOT / ARCHIVES_DIR
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
@@ -136,7 +144,7 @@ def main():
         print("Run scan_archives_for_restoration.py first!")
         return 1
 
-    with open(manifest_path) as f:
+    with open(manifest_path, encoding="utf-8") as f:
         manifest = json.load(f)
 
     restored = 0

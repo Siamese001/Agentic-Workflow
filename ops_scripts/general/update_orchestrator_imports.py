@@ -1,29 +1,17 @@
 """
-update_orchestrator_imports.py - Phase 1 Global Search & Replace for Orchestrators
-
-Updates all imports of archived legacy orchestrators to use the new unified agents.
-
-Mapping:
-- CachedOrchestratorAgent, SelfRecoveringOrchestratorAgent, IntelligentOrchestratorAgent,
-  HardenedWorkflowOrchestratorAgent, ConsolidatedOrchestratorAgent
-  -> CoreOrchestrationAgent
-
-- LicWorkflowOrchestratorAgent, OutreachPhase5Orchestrator, Phase4OrchestratorAgent,
-  Phase6OrchestratorAgent, Phase7OrchestratorAgent, HOPOrchestratorAgent
-  -> AppWorkflowOrchestratorAgent
-
-Usage:
-    python scripts/update_orchestrator_imports.py --dry-run
-    python scripts/update_orchestrator_imports.py
+Phase 1 global search-and-replace for archived legacy orchestrator imports.
 """
 
+from __future__ import annotations
+
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
+
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).parent.parent
 IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
     "CachedOrchestratorAgent": (
         "agentic_core.L3_orchestration.unified.CoreOrchestrationAgent",
@@ -103,68 +91,94 @@ IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
     ),
 }
 
+SKIP_PATH_PARTS = {"__pycache__", ".git", ".venv", "venv", "node_modules", "archive", "archives"}
+
+
+def _resolve_repo_root(explicit_root: str | None = None) -> Path:
+    if explicit_root:
+        return Path(explicit_root).expanduser().resolve()
+    env_root = os.getenv("AGENTIC_WORKFLOW_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path.cwd().resolve()
+
+
+def _atomic_write(path: Path, content: str) -> None:
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(content, encoding="utf-8")
+    tmp_path.replace(path)
+
 
 def find_files_with_imports(root: Path) -> list[Path]:
     """Find all Python files that might have legacy imports."""
-    files = []
+    files: list[Path] = []
     for path in root.rglob("*.py"):
-        path_str = str(path).lower()
-        if "archive" in path_str:
-            continue
-        if "__pycache__" in path_str:
+        if any(part.lower() in SKIP_PATH_PARTS for part in path.parts):
             continue
         files.append(path)
-    return files
+    return sorted(files)
 
 
 def update_imports_in_file(file_path: Path, dry_run: bool = False) -> list[str]:
     """Update legacy imports in a single file."""
-    changes = []
+    changes: list[str] = []
+
     try:
-        content = file_path.read_text(encoding="utf-8")
-    # guardian: allow-silent-swallow
-    except Exception:
+        content = file_path.read_text(encoding="utf-8", errors="replace")
+    except (OSError, UnicodeDecodeError):
         return changes
+
     original_content = content
-    for legacy_name, (unified_module, unified_class) in tqdm(
-        IMPORT_REPLACEMENTS.items(), desc="Processing", unit="item"
-    ):
-        pattern1 = f"from\\s+[\\w.]+\\s+import\\s+{legacy_name}\\b"
-        if re.search(pattern1, content):
+    for legacy_name, (unified_module, unified_class) in IMPORT_REPLACEMENTS.items():
+        pattern = rf"from\s+[\w.]+\s+import\s+{re.escape(legacy_name)}\b"
+        if re.search(pattern, content):
             new_import = f"from {unified_module} import {unified_class}"
-            content = re.sub(pattern1, new_import, content)
+            content = re.sub(pattern, new_import, content)
             changes.append(f"Updated import: {legacy_name} -> {unified_class}")
-        if any(legacy_name in c for c in changes):
-            usage_pattern = f"\\b{legacy_name}\\b"
+
+        if any(legacy_name in change for change in changes):
+            usage_pattern = rf"\b{re.escape(legacy_name)}\b"
             if re.search(usage_pattern, content):
                 content = re.sub(usage_pattern, unified_class, content)
                 changes.append(f"Updated usage: {legacy_name} -> {unified_class}")
-    if content != original_content and (not dry_run):
-        file_path.write_text(content, encoding="utf-8")
+
+    if content != original_content and not dry_run:
+        _atomic_write(file_path, content)
     return changes
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Update legacy orchestrator imports")
+    parser.add_argument("--repo-root", help="Override automatic repository root detection.")
     parser.add_argument("--dry-run", action="store_true", help="Show what would be done")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+
+    project_root = _resolve_repo_root(args.repo_root)
+
     print("=" * 70)
     print("Phase 1 Global Search & Replace - Orchestrator Import Updates")
     print("=" * 70)
     if args.dry_run:
         print("\n[DRY RUN MODE]\n")
-    files = find_files_with_imports(PROJECT_ROOT)
+
+    files = find_files_with_imports(project_root)
     total_changes = 0
     files_modified = 0
-    for file_path in files:
+
+    for file_path in tqdm(files, desc="Processing", unit="file"):
         changes = update_imports_in_file(file_path, args.dry_run)
-        if changes:
-            rel_path = file_path.relative_to(PROJECT_ROOT)
-            print(f"\n{rel_path}:")
-            for change in changes:
-                print(f"  - {change}")
-            total_changes += len(changes)
-            files_modified += 1
+        if not changes:
+            continue
+        rel_path = file_path.relative_to(project_root)
+        print(f"\n{rel_path}:")
+        for change in changes:
+            print(f"  - {change}")
+        total_changes += len(changes)
+        files_modified += 1
+
     print(f"\n{'=' * 70}")
     print("Summary:")
     print(f"  Files scanned:  {len(files)}")
@@ -178,4 +192,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    raise SystemExit(main())

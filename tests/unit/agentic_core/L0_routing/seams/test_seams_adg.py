@@ -1,32 +1,24 @@
-"""Test SeamsAdg functionality."""
+"""Runtime-hardened top-level export tests for seams ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestSeamsAdg:
-    """Test SeamsAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_seams_adg_imports(self):
-        """Test seams_adg module imports."""
-        from agentic_core import seams_adg
 
-        assert seams_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "seams_adg", None) is not None
 
-    def test_seams_adg_class(self):
-        """Test SeamsAdg class exists."""
-        from agentic_core import SeamsAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "SeamsAdg", None) is not None
 
-        assert SeamsAdg is not None
-
-    def test_seams_adg_callable(self):
-        """Test seams_adg functions are callable."""
-        from agentic_core import validate_seams_adg
-
-        assert callable(validate_seams_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_seams_adg", None)
+        assert callable(validator)

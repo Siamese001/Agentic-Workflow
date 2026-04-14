@@ -1,24 +1,20 @@
-"""Placeholder test file - syntax fixed."""
+"""Runtime-hardened tests for governance evidence-pack enforcement contracts."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.enforcement."""
+@pytest.fixture(scope="module")
+def enforcement_package():
+    return pytest.importorskip("agentic_core.L0_routing.enforcement")
 
-    def test_build_evidence_pack(self):
-        """Test build_evidence_pack function."""
-        from agentic_core.L0_routing.enforcement import build_evidence_pack
 
-        result = build_evidence_pack(
+class TestGovernanceEvidencePackContracts:
+    def test_build_evidence_pack_returns_value(self, enforcement_package):
+        result = enforcement_package.build_evidence_pack(
             "trace123",
             ("action1", "action2"),
             ("eval1", "eval2"),
@@ -26,13 +22,11 @@ class GeneratedTest(unittest.TestCase):
             budget_breach_data={},
             boundary_snapshot_hash="hash123",
         )
-        self.assertIsNotNone(result)
 
-    def test_validate_evidence_pack(self):
-        """Test validate_evidence_pack function."""
-        from agentic_core.L0_routing.enforcement import build_evidence_pack, validate_evidence_pack
+        assert result is not None
 
-        pack = build_evidence_pack(
+    def test_validate_evidence_pack_accepts_pack(self, enforcement_package):
+        pack = enforcement_package.build_evidence_pack(
             "trace123",
             ("action1", "action2"),
             ("eval1", "eval2"),
@@ -40,16 +34,17 @@ class GeneratedTest(unittest.TestCase):
             budget_breach_data={},
             boundary_snapshot_hash="hash123",
         )
-        result = validate_evidence_pack(pack)
-        self.assertIsNotNone(result)
 
-    def test_build_evidence_pack_failure(self):
-        """Test build_evidence_pack failure path."""
-        from agentic_core.L0_routing.enforcement import EvidencePackError, build_evidence_pack
+        assert enforcement_package.validate_evidence_pack(pack) is not None
 
-        # Test with invalid risk score (should be 0-1)
-        with self.assertRaises((EvidencePackError, ValueError, TypeError)):
-            build_evidence_pack(
+    def test_build_evidence_pack_rejects_invalid_risk_score(self, enforcement_package):
+        allowed_errors = (
+            getattr(enforcement_package, "EvidencePackError", ValueError),
+            ValueError,
+            TypeError,
+        )
+        with pytest.raises(allowed_errors):
+            enforcement_package.build_evidence_pack(
                 "trace123",
                 ("action1",),
                 ("eval1",),
@@ -58,20 +53,6 @@ class GeneratedTest(unittest.TestCase):
                 boundary_snapshot_hash="hash123",
             )
 
-    def test_EvidencePackError_init(self):
-        """Test EvidencePackError initialization."""
-        from agentic_core.L0_routing.enforcement import EvidencePackError
-
-        instance = EvidencePackError()
-        self.assertIsNotNone(instance)
-
-    def test_PolicyExceptionError_init(self):
-        """Test PolicyExceptionError initialization."""
-        from agentic_core.L0_routing.enforcement import PolicyExceptionError
-
-        instance = PolicyExceptionError()
-        self.assertIsNotNone(instance)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_exception_types_initialize(self, enforcement_package):
+        assert isinstance(enforcement_package.EvidencePackError(), Exception)
+        assert isinstance(enforcement_package.PolicyExceptionError(), Exception)

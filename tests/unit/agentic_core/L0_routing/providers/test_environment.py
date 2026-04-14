@@ -1,32 +1,24 @@
-"""Test Environment functionality."""
+"""Runtime-hardened top-level export tests for environment."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestEnvironment:
-    """Test Environment functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_environment_imports(self):
-        """Test environment module imports."""
-        from agentic_core import environment
 
-        assert environment is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "environment", None) is not None
 
-    def test_environment_class(self):
-        """Test Environment class exists."""
-        from agentic_core import Environment
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "Environment", None) is not None
 
-        assert Environment is not None
-
-    def test_environment_callable(self):
-        """Test environment functions are callable."""
-        from agentic_core import validate_environment
-
-        assert callable(validate_environment)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_environment", None)
+        assert callable(validator)

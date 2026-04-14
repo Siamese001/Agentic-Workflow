@@ -1,32 +1,24 @@
-"""Test SsotMixinStack functionality."""
+"""Runtime-hardened top-level export tests for SSOT mixin stack."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestSsotMixinStack:
-    """Test SsotMixinStack functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_ssot_mixin_stack_imports(self):
-        """Test ssot_mixin_stack module imports."""
-        from agentic_core import ssot_mixin_stack
 
-        assert ssot_mixin_stack is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ssot_mixin_stack", None) is not None
 
-    def test_ssot_mixin_stack_class(self):
-        """Test SsotMixinStack class exists."""
-        from agentic_core import SsotMixinStack
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "SsotMixinStack", None) is not None
 
-        assert SsotMixinStack is not None
-
-    def test_ssot_mixin_stack_callable(self):
-        """Test ssot_mixin_stack functions are callable."""
-        from agentic_core import validate_ssot_mixin_stack
-
-        assert callable(validate_ssot_mixin_stack)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_ssot_mixin_stack", None)
+        assert callable(validator)

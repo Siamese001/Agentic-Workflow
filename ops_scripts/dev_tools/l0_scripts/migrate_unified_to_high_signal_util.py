@@ -15,6 +15,7 @@ This is the transition from Defensive Posture (coexisting with legacy via "Unifi
 to Sovereign Posture (defining the single source of truth).
 """
 
+import argparse
 import re
 import shutil
 from pathlib import Path
@@ -43,9 +44,17 @@ emit_determinism_digest(
 _emit_validated_by_safety_plane("p1", "migrate_unified_to_high_signal_util", "safety_validation")
 
 
-def migrate_unified():
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return Path(__file__).resolve().parents[3]
+
+
+def migrate_unified(*, dry_run: bool = True, force: bool = False) -> int:
     """Performs physical migration, file renaming, and deep import refactoring."""
-    project_root = Path(__file__).resolve().parents[3]
+    project_root = _find_project_root()
     PATH_MAPPING = {
         "agentic_core/L5_safety/unified": "agentic_core/L5_safety/reasoning",
         "agentic_core/L2_execution/unified": "agentic_core/L2_execution/execution_bridge",
@@ -72,9 +81,16 @@ def migrate_unified():
                         files_renamed += 1
                     dest = new_path / new_filename
                     if not dest.exists():
-                        shutil.move(str(item), str(dest))
-                        files_moved += 1
-                        print(f"  [MOVED] {item.name} -> {dest.relative_to(project_root)}")
+                        if dry_run:
+                            print(f"  [DRY-RUN] Would move {item.name} -> {dest.relative_to(project_root)}")
+                        elif force:
+                            shutil.move(str(item), str(dest))
+                            files_moved += 1
+                            print(f"  [MOVED] {item.name} -> {dest.relative_to(project_root)}")
+                        else:
+                            print(
+                                f"  [SKIP] Use --force to move {item.name} -> {dest.relative_to(project_root)}"
+                            )
                     else:
                         print(f"  [SKIP] {new_filename} already exists at destination")
             remaining_items = list(old_path.iterdir())
@@ -82,11 +98,25 @@ def migrate_unified():
             remaining_dirs = [d for d in remaining_items if d.is_dir()]
             for d in remaining_dirs:
                 if d.name == "__pycache__":
-                    shutil.rmtree(d)
-                    print(f"  [CLEANUP] Removed {d.relative_to(project_root)}")
+                    if dry_run:
+                        print(f"  [DRY-RUN] Would remove {d.relative_to(project_root)}")
+                    elif force:
+                        shutil.rmtree(d)
+                        print(f"  [CLEANUP] Removed {d.relative_to(project_root)}")
+                    else:
+                        print(f"  [SKIP] Use --force to remove {d.relative_to(project_root)}")
             if not any(old_path.iterdir()):
-                old_path.rmdir()
-                print(f"  [CLEANUP] Removed obsolete directory: {old_path.relative_to(project_root)}")
+                if dry_run:
+                    print(
+                        f"  [DRY-RUN] Would remove obsolete directory: {old_path.relative_to(project_root)}"
+                    )
+                elif force:
+                    old_path.rmdir()
+                    print(f"  [CLEANUP] Removed obsolete directory: {old_path.relative_to(project_root)}")
+                else:
+                    print(
+                        f"  [SKIP] Use --force to remove obsolete directory: {old_path.relative_to(project_root)}"
+                    )
             else:
                 remaining = list(old_path.iterdir())
                 print(
@@ -145,7 +175,14 @@ def migrate_unified():
     print()
     print("=== Sovereign Namespace Migration: COMPLETE ===")
     print("[NEXT] Run verification: python -m compileall agentic_core")
+    return 0
 
 
 if __name__ == "__main__":
-    migrate_unified()
+    parser = argparse.ArgumentParser(description="Sovereign namespace migration with safe defaults")
+    parser.add_argument(
+        "--apply", action="store_true", help="Perform filesystem changes. Default is dry-run."
+    )
+    parser.add_argument("--force", action="store_true", help="Allow mutations when used with --apply.")
+    args = parser.parse_args()
+    raise SystemExit(migrate_unified(dry_run=not args.apply, force=args.force))

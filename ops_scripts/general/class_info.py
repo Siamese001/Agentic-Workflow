@@ -343,7 +343,7 @@ def main(argv: list[str] | None = None) -> int:
         + ("Executing deduplication..." if args.execute else "Dry run only; no files will be deleted...")
     )
     deleted_count = 0
-    for file_path in tqdm(sorted(files_to_delete), desc="Deleting files", unit="file"):
+    for file_path in sorted(files_to_delete):
         if not args.execute:
             print(f"  ○ Would delete: {Path(file_path).name}")
             continue

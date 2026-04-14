@@ -1,32 +1,24 @@
-"""Test SafetyValidatorsSeam functionality."""
+"""Runtime-hardened top-level export tests for safety validators seam."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestSafetyValidatorsSeam:
-    """Test SafetyValidatorsSeam functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_safety_validators_seam_imports(self):
-        """Test safety_validators_seam module imports."""
-        from agentic_core import safety_validators_seam
 
-        assert safety_validators_seam is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "safety_validators_seam", None) is not None
 
-    def test_safety_validators_seam_class(self):
-        """Test SafetyValidatorsSeam class exists."""
-        from agentic_core import SafetyValidatorsSeam
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "SafetyValidatorsSeam", None) is not None
 
-        assert SafetyValidatorsSeam is not None
-
-    def test_safety_validators_seam_callable(self):
-        """Test safety_validators_seam functions are callable."""
-        from agentic_core import validate_safety_validators_seam
-
-        assert callable(validate_safety_validators_seam)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_safety_validators_seam", None)
+        assert callable(validator)

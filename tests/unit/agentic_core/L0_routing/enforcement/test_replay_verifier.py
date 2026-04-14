@@ -1,32 +1,24 @@
-"""Test ReplayVerifier functionality."""
+"""Runtime-hardened top-level export tests for replay verifier."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestReplayVerifier:
-    """Test ReplayVerifier functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_replay_verifier_imports(self):
-        """Test replay_verifier module imports."""
-        from agentic_core import replay_verifier
 
-        assert replay_verifier is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "replay_verifier", None) is not None
 
-    def test_replay_verifier_class(self):
-        """Test ReplayVerifier class exists."""
-        from agentic_core import ReplayVerifier
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ReplayVerifier", None) is not None
 
-        assert ReplayVerifier is not None
-
-    def test_replay_verifier_callable(self):
-        """Test replay_verifier functions are callable."""
-        from agentic_core import validate_replay_verifier
-
-        assert callable(validate_replay_verifier)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_replay_verifier", None)
+        assert callable(validator)

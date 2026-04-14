@@ -81,6 +81,14 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
+
+def _atomic_write(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(content, encoding="utf-8")
+    tmp_path.replace(path)
+
+
 _emit_emits_metric_event("migrate_blueprint_to_modular", "p4obs", "metric_1")
 _emit_emits_metric_event("migrate_blueprint_to_modular", "p4obs", "metric_2")
 _emit_emits_metric_event("migrate_blueprint_to_modular", "p4obs", "metric_3")
@@ -318,7 +326,7 @@ def main():
             blocks.append(block)
         combined = "\n".join(blocks)
         output_file = ROOT / "data" / "freeze_reports" / f"_migrate_{module}.py.fragment"
-        output_file.write_text(combined, encoding="utf-8")
+        _atomic_write(output_file, combined)
         print(f"\nWrote {output_file} ({len(combined)} chars)")
     print("\n=== MIGRATION FRAGMENTS GENERATED ===")
     print("Review fragments in data/freeze_reports/_migrate_*.py.fragment")

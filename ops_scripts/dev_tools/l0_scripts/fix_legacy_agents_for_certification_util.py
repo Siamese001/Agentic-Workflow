@@ -1,82 +1,106 @@
-"""
-scripts/fix_legacy_agents_for_certification_util.py
-Fix all legacy agents to inherit from SovereignBaseAgent for final certification
-"""
+"""Plan or apply safe legacy-agent inheritance updates for certification."""
 
+from __future__ import annotations
+
+import argparse
 import re
 import sys
 from pathlib import Path
 
-# guardian: allow-global-mutation
-sys.path.insert(0, str(Path(__file__).parent.parent))
+CLASS_PATTERN = re.compile(
+    r"class\s+(?P<name>\w+(?:Agent|Specialist|Architect))\s*\((?P<bases>[^)]*)\):",
+    re.MULTILINE,
+)
+DEFAULT_BASE_IMPORT = "from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent\n"
 
 
-def fix_agent_file(file_path: Path) -> bool:
-    """Fix a single agent file to use SovereignBaseAgent"""
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "l0_scripts").exists() and (candidate / "L0_routing_scripts").exists():
+            return candidate
+    return Path(__file__).resolve().parents[1]
+
+
+def _iter_candidate_files(project_root: Path, domains: list[str]):
+    if domains:
+        for domain in domains:
+            root = (project_root / domain).resolve()
+            if root.exists():
+                yield from root.rglob("*.py")
+        return
+    for path in project_root.rglob("*.py"):
+        if "__pycache__" not in path.parts and "tests" not in path.parts:
+            yield path
+
+
+def _rewrite_content(content: str, base_import: str) -> tuple[str, bool]:
+    changed = False
+
+    def replace(match: re.Match[str]) -> str:
+        nonlocal changed
+        bases = match.group("bases")
+        if "SovereignBaseAgent" in bases or "MCPHardenedMixin" not in bases:
+            return match.group(0)
+        changed = True
+        return f"class {match.group('name')}(SovereignBaseAgent):"
+
+    new_content = CLASS_PATTERN.sub(replace, content)
+    if changed and "SovereignBaseAgent" not in new_content:
+        lines = new_content.splitlines(keepends=True)
+        insert_at = 0
+        if lines and lines[0].startswith("#!"):
+            insert_at = 1
+        if lines and "SovereignBaseAgent" not in "".join(lines[: insert_at + 1]):
+            lines.insert(insert_at, base_import)
+            new_content = "".join(lines)
+    return new_content, changed
+
+
+def fix_agent_file(file_path: Path, *, apply: bool, base_import: str) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
-        if "SovereignBaseAgent" in content:
-            print(f"Skipping {file_path}: already uses SovereignBaseAgent")
-            return False
-        if not any(
-            re.search(pattern, content, re.MULTILINE | re.DOTALL)
-            for pattern in ["class\\s+\\w*Agent", "class\\s+\\w*Specialist", "class\\s+\\w*Architect"]
-        ):
-            print(f"Skipping {file_path}: no agent class found")
-            return False
-        if "MCPHardenedMixin" not in content:
-            print(f"Skipping {file_path}: no MCPHardenedMixin found")
-            return False
-        print(f"Processing {file_path}: found agent with MCPHardenedMixin")
-        content = re.sub(
-            "class\\s+(\\w+(?:Agent|Specialist|Architect))\\s*\\([^)]*MCPHardenedMixin[^)]*\\)",
-            lambda m: f"class {m.group(1)}(SovereignBaseAgent)",
-            content,
-            flags=re.MULTILINE | re.DOTALL,
-        )
-        if "SovereignBaseAgent" not in content:
-            import_line = "from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent\n"
-            if "from agentic_core" in content:
-                agentic_imports = re.findall("from agentic_core[^\\n]*\\n", content)
-                if agentic_imports:
-                    last_import = agentic_imports[-1]
-                    content = content.replace(last_import, last_import + import_line)
-                else:
-                    # guardian: allow-path-string
-                    content = re.sub("(from agentic_core.*?\\n)", "\\1" + import_line, content, count=1)
-            else:
-                # guardian: allow-path-string
-                content = re.sub("(import.*?\\n)", "\\1\\n" + import_line, content, count=1)
-        file_path.write_text(content, encoding="utf-8")
-        print(f"Fixed: {file_path}")
-        return True
-    except Exception as e:
-        print(f"Error fixing {file_path}: {e}")
+    except OSError as exc:
+        print(f"[certification-fix] unable to read {file_path}: {exc}", file=sys.stderr)
         return False
 
+    new_content, changed = _rewrite_content(content, base_import)
+    if not changed:
+        return False
 
-def main():
-    print("Fixing legacy agents for certification...")
-    domains = ["apps_lic/engines", "apps_rg/engines"]
-    fixed_count = 0
-    for domain in domains:
-        domain_path = Path(domain)
-        if not domain_path.exists():
-            continue
-        for file_path in domain_path.glob("*Agent.py"):
-            if fix_agent_file(file_path):
-                fixed_count += 1
-    print(f"\nFixed {fixed_count} legacy agents")
-    print("\nRegenerating certificate...")
-    import subprocess
+    print(f"{'Applying' if apply else 'Would apply'}: {file_path}")
+    if apply:
+        try:
+            file_path.write_text(new_content, encoding="utf-8")
+        except OSError as exc:
+            print(f"[certification-fix] unable to write {file_path}: {exc}", file=sys.stderr)
+            return False
+    return True
 
-    result = subprocess.run(
-        [sys.executable, "scripts/generate_certificate.py"], capture_output=True, text=True
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description="Plan or apply SovereignBaseAgent inheritance fixes")
+    parser.add_argument("--apply", action="store_true", help="Write changes to disk")
+    parser.add_argument(
+        "--domain", action="append", default=[], help="Relative directory to scan; repeatable"
     )
-    print(result.stdout)
-    if result.stderr:
-        print("Errors:", result.stderr)
+    parser.add_argument(
+        "--base-import", default=DEFAULT_BASE_IMPORT.strip(), help="Import line to insert when needed"
+    )
+    args = parser.parse_args(argv)
+
+    project_root = _find_project_root()
+    fixed_count = 0
+    scanned = 0
+    for file_path in _iter_candidate_files(project_root, args.domain):
+        scanned += 1
+        if fix_agent_file(file_path, apply=args.apply, base_import=args.base_import + "\n"):
+            fixed_count += 1
+
+    print(f"Scanned {scanned} files")
+    print(f"{'Fixed' if args.apply else 'Planned'} {fixed_count} legacy agents")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

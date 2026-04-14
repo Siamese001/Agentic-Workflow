@@ -50,6 +50,8 @@ import sys
 import sysconfig
 from collections import defaultdict
 
+from tqdm import tqdm
+
 _FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 

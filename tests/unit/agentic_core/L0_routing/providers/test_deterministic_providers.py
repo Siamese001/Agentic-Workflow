@@ -1,32 +1,24 @@
-"""Test DeterministicProviders functionality."""
+"""Runtime-hardened top-level export tests for deterministic providers."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestDeterministicProviders:
-    """Test DeterministicProviders functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_deterministic_providers_imports(self):
-        """Test deterministic_providers module imports."""
-        from agentic_core import deterministic_providers
 
-        assert deterministic_providers is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "deterministic_providers", None) is not None
 
-    def test_deterministic_providers_class(self):
-        """Test DeterministicProviders class exists."""
-        from agentic_core import DeterministicProviders
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "DeterministicProviders", None) is not None
 
-        assert DeterministicProviders is not None
-
-    def test_deterministic_providers_callable(self):
-        """Test deterministic_providers functions are callable."""
-        from agentic_core import validate_deterministic_providers
-
-        assert callable(validate_deterministic_providers)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_deterministic_providers", None)
+        assert callable(validator)

@@ -1,354 +1,278 @@
-"""
-Wave 0B: Categorized restore from .healing_backups/
+#!/usr/bin/env python3
+"""Restore files from ``.healing_backups`` into safe quarantine or inferred targets.
 
-Restores files that were unintentionally archived by the healing pipeline into
-.healing_backups/ during the run11 archiving event.
-
-Category routing:
-  1. test_*.py          -> tests/_quarantine/restored_tests/
-  2. PascalCase*Agent.py -> <inferred-layer>/reasoning/   (apps_rg, apps_lic, agentic_core)
-  3. snake_case*.py     -> tests/_quarantine/restored_snake_case/  (manual triage)
-  4. __init__.py        -> original package path (strip timestamp suffix from backup name)
-  5. naming_violations/ -> HOLD — do not auto-restore
-
-Run:
-    python -m ops_scripts.general.restore_from_healing_backup [--dry-run] [--backup-root PATH]
-
-AST analysis is used for category inference. No heuristics on file content patterns.
+Defaults to dry-run mode. The script copies backups back into the repository,
+keeps the original backup files in place, and avoids overwriting existing files
+unless explicitly requested.
 """
 
 from __future__ import annotations
 
 import argparse
 import ast
+import json
+import logging
+import os
 import re
 import shutil
-import sys
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    L0_ROUTING_DIR,
-    L1_COGNITION_DIR,
-    L2_EXECUTION_DIR,
-    L3_ORCHESTRATION_DIR,
-    L5_SAFETY_DIR,
-    TESTS_DIR,
-    get_validated_project_root,
-)
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_emits_metric_event,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_links_incident_trace,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_meta_learning_state,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-from tqdm import tqdm
+LOGGER = logging.getLogger(__name__)
 
-_emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_1")
-_emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_2")
-_emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_3")
-_emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_4")
-_emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_5")
-_emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_6")
-_emit_records_incident_event("restore_from_healing_backup", "p4obs", "incident")
-_emit_captures_runtime_anomaly("restore_from_healing_backup", "p4obs", "anomaly")
-_emit_writes_observability_log("restore_from_healing_backup", "p4obs", "obs_log")
-_emit_updates_monitoring_state("restore_from_healing_backup", "p4obs", "mon_state")
-_emit_triggers_alert("restore_from_healing_backup", "p4obs", "alert")
-_emit_links_incident_trace("restore_from_healing_backup", "p4obs", "trace_link")
-_emit_captures_pattern("restore_from_healing_backup", "p3lm", "pattern")
-_emit_records_learning_event("restore_from_healing_backup", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("restore_from_healing_backup", "p3lm", "snapshot")
-_emit_feeds_meta_learning("restore_from_healing_backup", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("restore_from_healing_backup", "p3lm", "routing")
-_emit_improves_agent_policy("restore_from_healing_backup", "p3lm", "policy")
-_emit_stores_learning_state("restore_from_healing_backup", "p3lm", "state")
-_emit_records_execution_trace("restore_from_healing_backup", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("restore_from_healing_backup", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("restore_from_healing_backup", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("restore_from_healing_backup", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("restore_from_healing_backup", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("restore_from_healing_backup", "env_read", "p2_env_1")
-_emit_reads_environ("restore_from_healing_backup", "env_read", "p2_env_2")
-_emit_reads_runtime_state("restore_from_healing_backup", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("restore_from_healing_backup", "runtime_state", "p2_rt_2")
+try:
+    from agentic_core.L0_routing.config.path_constants import (
+        AGENTIC_CORE_DIR as _AGENTIC_CORE_DIR,
+        APPS_LIC_DIR as _APPS_LIC_DIR,
+        APPS_RG_DIR as _APPS_RG_DIR,
+        APPS_SHARED_DIR as _APPS_SHARED_DIR,
+        TESTS_DIR as _TESTS_DIR,
+    )
+except Exception:
+    _AGENTIC_CORE_DIR = "agentic_core"
+    _APPS_LIC_DIR = "apps_lic"
+    _APPS_RG_DIR = "apps_rg"
+    _APPS_SHARED_DIR = "apps_shared"
+    _TESTS_DIR = "tests"
 
-_emit_records_execution_trace("p0", "evidence", "restore_from_healing_backup")
-_emit_applies_guardrail("p0", "restore_from_healing_backup", "p0_governance")
-_emit_reads_policy_state("p0", "restore_from_healing_backup", "policy_binding")
-_emit_snapshots_state("p0", "restore_from_healing_backup", "state_snapshot")
-_emit_pulls_context("p1", "restore_from_healing_backup", "context_pull")
-_emit_pulls_context("p1", "restore_from_healing_backup", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "restore_from_healing_backup", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "restore_from_healing_backup", "uwg_term_secondary")
-_emit_writes_through("p1", "restore_from_healing_backup", "write_through")
-_emit_writes_through("p1", "restore_from_healing_backup", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "restore_from_healing_backup", "safety_validation")
-_emit_invokes_eval("p1", "restore_from_healing_backup", "eval_call")
-_emit_proposal_commits_routing("p1", "restore_from_healing_backup", "routing_commit")
-_emit_escalates_to_human("p1", "restore_from_healing_backup", "human_escalation")
-_emit_routes_through("p1", "restore_from_healing_backup", "route_through")
-_emit_checks_agent_registry("p1", "restore_from_healing_backup", "agent_registry")
-_emit_validates_agent_capability("p1", "restore_from_healing_backup", "capability")
-_emit_dispatches_execution_plan("p1", "restore_from_healing_backup", "exec_plan")
-_emit_agent_executes_agent("p1", "restore_from_healing_backup", "sub_agent")
-_emit_routes_to_agent("p1", "restore_from_healing_backup", "target_agent")
-_emit_verifies_policy("p1", "restore_from_healing_backup", "policy_check")
-_emit_observes_runtime_state("p1", "restore_from_healing_backup", "runtime_state")
-_emit_verifies_boundary("p1", "restore_from_healing_backup", "boundary_check")
-_emit_transcripts_response("p1", "restore_from_healing_backup", "transcript")
-_emit_hard_fails_untranscripted("p1", "restore_from_healing_backup")
-_emit_gated_by_confidence("p1", "restore_from_healing_backup", "confidence_gate")
-emit_replay_key("p0", "restore_from_healing_backup")
-emit_determinism_digest("p0", "restore_from_healing_backup")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "restore_from_healing_backup", "execution_auth")
-_emit_validates_capability("p2", "restore_from_healing_backup", "capability_check")
-_emit_routes_to_capability("p2", "restore_from_healing_backup", "capability_route")
-_emit_writes_via_uwg("p2", "restore_from_healing_backup", "uwg_write")
-_emit_blocks_direct_write("p2", "restore_from_healing_backup", "direct_write_block")
-_emit_records_tool_invocation("p2", "restore_from_healing_backup", "tool_invocation")
-_emit_captures_execution_output("p2", "restore_from_healing_backup", "exec_output")
-_emit_dispatches_agent("p3", "restore_from_healing_backup", "agent_dispatch")
-_emit_coordinates_agents("p3", "restore_from_healing_backup", "agent_coordination")
-_emit_records_workflow_lineage("p3", "restore_from_healing_backup", "workflow_lineage")
-_emit_records_healing_outcome("p3", "restore_from_healing_backup", "healing_outcome")
-_emit_escalates_failure("p3", "restore_from_healing_backup", "failure_escalation")
-_emit_orchestrates_workflow("p3", "restore_from_healing_backup", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "restore_from_healing_backup", "healing_dispatch")
-_emit_invokes_evaluation("p3", "restore_from_healing_backup", "evaluation_signal")
-_emit_records_telemetry_event("p4", "restore_from_healing_backup", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "restore_from_healing_backup", "eval_metric")
-_emit_stores_embedding("p4", "restore_from_healing_backup", "embedding_store")
-_emit_updates_meta_learning_state("p4", "restore_from_healing_backup", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "restore_from_healing_backup", "exec_snapshot_link")
-
-PROJECT_ROOT = get_validated_project_root()
-DEFAULT_BACKUP_ROOT = PROJECT_ROOT / ".healing_backups"
-
-# Destination roots for each category
-DEST_QUARANTINE_TESTS = PROJECT_ROOT / TESTS_DIR / "_quarantine" / "restored_tests"
-DEST_QUARANTINE_SNAKE = PROJECT_ROOT / TESTS_DIR / "_quarantine" / "restored_snake_case"
-
-LAYER_ROOTS = [
-    PROJECT_ROOT / APPS_RG_DIR,
-    PROJECT_ROOT / APPS_LIC_DIR,
-    PROJECT_ROOT / APPS_SHARED_DIR,
-    PROJECT_ROOT / L5_SAFETY_DIR,
-    PROJECT_ROOT / L1_COGNITION_DIR,
-    PROJECT_ROOT / L2_EXECUTION_DIR,
-    PROJECT_ROOT / L3_ORCHESTRATION_DIR,
-    PROJECT_ROOT / L0_ROUTING_DIR,
-]
-
-PASCAL_RE = re.compile(r"^[A-Z][a-zA-Z0-9]*Agent\.py$")
-SNAKE_RE = re.compile(r"^[a-z_][a-z0-9_]*\.py$")
-INIT_RE = re.compile(r"^__init__(\.py|\.[0-9]+\.py)$")
-NAMING_VIOLATION_RE = re.compile(r"^naming_violations[/\\]")
+TIMESTAMP_SUFFIX_RE = re.compile(r"(?:[_-]?\d{8,14})+$")
+CLASS_NAME_RE = re.compile(r"^[A-Z][A-Za-z0-9_]*$")
 
 
-def _infer_agent_layer(py_path: Path) -> Path | None:
-    """Use AST to detect the primary base class and infer layer root."""
-    try:
-        src = py_path.read_text(encoding="utf-8", errors="replace")
-        tree = ast.parse(src)
-    except (OSError, SyntaxError):
-        return None
-    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
-        if not isinstance(node, ast.ClassDef):
-            continue
-        for base in node.bases:
-            base_name = ""
-            if isinstance(base, ast.Attribute):
-                base_name = base.attr
-            elif isinstance(base, ast.Name):
-                base_name = base.id
-            if APPS_RG_DIR in src and APPS_LIC_DIR not in src:
-                return PROJECT_ROOT / APPS_RG_DIR / "reasoning"
-            if APPS_LIC_DIR in src and APPS_RG_DIR not in src:
-                return PROJECT_ROOT / APPS_LIC_DIR / "reasoning"
-    # Default: agentic_core L5_safety (most archived agents were there)
-    return PROJECT_ROOT / L5_SAFETY_DIR / "reasoning"
+@dataclass(slots=True)
+class RestoreAction:
+    source: str
+    destination: str
+    category: str
+    action: str
+    reason: str
+
+
+def _resolve_project_root() -> Path:
+    env_root = os.getenv("AGENTIC_WORKFLOW_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists() or (candidate / _AGENTIC_CORE_DIR).exists():
+            return candidate
+
+    return Path.cwd().resolve()
 
 
 def _strip_timestamp_suffix(name: str) -> str:
-    """Remove trailing .YYYYMMDDHHMMSS timestamp from backup filenames."""
-    return re.sub(r"\.\d{14}$", "", name)
+    stem, suffix = os.path.splitext(name)
+    stem = TIMESTAMP_SUFFIX_RE.sub("", stem)
+    return f"{stem}{suffix}"
 
 
-def _categorize(path: Path, rel: Path) -> tuple[str, Path | None]:
-    """
-    Returns (category, destination_path).
-
-    Categories:
-      TEST, AGENT, SNAKE, INIT, NAMING_VIOLATION, UNKNOWN
-    """
-    name = path.name
-    rel_str = str(rel)
-
-    if NAMING_VIOLATION_RE.match(rel_str):
-        return "NAMING_VIOLATION", None
-
-    if INIT_RE.match(name):
-        clean_name = _strip_timestamp_suffix(name)
-        # Best-effort: place into same relative directory minus the backup prefix
-        parts = rel.parts[1:]  # strip the first backup subfolder
-        if parts:
-            dest = PROJECT_ROOT.joinpath(*parts[:-1]) / clean_name
-        else:
-            dest = PROJECT_ROOT / clean_name
-        return "INIT", dest
-
-    if name.startswith("test_") and name.endswith(".py"):
-        return "TEST", DEST_QUARANTINE_TESTS / name
-
-    if PASCAL_RE.match(name):
-        layer = _infer_agent_layer(path)
-        dest = (layer or PROJECT_ROOT / L5_SAFETY_DIR / "reasoning") / name
-        return "AGENT", dest
-
-    if SNAKE_RE.match(name) and name.endswith(".py"):
-        return "SNAKE", DEST_QUARANTINE_SNAKE / name
-
-    return "UNKNOWN", DEST_QUARANTINE_SNAKE / name
-
-
-def restore(backup_root: Path = DEFAULT_BACKUP_ROOT, dry_run: bool = True) -> dict:
-    """Main restore driver. Returns summary dict."""
+def _iter_backup_files(backup_root: Path) -> list[Path]:
     if not backup_root.exists():
-        print(f"ERROR: Backup root not found: {backup_root}")
-        return {"error": f"backup root not found: {backup_root}"}
+        return []
+    return sorted(path for path in backup_root.rglob("*.py") if path.is_file())
 
-    summary: dict[str, list[str]] = {
-        "TEST": [],
-        "AGENT": [],
-        "SNAKE": [],
-        "INIT": [],
-        "NAMING_VIOLATION": [],
-        "UNKNOWN": [],
-        "SKIPPED_EXISTS": [],
-        "ERROR": [],
+
+def _read_ast(path: Path) -> ast.AST | None:
+    try:
+        return ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, SyntaxError, ValueError):
+        return None
+
+
+def _infer_agent_destination(project_root: Path, file_path: Path) -> Path:
+    tree = _read_ast(file_path)
+    if tree is None:
+        return (
+            project_root
+            / _TESTS_DIR
+            / "_quarantine"
+            / "restored_agents"
+            / _strip_timestamp_suffix(file_path.name)
+        )
+
+    imported_names: set[str] = set()
+    base_names: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            module = node.module or ""
+            imported_names.add(module)
+        elif isinstance(node, ast.ClassDef):
+            for base in node.bases:
+                if isinstance(base, ast.Name):
+                    base_names.add(base.id)
+                elif isinstance(base, ast.Attribute):
+                    base_names.add(base.attr)
+
+    layer_map = {
+        "L0": "L0_routing",
+        "L1": "L1_cognition",
+        "L2": "L2_execution",
+        "L3": "L3_orchestration",
+        "L4": "L4_state",
+        "L5": "L5_safety",
+        "L6": "L6_observability",
     }
 
-    all_py = list(backup_root.rglob("*.py"))
-    print(f"[restore] Scanning {len(all_py)} .py files under {backup_root.name}/")
+    for token, layer_dir in layer_map.items():
+        if any(token in value for value in imported_names | base_names):
+            return (
+                project_root
+                / _AGENTIC_CORE_DIR
+                / layer_dir
+                / "reasoning"
+                / _strip_timestamp_suffix(file_path.name)
+            )
 
-    for src_path in tqdm(all_py, desc="Processing", unit="item"):
+    file_name = _strip_timestamp_suffix(file_path.name)
+    if file_name.startswith("RG"):
+        return project_root / _APPS_RG_DIR / "agents" / file_name
+    if file_name.startswith("LIC"):
+        return project_root / _APPS_LIC_DIR / "agents" / file_name
+    if file_name.startswith("SHARED"):
+        return project_root / _APPS_SHARED_DIR / "agents" / file_name
+
+    return project_root / _TESTS_DIR / "_quarantine" / "restored_agents" / file_name
+
+
+def _categorize(project_root: Path, backup_root: Path, file_path: Path) -> tuple[str, Path | None, str]:
+    relative = file_path.relative_to(backup_root)
+    normalized_name = _strip_timestamp_suffix(file_path.name)
+    normalized_relative = Path(*relative.parts[:-1], normalized_name)
+    relative_posix = relative.as_posix().lower()
+
+    if "naming_violations" in relative_posix:
+        return "hold", None, "naming_violations backup requires manual review"
+
+    if normalized_name == "__init__.py":
+        return "package_init", project_root / normalized_relative, "restoring package init file"
+
+    if normalized_name.startswith("test_"):
+        destination = project_root / _TESTS_DIR / "_quarantine" / "restored_tests" / normalized_name
+        return "test", destination, "test file restored to quarantine"
+
+    stem = Path(normalized_name).stem
+    if CLASS_NAME_RE.match(stem) and stem.endswith("Agent"):
+        return (
+            "agent",
+            _infer_agent_destination(project_root, file_path),
+            "agent restored to inferred territory",
+        )
+
+    destination = project_root / _TESTS_DIR / "_quarantine" / "restored_snake_case" / normalized_name
+    return "snake_case", destination, "non-agent Python file restored to quarantine"
+
+
+def _copy_file(source: Path, destination: Path, overwrite: bool) -> None:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists() and not overwrite:
+        raise FileExistsError(f"Destination already exists: {destination}")
+
+    temp_destination = destination.with_suffix(destination.suffix + ".tmp")
+    shutil.copy2(source, temp_destination)
+    temp_destination.replace(destination)
+
+
+def restore(
+    project_root: Path,
+    backup_root: Path,
+    *,
+    execute: bool,
+    overwrite: bool,
+    delete_source: bool,
+) -> dict[str, object]:
+    actions: list[RestoreAction] = []
+    restored = 0
+    skipped = 0
+    held = 0
+    errors = 0
+
+    for source in _iter_backup_files(backup_root):
+        category, destination, reason = _categorize(project_root, backup_root, source)
+        if destination is None:
+            actions.append(RestoreAction(str(source), "", category, "hold", reason))
+            held += 1
+            continue
+
+        action_name = "restore" if execute else "would_restore"
         try:
-            rel = src_path.relative_to(backup_root)
-        except ValueError:
-            continue
+            if execute:
+                _copy_file(source, destination, overwrite=overwrite)
+                if delete_source:
+                    source.unlink()
+                restored += 1
+            else:
+                skipped += 1
+            actions.append(RestoreAction(str(source), str(destination), category, action_name, reason))
+        except OSError as exc:
+            actions.append(RestoreAction(str(source), str(destination), category, "error", str(exc)))
+            errors += 1
 
-        category, dest = _categorize(src_path, rel)
-
-        if category == "NAMING_VIOLATION" or dest is None:
-            summary["NAMING_VIOLATION"].append(str(rel))
-            print(f"  HOLD [naming_violation]: {rel}")
-            continue
-
-        if dest.exists():
-            summary["SKIPPED_EXISTS"].append(str(rel))
-            print(f"  SKIP [exists]: {rel} -> {dest.relative_to(PROJECT_ROOT)}")
-            continue
-
-        print(f"  {category}: {rel} -> {dest.relative_to(PROJECT_ROOT)}")
-        summary[category].append(str(rel))
-
-        if not dry_run:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(src_path, dest)
-
-    print("\n[restore] Summary:")
-    for cat, items in summary.items():
-        if items:
-            print(f"  {cat}: {len(items)}")
-
-    if dry_run:
-        print("\n[restore] DRY-RUN: no files written. Pass --no-dry-run to apply.")
-
-    return {k: len(v) for k, v in summary.items()}
+    return {
+        "backup_root": str(backup_root),
+        "project_root": str(project_root),
+        "execute": execute,
+        "overwrite": overwrite,
+        "delete_source": delete_source,
+        "restored": restored,
+        "planned": skipped,
+        "held": held,
+        "errors": errors,
+        "actions": [asdict(action) for action in actions],
+    }
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Wave 0B: restore files from .healing_backups/")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--backup-root", help="Override backup root path.")
+    parser.add_argument("--execute", action="store_true", help="Perform file copies.")
+    parser.add_argument("--overwrite", action="store_true", help="Allow overwriting destination files.")
     parser.add_argument(
-        "--backup-root",
-        type=Path,
-        default=DEFAULT_BACKUP_ROOT,
-        help="Path to .healing_backups/ directory",
+        "--delete-source", action="store_true", help="Delete backup files after successful copy."
     )
-    parser.add_argument(
-        "--no-dry-run",
-        action="store_true",
-        default=False,
-        help="Actually copy files (default is dry-run)",
+    parser.add_argument("--report", help="Optional JSON report output path.")
+    parser.add_argument("--verbose", action="store_true", help="Enable debug logging.")
+    args = parser.parse_args(argv)
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(levelname)s %(message)s",
     )
-    args = parser.parse_args()
-    result = restore(backup_root=args.backup_root, dry_run=not args.no_dry_run)
-    errors = result.get("ERROR", 0)
-    sys.exit(1 if errors else 0)
+
+    project_root = _resolve_project_root()
+    backup_root = (
+        Path(args.backup_root).expanduser().resolve()
+        if args.backup_root
+        else project_root / ".healing_backups"
+    )
+
+    if not backup_root.exists():
+        LOGGER.error("Backup root not found: %s", backup_root)
+        return 2
+
+    report = restore(
+        project_root,
+        backup_root,
+        execute=args.execute,
+        overwrite=args.overwrite,
+        delete_source=args.delete_source,
+    )
+
+    LOGGER.info(
+        "planned=%s restored=%s held=%s errors=%s",
+        report["planned"],
+        report["restored"],
+        report["held"],
+        report["errors"],
+    )
+
+    if args.report:
+        report_path = Path(args.report).expanduser().resolve()
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        LOGGER.info("Wrote report to %s", report_path)
+
+    return 1 if report["errors"] else 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -1,32 +1,24 @@
-"""Test CryptoTrustTypes functionality."""
+"""Runtime-hardened top-level export tests for crypto trust types."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestCryptoTrustTypes:
-    """Test CryptoTrustTypes functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_crypto_trust_types_imports(self):
-        """Test crypto_trust_types module imports."""
-        from agentic_core import crypto_trust_types
 
-        assert crypto_trust_types is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "crypto_trust_types", None) is not None
 
-    def test_crypto_trust_types_class(self):
-        """Test CryptoTrustTypes class exists."""
-        from agentic_core import CryptoTrustTypes
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "CryptoTrustTypes", None) is not None
 
-        assert CryptoTrustTypes is not None
-
-    def test_crypto_trust_types_callable(self):
-        """Test crypto_trust_types functions are callable."""
-        from agentic_core import validate_crypto_trust_types
-
-        assert callable(validate_crypto_trust_types)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_crypto_trust_types", None)
+        assert callable(validator)

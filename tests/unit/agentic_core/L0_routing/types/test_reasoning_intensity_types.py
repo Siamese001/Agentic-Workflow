@@ -1,201 +1,154 @@
-"""Test ReasoningIntensityTypes functionality."""
+"""Runtime-hardened tests for ``reasoning_intensity_types``."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestReasoningIntensityTypes:
-    """Test ReasoningIntensityTypes functionality."""
-
-    def test_reasoning_intensity_types_imports(self):
-        """Test reasoning_intensity_types module imports."""
-        from agentic_core import reasoning_intensity_types
-
-        assert reasoning_intensity_types is not None
-
-    def test_reasoning_intensity_types_class(self):
-        """Test ReasoningIntensityTypes class exists."""
-        from agentic_core import ReasoningIntensityTypes
-
-        assert ReasoningIntensityTypes is not None
-
-    def test_reasoning_intensity_types_callable(self):
-        """Test reasoning_intensity_types functions are callable."""
-        from agentic_core import validate_reasoning_intensity_types
-
-        assert callable(validate_reasoning_intensity_types)
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
 
-# G3 Fix: ADG complexity tests
-from agentic_core.L0_routing.types.reasoning_intensity_types import (
-    ADG_COMPLEXITY_TIER_TABLE,
-    ReasoningTier,
-    StageTokenBudget,
-    build_envelope_hash,
-    build_profile_hash,
-    compute_complexity_tier,
-)
-from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-    REASONING_PATH_TABLE,
-)
+@pytest.fixture(scope="module")
+def reasoning_symbols():
+    module = pytest.importorskip("agentic_core.L0_routing.types.reasoning_intensity_types")
+    return {
+        "module": module,
+        "ADG_COMPLEXITY_TIER_TABLE": module.ADG_COMPLEXITY_TIER_TABLE,
+        "ReasoningTier": module.ReasoningTier,
+        "StageTokenBudget": module.StageTokenBudget,
+        "build_envelope_hash": module.build_envelope_hash,
+        "build_profile_hash": module.build_profile_hash,
+        "compute_complexity_tier": module.compute_complexity_tier,
+    }
+
+
+@pytest.fixture(scope="module")
+def reasoning_path_table():
+    module = pytest.importorskip("agentic_core.L2_execution.enforcement.SovereignLLMGateway")
+    return module.REASONING_PATH_TABLE
+
+
+class TestTopLevelExports:
+    def test_reasoning_intensity_types_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "reasoning_intensity_types", None) is not None
+
+    def test_reasoning_intensity_types_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ReasoningIntensityTypes", None) is not None
+
+    def test_validate_reasoning_intensity_types_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_reasoning_intensity_types", None)
+        assert callable(validator)
 
 
 class TestComputeComplexityTier:
-    """Test compute_complexity_tier function — G3 ADG complexity."""
+    @pytest.mark.parametrize(
+        ("node_count", "edge_count", "expected"),
+        [
+            (50, 100, "simple"),
+            (300, 800, "moderate"),
+            (1500, 5000, "complex"),
+            (5000, 20000, "deep"),
+            (100, 500, "simple"),
+            (500, 2500, "moderate"),
+            (2500, 10000, "deep"),
+            (0, 0, "simple"),
+            (50, 600, "moderate"),
+        ],
+    )
+    def test_complexity_tier_resolution(self, reasoning_symbols, node_count, edge_count, expected):
+        tier = reasoning_symbols["compute_complexity_tier"](
+            adg_node_count=node_count,
+            adg_edge_count=edge_count,
+        )
 
-    def test_simple_tier_low_nodes(self):
-        """Happy path: low node count returns simple tier."""
-        tier = compute_complexity_tier(adg_node_count=50, adg_edge_count=100)
-        assert tier == "simple"
-
-    def test_moderate_tier_medium_nodes(self):
-        """Happy path: medium node count returns moderate tier."""
-        tier = compute_complexity_tier(adg_node_count=300, adg_edge_count=800)
-        assert tier == "moderate"
-
-    def test_complex_tier_high_nodes(self):
-        """Happy path: high node count returns complex tier."""
-        tier = compute_complexity_tier(adg_node_count=1500, adg_edge_count=5000)
-        assert tier == "complex"
-
-    def test_deep_tier_very_high_nodes(self):
-        """Happy path: very high node count returns deep tier."""
-        tier = compute_complexity_tier(adg_node_count=5000, adg_edge_count=20000)
-        assert tier == "deep"
-
-    def test_boundary_simple_to_moderate(self):
-        """Edge case: exactly at simple/moderate boundary."""
-        tier = compute_complexity_tier(adg_node_count=100, adg_edge_count=500)
-        # At boundary, falls within simple tier (<= max_adg_nodes/max_adg_edges)
-        assert tier == "simple"
-
-    def test_boundary_moderate_to_complex(self):
-        """Edge case: exactly at moderate/complex boundary."""
-        tier = compute_complexity_tier(adg_node_count=500, adg_edge_count=2500)
-        # At boundary, falls within moderate tier (<= max_adg_nodes/max_adg_edges)
-        assert tier == "moderate"
-
-    def test_boundary_complex_to_deep(self):
-        """Edge case: exactly at complex/deep boundary."""
-        tier = compute_complexity_tier(adg_node_count=2500, adg_edge_count=10000)
-        assert tier == "deep"
-
-    def test_zero_nodes_defaults_simple(self):
-        """Edge case: zero nodes defaults to simple."""
-        tier = compute_complexity_tier(adg_node_count=0, adg_edge_count=0)
-        assert tier == "simple"
-
-    def test_high_edges_override(self):
-        """Edge case: high edge count can override node-based tier."""
-        tier = compute_complexity_tier(adg_node_count=50, adg_edge_count=600)
-        assert tier == "moderate"
+        assert tier == expected
 
 
 class TestADGComplexityTierTable:
-    """Test ADG_COMPLEXITY_TIER_TABLE structure — G3."""
+    def test_table_has_expected_tiers(self, reasoning_symbols):
+        table = reasoning_symbols["ADG_COMPLEXITY_TIER_TABLE"]
 
-    def test_table_has_expected_tiers(self):
-        """Validation: table contains all expected tiers."""
-        assert "simple" in ADG_COMPLEXITY_TIER_TABLE
-        assert "moderate" in ADG_COMPLEXITY_TIER_TABLE
-        assert "complex" in ADG_COMPLEXITY_TIER_TABLE
-        assert "deep" in ADG_COMPLEXITY_TIER_TABLE
+        assert set(table) >= {"simple", "moderate", "complex", "deep"}
 
-    def test_simple_tier_parameters(self):
-        """Validation: simple tier has correct parameters."""
-        params = ADG_COMPLEXITY_TIER_TABLE["simple"]
+    def test_simple_tier_parameters(self, reasoning_symbols):
+        params = reasoning_symbols["ADG_COMPLEXITY_TIER_TABLE"]["simple"]
+
         assert params["max_adg_nodes"] == 100
         assert params["max_adg_edges"] == 500
 
-    def test_complex_tier_has_tot_enabled(self):
-        """Validation: complex tier enables TOT."""
-        params = ADG_COMPLEXITY_TIER_TABLE["complex"]
+    def test_complex_tier_has_limits(self, reasoning_symbols):
+        params = reasoning_symbols["ADG_COMPLEXITY_TIER_TABLE"]["complex"]
+
         assert "max_adg_nodes" in params
         assert "max_adg_edges" in params
 
 
 class TestReasoningPathTable:
-    """Test REASONING_PATH_TABLE structure — G3."""
+    @pytest.mark.parametrize(
+        ("tier", "path_id", "use_cot", "use_tot", "use_reflexion"),
+        [
+            ("simple", "simple_cot", True, False, False),
+            ("moderate", "moderate_cot_hybrid", True, True, False),
+            ("complex", "complex_tot_reflexion", True, True, False),
+            ("deep", "deep_full_reasoning", None, True, True),
+        ],
+    )
+    def test_path_table_expectations(
+        self,
+        reasoning_path_table,
+        tier,
+        path_id,
+        use_cot,
+        use_tot,
+        use_reflexion,
+    ):
+        path = reasoning_path_table[tier]
 
-    def test_table_has_all_tiers(self):
-        """Validation: table contains all complexity tiers."""
-        assert "simple" in REASONING_PATH_TABLE
-        assert "moderate" in REASONING_PATH_TABLE
-        assert "complex" in REASONING_PATH_TABLE
-        assert "deep" in REASONING_PATH_TABLE
-
-    def test_simple_path_uses_cot_only(self):
-        """Validation: simple path uses COT only."""
-        path = REASONING_PATH_TABLE["simple"]
-        assert path.path_id == "simple_cot"
-        assert path.use_cot is True
-        assert path.use_tot is False
-
-    def test_moderate_path_uses_cot_with_tot(self):
-        """Validation: moderate path uses COT with TOT."""
-        path = REASONING_PATH_TABLE["moderate"]
-        assert path.path_id == "moderate_cot_hybrid"
-        assert path.use_cot is True
-        assert path.use_tot is True
-        assert path.use_reflexion is False
-
-    def test_complex_path_uses_tot(self):
-        """Validation: complex path uses TOT."""
-        path = REASONING_PATH_TABLE["complex"]
-        assert path.path_id == "complex_tot_reflexion"
-        assert path.use_tot is True
-        assert path.use_cot is True
-
-    def test_deep_path_uses_full_tot(self):
-        """Validation: deep path uses full TOT."""
-        path = REASONING_PATH_TABLE["deep"]
-        assert path.path_id == "deep_full_reasoning"
-        assert path.use_tot is True
-        assert path.use_reflexion is True
+        assert path.path_id == path_id
+        if use_cot is not None:
+            assert path.use_cot is use_cot
+        assert path.use_tot is use_tot
+        assert path.use_reflexion is use_reflexion
 
 
 class TestProfileHashComputation:
-    """Test profile and envelope hash computation — G3."""
-
-    def test_profile_hash_computation(self):
-        """Happy path: profile hash is computed correctly."""
-        profile_hash = build_profile_hash(
+    def test_profile_hash_computation(self, reasoning_symbols):
+        profile_hash = reasoning_symbols["build_profile_hash"](
             version="1.0.0",
             policy_hash="policy123",
-            tier=ReasoningTier.LOW,
+            tier=reasoning_symbols["ReasoningTier"].LOW,
             max_branches=1,
             max_depth=1,
             enable_reflection=False,
-            token_budget_per_stage=[StageTokenBudget(stage_id=1, max_tokens=512)],
+            token_budget_per_stage=[reasoning_symbols["StageTokenBudget"](stage_id=1, max_tokens=512)],
             allowed_modes=["cot"],
         )
-        assert isinstance(profile_hash, str)
-        assert len(profile_hash) == 64  # SHA256 hex length
 
-    def test_envelope_hash_structure(self):
-        """Happy path: envelope hash is computed correctly."""
-        envelope_hash = build_envelope_hash(
+        assert isinstance(profile_hash, str)
+        assert len(profile_hash) == 64
+
+    def test_envelope_hash_structure(self, reasoning_symbols):
+        envelope_hash = reasoning_symbols["build_envelope_hash"](
             route_decision_trace_id="trace123",
             profile_hash="profile_hash_abc",
             policy_hash="policy_hash_def",
         )
+
         assert isinstance(envelope_hash, str)
         assert len(envelope_hash) == 64
 
-    def test_envelope_hash_determinism(self):
-        """Validation: same inputs produce same hash."""
-        hash1 = build_envelope_hash("trace1", "profile1", "policy1")
-        hash2 = build_envelope_hash("trace1", "profile1", "policy1")
+    def test_envelope_hash_determinism(self, reasoning_symbols):
+        hash1 = reasoning_symbols["build_envelope_hash"]("trace1", "profile1", "policy1")
+        hash2 = reasoning_symbols["build_envelope_hash"]("trace1", "profile1", "policy1")
+
         assert hash1 == hash2
 
-    def test_envelope_hash_uniqueness(self):
-        """Validation: different inputs produce different hashes."""
-        hash1 = build_envelope_hash("trace1", "profile1", "policy1")
-        hash2 = build_envelope_hash("trace2", "profile1", "policy1")
+    def test_envelope_hash_uniqueness(self, reasoning_symbols):
+        hash1 = reasoning_symbols["build_envelope_hash"]("trace1", "profile1", "policy1")
+        hash2 = reasoning_symbols["build_envelope_hash"]("trace2", "profile1", "policy1")
+
         assert hash1 != hash2

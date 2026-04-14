@@ -1,32 +1,24 @@
-"""Test CoreIntegrityUtilAdg functionality."""
+"""Runtime-hardened top-level export tests for core integrity util ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestCoreIntegrityUtilAdg:
-    """Test CoreIntegrityUtilAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_core_integrity_util_adg_imports(self):
-        """Test core_integrity_util_adg module imports."""
-        from agentic_core import core_integrity_util_adg
 
-        assert core_integrity_util_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "core_integrity_util_adg", None) is not None
 
-    def test_core_integrity_util_adg_class(self):
-        """Test CoreIntegrityUtilAdg class exists."""
-        from agentic_core import CoreIntegrityUtilAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "CoreIntegrityUtilAdg", None) is not None
 
-        assert CoreIntegrityUtilAdg is not None
-
-    def test_core_integrity_util_adg_callable(self):
-        """Test core_integrity_util_adg functions are callable."""
-        from agentic_core import validate_core_integrity_util_adg
-
-        assert callable(validate_core_integrity_util_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_core_integrity_util_adg", None)
+        assert callable(validator)

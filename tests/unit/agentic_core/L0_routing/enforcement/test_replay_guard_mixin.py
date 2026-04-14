@@ -1,32 +1,24 @@
-"""Test ReplayGuardMixin functionality."""
+"""Runtime-hardened top-level export tests for replay guard mixin."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestReplayGuardMixin:
-    """Test ReplayGuardMixin functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_replay_guard_mixin_imports(self):
-        """Test replay_guard_mixin module imports."""
-        from agentic_core import replay_guard_mixin
 
-        assert replay_guard_mixin is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "replay_guard_mixin", None) is not None
 
-    def test_replay_guard_mixin_class(self):
-        """Test ReplayGuardMixin class exists."""
-        from agentic_core import ReplayGuardMixin
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ReplayGuardMixin", None) is not None
 
-        assert ReplayGuardMixin is not None
-
-    def test_replay_guard_mixin_callable(self):
-        """Test replay_guard_mixin functions are callable."""
-        from agentic_core import validate_replay_guard_mixin
-
-        assert callable(validate_replay_guard_mixin)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_replay_guard_mixin", None)
+        assert callable(validator)

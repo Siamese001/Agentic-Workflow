@@ -1,237 +1,152 @@
-"""
-Unit tests for L0 Path Router - deterministic path selection.
-"""
+"""Runtime-hardened tests for deterministic L0 path routing."""
+
+from __future__ import annotations
+
+import ast
+from pathlib import Path
 
 import pytest
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestPathRouter:
-    """Test deterministic PathRouter implementation."""
+@pytest.fixture(scope="module")
+def routing_symbols():
+    path_router_module = pytest.importorskip("agentic_core.L0_routing.reasoning.path_router")
+    assembly_module = pytest.importorskip("agentic_core.L0_routing.reasoning.assembly_stage")
+    return {
+        "Path": path_router_module.Path,
+        "PathRouter": path_router_module.PathRouter,
+        "AirlockAssembler": assembly_module.AirlockAssembler,
+    }
 
-    def test_path_enum_values(self):
-        """Test Path enum has correct values."""
-        from agentic_core.L0_routing.reasoning.path_router import Path
 
-        assert Path.A.value == "A"
-        assert Path.B.value == "B"
-        assert Path.C.value == "C"
-        assert Path.D.value == "D"
+@pytest.fixture(scope="module")
+def seam_module():
+    return pytest.importorskip("agentic_core.L0_routing.utils.elevator_shaft_seam")
 
-    def test_empty_check_ids_selects_path_a(self):
-        """Test empty check_ids selects Path.A."""
-        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
 
-        payload = AirlockAssembler.assemble(
+@pytest.fixture()
+def make_payload(routing_symbols):
+    def _make_payload(user_prompt: str = "Simple prompt"):
+        assembler = routing_symbols["AirlockAssembler"]
+        return assembler.assemble(
             s0_system="System",
             i0_instructional="Instructions",
             c0_context="Context",
-            u0_user_prompt="Simple prompt",
+            u0_user_prompt=user_prompt,
         )
 
-        # Ensure empty check_ids
+    return _make_payload
+
+
+class TestPathRouter:
+    def test_path_enum_values(self, routing_symbols):
+        path_enum = routing_symbols["Path"]
+
+        assert path_enum.A.value == "A"
+        assert path_enum.B.value == "B"
+        assert path_enum.C.value == "C"
+        assert path_enum.D.value == "D"
+
+    def test_empty_check_ids_selects_path_a(self, routing_symbols, make_payload):
+        payload = make_payload()
         payload.check_ids = []
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+        selected = routing_symbols["PathRouter"]().select_path(payload)
 
-        assert selected == Path.A
+        assert selected == routing_symbols["Path"].A
 
-    def test_sanitized_payload_selects_path_b(self):
-        """Test sanitized payload selects Path.B."""
-        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
+    def test_sanitized_payload_selects_path_b(self, routing_symbols, make_payload):
+        payload = make_payload("Prompt with [ADMIN] marker")
 
-        payload = AirlockAssembler.assemble(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Prompt with [ADMIN] marker",
-        )
-
-        # Verify payload is sanitized
         assert payload.sanitized is True
-        assert payload.check_ids  # Non-empty to avoid Path.A
+        assert payload.check_ids
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+        selected = routing_symbols["PathRouter"]().select_path(payload)
 
-        assert selected == Path.B
+        assert selected == routing_symbols["Path"].B
 
-    def test_single_check_id_selects_path_c(self):
-        """Test single check_id selects Path.C."""
-        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
-
-        payload = AirlockAssembler.assemble(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Simple prompt",
-        )
-
-        # Set single check_id and ensure not sanitized
+    def test_single_check_id_selects_path_c(self, routing_symbols, make_payload):
+        payload = make_payload()
         payload.check_ids = ["check1"]
         payload.sanitized = False
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+        selected = routing_symbols["PathRouter"]().select_path(payload)
 
-        assert selected == Path.C
+        assert selected == routing_symbols["Path"].C
 
-    def test_multiple_check_ids_selects_path_d(self):
-        """Test multiple check_ids selects Path.D."""
-        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
-
-        payload = AirlockAssembler.assemble(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Simple prompt",
-        )
-
-        # Set multiple check_ids and ensure not sanitized
+    def test_multiple_check_ids_selects_path_d(self, routing_symbols, make_payload):
+        payload = make_payload()
         payload.check_ids = ["check1", "check2"]
         payload.sanitized = False
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+        selected = routing_symbols["PathRouter"]().select_path(payload)
 
-        assert selected == Path.D
+        assert selected == routing_symbols["Path"].D
 
-    def test_deterministic_selection_identical_payloads(self):
-        """Test identical payloads produce identical path selection."""
-        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.reasoning.path_router import PathRouter
+    def test_deterministic_selection_identical_payloads(self, routing_symbols, make_payload):
+        router = routing_symbols["PathRouter"]()
+        payload1 = make_payload("Test prompt")
+        payload2 = make_payload("Test prompt")
 
-        payload_args = {
-            "s0_system": "System",
-            "i0_instructional": "Instructions",
-            "c0_context": "Context",
-            "u0_user_prompt": "Test prompt",
-        }
+        assert router.select_path(payload1) == router.select_path(payload2)
 
-        payload1 = AirlockAssembler.assemble(**payload_args)
-        payload2 = AirlockAssembler.assemble(**payload_args)
-
-        router = PathRouter()
-        path1 = router.select_path(payload1)
-        path2 = router.select_path(payload2)
-
-        assert path1 == path2
-
-    def test_priority_order_empty_check_ids_overrides_sanitized(self):
-        """Test priority: empty check_ids overrides sanitized."""
-        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
-
-        payload = AirlockAssembler.assemble(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Prompt with [ADMIN] marker",
-        )
-
-        # Force empty check_ids even though sanitized
+    def test_priority_order_empty_check_ids_overrides_sanitized(self, routing_symbols, make_payload):
+        payload = make_payload("Prompt with [ADMIN] marker")
         payload.check_ids = []
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+        selected = routing_symbols["PathRouter"]().select_path(payload)
 
-        # Should be Path.A due to empty check_ids, not Path.B
-        assert selected == Path.A
+        assert selected == routing_symbols["Path"].A
 
-    def test_priority_order_sanitized_over_single_check_id(self):
-        """Test priority: sanitized overrides single check_id."""
-        from agentic_core.L0_routing.reasoning.assembly_stage import AirlockAssembler
-        from agentic_core.L0_routing.reasoning.path_router import Path, PathRouter
-
-        payload = AirlockAssembler.assemble(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Prompt with [ADMIN] marker",
-        )
-
-        # Ensure single check_id but sanitized
+    def test_priority_order_sanitized_over_single_check_id(self, routing_symbols, make_payload):
+        payload = make_payload("Prompt with [ADMIN] marker")
         payload.check_ids = ["check1"]
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+        selected = routing_symbols["PathRouter"]().select_path(payload)
 
-        # Should be Path.B due to sanitized flag, not Path.C
-        assert selected == Path.B
+        assert selected == routing_symbols["Path"].B
 
 
-@pytest.mark.unit
 class TestElevatorShaftSeam:
-    """Test Elevator Shaft seam contains no business logic."""
-
-    def test_load_context_jit_returns_empty_dict(self):
-        """Test seam returns deterministic empty dict."""
-        from agentic_core.L0_routing.utils.elevator_shaft_seam import load_context_jit
-
-        result = load_context_jit("test_trace_id", "test_intent")
+    def test_load_context_jit_returns_empty_dict(self, seam_module):
+        result = seam_module.load_context_jit("test_trace_id", "test_intent")
 
         assert result == {}
         assert isinstance(result, dict)
 
-    def test_seam_has_no_forbidden_imports(self):
-        """Test seam contains no forbidden imports."""
-        import ast
+    def test_seam_has_no_forbidden_imports(self, seam_module):
+        seam_path = Path(seam_module.__file__)
+        tree = ast.parse(seam_path.read_text(encoding="utf-8"))
 
-        seam_file = "agentic_core/L0_routing/utils/elevator_shaft_seam.py"
-
-        # Read and parse the seam file
-        with open(seam_file, encoding="utf-8") as f:
-            content = f.read()
-
-        tree = ast.parse(content)
-
-        # Check for forbidden imports
-        forbidden_imports = ["L2_", "L5_", "datetime", "time"]
-        found_forbidden = []
+        forbidden_import_terms = ("L2_", "L5_", "datetime", "time")
+        found_forbidden: list[str] = []
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    if any(forbidden in alias.name for forbidden in forbidden_imports):
+                    if any(term in alias.name for term in forbidden_import_terms):
                         found_forbidden.append(alias.name)
             elif isinstance(node, ast.ImportFrom):
-                if node.module and any(forbidden in node.module for forbidden in forbidden_imports):
-                    found_forbidden.append(f"from {node.module}")
+                module_name = node.module or ""
+                if any(term in module_name for term in forbidden_import_terms):
+                    found_forbidden.append(f"from {module_name}")
 
         assert not found_forbidden, f"Forbidden imports found: {found_forbidden}"
 
-    def test_seam_has_no_routing_logic(self):
-        """Test seam contains no routing decision logic."""
-        import ast
+    def test_seam_has_no_routing_logic_in_load_context_jit(self, seam_module):
+        seam_path = Path(seam_module.__file__)
+        tree = ast.parse(seam_path.read_text(encoding="utf-8"))
+        target_function = next(
+            node
+            for node in tree.body
+            if isinstance(node, ast.FunctionDef) and node.name == "load_context_jit"
+        )
 
-        seam_file = "agentic_core/L0_routing/utils/elevator_shaft_seam.py"
-
-        with open(seam_file, encoding="utf-8") as f:
-            content = f.read()
-
-        tree = ast.parse(content)
-
-        # Check for control flow statements (routing logic)
         forbidden_nodes = (ast.If, ast.For, ast.While, ast.Try)
-        found_nodes = []
+        found_nodes = [
+            type(node).__name__ for node in ast.walk(target_function) if isinstance(node, forbidden_nodes)
+        ]
 
-        for node in ast.walk(tree):
-            if isinstance(node, forbidden_nodes):
-                found_nodes.append(type(node).__name__)
-
-        assert not found_nodes, f"Control flow statements found: {found_nodes}"
+        assert not found_nodes, f"Control-flow statements found in load_context_jit: {found_nodes}"

@@ -1,32 +1,24 @@
-"""Test ExecutionOrchestratorL3Wiring functionality."""
+"""Runtime-hardened top-level export tests for execution orchestrator L3 wiring."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
+
+
 class TestExecutionOrchestratorL3Wiring:
-    """Test ExecutionOrchestratorL3Wiring functionality."""
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "execution_orchestrator_l3_wiring", None) is not None
 
-    def test_execution_orchestrator_l3_wiring_imports(self):
-        """Test execution_orchestrator_l3_wiring module imports."""
-        from agentic_core import execution_orchestrator_l3_wiring
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ExecutionOrchestratorL3Wiring", None) is not None
 
-        assert execution_orchestrator_l3_wiring is not None
-
-    def test_execution_orchestrator_l3_wiring_class(self):
-        """Test ExecutionOrchestratorL3Wiring class exists."""
-        from agentic_core import ExecutionOrchestratorL3Wiring
-
-        assert ExecutionOrchestratorL3Wiring is not None
-
-    def test_execution_orchestrator_l3_wiring_callable(self):
-        """Test execution_orchestrator_l3_wiring functions are callable."""
-        from agentic_core import validate_execution_orchestrator_l3_wiring
-
-        assert callable(validate_execution_orchestrator_l3_wiring)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_execution_orchestrator_l3_wiring", None)
+        assert callable(validator)

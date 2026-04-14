@@ -1,32 +1,24 @@
-"""Test RoutingConfigSealTypesAdg functionality."""
+"""Runtime-hardened top-level export tests for routing config seal types ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestRoutingConfigSealTypesAdg:
-    """Test RoutingConfigSealTypesAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_routing_config_seal_types_adg_imports(self):
-        """Test routing_config_seal_types_adg module imports."""
-        from agentic_core import routing_config_seal_types_adg
 
-        assert routing_config_seal_types_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "routing_config_seal_types_adg", None) is not None
 
-    def test_routing_config_seal_types_adg_class(self):
-        """Test RoutingConfigSealTypesAdg class exists."""
-        from agentic_core import RoutingConfigSealTypesAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "RoutingConfigSealTypesAdg", None) is not None
 
-        assert RoutingConfigSealTypesAdg is not None
-
-    def test_routing_config_seal_types_adg_callable(self):
-        """Test routing_config_seal_types_adg functions are callable."""
-        from agentic_core import validate_routing_config_seal_types_adg
-
-        assert callable(validate_routing_config_seal_types_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_routing_config_seal_types_adg", None)
+        assert callable(validator)

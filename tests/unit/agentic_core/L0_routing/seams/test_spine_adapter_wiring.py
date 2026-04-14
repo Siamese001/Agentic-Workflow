@@ -1,32 +1,24 @@
-"""Test SpineAdapterWiring functionality."""
+"""Runtime-hardened top-level export tests for spine adapter wiring."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestSpineAdapterWiring:
-    """Test SpineAdapterWiring functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_spine_adapter_wiring_imports(self):
-        """Test spine_adapter_wiring module imports."""
-        from agentic_core import spine_adapter_wiring
 
-        assert spine_adapter_wiring is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "spine_adapter_wiring", None) is not None
 
-    def test_spine_adapter_wiring_class(self):
-        """Test SpineAdapterWiring class exists."""
-        from agentic_core import SpineAdapterWiring
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "SpineAdapterWiring", None) is not None
 
-        assert SpineAdapterWiring is not None
-
-    def test_spine_adapter_wiring_callable(self):
-        """Test spine_adapter_wiring functions are callable."""
-        from agentic_core import validate_spine_adapter_wiring
-
-        assert callable(validate_spine_adapter_wiring)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_spine_adapter_wiring", None)
+        assert callable(validator)

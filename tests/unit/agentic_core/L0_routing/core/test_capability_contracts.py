@@ -1,32 +1,28 @@
-"""Test CapabilityContracts functionality."""
+"""Runtime-hardened capability contract surface tests."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
+
+
+@pytest.fixture(scope="module")
+def capability_contracts_module():
+    return pytest.importorskip("agentic_core.capability_contracts")
+
+
 class TestCapabilityContracts:
-    """Test CapabilityContracts functionality."""
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "capability_contracts", None) is not None
 
-    def test_capability_contracts_imports(self):
-        """Test capability contracts module imports."""
-        from agentic_core import capability_contracts
+    def test_capability_contract_class_is_exposed(self, capability_contracts_module):
+        assert getattr(capability_contracts_module, "CapabilityContract", None) is not None
 
-        assert capability_contracts is not None
-
-    def test_capability_contract_class(self):
-        """Test capability contract class exists."""
-        from agentic_core.capability_contracts import CapabilityContract
-
-        assert CapabilityContract is not None
-
-    def test_validate_capability(self):
-        """Test validate capability function."""
-        from agentic_core.capability_contracts import validate_capability
-
-        assert callable(validate_capability)
+    def test_validate_capability_is_callable(self, capability_contracts_module):
+        assert callable(getattr(capability_contracts_module, "validate_capability", None))

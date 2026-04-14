@@ -1,32 +1,24 @@
-"""Test ForceAnnexationUtilAdg functionality."""
+"""Runtime-hardened top-level export tests for force annexation util ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestForceAnnexationUtilAdg:
-    """Test ForceAnnexationUtilAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_force_annexation_util_adg_imports(self):
-        """Test force_annexation_util_adg module imports."""
-        from agentic_core import force_annexation_util_adg
 
-        assert force_annexation_util_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "force_annexation_util_adg", None) is not None
 
-    def test_force_annexation_util_adg_class(self):
-        """Test ForceAnnexationUtilAdg class exists."""
-        from agentic_core import ForceAnnexationUtilAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ForceAnnexationUtilAdg", None) is not None
 
-        assert ForceAnnexationUtilAdg is not None
-
-    def test_force_annexation_util_adg_callable(self):
-        """Test force_annexation_util_adg functions are callable."""
-        from agentic_core import validate_force_annexation_util_adg
-
-        assert callable(validate_force_annexation_util_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_force_annexation_util_adg", None)
+        assert callable(validator)

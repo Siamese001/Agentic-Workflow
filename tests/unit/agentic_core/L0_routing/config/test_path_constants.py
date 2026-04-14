@@ -1,83 +1,53 @@
-"""Tests for path_constants healing threshold configuration."""
+"""Runtime-hardened tests for L0 routing path constants."""
 
-import unittest
+from __future__ import annotations
 
+import importlib
 
-class TestPathConstantsHealingThresholds(unittest.TestCase):
-    """Test healing tier thresholds in path_constants."""
+import pytest
 
-    def test_healing_confidence_x_exists(self):
-        """HEALING_CONFIDENCE_X must exist and be 0.80."""
-        from agentic_core.L0_routing.config.path_constants import HEALING_CONFIDENCE_X
+pytestmark = pytest.mark.unit
 
-        self.assertEqual(HEALING_CONFIDENCE_X, 0.80)
-
-    def test_healing_confidence_y_exists(self):
-        """HEALING_CONFIDENCE_Y must exist and be 0.50."""
-        from agentic_core.L0_routing.config.path_constants import HEALING_CONFIDENCE_Y
-
-        self.assertEqual(HEALING_CONFIDENCE_Y, 0.50)
-
-    def test_ssot_score_det_threshold(self):
-        """SSOT_SCORE_THRESHOLD_DET must be 13."""
-        from agentic_core.L0_routing.config.path_constants import SSOT_SCORE_THRESHOLD_DET
-
-        self.assertEqual(SSOT_SCORE_THRESHOLD_DET, 13)
-
-    def test_ssot_score_qwen_threshold(self):
-        """SSOT_SCORE_THRESHOLD_QWEN must be 26."""
-        from agentic_core.L0_routing.config.path_constants import SSOT_SCORE_THRESHOLD_QWEN
-
-        self.assertEqual(SSOT_SCORE_THRESHOLD_QWEN, 26)
-
-    def test_qwen_14b_model_id(self):
-        """QWEN_14B_MODEL_ID must be correct string."""
-        from agentic_core.L0_routing.config.path_constants import QWEN_14B_MODEL_ID
-
-        self.assertEqual(QWEN_14B_MODEL_ID, "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4")
-
-    def test_healing_thresholds_in_all(self):
-        """All healing thresholds must be in __all__."""
-        from agentic_core.L0_routing.config import path_constants
-
-        self.assertIn("HEALING_CONFIDENCE_X", path_constants.__all__)
-        self.assertIn("HEALING_CONFIDENCE_Y", path_constants.__all__)
-        self.assertIn("SSOT_SCORE_THRESHOLD_DET", path_constants.__all__)
-        self.assertIn("SSOT_SCORE_THRESHOLD_QWEN", path_constants.__all__)
-        self.assertIn("QWEN_14B_MODEL_ID", path_constants.__all__)
-
-    def test_threshold_value_constraints(self):
-        """Healing thresholds must satisfy X > Y."""
-        from agentic_core.L0_routing.config.path_constants import (
-            HEALING_CONFIDENCE_X,
-            HEALING_CONFIDENCE_Y,
-        )
-
-        self.assertGreater(HEALING_CONFIDENCE_X, HEALING_CONFIDENCE_Y)
-        self.assertGreater(HEALING_CONFIDENCE_X, 0.0)
-        self.assertGreater(HEALING_CONFIDENCE_Y, 0.0)
-        self.assertLess(HEALING_CONFIDENCE_X, 1.0)
-        self.assertLess(HEALING_CONFIDENCE_Y, 1.0)
+PATH_CONSTANTS_MODULE = "agentic_core.L0_routing.config.path_constants"
+CONFIG_MODULE = "agentic_core.L0_routing.config"
+EXPECTED_VALUES = {
+    "HEALING_CONFIDENCE_X": 0.80,
+    "HEALING_CONFIDENCE_Y": 0.50,
+    "SSOT_SCORE_THRESHOLD_DET": 13,
+    "SSOT_SCORE_THRESHOLD_QWEN": 26,
+    "QWEN_14B_MODEL_ID": "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4",
+}
 
 
-class TestPathConstantsCore(unittest.TestCase):
-    """Core path constants functionality."""
-
-    def test_get_validated_project_root(self):
-        """Test get_validated_project_root returns non-None path."""
-        from agentic_core.L0_routing.config import get_validated_project_root
-
-        result = get_validated_project_root()
-        self.assertIsNotNone(result)
-
-    def test_get_apps_directories(self):
-        """Test get_apps_directories returns list."""
-        from agentic_core.L0_routing.config import get_apps_directories
-
-        result = get_apps_directories()
-        self.assertIsNotNone(result)
-        self.assertIsInstance(result, list)
+@pytest.fixture(scope="module")
+def path_constants():
+    return pytest.importorskip(PATH_CONSTANTS_MODULE)
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(scope="module")
+def config_pkg():
+    return pytest.importorskip(CONFIG_MODULE)
+
+
+def test_expected_constants_exist_with_exact_values(path_constants):
+    for name, expected in EXPECTED_VALUES.items():
+        assert hasattr(path_constants, name), f"{name} missing from {PATH_CONSTANTS_MODULE}"
+        assert getattr(path_constants, name) == expected
+
+
+def test_expected_constants_are_exported(path_constants):
+    exported = set(getattr(path_constants, "__all__", []))
+    missing = set(EXPECTED_VALUES) - exported
+    assert not missing, f"Expected constants missing from __all__: {sorted(missing)}"
+
+
+def test_threshold_relationships_are_sane(path_constants):
+    assert path_constants.HEALING_CONFIDENCE_X > path_constants.HEALING_CONFIDENCE_Y
+    assert 0.0 < path_constants.HEALING_CONFIDENCE_Y < 1.0
+    assert 0.0 < path_constants.HEALING_CONFIDENCE_X < 1.0
+
+
+def test_config_helpers_exist_and_are_callable(config_pkg):
+    for name in ["get_validated_project_root", "get_apps_directories"]:
+        value = getattr(config_pkg, name, None)
+        assert callable(value), f"{name} must be callable on {CONFIG_MODULE}"

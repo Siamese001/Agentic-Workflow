@@ -50,6 +50,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_
 from tqdm import tqdm
 
 
+def _resolve_repo_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
 @dataclass
 class FileClassification:
     """Classification result for a Python file."""
@@ -227,7 +234,8 @@ class AppsLicASTAuditor:
 
 def main():
     """Run the audit."""
-    root = Path("C:/Git/Agentic-Workflow/apps_lic")
+    repo_root = _resolve_repo_root()
+    root = repo_root / "apps_lic"
     auditor = AppsLicASTAuditor(root)
     print("🔍 Discovering and classifying files...")
     classifications = auditor.discover_and_classify()
@@ -251,7 +259,7 @@ def main():
     recommendations = auditor.generate_refactoring_recommendations()
     for i, rec in enumerate(recommendations, 1):
         print(f"  {i}. {rec}")
-    output_path = Path("agentic_core/L0_routing/utils/audit_apps_lic_ast_results.json")
+    output_path = repo_root / "agentic_core" / "L0_routing" / "utils" / "audit_apps_lic_ast_results.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     results = {
         "total_files": len(classifications),

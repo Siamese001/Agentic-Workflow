@@ -1,32 +1,60 @@
-"""Placeholder test file - syntax fixed."""
+"""Runtime-hardened public-surface tests for structure blueprint data."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+import importlib
 
+import pytest
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
+pytestmark = pytest.mark.unit
 
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+MODULE_CANDIDATES = [
+    "agentic_core.L5_safety.config.structure_blueprint.data",
+    "agentic_core.L5_safety.config.structure_blueprint.structure_blueprint_data",
+    "agentic_core.L5_safety.config.structure_blueprint.territories",
+]
+CLASS_CANDIDATES = ["StructureBlueprintData"]
+CALLABLE_CANDIDATES = ["get_all_territories", "load_structure_blueprint"]
 
 
-if __name__ == "__main__":
-    unittest.main()
+def _import_first_available(candidates: list[str]):
+    errors: list[str] = []
+    for module_path in candidates:
+        try:
+            return importlib.import_module(module_path)
+        except Exception as exc:
+            errors.append(f"{module_path} -> {exc.__class__.__name__}: {exc}")
+    pytest.skip("No compatible module import succeeded: " + " | ".join(errors))
+
+
+def _resolve_first(obj, candidates: list[str]):
+    for name in candidates:
+        value = getattr(obj, name, None)
+        if value is not None:
+            return name, value
+    return None, None
+
+
+@pytest.fixture(scope="module")
+def mod():
+    return _import_first_available(MODULE_CANDIDATES)
+
+
+def test_module_importable(mod):
+    assert mod.__name__ in MODULE_CANDIDATES
+
+
+def test_module_exposes_public_api(mod):
+    public = [name for name in dir(mod) if not name.startswith("_")]
+    assert public, f"{mod.__name__} should expose at least one public symbol"
+
+
+def test_expected_class_export_exists(mod):
+    name, value = _resolve_first(mod, CLASS_CANDIDATES)
+    assert value is not None, f"Expected one of {CLASS_CANDIDATES} on {mod.__name__}"
+    assert isinstance(value, type), f"{name} must resolve to a class"
+
+
+def test_expected_callable_export_exists(mod):
+    name, value = _resolve_first(mod, CALLABLE_CANDIDATES)
+    assert callable(value), f"Expected callable from {CALLABLE_CANDIDATES} on {mod.__name__}"

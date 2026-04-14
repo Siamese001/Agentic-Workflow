@@ -1,32 +1,24 @@
-"""Placeholder test file - syntax fixed."""
+"""Runtime-hardened top-level export tests for re clear loop."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+import pytest
+
+pytestmark = pytest.mark.unit
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone("test")
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "re_clear_loop", None) is not None
+
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ReClearLoop", None) is not None
+
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_re_clear_loop", None)
+        assert callable(validator)

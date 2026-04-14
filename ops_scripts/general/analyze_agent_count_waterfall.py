@@ -8,6 +8,17 @@ import json
 import subprocess
 import sys
 from collections import defaultdict
+from pathlib import Path
+
+
+def _resolve_repo_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path.cwd().resolve()
+
+
+REPO_ROOT = _resolve_repo_root()
 
 
 def get_agent_count_at_commit(commit_hash):
@@ -17,13 +28,13 @@ def get_agent_count_at_commit(commit_hash):
             ["git", "show", f"{commit_hash}:agent_discovery_full.json"],
             capture_output=True,
             text=True,
-            cwd="C:/Git/Agentic-Workflow",
+            cwd=str(REPO_ROOT),
+            check=False,
         )
         if result.returncode == 0:
             data = json.loads(result.stdout)
             return len(data) if isinstance(data, list) else len(data.get("agents", []))
-    # guardian: allow-silent-swallow
-    except:
+    except (OSError, json.JSONDecodeError):
         pass
     return None
 
@@ -34,7 +45,8 @@ def get_commit_history():
         ["git", "log", "--oneline", "--format=%h|%ad|%s", "--date=short", "--", "agent_discovery_full.json"],
         capture_output=True,
         text=True,
-        cwd="C:/Git/Agentic-Workflow",
+        cwd=str(REPO_ROOT),
+        check=False,
     )
     commits = []
     for line in result.stdout.strip().split("\n"):
@@ -49,6 +61,12 @@ def main():
     print("=" * 80)
     print("AGENT COUNT WATERFALL ANALYSIS")
     print("=" * 80)
+    print(f"Repository root: {REPO_ROOT}")
+
+    if not (REPO_ROOT / ".git").exists():
+        print("No git repository detected.")
+        return 1
+
     commits = get_commit_history()
     print(f"\nFound {len(commits)} commits touching agent_discovery_full.json\n")
     waterfall = []

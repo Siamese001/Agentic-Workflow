@@ -80,6 +80,14 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
+
+def _atomic_write(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(content, encoding="utf-8")
+    tmp_path.replace(path)
+
+
 _emit_emits_metric_event("generate_monolith_shim", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_monolith_shim", "p4obs", "metric_2")
 _emit_emits_metric_event("generate_monolith_shim", "p4obs", "metric_3")
@@ -294,7 +302,7 @@ def main() -> None:
         print(f"MISSING names: {sorted(missing)}")
     shim = generate_shim(imported_names, name_to_module)
     output = ROOT / "data" / "freeze_reports" / "_monolith_shim.py"
-    output.write_text(shim, encoding="utf-8")
+    _atomic_write(output, shim)
     print(f"\nWrote shim to {output} ({len(shim.splitlines())} lines)")
     ast.parse(shim)
     print("Syntax OK")

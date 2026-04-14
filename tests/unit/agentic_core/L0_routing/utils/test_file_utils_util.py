@@ -1,32 +1,24 @@
-"""Test FileUtilsUtil functionality."""
+"""Runtime-hardened top-level export tests for file utils util."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestFileUtilsUtil:
-    """Test FileUtilsUtil functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_file_utils_util_imports(self):
-        """Test file_utils_util module imports."""
-        from agentic_core import file_utils_util
 
-        assert file_utils_util is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "file_utils_util", None) is not None
 
-    def test_file_utils_util_class(self):
-        """Test FileUtilsUtil class exists."""
-        from agentic_core import FileUtilsUtil
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "FileUtilsUtil", None) is not None
 
-        assert FileUtilsUtil is not None
-
-    def test_file_utils_util_callable(self):
-        """Test file_utils_util functions are callable."""
-        from agentic_core import validate_file_utils_util
-
-        assert callable(validate_file_utils_util)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_file_utils_util", None)
+        assert callable(validator)

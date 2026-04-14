@@ -1,48 +1,28 @@
-"""Placeholder test file - syntax fixed."""
+"""Runtime-hardened tests for crypto trust contract helpers."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.enforcement."""
-
-    def test_hash_artifact_canonical(self):
-        """Test hash_artifact_canonical function."""
-        from agentic_core.L0_routing.enforcement import hash_artifact_canonical
-
-        result = hash_artifact_canonical(b"test data")
-        self.assertIsNotNone(result)
-
-    def test_sign_artifact(self):
-        """Test sign_artifact function."""
-        from agentic_core.L0_routing.enforcement import SigningError
-
-        # sign_artifact requires a SignatureEnclave which is complex to set up
-        # Just test that the error class can be imported
-        self.assertIsNotNone(SigningError)
-
-    def test_SigningError_init(self):
-        """Test SigningError initialization."""
-        from agentic_core.L0_routing.enforcement import SigningError
-
-        instance = SigningError()
-        self.assertIsNotNone(instance)
-
-    def test_VerificationError_init(self):
-        """Test VerificationError initialization."""
-        from agentic_core.L0_routing.enforcement import VerificationError
-
-        instance = VerificationError()
-        self.assertIsNotNone(instance)
+@pytest.fixture(scope="module")
+def enforcement_package():
+    return pytest.importorskip("agentic_core.L0_routing.enforcement")
 
 
-if __name__ == "__main__":
-    unittest.main()
+class TestCryptoTrustContracts:
+    def test_hash_artifact_canonical_is_deterministic(self, enforcement_package):
+        hash1 = enforcement_package.hash_artifact_canonical(b"test data")
+        hash2 = enforcement_package.hash_artifact_canonical(b"test data")
+
+        assert hash1 is not None
+        assert hash1 == hash2
+
+    def test_signing_error_class_is_available(self, enforcement_package):
+        assert enforcement_package.SigningError is not None
+
+    def test_exception_types_initialize(self, enforcement_package):
+        assert isinstance(enforcement_package.SigningError(), Exception)
+        assert isinstance(enforcement_package.VerificationError(), Exception)

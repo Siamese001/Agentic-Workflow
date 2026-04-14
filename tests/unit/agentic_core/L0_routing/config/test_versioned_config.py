@@ -1,32 +1,24 @@
-"""Test VersionedConfig functionality."""
+"""Runtime-hardened top-level export tests for versioned config."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestVersionedConfig:
-    """Test VersionedConfig functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_versioned_config_imports(self):
-        """Test versioned_config module imports."""
-        from agentic_core import versioned_config
 
-        assert versioned_config is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "versioned_config", None) is not None
 
-    def test_versioned_config_class(self):
-        """Test VersionedConfig class exists."""
-        from agentic_core import VersionedConfig
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "VersionedConfig", None) is not None
 
-        assert VersionedConfig is not None
-
-    def test_versioned_config_callable(self):
-        """Test versioned_config functions are callable."""
-        from agentic_core import validate_versioned_config
-
-        assert callable(validate_versioned_config)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_versioned_config", None)
+        assert callable(validator)

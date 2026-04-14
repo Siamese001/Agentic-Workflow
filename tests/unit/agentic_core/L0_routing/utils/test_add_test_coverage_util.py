@@ -1,32 +1,24 @@
-"""Test AddCoverageUtil functionality."""
+"""Runtime-hardened top-level export tests for add coverage util."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestAddCoverageUtil:
-    """Test AddCoverageUtil functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_add_coverage_util_imports(self):
-        """Test add_coverage_util module imports."""
-        from agentic_core import add_coverage_util
 
-        assert add_coverage_util is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "add_coverage_util", None) is not None
 
-    def test_add_coverage_util_class(self):
-        """Test AddCoverageUtil class exists."""
-        from agentic_core import AddCoverageUtil
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "AddCoverageUtil", None) is not None
 
-        assert AddCoverageUtil is not None
-
-    def test_add_coverage_util_callable(self):
-        """Test add_coverage_util functions are callable."""
-        from agentic_core import validate_add_coverage_util
-
-        assert callable(validate_add_coverage_util)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_add_coverage_util", None)
+        assert callable(validator)

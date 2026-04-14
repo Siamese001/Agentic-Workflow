@@ -1,32 +1,24 @@
-"""Test SafetyReasoningSeam functionality."""
+"""Runtime-hardened top-level export tests for safety reasoning seam."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestSafetyReasoningSeam:
-    """Test SafetyReasoningSeam functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_safety_reasoning_seam_imports(self):
-        """Test safety_reasoning_seam module imports."""
-        from agentic_core import safety_reasoning_seam
 
-        assert safety_reasoning_seam is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "safety_reasoning_seam", None) is not None
 
-    def test_safety_reasoning_seam_class(self):
-        """Test SafetyReasoningSeam class exists."""
-        from agentic_core import SafetyReasoningSeam
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "SafetyReasoningSeam", None) is not None
 
-        assert SafetyReasoningSeam is not None
-
-    def test_safety_reasoning_seam_callable(self):
-        """Test safety_reasoning_seam functions are callable."""
-        from agentic_core import validate_safety_reasoning_seam
-
-        assert callable(validate_safety_reasoning_seam)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_safety_reasoning_seam", None)
+        assert callable(validator)

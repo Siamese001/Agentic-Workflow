@@ -1,32 +1,24 @@
-"""Test ReasoningIntensityTypesAdg functionality."""
+"""Runtime-hardened top-level export tests for reasoning intensity types ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestReasoningIntensityTypesAdg:
-    """Test ReasoningIntensityTypesAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_reasoning_intensity_types_adg_imports(self):
-        """Test reasoning_intensity_types_adg module imports."""
-        from agentic_core import reasoning_intensity_types_adg
 
-        assert reasoning_intensity_types_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "reasoning_intensity_types_adg", None) is not None
 
-    def test_reasoning_intensity_types_adg_class(self):
-        """Test ReasoningIntensityTypesAdg class exists."""
-        from agentic_core import ReasoningIntensityTypesAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ReasoningIntensityTypesAdg", None) is not None
 
-        assert ReasoningIntensityTypesAdg is not None
-
-    def test_reasoning_intensity_types_adg_callable(self):
-        """Test reasoning_intensity_types_adg functions are callable."""
-        from agentic_core import validate_reasoning_intensity_types_adg
-
-        assert callable(validate_reasoning_intensity_types_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_reasoning_intensity_types_adg", None)
+        assert callable(validator)

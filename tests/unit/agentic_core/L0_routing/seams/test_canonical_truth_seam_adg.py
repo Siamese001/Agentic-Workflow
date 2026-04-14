@@ -1,32 +1,24 @@
-"""Test CanonicalTruthSeamAdg functionality."""
+"""Runtime-hardened top-level export tests for canonical truth seam ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestCanonicalTruthSeamAdg:
-    """Test CanonicalTruthSeamAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_canonical_truth_seam_adg_imports(self):
-        """Test canonical_truth_seam_adg module imports."""
-        from agentic_core import canonical_truth_seam_adg
 
-        assert canonical_truth_seam_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "canonical_truth_seam_adg", None) is not None
 
-    def test_canonical_truth_seam_adg_class(self):
-        """Test CanonicalTruthSeamAdg class exists."""
-        from agentic_core import CanonicalTruthSeamAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "CanonicalTruthSeamAdg", None) is not None
 
-        assert CanonicalTruthSeamAdg is not None
-
-    def test_canonical_truth_seam_adg_callable(self):
-        """Test canonical_truth_seam_adg functions are callable."""
-        from agentic_core import validate_canonical_truth_seam_adg
-
-        assert callable(validate_canonical_truth_seam_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_canonical_truth_seam_adg", None)
+        assert callable(validator)

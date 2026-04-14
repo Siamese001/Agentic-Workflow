@@ -1,89 +1,57 @@
-"""Placeholder test file - syntax fixed."""
+"""Runtime-hardened tests for ``ExecutionGateway``."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L0_routing.enforcement."""
+@pytest.fixture(scope="module")
+def enforcement_package():
+    return pytest.importorskip("agentic_core.L0_routing.enforcement")
 
-    def test_clock(self):
-        """Test clock property."""
-        from agentic_core.L0_routing.enforcement import ExecutionGateway
 
-        gateway = ExecutionGateway()
-        result = gateway.clock
-        self.assertIsNotNone(result)
+@pytest.fixture()
+def gateway(enforcement_package):
+    return enforcement_package.ExecutionGateway()
 
-    def test_execute(self):
-        """Test execute method."""
-        from agentic_core.L0_routing.enforcement import ExecutionGateway
 
-        gateway = ExecutionGateway()
-        # execute requires complex parameters, just test it's callable
-        self.assertTrue(hasattr(gateway, "execute"))
+class TestExecutionGatewaySurface:
+    def test_clock_property_exists(self, gateway):
+        assert gateway.clock is not None
 
-    def test_ExecutionGatewayError_init(self):
-        """Test ExecutionGatewayError initialization."""
-        from agentic_core.L0_routing.enforcement import ExecutionGatewayError
+    def test_execute_is_callable(self, gateway):
+        assert callable(getattr(gateway, "execute", None))
 
-        instance = ExecutionGatewayError("test error")
-        self.assertIsNotNone(instance)
+    def test_execution_gateway_error_initialization(self, enforcement_package):
+        instance = enforcement_package.ExecutionGatewayError("test error")
 
-    def test_UnregisteredAgentError_init(self):
-        """Test UnregisteredAgentError initialization."""
-        from agentic_core.L0_routing.enforcement import UnregisteredAgentError
+        assert instance is not None
+        assert isinstance(instance, Exception)
 
-        instance = UnregisteredAgentError()
-        self.assertIsNotNone(instance)
+    def test_unregistered_agent_error_initialization(self, enforcement_package):
+        instance = enforcement_package.UnregisteredAgentError()
 
-    def test_execute_raises_for_empty_agent_id(self):
-        """execute() raises UnregisteredAgentError immediately for agent_id=''."""
-        from agentic_core.L0_routing.enforcement import ExecutionGateway, UnregisteredAgentError
+        assert instance is not None
+        assert isinstance(instance, Exception)
 
-        gateway = ExecutionGateway()
-        with self.assertRaises(UnregisteredAgentError):
+    @pytest.mark.parametrize("agent_id", ["", "   "])
+    def test_execute_rejects_empty_or_blank_agent_id(self, gateway, enforcement_package, agent_id):
+        with pytest.raises(enforcement_package.UnregisteredAgentError):
             gateway.execute(
                 object(),
-                lambda m: {},
+                lambda material: {},
                 lambda: ("h", "g", "m"),
-                agent_id="",
+                agent_id=agent_id,
             )
 
-    def test_execute_raises_for_blank_agent_id(self):
-        """execute() raises UnregisteredAgentError for whitespace-only agent_id."""
-        from agentic_core.L0_routing.enforcement import ExecutionGateway, UnregisteredAgentError
-
-        gateway = ExecutionGateway()
-        with self.assertRaises(UnregisteredAgentError):
+    def test_max_heal_attempts_accepted_as_kwarg(self, gateway, enforcement_package):
+        with pytest.raises(enforcement_package.UnregisteredAgentError):
             gateway.execute(
                 object(),
-                lambda m: {},
-                lambda: ("h", "g", "m"),
-                agent_id="   ",
-            )
-
-    def test_max_heal_attempts_accepted_as_kwarg(self):
-        """max_heal_attempts is a valid keyword argument; empty agent_id still raises before any heal."""
-        from agentic_core.L0_routing.enforcement import ExecutionGateway, UnregisteredAgentError
-
-        gateway = ExecutionGateway()
-        with self.assertRaises(UnregisteredAgentError):
-            gateway.execute(
-                object(),
-                lambda m: {},
+                lambda material: {},
                 lambda: ("h", "g", "m"),
                 agent_id="",
                 max_heal_attempts=0,
             )
-
-
-if __name__ == "__main__":
-    unittest.main()

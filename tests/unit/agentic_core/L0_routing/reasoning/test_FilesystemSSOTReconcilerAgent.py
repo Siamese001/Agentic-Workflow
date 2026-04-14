@@ -1,32 +1,38 @@
-"""Placeholder test file - syntax fixed."""
+"""Runtime-hardened public-surface tests for FilesystemSSOTReconcilerAgent."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+import pytest
 
+pytestmark = pytest.mark.unit
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+MODULE_CANDIDATES = ["filesystem_ssot_reconciler_agent", "FilesystemSSOTReconcilerAgent"]
+CLASS_CANDIDATES = ["FilesystemSSOTReconcilerAgent", "FilesystemSsotReconcilerAgent"]
+VALIDATOR_CANDIDATES = ["validate_filesystem_ssot_reconciler_agent", "validate_FilesystemSSOTReconcilerAgent"]
 
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
+
+
+def _resolve_first(package, candidates):
+    for name in candidates:
+        value = getattr(package, name, None)
+        if value is not None:
+            return name, value
+    return None, None
+
+
+class TestPublicSurface:
+    def test_module_export_exists(self, agentic_core_package):
+        name, value = _resolve_first(agentic_core_package, MODULE_CANDIDATES)
+        assert value is not None, f"Expected one of {MODULE_CANDIDATES} on agentic_core, found none"
+
+    def test_class_export_exists(self, agentic_core_package):
+        name, value = _resolve_first(agentic_core_package, CLASS_CANDIDATES)
+        assert value is not None, f"Expected one of {CLASS_CANDIDATES} on agentic_core, found none"
+
+    def test_validator_export_is_callable(self, agentic_core_package):
+        name, value = _resolve_first(agentic_core_package, VALIDATOR_CANDIDATES)
+        assert callable(value), f"Expected callable validator from {VALIDATOR_CANDIDATES}, found none"

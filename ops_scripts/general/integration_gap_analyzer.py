@@ -22,7 +22,15 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+def _resolve_repo_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+PROJECT_ROOT = _resolve_repo_root()
 CRITICAL_MIXINS = {
     "MetaLearningMixin": "P0",
     "AuditTrailMixin": "P1",
@@ -257,6 +265,7 @@ def generate_migration_json(results):
         "by_priority": {p: list(agents) for p, agents in results["by_priority"].items()},
     }
     output_path = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "agent_integration_gaps.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
     print(f"\nSaved detailed analysis to: {output_path}")

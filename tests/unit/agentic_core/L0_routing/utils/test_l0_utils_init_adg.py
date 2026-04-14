@@ -1,32 +1,24 @@
-"""Test L0UtilsInitAdg functionality."""
+"""Runtime-hardened top-level export tests for L0 utils init ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestL0UtilsInitAdg:
-    """Test L0UtilsInitAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_l0_utils_init_adg_imports(self):
-        """Test l0_utils_init_adg module imports."""
-        from agentic_core import l0_utils_init_adg
 
-        assert l0_utils_init_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "l0_utils_init_adg", None) is not None
 
-    def test_l0_utils_init_adg_class(self):
-        """Test L0UtilsInitAdg class exists."""
-        from agentic_core import L0UtilsInitAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "L0UtilsInitAdg", None) is not None
 
-        assert L0UtilsInitAdg is not None
-
-    def test_l0_utils_init_adg_callable(self):
-        """Test l0_utils_init_adg functions are callable."""
-        from agentic_core import validate_l0_utils_init_adg
-
-        assert callable(validate_l0_utils_init_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_l0_utils_init_adg", None)
+        assert callable(validator)

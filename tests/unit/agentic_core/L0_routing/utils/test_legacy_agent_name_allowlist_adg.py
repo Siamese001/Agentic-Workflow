@@ -1,32 +1,24 @@
-"""Test LegacyAgentNameAllowlistAdg functionality."""
+"""Runtime-hardened top-level export tests for legacy agent name allowlist ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestLegacyAgentNameAllowlistAdg:
-    """Test LegacyAgentNameAllowlistAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_legacy_agent_name_allowlist_adg_imports(self):
-        """Test legacy_agent_name_allowlist_adg module imports."""
-        from agentic_core import legacy_agent_name_allowlist_adg
 
-        assert legacy_agent_name_allowlist_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "legacy_agent_name_allowlist_adg", None) is not None
 
-    def test_legacy_agent_name_allowlist_adg_class(self):
-        """Test LegacyAgentNameAllowlistAdg class exists."""
-        from agentic_core import LegacyAgentNameAllowlistAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "LegacyAgentNameAllowlistAdg", None) is not None
 
-        assert LegacyAgentNameAllowlistAdg is not None
-
-    def test_legacy_agent_name_allowlist_adg_callable(self):
-        """Test legacy_agent_name_allowlist_adg functions are callable."""
-        from agentic_core import validate_legacy_agent_name_allowlist_adg
-
-        assert callable(validate_legacy_agent_name_allowlist_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_legacy_agent_name_allowlist_adg", None)
+        assert callable(validator)

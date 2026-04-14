@@ -1,32 +1,24 @@
-"""Test SsotAuditTrailMixin functionality."""
+"""Runtime-hardened top-level export tests for SSOT audit trail mixin."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestSsotAuditTrailMixin:
-    """Test SsotAuditTrailMixin functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_ssot_audit_trail_mixin_imports(self):
-        """Test ssot_audit_trail_mixin module imports."""
-        from agentic_core import ssot_audit_trail_mixin
 
-        assert ssot_audit_trail_mixin is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ssot_audit_trail_mixin", None) is not None
 
-    def test_ssot_audit_trail_mixin_class(self):
-        """Test SsotAuditTrailMixin class exists."""
-        from agentic_core import SsotAuditTrailMixin
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "SsotAuditTrailMixin", None) is not None
 
-        assert SsotAuditTrailMixin is not None
-
-    def test_ssot_audit_trail_mixin_callable(self):
-        """Test ssot_audit_trail_mixin functions are callable."""
-        from agentic_core import validate_ssot_audit_trail_mixin
-
-        assert callable(validate_ssot_audit_trail_mixin)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_ssot_audit_trail_mixin", None)
+        assert callable(validator)

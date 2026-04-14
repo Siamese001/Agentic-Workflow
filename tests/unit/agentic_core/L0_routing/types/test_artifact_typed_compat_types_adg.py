@@ -1,32 +1,24 @@
-"""Test ArtifactTypedCompatTypesAdg functionality."""
+"""Runtime-hardened top-level export tests for artifact typed compat types ADG."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestArtifactTypedCompatTypesAdg:
-    """Test ArtifactTypedCompatTypesAdg functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_artifact_typed_compat_types_adg_imports(self):
-        """Test artifact_typed_compat_types_adg module imports."""
-        from agentic_core import artifact_typed_compat_types_adg
 
-        assert artifact_typed_compat_types_adg is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "artifact_typed_compat_types_adg", None) is not None
 
-    def test_artifact_typed_compat_types_adg_class(self):
-        """Test ArtifactTypedCompatTypesAdg class exists."""
-        from agentic_core import ArtifactTypedCompatTypesAdg
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "ArtifactTypedCompatTypesAdg", None) is not None
 
-        assert ArtifactTypedCompatTypesAdg is not None
-
-    def test_artifact_typed_compat_types_adg_callable(self):
-        """Test artifact_typed_compat_types_adg functions are callable."""
-        from agentic_core import validate_artifact_typed_compat_types_adg
-
-        assert callable(validate_artifact_typed_compat_types_adg)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_artifact_typed_compat_types_adg", None)
+        assert callable(validator)

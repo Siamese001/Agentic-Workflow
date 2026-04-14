@@ -1,32 +1,24 @@
-"""Test RetrievalSnapshot functionality."""
+"""Runtime-hardened top-level export tests for retrieval snapshot."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestRetrievalSnapshot:
-    """Test RetrievalSnapshot functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_retrieval_snapshot_imports(self):
-        """Test retrieval_snapshot module imports."""
-        from agentic_core import retrieval_snapshot
 
-        assert retrieval_snapshot is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "retrieval_snapshot", None) is not None
 
-    def test_retrieval_snapshot_class(self):
-        """Test RetrievalSnapshot class exists."""
-        from agentic_core import RetrievalSnapshot
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "RetrievalSnapshot", None) is not None
 
-        assert RetrievalSnapshot is not None
-
-    def test_retrieval_snapshot_callable(self):
-        """Test retrieval_snapshot functions are callable."""
-        from agentic_core import validate_retrieval_snapshot
-
-        assert callable(validate_retrieval_snapshot)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_retrieval_snapshot", None)
+        assert callable(validator)

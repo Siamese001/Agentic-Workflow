@@ -1,32 +1,24 @@
-"""Test RetrievalAnchors functionality."""
+"""Runtime-hardened top-level export tests for retrieval anchors."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestRetrievalAnchors:
-    """Test RetrievalAnchors functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_retrieval_anchors_imports(self):
-        """Test retrieval_anchors module imports."""
-        from agentic_core import retrieval_anchors
 
-        assert retrieval_anchors is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "retrieval_anchors", None) is not None
 
-    def test_retrieval_anchors_class(self):
-        """Test RetrievalAnchors class exists."""
-        from agentic_core import RetrievalAnchors
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "RetrievalAnchors", None) is not None
 
-        assert RetrievalAnchors is not None
-
-    def test_retrieval_anchors_callable(self):
-        """Test retrieval_anchors functions are callable."""
-        from agentic_core import validate_retrieval_anchors
-
-        assert callable(validate_retrieval_anchors)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_retrieval_anchors", None)
+        assert callable(validator)

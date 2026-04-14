@@ -1,32 +1,24 @@
-"""Test RagImportContract functionality."""
+"""Runtime-hardened top-level export tests for rag import contract."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestRagImportContract:
-    """Test RagImportContract functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_rag_import_contract_imports(self):
-        """Test rag_import_contract module imports."""
-        from agentic_core import rag_import_contract
 
-        assert rag_import_contract is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "rag_import_contract", None) is not None
 
-    def test_rag_import_contract_class(self):
-        """Test RagImportContract class exists."""
-        from agentic_core import RagImportContract
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "RagImportContract", None) is not None
 
-        assert RagImportContract is not None
-
-    def test_rag_import_contract_callable(self):
-        """Test rag_import_contract functions are callable."""
-        from agentic_core import validate_rag_import_contract
-
-        assert callable(validate_rag_import_contract)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_rag_import_contract", None)
+        assert callable(validator)

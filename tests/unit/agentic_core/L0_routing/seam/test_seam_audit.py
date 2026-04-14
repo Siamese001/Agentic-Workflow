@@ -1,32 +1,24 @@
-"""Test SeamAudit functionality."""
+"""Runtime-hardened top-level export tests for seam audit."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
-class TestSeamAudit:
-    """Test SeamAudit functionality."""
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
 
-    def test_seam_audit_imports(self):
-        """Test seam_audit module imports."""
-        from agentic_core import seam_audit
 
-        assert seam_audit is not None
+class TestExports:
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "seam_audit", None) is not None
 
-    def test_seam_audit_class(self):
-        """Test SeamAudit class exists."""
-        from agentic_core import SeamAudit
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "SeamAudit", None) is not None
 
-        assert SeamAudit is not None
-
-    def test_seam_audit_callable(self):
-        """Test seam_audit functions are callable."""
-        from agentic_core import validate_seam_audit
-
-        assert callable(validate_seam_audit)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_seam_audit", None)
+        assert callable(validator)

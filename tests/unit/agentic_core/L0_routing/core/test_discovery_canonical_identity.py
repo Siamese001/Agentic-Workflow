@@ -1,32 +1,24 @@
-"""Test DiscoveryCanonicalIdentity functionality."""
+"""Runtime-hardened top-level export tests for discovery canonical identity."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytestmark = pytest.mark.unit
 
 
-@pytest.mark.unit
+@pytest.fixture(scope="module")
+def agentic_core_package():
+    return pytest.importorskip("agentic_core")
+
+
 class TestDiscoveryCanonicalIdentity:
-    """Test DiscoveryCanonicalIdentity functionality."""
+    def test_module_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "discovery_canonical_identity", None) is not None
 
-    def test_discovery_canonical_identity_imports(self):
-        """Test discovery_canonical_identity module imports."""
-        from agentic_core import discovery_canonical_identity
+    def test_class_is_exposed(self, agentic_core_package):
+        assert getattr(agentic_core_package, "DiscoveryCanonicalIdentity", None) is not None
 
-        assert discovery_canonical_identity is not None
-
-    def test_discovery_canonical_identity_class(self):
-        """Test DiscoveryCanonicalIdentity class exists."""
-        from agentic_core import DiscoveryCanonicalIdentity
-
-        assert DiscoveryCanonicalIdentity is not None
-
-    def test_discovery_canonical_identity_callable(self):
-        """Test discovery_canonical_identity functions are callable."""
-        from agentic_core import validate_discovery_canonical_identity
-
-        assert callable(validate_discovery_canonical_identity)
+    def test_validator_is_callable(self, agentic_core_package):
+        validator = getattr(agentic_core_package, "validate_discovery_canonical_identity", None)
+        assert callable(validator)

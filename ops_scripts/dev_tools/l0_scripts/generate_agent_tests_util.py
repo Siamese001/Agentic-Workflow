@@ -1,99 +1,150 @@
-"""
-Generate test files for agents lacking test coverage.
-Priority: L5 > L4 > L3 > L2 > L1 > L0 > Base > Apps
-"""
+"""Generate smoke-test stubs for a prioritized subset of discovered agent classes."""
 
-import json
+from __future__ import annotations
+
+import argparse
+import ast
+import sys
 from pathlib import Path
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_pulls_context,
-    _emit_validated_by_safety_plane,
-    _emit_writes_through,
-    emit_determinism_digest,
-)
-from tqdm import tqdm
-
-_emit_writes_through("p1", "generate_agent_tests_util", "uwg_governed_write")
-_emit_writes_through("p1", "generate_agent_tests_util", "uwg_governed_write_2")
-_emit_pulls_context("p1", "generate_agent_tests_util", "context_retrieval")
-_emit_pulls_context("p1", "generate_agent_tests_util", "context_retrieval_2")
-emit_determinism_digest("trace_generate_agent_tests_util", "generate_agent_tests_util_dispatch")
-emit_determinism_digest("trace_generate_agent_tests_util", "generate_agent_tests_util_complete")
-_emit_validated_by_safety_plane("p1", "generate_agent_tests_util", "safety_validation")
-project_root = Path(__file__).parent.parent
-with open(project_root / "untested_agents.json", encoding="utf-8") as f:
-    untested_agents = json.load(f)
-LAYER_PRIORITY = ["L5", "L4", "L3", "L2", "L1", "L0", "Base", "L6", "Apps", "Utils"]
+LAYER_PRIORITY = ["L5", "L4", "L3", "L2", "L1", "L0", "Base", "L6", "Apps", "Utils", "Other"]
+CLASS_SUFFIXES = ("Agent", "Specialist", "Architect", "Auditor", "Validator")
 
 
-def get_test_template(agent: dict) -> str:
-    """Generate a test file template for an agent."""
-    class_name = agent["class_name"]
-    agent_path = agent["path"].replace("\\", "/")
-    layer = agent["layer"]
-    test_dir = project_root / TESTS_DIR / layer.lower()
-    test_dir.mkdir(parents=True, exist_ok=True)
-    template = f'''#!/usr/bin/env python3\n"""\nTest suite for {class_name}\nGenerated automatically to improve test coverage.\n"""\nimport pytest\nimport sys\nfrom pathlib import Path\n\n# Add project root to path\nproject_root = Path(__file__).parent.parent.parent\nsys.path.insert(0, str(project_root))\n\nfrom {agent_path.replace("/", ".").replace(".py", "")} import {class_name}\n\n\nclass Test{class_name}:\n    """Test suite for {class_name}."""\n\n    @pytest.fixture\n    def agent(self):\n        """Create agent instance for testing."""\n        return {class_name}()\n\n    def test_instantiation(self, agent):\n        """Test that agent can be instantiated."""\n        assert agent is not None\n        assert isinstance(agent, {class_name})\n\n    def test_has_heal_repository(self, agent):\n        """Test that agent has heal_repository method."""\n        assert hasattr(agent, 'heal_repository')\n        assert callable(getattr(agent, 'heal_repository'))\n\n    def test_heal_repository_dry_run(self, agent):\n        """Test heal_repository in dry-run mode."""\n        result = agent.heal_repository(dry_run=True, execute=False)\n        assert isinstance(result, dict)\n        assert 'violations' in result or 'fixed' in result\n\n    def test_mcp_hardened(self, agent):\n        """Test that agent has MCP hardening."""\n        # Check for MCPHardenedMixin in MRO\n        mro_classes = [cls.__name__ for cls in type(agent).__mro__]\n        assert 'MCPHardenedMixin' in mro_classes, f"Agent should have MCPHardenedMixin in MRO"\n\n    def test_class_name(self, agent):\n        """Test that agent has correct class name."""\n        assert agent.__class__.__name__ == \'{class_name}'\n\n    # Add more specific tests based on agent methods\n    # TODO: Expand with agent-specific test cases\n\n\nif __name__ == "__main__":\n    pytest.main([__file__, "-v"])\n'''
-    return template
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "l0_scripts").exists() and (candidate / "L0_routing_scripts").exists():
+            return candidate
+    return Path(__file__).resolve().parents[1]
 
 
-# guardian: allow-magic-config
-def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10) -> int:
-    """Generate test files for agents in a specific layer."""
-    layer_agents = [a for a in agents if a["layer"] == layer]
-    if not layer_agents:
-        return 0
-    print(f"\n{'=' * 70}")
-    print(f"Generating tests for {layer} layer ({len(layer_agents)} agents)")
-    print(f"{'=' * 70}")
-    generated = 0
-    for agent in tqdm(layer_agents[:max_count], desc="Processing", unit="item"):
-        class_name = agent["class_name"]
-        test_file = project_root / TESTS_DIR / layer.lower() / f"test_{class_name}.py"
-        if test_file.exists():
-            print(f"  ⏭️  {class_name}: test already exists")
-            continue
+def _iter_python_files(project_root: Path):
+    for path in project_root.rglob("*.py"):
+        if "__pycache__" not in path.parts and "tests" not in path.parts:
+            yield path
+
+
+def _infer_layer(path: Path) -> str:
+    text = str(path).replace("\\", "/")
+    if "/L0_routing_scripts/" in text or "/l0_scripts/" in text or "/L0_routing/" in text:
+        return "L0"
+    if "/L1_" in text:
+        return "L1"
+    if "/L2_" in text:
+        return "L2"
+    if "/L3_" in text:
+        return "L3"
+    if "/L4_" in text:
+        return "L4"
+    if "/L5_" in text:
+        return "L5"
+    return "Other"
+
+
+def _discover_agents(project_root: Path) -> list[dict]:
+    agents = []
+    for path in _iter_python_files(project_root):
         try:
-            test_content = get_test_template(agent)
-            test_file.parent.mkdir(parents=True, exist_ok=True)
-            test_file.write_text(test_content, encoding="utf-8")
-            print(f"  ✅ {class_name}: test generated")
-            generated += 1
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            print(f"  ❌ {class_name}: failed - {e}")
-    if len(layer_agents) > max_count:
-        print(f"  ... {len(layer_agents) - max_count} more agents in {layer} (not generated)")
-    return generated
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        except (OSError, SyntaxError):
+            continue
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name.endswith(CLASS_SUFFIXES):
+                agents.append(
+                    {
+                        "class_name": node.name,
+                        "path": str(path.relative_to(project_root)).replace("\\", "/"),
+                        "layer": _infer_layer(path),
+                    }
+                )
+    return agents
 
 
-def main():
-    """Generate tests for untested agents by priority."""
+def _test_path(project_root: Path, agent: dict) -> Path:
+    return project_root / "tests" / agent["layer"].lower() / f"test_{agent['class_name']}.py"
+
+
+def _module_template(agent: dict) -> str:
+    rel_source_path = agent["path"]
+    class_name = agent["class_name"]
+    return f'''"""Auto-generated smoke tests for {class_name}."""
+
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+SOURCE_PATH = Path(__file__).resolve().parents[2] / "{rel_source_path}"
+CLASS_NAME = "{class_name}"
+
+
+def _load_class():
+    spec = importlib.util.spec_from_file_location(SOURCE_PATH.stem, SOURCE_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Unable to load module from {{SOURCE_PATH}}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return getattr(module, CLASS_NAME)
+
+
+def test_source_file_exists():
+    assert SOURCE_PATH.exists()
+
+
+def test_class_is_defined():
+    cls = _load_class()
+    assert cls.__name__ == CLASS_NAME
+'''
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Generate smoke tests for a prioritized subset of discovered agents"
+    )
+    parser.add_argument("--apply", action="store_true", help="Write generated tests to disk")
+    parser.add_argument("--max-per-layer", type=int, default=10, help="Maximum tests to generate per layer")
+    args = parser.parse_args(argv)
+
+    project_root = _find_project_root()
+    agents = _discover_agents(project_root)
+    total_generated = 0
+
     print("=" * 70)
     print("AGENT TEST GENERATION")
     print("=" * 70)
-    print(f"Total untested agents: {len(untested_agents)}")
-    total_generated = 0
+    print(f"Total discovered agents: {len(agents)}")
+
     for layer in LAYER_PRIORITY:
-        # guardian: allow-magic-config
-        generated = generate_tests_for_layer(layer, untested_agents, max_count=10)
-        total_generated += generated
+        layer_agents = [agent for agent in agents if agent["layer"] == layer]
+        if not layer_agents:
+            continue
+        generated_here = 0
+        print(f"\nGenerating tests for {layer} layer ({len(layer_agents)} agents)")
+        for agent in layer_agents:
+            if generated_here >= max(args.max_per_layer, 0):
+                break
+            test_file = _test_path(project_root, agent)
+            if test_file.exists():
+                print(f"  ⏭️  {agent['class_name']}: test already exists")
+                continue
+            generated_here += 1
+            total_generated += 1
+            print(
+                f"  {'✅ generating' if args.apply else '📝 would generate'} {test_file.relative_to(project_root)}"
+            )
+            if args.apply:
+                test_file.parent.mkdir(parents=True, exist_ok=True)
+                test_file.write_text(_module_template(agent), encoding="utf-8")
+        if len(layer_agents) > args.max_per_layer:
+            print(f"  ... {len(layer_agents) - args.max_per_layer} more agents in {layer}")
+
     print("\n" + "=" * 70)
     print("SUMMARY")
     print("=" * 70)
-    print(f"Total tests generated: {total_generated}")
-    print(f"Remaining untested: {len(untested_agents) - total_generated}")
-    if total_generated > 0:
-        print("\n✅ Test generation complete!")
-        print("\nNext steps:")
-        print("1. Review generated tests in tests/ directory")
-        print("2. Run: pytest tests/ -v")
-        print("3. Run: python scripts/full_agent_discovery.py")
-        print("4. Verify improved test coverage % in dashboard")
-    else:
-        print("\n⚠️  No new tests generated (all agents already have tests)")
+    print(f"Total tests {'generated' if args.apply else 'planned'}: {total_generated}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

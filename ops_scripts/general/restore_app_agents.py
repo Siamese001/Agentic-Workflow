@@ -31,6 +31,14 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
+
+def _resolve_project_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
 _emit_writes_through("p1", "restore_app_agents", "uwg_governed_write")
 _emit_writes_through("p1", "restore_app_agents", "uwg_governed_write_2")
 _emit_pulls_context("p1", "restore_app_agents", "context_retrieval")
@@ -39,7 +47,7 @@ emit_determinism_digest("trace_restore_app_agents", "restore_app_agents_dispatch
 emit_determinism_digest("trace_restore_app_agents", "restore_app_agents_complete")
 _emit_validated_by_safety_plane("p1", "restore_app_agents", "safety_validation")
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = _resolve_project_root()
 ARCHIVE_DIR = PROJECT_ROOT / ARCHIVES_DIR / "hierarchy_violations" / "apps_depth"
 
 
@@ -60,7 +68,7 @@ def extract_original_path(file_path: Path) -> str:
         if match:
             return match.group(1).replace("\\", "/")
     # guardian: allow-silent-swallow
-    except Exception:
+    except (OSError, UnicodeDecodeError, re.error):
         pass
 
     # Fallback: reconstruct from archive path
