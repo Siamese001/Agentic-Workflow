@@ -43,7 +43,9 @@ from agentic_core.L2_execution.audit.telemetry_bus import BusType, get_telemetry
 # Helpers
 # ---------------------------------------------------------------------------
 
-_BASELINE_PATH = Path(__file__).parents[6] / "ops_scripts" / "ci" / "evidence_governance_baseline.json"
+_BASELINE_PATH = (
+    Path(__file__).resolve().parents[3] / "ops_scripts" / "ci" / "evidence_governance_baseline.json"
+)
 
 
 def _metrics(
