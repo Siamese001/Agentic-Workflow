@@ -3,6 +3,7 @@ Execute safe deletion of verified identical duplicates.
 This script bypasses the interactive prompt for automated execution.
 """
 
+import argparse
 import asyncio
 import sys
 from pathlib import Path
@@ -163,12 +164,23 @@ _emit_validated_by_safety_plane("p1", "execute_safe_deletion_util", "safety_vali
 _emit_invokes_eval("p1", "execute_safe_deletion_util", "eval_call")
 _emit_proposal_commits_routing("p1", "execute_safe_deletion_util", "routing_commit")
 
-project_root = Path(__file__).parent.parent
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent
+
+
+project_root = _find_project_root()
+project_root_str = str(project_root)
 # guardian: allow-global-mutation
-sys.path.insert(0, str(project_root))
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
 
 
-async def main():
+async def main(*, dry_run: bool = True, force: bool = False):
     """Execute deletion of verified identical duplicates."""
     import uuid as _uuid  # noqa: PLC0415
 
@@ -219,8 +231,12 @@ async def main():
             total_to_delete += len(rec["delete"])
     print(f"   Total files to delete: {total_to_delete}")
     print()
-    print("[3/3] Executing deletion...")
-    delete_result = agent.delete_duplicates(recommendations, dry_run=False)
+    mode = "DRY-RUN" if dry_run else "EXECUTE"
+    print(f"[3/3] {mode} deletion...")
+    if not dry_run and not force:
+        print("Refusing to delete files without --force.")
+        return 1
+    delete_result = agent.delete_duplicates(recommendations, dry_run=dry_run)
     print()
     print("=" * 120)
     print("DELETION RESULTS")
@@ -233,11 +249,22 @@ async def main():
         for error in delete_result["errors"]:
             print(f"  ✗ {error['path']}: {error['error']}")
         print()
-    print("✓ Deletion complete!")
-    print(f"  Successfully deleted {delete_result['deleted_count']} duplicate files")
+    if dry_run:
+        print("✓ Dry-run complete!")
+        print("  No files were actually deleted")
+    else:
+        print("✓ Deletion complete!")
+        print(f"  Successfully deleted {delete_result['deleted_count']} duplicate files")
     print(f"  Kept {len(recommendations)} canonical copies")
     print()
+    return 0 if not delete_result["errors"] else 1
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(description="Execute safe deletion of verified duplicate files")
+    parser.add_argument("--apply", action="store_true", help="Actually delete files. Default is dry-run.")
+    parser.add_argument(
+        "--force", action="store_true", help="Required together with --apply to allow deletion."
+    )
+    args = parser.parse_args()
+    raise SystemExit(asyncio.run(main(dry_run=not args.apply, force=args.force)))

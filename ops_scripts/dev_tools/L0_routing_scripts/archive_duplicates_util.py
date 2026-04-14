@@ -1,3 +1,4 @@
+import argparse
 import shutil
 import sys
 from datetime import datetime
@@ -155,7 +156,16 @@ _emit_stores_embedding("p4", "archive_duplicates_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "archive_duplicates_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "archive_duplicates_util", "exec_snapshot_link")
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent.parent
+
+
+PROJECT_ROOT = _find_project_root()
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 ARCHIVE_BASE = PROJECT_ROOT / ARCHIVES_DIR / "consolidated_duplicates" / f"batch_{TIMESTAMP}"
 TARGETS = [
@@ -175,9 +185,9 @@ TARGETS = [
 ]
 
 
-def main():
-    """TODO: Add documentation for main."""
-    if not ARCHIVE_BASE.exists():
+def main(*, dry_run: bool = True, force: bool = False) -> int:
+    """Archive duplicate targets safely with dry-run default."""
+    if not ARCHIVE_BASE.exists() and not dry_run:
         try:
             ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
         # guardian: allow-silent-swallow
@@ -196,9 +206,16 @@ def main():
             dest_path = ARCHIVE_BASE / f"{parent_name}_{filename}"
         if source_path.exists():
             try:
-                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
-                shutil.move(str(source_path), str(dest_path))
-                moved_count += 1
+                if dry_run:
+                    print(
+                        f"[DRY-RUN] Would archive {source_path.relative_to(PROJECT_ROOT)} -> {dest_path.relative_to(PROJECT_ROOT)}"
+                    )
+                elif force:
+                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
+                    shutil.move(str(source_path), str(dest_path))
+                    moved_count += 1
+                else:
+                    print(f"[SKIP] Use --force to archive {source_path.relative_to(PROJECT_ROOT)}")
             # guardian: allow-silent-swallow
             except Exception:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
@@ -211,4 +228,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Archive duplicate targets with safe defaults")
+    parser.add_argument("--apply", action="store_true", help="Perform file moves. Default is dry-run.")
+    parser.add_argument("--force", action="store_true", help="Allow mutations when used with --apply.")
+    args = parser.parse_args()
+    raise SystemExit(main(dry_run=not args.apply, force=args.force))

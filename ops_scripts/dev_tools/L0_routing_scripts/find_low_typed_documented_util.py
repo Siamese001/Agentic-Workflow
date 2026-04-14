@@ -1,6 +1,7 @@
 """Find agents with Typed % < 100% or Documented % < 100%."""
 
 import json
+import sys
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -150,20 +151,36 @@ _emit_stores_embedding("p4", "find_low_typed_documented_util", "embedding_store"
 _emit_updates_meta_learning_state("p4", "find_low_typed_documented_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "find_low_typed_documented_util", "exec_snapshot_link")
 
-PROJECT_ROOT = Path(__file__).parent.parent
-with open(PROJECT_ROOT / "agent_discovery_full.json", encoding="utf-8") as f:
-    agents = json.load(f)
-low_typed = [a for a in agents if a.get("typed_pct", 100) < 100]
-low_doc = [a for a in agents if a.get("documented_pct", 100) < 100]
-print(f"Agents with Typed < 100%: {len(low_typed)}")
-print(f"Agents with Documented < 100%: {len(low_doc)}")
-print("\n" + "=" * 70)
-print("LOW TYPED AGENTS:")
-print("=" * 70)
-for a in low_typed:
-    print(f"  {a['class_name']}: {a['typed_pct']}% - {a['path']}")
-print("\n" + "=" * 70)
-print("LOW DOCUMENTED AGENTS:")
-print("=" * 70)
-for a in low_doc:
-    print(f"  {a['class_name']}: {a['documented_pct']}% - {a['path']}")
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agent_discovery_full.json").exists() and (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+def main() -> int:
+    project_root = _find_project_root()
+    with (project_root / "agent_discovery_full.json").open(encoding="utf-8") as f:
+        agents = json.load(f)
+
+    low_typed = [a for a in agents if a.get("typed_pct", 100) < 100]
+    low_doc = [a for a in agents if a.get("documented_pct", 100) < 100]
+    print(f"Agents with Typed < 100%: {len(low_typed)}")
+    print(f"Agents with Documented < 100%: {len(low_doc)}")
+    print("\n" + "=" * 70)
+    print("LOW TYPED AGENTS:")
+    print("=" * 70)
+    for agent in low_typed:
+        print(f"  {agent['class_name']}: {agent['typed_pct']}% - {agent['path']}")
+    print("\n" + "=" * 70)
+    print("LOW DOCUMENTED AGENTS:")
+    print("=" * 70)
+    for agent in low_doc:
+        print(f"  {agent['class_name']}: {agent['documented_pct']}% - {agent['path']}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

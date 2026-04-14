@@ -161,7 +161,16 @@ _emit_validated_by_safety_plane("p1", "verify_healing_metrics_util", "safety_val
 _emit_invokes_eval("p1", "verify_healing_metrics_util", "eval_call")
 _emit_proposal_commits_routing("p1", "verify_healing_metrics_util", "routing_commit")
 
-PROJECT_ROOT = Path(__file__).parent.parent
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent
+
+
+PROJECT_ROOT = _find_project_root()
 DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
 DASHBOARD_DATA = PROJECT_ROOT / "agentic_core/L6_observability/dashboards/data/dashboard_data.js"
 
@@ -186,6 +195,12 @@ def main():
     print("=" * 70)
     print("HEALING & INVOCATION METRICS VERIFICATION")
     print("=" * 70)
+    if not DISCOVERY_FILE.exists():
+        print(f"Discovery file not found: {DISCOVERY_FILE}")
+        return 1
+    if not DASHBOARD_DATA.exists():
+        print(f"Dashboard data file not found: {DASHBOARD_DATA}")
+        return 1
     with open(DISCOVERY_FILE, encoding="utf-8") as f:
         agents = json.load(f)
     total = len(agents)
@@ -208,6 +223,7 @@ def main():
         print(f"  Test %: {total_row['Test %']}")
         print(f"  MCP Hardened %: {total_row['MCP Hardened %']}")
         print(f"  Health Score: {total_row['Health']}")
+        return 0
     print("\n" + "=" * 70)
     if with_healing == total and with_invocation == total:
         print("✅ 100% HEALING AND INVOCATION ACHIEVED")
@@ -221,6 +237,8 @@ def main():
         print(f"\nMissing healing: {total - with_healing} agents")
         print(f"Missing invocation: {total - with_invocation} agents")
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

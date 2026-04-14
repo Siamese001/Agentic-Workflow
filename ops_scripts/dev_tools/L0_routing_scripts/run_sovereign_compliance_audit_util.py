@@ -93,9 +93,19 @@ _emit_stores_embedding("p4", "run_sovereign_compliance_audit_util", "embedding_s
 _emit_updates_meta_learning_state("p4", "run_sovereign_compliance_audit_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "run_sovereign_compliance_audit_util", "exec_snapshot_link")
 
-project_root = Path(__file__).resolve().parents[3]
-# guardian: allow-global-mutation
-sys.path.insert(0, str(project_root))
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+project_root = _find_project_root()
+project_root_str = str(project_root)
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.enforcement.safety_reasoning_seam import load_structure_enforcer_agent
 from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator

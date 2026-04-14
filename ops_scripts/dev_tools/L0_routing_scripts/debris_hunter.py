@@ -9,6 +9,7 @@ Rationale:
     3. __temp_ artifacts if any rename operations were interrupted.
 """
 
+import argparse
 import os
 import sys
 from pathlib import Path
@@ -179,9 +180,17 @@ _emit_invokes_eval("p1", "debris_hunter", "eval_call")
 _emit_proposal_commits_routing("p1", "debris_hunter", "routing_commit")
 
 
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
 class DebrisHunter:
     def __init__(self, root: Path, dry_run: bool = True):
-        self.root = root
+        self.root = root.resolve()
         self.dry_run = dry_run
         self.debris_found = []
 
@@ -236,6 +245,8 @@ class DebrisHunter:
                 print(f"[TEMP] Found interrupted rename artifact: {path.name}")
 
     def execute_cleanup(self):
+        self.debris_found = list(dict.fromkeys(self.debris_found))
+
         if not self.debris_found:
             print("\n✅ No debris found. System clean.")
             return 0
@@ -254,16 +265,21 @@ class DebrisHunter:
                 print(f"[DELETED] {path.name}")
                 deleted += 1
             # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as e:
+            except (OSError, ValueError, TypeError) as e:
                 print(f"[ERROR] Could not delete {path.name}: {e}")
 
         print(f"\n✅ Cleanup complete. Deleted {deleted} files.")
         return 0
 
 
-if __name__ == "__main__":
-    dry_run = "--force" not in sys.argv
-    root = Path(__file__).parent.parent
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Find and optionally delete migration debris.")
+    parser.add_argument("--apply", action="store_true", help="Delete discovered debris. Default is dry-run.")
+    parser.add_argument("--root", type=Path, help="Override project root.")
+    args = parser.parse_args()
+
+    root = args.root.resolve() if args.root else _find_project_root()
+    dry_run = not args.apply
 
     print("=" * 60)
     print("SOVEREIGNTY DEBRIS HUNTER")
@@ -276,4 +292,8 @@ if __name__ == "__main__":
     hunter.scan_for_collisions()
     hunter.scan_for_known_redundancies()
     hunter.scan_for_temp_files()
-    sys.exit(hunter.execute_cleanup())
+    return hunter.execute_cleanup()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

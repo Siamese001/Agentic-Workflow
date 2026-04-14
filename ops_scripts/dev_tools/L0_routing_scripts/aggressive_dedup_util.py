@@ -9,6 +9,7 @@ Strategies:
 4. Consolidate test files
 """
 
+import argparse
 import ast
 import re
 from collections import defaultdict
@@ -316,7 +317,7 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
     return low_value
 
 
-def main():
+def main(*, dry_run: bool = True, force: bool = False) -> int:
     print("=" * 80)
     print("AGGRESSIVE DEDUPLICATION")
     print("=" * 80)
@@ -378,19 +379,35 @@ def main():
             print(f"    ... and {len(files) - 10} more")
 
     # Execute deletion
-    print("\n[5/5] Executing deletion...")
+    mode = "DRY-RUN" if dry_run else "APPLY"
+    print(f"\n[5/5] {mode} deletion phase...")
 
     deleted = 0
     for f in to_delete:
         try:
-            Path(f).unlink()
+            target = Path(f)
+            if dry_run:
+                print(f"  [DRY-RUN] Would delete: {target}")
+                continue
+            if not force:
+                print(f"  [SKIP] Use --force to delete: {target}")
+                continue
+            target.unlink()
             deleted += 1
         # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError, OSError) as e:
             print(f"  ✗ Failed: {Path(f).name}: {e}")
 
-    print(f"\n  ✓ Deleted {deleted} files")
+    if dry_run:
+        print("\n  ✓ Dry-run complete")
+    else:
+        print(f"\n  ✓ Deleted {deleted} files")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Aggressive deduplication with safe defaults")
+    parser.add_argument("--apply", action="store_true", help="Perform deletions. Default is dry-run.")
+    parser.add_argument("--force", action="store_true", help="Allow file deletion when used with --apply.")
+    args = parser.parse_args()
+    raise SystemExit(main(dry_run=not args.apply, force=args.force))

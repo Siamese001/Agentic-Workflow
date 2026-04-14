@@ -258,20 +258,27 @@ def scan_for_rglob_usage(root_dir: Path) -> tuple[int, list[dict]]:
     return total_count, offenders
 
 
-def main():
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent
+
+
+def main() -> int:
     """Main entry point for CI check."""
     print("=" * 60)
     print("CI GUARD: rglob/glob Usage Check")
     print("=" * 60)
 
     # Find project root (parent of scripts directory)
-    script_dir = Path(__file__).parent
-    project_root = script_dir.parent
+    project_root = _find_project_root()
     agentic_core = project_root / AGENTIC_CORE_DIR
 
     if not agentic_core.exists():
         print(f"ERROR: agentic_core directory not found at {agentic_core}")
-        sys.exit(1)
+        return 1
 
     print(f"Scanning: {agentic_core}")
     print(f"Maximum allowed: {MAX_ALLOWED_RGLOB}")
@@ -302,13 +309,13 @@ def main():
         print("  1. Refactor files to use ssot_discovery.get_python_files()")
         print("  2. Or use scan_guard.guarded_rglob() for tracking")
         print()
-        sys.exit(1)
+        return 1
     else:
         print("=" * 60)
         print(f"✅ PASS: Count ({total_count}) is within limit ({MAX_ALLOWED_RGLOB})")
         print("=" * 60)
-        sys.exit(0)
+        return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

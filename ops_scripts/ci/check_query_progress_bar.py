@@ -18,7 +18,10 @@ import ast
 import sys
 from pathlib import Path
 
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ImportError:
+    sys.exit("[FATAL] tqdm not installed — run: pip install tqdm")
 
 _ROOT = Path(__file__).resolve().parents[2]
 
@@ -197,13 +200,16 @@ def check_files(paths: list[Path], verbose: bool = False) -> list[Violation]:
 def collect_repo_files() -> list[Path]:
     """Collect all Python files from the canonical scan directories."""
     files: list[Path] = []
+    seen: set[Path] = set()
     for dirname in _SCAN_DIRS:
         scan_dir = _ROOT / dirname
         if not scan_dir.is_dir():
             continue
         for py_file in sorted(scan_dir.rglob("*.py")):
-            if not _should_skip(py_file):
-                files.append(py_file)
+            if _should_skip(py_file) or py_file in seen:
+                continue
+            seen.add(py_file)
+            files.append(py_file)
     return files
 
 
@@ -216,6 +222,11 @@ def main(argv: list[str] | None = None) -> int:
 
     # Explicit file list (from pre-commit --filenames or manual invocation)
     explicit_files = [Path(a) for a in argv if not a.startswith("-") and a.endswith(".py")]
+    missing_explicit = [p for p in explicit_files if not p.exists()]
+    if missing_explicit:
+        for path in missing_explicit:
+            print(f"[FAIL] File not found: {path}")
+        return 1
 
     if explicit_files:
         target_files = explicit_files

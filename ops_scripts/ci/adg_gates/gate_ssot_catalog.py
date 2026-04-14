@@ -19,6 +19,19 @@ Classification decisions from HITL approval (design package, 2026):
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
+
 from dataclasses import dataclass, field
 from typing import Any
 

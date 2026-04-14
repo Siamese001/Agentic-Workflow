@@ -24,7 +24,10 @@ import re
 import sys
 from pathlib import Path
 
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ImportError:
+    sys.exit("[FATAL] tqdm not installed — run: pip install tqdm")
 
 _ROOT = Path(__file__).resolve().parents[2]
 
@@ -43,9 +46,19 @@ _HIGH_CONFIDENCE_THRESHOLD = 0.85
 _SURFACE_THRESHOLD = 0.72
 
 
+def _read_text(path: Path) -> tuple[str | None, str | None]:
+    try:
+        return path.read_text(encoding="utf-8"), None
+    except (OSError, UnicodeDecodeError) as exc:
+        return None, f"{type(exc).__name__}: {exc}"
+
+
 def validate_file(path: Path) -> list[tuple[str, str]]:
     """Return list of (location, violation_type) tuples for HITL format issues in *path*."""
-    text = path.read_text(encoding="utf-8")
+    text, read_error = _read_text(path)
+    if read_error is not None or text is None:
+        return [("file", f"FILE_READ_ERROR: {read_error}")]
+
     violations: list[tuple[str, str]] = []
 
     # 1. Global banned patterns (whole file, line by line)
@@ -105,8 +118,16 @@ def validate_file(path: Path) -> list[tuple[str, str]]:
 
 
 def _run(paths: list[Path]) -> int:
+    if not paths:
+        print("[SKIP] validate_hitl_format: no files provided")
+        return 0
+
     exit_code = 0
     for path in paths:
+        if not path.exists():
+            print(f"[MISSING_FILE] {path}", file=sys.stderr)
+            exit_code = 1
+            continue
         for loc, vtype in validate_file(path):
             print(f"[{vtype}] {path}:{loc}", file=sys.stderr)
             exit_code = 1

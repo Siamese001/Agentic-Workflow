@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -165,12 +166,41 @@ _emit_validated_by_safety_plane("p1", "check_sovereign_base_util", "safety_valid
 _emit_invokes_eval("p1", "check_sovereign_base_util", "eval_call")
 _emit_proposal_commits_routing("p1", "check_sovereign_base_util", "routing_commit")
 
-PROJECT_ROOT = Path(__file__).parent.parent
-with open(PROJECT_ROOT / "agent_discovery_full.json") as f:
-    agents = json.load(f)
-sovereign_class = [a for a in agents if a.get("class_name") == "SovereignBaseAgent"]
-if sovereign_class:
-    for _a in sovereign_class:
-        pass
-territory_sovereign = [a for a in agents if a.get("territory") == "Sovereign Base Agent"]
-base_layer = [a for a in agents if a.get("layer") == "Base"]
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agent_discovery_full.json").exists() and (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+def main() -> int:
+    project_root = _find_project_root()
+    discovery_path = project_root / "agent_discovery_full.json"
+    if not discovery_path.exists():
+        print(f"[ERROR] Discovery file not found: {discovery_path}")
+        return 1
+
+    with discovery_path.open(encoding="utf-8") as f:
+        agents = json.load(f)
+
+    sovereign_class = [a for a in agents if a.get("class_name") == "SovereignBaseAgent"]
+    territory_sovereign = [a for a in agents if a.get("territory") == "Sovereign Base Agent"]
+    base_layer = [a for a in agents if a.get("layer") == "Base"]
+
+    print(f"Discovery file: {discovery_path}")
+    print(f"SovereignBaseAgent entries: {len(sovereign_class)}")
+    print(f"'Sovereign Base Agent' territory entries: {len(territory_sovereign)}")
+    print(f"Base layer entries: {len(base_layer)}")
+
+    if sovereign_class:
+        print("Matching class entries:")
+        for entry in sovereign_class:
+            print(f"  - {entry.get('path', '<missing path>')}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

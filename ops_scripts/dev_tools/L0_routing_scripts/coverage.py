@@ -173,8 +173,20 @@ _emit_validated_by_safety_plane("p1", "coverage", "safety_validation")
 _emit_invokes_eval("p1", "coverage", "eval_call")
 _emit_proposal_commits_routing("p1", "coverage", "routing_commit")
 
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent
+
+
+project_root = _find_project_root()
+project_root_str = str(project_root)
 # guardian: allow-global-mutation
-sys.path.insert(0, str(Path(__file__).parent.parent))
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
 
 
 class CoverageValidator:
@@ -258,23 +270,23 @@ async def run_autonomous_remediation():
     return success
 
 
-def main():
+def main() -> int:
     """Main entry point."""
     try:
         result = asyncio.run(run_autonomous_remediation())
-        sys.exit(0 if result else 1)
+        return 0 if result else 1
     # guardian: allow-silent-swallow - acceptable exception handling
     except KeyboardInterrupt:
         print("\n\n⚠️  Remediation interrupted by user")
-        sys.exit(1)
+        return 1
     # guardian: allow-silent-swallow
     except (ValueError, TypeError) as e:
         print(f"\n\n❌ Remediation failed: {e}")
         import traceback
 
         traceback.print_exc()
-        sys.exit(1)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

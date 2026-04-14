@@ -1,0 +1,389 @@
+Loading ChromaDB from C:\Git\Agentic-Workflow\data\cache\chromadb...
+ChromaDB ready in 0.1s
+Collections: ['runtime_evidence', 'arch_docs', 'symbols', 'process_docs', 'incidents_rca', 'ext_knowledge', 'code_chunks', 'tests_guardrails']
+
+Loading embedding model...
+Model ready in 6.2s
+
+=== ext_knowledge: agentic architecture multi-agent orchestration wiring integration patt... ===
+  Encode: 0.140s | Query: 10.063s | Results: 8
+  [1] dist=0.3664 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Built on top of LangGraph
+[SOURCE]: python.langchain.com
+
+LangChainΓÇÖs agents are built on top of LangGraph. This allows us to take advantag...
+  [2] dist=0.4189 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Introduction
+[SOURCE]: python.langchain.com
+
+LangChain vs. LangGraph vs. Deep AgentsIf you are looking to build an agent, we recommend you ...
+  [3] dist=0.4481 | Build a RAG agent with LangChain - Docs by LangChain | https://python.langchain.com/docs/tutorials/rag
+      [SECTION]: ΓÇïOverview
+[SOURCE]: python.langchain.com
+
+A RAG agent that executes searches with a simple tool. This is a good general-purpose implementat...
+  [4] dist=0.4599 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Standard model interface
+[SOURCE]: python.langchain.com
+
+Different providers have unique APIs for interacting with models, including the fo...
+  [5] dist=0.4607 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Easy to use, highly flexible agent
+[SOURCE]: python.langchain.com
+
+LangChainΓÇÖs agent abstraction is designed to be easy to get started with...
+  [6] dist=0.4623 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Debug with LangSmith
+[SOURCE]: python.langchain.com
+
+Gain deep visibility into complex agent behavior with visualization tools that trace e...
+  [7] dist=0.4716 | Build a RAG agent with LangChain - Docs by LangChain | https://python.langchain.com/docs/tutorials/rag
+      [SECTION]: ΓÇïRAG agents
+[SUBSECTION]: ΓÇï2. Retrieval and generation
+[SOURCE]: python.langchain.com
+
+from langchain.tools import tool
+
+@tool(response_for...
+  [8] dist=0.4742 | Hybrid Search with RRF - Chroma Docs | https://docs.trychroma.com/cloud/search-api/hybrid-search
+      [SECTION]: ΓÇïNext Steps
+[SOURCE]: docs.trychroma.com
+
+Learn about batch operations for running multiple RRF searches
+See practical examples of hybrid s...
+
+=== ext_knowledge: agent memory persistence state management durable execution checkpoint... ===
+  Encode: 0.015s | Query: 0.000s | Results: 8
+  [1] dist=0.4000 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      name and description, and methods like `run` and `run_stream` to execute tasks and handle messages. - **AssistantAgent**: A built-in general-purpose a...
+  [2] dist=0.4113 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      [SECTION]: Memory and RAG#
+[SOURCE]: microsoft.github.io
+
+There are several use cases where it is valuable to maintain a store of useful facts that ca...
+  [3] dist=0.4119 | compliance_mapping | data/external/reference_playbooks/compliance_mapping.yaml
+      trail documentation"
+
+      testimonial_evidence:
+        - "Management attestations"
+        - "Staff interviews and statements"
+        - "Third-par...
+  [4] dist=0.4180 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Debug with LangSmith
+[SOURCE]: python.langchain.com
+
+Gain deep visibility into complex agent behavior with visualization tools that trace e...
+  [5] dist=0.4215 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      Memory and RAG# There are several use cases where it is valuable to maintain a store of useful facts that can be intelligently added to the context of...
+  [6] dist=0.4225 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      [SECTION]: RAG Agent: Putting It All Together#
+[SOURCE]: microsoft.github.io
+
+The RAG (Retrieval Augmented Generation) pattern which is common in buil...
+  [7] dist=0.4246 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      the add, query and update_context methods to implement the desired functionality and pass the memory store to your agent. Currently the following exam...
+  [8] dist=0.4334 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      [SECTION]: Building a Simple RAG Agent#
+[SOURCE]: microsoft.github.io
+
+---------- TextMessage (user) ----------
+What is AgentChat?
+---------- MemoryQu...
+
+=== ext_knowledge: agent guardrails safety layer input validation output filtering trust ... ===
+  Encode: 0.016s | Query: 0.000s | Results: 8
+  [1] dist=0.3894 | Tools - Model Context Protocol | https://modelcontextprotocol.io/specification/2025-11-25/server/tools
+      [SECTION]: ΓÇïSecurity Considerations
+[SOURCE]: modelcontextprotocol.io
+
+Servers MUST:
+
+Validate all tool inputs
+Implement proper access controls
+Rate l...
+  [2] dist=0.4236 | nvlpubs.nist.gov | https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf
+      organizations in varying degrees and capacities so society can benefit from AI while also being protected from its potential harms. Artificial Intelli...
+  [3] dist=0.4260 | nvlpubs.nist.gov | https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf
+      from its potential harms. Artificial Intelligence (AI) AI AI RMF AI RMF 1.0 AI systems trustworthy and responsible AI. uuid:bb21b82c-8d79-48f7-bb00-63...
+  [4] dist=0.4282 | nvlpubs.nist.gov | https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf
+      to the AI landscape as AI technologies continue to develop, and to be operationalized by organizations in varying degrees and capacities so society ca...
+  [5] dist=0.4324 | red_team_protocol_v8 | data/external/reference_playbooks/red_team_protocol_v8.md
+      # Red Team Protocol v8.0 - December 2025
+## Comprehensive Safety Testing Framework for AI Systems
+
+### 1. Protocol Overview
+
+This protocol establishes...
+  [6] dist=0.4335 | AI Risk Management Framework | NIST | https://www.nist.gov/itl/ai-risk-management-framework
+      New guidance seeks to cultivate trust in AI technologies and promote AI innovation while mitigating risk. New guidance seeks to cultivate trust in AI ...
+  [7] dist=0.4386 | nvlpubs.nist.gov | https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf
+      or using AI systems to help manage the many risks of AI and promote trustworthy and responsible development and use of AI systems. The Framework is in...
+  [8] dist=0.4408 | nvlpubs.nist.gov | https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf
+      RMF 1.0 AI systems trustworthy and responsible AI. uuid:bb21b82c-8d79-48f7-bb00-63eec0ff99b1 uuid:252a610a-b48d-4478-8ec1-c6ebe9502a50 endstream endob...
+
+=== ext_knowledge: MCP model context protocol tool server implementation structured outpu... ===
+  Encode: 0.000s | Query: 0.016s | Results: 8
+  [1] dist=0.3166 | Tools - Model Context Protocol | https://modelcontextprotocol.io/specification/2025-11-25/server/tools
+      [SECTION]: ΓÇïError Handling
+[SOURCE]: modelcontextprotocol.io
+
+Protocol Errors: Standard JSON-RPC errors for issues like:
+
+Unknown tools
+Malformed requ...
+  [2] dist=0.3229 | Architecture overview - Model Context Protocol | https://modelcontextprotocol.io/docs/learn/architecture
+      [SECTION]: ΓÇïLayers
+[SUBSECTION]: ΓÇïConcepts of MCP
+[SOURCE]: modelcontextprotocol.io
+
+Data layer: Defines the JSON-RPC based protocol for client-server...
+  [3] dist=0.3248 | Architecture overview - Model Context Protocol | https://modelcontextprotocol.io/docs/learn/architecture
+      MCP servers and combines them into a unified tool registry that the language model can access. This allows the LLM to understand what actions it can p...
+  [4] dist=0.3291 | Architecture overview - Model Context Protocol | https://modelcontextprotocol.io/docs/learn/architecture
+      [SECTION]: ΓÇïScope
+[SOURCE]: modelcontextprotocol.io
+
+MCP Specification: A specification of MCP that outlines the implementation requirements for clien...
+  [5] dist=0.3347 | Architecture overview - Model Context Protocol | https://modelcontextprotocol.io/docs/learn/architecture
+      and server. Note that weΓÇÖre using the proper tool name from the discovery response (weather_current) rather than a simplified name:Tool Call RequestTo...
+  [6] dist=0.3393 | Architecture overview - Model Context Protocol | https://modelcontextprotocol.io/docs/learn/architecture
+      [SECTION]: ΓÇïData Layer Protocol
+[SUBSECTION]: ΓÇïConcepts of MCP
+[SOURCE]: modelcontextprotocol.io
+
+Tools: Executable functions that AI applications can...
+  [7] dist=0.3505 | Architecture overview - Model Context Protocol | https://modelcontextprotocol.io/docs/learn/architecture
+      [SECTION]: ΓÇïData Layer
+[SUBSECTION]: ΓÇïExample
+[SOURCE]: modelcontextprotocol.io
+
+Initialization (Lifecycle Management)
+
+{
+  "jsonrpc": "2.0",
+  "id": ...
+  [8] dist=0.3557 | Architecture overview - Model Context Protocol | https://modelcontextprotocol.io/docs/learn/architecture
+      it to the appropriate MCP server, executes it, and returns the results back to the LLM as part of the conversation flow. This enables the LLM to acces...
+
+=== ext_knowledge: vector database embedding RAG retrieval augmented generation indexing ... ===
+  Encode: 0.000s | Query: 0.000s | Results: 8
+  [1] dist=0.2704 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      [SECTION]: RAG Agent: Putting It All Together#
+[SOURCE]: microsoft.github.io
+
+The RAG (Retrieval Augmented Generation) pattern which is common in buil...
+  [2] dist=0.3002 | Memory and RAG ΓÇö AutoGen | https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/memor
+      chunking them, and storing them in a vector database Retrieval: Finding and using relevant chunks during conversation runtime In our previous examples...
+  [3] dist=0.3334 | Overview - Qdrant | https://www.qdrant.tech/documentation/overview/
+      [SECTION]: Retrieval Process
+[SOURCE]: www.qdrant.tech
+
+Vector search is a transformative information retrieval technique that goes beyond keyword mat...
+  [4] dist=0.3729 | Look at Your Data - Chroma Docs | https://docs.trychroma.com/guides/build/look-at-your-data
+      = Knn( query="machine learning research", # Text query for sparse embeddings key="sparse_embedding", # Metadata field for sparse vectors return_rank=T...
+  [5] dist=0.3770 | BAAI/bge-m3 ┬╖ Hugging Face | https://huggingface.co/BAAI/bge-m3
+      For more details please refer to our github repo: https://github.com/FlagOpen/FlagEmbedding BGE-M3 (paper, code) In this project, we introduce BGE-M3,...
+  [6] dist=0.3774 | Build a RAG agent with LangChain - Docs by LangChain | https://python.langchain.com/docs/tutorials/rag
+      [SECTION]: ΓÇï1. Indexing
+[SOURCE]: python.langchain.com
+
+This section is an abbreviated version of the content in the semantic search tutorial.If your ...
+  [7] dist=0.3872 | BAAI/bge-m3 ┬╖ Hugging Face | https://huggingface.co/BAAI/bge-m3
+      [SECTION]: BGE-M3 (paper, code)
+[SOURCE]: huggingface.co
+
+In this project, we introduce BGE-M3, which is distinguished for its versatility in Multi-Fu...
+  [8] dist=0.4025 | Look at Your Data - Chroma Docs | https://docs.trychroma.com/guides/build/look-at-your-data
+      [SECTION]: Introduction
+[SOURCE]: docs.trychroma.com
+
+What types of searches do we want to support? (semantic, regex, keyword, etc.)
+What embedding mo...
+
+=== ext_knowledge: agent observability tracing telemetry monitoring production debugging ... ===
+  Encode: 0.015s | Query: 0.000s | Results: 8
+  [1] dist=0.3232 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Debug with LangSmith
+[SOURCE]: python.langchain.com
+
+Gain deep visibility into complex agent behavior with visualization tools that trace e...
+  [2] dist=0.4491 | change_history | data/external/reference_playbooks/change_history.yaml
+      ion: "Integration with Trello for visual tracking"
+      - confluence_integration: "Integration with Confluence for documentation"
+      - slack_integ...
+  [3] dist=0.4505 | change_history | data/external/reference_playbooks/change_history.yaml
+      shold"
+      - user_complaints: "Significant user complaints or issues"
+      - compliance_violations: "Regulatory compliance violations"
+      - secu...
+  [4] dist=0.4518 | ownership | data/external/reference_playbooks/ownership.yaml
+      liance_violations:
+        - "Immediate investigation and remediation"
+        - "Root cause analysis"
+        - "Process improvement implementation"
+...
+  [5] dist=0.4542 | compliance_mapping | data/external/reference_playbooks/compliance_mapping.yaml
+      trail documentation"
+
+      testimonial_evidence:
+        - "Management attestations"
+        - "Staff interviews and statements"
+        - "Third-par...
+  [6] dist=0.4551 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: ΓÇï Create an agent
+[SOURCE]: python.langchain.com
+
+# pip install -qU langchain "langchain[anthropic]"
+from langchain.agents import create_ag...
+  [7] dist=0.4599 | LangChain overview - Docs by LangChain | https://python.langchain.com/docs/concepts/rag
+      [SECTION]: Built on top of LangGraph
+[SOURCE]: python.langchain.com
+
+LangChainΓÇÖs agents are built on top of LangGraph. This allows us to take advantag...
+  [8] dist=0.4651 | red_team_protocol_v8 | data/external/reference_playbooks/red_team_protocol_v8.md
+      e monitoring thresholds
+        threshold_updates = self.calculate_threshold_adjustments(test_results)
+        self.metrics_tracker.update_thresholds(...
+
+=== ext_knowledge: agent error handling retry circuit breaker resilience fallback gracefu... ===
+  Encode: 0.016s | Query: 0.000s | Results: 8
+  [1] dist=0.4651 | approval_workflow | data/external/reference_playbooks/approval_workflow.yaml
+      ter", "next_stage_approvers"]
+        template: "stage_approval_notification"
+
+      stage_rejected:
+        recipients: ["submitter", "rejection_appr...
+  [2] dist=0.4655 | change_history | data/external/reference_playbooks/change_history.yaml
+      shold"
+      - user_complaints: "Significant user complaints or issues"
+      - compliance_violations: "Regulatory compliance violations"
+      - secu...
+  [3] dist=0.4690 | approval_workflow | data/external/reference_playbooks/approval_workflow.yaml
+      sions with timestamps"
+      - rejections: "All rejections with reasons"
+      - escalations: "All escalations and their resolutions"
+      - emergenc...
+  [4] dist=0.4752 | api_optimization_guide | data/external/openai_best_practices/api_optimization_guide.md
+      model="gpt-4o",
+                messages=[{"role": "user", "content": prompt}]
+            )
+
+    return await asyncio.gather(*[process_prompt(p) for ...
+  [5] dist=0.4828 | approval_workflow | data/external/reference_playbooks/approval_workflow.yaml
+      can_deploy: true
+      can_rollback: true
+
+    release_manager:
+      can_submit: false
+      can_approve: ["final_approval"]
+      can_review: true
+ ...
+  [6] dist=0.4843 | approval_workflow | data/external/reference_playbooks/approval_workflow.yaml
+      lity_met: "Accessibility standards met"
+      rejection_reasons:
+        - "Regulatory compliance violations"
+        - "Ethical concerns"
+        - "...
+  [7] dist=0.4881 | nvlpubs.nist.gov | https://nvlpubs.nist.gov/nistpubs/ai/nist.ai.100-1.pdf
+      from its potential harms. Artificial Intelligence (AI) AI AI RMF AI RMF 1.0 AI systems trustworthy and responsible AI. uuid:bb21b82c-8d79-48f7-bb00-63...
+  [8] dist=0.4907 | ownership | data/external/reference_playbooks/ownership.yaml
+      - "Technical architecture decisions"
+            - "Code quality standards"
+            - "Performance optimization"
+            - "Security implement...
+
+=== arch_docs: agent orchestration wiring integration coordinator message passing mul... ===
+  Encode: 0.016s | Query: 0.046s | Results: 8
+  [1] dist=0.3896 |  | docs/reference/_archive/Agentic Process Mapping/agentic_process_mapping_detailed
+      |----------------------------------------------------------|          |----------------------------------------------------------|          |---------...
+  [2] dist=0.4054 |  | docs/reference/ADG/ADG Convergence.md
+      Γöé
+Γöé calls / executes_tool / invokes_service                                                                                   Γöé
+ΓööΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ...
+  [3] dist=0.4110 |  | docs/reference/_archive/Embeddings/Embedding Analogy.md
+      ======================================================================================================================================================...
+  [4] dist=0.4383 |  | docs/reference/Base Agent Hierarchy v2.md
+      DIRECTLY INTO SovereignBaseAgent (MRO order) ]                       |
+         | * MIXIN ATOMICITY: Capabilities are modular, injected at root so all...
+  [5] dist=0.4391 |  | docs/reference/MRO Mixins v2.md
+      ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+  as a base, merging two distinct paths:       Γöé 4. CoreAgent                     Γöé (Shared Base)
+  ΓÇó Path A: Age...
+  [6] dist=0.4391 |  | docs/reference/_archive/MRO Mixins.md
+      ΓöîΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÉ
+  as a base, merging two distinct paths:       Γöé 4. CoreAgent                     Γöé (Shared Base)
+  ΓÇó Path A: Age...
+  [7] dist=0.4404 |  | docs/reference/_archive/Architecture - Contextual Refinement v3.md
+      is technical pipeline to Agentic AI frameworksΓÇöparticularly when orchestrating advanced RAG or GraphRAG architecturesΓÇöthe architectural components tra...
+  [8] dist=0.4404 |  | docs/reference/_archive/Architecture - Contextual Refinement v4.md
+      is technical pipeline to Agentic AI frameworksΓÇöparticularly when orchestrating advanced RAG or GraphRAG architecturesΓÇöthe architectural components tra...
+
+=== arch_docs: error handling retry resilience fallback observability telemetry traci... ===
+  Encode: 0.016s | Query: 0.000s | Results: 8
+  [1] dist=0.3683 |  | docs/reports/design/baseline_requirements.md
+      igest; wall-clock access ΓåÆ violation; raw random ΓåÆ violation; replay mismatch ΓåÆ FAULT_TELEMETRY |
+| **severity_if_missing** | CRITICAL |
+| **confidenc...
+  [2] dist=0.3795 |  | docs/reference/Agentic Design/Agentic Design Pillars.md
+      en usage per step. | **Basic Tracing:** Logging inputs/outputs to a file or DB. Some visualization of the chain, but metadata (token counts, tool late...
+  [3] dist=0.3806 |  | docs/reports/design/test_plan.md
+      uest | `DeterminismViolation` raised | YES |
+| T10-06 | replay_mismatch_emits_fault_telemetry | unit | Replay produces different result | `FAULT_TELEM...
+  [4] dist=0.3848 |  | docs/specs/hardening/LATENCY_BUDGET_SLA_SPEC.md
+      eturn deterministic fallback"""
+
+        return {
+            'mode': 'DETERMINISTIC',
+            'reason': reason,
+            'ml_routing_disabled'...
+  [5] dist=0.3907 |  | docs/reference/agentic_process_mapping_v29.md
+      =====
+[6] SHADOW EVALUATION + FUTURE-RUN LEARNING
+====================================================================================================...
+  [6] dist=0.3915 |  | docs/reference/C2_Observability_Telemetry_Control_Signals.md
+      ==============================================================================================================================
+[C2] ≡ƒæü∩╕Å OBSERVABILITY, ...
+  [7] dist=0.3981 |  | docs/reference/Agentic Design/Agentic Architecture Design Dependencies.md
+      | ΓÇó model routing policies<br>ΓÇó latency optimization rules<br>ΓÇó cost ceiling controls<br>ΓÇó provider fallback logic<br>ΓÇó safety-constrained selection |...
+  [8] dist=0.4000 |  | docs/reference/_archive/agentic_process_mapping_v24.md
+      Γöé Package system outcome  ΓöéΓöÇΓöÇ> (To L6 Observability)                                                               Γöé
+    Γöé                            ...
+
+=== arch_docs: memory persistence state management checkpointing durable execution... ===
+  Encode: 0.031s | Query: 0.000s | Results: 8
+  [1] dist=0.3876 |  | docs/tools/persistent_memory_implementation_plan.md
+      Γ£à Persistent knowledge retention
+- Γ£à Semantic search capabilities
+- Γ£à Cross-graph relationships
+- Γ£à Learning from graph evolution
+
+---
+
+## ≡ƒöº Implement...
+  [2] dist=0.4078 |  | docs/architecture/hardening_addendum.md
+      # Hardening Addendum ΓÇö Acceptance Criteria
+
+**Status:** Implemented
+**Plan:** `docs/reports/plans/master-hardening-consolidation-bf7f69.md`
+**Branch:*...
+  [3] dist=0.4130 |  | docs/reference/_archive/Agentic Process Mapping/agentic_process_mapping_v5.md
+      OME
++----------------------------------------------------------------------------------------------------------------------------------+
+| ≡ƒôï OUTCOME /...
+  [4] dist=0.4139 |  | docs/reference/_archive/Agentic Process Mapping/agentic_process_mapping_v12.md
+      |       +--------------------------------+
+|----------------------------------------------------------------------------------------------------------...
+  [5] dist=0.4142 |  | docs/reference/Agentic Design/Agentic Architecture Design Dependencies.md
+      nts exist; when checks run; how control blocks | L5 ΓÇö safety enforcement system   | ΓÇó safety filtering rules<br>ΓÇó policy enforcement logic<br>ΓÇó inject...
+  [6] dist=0.4169 |  | docs/reference/_archive/Zero Loss Determinism & Replay Core v2.md
+      ent & initiates raw payload.                                                  | | - Acts as BOTH:                                                     ...
+  [7] dist=0.4169 |  | docs/reports/design/test_plan.md
+      # T5 ΓÇö L2 Execution Chokepoint and Heal Loop (REQ-009, REQ-010, REQ-011, GAP-006)
+
+**Modules**: `L2_execution/enforcement/execution_guardrail_chokepoi...
+  [8] dist=0.4174 |  | docs/reports/design/baseline_requirements.md
+      slots before U0 policy; overflow triggers abstain; HMAC verifiable on replay; schema slot reserved |
+| **severity_if_missing** | HIGH |
+| **confidence...
+
+=== ALL QUERIES DONE ===

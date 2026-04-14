@@ -1,6 +1,7 @@
 """Find which agent is missing from dashboard territories."""
 
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -151,15 +152,37 @@ _emit_stores_embedding("p4", "find_missing_agents_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "find_missing_agents_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "find_missing_agents_util", "exec_snapshot_link")
 
-PROJECT_ROOT = Path(__file__).parent.parent
-DISCOVERY_PATH = PROJECT_ROOT / "agent_discovery_full.json"
-with open(DISCOVERY_PATH, encoding="utf-8") as f:
-    agents = json.load(f)
-territory_counts = defaultdict(int)
-for agent in agents:
-    territory = agent.get("territory", "Unknown")
-    territory_counts[territory] += 1
-print("Territory counts from discovery:")
-for t, count in sorted(territory_counts.items()):
-    print(f"  {t}: {count}")
-print(f"\nTotal: {sum(territory_counts.values())}")
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agent_discovery_full.json").exists() and (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+def main() -> int:
+    project_root = _find_project_root()
+    discovery_path = project_root / "agent_discovery_full.json"
+    if not discovery_path.exists():
+        print(f"[ERROR] Discovery file not found: {discovery_path}")
+        return 1
+
+    with discovery_path.open(encoding="utf-8") as f:
+        agents = json.load(f)
+
+    territory_counts = defaultdict(int)
+    for agent in agents:
+        territory = agent.get("territory", "Unknown")
+        territory_counts[territory] += 1
+
+    print("Territory counts from discovery:")
+    for territory, count in sorted(territory_counts.items()):
+        print(f"  {territory}: {count}")
+    print(f"\nTotal: {sum(territory_counts.values())}")
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

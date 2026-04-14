@@ -34,7 +34,10 @@ class PytestConfig:
 
 def parse_pytest_ini(path: Path) -> PytestConfig:
     """Parse pytest.ini file."""
-    content = path.read_text()
+    try:
+        content = path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise RuntimeError(f"could not read {path}: {exc}") from exc
 
     # Extract addopts
     addopts_match = re.search(r"addopts\s*=\s*(.+?)(?:\n\w|\Z)", content, re.DOTALL)
@@ -80,8 +83,11 @@ def parse_pytest_ini(path: Path) -> PytestConfig:
 
 def parse_pyproject_toml(path: Path) -> PytestConfig:
     """Parse pyproject.toml file."""
-    content = path.read_bytes()
-    data = tomllib.loads(content.decode("utf-8"))
+    try:
+        content = path.read_bytes()
+        data = tomllib.loads(content.decode("utf-8"))
+    except (OSError, UnicodeDecodeError, tomllib.TOMLDecodeError) as exc:
+        raise RuntimeError(f"could not parse {path}: {exc}") from exc
 
     pytest_options = data.get("tool", {}).get("pytest", {}).get("ini_options", {})
 
@@ -220,7 +226,10 @@ def validate_configs(pytest_ini: PytestConfig, pyproject: PytestConfig, strict: 
 
 def fix_configs(pytest_ini_path: Path, _pyproject_path: Path) -> bool:
     """Auto-fix critical config drift. Returns True if changes made."""
-    content = pytest_ini_path.read_text()
+    try:
+        content = pytest_ini_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise RuntimeError(f"could not read {pytest_ini_path}: {exc}") from exc
     changes_made = False
 
     # Fix missing -n auto
@@ -245,7 +254,10 @@ def fix_configs(pytest_ini_path: Path, _pyproject_path: Path) -> bool:
         print("🔧 AUTO-FIX: Added 'serial' marker definition")
 
     if changes_made:
-        pytest_ini_path.write_text(content)
+        try:
+            pytest_ini_path.write_text(content, encoding="utf-8")
+        except OSError as exc:
+            raise RuntimeError(f"could not write {pytest_ini_path}: {exc}") from exc
         print(f"✅ Written fixes to {pytest_ini_path}")
 
     return changes_made
@@ -263,6 +275,15 @@ def main():
     pytest_ini_path = root / "pytest.ini"
     pyproject_path = root / "pyproject.toml"
 
+    if not pytest_ini_path.exists() or not pyproject_path.exists():
+        repo_root = Path(__file__).resolve().parents[2]
+        repo_pytest = repo_root / "pytest.ini"
+        repo_pyproject = repo_root / "pyproject.toml"
+        if repo_pytest.exists() and repo_pyproject.exists():
+            root = repo_root
+            pytest_ini_path = repo_pytest
+            pyproject_path = repo_pyproject
+
     if not pytest_ini_path.exists():
         print(f"❌ File not found: {pytest_ini_path}")
         return 1
@@ -271,17 +292,17 @@ def main():
         print(f"❌ File not found: {pyproject_path}")
         return 1
 
-    # Parse configs
-    pytest_ini = parse_pytest_ini(pytest_ini_path)
-    pyproject = parse_pyproject_toml(pyproject_path)
+    try:
+        pytest_ini = parse_pytest_ini(pytest_ini_path)
+        pyproject = parse_pyproject_toml(pyproject_path)
 
-    # Auto-fix if requested
-    if args.fix:
-        if fix_configs(pytest_ini_path, pyproject_path):
-            # Re-parse after fixes
-            pytest_ini = parse_pytest_ini(pytest_ini_path)
+        if args.fix:
+            if fix_configs(pytest_ini_path, pyproject_path):
+                pytest_ini = parse_pytest_ini(pytest_ini_path)
+    except RuntimeError as exc:
+        print(f"❌ {exc}")
+        return 1
 
-    # Validate
     return validate_configs(pytest_ini, pyproject, strict=args.strict)
 
 

@@ -216,10 +216,18 @@ def check_syntax(root: Path) -> int:
         return 0
 
 
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent
+
+
 if __name__ == "__main__":
     import sys
 
-    root = Path(__file__).parent.parent
+    root = _find_project_root()
 
     # Check agentic_core
     print("Checking agentic_core...")
@@ -227,11 +235,11 @@ if __name__ == "__main__":
 
     # Check scripts
     print("\nChecking scripts...")
-    scripts_errors = check_syntax(root / "scripts")
+    scripts_errors = check_syntax(root / "scripts") if (root / "scripts").exists() else 0
 
     # Check tests
     print("\nChecking tests...")
-    tests_errors = check_syntax(root / TESTS_DIR)
+    tests_errors = check_syntax(root / TESTS_DIR) if (root / TESTS_DIR).exists() else 0
 
     total = agentic_errors + scripts_errors + tests_errors
     print(f"\n{'=' * 60}")

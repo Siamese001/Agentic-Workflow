@@ -55,6 +55,41 @@ VALID_EVIDENCE_TIERS = frozenset({"truth", "derived_explainer"})
 VALID_PATH_CRITICALITY_CLASSES = frozenset({"ingress", "execution", "sink", "write", "provider", "unknown"})
 
 
+def _as_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_bool(value: Any, default: bool = False) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        lowered = value.strip().lower()
+        if lowered in {"true", "1", "yes", "y"}:
+            return True
+        if lowered in {"false", "0", "no", "n"}:
+            return False
+    return default
+
+
+def _as_str(value: Any, default: str = "") -> str:
+    return value if isinstance(value, str) else default
+
+
+def _as_str_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, str)]
+
+
+def _as_dict_list(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, dict)]
+
+
 # ---------------------------------------------------------------------------
 # ExecutionPolicy — attached to every GateResult
 # ---------------------------------------------------------------------------
@@ -148,16 +183,16 @@ class RatchetResult:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "RatchetResult":
         return cls(
-            gross=data.get("gross", 0),
-            net=data.get("net", 0),
-            new=data.get("new", 0),
-            resolved=data.get("resolved", 0),
-            critical_new=data.get("critical_new", 0),
-            critical_near_sink=data.get("critical_near_sink", 0),
-            critical_cross_layer=data.get("critical_cross_layer", 0),
-            modified_area_count=data.get("modified_area_count", 0),
-            blocked=data.get("blocked", False),
-            reason=data.get("reason", ""),
+            gross=_as_int(data.get("gross", 0)),
+            net=_as_int(data.get("net", 0)),
+            new=_as_int(data.get("new", 0)),
+            resolved=_as_int(data.get("resolved", 0)),
+            critical_new=_as_int(data.get("critical_new", 0)),
+            critical_near_sink=_as_int(data.get("critical_near_sink", 0)),
+            critical_cross_layer=_as_int(data.get("critical_cross_layer", 0)),
+            modified_area_count=_as_int(data.get("modified_area_count", 0)),
+            blocked=_as_bool(data.get("blocked", False)),
+            reason=_as_str(data.get("reason", "")),
         )
 
 
@@ -225,10 +260,10 @@ class TrendResult:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "TrendResult":
         obj = cls(
-            history=data.get("history", []),
-            consecutive_increases=data.get("consecutive_increases", 0),
-            hotspot_modules=data.get("hotspot_modules", []),
-            promotion_candidate=data.get("promotion_candidate", False),
-            promotion_reason=data.get("promotion_reason", ""),
+            history=_as_dict_list(data.get("history", [])),
+            consecutive_increases=_as_int(data.get("consecutive_increases", 0)),
+            hotspot_modules=_as_str_list(data.get("hotspot_modules", [])),
+            promotion_candidate=_as_bool(data.get("promotion_candidate", False)),
+            promotion_reason=_as_str(data.get("promotion_reason", "")),
         )
         return obj

@@ -88,8 +88,20 @@ _emit_stores_embedding("p4", "check_syntax_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "check_syntax_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "check_syntax_util", "exec_snapshot_link")
 
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent
+
+
+project_root = _find_project_root()
+project_root_str = str(project_root)
 # guardian: allow-global-mutation
-sys.path.insert(0, str(Path(__file__).parent.parent))
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
 from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -186,7 +198,7 @@ def main():
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "main")
-    project_root = Path(__file__).parent.parent
+    project_root = _find_project_root()
     result = invoke_code_validator(action="validate", project_root=project_root)
     if result.get("success"):
         print(f"Total errors: {result.get('total_violations', 0)}")

@@ -177,9 +177,20 @@ _emit_validated_by_safety_plane("p1", "verify_intentional_variants_util", "safet
 _emit_invokes_eval("p1", "verify_intentional_variants_util", "eval_call")
 _emit_proposal_commits_routing("p1", "verify_intentional_variants_util", "routing_commit")
 
-project_root = Path(__file__).parent.parent
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent
+
+
+project_root = _find_project_root()
+project_root_str = str(project_root)
 # guardian: allow-global-mutation
-sys.path.insert(0, str(project_root))  # guardian: allow-global-mutation
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)  # guardian: allow-global-mutation
 
 
 def read_file_content(file_path: Path) -> str:

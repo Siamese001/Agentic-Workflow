@@ -34,10 +34,20 @@ _HITL9_REQUIRED_KEYS = [
 ]
 
 
+def _read_text(path: Path) -> tuple[str | None, str | None]:
+    try:
+        return path.read_text(encoding="utf-8"), None
+    except (OSError, UnicodeDecodeError) as exc:
+        return None, f"{type(exc).__name__}: {exc}"
+
+
 def validate_yaml_config_section(path: Path) -> list[str]:
     """Return list of error strings for §HITL-9 YAML config issues in *path*."""
-    text = path.read_text(encoding="utf-8")
+    text, read_error = _read_text(path)
     errors: list[str] = []
+    if read_error is not None or text is None:
+        errors.append(f"file read failed: {read_error}")
+        return errors
 
     if "\u00a7HITL-9" not in text:
         errors.append("\u00a7HITL-9 section not found")
@@ -73,8 +83,11 @@ _HITL10_REQUIRED_FIELDS = [
 
 def validate_option_shape_section(path: Path) -> list[str]:
     """Return list of error strings for §HITL-10 option shape issues in *path*."""
-    text = path.read_text(encoding="utf-8")
+    text, read_error = _read_text(path)
     errors: list[str] = []
+    if read_error is not None or text is None:
+        errors.append(f"file read failed: {read_error}")
+        return errors
 
     if "\u00a7HITL-10" not in text:
         errors.append("\u00a7HITL-10 section not found")
@@ -109,8 +122,11 @@ _REQUIRED_PATTERNS: list[tuple[str, str]] = [
 
 def validate_no_hardcoded_2to4(path: Path) -> list[str]:
     """Return list of error strings for hardcoded 2-4 count pattern issues in *path*."""
-    text = path.read_text(encoding="utf-8")
+    text, read_error = _read_text(path)
     errors: list[str] = []
+    if read_error is not None or text is None:
+        errors.append(f"file read failed: {read_error}")
+        return errors
 
     for regex, label in _FORBIDDEN_PATTERNS:
         if re.search(regex, text):
@@ -129,8 +145,16 @@ def validate_no_hardcoded_2to4(path: Path) -> list[str]:
 
 
 def _run(paths: list[Path]) -> int:
+    if not paths:
+        print("[SKIP] validate_hitl_rules: no files provided")
+        return 0
+
     exit_code = 0
     for path in paths:
+        if not path.exists():
+            print(f"[MISSING_FILE] {path}", file=sys.stderr)
+            exit_code = 1
+            continue
         for fn in (validate_yaml_config_section, validate_option_shape_section, validate_no_hardcoded_2to4):
             errs = fn(path)
             for e in errs:

@@ -17,10 +17,21 @@ Migration notes (HITL H3):
 
 from __future__ import annotations
 
-import json
 import sys
-from datetime import datetime, timezone
 from pathlib import Path
+
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
+
+import json
+from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
@@ -30,9 +41,13 @@ from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
 GUARDRAIL_COVERAGE_THRESHOLD = 0.10
 TRACE_COVERAGE_THRESHOLD = 0.05
 
-_REDIS_HOST = "localhost"
-_REDIS_PORT = 6379
-_REDIS_DB = 0
+import os
+
+_REDIS_HOST = os.getenv("ADG_M_GATES_REDIS_HOST", "localhost")
+_REDIS_PORT = int(os.getenv("ADG_M_GATES_REDIS_PORT", "6379"))
+_REDIS_DB = int(os.getenv("ADG_M_GATES_REDIS_DB", "0"))
+_REDIS_SOCKET_TIMEOUT = float(os.getenv("ADG_M_GATES_REDIS_TIMEOUT", "5"))
+_REDIS_CONNECT_TIMEOUT = float(os.getenv("ADG_M_GATES_REDIS_CONNECT_TIMEOUT", "2"))
 
 
 def _get_gpc() -> dict[str, int]:
@@ -42,13 +57,32 @@ def _get_gpc() -> dict[str, int]:
     except ImportError as exc:
         raise RuntimeError("redis-py not installed; run: pip install redis") from exc
 
-    r = redis.Redis(host=_REDIS_HOST, port=_REDIS_PORT, db=_REDIS_DB, decode_responses=True)
-    raw = r.get("adg:snapshot")
+    try:
+        r = redis.Redis(
+            host=_REDIS_HOST,
+            port=_REDIS_PORT,
+            db=_REDIS_DB,
+            decode_responses=True,
+            socket_timeout=_REDIS_SOCKET_TIMEOUT,
+            socket_connect_timeout=_REDIS_CONNECT_TIMEOUT,
+            health_check_interval=30,
+            retry_on_timeout=True,
+        )
+        r.ping()
+        raw = r.get("adg:snapshot")
+    except redis.RedisError as exc:
+        raise RuntimeError(
+            "unable to read Redis ADG snapshot "
+            f"(host={_REDIS_HOST}, port={_REDIS_PORT}, db={_REDIS_DB}): {exc}"
+        ) from exc
     if not raw:
         raise RuntimeError(
             "adg:snapshot key missing from Redis — run: python tools/adg/adg_redis_ingest.py --force"
         )
-    snap = json.loads(raw)
+    try:
+        snap = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("adg:snapshot contains invalid JSON") from exc
     return snap.get("graph_plane_counts", {})
 
 

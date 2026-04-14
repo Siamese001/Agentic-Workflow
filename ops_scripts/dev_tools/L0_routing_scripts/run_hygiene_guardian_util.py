@@ -93,9 +93,19 @@ _emit_stores_embedding("p4", "run_hygiene_guardian_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "run_hygiene_guardian_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "run_hygiene_guardian_util", "exec_snapshot_link")
 
-PROJECT_ROOT = Path(__file__).parent.parent
-# guardian: allow-global-mutation
-sys.path.insert(0, str(PROJECT_ROOT))
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+PROJECT_ROOT = _find_project_root()
+project_root_str = str(PROJECT_ROOT)
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
 from agentic_core.L0_routing.config import ROOT_WHITELIST
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write

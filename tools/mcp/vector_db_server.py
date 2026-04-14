@@ -8,6 +8,7 @@ env safety) and mcp_deferred_loader for lazy embedding model loading.
 
 from __future__ import annotations
 
+import atexit
 import json
 import logging
 import os
@@ -19,8 +20,6 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-# ── Shared MCP bootstrap (repo-root, logging→stderr, env safety, FastMCP) ─
-# Must be the first project import — sets sys.path, TOKENIZERS_PARALLELISM, etc.
 from tools.mcp.mcp_bootstrap import REPO_ROOT, create_mcp_server, run_server
 from tools.mcp.mcp_deferred_loader import DeferredLoader
 
@@ -34,13 +33,18 @@ except ImportError as e:
 
 logger = logging.getLogger(__name__)
 
-# ── Env-var configuration — all values frozen at startup ───────────────────
 _raw_chroma_path = os.environ.get("VECTOR_DB_CHROMA_PATH", "")
 CHROMA_PATH: Path = Path(_raw_chroma_path) if _raw_chroma_path else REPO_ROOT / "data" / "cache" / "chromadb"
 DEFAULT_EMBEDDING_MODEL: str = os.environ.get("VECTOR_DB_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
 ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "0").strip() == "1"
 MODEL_LOAD_TIMEOUT: float = float(os.environ.get("VECTOR_DB_MODEL_LOAD_TIMEOUT", "120"))
 CHROMA_INIT_TIMEOUT: float = float(os.environ.get("VECTOR_DB_CHROMA_INIT_TIMEOUT", "30"))
+EMBEDDING_ENCODE_TIMEOUT: float = float(os.environ.get("VECTOR_DB_ENCODE_TIMEOUT", "20"))
+EMBEDDING_QUEUE_WAIT_TIMEOUT: float = float(os.environ.get("VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT", "10"))
+QUERY_COLLECTION_TIMEOUT: float = float(os.environ.get("VECTOR_DB_QUERY_COLLECTION_TIMEOUT", "20"))
+SEARCH_PER_COLLECTION_TIMEOUT: float = float(os.environ.get("VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT", "15"))
+SEARCH_GLOBAL_TIMEOUT: float = float(os.environ.get("VECTOR_DB_SEARCH_GLOBAL_TIMEOUT", "60"))
+PREWARM_QUERY_TEXT: str = os.environ.get("VECTOR_DB_PREWARM_QUERY_TEXT", "warmup")
 
 
 def _parse_int_env(name: str, default: int, min_val: int = 1) -> int:
@@ -69,24 +73,103 @@ _KNOWN_MODEL_DIMS: dict[str, int] = {
     "text-embedding-ada-002": 1536,
 }
 
-# ── FastMCP server instance — via shared bootstrap ────────────────────────
 mcp = create_mcp_server(
     "vector-db",
     "ChromaDB-backed vector storage and semantic search. "
     "Provides embeddings, similarity queries, and collection management.",
 )
 
-# ── Module-level singletons — lazy-initialized via DeferredLoader ──────────
 _COUNT_CACHE: dict[str, tuple[int, float]] = {}
 _COUNT_CACHE_TTL: float = 60.0
+_COLLECTION_LOCKS: dict[str, threading.Lock] = {}
+_COLLECTION_LOCKS_GUARD = threading.Lock()
+_PREWARM_STATE: dict[str, Any] = {"phase": "idle", "total": 0, "done": 0, "current": "", "last_error": ""}
+
+
+def _get_named_lock(name: str) -> threading.Lock:
+    with _COLLECTION_LOCKS_GUARD:
+        lock = _COLLECTION_LOCKS.get(name)
+        if lock is None:
+            lock = threading.Lock()
+            _COLLECTION_LOCKS[name] = lock
+        return lock
+
+
+def _set_prewarm_state(**updates: Any) -> None:
+    _PREWARM_STATE.update(updates)
+
+
+def _register_client_close(client: Any) -> None:
+    close_fn = getattr(client, "close", None)
+    if not callable(close_fn):
+        return
+
+    def _close_client() -> None:
+        try:
+            close_fn()
+        except Exception:
+            logger.exception("CHROMA_CLOSE_FAIL")
+
+    atexit.register(_close_client)
+
+
+def _release_lock_when_worker_finishes(lock: threading.Lock, worker: threading.Thread, op_name: str) -> None:
+    def _releaser() -> None:
+        worker.join()
+        lock.release()
+        logger.info("SINGLE_FLIGHT_RELEASED: %s finished after timeout", op_name)
+
+    threading.Thread(
+        target=_releaser,
+        daemon=True,
+        name=f"{op_name}-release",
+    ).start()
+
+
+def _run_single_flight_with_timeout(
+    *,
+    lock: threading.Lock,
+    fn: Any,
+    op_name: str,
+    call_timeout_s: float,
+    acquire_timeout_s: float | None = None,
+) -> Any:
+    effective_acquire_timeout = call_timeout_s if acquire_timeout_s is None else acquire_timeout_s
+    acquired = lock.acquire(timeout=max(effective_acquire_timeout, 0.0))
+    if not acquired:
+        raise TimeoutError(
+            f"{op_name} could not start after waiting {effective_acquire_timeout:.1f}s for the prior call"
+        )
+
+    result_q: queue.Queue[tuple[bool, object]] = queue.Queue(maxsize=1)
+
+    def _worker() -> None:
+        try:
+            result_q.put((True, fn()))
+        except BaseException as exc:  # guardian: allow-broad-except -- worker boundary
+            result_q.put((False, exc))
+
+    worker = threading.Thread(target=_worker, daemon=True, name=f"{op_name}-worker")
+    worker.start()
+
+    try:
+        ok, payload = result_q.get(timeout=call_timeout_s)
+    except queue.Empty as exc:
+        logger.warning(
+            "SINGLE_FLIGHT_TIMEOUT: %s — no result after %.1fs; quarantining subsequent calls until worker exits",
+            op_name,
+            call_timeout_s,
+        )
+        _release_lock_when_worker_finishes(lock, worker, op_name)
+        raise TimeoutError(f"{op_name} timed out after {call_timeout_s:.1f}s") from exc
+
+    lock.release()
+    if ok:
+        return payload
+    raise payload  # type: ignore[misc]
 
 
 def _init_chroma() -> chromadb.PersistentClient:
-    """Factory for DeferredLoader — creates ChromaDB PersistentClient.
-
-    Runs inside a daemon thread so it never blocks the MCP stdio
-    transport. DeferredLoader enforces CHROMA_INIT_TIMEOUT (default 30s).
-    """
     CHROMA_PATH.mkdir(parents=True, exist_ok=True)
     logger.info("CHROMA_INIT_START: path=%s — loading HNSW indexes from disk...", CHROMA_PATH)
     t0 = time.monotonic()
@@ -97,11 +180,11 @@ def _init_chroma() -> chromadb.PersistentClient:
     elapsed = time.monotonic() - t0
     logger.info("CHROMA_INIT_DONE: ready in %.1fs", elapsed)
     _check_embedding_alignment(client, DEFAULT_EMBEDDING_MODEL)
+    _register_client_close(client)
     return client
 
 
 def _load_embedding_model():
-    """Factory for DeferredLoader — loads SentenceTransformer from cache."""
     _old_tqdm_disable = os.environ.get("TQDM_DISABLE")
     os.environ["TQDM_DISABLE"] = "1"
     try:
@@ -141,12 +224,7 @@ _embedding_loader = DeferredLoader(
 )
 
 
-# ── Deferred ChromaDB loader — CHROMA_INIT_TIMEOUT bounds the wait ─────────
-# Declared after _init_chroma/_check_embedding_alignment are defined.
-# DeferredLoader runs _init_chroma in a daemon thread so PersistentClient
-# HNSW cold-start never blocks the MCP stdio transport thread.
 def _check_embedding_alignment(client: chromadb.PersistentClient, model_name: str) -> None:
-    """Fail-fast: configured embedding model dim must match corpus."""
     configured_dim = _KNOWN_MODEL_DIMS.get(model_name)
     if configured_dim is None:
         return
@@ -154,7 +232,7 @@ def _check_embedding_alignment(client: chromadb.PersistentClient, model_name: st
         collections = client.list_collections()
     except (RuntimeError, ValueError):
         return
-    for col in collections:  # progress_bar: bounded collection list
+    for col in collections:
         corpus_dim = (col.metadata or {}).get("embedding_dim")
         if corpus_dim is None:
             continue
@@ -179,8 +257,6 @@ def _check_embedding_alignment(client: chromadb.PersistentClient, model_name: st
     logger.info("EMBEDDING_ALIGNMENT_OK: model=%r dim=%d", model_name, configured_dim)
 
 
-# _chroma_loader instantiated HERE — after both _init_chroma and
-# _check_embedding_alignment are fully defined (the factory calls the latter).
 _chroma_loader = DeferredLoader(
     "chromadb-client",
     _init_chroma,
@@ -189,35 +265,10 @@ _chroma_loader = DeferredLoader(
 
 
 def _get_chroma() -> chromadb.PersistentClient | None:
-    """Get ChromaDB client — None if not yet loaded or load failed."""
     return _chroma_loader.get()  # type: ignore[return-value]
 
 
-def _call_with_timeout(fn: Any, timeout_s: float, op_name: str) -> Any:
-    """Run a callable in a daemon thread and return or time out without blocking shutdown."""
-    result_q: queue.Queue[tuple[bool, object]] = queue.Queue(maxsize=1)
-
-    def _worker() -> None:
-        try:
-            result_q.put((True, fn()))
-        except BaseException as exc:  # guardian: allow-broad-except -- daemon thread boundary
-            result_q.put((False, exc))
-
-    worker = threading.Thread(target=_worker, daemon=True, name=f"{op_name}-timeout-guard")
-    worker.start()
-
-    try:
-        ok, payload = result_q.get(timeout=timeout_s)
-    except queue.Empty as exc:
-        raise TimeoutError(f"{op_name} timed out after {timeout_s:.1f}s") from exc
-
-    if ok:
-        return payload
-    raise payload  # type: ignore[misc]
-
-
 def _require_chroma() -> chromadb.PersistentClient:
-    """Get ChromaDB or raise — fails fast if still loading during prewarm."""
     if not _chroma_loader.is_loaded():
         _chroma_loader.get(wait_timeout=0)
         raise RuntimeError(
@@ -229,7 +280,6 @@ def _require_chroma() -> chromadb.PersistentClient:
 
 
 def _require_model_ready():
-    """Fail fast while the embedding model is still warming instead of blocking MCP calls."""
     if not _embedding_loader.is_loaded():
         _embedding_loader.get(wait_timeout=0)
         raise RuntimeError(
@@ -240,16 +290,62 @@ def _require_model_ready():
     return _embedding_loader.require()
 
 
+def _encode_with_guard(op_name: str, *args: Any, **kwargs: Any) -> Any:
+    def _encode(model: Any) -> Any:
+        return model.encode(*args, **kwargs)
+
+    return _embedding_loader.call_serialized(
+        _encode,
+        wait_timeout=0,
+        call_timeout=EMBEDDING_ENCODE_TIMEOUT,
+        queue_wait_timeout=EMBEDDING_QUEUE_WAIT_TIMEOUT,
+        op_name=op_name,
+    )
+
+
+def _query_collection_with_timeout(
+    collection: Any,
+    *,
+    query_embeddings: list[list[float]],
+    n_results: int,
+    where: dict | None,
+    include: list[str],
+    collection_name: str,
+    timeout_s: float | None = None,
+    op_name: str = "query_collection",
+) -> Any:
+    lock = _get_named_lock(f"query:{collection_name}")
+    effective_timeout = QUERY_COLLECTION_TIMEOUT if timeout_s is None else timeout_s
+    return _run_single_flight_with_timeout(
+        lock=lock,
+        fn=lambda: collection.query(
+            query_embeddings=query_embeddings,
+            n_results=n_results,
+            where=where if where else None,
+            include=include,
+        ),
+        op_name=f"{op_name}:{collection_name}",
+        call_timeout_s=effective_timeout,
+        acquire_timeout_s=effective_timeout,
+    )
+
+
 def _get_cached_count(collection_name: str, collection: Any) -> int | None:
-    """Return cached document count or fetch with a 2s timeout."""
     now = time.time()
     cached = _COUNT_CACHE.get(collection_name)
     if cached is not None:
         count, fetched_at = cached
         if now - fetched_at < _COUNT_CACHE_TTL:
             return count
+
     try:
-        count = _call_with_timeout(collection.count, 2.0, f"count:{collection_name}")
+        count = _run_single_flight_with_timeout(
+            lock=_get_named_lock(f"count:{collection_name}"),
+            fn=collection.count,
+            op_name=f"count:{collection_name}",
+            call_timeout_s=2.0,
+            acquire_timeout_s=2.0,
+        )
         _COUNT_CACHE[collection_name] = (count, now)
         return count
     except TimeoutError:
@@ -260,12 +356,87 @@ def _get_cached_count(collection_name: str, collection: Any) -> int | None:
         return None
 
 
-# ── Tool implementations ───────────────────────────────────────────────────
+def _prewarm_hnsw_indexes(client: chromadb.PersistentClient, model: Any) -> None:
+    """Force first-query HNSW initialization for all non-empty collections."""
+    try:
+        warm_embedding = model.encode([PREWARM_QUERY_TEXT]).tolist()
+        model_dim = len(warm_embedding[0]) if warm_embedding and warm_embedding[0] else None
+    except Exception as exc:  # guardian: allow-broad-except -- warmup must not crash server
+        logger.warning("PREWARM_HNSW_EMBED_FAIL: %s", exc)
+        warm_embedding = None
+        model_dim = None
+
+    try:
+        collections = client.list_collections()
+    except (RuntimeError, ValueError) as exc:
+        logger.error("PREWARM_HNSW_FAIL: unable to list collections: %s", exc)
+        _set_prewarm_state(phase="warmup_failed", last_error=str(exc))
+        return
+
+    candidates: list[tuple[int, str, Any, int | None]] = []
+    for col_meta in collections:
+        collection_name = col_meta.name
+        try:
+            collection = client.get_collection(collection_name)
+            doc_count = collection.count()
+        except (RuntimeError, ValueError, chromadb.errors.ChromaError) as exc:
+            logger.warning("PREWARM_HNSW_SKIP: collection=%r count/get failed: %s", collection_name, exc)
+            continue
+
+        if doc_count <= 0:
+            logger.info("PREWARM_HNSW_SKIP: collection=%r empty", collection_name)
+            continue
+
+        metadata = col_meta.metadata or {}
+        embedding_dim = metadata.get("embedding_dim")
+        try:
+            dim = int(embedding_dim) if embedding_dim is not None else None
+        except (TypeError, ValueError):
+            dim = None
+        if dim is None:
+            dim = model_dim
+
+        candidates.append((doc_count, collection_name, collection, dim))
+
+    candidates.sort(key=lambda item: item[0], reverse=True)
+    _set_prewarm_state(phase="warming_hnsw", total=len(candidates), done=0, current="", last_error="")
+
+    for index, (doc_count, collection_name, collection, dim) in enumerate(candidates, start=1):
+        _set_prewarm_state(current=collection_name)
+        if warm_embedding is not None and model_dim is not None and dim == model_dim:
+            query_embeddings = warm_embedding
+        elif dim is not None:
+            query_embeddings = [[0.0] * dim]
+        else:
+            logger.warning("PREWARM_HNSW_SKIP: collection=%r missing embedding dimension", collection_name)
+            _set_prewarm_state(done=index)
+            continue
+
+        t0 = time.monotonic()
+        try:
+            collection.query(
+                query_embeddings=query_embeddings,
+                n_results=1,
+                include=["distances"],
+            )
+            logger.info(
+                "PREWARM_HNSW_DONE: collection=%r docs=%d dim=%s elapsed=%.2fs",
+                collection_name,
+                doc_count,
+                dim,
+                time.monotonic() - t0,
+            )
+        except (RuntimeError, ValueError, chromadb.errors.ChromaError) as exc:
+            logger.warning("PREWARM_HNSW_FAIL: collection=%r error=%s", collection_name, exc)
+            _set_prewarm_state(last_error=f"{collection_name}: {exc}")
+        finally:
+            _set_prewarm_state(done=index)
+
+    _set_prewarm_state(phase="ready", current="")
 
 
 @mcp.tool()
 def create_collection(name: str, metadata: dict[str, str] | None = None) -> str:
-    """Create a new vector collection"""
     client = _require_chroma()
     try:
         client.get_collection(name)
@@ -281,7 +452,6 @@ def create_collection(name: str, metadata: dict[str, str] | None = None) -> str:
 
 @mcp.tool()
 def list_collections() -> str:
-    """List all vector collections"""
     client = _require_chroma()
     collections = client.list_collections()
     result = f"Vector Collections ({len(collections)} total):\n\n"
@@ -296,7 +466,6 @@ def list_collections() -> str:
 
 @mcp.tool()
 def delete_collection(name: str) -> str:
-    """Delete a vector collection"""
     client = _require_chroma()
     client.delete_collection(name)
     return f"Collection '{name}' deleted successfully"
@@ -309,9 +478,8 @@ def add_documents(
     metadatas: list[dict] | None = None,
     ids: list[str] | None = None,
 ) -> str:
-    """Add documents to a collection with embeddings"""
     client = _require_chroma()
-    model = _require_model_ready()
+    _require_model_ready()
 
     if len(documents) > MAX_EMBEDDING_BATCH_SIZE:
         return f"Too many documents (max {MAX_EMBEDDING_BATCH_SIZE})"
@@ -319,7 +487,10 @@ def add_documents(
     collection = client.get_collection(collection_name)
 
     t0 = time.time()
-    embeddings = model.encode(documents)
+    embeddings = _encode_with_guard(
+        f"encode:add_documents:{collection_name}",
+        documents,
+    )
     embedding_time = time.time() - t0
 
     if not ids:
@@ -350,9 +521,8 @@ def query_collection(
     where: dict | None = None,
     include: list[str] | None = None,
 ) -> str:
-    """Query a collection for similar documents"""
     client = _require_chroma()
-    model = _require_model_ready()
+    _require_model_ready()
 
     if not query_text.strip():
         return "Error: EMPTY_QUERY — query_text must be non-empty"
@@ -364,15 +534,22 @@ def query_collection(
     collection = client.get_collection(collection_name)
 
     t0 = time.time()
-    query_embedding = model.encode([query_text])
+    query_embedding = _encode_with_guard(
+        f"encode:query_collection:{collection_name}",
+        [query_text],
+    )
     embedding_time = time.time() - t0
 
     t1 = time.time()
-    results = collection.query(
+    results = _query_collection_with_timeout(
+        collection,
         query_embeddings=query_embedding.tolist(),
         n_results=n_results,
-        where=where if where else None,
+        where=where,
         include=include,
+        collection_name=collection_name,
+        timeout_s=QUERY_COLLECTION_TIMEOUT,
+        op_name="query_collection",
     )
     query_time = time.time() - t1
 
@@ -386,7 +563,7 @@ def query_collection(
         documents = results["documents"][0]
         distances = results.get("distances", [[]])[0]
         metadatas_list = results.get("metadatas", [[]])[0]
-        for i, doc in enumerate(documents):  # progress_bar: bounded by n_results (max 100)
+        for i, doc in enumerate(documents):
             result_text += f"Result {i + 1}:\n"
             result_text += f"  Document: {doc[:200]}{'...' if len(doc) > 200 else ''}\n"
             if i < len(distances):
@@ -400,7 +577,6 @@ def query_collection(
 
 @mcp.tool()
 def get_collection_info(name: str) -> str:
-    """Get detailed information about a collection"""
     client = _require_chroma()
     collection = client.get_collection(name)
 
@@ -432,15 +608,18 @@ def get_collection_info(name: str) -> str:
 
 @mcp.tool()
 def embed_text(texts: list[str], batch_size: int = 32) -> str:
-    """Generate embeddings for text"""
-    model = _require_model_ready()
+    _require_model_ready()
     batch_size = min(batch_size, MAX_EMBEDDING_BATCH_SIZE)
 
     if len(texts) > MAX_EMBEDDING_BATCH_SIZE:
         return f"Too many texts (max {MAX_EMBEDDING_BATCH_SIZE})"
 
     t0 = time.time()
-    embeddings = model.encode(texts, batch_size=batch_size)
+    embeddings = _encode_with_guard(
+        "encode:embed_text",
+        texts,
+        batch_size=batch_size,
+    )
     processing_time = time.time() - t0
 
     safe_time = max(processing_time, 1e-9)
@@ -464,9 +643,8 @@ def semantic_search(
     collections: list[str] | None = None,
     n_results: int = 5,
 ) -> str:
-    """Perform semantic search across all collections"""
     client = _require_chroma()
-    model = _require_model_ready()
+    _require_model_ready()
 
     if not query.strip():
         return "Error: EMPTY_QUERY — query must be non-empty"
@@ -477,47 +655,44 @@ def semantic_search(
         all_cols = client.list_collections()
         collections = [col.name for col in all_cols]
 
-    query_embedding = model.encode([query])
+    query_embedding = _encode_with_guard(
+        "encode:semantic_search",
+        [query],
+    )
 
     merged: list[dict] = []
     collection_errors: dict[str, str] = {}
     total_time = 0.0
-    per_collection_timeout = 5.0
-    global_deadline = time.monotonic() + 30.0
+    global_deadline = time.monotonic() + SEARCH_GLOBAL_TIMEOUT
 
-    def _query_one(col_name: str) -> tuple[str, list[dict], float]:
-        col = client.get_collection(col_name)
-        t0 = time.time()
-        res = col.query(
-            query_embeddings=query_embedding.tolist(),
-            n_results=n_results,
-            include=["metadatas", "documents", "distances"],
-        )
-        elapsed = time.time() - t0
-        docs = res.get("documents", [[]])[0] if res.get("documents") else []
-        dists = res.get("distances", [[]])[0] if res.get("distances") else []
-        metas = res.get("metadatas", [[]])[0] if res.get("metadatas") else []
-        hits = []
-        for doc, dist, meta in zip(docs, dists, metas or [None] * len(docs)):
-            hits.append({"collection": col_name, "distance": dist, "document": doc, "metadata": meta})
-        return col_name, hits, elapsed
-
-    for cn in collections:  # progress_bar: bounded collection list with per-item timeout
+    for cn in collections:
         remaining = global_deadline - time.monotonic()
         if remaining <= 0:
-            collection_errors[cn] = "GLOBAL_TIMEOUT (>30s)"
+            collection_errors[cn] = f"GLOBAL_TIMEOUT (>{SEARCH_GLOBAL_TIMEOUT:.1f}s)"
             continue
-        timeout_s = min(per_collection_timeout, remaining)
+        timeout_s = min(SEARCH_PER_COLLECTION_TIMEOUT, remaining)
         try:
-            _, hits, elapsed = _call_with_timeout(
-                lambda collection_name=cn: _query_one(collection_name),
-                timeout_s,
-                f"semantic_search:{cn}",
+            col = client.get_collection(cn)
+            t0 = time.time()
+            res = _query_collection_with_timeout(
+                col,
+                query_embeddings=query_embedding.tolist(),
+                n_results=n_results,
+                where=None,
+                include=["metadatas", "documents", "distances"],
+                collection_name=cn,
+                timeout_s=timeout_s,
+                op_name="semantic_search",
             )
-            merged.extend(hits)
+            elapsed = time.time() - t0
+            docs = res.get("documents", [[]])[0] if res.get("documents") else []
+            dists = res.get("distances", [[]])[0] if res.get("distances") else []
+            metas = res.get("metadatas", [[]])[0] if res.get("metadatas") else []
+            for doc, dist, meta in zip(docs, dists, metas or [None] * len(docs)):
+                merged.append({"collection": cn, "distance": dist, "document": doc, "metadata": meta})
             total_time += elapsed
         except TimeoutError:
-            collection_errors[cn] = f"QUERY_TIMEOUT (>{timeout_s:.1f}s — HNSW index may be cold)"
+            collection_errors[cn] = f"QUERY_TIMEOUT (>{timeout_s:.1f}s — HNSW index may still be cold)"
         except (RuntimeError, ValueError, chromadb.errors.ChromaError) as col_err:
             collection_errors[cn] = str(col_err)
 
@@ -546,7 +721,6 @@ def semantic_search(
 
 @mcp.tool()
 def vector_stats() -> str:
-    """Get vector database statistics"""
     client = _require_chroma()
     cols = client.list_collections()
 
@@ -565,10 +739,14 @@ def vector_stats() -> str:
     stats += f"Embedding model: {DEFAULT_EMBEDDING_MODEL}\n"
     stats += f"Model loaded: {model_loaded}\n"
     stats += f"Embedding dimension: {embedding_dimension}\n"
+    stats += f"Encode timeout: {EMBEDDING_ENCODE_TIMEOUT:.0f}s\n"
+    stats += f"Encode queue wait timeout: {EMBEDDING_QUEUE_WAIT_TIMEOUT:.0f}s\n"
+    stats += f"Per-collection query timeout: {QUERY_COLLECTION_TIMEOUT:.0f}s\n"
+    stats += f"Per-collection semantic search timeout: {SEARCH_PER_COLLECTION_TIMEOUT:.0f}s\n"
 
     stats += "\nCollection Details:\n"
     total_documents = 0
-    for col in cols:  # progress_bar: bounded collection list
+    for col in cols:
         count = _get_cached_count(col.name, col)
         if count is not None:
             total_documents += count
@@ -595,7 +773,6 @@ def vector_stats() -> str:
 
 @mcp.tool()
 def readiness() -> str:
-    """Report ChromaDB and embedding-model warmup state without triggering heavy work."""
     chroma_loaded = _chroma_loader.is_loaded()
     chroma_loading = _chroma_loader.is_loading()
     model_loaded = _embedding_loader.is_loaded()
@@ -608,45 +785,57 @@ def readiness() -> str:
     status += f"Embedding model loading: {model_loading}\n"
     status += f"Chroma timeout: {CHROMA_INIT_TIMEOUT:.0f}s\n"
     status += f"Model timeout: {MODEL_LOAD_TIMEOUT:.0f}s\n"
-    if chroma_loaded and model_loaded:
+    status += f"Encode timeout: {EMBEDDING_ENCODE_TIMEOUT:.0f}s\n"
+    status += f"Query timeout: {QUERY_COLLECTION_TIMEOUT:.0f}s\n"
+    status += f"Prewarm phase: {_PREWARM_STATE['phase']}\n"
+    status += f"Prewarm progress: {_PREWARM_STATE['done']}/{_PREWARM_STATE['total']}\n"
+    status += f"Prewarm current: {_PREWARM_STATE['current']}\n"
+    status += f"Prewarm last error: {_PREWARM_STATE['last_error']}\n"
+    if chroma_loaded and model_loaded and _PREWARM_STATE["phase"] == "ready":
         status += "Ready for full semantic operations\n"
     else:
         status += "Warmup still in progress\n"
     return status
 
 
-# ── Background prewarm — init ChromaDB + load model BEFORE mcp.run() ──────
-# This runs in a daemon thread so it doesn't block the MCP handshake.
-# ChromaDB PersistentClient init loads HNSW indexes from disk (can take
-# seconds with large collections). Without prewarm, the first tool call
-# (e.g. list_collections) blocks the stdio transport and appears to hang.
 def _prewarm() -> None:
-    """Init ChromaDB + load embedding model in background — never blocks stdio."""
-    # Phase 1: ChromaDB client (fast, ~1-3s — but blocks HNSW cold-start)
+    client = None
+    _set_prewarm_state(phase="starting", total=0, done=0, current="", last_error="")
+
     try:
         logger.info("PREWARM_PHASE_1: initializing ChromaDB client...")
         client = _get_chroma()
         if client is not None:
             cols = client.list_collections()
             logger.info("PREWARM_PHASE_1_DONE: ChromaDB ready, %d collections", len(cols))
+            _set_prewarm_state(phase="chroma_ready")
         else:
             logger.error("PREWARM_PHASE_1_FAIL: ChromaDB client returned None")
+            _set_prewarm_state(phase="chroma_failed", last_error="client returned None")
     except (OSError, RuntimeError, ValueError) as e:
         logger.error("PREWARM_PHASE_1_FAIL: %s", e)
+        _set_prewarm_state(phase="chroma_failed", last_error=str(e))
 
-    # Phase 2: Embedding model (slow, ~12-15s)
     try:
         logger.info("PREWARM_PHASE_2: loading embedding model...")
-        _embedding_loader.get()
+        model = _embedding_loader.get()
+        if model is None:
+            logger.error("PREWARM_PHASE_2_FAIL: embedding model returned None")
+            _set_prewarm_state(phase="model_failed", last_error="model returned None")
+            return
         logger.info("PREWARM_PHASE_2_DONE: embedding model ready")
+        _set_prewarm_state(phase="model_ready")
+        if client is not None:
+            logger.info("PREWARM_PHASE_3: warming HNSW indexes for all collections...")
+            _prewarm_hnsw_indexes(client, model)
+            logger.info("PREWARM_PHASE_3_DONE: HNSW warmup complete")
     except (RuntimeError, OSError, ImportError) as e:
         logger.error("PREWARM_PHASE_2_FAIL: %s", e)
+        _set_prewarm_state(phase="model_failed", last_error=str(e))
 
 
-# ── Entry point — via shared bootstrap ─────────────────────────────────────
 if __name__ == "__main__":
-    # Start prewarm as daemon thread — runs alongside mcp.run()
     _prewarm_thread = threading.Thread(target=_prewarm, daemon=True, name="prewarm")
     _prewarm_thread.start()
-    logger.info("Background prewarm started (ChromaDB + embedding model)")
+    logger.info("Background prewarm started (ChromaDB + embedding model + prioritized HNSW warmup)")
     run_server(mcp)

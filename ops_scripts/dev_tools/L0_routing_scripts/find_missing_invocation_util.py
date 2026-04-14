@@ -2,6 +2,7 @@
 
 import json
 import re
+import sys
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -168,60 +169,75 @@ _emit_proposal_commits_routing("p1", "find_missing_invocation_util", "routing_co
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR  # noqa: E402
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).parent.parent
-dashboard_path = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
-try:
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+def main() -> int:
+    project_root = _find_project_root()
+    dashboard_path = project_root / REPORTS_DIR / "autonomy_dashboard.html"
+    if not dashboard_path.exists():
+        print(f"[ERROR] Dashboard not found: {dashboard_path}")
+        return 1
+
     try:
         content = dashboard_path.read_text(encoding="utf-8")
-        match = re.search("const agentDataByTerritory\\s*=\\s*(\\{.*?\\});", content, re.DOTALL)
-        if match:
-            try:
-                agent_data = json.loads(match.group(1))
-                print(f"Found agentDataByTerritory with {len(agent_data)} territories")
-                total_agents = 0
-                invocation_yes = 0
-                invocation_no = 0
-                invocation_inherited = 0
-                missing_invocation_agents = []
-                for territory, agents in tqdm(agent_data.items(), desc="Processing", unit="item"):
-                    for agent in tqdm(agents, desc="Processing", unit="item"):
-                        total_agents += 1
-                        inv = agent.get("invocation", "")
-                        name = agent.get("name", "Unknown")
-                        path = agent.get("path", "")
-                        if inv == "Yes":
-                            invocation_yes += 1
-                        elif inv == "Inherited":
-                            invocation_inherited += 1
-                        else:
-                            invocation_no += 1
-                            missing_invocation_agents.append(
-                                {"name": name, "path": path, "territory": territory}
-                            )
-                print(f"\nTotal agents: {total_agents}")
-                print(f"Invocation Yes: {invocation_yes}")
-                print(f"Invocation Inherited: {invocation_inherited}")
-                print(f"Invocation No/Missing: {invocation_no}")
-                print(f"Invocation %: {(invocation_yes + invocation_inherited) / total_agents * 100:.1f}%")
-                print(f"\n=== Agents MISSING invocation ({len(missing_invocation_agents)}) ===")
-                for agent in sorted(missing_invocation_agents, key=lambda x: x["path"]):
-                    print(f"  {agent['path']}")
-            except json.JSONDecodeError as e:
-                print(f"JSON parse error: {e}")
-        else:
-            print("Could not find agentDataByTerritory in dashboard")
-            all_invocations = re.findall('"invocation":\\s*"([^"]*)"', content)
-            print(f"\nFound {len(all_invocations)} invocation values via regex")
-            from collections import Counter
-    except (FileNotFoundError, OSError):  # guardian: allow-silent-swallow
-        pass
-except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
-    pass
+    except OSError as e:
+        print(f"[ERROR] Failed to read dashboard: {e}")
+        return 1
+
+    match = re.search(r"const agentDataByTerritory\s*=\s*(\{.*?\});", content, re.DOTALL)
+    if match:
+        try:
+            agent_data = json.loads(match.group(1))
+        except json.JSONDecodeError as e:
+            print(f"JSON parse error: {e}")
+            return 1
+
+        print(f"Found agentDataByTerritory with {len(agent_data)} territories")
+        total_agents = 0
+        invocation_yes = 0
+        invocation_no = 0
+        invocation_inherited = 0
+        missing_invocation_agents = []
+        for territory, agents in tqdm(agent_data.items(), desc="Processing", unit="item"):
+            for agent in tqdm(agents, desc="Processing", unit="item"):
+                total_agents += 1
+                inv = agent.get("invocation", "")
+                name = agent.get("name", "Unknown")
+                path = agent.get("path", "")
+                if inv == "Yes":
+                    invocation_yes += 1
+                elif inv == "Inherited":
+                    invocation_inherited += 1
+                else:
+                    invocation_no += 1
+                    missing_invocation_agents.append({"name": name, "path": path, "territory": territory})
+        print(f"\nTotal agents: {total_agents}")
+        print(f"Invocation Yes: {invocation_yes}")
+        print(f"Invocation Inherited: {invocation_inherited}")
+        print(f"Invocation No/Missing: {invocation_no}")
+        if total_agents:
+            print(f"Invocation %: {(invocation_yes + invocation_inherited) / total_agents * 100:.1f}%")
+        print(f"\n=== Agents MISSING invocation ({len(missing_invocation_agents)}) ===")
+        for agent in sorted(missing_invocation_agents, key=lambda x: x["path"]):
+            print(f"  {agent['path']}")
+        return 0 if invocation_no == 0 else 1
+
+    print("Could not find agentDataByTerritory in dashboard")
+    all_invocations = re.findall(r'"invocation":\s*"([^"]*)"', content)
+    print(f"\nFound {len(all_invocations)} invocation values via regex")
+    from collections import Counter
 
     print(Counter(all_invocations))
     for line in tqdm(content.split("\n"), desc="Processing", unit="item"):
         if '"invocation": "No (missing super)"' in line and len(line) > 10000:
-            agent_pattern = '\\{"name":\\s*"([^"]+)"[^}]*"path":\\s*"([^"]+)"[^}]*"invocation":\\s*"([^"]+)"'
+            agent_pattern = r'\\{"name":\s*"([^"]+)"[^}]*"path":\s*"([^"]+)"[^}]*"invocation":\s*"([^"]+)"'
             matches = re.findall(agent_pattern, line)
             missing_paths = []
             for name, path, inv in matches:
@@ -231,3 +247,8 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
             for path in sorted(set(missing_paths)):
                 print(path)
             break
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

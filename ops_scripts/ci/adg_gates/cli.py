@@ -15,9 +15,23 @@ import json
 import sys
 from pathlib import Path
 
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_BOOTSTRAPPED_REPO_ROOT = _bootstrap_repo_root()
+
 from ops_scripts.ci.adg_gates import GATE_REGISTRY, get_gate, list_gates, run_all, run_phase
 from ops_scripts.ci.adg_gates.gate_base import CI_ARTIFACTS_DIR
-from tqdm import tqdm
+
+try:
+    from tqdm import tqdm
+except ImportError:
+    sys.exit("[FATAL] tqdm not installed — run: pip install tqdm")
 
 
 def cmd_list() -> int:
@@ -49,7 +63,8 @@ def cmd_run_phase(phase: str) -> int:
     passed = []
 
     for gate_id, result in tqdm(results.items(), desc="Processing", unit="item"):
-        gate_name = GATE_REGISTRY[gate_id][0].gate_family
+        gate_meta = GATE_REGISTRY.get(gate_id)
+        gate_name = gate_meta[0].gate_family if gate_meta else result.gate_family
         if result.status == "blocked":
             blocked.append((gate_id, gate_name, len(result.violations)))
             print(f"  Gate {gate_id} [{gate_name}]: BLOCKED ({len(result.violations)} violations)")

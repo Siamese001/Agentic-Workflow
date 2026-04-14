@@ -31,6 +31,19 @@ Usage:
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
+
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
 from ops_scripts.ci.adg_gates.gate_p0_critical_path import CriticalPathIntegrityGate
 from ops_scripts.ci.adg_gates.gate_p0_authority import AuthorityBoundaryGate

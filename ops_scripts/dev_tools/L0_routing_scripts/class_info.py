@@ -179,8 +179,17 @@ _emit_validated_by_safety_plane("p1", "class_info", "safety_validation")
 _emit_invokes_eval("p1", "class_info", "eval_call")
 _emit_proposal_commits_routing("p1", "class_info", "routing_commit")
 
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists() and (candidate / ARCHIVES_DIR).exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
 # Project root
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = _find_project_root()
 _ARCHIVES_DIR_PATH = PROJECT_ROOT / ARCHIVES_DIR
 _AGENTIC_CORE_DIR_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR
 

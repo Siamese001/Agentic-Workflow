@@ -18,12 +18,22 @@ Exit codes:
 from __future__ import annotations
 
 import json
+import os
 import sys
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+REPO_ROOT = _bootstrap_repo_root()
 CI_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "ci_gates"
 CI_RATCHET_DIR = REPO_ROOT / "artifacts" / "adg" / "ci_ratchets"
 
@@ -34,8 +44,8 @@ try:
     from ops_scripts.ci.adg_gates.gate_policy import TrendResult
 
     _IMPORTS_OK = True
-except ImportError as _exc:
-    _IMPORT_ERROR = str(_exc)
+except Exception as _exc:  # guardian: runner must record import-side-effect failures instead of crashing
+    _IMPORT_ERROR = f"{type(_exc).__name__}: {_exc}"
 
 
 def _load_trend(gate_key: str) -> TrendResult:
@@ -96,7 +106,11 @@ def _run_fanin_trend(modified_files: list[str]) -> tuple[TrendResult, int, list[
         hotspots: list[str] = result.get("hotspot_modules", [])
         near_critical: bool = result.get("near_critical_path", False)
         return _load_trend("fanin_triage"), gross, hotspots, near_critical
-    except (ImportError, AttributeError, TypeError):
+    except Exception as exc:
+        print(
+            f"[p3_trend_runner] WARNING: fanin triage unavailable: {type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
         return _load_trend("fanin_triage"), 0, [], False
 
 
@@ -158,8 +172,33 @@ def run_p3_trend(
         }
         fname_ts = ts.replace(":", "").replace(".", "_")
         out = CI_ARTIFACTS_DIR / f"p3_trend_summary_{fname_ts}.json"
-        out.write_text(json.dumps(summary, indent=2), encoding="utf-8")
-        print(f"[p3_trend_runner] Trend artifact: {out}")
+        tmp_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                "w",
+                encoding="utf-8",
+                dir=CI_ARTIFACTS_DIR,
+                prefix=".p3_trend_summary_",
+                suffix=".tmp",
+                delete=False,
+            ) as fh:
+                fh.write(json.dumps(summary, indent=2) + "\n")
+                fh.flush()
+                os.fsync(fh.fileno())
+                tmp_path = Path(fh.name)
+            if sys.platform == "win32" and out.exists():
+                out.unlink()
+            if tmp_path is None:
+                raise OSError("Failed to create temporary trend summary file")
+            tmp_path.replace(out)
+            print(f"[p3_trend_runner] Trend artifact: {out}")
+        except OSError as exc:
+            if tmp_path is not None:
+                try:
+                    tmp_path.unlink()
+                except OSError:
+                    pass
+            print(f"[p3_trend_runner] WARNING: could not persist trend artifact: {exc}", file=sys.stderr)
 
     return 0
 

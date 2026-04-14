@@ -91,9 +91,19 @@ _emit_stores_embedding("p4", "run_hierarchy_healer_dry_run_util", "embedding_sto
 _emit_updates_meta_learning_state("p4", "run_hierarchy_healer_dry_run_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "run_hierarchy_healer_dry_run_util", "exec_snapshot_link")
 
-project_root = Path(__file__).resolve().parents[1]
-# guardian: allow-global-mutation
-sys.path.insert(0, str(project_root))
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+project_root = _find_project_root()
+project_root_str = str(project_root)
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
 from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -194,7 +204,7 @@ def main():
     print("HIERARCHY HEALER - DRY RUN MODE")
     print("=" * 80)
     print("Scanning for hierarchy violations (no changes will be made)...\n")
-    project_root = Path.cwd()
+    project_root = _find_project_root()
     result = invoke_hierarchy_agent(action="heal_violations", project_root=project_root)
     print("\n" + "=" * 80)
     print("DRY RUN RESULTS")
@@ -216,4 +226,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

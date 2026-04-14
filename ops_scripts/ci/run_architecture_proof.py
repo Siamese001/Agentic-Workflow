@@ -34,7 +34,15 @@ import sys
 import time
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[2]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
 
 PASS_MARK = "\033[92mPASS\033[0m"
 FAIL_MARK = "\033[91mFAIL\033[0m"
@@ -76,6 +84,20 @@ _SUITES: list[dict] = [
 ]
 
 
+def _resolve_suite_cmd(cmd: list[str]) -> tuple[list[str] | None, str | None]:
+    if not cmd:
+        return None, "empty suite command"
+
+    head = cmd[0]
+    if head.endswith(".py"):
+        script_path = _REPO_ROOT / head
+        if not script_path.exists():
+            return None, f"missing suite target: {script_path}"
+        return [str(script_path), *cmd[1:]], None
+
+    return cmd, None
+
+
 def _run_suite(suite: dict, skip: bool = False) -> tuple[bool, float, str]:
     """Run a single proof suite via subprocess.
 
@@ -84,7 +106,11 @@ def _run_suite(suite: dict, skip: bool = False) -> tuple[bool, float, str]:
     if skip:
         return True, 0.0, "(skipped)"
 
-    cmd = [sys.executable] + suite["cmd"]
+    resolved_cmd, resolve_error = _resolve_suite_cmd(suite["cmd"])
+    if resolve_error is not None or resolved_cmd is None:
+        return False, 0.0, resolve_error or "invalid suite command"
+
+    cmd = [sys.executable] + resolved_cmd
     t0 = time.monotonic()
     try:
         result = subprocess.run(  # noqa: S603
@@ -101,8 +127,11 @@ def _run_suite(suite: dict, skip: bool = False) -> tuple[bool, float, str]:
         tail_lines = output.strip().splitlines()[-8:]
         tail = "\n      ".join(tail_lines) if tail_lines else ""
         return passed, elapsed, tail
-    except subprocess.TimeoutExpired:
-        return False, time.monotonic() - t0, "TIMEOUT after 300s"
+    except subprocess.TimeoutExpired as exc:
+        output = (exc.stdout or "") + (exc.stderr or "")
+        tail_lines = output.strip().splitlines()[-8:]
+        tail = "\n      ".join(tail_lines) if tail_lines else "TIMEOUT after 300s"
+        return False, time.monotonic() - t0, tail
     except (OSError, ValueError) as exc:
         return False, time.monotonic() - t0, f"launch error: {exc}"
 

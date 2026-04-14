@@ -44,7 +44,7 @@
     },
     "filesystem": {
       "_comment": "Constitutional Rule #0: filesystem MCP scope is LOCKED to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Denominator-sensitive read paths: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. NEVER reference C:\\Users\\... or .windsurf\\plans\\ in args.",
-      "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime \u2014 no version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
+      "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime — no version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
       "command": "node",
       "args": [
         "${env:AGENTIC_REPO_ROOT}/.windsurf/scripts/filesystem_mcp_launcher.js",
@@ -85,7 +85,14 @@
         "VECTOR_DB_LOG_LEVEL": "INFO",
         "VECTOR_DB_MODEL_LOAD_TIMEOUT": "120",
         "TOKENIZERS_PARALLELISM": "false",
-        "PYTHONUNBUFFERED": "1"
+        "PYTHONUNBUFFERED": "1",
+        "VECTOR_DB_ENCODE_TIMEOUT": "20",
+        "VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT": "10",
+        "VECTOR_DB_QUERY_COLLECTION_TIMEOUT": "20",
+        "VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT": "15",
+        "VECTOR_DB_SEARCH_GLOBAL_TIMEOUT": "60",
+        "VECTOR_DB_PREWARM_QUERY_TEXT": "warmup",
+        "MCP_MAX_THREADPOOL_WORKERS": "2"
       }
     },
     "otel_mcp": {

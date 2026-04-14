@@ -93,9 +93,10 @@ _emit_stores_embedding("p4", "run_hierarchy_agent_dry_run_util", "embedding_stor
 _emit_updates_meta_learning_state("p4", "run_hierarchy_agent_dry_run_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "run_hierarchy_agent_dry_run_util", "exec_snapshot_link")
 
-project_root = Path(__file__).resolve().parents[1]
-# guardian: allow-global-mutation
-sys.path.insert(0, str(project_root))
+project_root = _find_project_root()
+project_root_str = str(project_root)
+if project_root_str not in sys.path:
+    sys.path.insert(0, project_root_str)
 from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -176,6 +177,14 @@ _emit_invokes_eval("p1", "run_hierarchy_agent_dry_run_util", "eval_call")
 _emit_proposal_commits_routing("p1", "run_hierarchy_agent_dry_run_util", "routing_commit")
 
 
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
 def main():
     import uuid as _uuid  # noqa: PLC0415
 
@@ -197,7 +206,7 @@ def main():
     print("=" * 80)
     print("Using: agentic_core/L5_safety/enforcement/HierarchyAgent.py")
     print("Validating hierarchy (no changes will be made)...\n")
-    project_root = Path.cwd()
+    project_root = _find_project_root()
     result = invoke_hierarchy_agent(action="dry_run", project_root=project_root)
     if result.get("success"):
         print(f"\n{result.get('message', 'Dry run complete')}")
@@ -213,4 +222,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

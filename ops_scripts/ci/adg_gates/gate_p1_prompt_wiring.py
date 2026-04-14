@@ -22,6 +22,19 @@ regression trend.  Zero tolerance — any orphaned runtime surface halts CI.
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
+
 import sqlite3
 from datetime import datetime, timezone
 from typing import Any
@@ -200,6 +213,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    import sys
-
     sys.exit(main())

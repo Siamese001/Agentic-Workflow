@@ -155,9 +155,17 @@ _emit_updates_meta_learning_state("p4", "check_duplicate_filenames_util", "meta_
 _emit_links_execution_to_snapshot("p4", "check_duplicate_filenames_util", "exec_snapshot_link")
 
 
-def check_for_duplicates():
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return current.parent.parent
+
+
+def check_for_duplicates() -> int:
     """Scans for identical filenames across different directories."""
-    project_root = Path(__file__).parent.parent.parent
+    project_root = _find_project_root()
     file_map = defaultdict(list)
     exclude = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
     for path in project_root.rglob("*.py"):
@@ -166,12 +174,14 @@ def check_for_duplicates():
         file_map[path.name].append(path)
     duplicates = {name: paths for name, paths in file_map.items() if len(paths) > 1}
     if duplicates:
-        for _name, paths in sorted(duplicates.items()):
+        print(f"Found {len(duplicates)} duplicate filenames:", file=sys.stderr)
+        for name, paths in sorted(duplicates.items()):
+            print(f"  {name}", file=sys.stderr)
             for p in paths:
-                p.relative_to(project_root)
-        sys.exit(1)
-    sys.exit(0)
+                print(f"    - {p.relative_to(project_root)}", file=sys.stderr)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    check_for_duplicates()
+    raise SystemExit(check_for_duplicates())

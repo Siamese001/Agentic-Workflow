@@ -1,3 +1,5 @@
+import json
+import sys
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -165,18 +167,37 @@ _emit_validated_by_safety_plane("p1", "investigate_sovereign_base_util", "safety
 _emit_invokes_eval("p1", "investigate_sovereign_base_util", "eval_call")
 _emit_proposal_commits_routing("p1", "investigate_sovereign_base_util", "routing_commit")
 
-PROJECT_ROOT = Path(__file__).parent.parent
-with open(PROJECT_ROOT / "agent_discovery_full.json") as f:
-    agents = json.load(f)
-sovereign_agents = [a for a in agents if a.get("territory") == "Sovereign Base Agent"]
-for a in sovereign_agents[:20]:
-    layer = a.get("layer", "?")
-    path = a.get("path", "no path")
-path_prefixes = {}
-for a in sovereign_agents:
-    path = a.get("path", "")
-    if "/" in path or "\\" in path:
-        prefix = path.split("/")[0] if "/" in path else path.split("\\")[0]
-        path_prefixes[prefix] = path_prefixes.get(prefix, 0) + 1
-for prefix, _count in sorted(path_prefixes.items(), key=lambda x: -x[1]):
-    pass
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agent_discovery_full.json").exists() and (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+def main() -> int:
+    PROJECT_ROOT = _find_project_root()
+    with open(PROJECT_ROOT / "agent_discovery_full.json") as f:
+        agents = json.load(f)
+    sovereign_agents = [a for a in agents if a.get("territory") == "Sovereign Base Agent"]
+    for a in sovereign_agents[:20]:
+        layer = a.get("layer", "?")
+        path = a.get("path", "no path")
+    path_prefixes = {}
+    for a in sovereign_agents:
+        path = a.get("path", "")
+        if "/" in path or "\\" in path:
+            prefix = path.split("/")[0] if "/" in path else path.split("\\")[0]
+            path_prefixes[prefix] = path_prefixes.get(prefix, 0) + 1
+    for prefix, _count in sorted(path_prefixes.items(), key=lambda x: -x[1]):
+        pass
+
+    print(f"Sovereign Base Agent entries: {len(sovereign_agents)}")
+    for prefix, count in sorted(path_prefixes.items(), key=lambda x: -x[1]):
+        print(f"{prefix}: {count}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

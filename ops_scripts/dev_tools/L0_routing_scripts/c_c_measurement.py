@@ -174,12 +174,20 @@ _emit_invokes_eval("p1", "c_c_measurement", "eval_call")
 _emit_proposal_commits_routing("p1", "c_c_measurement", "routing_commit")
 
 
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
 class CCMeasurement:
     """Measure and report cyclomatic complexity metrics."""
 
-    def __init__(self, project_root: Path = None):
+    def __init__(self, project_root: Path | None = None):
         """Initialize measurement tool."""
-        self.project_root = project_root or Path(__file__).parent.parent.parent
+        self.project_root = project_root.resolve() if project_root else _find_project_root()
         self.results = {}
         self.timestamp = datetime.now().isoformat()
 
@@ -201,6 +209,9 @@ class CCMeasurement:
                 return {}
             data = json.loads(result.stdout) if result.stdout else {}
             return data
+        except FileNotFoundError:
+            print("Radon is not installed or not available on PATH")
+            return {}
         except subprocess.TimeoutExpired:
             print("Radon measurement timed out")
             return {}
@@ -309,7 +320,7 @@ class CCMeasurement:
         try:
             output_file.parent.mkdir(parents=True, exist_ok=True)
             report = {"timestamp": self.timestamp, "metrics": metrics}
-            with open(output_file, "w") as f:
+            with open(output_file, "w", encoding="utf-8") as f:
                 assert_no_persistent_write("L0", "json.dump")
                 json.dump(report, f, indent=2)
             print(f"\nReport saved to: {output_file}")
@@ -380,14 +391,14 @@ class CCMeasurement:
         print(f"  Functions CC > 15: {len(current['functions_cc_gt_15'])} (target: 0)")
 
 
-def main():
+def main() -> int:
     """Main entry point."""
     tool = CCMeasurement()
     print("Measuring cyclomatic complexity...")
     data = tool.measure_cc()
     if not data:
         print("Failed to measure CC")
-        sys.exit(1)
+        return 1
     metrics = tool.analyze_results(data)
     tool.print_report(metrics, "Current Cyclomatic Complexity Report")
     report_file = tool.project_root / AGENTIC_CORE_DIR / "L0_routing" / "logs" / "cc_current_measurement.json"
@@ -413,11 +424,11 @@ def main():
         print("✓ Functions CC > 15: 0 (target: 0)")
     if success:
         print("\n✓ All Phase 3 validation criteria met!")
-        sys.exit(0)
+        return 0
     else:
         print("\n✗ Some Phase 3 validation criteria not met")
-        sys.exit(1)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

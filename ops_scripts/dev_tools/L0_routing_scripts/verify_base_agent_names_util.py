@@ -2,6 +2,7 @@
 """Verify Base Agent names in dashboard data."""
 
 import json
+import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config import (
@@ -154,25 +155,46 @@ _emit_stores_embedding("p4", "verify_base_agent_names_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "verify_base_agent_names_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "verify_base_agent_names_util", "exec_snapshot_link")
 
-project_root = Path(__file__).parent.parent
-data_file = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
 
-try:
-    content = data_file.read_text(encoding="utf-8")
-    lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
-    content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
-    data = json.loads(content)
-except (FileNotFoundError, OSError):  # guardian: allow-silent-swallow
-    pass
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
 
-print("\nFirst 10 territories in dashboard data:")
-print("=" * 60)
-for i, row in enumerate(data[:10]):
-    print(f"{i + 1}. {row['Territory']}")
 
-print("\n" + "=" * 60)
-print("Base Agent territories:")
-print("=" * 60)
-for row in data:
-    if "Base Agent" in row["Territory"] or row["Territory"] == "Sovereign Base Agent":
-        print(f"  ✅ {row['Territory']}")
+def main() -> int:
+    project_root = _find_project_root()
+    data_file = (
+        project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
+    )
+    if not data_file.exists():
+        print(f"[ERROR] Dashboard data not found: {data_file}")
+        return 1
+
+    try:
+        content = data_file.read_text(encoding="utf-8")
+        lines = [line for line in content.split("\n") if not line.strip().startswith("//")]
+        content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
+        data = json.loads(content)
+    except (FileNotFoundError, OSError, json.JSONDecodeError) as e:
+        print(f"[ERROR] Unable to parse dashboard data: {e}")
+        return 1
+
+    print("\nFirst 10 territories in dashboard data:")
+    print("=" * 60)
+    for i, row in enumerate(data[:10]):
+        print(f"{i + 1}. {row['Territory']}")
+
+    print("\n" + "=" * 60)
+    print("Base Agent territories:")
+    print("=" * 60)
+    for row in data:
+        if "Base Agent" in row["Territory"] or row["Territory"] == "Sovereign Base Agent":
+            print(f"  ✅ {row['Territory']}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

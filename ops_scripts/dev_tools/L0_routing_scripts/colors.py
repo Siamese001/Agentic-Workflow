@@ -1,5 +1,6 @@
 import argparse
 import os
+import subprocess
 import sys
 import traceback
 from datetime import datetime
@@ -187,9 +188,26 @@ try:
 except ImportError:
     pass
 discover_all_agents = None
-if sys.platform.startswith("win"):
-    os.system("chcp 65001 >nul")
-    sys.stdout.reconfigure(encoding="utf-8")
+
+
+def _configure_console_encoding() -> None:
+    if not sys.platform.startswith("win"):
+        return
+    try:
+        subprocess.run(
+            ["chcp", "65001"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            shell=False,
+        )
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except (FileNotFoundError, OSError):
+        pass
+
+
+_configure_console_encoding()
 _mission_executed = False
 import json as _json
 
@@ -429,15 +447,22 @@ AGENT_LAYERS = {
     "BootstrapAgent": "L0 – Maintenance & Infrastructure",
     "FilesystemSSOTReconcilerAgent": "L0 – Maintenance & Infrastructure",
 }
-current_file_path = Path(__file__).resolve()
-project_root = None
-for parent in current_file_path.parents:
-    if (parent / ".env").exists():
-        project_root = parent
-        break
-if not project_root:
-    print(f"\n[!] [L6 ERROR] CRITICAL GRAVITY LOSS: Could not locate .env root from {current_file_path}")
-    project_root = Path.cwd()
+
+
+def _find_project_root() -> Path:
+    current_file_path = Path(__file__).resolve()
+    for parent in current_file_path.parents:
+        if (
+            (parent / ".git").exists()
+            or (parent / "pyproject.toml").exists()
+            or (parent / ".env").exists()
+            or (parent / AGENTIC_CORE_DIR).exists()
+        ):
+            return parent
+    return current_file_path.parent
+
+
+project_root = _find_project_root()
 project_root_str = str(project_root)
 # guardian: allow-global-mutation
 if project_root_str not in sys.path:

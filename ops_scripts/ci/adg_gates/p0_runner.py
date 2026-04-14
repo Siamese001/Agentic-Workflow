@@ -29,9 +29,21 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-from tqdm import tqdm
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+try:
+    from tqdm import tqdm
+except ImportError:
+    sys.exit("[FATAL] tqdm not installed — run: pip install tqdm")
+
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+REPO_ROOT = _bootstrap_repo_root()
 CI_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "ci_gates"
 
 # Lazy imports — gates import SQLite; avoid import-time failures if ADG missing
@@ -49,8 +61,8 @@ try:
     from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
 
     _GATE_IMPORTS_OK = True
-except ImportError as _exc:
-    _IMPORT_ERROR = str(_exc)
+except Exception as _exc:  # guardian: runner must record import-side-effect failures instead of crashing
+    _IMPORT_ERROR = f"{type(_exc).__name__}: {_exc}"
 
 
 # ---------------------------------------------------------------------------
@@ -157,8 +169,11 @@ def run_preflight(
                     f"({len(result.violations)} violations)",
                     file=sys.stderr,
                 )
-        except (OSError, RuntimeError) as exc:
-            print(f"[p0_runner] PREFLIGHT ERROR running {cls_name}: {exc}", file=sys.stderr)
+        except Exception as exc:
+            print(
+                f"[p0_runner] PREFLIGHT ERROR running {cls_name}: {type(exc).__name__}: {exc}",
+                file=sys.stderr,
+            )
             any_blocked = True
 
     if emit_artifacts:
@@ -204,8 +219,8 @@ def run_full(
                     f"[p0_runner] FULL BLOCKED: {result.gate_family} ({len(result.violations)} violations)",
                     file=sys.stderr,
                 )
-        except (OSError, RuntimeError) as exc:
-            print(f"[p0_runner] FULL ERROR running {cls_name}: {exc}", file=sys.stderr)
+        except Exception as exc:
+            print(f"[p0_runner] FULL ERROR running {cls_name}: {type(exc).__name__}: {exc}", file=sys.stderr)
             any_blocked = True
 
     if emit_artifacts:

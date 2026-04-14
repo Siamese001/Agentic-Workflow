@@ -5,6 +5,7 @@ Identifies test files with the same name in different directories
 and archives the duplicates to preserve SSOT.
 """
 
+import argparse
 import shutil
 from datetime import datetime
 from pathlib import Path
@@ -185,7 +186,8 @@ def main():
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "main")
-    test_dir = Path(__file__).parent.parent / TESTS_DIR
+    project_root = _find_project_root()
+    test_dir = project_root / TESTS_DIR
     "Find all test files in directory."
     seen = {}
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
@@ -203,19 +205,25 @@ def main():
         print("No duplicates to archive.")
         return 0
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    archive_dir = Path(__file__).parent.parent / ARCHIVES_DIR / f"duplicate_tests_{timestamp}"
-    archive_dir.mkdir(parents=True, exist_ok=True)
+    archive_dir = project_root / ARCHIVES_DIR / f"duplicate_tests_{timestamp}"
+    if not dry_run:
+        archive_dir.mkdir(parents=True, exist_ok=True)
     archived = 0
     for dup_list in tqdm(duplicates, desc="Processing", unit="item"):
         for dup in tqdm(dup_list, desc="Processing", unit="item"):
             try:
                 relative_path = dup.relative_to(test_dir)
                 archive_target = archive_dir / relative_path
-                archive_target.parent.mkdir(parents=True, exist_ok=True)
-                assert_no_persistent_write("L0", "shutil.mutate")
-                shutil.move(str(dup), str(archive_target))
-                print(f"✅ Archived: {relative_path}")
-                archived += 1
+                if dry_run:
+                    print(f"[DRY-RUN] Would archive: {relative_path}")
+                elif force:
+                    archive_target.parent.mkdir(parents=True, exist_ok=True)
+                    assert_no_persistent_write("L0", "shutil.mutate")
+                    shutil.move(str(dup), str(archive_target))
+                    print(f"✅ Archived: {relative_path}")
+                    archived += 1
+                else:
+                    print(f"[SKIP] Use --force to archive: {relative_path}")
             # guardian: allow-silent-swallow
             except (ValueError, TypeError) as e:
                 print(f"❌ Failed to archive {dup}: {e}")
@@ -231,4 +239,8 @@ def main():
 if __name__ == "__main__":
     import sys
 
-    sys.exit(main())
+    parser = argparse.ArgumentParser(description="Archive duplicate tests with safe defaults")
+    parser.add_argument("--apply", action="store_true", help="Perform archival. Default is dry-run.")
+    parser.add_argument("--force", action="store_true", help="Allow mutations when used with --apply.")
+    args = parser.parse_args()
+    sys.exit(main(dry_run=not args.apply, force=args.force))

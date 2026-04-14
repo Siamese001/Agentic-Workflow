@@ -4,6 +4,7 @@ Focuses on typed %, documented %, and schema strictness %.
 """
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -164,8 +165,8 @@ _emit_validated_by_safety_plane("p1", "identify_low_quality_agents_util", "safet
 _emit_invokes_eval("p1", "identify_low_quality_agents_util", "eval_call")
 _emit_proposal_commits_routing("p1", "identify_low_quality_agents_util", "routing_commit")
 
-PROJECT_ROOT = Path(__file__).parent.parent
-DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
+PROJECT_ROOT: Path | None = None
+DISCOVERY_FILE: Path | None = None
 
 
 def calculate_quality_score(agent: dict[str, Any]) -> float:
@@ -191,12 +192,18 @@ def calculate_quality_score(agent: dict[str, Any]) -> float:
     return (typed + documented + schema) / 3
 
 
-def main():
+def main() -> int:
     """Identify agents needing refactoring."""
+    global PROJECT_ROOT, DISCOVERY_FILE
+    PROJECT_ROOT = _find_project_root()
+    DISCOVERY_FILE = PROJECT_ROOT / "agent_discovery_full.json"
     print("=" * 70)
     print("IDENTIFYING LOW QUALITY AGENTS FOR REFACTORING")
     print("=" * 70)
-    with open(DISCOVERY_FILE, encoding="utf-8") as f:
+    if DISCOVERY_FILE is None or not DISCOVERY_FILE.exists():
+        print(f"[ERROR] Discovery file not found: {DISCOVERY_FILE}")
+        return 1
+    with DISCOVERY_FILE.open(encoding="utf-8") as f:
         agents = json.load(f)
     agent_scores = []
     for agent in tqdm(agents, desc="Processing", unit="item"):
@@ -238,6 +245,8 @@ def main():
             )
             print(f"  Quality Score: {agent['quality_score']:.1f}%")
 
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

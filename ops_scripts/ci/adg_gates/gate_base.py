@@ -22,6 +22,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+REPO_ROOT = _bootstrap_repo_root()
+
 from ops_scripts.ci.adg_gates.gate_policy import (
     ExecutionPolicy,
     RatchetResult,
@@ -29,7 +39,6 @@ from ops_scripts.ci.adg_gates.gate_policy import (
     VALID_PATH_CRITICALITY_CLASSES,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
 ADG_DIR = REPO_ROOT / "artifacts" / "adg"
 CI_RATchet_DIR = ADG_DIR / "ci_ratchets"
 CI_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "ci_gates"
@@ -156,14 +165,14 @@ class ADGGateBase(ABC):
 
     def _find_latest_sqlite(self) -> Path:
         """Find the latest ADG SQLite file."""
-        files = sorted(ADG_DIR.glob("adg_indexed_*.sqlite"))
+        files = [p for p in ADG_DIR.glob("adg_indexed_*.sqlite") if p.is_file()]
         if not files:
             raise RuntimeError("No ADG SQLite file found in artifacts/adg/")
-        return files[-1]
+        return max(files, key=lambda p: (p.stat().st_mtime_ns, p.name))
 
     def _connect(self) -> None:
         """Establish SQLite connection."""
-        db_uri = f"file:{self.sqlite_path.as_posix()}?mode=ro"
+        db_uri = f"file:{self.sqlite_path.as_posix()}?mode=ro&immutable=1"
         self.conn = sqlite3.connect(db_uri, uri=True, timeout=5)
         self.conn.row_factory = sqlite3.Row
         self.conn.execute("PRAGMA query_only = ON")

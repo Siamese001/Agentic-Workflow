@@ -2,6 +2,7 @@
 Quick script to check _from_utils duplicates
 """
 
+import sys
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -151,14 +152,34 @@ _emit_stores_embedding("p4", "check_from_utils_duplicates_util", "embedding_stor
 _emit_updates_meta_learning_state("p4", "check_from_utils_duplicates_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "check_from_utils_duplicates_util", "exec_snapshot_link")
 
-project_root = Path(__file__).parent.parent.parent
-from_utils = list(project_root.rglob("*_from_utils.py"))
-from_utils = [f for f in from_utils if ARCHIVES_DIR not in str(f)]
-canonicals = []
-for f in from_utils:
-    canonical = f.parent / f.name.replace("_from_utils.py", ".py")
-    if canonical.exists():
-        canonicals.append((f, canonical))
-if canonicals:
-    for _dup, _canon in canonicals:
-        pass
+
+def _find_project_root() -> Path:
+    current = Path(__file__).resolve().parent
+    for candidate in (current, *current.parents):
+        if (candidate / "agentic_core").exists():
+            return candidate
+    raise RuntimeError(f"Could not determine project root from {__file__}")
+
+
+def main() -> int:
+    project_root = _find_project_root()
+    from_utils = list(project_root.rglob("*_from_utils.py"))
+    from_utils = [f for f in from_utils if "archive" not in str(f).lower()]
+
+    canonicals = []
+    for dup in from_utils:
+        canonical = dup.parent / dup.name.replace("_from_utils.py", ".py")
+        if canonical.exists():
+            canonicals.append((dup, canonical))
+
+    print(f"Scanned root: {project_root}")
+    print(f"_from_utils files: {len(from_utils)}")
+    print(f"Duplicate canonical pairs: {len(canonicals)}")
+    for dup, canon in canonicals[:20]:
+        print(f"  - {dup.relative_to(project_root)} -> {canon.relative_to(project_root)}")
+
+    return 1 if canonicals else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

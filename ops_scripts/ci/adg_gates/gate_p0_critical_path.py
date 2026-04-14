@@ -12,13 +12,29 @@ Source views:
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[3]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
+
 import sqlite3
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
-from tqdm import tqdm
+
+try:
+    from tqdm import tqdm
+except ImportError as exc:
+    raise RuntimeError("tqdm is required for ADG CI gates; install with: pip install tqdm") from exc
 
 
 class CriticalPathIntegrityGate(ADGGateBase):
@@ -195,6 +211,7 @@ class CriticalPathIntegrityGate(ADGGateBase):
             status=status,
             violations=violations,
             summary=summary,
+            policy=self.execution_policy,
         )
 
     def _empty_result(self) -> GateResult:
@@ -215,6 +232,7 @@ class CriticalPathIntegrityGate(ADGGateBase):
                 "forbidden_hop_count": 0,
                 "note": "Materialized views not available - no violations detected",
             },
+            policy=self.execution_policy,
         )
 
 
@@ -225,6 +243,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    import sys
-
     sys.exit(main())

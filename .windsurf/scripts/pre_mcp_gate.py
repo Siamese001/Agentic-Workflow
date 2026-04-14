@@ -30,6 +30,7 @@ Fail policy: CLOSED for ADG and filesystem-write calls, OPEN for everything else
 Zero hardcoded paths — REPO_ROOT resolved from __file__.
 """
 
+import importlib.util
 import json
 import os
 import sqlite3
@@ -796,53 +797,21 @@ def check_task_manager_gate() -> int:
 
 def check_vector_db_gate() -> int:
     """
-    Check Vector DB MCP (ChromaDB) health.
+    Check Vector DB MCP health cheaply for embedded Chroma usage.
 
-    Two-stage probe (library probe cached per process):
-    1. Verify chromadb package is importable — hard block if missing
-    2. Probe ChromaDB HTTP instance at CHROMA_HOST:CHROMA_PORT — fail-open
-       (embedded mode has no HTTP endpoint; server mode does)
+    Best-practice change:
+    - Do not spawn a subprocess to `import chromadb` on every hook invocation.
+      Windsurf launches this hook as a fresh process per MCP call, so process-local
+      caches provide no cross-call benefit.
+    - Do not probe localhost:8000 for Chroma HTTP health when the MCP server uses
+      embedded PersistentClient mode against the local persist directory.
 
     Return 0 (allow) or 2 (block).
     """
-    import socket as _socket
-
-    # Stage 1: library importable? (cached)
-    cache_key = "chromadb_importable"
-    if cache_key not in _PROBE_CACHE:
-        try:
-            result = subprocess.run(
-                [sys.executable, "-c", "import chromadb"],
-                shell=False,
-                capture_output=True,
-                text=True,
-                timeout=10,
-                check=False,
-            )
-            _PROBE_CACHE[cache_key] = result.returncode == 0
-        except (subprocess.TimeoutExpired, OSError):
-            _PROBE_CACHE[cache_key] = False
-
-    if not _PROBE_CACHE[cache_key]:
+    if importlib.util.find_spec("chromadb") is None:
         return _exit_block(
             "Vector DB MCP health check failed: chromadb not installed. Install with: pip install chromadb",
         )
-
-    # Stage 2: HTTP instance probe — fail-open (embedded mode is valid)
-    host = os.getenv("CHROMA_HOST", "localhost")
-    port = int(os.getenv("CHROMA_PORT", "8000"))
-    try:
-        with _socket.create_connection((host, port), timeout=2):
-            pass
-    except ConnectionRefusedError:
-        print(
-            f"[pre_mcp_gate] INFO: ChromaDB HTTP instance not detected at {host}:{port} — "
-            "using embedded mode. For server mode: chroma run --path ./artifacts/chroma",
-            file=sys.stderr,
-        )
-    except OSError:
-        pass  # network unavailable — fail-open
-
     return 0
 
 
