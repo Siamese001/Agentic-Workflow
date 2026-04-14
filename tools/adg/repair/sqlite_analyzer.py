@@ -34,6 +34,12 @@ class SQLiteAnalyzer:
         self.sqlite_path = Path(sqlite_path)
         self._connection: sqlite3.Connection | None = None
 
+    def _quote_identifier(self, name: str) -> str:
+        """Quote a SQLite identifier sourced from database metadata."""
+        if "\x00" in name:
+            raise ValueError("SQLite identifier contains a NUL byte")
+        return '"' + name.replace('"', '""') + '"'
+
     def _get_connection(self) -> sqlite3.Connection:
         """Get or create database connection."""
         if self._connection is None:
@@ -67,8 +73,9 @@ class SQLiteAnalyzer:
 
         counts = {}
         for table in tables:
-            cursor = conn.execute(f"SELECT COUNT(*) FROM {table}")
-            counts[table] = cursor.fetchone()[0]
+            quoted_table = self._quote_identifier(str(table))
+            cursor = conn.execute(f"SELECT COUNT(*) FROM {quoted_table}")
+            counts[str(table)] = cursor.fetchone()[0]
 
         return counts
 
@@ -101,7 +108,6 @@ class SQLiteAnalyzer:
             AND n.id NOT IN (
                 SELECT DISTINCT src_id FROM edges WHERE relation_type = 'applies_guardrail'
             )
-            LIMIT 100
             """,
         )
 
@@ -134,7 +140,6 @@ class SQLiteAnalyzer:
             JOIN nodes n ON e.src_id = n.id
             WHERE e.relation_type = 'imports'
             AND e.dst_id NOT IN (SELECT id FROM nodes WHERE entity_type = 'module')
-            LIMIT 100
             """,
         )
 
@@ -205,7 +210,6 @@ class SQLiteAnalyzer:
             JOIN nodes src ON e.src_id = src.id
             JOIN nodes dst ON e.dst_id = dst.id
             WHERE e.relation_type = 'violates'
-            LIMIT 100
             """,
         )
 

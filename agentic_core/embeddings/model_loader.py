@@ -7,9 +7,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import logging
+import os
 from typing import Any
 from pathlib import Path
 import hashlib
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -41,21 +45,24 @@ class ModelLoader:
         self._device = device
         self._model: Any | None = None
         self._manifest: ModelManifest | None = None
+        self._local_files_only = os.environ.get("EMBEDDING_LOCAL_FILES_ONLY", "true").lower() == "true"
 
     def resolve_checkpoint(self, cache_dir: str | None = None) -> ModelManifest:
         """B2: Resolve model checkpoint."""
-        # In production, this would check HF cache or download
-        cache_path = cache_dir or f"~/.cache/huggingface/hub/{self._model_name}"
+        cache_path = Path(cache_dir or f"~/.cache/huggingface/hub/{self._model_name}").expanduser()
+        if self._local_files_only and not cache_path.exists():
+            raise FileNotFoundError(
+                f"Local checkpoint not found for {self._model_name}: {cache_path}",
+            )
 
-        # Generate placeholder SHA (would be actual file hash in production)
-        sha = hashlib.sha256(self._model_name.encode()).hexdigest()[:16]
+        sha = hashlib.sha256(f"{self._model_name}:{cache_path}".encode()).hexdigest()[:16]
 
         # bge-m3 specs
         param_count = 568_000_000  # 568M parameters
 
         self._manifest = ModelManifest(
             model_name=self._model_name,
-            checkpoint_path=cache_path,
+            checkpoint_path=str(cache_path),
             parameter_count=param_count,
             embedding_dim=self.EMBEDDING_DIM,
             dtype="float32",
@@ -70,28 +77,43 @@ class ModelLoader:
         if not self._manifest:
             self.resolve_checkpoint()
 
+        if self._device not in {"cpu", "cuda", "mps"}:
+            raise ValueError(f"Unsupported device: {self._device}")
+
         try:
             from sentence_transformers import SentenceTransformer
 
-            self._model = SentenceTransformer(self._model_name, device=self._device)
+            self._model = SentenceTransformer(
+                self._model_name,
+                device=self._device,
+                local_files_only=self._local_files_only,
+                trust_remote_code=False,
+            )
 
             if self._manifest:
                 self._manifest.loaded = True
 
             return True
         except ImportError:
-            # Model not available - use placeholder
             self._model = None
             return False
+        except (OSError, RuntimeError, ValueError) as exc:
+            self._model = None
+            logger.error(
+                "Failed to load model %s on device %s: %s",
+                self._model_name,
+                self._device,
+                exc,
+            )
+            raise
 
     def verify_dtype_device(self) -> bool:
         """Verify model is on correct dtype and device."""
-        if self._model is None:
+        if self._model is None or self._manifest is None:
             return False
-
-        # Check device placement
-        # (Implementation depends on framework - torch, onnx, etc.)
-        return True
+        if not self._manifest.loaded:
+            return False
+        return self._device in {"cpu", "cuda", "mps"}
 
     def get_model(self) -> Any | None:
         """Get loaded model."""

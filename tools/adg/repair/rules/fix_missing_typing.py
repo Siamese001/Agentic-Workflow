@@ -139,7 +139,7 @@ class FixMissingTypingRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except Exception as e:
+        except (OSError, SyntaxError, ValueError) as e:
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,
@@ -158,13 +158,13 @@ class FixMissingTypingRule(BaseRepairRule):
             content = path.read_text(encoding="utf-8")
             tree = ast.parse(content)
 
-            # Check that functions now have more annotations
-            functions = self._find_functions_missing_types(tree)
-            # If fewer functions missing types, fix worked
-            original_count = len(result.original_content or "")
-            return len(functions) < original_count
+            current_missing = len(self._find_functions_missing_types(tree))
 
-        except Exception:
+            original_tree = ast.parse(result.original_content or "")
+            original_missing = len(self._find_functions_missing_types(original_tree))
+            return current_missing < original_missing
+
+        except (OSError, SyntaxError, ValueError):
             return False
 
     def _find_functions_missing_types(

@@ -8,6 +8,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections import Counter
+import hashlib
 from typing import Any
 import math
 
@@ -31,6 +33,17 @@ class ForwardPass:
 
     def __init__(self, model: Any | None = None) -> None:
         self._model = model
+        self._dim = 1024
+
+    @staticmethod
+    def _stable_seed(text: str) -> int:
+        digest = hashlib.sha256(text.encode("utf-8")).digest()
+        return int.from_bytes(digest[:8], "big")
+
+    @staticmethod
+    def _stable_token_id(token: str) -> int:
+        digest = hashlib.sha256(token.encode("utf-8")).digest()
+        return int.from_bytes(digest[:4], "big") % 250002
 
     def infer(
         self,
@@ -39,13 +52,20 @@ class ForwardPass:
     ) -> list[float]:
         """B4: Forward pass inference."""
         if self._model:
-            # Use actual model
-            return self._model.encode(input_ids)
+            if not hasattr(self._model, "encode"):
+                raise TypeError("Configured model does not expose encode()")
+            encoded = self._model.encode(
+                " ".join(str(tok) for tok in input_ids),
+                convert_to_numpy=True,
+                normalize_embeddings=False,
+                show_progress_bar=False,
+            )
+            return [float(x) for x in encoded.tolist()]
 
         # Fallback: deterministic placeholder
         # Hash-based embedding for structure without model
         seed = sum(input_ids[:10]) if input_ids else 0
-        dim = 1024  # bge-m3 dimension
+        dim = self._dim
 
         # Deterministic pseudo-random based on seed
         embedding = []
@@ -72,6 +92,8 @@ class ForwardPass:
 
     def normalize(self, vector: list[float]) -> list[float]:
         """B6: L2 normalization to unit vector."""
+        if not vector:
+            return []
         # Calculate L2 norm
         norm_sq = sum(x * x for x in vector)
         norm = math.sqrt(norm_sq) if norm_sq > 0 else 1.0
@@ -87,11 +109,14 @@ class ForwardPass:
         return_sparse: bool = True,
     ) -> EmbeddingOutput:
         """Full encode: forward + pool + normalize."""
-        # This would integrate with tokenizer in production
-        # For now, simple hash-based embedding
+        if not isinstance(text, str):
+            raise TypeError("text must be a string")
+        normalized_text = text.strip()
+        if not normalized_text:
+            raise ValueError("text must not be empty")
 
-        seed = hash(text) % 1000000
-        dim = 1024
+        seed = self._stable_seed(normalized_text) % 1000000
+        dim = self._dim
 
         # Generate dense vector
         dense = []
@@ -106,11 +131,12 @@ class ForwardPass:
         sparse: dict[int, float] | None = None
         if return_sparse:
             sparse = {}
-            # Simple term-frequency style sparse representation
-            words = text.lower().split()
-            for i, word in enumerate(set(words)):
-                token_id = hash(word) % 250002  # BGE-M3 vocab size
-                weight = words.count(word) / len(words)
+            words = normalized_text.lower().split()
+            counts = Counter(words)
+            total = len(words)
+            for word, count in counts.items():
+                token_id = self._stable_token_id(word)
+                weight = count / total
                 sparse[token_id] = weight
 
         return EmbeddingOutput(

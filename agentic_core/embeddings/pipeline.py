@@ -11,6 +11,8 @@ from typing import Any
 from pathlib import Path
 import hashlib
 import json
+import os
+import tempfile
 import time
 
 
@@ -37,6 +39,7 @@ class EmbeddingPipeline:
         self._collection = collection_name
         self._records: list[VectorRecord] = []
         self._index_path: Path | None = None
+        self._index_root = Path("vector_store")
 
     def bind_metadata(
         self,
@@ -48,14 +51,15 @@ class EmbeddingPipeline:
         extra_meta: dict[str, Any] | None = None,
     ) -> VectorRecord:
         """B7: Bind metadata to embedding."""
-        # Generate deterministic ID
-        content = f"{source_uri}:{chunk_index}:{text[:100]}"
+        content_sha256 = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        content = f"{source_uri}:{chunk_index}:{content_sha256}"
         record_id = hashlib.sha256(content.encode()).hexdigest()[:16]
 
         metadata = {
             "source_uri": source_uri,
             "chunk_index": chunk_index,
             "text_preview": text[:200],
+            "content_sha256": content_sha256,
             "char_count": len(text),
             "embedding_dim": len(embedding),
             "has_sparse": sparse is not None,
@@ -83,11 +87,11 @@ class EmbeddingPipeline:
         index_path: str | None = None,
     ) -> dict[str, Any]:
         """B8: Write to vector index."""
-        path = index_path or f"vector_store/{self._collection}"
-        self._index_path = Path(path)
+        path = Path(index_path) if index_path else self._index_root / self._collection
+        if path.is_absolute() or ".." in path.parts:
+            raise ValueError("index_path must stay under the managed vector_store root")
+        self._index_path = path
 
-        # In production, this would write to ChromaDB/FAISS
-        # For now, simulate with JSONL
         self._index_path.parent.mkdir(parents=True, exist_ok=True)
 
         records_data = []
@@ -95,17 +99,26 @@ class EmbeddingPipeline:
             records_data.append(
                 {
                     "id": r.id,
-                    "embedding": r.embedding[:10],  # Truncate for storage
+                    "embedding": r.embedding,
+                    "sparse_vector": r.sparse_vector,
+                    "created_at": r.created_at,
                     "metadata": r.metadata,
                     "source_uri": r.source_uri,
                 }
             )
 
-        # Write to file
         index_file = self._index_path.with_suffix(".jsonl")
-        with open(index_file, "w", encoding="utf-8") as f:
-            for rec in records_data:
-                f.write(json.dumps(rec) + "\n")
+        fd, tmp_name = tempfile.mkstemp(dir=str(index_file.parent), suffix=".tmp", text=True)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                for rec in records_data:
+                    f.write(json.dumps(rec, sort_keys=True) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_name, index_file)
+        finally:
+            if os.path.exists(tmp_name):
+                os.unlink(tmp_name)
 
         return {
             "index_path": str(index_file),
@@ -120,6 +133,8 @@ class EmbeddingPipeline:
         encoder: Any,
     ) -> VectorRecord:
         """Full pipeline: encode + bind + stage."""
+        if not source_uri or not source_uri.strip():
+            raise ValueError("source_uri must not be empty")
         # Encode
         result = encoder.encode(text, return_sparse=True)
 

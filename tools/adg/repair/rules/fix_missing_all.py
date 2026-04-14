@@ -128,7 +128,7 @@ class FixMissingAllRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except Exception as e:
+        except (OSError, SyntaxError, ValueError) as e:
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,
@@ -160,7 +160,7 @@ class FixMissingAllRule(BaseRepairRule):
 
             return False
 
-        except Exception:
+        except (OSError, SyntaxError):
             return False
 
     def _extract_exports(self, tree: ast.AST) -> list[str]:
@@ -183,8 +183,8 @@ class FixMissingAllRule(BaseRepairRule):
                 # Module-level constants (UPPERCASE)
                 for target in node.targets:
                     if isinstance(target, ast.Name):
-                        if target.name.isupper() and not target.name.startswith("_"):
-                            exports.append(target.name)
+                        if target.id.isupper() and not target.id.startswith("_"):
+                            exports.append(target.id)
 
         # Remove duplicates and sort
         return sorted(set(exports))

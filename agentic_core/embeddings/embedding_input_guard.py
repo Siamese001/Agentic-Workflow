@@ -7,6 +7,7 @@ is passed to an embedding model.
 import hashlib
 import re
 from dataclasses import dataclass
+from typing import ClassVar
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -174,12 +175,13 @@ class EmbeddingInputGuard:
     """Enforces privacy and data boundary controls at the embedding seam."""
 
     # Allowlist of fields that are permitted to be embedded.
-    ALLOWED_FIELDS = {
+    ALLOWED_FIELDS: ClassVar[set[str]] = {
         "u0_user_prompt",
         "failure_signal.error_message",
         "pattern_text",
         "rag_query",
     }
+    MAX_TEXT_BYTES: ClassVar[int] = 32_768
 
     # Patterns for redacting sensitive information.
     REDACTION_PATTERNS = [
@@ -190,7 +192,14 @@ class EmbeddingInputGuard:
             re.IGNORECASE,
         ),  # UUIDs
         re.compile(r"[\w\.-]+@[\w\.-]+\.\w+"),  # Emails
+        re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),  # SSNs
     ]
+
+    @staticmethod
+    def _normalize(text: str) -> str:
+        text = text.replace("\x00", " ")
+        text = re.sub(r"\s+", " ", text)
+        return text.strip()
 
     @classmethod
     def guard(cls, text: str, field_name: str) -> GuardedText:
@@ -200,12 +209,25 @@ class EmbeddingInputGuard:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EmbeddingInputGuard.guard")
 
+        if not isinstance(text, str):
+            raise EmbeddingInputViolation("Embedding input must be a string.")
         if field_name not in cls.ALLOWED_FIELDS:
             raise EmbeddingInputViolation(f"Field '{field_name}' is not allowed for embedding.")
 
-        redacted_text = text
+        redacted_text = cls._normalize(text)
+        if not redacted_text:
+            raise EmbeddingInputViolation("Embedding input cannot be empty.")
+        if len(redacted_text.encode("utf-8")) > cls.MAX_TEXT_BYTES:
+            raise EmbeddingInputViolation(
+                f"Embedding input exceeds maximum size of {cls.MAX_TEXT_BYTES} bytes.",
+            )
         for pattern in cls.REDACTION_PATTERNS:
             redacted_text = pattern.sub("[REDACTED]", redacted_text)
+
+        if not redacted_text.replace("[REDACTED]", "").strip():
+            raise EmbeddingInputViolation(
+                "Embedding input was fully redacted and is not useful for embedding."
+            )
 
         text_hash = hashlib.sha256(redacted_text.encode("utf-8")).hexdigest()
 

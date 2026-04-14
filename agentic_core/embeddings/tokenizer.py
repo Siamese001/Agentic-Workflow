@@ -6,7 +6,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
+import logging
+import os
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -30,6 +35,7 @@ class TokenizerStage:
 
     DEFAULT_MODEL = "BAAI/bge-m3"  # HITL-10C-001 selection
     DEFAULT_MAX_LENGTH = 8192
+    LOCAL_FILES_ONLY = os.environ.get("EMBEDDING_LOCAL_FILES_ONLY", "true").lower() == "true"
 
     def __init__(self, model_name: str | None = None) -> None:
         self._model_name = model_name or self.DEFAULT_MODEL
@@ -41,12 +47,22 @@ class TokenizerStage:
         try:
             from transformers import AutoTokenizer
 
-            self._tokenizer = AutoTokenizer.from_pretrained(self._model_name)
+            self._tokenizer = AutoTokenizer.from_pretrained(
+                self._model_name,
+                local_files_only=self.LOCAL_FILES_ONLY,
+                trust_remote_code=False,
+                use_fast=True,
+            )
             return True
-        except ImportError:
-            # Fallback: simple whitespace tokenization
+        except (ImportError, OSError, ValueError) as exc:
             self._tokenizer = None
+            logger.warning("Falling back to whitespace tokenizer for %s: %s", self._model_name, exc)
             return False
+
+    @staticmethod
+    def _stable_token_id(token: str) -> int:
+        digest = hashlib.sha256(token.encode("utf-8")).digest()
+        return int.from_bytes(digest[:4], "big") % 50000
 
     def tokenize(
         self,
@@ -56,10 +72,19 @@ class TokenizerStage:
         padding: bool = True,
     ) -> TokenizedOutput:
         """Tokenize text to IDs with attention mask."""
+        if not isinstance(text, str):
+            raise TypeError("text must be a string")
         max_len = max_length or self._max_length
+        if max_len <= 0:
+            raise ValueError("max_length must be > 0")
 
         if self._tokenizer:
-            # Use HF tokenizer
+            original = self._tokenizer(
+                text,
+                truncation=False,
+                padding=False,
+                return_attention_mask=False,
+            )
             result = self._tokenizer(
                 text,
                 max_length=max_len,
@@ -67,23 +92,22 @@ class TokenizerStage:
                 padding="max_length" if padding else False,
                 return_attention_mask=True,
             )
+            token_count = int(sum(result["attention_mask"]))
 
             return TokenizedOutput(
                 input_ids=result["input_ids"],
                 attention_mask=result["attention_mask"],
-                token_count=sum(result["attention_mask"]),
-                truncated=len(result["input_ids"]) >= max_len,
-                padded=padding and len(result["input_ids"]) < max_len,
+                token_count=token_count,
+                truncated=truncation and len(original["input_ids"]) > max_len,
+                padded=padding and token_count < len(result["input_ids"]),
             )
         else:
-            # Fallback: whitespace tokenization
-            tokens = text.split()[:max_len]
+            words = text.split()
+            tokens = words[:max_len] if truncation else words
             token_count = len(tokens)
 
-            # Simple ID mapping (not real, just for structure)
-            input_ids = [hash(t) % 50000 for t in tokens]
+            input_ids = [self._stable_token_id(t) for t in tokens]
 
-            # Pad
             if padding and len(input_ids) < max_len:
                 input_ids.extend([0] * (max_len - len(input_ids)))
                 attention_mask = [1] * token_count + [0] * (max_len - token_count)
@@ -94,7 +118,7 @@ class TokenizerStage:
                 input_ids=input_ids,
                 attention_mask=attention_mask,
                 token_count=token_count,
-                truncated=len(tokens) >= max_len,
+                truncated=truncation and len(words) > max_len,
                 padded=padding and len(input_ids) < max_len,
             )
 

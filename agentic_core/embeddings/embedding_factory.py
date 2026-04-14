@@ -13,6 +13,7 @@ import hashlib
 import json
 import logging
 import os
+import threading
 from typing import Any, Literal, Protocol, runtime_checkable
 
 from agentic_core.embeddings.embedding_input_guard import GuardedText
@@ -172,7 +173,7 @@ def is_enabled() -> bool:
     Returns:
         True if embeddings are enabled, False otherwise.
     """
-    return os.environ.get("EMBEDDING_ENABLED", "true").lower() == "true"
+    return os.environ.get("EMBEDDING_ENABLED", "false").lower() == "true"
 
 
 # For module-level logging, check once at import time.
@@ -206,6 +207,7 @@ class EmbeddingClient(Protocol):
 
 # Registry for tracking embedding client instances
 _embedding_client_registry: dict[str, Any] = {}
+_registry_lock = threading.Lock()
 
 
 def register_embedding_client(name: str, client: EmbeddingClient) -> None:
@@ -213,8 +215,15 @@ def register_embedding_client(name: str, client: EmbeddingClient) -> None:
     if not is_enabled():
         raise EmbeddingDisabledError("EMBEDDING_ENABLED=false: Cannot register embedding clients")
 
-    _embedding_client_registry[name] = client
-    logger.info(f"Registered embedding client: {name}")
+    if not name or not name.strip():
+        raise ValueError("Embedding client name cannot be empty")
+    with _registry_lock:
+        if name in _embedding_client_registry:
+            raise EmbeddingSovereigntyViolationError(
+                f"Embedding client '{name}' is already registered",
+            )
+        _embedding_client_registry[name] = client
+    logger.info("Registered embedding client: %s", name)
 
 
 def get_embedding_client(name: str = "default") -> EmbeddingClient:
@@ -222,7 +231,8 @@ def get_embedding_client(name: str = "default") -> EmbeddingClient:
     if not is_enabled():
         raise EmbeddingDisabledError("EMBEDDING_ENABLED=false: Cannot get embedding clients")
 
-    client = _embedding_client_registry.get(name)
+    with _registry_lock:
+        client = _embedding_client_registry.get(name)
     if not client:
         raise EmbeddingDisabledError(f"No embedding client registered with name: {name}")
 
@@ -320,6 +330,12 @@ def create_embedding_client(
 
                 # W11: Stable float32 casting for determinism
                 embedding = [float(x) for x in embedding]
+                if self.observed_dimension is None:
+                    self.observed_dimension = len(embedding)
+                elif len(embedding) != self.observed_dimension:
+                    raise RuntimeError(
+                        f"OPENAI_EMBED_DIM_MISMATCH: got {len(embedding)}, expected {self.observed_dimension}",
+                    )
 
                 self._cache[cache_key] = embedding
 
@@ -356,6 +372,11 @@ def create_embedding_client(
 
                 if self.observed_dimension is None and embeddings:
                     self.observed_dimension = len(embeddings[0])
+                for emb in embeddings:
+                    if len(emb) != self.observed_dimension:
+                        raise RuntimeError(
+                            f"OPENAI_BATCH_EMBED_DIM_MISMATCH: got {len(emb)}, expected {self.observed_dimension}",
+                        )
 
                 for i, embedding in enumerate(embeddings):
                     original_index, guarded_text = texts_to_embed[i]
@@ -386,9 +407,6 @@ def create_embedding_client(
         client = OpenAIEmbeddingClient(model or "text-embedding-3-large", dimensions=kwargs.get("dimensions"))
 
     elif provider == "gemini":
-        raw_client = create_vertex_client()
-        # Note: Vertex AI embeddings implementation would go here
-        # For now, raise NotImplementedError
         raise NotImplementedError("Gemini embeddings not yet implemented through factory")
 
     elif provider == "anthropic":
@@ -428,8 +446,13 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
             "Install with: pip install sentence-transformers",
         ) from e
 
-    # Load model
-    model = SentenceTransformer(model_name, device=device)
+    allow_download = os.environ.get("BGE_ALLOW_MODEL_DOWNLOAD", "false").lower() == "true"
+    model = SentenceTransformer(
+        model_name,
+        device=device,
+        local_files_only=not allow_download,
+        trust_remote_code=False,
+    )
 
     class BGEM3EmbeddingClient:
         """BGE-M3 embedding client wrapper."""
@@ -456,6 +479,12 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
             self.observed_dimension = model.get_sentence_embedding_dimension()
             self.embedder_identity["dimensions"] = self.observed_dimension
 
+        def _validate_dimension(self, embedding: list[float]) -> None:
+            if len(embedding) != self.observed_dimension:
+                raise RuntimeError(
+                    f"BGE_DIM_MISMATCH: got {len(embedding)}, expected {self.observed_dimension}",
+                )
+
         async def get_embedding(self, guarded_text: GuardedText) -> list[float]:
             import uuid as _uuid  # noqa: PLC0415
 
@@ -479,10 +508,12 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
                 guarded_text.redacted_text,
                 convert_to_numpy=True,
                 normalize_embeddings=True,  # L2 normalization
+                show_progress_bar=False,
             ).tolist()
 
             # Stable float32 casting
             embedding = [float(x) for x in embedding]
+            self._validate_dimension(embedding)
 
             self._cache[cache_key] = embedding
 
@@ -521,6 +552,7 @@ def _create_bge_m3_client(model_name: str, device: str = "cpu") -> EmbeddingClie
             embeddings = [[float(x) for x in emb] for emb in embeddings]
 
             for i, embedding in enumerate(embeddings):
+                self._validate_dimension(embedding)
                 original_index, text = texts_to_embed[i]
                 cache_key = create_deterministic_cache_key(text, self.embedder_identity)
                 self._cache[cache_key] = embedding
@@ -584,7 +616,7 @@ def compute_w7_sovereignty_digest() -> str:
         "embedding_enabled": is_enabled(),
         "factory_module_hash": module_hash,
         "registered_clients": sorted(_embedding_client_registry.keys()),
-        "allowed_providers": ["openai", "gemini", "anthropic"],
+        "allowed_providers": ["openai", "gemini", "anthropic", "bge-m3"],
         "kill_switch_default": "true",
         "factory_path": "agentic_core/embeddings/embedding_factory.py",
     }

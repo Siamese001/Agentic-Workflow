@@ -13,6 +13,7 @@ No async, no factory sovereignty path, no external network calls after first loa
 from __future__ import annotations
 
 import logging
+import os
 import threading
 from typing import TYPE_CHECKING
 
@@ -37,10 +38,20 @@ class BGEInstallError(RuntimeError):
 # ── Constants ──────────────────────────────────────────────────────────────
 BGE_MODEL: str = "BAAI/bge-m3"
 BGE_QUERY_DIM: int = 1024
+BGE_ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("BGE_ALLOW_MODEL_DOWNLOAD", "false").lower() == "true"
 
 # ── Process-level singleton ────────────────────────────────────────────────
 _model_lock = threading.Lock()
 _bge_model: "_ST | None" = None
+
+
+def _sanitize_text(text: str) -> str:
+    if not isinstance(text, str):
+        raise TypeError("text must be a string")
+    text = text.strip()
+    if not text:
+        raise ValueError("text must not be empty")
+    return text
 
 
 def _get_model() -> "_ST":
@@ -54,7 +65,11 @@ def _get_model() -> "_ST":
                         "sentence-transformers is not installed. Run: pip install sentence-transformers"
                     )
                 logger.info("Loading BGE model: %s", BGE_MODEL)
-                _bge_model = SentenceTransformer(BGE_MODEL)
+                _bge_model = SentenceTransformer(
+                    BGE_MODEL,
+                    local_files_only=not BGE_ALLOW_MODEL_DOWNLOAD,
+                    trust_remote_code=False,
+                )
                 logger.info("BGE model loaded: %s (dim=%d)", BGE_MODEL, BGE_QUERY_DIM)
     return _bge_model
 
@@ -73,13 +88,19 @@ def bge_embed_query(text: str) -> list[float]:
         RuntimeError: If the model returns an unexpected dimension
                       (BGE_DIM_MISMATCH — loud, never silent).
     """
+    sanitized = _sanitize_text(text)
     model = _get_model()
-    vec: list[float] = model.encode(
-        [text],
+    encoded = model.encode(
+        [sanitized],
         convert_to_numpy=True,
         normalize_embeddings=True,
         show_progress_bar=False,
-    ).tolist()[0]
+    )
+    if encoded is None or len(encoded) != 1:
+        raise RuntimeError("BGE_EMBED_FAILED: expected a single embedding row")
+    vec: list[float] = encoded.tolist()[0]
+    if not isinstance(vec, list):
+        raise RuntimeError("BGE_EMBED_FAILED: model returned a non-list embedding payload")
 
     if len(vec) != BGE_QUERY_DIM:
         raise RuntimeError(

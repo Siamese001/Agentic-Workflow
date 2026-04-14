@@ -68,6 +68,10 @@ class ADGRepairOrchestrator:
         self.timestamp = timestamp
         self.repo_root = repo_root or ROOT
         self.sqlite_path = Path(sqlite_path) if sqlite_path else None
+        self.run_started_at = datetime.now(timezone.utc).isoformat()
+
+        # Register built-in rules before the engine snapshots the registry.
+        register_builtin_rules()
 
         # Initialize components
         self.rule_engine = RuleEngine()
@@ -77,9 +81,6 @@ class ADGRepairOrchestrator:
         # Logging
         self.log: list[dict[str, Any]] = []
         self.log_path: Path | None = None
-
-        # Register built-in rules
-        register_builtin_rules()
 
         self._log_event(
             "orchestrator_init",
@@ -98,7 +99,7 @@ class ADGRepairOrchestrator:
             data: Event data dictionary
         """
         event = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": self.run_started_at,
             "event_type": event_type,
             **data,
         }
@@ -410,7 +411,7 @@ class ADGRepairOrchestrator:
                     "sqlite_deficiencies_extracted",
                     {"count": len(sqlite_defs)},
                 )
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError, KeyError) as e:
             self._log_event(
                 "sqlite_extraction_failed",
                 {"error": str(e)},
@@ -550,7 +551,7 @@ class ADGRepairOrchestrator:
                     else:
                         failed_count += 1
 
-                except Exception as e:
+                except (OSError, ValueError, RuntimeError, SyntaxError) as e:
                     failed_count += 1
                     self._log_event(
                         "fix_exception",
@@ -566,7 +567,7 @@ class ADGRepairOrchestrator:
 
         # Build result
         self.results = RepairRunResult(
-            timestamp=datetime.now(timezone.utc).isoformat(),
+            timestamp=self.run_started_at,
             deficiencies_found=len(self.deficiencies),
             fixes_applied=applied_count if not dry_run else 0,
             fixes_suggested=suggest_fix_count,

@@ -112,7 +112,7 @@ class FixUnusedImportsRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except Exception as e:
+        except (OSError, SyntaxError, ValueError) as e:
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,
@@ -144,20 +144,19 @@ class FixUnusedImportsRule(BaseRepairRule):
         Returns:
             List of AST nodes for unused import statements
         """
-        # Collect all imported names and their nodes
-        imported_names: dict[str, ast.AST] = {}
+        # Collect imported names grouped by AST node so partially used imports are preserved.
+        imports_by_node: dict[ast.AST, set[str]] = {}
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
+                names: set[str] = set()
                 for alias in node.names:
                     name = alias.asname if alias.asname else alias.name
-                    # Handle 'import x.y' -> use 'x' as the reference
-                    base_name = name.split(".")[0]
-                    imported_names[base_name] = node
+                    names.add(name.split(".")[0])
+                imports_by_node[node] = names
             elif isinstance(node, ast.ImportFrom):
-                for alias in node.names:
-                    name = alias.asname if alias.asname else alias.name
-                    imported_names[name] = node
+                names = {alias.asname if alias.asname else alias.name for alias in node.names}
+                imports_by_node[node] = names
 
         # Collect all used names
         used_names: set[str] = set()
@@ -171,20 +170,11 @@ class FixUnusedImportsRule(BaseRepairRule):
                 if isinstance(node.value, ast.Name):
                     used_names.add(node.value.id)
 
-        # Find unused imports
-        unused = []
-        for name, node in imported_names.items():
-            if name not in used_names:
-                # Don't remove imports that might be used dynamically
-                if not name.startswith("_"):  # Skip private imports
-                    unused.append(node)
+        # Only remove a statement when every imported alias in that statement is unused.
+        removable_nodes: list[ast.AST] = []
+        for node, imported in imports_by_node.items():
+            public_imports = {name for name in imported if not name.startswith("_")}
+            if public_imports and public_imports.isdisjoint(used_names):
+                removable_nodes.append(node)
 
-        # Return unique nodes only
-        seen = set()
-        unique_unused = []
-        for node in unused:
-            if id(node) not in seen:
-                seen.add(id(node))
-                unique_unused.append(node)
-
-        return unique_unused
+        return removable_nodes

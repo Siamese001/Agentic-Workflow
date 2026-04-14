@@ -92,20 +92,21 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
             # Add docstrings (simplified approach)
             new_lines = list(lines)
 
-            for node, element_type in missing:
+            for node, element_type in sorted(missing, key=lambda item: item[0].lineno if hasattr(item[0], "lineno") else 0, reverse=True):
                 line_idx = node.lineno - 1
                 indent = self._get_indent(new_lines[line_idx])
 
                 # Generate appropriate docstring
                 if element_type == "module":
-                    docstring = f'{indent}"""{node.get("name", "Module")}."""\n'
-                elif element_type == "class":
-                    docstring = f"{indent}'''{node.name}.'''\n"
-                else:  # function
-                    docstring = f"{indent}'''{node.name}().'''\n"
-
-                # Insert after the definition line
-                insert_idx = line_idx + 1
+                    docstring = '"""Module."""\n'
+                    insert_idx = 0
+                else:
+                    inner_indent = indent + "    "
+                    if element_type == "class":
+                        docstring = f'{inner_indent}"""{node.name}."""\n'
+                    else:  # function
+                        docstring = f'{inner_indent}"""{node.name}()."""\n'
+                    insert_idx = line_idx + 1
                 new_lines.insert(insert_idx, docstring.rstrip())
 
             new_content = "\n".join(new_lines)
@@ -118,7 +119,7 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
                 new_content=new_content,
             )
 
-        except (OSError, SyntaxError, ValueError) as e:
+        except (OSError, SyntaxError, ValueError, AttributeError) as e:
             return FixResult(
                 deficiency_id=deficiency.id,
                 success=False,

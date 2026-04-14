@@ -37,8 +37,21 @@ class GitIntegration:
         Args:
             repo_root: Repository root path (default: current directory)
         """
-        self.repo_root = Path(repo_root) if repo_root else Path(".")
-        self._check_git_available()
+        self.repo_root = Path(repo_root).resolve() if repo_root else Path(".").resolve()
+        self.git_available = self._check_git_available()
+
+    def _run_git(self, args: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
+        if not self.git_available:
+            raise RuntimeError(f"Git is unavailable or {self.repo_root} is not a repository")
+
+        return subprocess.run(
+            ["git", *args],
+            cwd=self.repo_root,
+            capture_output=True,
+            text=True,
+            check=check,
+            timeout=30,
+        )
 
     def _check_git_available(self) -> bool:
         """Check if git is available and this is a git repo."""
@@ -49,9 +62,10 @@ class GitIntegration:
                 capture_output=True,
                 text=True,
                 check=True,
+                timeout=10,
             )
             return bool(result.stdout.strip())
-        except (subprocess.CalledProcessError, FileNotFoundError):
+        except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
             return False
 
     def create_checkpoint(self, name: str | None = None) -> str:
@@ -67,21 +81,14 @@ class GitIntegration:
             timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
             name = f"adg-repair-{timestamp}"
 
-        # Stash any current changes
-        subprocess.run(
-            ["git", "stash", "push", "-m", f"Pre-repair stash for {name}"],
-            cwd=self.repo_root,
-            capture_output=True,
-            check=False,
-        )
+        if not self.git_available:
+            raise RuntimeError("Cannot create checkpoint outside a git repository")
 
-        # Create checkpoint branch from current HEAD
-        subprocess.run(
-            ["git", "branch", name],
-            cwd=self.repo_root,
-            capture_output=True,
-            check=False,
-        )
+        existing = self._run_git(["rev-parse", "--verify", name], check=False)
+        if existing.returncode == 0:
+            raise RuntimeError(f"Checkpoint already exists: {name}")
+
+        self._run_git(["branch", name])
 
         return name
 
@@ -95,16 +102,12 @@ class GitIntegration:
             True if rollback succeeded
         """
         try:
-            # Reset to checkpoint
-            subprocess.run(
-                ["git", "reset", "--hard", checkpoint_name],
-                cwd=self.repo_root,
-                capture_output=True,
-                check=True,
-            )
+            verify = self._run_git(["rev-parse", "--verify", checkpoint_name], check=False)
+            if verify.returncode != 0:
+                return False
+            self._run_git(["reset", "--hard", checkpoint_name])
             return True
-        except subprocess.CalledProcessError as e:
-            print(f"[GitIntegration] Rollback failed: {e}")
+        except (RuntimeError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return False
 
     def get_current_branch(self) -> str | None:
@@ -114,15 +117,9 @@ class GitIntegration:
             Branch name or None if not in a repo
         """
         try:
-            result = subprocess.run(
-                ["git", "branch", "--show-current"],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
+            result = self._run_git(["branch", "--show-current"])
             return result.stdout.strip() or None
-        except subprocess.CalledProcessError:
+        except (RuntimeError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return None
 
     def has_uncommitted_changes(self) -> bool:
@@ -132,15 +129,9 @@ class GitIntegration:
             True if working tree is dirty
         """
         try:
-            result = subprocess.run(
-                ["git", "status", "--porcelain"],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
+            result = self._run_git(["status", "--porcelain"])
             return bool(result.stdout.strip())
-        except subprocess.CalledProcessError:
+        except (RuntimeError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return False
 
     def stage_files(self, file_paths: list[str]) -> bool:
@@ -152,16 +143,12 @@ class GitIntegration:
         Returns:
             True if staging succeeded
         """
-        try:
-            subprocess.run(
-                ["git", "add"] + file_paths,
-                cwd=self.repo_root,
-                capture_output=True,
-                check=True,
-            )
+        if not file_paths:
             return True
-        except subprocess.CalledProcessError as e:
-            print(f"[GitIntegration] Staging failed: {e}")
+        try:
+            self._run_git(["add", "--", *file_paths])
+            return True
+        except (RuntimeError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return False
 
     def commit_changes(self, message: str) -> bool:
@@ -174,15 +161,9 @@ class GitIntegration:
             True if commit succeeded
         """
         try:
-            subprocess.run(
-                ["git", "commit", "-m", message],
-                cwd=self.repo_root,
-                capture_output=True,
-                check=True,
-            )
+            self._run_git(["commit", "-m", message])
             return True
-        except subprocess.CalledProcessError as e:
-            print(f"[GitIntegration] Commit failed: {e}")
+        except (RuntimeError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return False
 
     def get_changed_files(self) -> list[str]:
@@ -192,24 +173,19 @@ class GitIntegration:
             List of changed file paths
         """
         try:
-            result = subprocess.run(
-                ["git", "status", "--porcelain"],
-                cwd=self.repo_root,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-
-            files = []
-            for line in result.stdout.strip().split("\n"):
-                if line:
-                    # Line format: XY filename (where X/Y are status codes)
-                    parts = line.split()
-                    if len(parts) >= 2:
-                        files.append(parts[1])
+            result = self._run_git(["status", "--porcelain=v1", "-z"])
+            entries = [entry for entry in result.stdout.split("\x00") if entry]
+            files: list[str] = []
+            for entry in entries:
+                payload = entry[3:]
+                if " -> " in payload:
+                    _, new_path = payload.split(" -> ", 1)
+                    files.append(new_path)
+                else:
+                    files.append(payload)
 
             return files
-        except subprocess.CalledProcessError:
+        except (RuntimeError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return []
 
     def get_summary(self) -> dict[str, Any]:
@@ -220,6 +196,7 @@ class GitIntegration:
         """
         return {
             "repo_root": str(self.repo_root),
+            "git_available": self.git_available,
             "current_branch": self.get_current_branch(),
             "has_uncommitted_changes": self.has_uncommitted_changes(),
             "changed_files": self.get_changed_files(),
