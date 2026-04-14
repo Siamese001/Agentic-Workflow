@@ -63,13 +63,17 @@ class ADGProvenanceVerifier:
         self.warnings: list[str] = []
 
     def _find_repo_root(self) -> Path:
-        """Find repository root by searching for .git directory."""
-        current = Path.cwd()
-        while current != current.parent:
-            if (current / ".git").exists():
-                return current.resolve()
-            current = current.parent
-        raise ProvenanceVerificationError("Could not find repository root")
+        """Find repository root by searching upward from the verifier file and ADG dir."""
+        search_roots = [self.adg_dir.resolve(), Path(__file__).resolve().parent]
+        for start in search_roots:
+            current = start
+            while current != current.parent:
+                if (current / ".git").exists():
+                    return current.resolve()
+                current = current.parent
+        raise ProvenanceVerificationError(
+            f"Could not find repository root from {self.adg_dir} or {Path(__file__).resolve().parent}"
+        )
 
     def _get_git_commit_sha(self) -> str:
         """Get exact git HEAD commit SHA."""
@@ -80,8 +84,13 @@ class ADGProvenanceVerifier:
                 capture_output=True,
                 text=True,
                 check=True,
+                timeout=15,
             )
             return result.stdout.strip()
+        except subprocess.TimeoutExpired as e:
+            raise ProvenanceVerificationError(f"Timed out getting git commit SHA: {e}")
+        except FileNotFoundError as e:
+            raise ProvenanceVerificationError(f"git executable not found: {e}")
         except subprocess.CalledProcessError as e:
             raise ProvenanceVerificationError(f"Failed to get git commit SHA: {e}")
 
@@ -94,11 +103,16 @@ class ADGProvenanceVerifier:
                 capture_output=True,
                 text=True,
                 check=True,
+                timeout=15,
             )
             return {
                 "is_dirty": bool(result.stdout.strip()),
                 "changed_files": result.stdout.strip().split("\n") if result.stdout.strip() else [],
             }
+        except subprocess.TimeoutExpired as e:
+            raise ProvenanceVerificationError(f"Timed out getting git status: {e}")
+        except FileNotFoundError as e:
+            raise ProvenanceVerificationError(f"git executable not found: {e}")
         except subprocess.CalledProcessError as e:
             raise ProvenanceVerificationError(f"Failed to get git status: {e}")
 
@@ -254,6 +268,13 @@ class ADGProvenanceVerifier:
                     f"Field {field} inconsistent across artifacts: {values}",
                 )
 
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
+
     def verify(self) -> dict[str, Any]:
         """Run complete provenance verification."""
         print("🔍 Starting ADG Provenance Verification...")
@@ -363,8 +384,7 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, "w") as f:
-                json.dump(result, f, indent=2, default=str)
+            verifier._write_json_report(args.output, result)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1

@@ -27,6 +27,7 @@ import sqlite3
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 from tqdm import tqdm
 
@@ -38,6 +39,9 @@ PROGRESS_INTERVAL = 10000  # print progress every N items
 
 
 def _find_latest_sqlite(adg_dir: Path) -> Path:
+    if not adg_dir.exists() or not adg_dir.is_dir():
+        print(f"ERROR: ADG artifacts directory not found: {adg_dir}", file=sys.stderr)
+        sys.exit(1)
     files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
     if not files:
         print(f"ERROR: No adg_indexed_*.sqlite found in {adg_dir}", file=sys.stderr)
@@ -69,9 +73,14 @@ def _connect_redis():
         )
         client.ping()
         return client
-    except Exception as exc:  # guardian: allow-broad-exception -- startup probe, must report and exit cleanly
+    except (ValueError, OSError, redis.RedisError) as exc:
         print(f"ERROR: Cannot connect to Redis at {REDIS_URL}: {exc}", file=sys.stderr)
         sys.exit(1)
+
+
+def _hset_mapping(pipe: Any, key: str, mapping: dict[str, str]) -> None:
+    """Write a Redis hash using the modern hset(mapping=...) API."""
+    pipe.hset(key, mapping=mapping)
 
 
 def _flush_old_snapshots(client, current_snapshot_id: str) -> int:
@@ -101,6 +110,7 @@ def _check_hot(client, snapshot_id: str) -> bool:
 
 def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False) -> dict:
     snapshot_id = _snapshot_id_from_path(sqlite_path)
+    sentinel_key = _redis_key(snapshot_id, "_hot")
     print(f"[adg_redis_ingest] Snapshot : {snapshot_id}")
     print(f"[adg_redis_ingest] SQLite   : {sqlite_path}")
     print(f"[adg_redis_ingest] Redis    : {REDIS_URL}")
@@ -109,110 +119,115 @@ def ingest(sqlite_path: Path, client, force: bool = False, dry_run: bool = False
         print("[adg_redis_ingest] Cache already HOT — skipping (use --force to re-ingest)")
         return {"status": "already_hot", "snapshot_id": snapshot_id}
 
-    conn = sqlite3.connect(str(sqlite_path), timeout=10)
-    conn.row_factory = sqlite3.Row
+    conn: sqlite3.Connection | None = None
+    try:
+        conn = sqlite3.connect(str(sqlite_path), timeout=10)
+        conn.row_factory = sqlite3.Row
 
-    node_count = conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
-    edge_count = conn.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
-    print(f"[adg_redis_ingest] Nodes    : {node_count:,}")
-    print(f"[adg_redis_ingest] Edges    : {edge_count:,}")
+        node_count = conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
+        edge_count = conn.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
+        print(f"[adg_redis_ingest] Nodes    : {node_count:,}")
+        print(f"[adg_redis_ingest] Edges    : {edge_count:,}")
 
-    if dry_run:
-        conn.close()
-        print("[adg_redis_ingest] DRY RUN — no writes performed")
-        return {"status": "dry_run", "node_count": node_count, "edge_count": edge_count}
+        if dry_run:
+            print("[adg_redis_ingest] DRY RUN — no writes performed")
+            return {"status": "dry_run", "node_count": node_count, "edge_count": edge_count}
 
-    # Flush old snapshot keys before writing new ones
-    if force:
-        deleted = _flush_old_snapshots(client, snapshot_id)
-        if deleted:
-            print(f"[adg_redis_ingest] Flushed  : {deleted:,} stale keys")
+        # Clear the hot sentinel before writing so interrupted runs never look healthy.
+        client.delete(sentinel_key)
 
-    t0 = time.monotonic()
+        # Flush old snapshot keys before writing new ones.
+        if force:
+            deleted = _flush_old_snapshots(client, snapshot_id)
+            if deleted:
+                print(f"[adg_redis_ingest] Flushed  : {deleted:,} stale keys")
 
-    # --- Ingest nodes ---
-    nodes_written = 0
-    cursor_nodes = conn.execute("SELECT * FROM nodes")
-    pipe = client.pipeline(transaction=False)
-    while True:
-        batch = cursor_nodes.fetchmany(BATCH_SIZE)
-        if not batch:
-            break
-        for row in batch:
-            raw = dict(row)
-            data = {k: str(v) for k, v in raw.items() if v is not None}
-            if not data or "id" not in data:
-                continue
-            key = _redis_key(snapshot_id, f"node:{data['id']}")
-            pipe.hmset(key, data)
-            nodes_written += 1
-        pipe.execute()
+        t0 = time.monotonic()
+
+        # --- Ingest nodes ---
+        nodes_written = 0
+        cursor_nodes = conn.execute("SELECT * FROM nodes")
         pipe = client.pipeline(transaction=False)
-        if nodes_written % PROGRESS_INTERVAL == 0:
-            print(f"[adg_redis_ingest]   nodes {nodes_written:,}/{node_count:,}...", end="\r")
-    pipe.execute()
-    print(f"[adg_redis_ingest] Nodes written : {nodes_written:,}          ")
-
-    # --- Ingest edges (fanout + fanin indexes + edge_detail hashes — fully hot at startup) ---
-    edges_written = 0
-    cursor_edges = conn.execute(
-        "SELECT id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges"
-    )
-    pipe = client.pipeline(transaction=False)
-    while True:
-        batch = cursor_edges.fetchmany(BATCH_SIZE)
-        if not batch:
-            break
-        for row in tqdm(batch, desc="Ingesting edges", unit="edge", leave=False):
-            edge_id = str(row[0])
-            src_id = str(row[1])
-            dst_id = str(row[2])
-            relation_type = str(row[3])
-            # Fanout index (edges going out from src_id)
-            fanout_key = _redis_key(snapshot_id, f"edge:{src_id}:{relation_type}")
-            pipe.sadd(fanout_key, edge_id)
-            # Fanin index (edges coming in to dst_id)
-            fanin_key = _redis_key(snapshot_id, f"fanin:{dst_id}:{relation_type}")
-            pipe.sadd(fanin_key, edge_id)
-            # Edge detail hash — pre-written so first MCP query hits Redis with no SQLite round-trip
-            detail_key = _redis_key(snapshot_id, f"edge_detail:{edge_id}")
-            detail = {
-                "id": edge_id,
-                "src_id": src_id,
-                "dst_id": dst_id,
-                "relation_type": relation_type,
-                "edge_kind": str(row[4]),
-            }
-            if row[5] is not None:
-                detail["source_file"] = str(row[5])
-            if row[6] is not None:
-                detail["line_no"] = str(row[6])
-            if row[7] is not None:
-                detail["symbol"] = str(row[7])
-            pipe.hmset(detail_key, detail)
-            edges_written += 1
+        while True:
+            batch = cursor_nodes.fetchmany(BATCH_SIZE)
+            if not batch:
+                break
+            for row in batch:
+                raw = dict(row)
+                data = {k: str(v) for k, v in raw.items() if v is not None}
+                if not data or "id" not in data:
+                    continue
+                key = _redis_key(snapshot_id, f"node:{data['id']}")
+                _hset_mapping(pipe, key, data)
+                nodes_written += 1
+            pipe.execute()
+            pipe = client.pipeline(transaction=False)
+            if nodes_written and nodes_written % PROGRESS_INTERVAL == 0:
+                print(f"[adg_redis_ingest]   nodes {nodes_written:,}/{node_count:,}...", end="\r")
         pipe.execute()
+        print(f"[adg_redis_ingest] Nodes written : {nodes_written:,}          ")
+
+        # --- Ingest edges (fanout + fanin indexes + edge_detail hashes — fully hot at startup) ---
+        edges_written = 0
+        cursor_edges = conn.execute(
+            "SELECT id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol FROM edges"
+        )
         pipe = client.pipeline(transaction=False)
-        if edges_written % PROGRESS_INTERVAL == 0:
-            print(f"[adg_redis_ingest]   edges {edges_written:,}/{edge_count:,}...", end="\r")
-    pipe.execute()
-    print(f"[adg_redis_ingest] Edges written : {edges_written:,}          ")
+        while True:
+            batch = cursor_edges.fetchmany(BATCH_SIZE)
+            if not batch:
+                break
+            for row in tqdm(batch, desc="Ingesting edges", unit="edge", leave=False):
+                edge_id = str(row[0])
+                src_id = str(row[1])
+                dst_id = str(row[2])
+                relation_type = str(row[3])
+                # Fanout index (edges going out from src_id)
+                fanout_key = _redis_key(snapshot_id, f"edge:{src_id}:{relation_type}")
+                pipe.sadd(fanout_key, edge_id)
+                # Fanin index (edges coming in to dst_id)
+                fanin_key = _redis_key(snapshot_id, f"fanin:{dst_id}:{relation_type}")
+                pipe.sadd(fanin_key, edge_id)
+                # Edge detail hash — pre-written so first MCP query hits Redis with no SQLite round-trip
+                detail_key = _redis_key(snapshot_id, f"edge_detail:{edge_id}")
+                detail = {
+                    "id": edge_id,
+                    "src_id": src_id,
+                    "dst_id": dst_id,
+                    "relation_type": relation_type,
+                    "edge_kind": str(row[4]),
+                }
+                if row[5] is not None:
+                    detail["source_file"] = str(row[5])
+                if row[6] is not None:
+                    detail["line_no"] = str(row[6])
+                if row[7] is not None:
+                    detail["symbol"] = str(row[7])
+                _hset_mapping(pipe, detail_key, detail)
+                edges_written += 1
+            pipe.execute()
+            pipe = client.pipeline(transaction=False)
+            if edges_written and edges_written % PROGRESS_INTERVAL == 0:
+                print(f"[adg_redis_ingest]   edges {edges_written:,}/{edge_count:,}...", end="\r")
+        pipe.execute()
+        print(f"[adg_redis_ingest] Edges written : {edges_written:,}          ")
 
-    # --- Write sentinel ---
-    sentinel_key = _redis_key(snapshot_id, "_hot")
-    client.set(sentinel_key, "1")
+        # Write the sentinel only after a fully successful ingest.
+        client.set(sentinel_key, "1")
 
-    conn.close()
-    elapsed = time.monotonic() - t0
-    print(f"[adg_redis_ingest] Done in {elapsed:.1f}s — cache is HOT ✓")
+        elapsed = time.monotonic() - t0
+        print(f"[adg_redis_ingest] Done in {elapsed:.1f}s — cache is HOT ✓")
 
-    return {
-        "status": "ingested",
-        "snapshot_id": snapshot_id,
-        "nodes_written": nodes_written,
-        "edges_written": edges_written,
-        "elapsed_seconds": round(elapsed, 2),
-    }
+        return {
+            "status": "ingested",
+            "snapshot_id": snapshot_id,
+            "nodes_written": nodes_written,
+            "edges_written": edges_written,
+            "elapsed_seconds": round(elapsed, 2),
+        }
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 def main() -> int:
@@ -225,6 +240,9 @@ def main() -> int:
     )
     parser.add_argument("--dry-run", action="store_true", help="Count rows and report, no Redis writes")
     args = parser.parse_args()
+
+    if args.check and (args.force or args.dry_run):
+        parser.error("--check cannot be combined with --force or --dry-run")
 
     adg_dir = ROOT / "artifacts" / "adg"
     sqlite_path = _find_latest_sqlite(adg_dir)

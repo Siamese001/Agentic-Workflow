@@ -18,14 +18,8 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
+    ARCHIVES_DIR,
+    get_validated_project_root,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -97,9 +91,7 @@ _emit_captures_evaluation_metric("p4", "remove_duplicate_suffixes", "eval_metric
 _emit_stores_embedding("p4", "remove_duplicate_suffixes", "embedding_store")
 _emit_updates_meta_learning_state("p4", "remove_duplicate_suffixes", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "remove_duplicate_suffixes", "exec_snapshot_link")
-project_root = Path(__file__).parent.parent.parent
-# guardian: allow-global-mutation
-sys.path.insert(0, str(project_root))
+project_root = get_validated_project_root()
 PROBLEMATIC_SUFFIXES = [
     "_flat",
     "_from_utils",

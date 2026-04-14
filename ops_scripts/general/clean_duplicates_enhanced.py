@@ -108,6 +108,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
 from tqdm import tqdm
 
 _emit_emits_metric_event("clean_duplicates_enhanced", "p4obs", "metric_1")
@@ -180,22 +181,19 @@ def aggressive_cleanup():
                 raise
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
     temp_patterns = SOVEREIGN_EXCLUDED_FOLDERS
-    for pattern in temp_patterns:
-        pass
     from pathlib import Path
 
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    search_path = Path(pattern.split("**")[0] if "**" in pattern else ".")
-    for file in [str(f) for f in get_python_files(search_path)]:
-        try:
-            os.remove(file)
-            Logger.info(f"🗑️ Purged temp file: {file}")
-            purged_count += 1
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
-            raise
-            Logger.error(f"❌ Failed to delete {file}: {e}")
+    for pattern in temp_patterns:
+        search_path = Path(pattern.split("**")[0] if "**" in pattern else ".")
+        for file in [str(f) for f in get_python_files(search_path)]:
+            try:
+                os.remove(file)
+                Logger.info(f"🗑️ Purged temp file: {file}")
+                purged_count += 1
+            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+                Logger.error(f"❌ Failed to delete {file}: {e}")
     for root, dirs, _files in os.walk("."):
         if "__pycache__" in dirs:
             pycache_path = Path(root) / "__pycache__"

@@ -65,15 +65,23 @@ Uses AST analysis to identify:
 4. Best version selection (most complete, best documented)
 """
 
+import argparse
 import ast
 import hashlib
+import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
 from tqdm import tqdm
 
+LOGGER = logging.getLogger(__name__)
 APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 SKIP_FILES = {"__init__.py", "conftest.py"}
 
@@ -124,8 +132,7 @@ def get_node_source(node: ast.AST, source_lines: list[str]) -> str:
         start = node.lineno - 1
         end = getattr(node, "end_lineno", start + 1)
         return "\n".join(source_lines[start:end])
-    # guardian: allow-silent-swallow
-    except:
+    except (AttributeError, IndexError, TypeError):
         return ""
 
 
@@ -252,7 +259,17 @@ def select_best_version(duplicates: list[ClassInfo]) -> tuple[ClassInfo, list[Cl
     return (best, others)
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Analyze duplicate classes, functions, and files across app territories.",
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Actually delete duplicate files. Default behavior is dry-run.",
+    )
+    args = parser.parse_args(argv)
+
     print("=" * 80)
     print("INTELLIGENT DEDUPLICATION ANALYZER")
     print("=" * 80)
@@ -321,21 +338,31 @@ def main():
     print("=" * 80)
     print(f"\n  Files to delete: {len(files_to_delete)}")
     print(f"  Classes to remove from files: {len(classes_to_remove)}")
-    print("\n[4/4] Executing deduplication...")
+    print(
+        "\n[4/4] "
+        + ("Executing deduplication..." if args.execute else "Dry run only; no files will be deleted...")
+    )
     deleted_count = 0
-    for file_path in files_to_delete:
+    for file_path in tqdm(sorted(files_to_delete), desc="Deleting files", unit="file"):
+        if not args.execute:
+            print(f"  ○ Would delete: {Path(file_path).name}")
+            continue
         try:
             Path(file_path).unlink()
             print(f"  ✓ Deleted: {Path(file_path).name}")
             deleted_count += 1
-        # guardian: allow-silent-swallow
         except Exception as e:
+            LOGGER.warning("Failed to delete %s: %s", file_path, e)
             print(f"  ✗ Failed to delete {file_path}: {e}")
-    print(f"\n  Total deleted: {deleted_count} files")
+    if args.execute:
+        print(f"\n  Total deleted: {deleted_count} files")
+    else:
+        print(f"\n  Dry run complete; {len(files_to_delete)} files flagged for deletion")
     if classes_to_remove:
         print(f"\n  NOTE: {len(classes_to_remove)} duplicate classes in multi-class files")
         print("  These require manual review or more complex AST manipulation to remove.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

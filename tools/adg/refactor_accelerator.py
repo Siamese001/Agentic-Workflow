@@ -21,8 +21,9 @@ import json
 import sqlite3
 import subprocess
 import sys
-from collections import defaultdict
+from collections import defaultdict, deque
 from pathlib import Path
+
 from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,8 +44,20 @@ def _find_latest_sqlite() -> Path:
     return candidates[0]
 
 
+def _normalize_rel_path(path_str: str) -> str:
+    path = Path(path_str)
+    if path.is_absolute():
+        try:
+            path = path.relative_to(ROOT)
+        except ValueError:
+            path = Path(path.name)
+    return path.as_posix()
+
+
 def _git_churn(days: int = 90) -> dict[str, int]:
     """Return {relative_path: commit_count} for files changed in last N days."""
+    if days <= 0:
+        return {}
     try:
         result = subprocess.run(
             ["git", "log", f"--since={days} days ago", "--name-only", "--format="],
@@ -54,11 +67,13 @@ def _git_churn(days: int = 90) -> dict[str, int]:
             timeout=30,
             check=False,
         )
+        if result.returncode != 0:
+            return {}
         counts: dict[str, int] = defaultdict(int)
         for line in result.stdout.splitlines():
             line = line.strip()
             if line and not line.startswith("commit "):
-                counts[line] += 1
+                counts[_normalize_rel_path(line)] += 1
         return dict(counts)
     except (OSError, subprocess.TimeoutExpired):
         return {}
@@ -68,13 +83,15 @@ def _ruff_lint_counts() -> dict[str, int]:
     """Return {relative_path: violation_count} from ruff."""
     try:
         result = subprocess.run(
-            ["python", "-m", "ruff", "check", ".", "--output-format=json", "--quiet"],
+            [sys.executable, "-m", "ruff", "check", ".", "--output-format=json", "--quiet"],
             cwd=str(ROOT),
             capture_output=True,
             text=True,
             timeout=60,
             check=False,
         )
+        if result.returncode not in (0, 1):
+            return {}
         if not result.stdout.strip():
             return {}
         violations = json.loads(result.stdout)
@@ -82,8 +99,7 @@ def _ruff_lint_counts() -> dict[str, int]:
         for v in violations:
             fname = v.get("filename", "")
             if fname:
-                rel = str(Path(fname).relative_to(ROOT)) if Path(fname).is_absolute() else fname
-                counts[rel.replace("\\", "/")] += 1
+                counts[_normalize_rel_path(fname)] += 1
         return dict(counts)
     except (OSError, json.JSONDecodeError, subprocess.TimeoutExpired, ValueError):
         return {}
@@ -125,12 +141,14 @@ def _fetch_candidates(
     ).fetchall()
 
     violation_counts: dict[int, int] = {}
-    vrows = cur.execute("""
+    vrows = cur.execute(
+        """
         SELECT e.dst_id, COUNT(*) as cnt
         FROM edges e
         WHERE e.relation_type = 'violates'
         GROUP BY e.dst_id
-    """).fetchall()
+    """
+    ).fetchall()
     for node_id, cnt in vrows:
         violation_counts[node_id] = cnt
 
@@ -179,8 +197,8 @@ def _fetch_candidates(
 def _add_blast_radius(conn: sqlite3.Connection, candidates: list[dict], depth: int = 2) -> None:
     """Add blast_radius field to each candidate (transitive fan-in, limited depth)."""
     cur = conn.cursor()
-    for c in candidates:
-        node_id = c["node_id"]
+    for candidate in candidates:
+        node_id = candidate["node_id"]
         visited: set[int] = {node_id}
         frontier = {node_id}
         depth_map: dict[int, int] = {node_id: 0}
@@ -201,7 +219,7 @@ def _add_blast_radius(conn: sqlite3.Connection, candidates: list[dict], depth: i
             visited.update(frontier)
             frontier = next_frontier
 
-        c["blast_radius"] = {
+        candidate["blast_radius"] = {
             "total_affected": len(depth_map) - 1,
             "max_depth": depth,
         }
@@ -210,8 +228,8 @@ def _add_blast_radius(conn: sqlite3.Connection, candidates: list[dict], depth: i
 def _add_impacted_tests(conn: sqlite3.Connection, candidates: list[dict]) -> None:
     """Add impacted_tests field to each candidate via 'covers' relation."""
     cur = conn.cursor()
-    for c in tqdm(candidates, desc="Processing", unit="item"):
-        node_id = c["node_id"]
+    for candidate in tqdm(candidates, desc="Processing", unit="item"):
+        node_id = candidate["node_id"]
         test_rows = cur.execute(
             """
             SELECT DISTINCT n.resolved_path
@@ -222,7 +240,7 @@ def _add_impacted_tests(conn: sqlite3.Connection, candidates: list[dict]) -> Non
         """,
             (node_id,),
         ).fetchall()
-        c["impacted_tests"] = [r[0] for r in test_rows if r[0]]
+        candidate["impacted_tests"] = [r[0] for r in test_rows if r[0]]
 
 
 def _migration_order(conn: sqlite3.Connection, candidates: list[dict]) -> list[str]:
@@ -230,12 +248,12 @@ def _migration_order(conn: sqlite3.Connection, candidates: list[dict]) -> list[s
     Topological sort of candidates: refactor leaves before roots.
     Nodes with no outgoing deps to other candidates come first.
     """
-    node_ids = {c["node_id"] for c in candidates}
-    id_to_path = {c["node_id"]: c["resolved_path"] for c in candidates}
+    node_ids = {candidate["node_id"] for candidate in candidates}
+    id_to_path = {candidate["node_id"]: candidate["resolved_path"] for candidate in candidates}
 
     cur = conn.cursor()
     in_degree: dict[int, int] = defaultdict(int)
-    adj: dict[int, list[int]] = defaultdict(list)
+    adj: dict[int, set[int]] = defaultdict(set)
 
     if node_ids:
         placeholders = ",".join("?" for _ in node_ids)
@@ -244,21 +262,28 @@ def _migration_order(conn: sqlite3.Connection, candidates: list[dict]) -> list[s
             list(node_ids) + list(node_ids),
         ).fetchall()
         for src, dst in edges:
-            adj[src].append(dst)
-            in_degree[dst] += 1
+            if dst not in adj[src]:
+                adj[src].add(dst)
+                in_degree[dst] += 1
 
-    queue = [n for n in node_ids if in_degree[n] == 0]
-    order = []
+    queue = deque(sorted(node for node in node_ids if in_degree[node] == 0))
+    ordered_paths: list[str] = []
+    seen_paths: set[str] = set()
     while queue:
-        node = queue.pop(0)
-        order.append(id_to_path.get(node, str(node)))
-        for neighbor in adj[node]:
+        node = queue.popleft()
+        path = id_to_path.get(node, str(node))
+        if path not in seen_paths:
+            ordered_paths.append(path)
+            seen_paths.add(path)
+        for neighbor in sorted(adj[node]):
             in_degree[neighbor] -= 1
             if in_degree[neighbor] == 0:
                 queue.append(neighbor)
 
-    remaining = [id_to_path.get(n, str(n)) for n in node_ids if id_to_path.get(n) not in order]
-    return order + remaining
+    remaining = [
+        id_to_path.get(node, str(node)) for node in sorted(node_ids) if id_to_path.get(node) not in seen_paths
+    ]
+    return ordered_paths + remaining
 
 
 def _print_candidates(candidates: list[dict], with_rank: bool = True) -> None:
@@ -269,12 +294,12 @@ def _print_candidates(candidates: list[dict], with_rank: bool = True) -> None:
         "| Rk | Score | Layer    | FanIn | Churn | Viol  | Lint | File                                                 |"
     )
     print(H)
-    for i, c in enumerate(candidates, 1):
-        layer = c["layer"][:8]
-        name = (c["resolved_path"] or c["adg_name"])[:52]
-        d = c["dimensions"]
+    for i, candidate in enumerate(candidates, 1):
+        layer = candidate["layer"][:8]
+        name = (candidate["resolved_path"] or candidate["adg_name"])[:52]
+        dims = candidate["dimensions"]
         print(
-            f"| {i:2} | {c['score']:.3f} | {layer:<8} | {d['fan_in']:5} | {d['churn_90d']:5} | {d['violations']:5} | {d['lint_count']:4} | {name:<52} |",
+            f"| {i:2} | {candidate['score']:.3f} | {layer:<8} | {dims['fan_in']:5} | {dims['churn_90d']:5} | {dims['violations']:5} | {dims['lint_count']:4} | {name:<52} |",
         )
     print(H)
 
@@ -289,6 +314,9 @@ def main() -> None:
     parser.add_argument("--no-churn", action="store_true", help="Skip git churn (faster)")
     parser.add_argument("--no-lint", action="store_true", help="Skip ruff lint (faster)")
     args = parser.parse_args()
+
+    if args.top <= 0:
+        parser.error("--top must be > 0")
 
     sqlite_path = Path(args.sqlite) if args.sqlite else _find_latest_sqlite()
     if not sqlite_path.exists():
@@ -336,17 +364,17 @@ def main() -> None:
                 _print_candidates(candidates)
                 if candidates:
                     top = candidates[0]
-                    d = top["dimensions"]
+                    dims = top["dimensions"]
                     print(f"\n[RA] Top candidate: {top['resolved_path'] or top['adg_name']}")
                     print(
-                        f"     Score: {top['score']} | FanIn: {d['fan_in']} | Churn: {d['churn_90d']} | Violations: {d['violations']}"
+                        f"     Score: {top['score']} | FanIn: {dims['fan_in']} | Churn: {dims['churn_90d']} | Violations: {dims['violations']}"
                     )
                     print(
                         f"     Blast radius: {top['blast_radius']['total_affected']} modules affected (depth {top['blast_radius']['max_depth']})"
                     )
                     tests = top.get("impacted_tests", [])
                     if tests:
-                        print(f"     Impacted tests: {', '.join(tests[:3])}")
+                        print(f"     Impacted tests: {', '.join(tests[:5])}")
     finally:
         conn.close()
 

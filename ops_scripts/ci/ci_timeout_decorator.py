@@ -14,6 +14,7 @@ Usage:
         pass
 """
 
+import _thread
 import functools
 import signal
 import sys
@@ -40,6 +41,28 @@ def timeout_handler(signum, frame):
     raise TimeoutError("CI operation exceeded timeout limit")
 
 
+class _InterruptFallbackTimer:
+    """Cross-platform fallback that interrupts the main thread after a deadline."""
+
+    def __init__(self, seconds: int):
+        self.seconds = seconds
+        self.fired = False
+        self._timer: threading.Timer | None = None
+
+    def start(self) -> None:
+        def _fire() -> None:
+            self.fired = True
+            _thread.interrupt_main()
+
+        self._timer = threading.Timer(self.seconds, _fire)
+        self._timer.daemon = True
+        self._timer.start()
+
+    def cancel(self) -> None:
+        if self._timer is not None:
+            self._timer.cancel()
+
+
 def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
     """
     Decorator to add timeout protection to CI operations.
@@ -57,20 +80,49 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
         def wrapper(*args, **kwargs) -> Any:
             start_time = time.monotonic()
             old_handler = None
+            fallback_timer: _InterruptFallbackTimer | None = None
             use_signal_timeout = (
                 sys.platform != "win32" and threading.current_thread() is threading.main_thread()
+            )
+            use_interrupt_fallback = (
+                not use_signal_timeout and threading.current_thread() is threading.main_thread()
             )
 
             # Set up timeout signal (Unix-like systems)
             if use_signal_timeout:
                 old_handler = signal.signal(signal.SIGALRM, timeout_handler)
                 signal.alarm(seconds)
+            elif use_interrupt_fallback:
+                fallback_timer = _InterruptFallbackTimer(seconds)
+                fallback_timer.start()
 
             try:
                 result = func(*args, **kwargs)
                 elapsed = time.monotonic() - start_time
                 print(f"✅ {operation_name} completed in {elapsed:.2f}s")
                 return result
+
+            except KeyboardInterrupt as e:
+                if use_interrupt_fallback and fallback_timer is not None and fallback_timer.fired:
+                    elapsed = time.monotonic() - start_time
+                    rca_path = generate_rca(
+                        operation_name=operation_name,
+                        error_type="TIMEOUT",
+                        error_message=f"Operation exceeded {seconds}s timeout limit",
+                        elapsed_time=elapsed,
+                        context={
+                            "function": func.__name__,
+                            "timeout_limit": seconds,
+                            "timeout_backend": "interrupt_main_fallback",
+                            "args": str(args)[:200],
+                            "kwargs": str(kwargs)[:200],
+                        },
+                    )
+
+                    print(f"❌ {operation_name} TIMEOUT after {elapsed:.2f}s")
+                    print(f"📄 RCA generated: {rca_path}")
+                    raise TimeoutError("CI operation exceeded timeout limit") from e
+                raise
 
             except TimeoutError as e:  # guardian: TimeoutError should be handled with specific context
                 elapsed = time.monotonic() - start_time
@@ -114,6 +166,8 @@ def ci_timeout(seconds: int = 300, operation_name: str = "CI Operation"):
                 print(f"📄 RCA generated: {rca_path}")
                 raise
             finally:
+                if fallback_timer is not None:
+                    fallback_timer.cancel()
                 if use_signal_timeout and old_handler is not None:
                     signal.alarm(0)
                     signal.signal(signal.SIGALRM, old_handler)
@@ -270,7 +324,7 @@ def ci_progress_reporter(total: int, operation_name: str = "Processing"):
         def __init__(self, total: int, operation_name: str):
             self.total = total
             self.operation_name = operation_name
-            self.start_time = time.time()
+            self.start_time = time.monotonic()
             self.last_report = 0
 
         def update(self, current: int):
@@ -282,7 +336,7 @@ def ci_progress_reporter(total: int, operation_name: str = "Processing"):
 
             # Report every 10%
             if percent >= self.last_report + 10:
-                elapsed = time.time() - self.start_time
+                elapsed = time.monotonic() - self.start_time
                 rate = current / elapsed if elapsed > 0 else 0
                 eta = (self.total - current) / rate if rate > 0 else 0
 
@@ -298,7 +352,7 @@ def ci_progress_reporter(total: int, operation_name: str = "Processing"):
             return self
 
         def __exit__(self, exc_type, exc_val, exc_tb):
-            elapsed = time.time() - self.start_time
+            elapsed = time.monotonic() - self.start_time
             if exc_type is None:
                 print(f"✅ {self.operation_name} completed in {elapsed:.2f}s")
             else:

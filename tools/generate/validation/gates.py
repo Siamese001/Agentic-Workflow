@@ -7,9 +7,21 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 # --- Violation class constants ---
 CLASS_HYGIENE = "hygiene"
@@ -18,6 +30,24 @@ CLASS_AGENTIC = "agentic_antipattern"
 
 # Valid violation classes (used for validation)
 VALID_VIOLATION_CLASSES = frozenset({CLASS_HYGIENE, CLASS_STRUCTURAL, CLASS_AGENTIC})
+
+
+def _load_json_file(path: Path) -> dict[str, Any]:
+    """Load a JSON object from disk and validate its shape."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError(f"Expected JSON object in {path}")
+    return data
+
+
+def _atomic_json_write(path: Path, payload: dict[str, Any]) -> None:
+    """Atomically persist ratchet state to avoid truncated files on interruption."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as tmp:
+        json.dump(payload, tmp, indent=2)
+        tmp.flush()
+        tmp_path = Path(tmp.name)
+    tmp_path.replace(path)
 
 
 def _fail_closed_gate(gate_name: str, exc: Exception) -> None:
@@ -140,16 +170,13 @@ def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             current_count = cursor.fetchone()[0]
 
         if ratchet_file.exists():
-            with open(ratchet_file, encoding="utf-8") as f:
-                ratchet_data = json.load(f)
+            ratchet_data = _load_json_file(ratchet_file)
             ceiling = ratchet_data.get(
                 "high_severity_ceiling", ratchet_data.get("p2_antipattern_ceiling", current_count)
             )
         else:
             ceiling = current_count
-            ratchet_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(ratchet_file, "w", encoding="utf-8") as f:
-                json.dump({"high_severity_ceiling": ceiling}, f, indent=2)
+            _atomic_json_write(ratchet_file, {"high_severity_ceiling": ceiling})
             print(f"[INFO] Initialized P1 ratchet ceiling: {ceiling}")
 
         if current_count > ceiling:
@@ -158,8 +185,7 @@ def _check_p1_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             print(f"[ERROR] Fix new exception swallows or update ceiling: {ratchet_file}")
             sys.exit(1)
         elif current_count < ceiling:
-            with open(ratchet_file, "w", encoding="utf-8") as f:
-                json.dump({"high_severity_ceiling": current_count}, f, indent=2)
+            _atomic_json_write(ratchet_file, {"high_severity_ceiling": current_count})
             print(f"[INFO] P1 ratchet: Reduced ceiling from {ceiling} to {current_count}")
         else:
             print(f"[INFO] P1 ratchet: Current count {current_count} at ceiling {ceiling}")
@@ -196,14 +222,11 @@ def _check_p2_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             current_count = cursor.fetchone()[0]
 
         if ratchet_file.exists():
-            with open(ratchet_file, encoding="utf-8") as f:
-                ratchet_data = json.load(f)
-                ceiling = ratchet_data.get("exception_swallow_ceiling", current_count)
+            ratchet_data = _load_json_file(ratchet_file)
+            ceiling = ratchet_data.get("exception_swallow_ceiling", current_count)
         else:
             ceiling = current_count
-            ratchet_file.parent.mkdir(parents=True, exist_ok=True)
-            with open(ratchet_file, "w", encoding="utf-8") as f:
-                json.dump({"exception_swallow_ceiling": ceiling}, f, indent=2)
+            _atomic_json_write(ratchet_file, {"exception_swallow_ceiling": ceiling})
             print(f"[INFO] Initialized P2 ratchet ceiling: {ceiling}")
 
         if current_count > ceiling:
@@ -213,8 +236,7 @@ def _check_p2_ratchet(sqlite_path: Path | None = None, ratchet_file: Path | None
             print(f"[ERROR] Fix antipatterns or update ceiling: {ratchet_file}")
             sys.exit(1)
         elif current_count < ceiling:
-            with open(ratchet_file, "w", encoding="utf-8") as f:
-                json.dump({"exception_swallow_ceiling": current_count}, f, indent=2)
+            _atomic_json_write(ratchet_file, {"exception_swallow_ceiling": current_count})
             print(f"[INFO] P2 ratchet: Reduced ceiling from {ceiling} to {current_count}")
         else:
             print(f"[INFO] P2 ratchet: Current count {current_count} at ceiling {ceiling}")

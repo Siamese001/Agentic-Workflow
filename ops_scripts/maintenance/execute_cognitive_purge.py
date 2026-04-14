@@ -36,6 +36,7 @@ import os
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -79,109 +80,112 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-_emit_records_execution_trace("p0", "evidence", "execute_cognitive_purge")
-_emit_applies_guardrail("p0", "execute_cognitive_purge", "p0_governance")
-_emit_reads_policy_state("p0", "execute_cognitive_purge", "policy_binding")
-_emit_snapshots_state("p0", "execute_cognitive_purge", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 
-_emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_1")
-_emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_2")
-_emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_3")
-_emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_4")
-_emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_5")
-_emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_6")
-_emit_records_incident_event("execute_cognitive_purge", "p4obs", "incident")
-_emit_captures_runtime_anomaly("execute_cognitive_purge", "p4obs", "anomaly")
-_emit_writes_observability_log("execute_cognitive_purge", "p4obs", "obs_log")
-_emit_updates_monitoring_state("execute_cognitive_purge", "p4obs", "mon_state")
-_emit_triggers_alert("execute_cognitive_purge", "p4obs", "alert")
-_emit_links_incident_trace("execute_cognitive_purge", "p4obs", "trace_link")
-_emit_captures_pattern("execute_cognitive_purge", "p3lm", "pattern")
-_emit_records_learning_event("execute_cognitive_purge", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("execute_cognitive_purge", "p3lm", "snapshot")
-_emit_feeds_meta_learning("execute_cognitive_purge", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("execute_cognitive_purge", "p3lm", "routing")
-_emit_improves_agent_policy("execute_cognitive_purge", "p3lm", "policy")
-_emit_stores_learning_state("execute_cognitive_purge", "p3lm", "state")
-_emit_records_execution_trace("execute_cognitive_purge", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("execute_cognitive_purge", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("execute_cognitive_purge", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("execute_cognitive_purge", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("execute_cognitive_purge", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("execute_cognitive_purge", "env_read", "p2_env_1")
-_emit_reads_environ("execute_cognitive_purge", "env_read", "p2_env_2")
-_emit_reads_runtime_state("execute_cognitive_purge", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("execute_cognitive_purge", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "execute_cognitive_purge", "context_pull")
-_emit_pulls_context("p1", "execute_cognitive_purge", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "execute_cognitive_purge", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "execute_cognitive_purge", "uwg_term_2")
-_emit_writes_through("p1", "execute_cognitive_purge", "write_through")
-_emit_writes_through("p1", "execute_cognitive_purge", "write_through_2")
-_emit_validated_by_safety_plane("p1", "execute_cognitive_purge", "safety_validation")
-_emit_invokes_eval("p1", "execute_cognitive_purge", "eval_call")
-_emit_proposal_commits_routing("p1", "execute_cognitive_purge", "routing_commit")
-_emit_escalates_to_human("p1", "execute_cognitive_purge", "human_escalation")
-_emit_routes_through("p1", "execute_cognitive_purge", "route_through")
-_emit_checks_agent_registry("p1", "execute_cognitive_purge", "agent_registry")
-_emit_validates_agent_capability("p1", "execute_cognitive_purge", "capability")
-_emit_dispatches_execution_plan("p1", "execute_cognitive_purge", "exec_plan")
-_emit_agent_executes_agent("p1", "execute_cognitive_purge", "sub_agent")
-_emit_routes_to_agent("p1", "execute_cognitive_purge", "target_agent")
-_emit_verifies_policy("p1", "execute_cognitive_purge", "policy_check")
-_emit_observes_runtime_state("p1", "execute_cognitive_purge", "runtime_state")
-_emit_verifies_boundary("p1", "execute_cognitive_purge", "boundary_check")
-_emit_transcripts_response("p1", "execute_cognitive_purge", "transcript")
-_emit_hard_fails_untranscripted("p1", "execute_cognitive_purge")
-_emit_gated_by_confidence("p1", "execute_cognitive_purge", "confidence_gate")
-emit_replay_key("p0", "execute_cognitive_purge")
-emit_determinism_digest("p0", "execute_cognitive_purge")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "execute_cognitive_purge", "execution_auth")
-_emit_validates_capability("p2", "execute_cognitive_purge", "capability_check")
-_emit_routes_to_capability("p2", "execute_cognitive_purge", "capability_route")
-_emit_writes_via_uwg("p2", "execute_cognitive_purge", "uwg_write")
-_emit_blocks_direct_write("p2", "execute_cognitive_purge", "direct_write_block")
-_emit_records_tool_invocation("p2", "execute_cognitive_purge", "tool_invocation")
-_emit_captures_execution_output("p2", "execute_cognitive_purge", "exec_output")
-_emit_dispatches_agent("p3", "execute_cognitive_purge", "agent_dispatch")
-_emit_coordinates_agents("p3", "execute_cognitive_purge", "agent_coordination")
-_emit_records_workflow_lineage("p3", "execute_cognitive_purge", "workflow_lineage")
-_emit_records_healing_outcome("p3", "execute_cognitive_purge", "healing_outcome")
-_emit_escalates_failure("p3", "execute_cognitive_purge", "failure_escalation")
-_emit_orchestrates_workflow("p3", "execute_cognitive_purge", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "execute_cognitive_purge", "healing_dispatch")
-_emit_invokes_evaluation("p3", "execute_cognitive_purge", "evaluation_signal")
-_emit_records_telemetry_event("p4", "execute_cognitive_purge", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "execute_cognitive_purge", "eval_metric")
-_emit_stores_embedding("p4", "execute_cognitive_purge", "embedding_store")
-_emit_updates_meta_learning_state("p4", "execute_cognitive_purge", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "execute_cognitive_purge", "exec_snapshot_link")
+def _init_runtime_trace() -> None:
+    _emit_records_execution_trace("p0", "evidence", "execute_cognitive_purge")
+    _emit_applies_guardrail("p0", "execute_cognitive_purge", "p0_governance")
+    _emit_reads_policy_state("p0", "execute_cognitive_purge", "policy_binding")
+    _emit_snapshots_state("p0", "execute_cognitive_purge", "state_snapshot")
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+        _emit_captures_pattern,
+        _emit_captures_runtime_anomaly,
+        _emit_emits_metric_event,
+        _emit_execution_terminates_at_uwg,
+        _emit_feeds_meta_learning,
+        _emit_improves_agent_policy,
+        _emit_invokes_eval,
+        _emit_links_incident_trace,
+        _emit_proposal_commits_routing,
+        _emit_pulls_context,
+        _emit_reads_environ,
+        _emit_reads_runtime_state,
+        _emit_records_execution_trace,
+        _emit_records_incident_event,
+        _emit_records_learning_event,
+        _emit_stores_learning_state,
+        _emit_triggers_alert,
+        _emit_updates_monitoring_state,
+        _emit_updates_routing_strategy,
+        _emit_validated_by_safety_plane,
+        _emit_writes_learning_snapshot,
+        _emit_writes_observability_log,
+        _emit_writes_through,
+    )
+
+    _emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_1")
+    _emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_2")
+    _emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_3")
+    _emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_4")
+    _emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_5")
+    _emit_emits_metric_event("execute_cognitive_purge", "p4obs", "metric_6")
+    _emit_records_incident_event("execute_cognitive_purge", "p4obs", "incident")
+    _emit_captures_runtime_anomaly("execute_cognitive_purge", "p4obs", "anomaly")
+    _emit_writes_observability_log("execute_cognitive_purge", "p4obs", "obs_log")
+    _emit_updates_monitoring_state("execute_cognitive_purge", "p4obs", "mon_state")
+    _emit_triggers_alert("execute_cognitive_purge", "p4obs", "alert")
+    _emit_links_incident_trace("execute_cognitive_purge", "p4obs", "trace_link")
+    _emit_captures_pattern("execute_cognitive_purge", "p3lm", "pattern")
+    _emit_records_learning_event("execute_cognitive_purge", "p3lm", "learning_event")
+    _emit_writes_learning_snapshot("execute_cognitive_purge", "p3lm", "snapshot")
+    _emit_feeds_meta_learning("execute_cognitive_purge", "p3lm", "meta_feed")
+    _emit_updates_routing_strategy("execute_cognitive_purge", "p3lm", "routing")
+    _emit_improves_agent_policy("execute_cognitive_purge", "p3lm", "policy")
+    _emit_stores_learning_state("execute_cognitive_purge", "p3lm", "state")
+    _emit_records_execution_trace("execute_cognitive_purge", "L0_ROUTING", "p2_trace_1")
+    _emit_records_execution_trace("execute_cognitive_purge", "L1_REASONING", "p2_trace_2")
+    _emit_records_execution_trace("execute_cognitive_purge", "L2_EXECUTION", "p2_trace_3")
+    _emit_records_execution_trace("execute_cognitive_purge", "L3_ORCHESTRATION", "p2_trace_4")
+    _emit_records_execution_trace("execute_cognitive_purge", "L4_STATE", "p2_trace_5")
+    _emit_reads_environ("execute_cognitive_purge", "env_read", "p2_env_1")
+    _emit_reads_environ("execute_cognitive_purge", "env_read", "p2_env_2")
+    _emit_reads_runtime_state("execute_cognitive_purge", "runtime_state", "p2_rt_1")
+    _emit_reads_runtime_state("execute_cognitive_purge", "runtime_state", "p2_rt_2")
+    _emit_pulls_context("p1", "execute_cognitive_purge", "context_pull")
+    _emit_pulls_context("p1", "execute_cognitive_purge", "context_pull_2")
+    _emit_execution_terminates_at_uwg("p1", "execute_cognitive_purge", "uwg_term")
+    _emit_execution_terminates_at_uwg("p1", "execute_cognitive_purge", "uwg_term_2")
+    _emit_writes_through("p1", "execute_cognitive_purge", "write_through")
+    _emit_writes_through("p1", "execute_cognitive_purge", "write_through_2")
+    _emit_validated_by_safety_plane("p1", "execute_cognitive_purge", "safety_validation")
+    _emit_invokes_eval("p1", "execute_cognitive_purge", "eval_call")
+    _emit_proposal_commits_routing("p1", "execute_cognitive_purge", "routing_commit")
+    _emit_escalates_to_human("p1", "execute_cognitive_purge", "human_escalation")
+    _emit_routes_through("p1", "execute_cognitive_purge", "route_through")
+    _emit_checks_agent_registry("p1", "execute_cognitive_purge", "agent_registry")
+    _emit_validates_agent_capability("p1", "execute_cognitive_purge", "capability")
+    _emit_dispatches_execution_plan("p1", "execute_cognitive_purge", "exec_plan")
+    _emit_agent_executes_agent("p1", "execute_cognitive_purge", "sub_agent")
+    _emit_routes_to_agent("p1", "execute_cognitive_purge", "target_agent")
+    _emit_verifies_policy("p1", "execute_cognitive_purge", "policy_check")
+    _emit_observes_runtime_state("p1", "execute_cognitive_purge", "runtime_state")
+    _emit_verifies_boundary("p1", "execute_cognitive_purge", "boundary_check")
+    _emit_transcripts_response("p1", "execute_cognitive_purge", "transcript")
+    _emit_hard_fails_untranscripted("p1", "execute_cognitive_purge")
+    _emit_gated_by_confidence("p1", "execute_cognitive_purge", "confidence_gate")
+    emit_replay_key("p0", "execute_cognitive_purge")
+    emit_determinism_digest("p0", "execute_cognitive_purge")
+    _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+    _emit_authorize_and_execute("p2", "execute_cognitive_purge", "execution_auth")
+    _emit_validates_capability("p2", "execute_cognitive_purge", "capability_check")
+    _emit_routes_to_capability("p2", "execute_cognitive_purge", "capability_route")
+    _emit_writes_via_uwg("p2", "execute_cognitive_purge", "uwg_write")
+    _emit_blocks_direct_write("p2", "execute_cognitive_purge", "direct_write_block")
+    _emit_records_tool_invocation("p2", "execute_cognitive_purge", "tool_invocation")
+    _emit_captures_execution_output("p2", "execute_cognitive_purge", "exec_output")
+    _emit_dispatches_agent("p3", "execute_cognitive_purge", "agent_dispatch")
+    _emit_coordinates_agents("p3", "execute_cognitive_purge", "agent_coordination")
+    _emit_records_workflow_lineage("p3", "execute_cognitive_purge", "workflow_lineage")
+    _emit_records_healing_outcome("p3", "execute_cognitive_purge", "healing_outcome")
+    _emit_escalates_failure("p3", "execute_cognitive_purge", "failure_escalation")
+    _emit_orchestrates_workflow("p3", "execute_cognitive_purge", "workflow_orchestration")
+    _emit_dispatches_healing_run("p3", "execute_cognitive_purge", "healing_dispatch")
+    _emit_invokes_evaluation("p3", "execute_cognitive_purge", "evaluation_signal")
+    _emit_records_telemetry_event("p4", "execute_cognitive_purge", "telemetry_event")
+    _emit_captures_evaluation_metric("p4", "execute_cognitive_purge", "eval_metric")
+    _emit_stores_embedding("p4", "execute_cognitive_purge", "embedding_store")
+    _emit_updates_meta_learning_state("p4", "execute_cognitive_purge", "meta_learning")
+    _emit_links_execution_to_snapshot("p4", "execute_cognitive_purge", "exec_snapshot_link")
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -206,6 +210,12 @@ def run_cognitive_purge(
     Returns:
         Exit code (0=success, 1=no API key, 2=error)
     """
+    _init_runtime_trace()
+
+    if rate_limit <= 0:
+        Logger.error("[FAIL] --rate-limit must be greater than 0.")
+        return 2
+
     # Load .env file first
     try:
         from dotenv import find_dotenv, load_dotenv
@@ -227,10 +237,13 @@ def run_cognitive_purge(
         return 1
 
     try:
-        # Add project root to path
-        project_root = Path(__file__).resolve().parent.parent.parent
-        # guardian: allow-global-mutation
-        sys.path.insert(0, str(project_root))
+        project_root = get_validated_project_root()
+        checkpoint_path = Path(checkpoint_file)
+        if not checkpoint_path.is_absolute():
+            checkpoint_path = project_root / checkpoint_path
+        checkpoint_path = checkpoint_path.resolve()
+        if project_root not in checkpoint_path.parents and checkpoint_path != project_root:
+            raise ValueError("Checkpoint path must remain under the project root")
 
         from agentic_core.L5_safety.validators import (
             ArchitectureGovernorAgent,
@@ -241,12 +254,11 @@ def run_cognitive_purge(
         Logger.info("=" * 60)
         Logger.info(f"Project Root: {project_root}")
         Logger.info(f"Rate Limit: {rate_limit}s between API calls")
-        Logger.info(f"Checkpoint: {checkpoint_file}")
+        Logger.info(f"Checkpoint: {checkpoint_path}")
         Logger.info("")
 
         # Clear checkpoint if requested
         if clear_checkpoint:
-            checkpoint_path = project_root / checkpoint_file
             if checkpoint_path.exists():
                 checkpoint_path.unlink()
                 Logger.info("[OK] Checkpoint cleared")
@@ -268,7 +280,7 @@ def run_cognitive_purge(
 
         # Execute cognitive purge
         result = agent.execute_cognitive_purge(
-            checkpoint_file=checkpoint_file,
+            checkpoint_file=str(checkpoint_path),
             rate_limit_delay=rate_limit,
         )
 
@@ -298,7 +310,7 @@ def run_cognitive_purge(
         for action, count in sorted(results_stats.get("by_action", {}).items()):
             Logger.info(f"  {action}: {count}")
         Logger.info("")
-        Logger.info(f"Checkpoint saved to: {result.get('checkpoint_file', checkpoint_file)}")
+        Logger.info(f"Checkpoint saved to: {result.get('checkpoint_file', str(checkpoint_path))}")
         Logger.info("=" * 60)
 
         Logger.info("")
@@ -315,12 +327,8 @@ def run_cognitive_purge(
         Logger.error(f"[ERROR] Import Error: {e}")
         Logger.error("Ensure agentic_core is properly installed.")
         return 2
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        Logger.error(f"[ERROR] Execution Error: {e}")
-        import traceback
-
-        traceback.print_exc()
+    except Exception as e:  # guardian: allow-broad-exception -- operational boundary
+        Logger.exception("[ERROR] Execution Error: %s", e)
         return 2
 
 

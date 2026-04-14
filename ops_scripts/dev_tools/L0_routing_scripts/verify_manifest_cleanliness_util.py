@@ -6,8 +6,11 @@ are absent from the resulting JSON manifest.
 
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
+
+from ops_scripts.dev_tools.L0_routing.project_root_util import get_validated_project_root
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -166,7 +169,7 @@ _emit_invokes_eval("p1", "verify_manifest_cleanliness_util", "eval_call")
 _emit_proposal_commits_routing("p1", "verify_manifest_cleanliness_util", "routing_commit")
 
 
-def main():
+def main() -> int:
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "main", "state_snapshot")
@@ -182,20 +185,36 @@ def main():
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "main")
-    print("[*] Running full_agent_discovery.py...")
-    env_cmd = (
-        "set PYTHONPATH=../../../.. && cd agentic_core/L0_routing/scripts && python full_agent_discovery.py"
+
+    project_root = get_validated_project_root()
+    discovery_script = project_root / "agentic_core" / "L0_routing" / "scripts" / "full_agent_discovery.py"
+    manifest_path = project_root / "agent_discovery_full.json"
+
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(project_root) + os.pathsep + env.get("PYTHONPATH", "")
+
+    print(f"[*] Running {discovery_script}...")
+    result = subprocess.run(
+        [sys.executable, str(discovery_script)],
+        cwd=project_root,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
     )
-    exit_code = os.system(env_cmd)
-    print(f"[*] Discovery script exit code: {exit_code}")
-    if exit_code != 0:
+    print(f"[*] Discovery script exit code: {result.returncode}")
+    if result.stderr.strip():
+        print(result.stderr.strip(), file=sys.stderr)
+    if result.returncode != 0:
         print("[!] Discovery script had compliance issues, but checking manifest...")
-    manifest_path = Path("agent_discovery_full.json")
+
     if not manifest_path.exists():
-        print("[-] Manifest file was not generated.")
-        sys.exit(1)
-    with open(manifest_path) as f:
+        print(f"[-] Manifest file was not generated at: {manifest_path}")
+        return 1
+
+    with manifest_path.open(encoding="utf-8") as f:
         data = json.load(f)
+
     BLACKLIST = {
         "L1CognitionBase",
         "L2ExecutionBase",
@@ -210,13 +229,13 @@ def main():
     print(f"[*] Total Agents Discovered: {len(found_agents)}")
     if violations:
         print("[-] CRITICAL FAILURE: The following deleted agents are still in the manifest:")
-        for v in violations:
+        for v in sorted(violations):
             print(f"   - {v}")
-        sys.exit(1)
-    else:
-        print("[+] SUCCESS: Manifest is clean. No legacy base classes detected.")
-        sys.exit(0)
+        return 1
+
+    print("[+] SUCCESS: Manifest is clean. No legacy base classes detected.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

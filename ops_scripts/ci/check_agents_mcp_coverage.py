@@ -26,12 +26,22 @@ _SERVER_REF_RE = re.compile(r"server:\s*`([^`]+)`")
 
 
 def load_registered_servers(config_path: Path) -> list[str]:
-    data = json.loads(config_path.read_text(encoding="utf-8"))
-    return list(data.get("mcpServers", {}).keys())
+    try:
+        data = json.loads(config_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"could not read {config_path}: {exc}") from exc
+
+    servers = data.get("mcpServers", {})
+    if not isinstance(servers, dict):
+        raise RuntimeError(f"{config_path} has invalid mcpServers payload (expected object)")
+    return sorted(servers.keys())
 
 
 def load_documented_servers(agents_path: Path) -> set[str]:
-    text = agents_path.read_text(encoding="utf-8")
+    try:
+        text = agents_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise RuntimeError(f"could not read {agents_path}: {exc}") from exc
     return set(_SERVER_REF_RE.findall(text))
 
 
@@ -43,8 +53,12 @@ def main() -> int:
         print(f"[agents_mcp_coverage] FAIL: {AGENTS_MD} not found", flush=True)
         return 1
 
-    registered = load_registered_servers(MCP_CONFIG)
-    documented = load_documented_servers(AGENTS_MD)
+    try:
+        registered = load_registered_servers(MCP_CONFIG)
+        documented = load_documented_servers(AGENTS_MD)
+    except RuntimeError as exc:
+        print(f"[agents_mcp_coverage] FAIL: {exc}", flush=True)
+        return 1
 
     missing = [s for s in registered if s not in documented]
 

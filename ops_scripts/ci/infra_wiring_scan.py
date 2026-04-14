@@ -103,6 +103,13 @@ AGENTIC_CORE_INFRA_SUBDIRS = {
 }
 
 
+def _find_latest_adg_sqlite(adg_dir: Path) -> Path | None:
+    candidates = [p for p in adg_dir.glob("adg_indexed_*.sqlite") if p.is_file()]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: (p.stat().st_mtime_ns, p.name))
+
+
 def scan_file(file_path: Path) -> list[tuple[int, str]] | None:
     """Scan a single Python file for forbidden imports.
 
@@ -214,20 +221,23 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
     adg_dir = root_dir / "artifacts" / "adg"
     if not adg_dir.is_dir():
         return {}
-    candidates = sorted(adg_dir.glob("adg_indexed_*.sqlite"), reverse=True)
-    if not candidates:
+    db_path = _find_latest_adg_sqlite(adg_dir)
+    if db_path is None:
         return {}
-    db_path = candidates[0]
     try:
         module_path = root_dir / "tools" / "generate" / "infra_wiring_views.py"
+        if not module_path.exists():
+            raise RuntimeError(f"Missing materializer: {module_path}")
         spec = importlib.util.spec_from_file_location("infra_wiring_views", module_path)
         if spec is None or spec.loader is None:
             raise RuntimeError(f"Could not load {module_path}")
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
         return module.materialize_infra_views(db_path)
-    except (AttributeError, RuntimeError, OSError):
-        _log.warning("Could not materialize infra views — falling back to raw view query")
+    except Exception as exc:  # guardian: structural scan should fall back to raw SQL instead of crashing
+        _log.warning(
+            "Could not materialize infra views for %s: %s — falling back to raw view query", db_path, exc
+        )
         import sqlite3 as _sqlite3
         from contextlib import closing
 
@@ -249,7 +259,7 @@ def _query_adg_view_counts(root_dir: Path) -> dict[str, int]:
             "v_p3_isolated_experimental",
         )
         counts: dict[str, int] = {}
-        db_uri = f"file:{db_path.as_posix()}?mode=ro"
+        db_uri = f"file:{db_path.as_posix()}?mode=ro&immutable=1"
         with closing(_sqlite3.connect(db_uri, uri=True, timeout=5)) as conn:
             cur = conn.cursor()
             for vname in view_names:

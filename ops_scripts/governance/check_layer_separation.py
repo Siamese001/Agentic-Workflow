@@ -1,31 +1,22 @@
 """
-check_layer_separation.py - Enforce 3-Layer Architecture Constraints.
+Enforce layer-separation constraints for a target Python file.
 
-Validates that the Sovereign Root (Layer 0) does not import:
-1. Canon Domains (Layer 1 Validation)
-2. Concrete Implementations (L6 Observability, L2 Tools)
-
-This prevents the 'God Object' Anti-Pattern.
+Validates that the Sovereign Root does not import forbidden downstream
+modules or symbols that would violate architecture boundaries.
 """
 
+from __future__ import annotations
+
+import argparse
 import ast
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
 from tqdm import tqdm
 
-TARGET_FILE = Path("agentic_core/base_agents/SovereignBaseAgent.py")
-FORBIDDEN_IMPORTS = [
+
+DEFAULT_TARGET = Path("agentic_core/base_agents/SovereignBaseAgent.py")
+FORBIDDEN_IMPORTS = (
     "CanonBaseAgent",
     "SovereignObservabilityAgent",
     "NamingAgent",
@@ -33,51 +24,78 @@ FORBIDDEN_IMPORTS = [
     "agentic_core.canon",
     "agentic_core.L6_observability",
     "archives.void_violations",
-]
+)
+
+
+def _matches_forbidden(candidate: str, forbidden: str) -> bool:
+    return candidate == forbidden or candidate.startswith(f"{forbidden}.")
 
 
 def check_imports(file_path: Path) -> list[str]:
     if not file_path.exists():
-        return [f"CRITICAL: Target file {file_path} not found."]
+        return [f"CRITICAL: target file not found: {file_path}"]
+
     try:
-        tree = ast.parse(file_path.read_text(encoding="utf-8"))
-    except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
-        return [f"Syntax Error in {file_path}: {e}"]
-    violations = []
-    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
+        source = file_path.read_text(encoding="utf-8")
+    except OSError as exc:
+        return [f"CRITICAL: could not read {file_path}: {exc}"]
+
+    try:
+        tree = ast.parse(source, filename=str(file_path))
+    except SyntaxError as exc:
+        return [f"Syntax error in {file_path}: line {exc.lineno}: {exc.msg}"]
+
+    violations: list[str] = []
+    for node in tqdm(list(ast.walk(tree)), desc="Checking imports", unit="node", leave=False):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 for forbidden in FORBIDDEN_IMPORTS:
-                    if forbidden in alias.name:
-                        violations.append(f"Line {node.lineno}: Forbidden import '{alias.name}'")
+                    if _matches_forbidden(alias.name, forbidden):
+                        violations.append(f"Line {node.lineno}: forbidden import '{alias.name}'")
         elif isinstance(node, ast.ImportFrom):
             module = node.module or ""
             for forbidden in FORBIDDEN_IMPORTS:
-                if forbidden in module:
-                    violations.append(f"Line {node.lineno}: Forbidden import source '{module}'")
+                if _matches_forbidden(module, forbidden):
+                    violations.append(f"Line {node.lineno}: forbidden import source '{module}'")
             for alias in node.names:
+                full_name = f"{module}.{alias.name}" if module else alias.name
                 for forbidden in FORBIDDEN_IMPORTS:
-                    if forbidden in alias.name:
+                    if _matches_forbidden(alias.name, forbidden) or _matches_forbidden(full_name, forbidden):
                         violations.append(
-                            f"Line {node.lineno}: Forbidden import '{alias.name}' from '{module}'"
+                            f"Line {node.lineno}: forbidden import '{alias.name}' from '{module}'"
                         )
     return violations
 
 
-def main():
-    print(f"Checking Layer Separation for: {TARGET_FILE}")
-    violations = check_imports(TARGET_FILE)
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--target",
+        type=Path,
+        default=DEFAULT_TARGET,
+        help="Python file to validate for forbidden imports.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    target = args.target.resolve()
+
+    print(f"Checking layer separation for: {target}")
+    violations = check_imports(target)
     if violations:
-        print("\n[!] ARCHITECTURE VIOLATION DETECTED")
-        print("    SovereignBaseAgent must NOT depend on downstream layers.")
-        print("-" * 50)
-        for v in violations:
-            print(f"    - {v}")
-        print("-" * 50)
-        sys.exit(1)
-    print("[OK] Layer Separation Verified. SovereignBaseAgent is pure.")
-    sys.exit(0)
+        print("\n[FAILED] Architecture violation detected")
+        print("SovereignBaseAgent must not depend on downstream layers.")
+        print("-" * 72)
+        for violation in violations:
+            print(f"  - {violation}")
+        print("-" * 72)
+        return 1
+
+    print("[PASSED] Layer separation verified.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

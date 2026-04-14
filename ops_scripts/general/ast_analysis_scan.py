@@ -3,9 +3,26 @@
 import ast
 import json
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+)
 from tqdm import tqdm
 
-ROOT = Path("c:/Git/Agentic-Workflow")
+
+def _resolve_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+ROOT = _resolve_root()
 SSOT_DIRS = [
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -94,58 +111,71 @@ def classify_shim(rel, tree):
     }
 
 
-pinecone_refs = []
-semantic_cache_refs = []
-shim_files = []
-for ssot_dir in tqdm(SSOT_DIRS, desc="Processing", unit="item"):
-    scan_root = ROOT / ssot_dir
-    if not scan_root.exists():
-        continue
-    for py_file in tqdm(sorted(scan_root.rglob("*.py")), desc="Processing", unit="item"):
-        if ".git" in py_file.parts:
+def main() -> int:
+    pinecone_refs = []
+    semantic_cache_refs = []
+    shim_files = []
+
+    for ssot_dir in tqdm(SSOT_DIRS, desc="Processing", unit="item"):
+        scan_root = ROOT / ssot_dir
+        if not scan_root.exists():
             continue
-        rel = py_file.relative_to(ROOT).as_posix()
-        src, tree = parse_file(py_file)
-        if tree is None:
-            continue
-        imports = get_imports(tree)
-        r = scan_pinecone(rel, src, tree, imports)
-        if r:
-            pinecone_refs.append(r)
-        r = scan_semantic_cache(rel, src, tree, imports)
-        if r:
-            semantic_cache_refs.append(r)
-        r = classify_shim(rel, tree)
-        if r:
-            shim_files.append(r)
-print("=== PINECONE REFS (SSOT DIRS) ===")
-for item in pinecone_refs:
-    print(f"  {item['file']}")
-    for ref in item["refs"]:
-        print(f"    - {ref}")
-print(f"TOTAL_PINECONE_FILES: {len(pinecone_refs)}")
-print()
-print("=== SEMANTIC CACHE REFS (SSOT DIRS) ===")
-for item in semantic_cache_refs[:30]:
-    print(f"  {item['file']}")
-    for ref in item["refs"]:
-        print(f"    - {ref}")
-print(f"TOTAL_CACHE_FILES: {len(semantic_cache_refs)}")
-print()
-pure_shims = [s for s in shim_files if s["is_pure_shim"] and s["has_all"]]
-shims_missing_all = [s for s in shim_files if s["is_pure_shim"] and (not s["has_all"])]
-impure_shims = [s for s in shim_files if not s["is_pure_shim"]]
-print("=== PURE SHIMS (imports + __all__ only) ===")
-for s in pure_shims:
-    print(f"  {s['file']}  body={s['body_count']}")
-print(f"TOTAL_PURE_SHIMS: {len(pure_shims)}")
-print()
-print("=== SHIMS MISSING __all__ ===")
-for s in shims_missing_all:
-    print(f"  {s['file']}  body={s['body_count']}  stmts={s['stmt_types']}")
-print(f"TOTAL_SHIMS_MISSING_ALL: {len(shims_missing_all)}")
-print()
-print("=== IMPURE SHIM CANDIDATES (no functions but has extra logic) ===")
-for s in impure_shims:
-    print(f"  {s['file']}  body={s['body_count']}  stmts={s['stmt_types']}")
-print(f"TOTAL_IMPURE: {len(impure_shims)}")
+        for py_file in tqdm(sorted(scan_root.rglob("*.py")), desc="Processing", unit="item"):
+            if ".git" in py_file.parts:
+                continue
+            rel = py_file.relative_to(ROOT).as_posix()
+            src, tree = parse_file(py_file)
+            if tree is None:
+                continue
+            imports = get_imports(tree)
+            r = scan_pinecone(rel, src, tree, imports)
+            if r:
+                pinecone_refs.append(r)
+            r = scan_semantic_cache(rel, src, tree, imports)
+            if r:
+                semantic_cache_refs.append(r)
+            r = classify_shim(rel, tree)
+            if r:
+                shim_files.append(r)
+
+    print("=== PINECONE REFS (SSOT DIRS) ===")
+    for item in pinecone_refs:
+        print(f"  {item['file']}")
+        for ref in item["refs"]:
+            print(f"    - {ref}")
+    print(f"TOTAL_PINECONE_FILES: {len(pinecone_refs)}")
+    print()
+
+    print("=== SEMANTIC CACHE REFS (SSOT DIRS) ===")
+    for item in semantic_cache_refs[:30]:
+        print(f"  {item['file']}")
+        for ref in item["refs"]:
+            print(f"    - {ref}")
+    print(f"TOTAL_CACHE_FILES: {len(semantic_cache_refs)}")
+    print()
+
+    pure_shims = [s for s in shim_files if s["is_pure_shim"] and s["has_all"]]
+    shims_missing_all = [s for s in shim_files if s["is_pure_shim"] and (not s["has_all"])]
+    impure_shims = [s for s in shim_files if not s["is_pure_shim"]]
+
+    print("=== PURE SHIMS (imports + __all__ only) ===")
+    for s in pure_shims:
+        print(f"  {s['file']}  body={s['body_count']}")
+    print(f"TOTAL_PURE_SHIMS: {len(pure_shims)}")
+    print()
+
+    print("=== SHIMS MISSING __all__ ===")
+    for s in shims_missing_all:
+        print(f"  {s['file']}  body={s['body_count']}  stmts={s['stmt_types']}")
+    print(f"TOTAL_SHIMS_MISSING_ALL: {len(shims_missing_all)}")
+    print()
+
+    print("=== IMPURE SHIM CANDIDATES (no functions but has extra logic) ===")
+    for s in impure_shims:
+        print(f"  {s['file']}  body={s['body_count']}  stmts={s['stmt_types']}")
+    print(f"TOTAL_IMPURE: {len(impure_shims)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

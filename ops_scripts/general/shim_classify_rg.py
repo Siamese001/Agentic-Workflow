@@ -3,7 +3,23 @@
 import ast
 from pathlib import Path
 
-ROOT = Path("c:/Git/Agentic-Workflow")
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
+
+def _resolve_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+ROOT = _resolve_root()
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
 
@@ -12,7 +28,7 @@ def classify_file(py_file):
     try:
         src = py_file.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(src)
-    except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
+    except SyntaxError:
         return None
     body = tree.body
     has_func = any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in body)
@@ -59,42 +75,52 @@ def classify_file(py_file):
     }
 
 
-results = []
-for ssot_dir in SSOT_DIRS:
-    scan_root = ROOT / ssot_dir
-    if not scan_root.exists():
-        continue
-    for py_file in sorted(scan_root.rglob("*.py")):
-        if ".git" in py_file.parts:
+def main() -> int:
+    results = []
+    for ssot_dir in SSOT_DIRS:
+        scan_root = ROOT / ssot_dir
+        if not scan_root.exists():
             continue
-        r = classify_file(py_file)
-        if r:
-            results.append(r)
-pure_shims = [r for r in results if r["shim_type"] == "PURE_SHIM"]
-missing_all = [r for r in results if r["shim_type"] == "SHIM_MISSING_ALL"]
-impure = [r for r in results if r["shim_type"] == "IMPURE_SHIM"]
-print("=== PURE SHIMS (intentional re-export, has __all__) ===")
-for r in pure_shims:
-    exported = r["all_value"] or "?"
-    print(f"  {r['file']}  exports={exported}")
-print(f"COUNT: {len(pure_shims)}")
-print()
-print("=== SHIMS MISSING __all__ (re-exports but no explicit export list) ===")
-for r in missing_all:
-    imp_summary = []
-    for imp in r["imports"]:
-        if imp[0] == "From":
-            imp_summary.append(f"from {imp[1]} import {imp[2]}")
-        else:
-            imp_summary.append(f"import {imp[1]}")
-    print(f"  {r['file']}  body={r['body_count']}")
-    for s in imp_summary:
-        print(f"    {s}")
-print(f"COUNT: {len(missing_all)}")
-print()
-print("=== IMPURE SHIMS (no funcs/classes but has logic stmts) ===")
-for r in impure:
-    print(f"  {r['file']}  non_trivial={r['non_trivial_stmts']}  body={r['body_count']}")
-print(f"COUNT: {len(impure)}")
-print()
-print(f"TOTAL_SHIM_CANDIDATES: {len(results)}")
+        for py_file in sorted(scan_root.rglob("*.py")):
+            if ".git" in py_file.parts:
+                continue
+            r = classify_file(py_file)
+            if r:
+                results.append(r)
+
+    pure_shims = [r for r in results if r["shim_type"] == "PURE_SHIM"]
+    missing_all = [r for r in results if r["shim_type"] == "SHIM_MISSING_ALL"]
+    impure = [r for r in results if r["shim_type"] == "IMPURE_SHIM"]
+
+    print("=== PURE SHIMS (intentional re-export, has __all__) ===")
+    for r in pure_shims:
+        exported = r["all_value"] or "?"
+        print(f"  {r['file']}  exports={exported}")
+    print(f"COUNT: {len(pure_shims)}")
+    print()
+
+    print("=== SHIMS MISSING __all__ (re-exports but no explicit export list) ===")
+    for r in missing_all:
+        imp_summary = []
+        for imp in r["imports"]:
+            if imp[0] == "From":
+                imp_summary.append(f"from {imp[1]} import {imp[2]}")
+            else:
+                imp_summary.append(f"import {imp[1]}")
+        print(f"  {r['file']}  body={r['body_count']}")
+        for s in imp_summary:
+            print(f"    {s}")
+    print(f"COUNT: {len(missing_all)}")
+    print()
+
+    print("=== IMPURE SHIMS (no funcs/classes but has logic stmts) ===")
+    for r in impure:
+        print(f"  {r['file']}  non_trivial={r['non_trivial_stmts']}  body={r['body_count']}")
+    print(f"COUNT: {len(impure)}")
+    print()
+    print(f"TOTAL_SHIM_CANDIDATES: {len(results)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

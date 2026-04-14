@@ -5,9 +5,21 @@ from __future__ import annotations
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from tqdm import tqdm
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 _OVERRIDES_FILE = Path(__file__).resolve().parents[1] / "adg_layer_overrides.yaml"
 
@@ -22,9 +34,13 @@ def _infer_layer(path: str) -> str:
     if overrides_file.exists():
         try:
             with open(overrides_file, encoding="utf-8") as f:
-                config = yaml.safe_load(f)
+                config = yaml.safe_load(f) or {}
+                if not isinstance(config, dict):
+                    raise ValueError("adg_layer_overrides.yaml must contain a mapping at the document root")
                 overrides = config.get("overrides", {})
                 default_layer = config.get("default_layer", "L_UNKNOWN")
+                if not isinstance(overrides, dict):
+                    raise ValueError("'overrides' must be a mapping of glob -> layer")
 
                 for pattern, layer in overrides.items():
                     if fnmatch.fnmatch(path, pattern):
@@ -57,8 +73,11 @@ def _infer_layer(path: str) -> str:
 
 def _generate_timestamp() -> str:
     """Generate timestamp in US Eastern time format MMDDYYYY_HHMM."""
-    est = timezone(timedelta(hours=-4))  # EDT (UTC-4); DST active Mar-Nov in US Eastern
-    now_est = datetime.now(est)
+    try:
+        eastern = ZoneInfo("America/New_York")
+    except ZoneInfoNotFoundError:
+        eastern = timezone(timedelta(hours=-4))
+    now_est = datetime.now(eastern)
     return now_est.strftime("%m%d%Y_%H%M")  # e.g., 03132026_0512
 
 

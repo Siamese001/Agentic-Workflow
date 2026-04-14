@@ -47,6 +47,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
+    REPORTS_DIR,
     L0_ROUTING_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,

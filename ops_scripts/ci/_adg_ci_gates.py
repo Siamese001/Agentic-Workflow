@@ -45,6 +45,16 @@ import sys
 import tempfile
 from pathlib import Path
 
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[2]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_through,
@@ -118,15 +128,13 @@ _emit_reads_through("l4", "_adg_ci_gates", "urg_read_55")
 _emit_reads_through("l4", "_adg_ci_gates", "urg_read_56")
 _emit_reads_through("l4", "_adg_ci_gates", "urg_read_57")
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
-
 BASELINE_FILE = _REPO_ROOT / "ops_scripts" / "ci" / "wave0_baseline.json"
 
-_REDIS_HOST = "localhost"
-_REDIS_PORT = 6379
-_REDIS_DB = 0
+_REDIS_HOST = os.getenv("ADG_CI_GATES_REDIS_HOST", "localhost")
+_REDIS_PORT = int(os.getenv("ADG_CI_GATES_REDIS_PORT", "6379"))
+_REDIS_DB = int(os.getenv("ADG_CI_GATES_REDIS_DB", "0"))
+_REDIS_SOCKET_TIMEOUT = float(os.getenv("ADG_CI_GATES_REDIS_TIMEOUT", "5"))
+_REDIS_CONNECT_TIMEOUT = float(os.getenv("ADG_CI_GATES_REDIS_CONNECT_TIMEOUT", "2"))
 
 # Coverage thresholds
 GUARDRAIL_COVERAGE_THRESHOLD = 0.10
@@ -227,8 +235,24 @@ def _get_gpc() -> dict[str, int]:
     except ImportError as exc:
         raise RuntimeError("redis-py not installed; run: pip install redis") from exc
 
-    r = redis.Redis(host=_REDIS_HOST, port=_REDIS_PORT, db=_REDIS_DB, decode_responses=True)
-    raw = r.get("adg:snapshot")
+    try:
+        r = redis.Redis(
+            host=_REDIS_HOST,
+            port=_REDIS_PORT,
+            db=_REDIS_DB,
+            decode_responses=True,
+            socket_timeout=_REDIS_SOCKET_TIMEOUT,
+            socket_connect_timeout=_REDIS_CONNECT_TIMEOUT,
+            health_check_interval=30,
+            retry_on_timeout=True,
+        )
+        r.ping()
+        raw = r.get("adg:snapshot")
+    except redis.RedisError as exc:
+        raise RuntimeError(
+            "unable to read Redis ADG snapshot "
+            f"(host={_REDIS_HOST}, port={_REDIS_PORT}, db={_REDIS_DB}): {exc}"
+        ) from exc
     if not raw:
         raise RuntimeError(
             "adg:snapshot key missing from Redis — run: python tools/adg/adg_redis_ingest.py --force"

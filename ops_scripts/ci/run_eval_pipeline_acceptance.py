@@ -32,7 +32,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[2]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
 
 _EVAL_PIPELINE_TESTS = [
     "tests/unit/agentic_core/L6_observability/utils/evaluation/test_pipeline_integration.py",
@@ -52,7 +60,22 @@ _KNOWN_EXCLUDED = [
 ]
 
 
+def _missing_test_targets() -> list[str]:
+    missing: list[str] = []
+    for rel_path in _EVAL_PIPELINE_TESTS:
+        if not (_REPO_ROOT / rel_path).exists():
+            missing.append(rel_path)
+    return missing
+
+
 def main(verbose: bool = False) -> int:
+    missing_targets = _missing_test_targets()
+    if missing_targets:
+        print("[FAIL] Eval pipeline acceptance cannot start; missing test targets:", file=sys.stderr)
+        for rel_path in missing_targets:
+            print(f"  - {rel_path}", file=sys.stderr)
+        return 2
+
     cmd = [
         sys.executable,
         "-m",

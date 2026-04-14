@@ -210,14 +210,23 @@ def get_staged_files() -> list[str]:
             check=True,
         )
         return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
+    except FileNotFoundError:
+        print("[gatekeeper-lock] git executable not found. Skipping protected-file check.", file=sys.stderr)
+        return []
     except subprocess.CalledProcessError:
+        print(
+            "[gatekeeper-lock] unable to inspect staged files. Skipping protected-file check.",
+            file=sys.stderr,
+        )
         return []
 
 
 def get_commit_message(commit_msg_file: str | None) -> str:
-    """Read commit message from file if provided."""
-    if commit_msg_file and Path(commit_msg_file).exists():
-        return Path(commit_msg_file).read_text(encoding="utf-8")
+    """Read commit message from the provided path or the default git location."""
+    candidates = [Path(commit_msg_file)] if commit_msg_file else [Path(".git/COMMIT_EDITMSG")]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate.read_text(encoding="utf-8", errors="replace")
     return ""
 
 
@@ -232,32 +241,48 @@ def check_commit_message_override(commit_message: str) -> bool:
 
 
 def main() -> int:
-    """TODO: Add documentation for main."""
+    """Run the protected file gate and return a process exit code."""
     parser = argparse.ArgumentParser(description="Gatekeeper Lock - Protect critical files")
     parser.add_argument("--commit-msg-filename", help="Path to commit message file (for commit-msg stage)")
     args = parser.parse_args()
+
     if check_env_bypass():
+        print("[gatekeeper-lock] bypass enabled via environment variable.", file=sys.stderr)
         return 0
+
     staged_files = get_staged_files()
     if not staged_files:
         return 0
+
     staged_normalized = [normalize_path(f) for f in staged_files]
     protected_normalized = [normalize_path(f) for f in PROTECTED_FILES]
+
     protected_modified = []
     for protected in protected_normalized:
         for staged in staged_normalized:
             if staged == protected or staged.endswith(protected):
                 protected_modified.append(protected)
                 break
+
     if not protected_modified:
         return 0
+
     commit_message = get_commit_message(args.commit_msg_filename)
     if check_commit_message_override(commit_message):
-        for _f in protected_modified:
-            pass
+        print(
+            "[gatekeeper-lock] override token present. Allowing changes to: "
+            + ", ".join(sorted(protected_modified)),
+            file=sys.stderr,
+        )
         return 0
-    for _f in protected_modified:
-        pass
+
+    print("[gatekeeper-lock] blocked protected file changes:", file=sys.stderr)
+    for protected in sorted(protected_modified):
+        print(f"  - {protected}", file=sys.stderr)
+    print(
+        f"[gatekeeper-lock] add {OVERRIDE_TOKEN} to the commit message or set {BYPASS_ENV_VAR}=1 to bypass.",
+        file=sys.stderr,
+    )
     return 1
 
 

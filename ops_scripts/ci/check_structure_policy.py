@@ -18,7 +18,11 @@ import fnmatch
 import sys
 from pathlib import Path
 from typing import Any
-from tqdm import tqdm
+
+try:
+    from tqdm import tqdm
+except ImportError:
+    sys.exit("[FATAL] tqdm not installed — run: pip install tqdm")
 
 _ROOT = Path(__file__).resolve().parents[2]
 
@@ -32,8 +36,15 @@ def _load_policy(policy_path: Path | None = None) -> dict[str, Any]:
     """Load and return the structure policy YAML."""
     if policy_path is None:
         policy_path = _ROOT / "config" / "structure_blueprint" / "structure_policy.yaml"
-    with open(policy_path, "r", encoding="utf-8") as fh:
-        return yaml.safe_load(fh)
+    try:
+        with open(policy_path, "r", encoding="utf-8") as fh:
+            policy = yaml.safe_load(fh)
+    except (OSError, yaml.YAMLError) as exc:
+        raise RuntimeError(f"could not load structure policy {policy_path}: {exc}") from exc
+
+    if not isinstance(policy, dict):
+        raise RuntimeError(f"structure policy {policy_path} must deserialize to a mapping")
+    return policy
 
 
 def _check_root_dirs(policy: dict[str, Any], verbose: bool = False) -> list[str]:
@@ -141,7 +152,11 @@ def _check_forbidden_root_dirs(policy: dict[str, Any], verbose: bool = False) ->
 
 def main(verbose: bool = False) -> int:
     """Run all structure policy checks. Returns 0 on success, 1 on failure."""
-    policy = _load_policy()
+    try:
+        policy = _load_policy()
+    except RuntimeError as exc:
+        print(f"[FAIL] Structure policy load error: {exc}")
+        return 2
 
     all_violations: list[str] = []
 

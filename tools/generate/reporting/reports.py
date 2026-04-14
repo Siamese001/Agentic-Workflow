@@ -8,7 +8,18 @@ from collections import Counter
 from pathlib import Path
 from tqdm import tqdm
 
-ROOT = Path(__file__).resolve().parents[3]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def _print_defect_table(
@@ -37,11 +48,13 @@ def _print_defect_table(
                             p0_count += 1
                     else:
                         p0_count += 1
-                except Exception:  # guardian: allow-silent-swallow -- non-critical: file read failure counts violation as unapproved
+                except (
+                    OSError,
+                    UnicodeDecodeError,
+                    ValueError,
+                ):  # guardian: allow-silent-swallow -- non-critical: file read failure counts violation as unapproved
                     p0_count += 1
-        except (
-            Exception
-        ):  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to 0
+        except sqlite3.Error:
             pass
 
     p1_antipattern = 0
@@ -58,7 +71,7 @@ def _print_defect_table(
                 p2_antipattern = _sev_map.get("MEDIUM", 0)
                 p3_antipattern = _sev_map.get("LOW", 0)
         except (
-            Exception
+            sqlite3.Error
         ):  # guardian: allow-silent-swallow -- non-critical: table read failure falls back to routing counts
             pass
 
@@ -74,7 +87,11 @@ def _print_defect_table(
             _p1_ceiling = _p1_data.get(
                 "high_severity_ceiling", _p1_data.get("p2_antipattern_ceiling", p1_antipattern)
             )
-    except Exception:  # guardian: allow-silent-swallow -- non-critical: ratchet read failure shows raw count
+    except (
+        OSError,
+        json.JSONDecodeError,
+        ValueError,
+    ):  # guardian: allow-silent-swallow -- non-critical: ratchet read failure shows raw count
         pass
     _p1_delta = max(0, p1_antipattern - _p1_ceiling)
     p1_count = p1_antipattern
@@ -89,7 +106,11 @@ def _print_defect_table(
         if _p2_ratchet_file.exists():
             _p2_data = json.loads(_p2_ratchet_file.read_text(encoding="utf-8"))
             _p2_ceiling = _p2_data.get("exception_swallow_ceiling")
-    except Exception:  # guardian: allow-silent-swallow -- non-critical: ratchet read failure
+    except (
+        OSError,
+        json.JSONDecodeError,
+        ValueError,
+    ):  # guardian: allow-silent-swallow -- non-critical: ratchet read failure
         pass
     p2_count = p2_antipattern
 

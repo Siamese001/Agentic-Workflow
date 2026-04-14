@@ -58,6 +58,11 @@ class ADGDeadCodeZoneControlVerifier:
 
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
 
+    @staticmethod
+    def _first_party_filter(alias: str = "") -> str:
+        prefix = f"{alias}." if alias else ""
+        return f"({prefix}identity_kind IS NULL OR {prefix}identity_kind NOT IN ('external_module', 'external_provider'))"
+
     def _verify_dead_import_detection(self) -> dict[str, Any]:
         """Verify dead imports are properly detected and categorized."""
         print("🔍 Verifying dead import detection...")
@@ -115,7 +120,7 @@ class ADGDeadCodeZoneControlVerifier:
                     SELECT n.adg_name, COUNT(*) as dead_count FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE e.relation_type = 'dead_imports'
-                    AND n.identity_kind NOT IN ('external_module', 'external_provider')
+                    AND {self._first_party_filter('n')}
                     GROUP BY n.id, n.adg_name
                     ORDER BY dead_count DESC
                     LIMIT 10
@@ -268,7 +273,7 @@ class ADGDeadCodeZoneControlVerifier:
                     JOIN edges e ON e.dst_id = n_unres.id
                     JOIN nodes n_src ON e.src_id = n_src.id
                     WHERE n_unres.identity_kind = 'unresolved_import'
-                    AND n_src.identity_kind NOT IN ('external_module', 'external_provider')
+                    AND {self._first_party_filter('n_src')}
                     GROUP BY n_src.id, n_src.adg_name
                     ORDER BY unresolved_count DESC
                     LIMIT 10
@@ -351,7 +356,7 @@ class ADGDeadCodeZoneControlVerifier:
                 cursor.execute("""
                     SELECT COUNT(*) FROM nodes
                     WHERE confidence = 'LOW'
-                    AND identity_kind NOT IN ('external_module', 'external_provider')
+                    AND {self._first_party_filter()}
                 """)
 
                 first_party_low_conf = cursor.fetchone()[0]
@@ -394,7 +399,12 @@ class ADGDeadCodeZoneControlVerifier:
                 # Check for high low-confidence ratio in governance surfaces
                 governance_layers = ["L0", "L1", "L2", "L3", "L5"]
                 governance_low_conf = sum(low_conf_by_layer.get(layer, 0) for layer in governance_layers)
-                governance_total = sum(low_conf_by_layer.get(layer, 0) for layer in governance_layers)
+                placeholders = ",".join(["?" for _ in governance_layers])
+                cursor.execute(
+                    f"SELECT COUNT(*) FROM nodes WHERE layer IN ({placeholders})",
+                    governance_layers,
+                )
+                governance_total = cursor.fetchone()[0]
 
                 governance_low_conf_ratio = (governance_low_conf / max(1, governance_total)) * 100
 
@@ -495,6 +505,8 @@ class ADGDeadCodeZoneControlVerifier:
                     "dead_code_count": "SELECT COUNT(*) FROM edges WHERE relation_type = 'dead_code_candidate'",
                     "unresolved_import_count": "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'unresolved_import'",
                     "low_confidence_count": "SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW'",
+                    "l4_unresolved_import_count": "SELECT COUNT(*) FROM nodes WHERE identity_kind = 'unresolved_import' AND layer = 'L4'",
+                    "first_party_low_confidence_ratio": "calculated_first_party_low_confidence_ratio",
                     "inferred_symbol_ratio": "calculated",  # Special case
                 }
 
@@ -509,6 +521,16 @@ class ADGDeadCodeZoneControlVerifier:
                         total_symbols = cursor.fetchone()[0]
                         ratio = (inferred / max(1, total_symbols)) * 100
                         calculated_metrics[metric_name] = ratio
+                    elif query == "calculated_first_party_low_confidence_ratio":
+                        cursor.execute(
+                            f"SELECT COUNT(*) FROM nodes WHERE confidence = 'LOW' AND {self._first_party_filter()}"
+                        )
+                        first_party_low_conf = cursor.fetchone()[0]
+                        cursor.execute(f"SELECT COUNT(*) FROM nodes WHERE {self._first_party_filter()}")
+                        total_first_party = cursor.fetchone()[0]
+                        calculated_metrics[metric_name] = (
+                            first_party_low_conf / max(1, total_first_party)
+                        ) * 100
                     else:
                         cursor.execute(query)
                         calculated_metrics[metric_name] = cursor.fetchone()[0]
@@ -516,19 +538,17 @@ class ADGDeadCodeZoneControlVerifier:
                 # Calculate first-party-only versions
                 first_party_metrics = {}
                 for metric_name, query in tqdm(executive_metrics.items(), desc="Processing", unit="item"):
-                    if query == "calculated":
+                    if query in {"calculated", "calculated_first_party_low_confidence_ratio"}:
                         continue  # Skip calculated metrics for now
 
                     # Add first-party filter
                     if "edges" in query:
                         fp_query = (
                             query.replace("FROM edges", "FROM edges e JOIN nodes n ON e.src_id = n.id")
-                            + " AND n.identity_kind NOT IN ('external_module', 'external_provider')"
+                            + " AND {self._first_party_filter('n')}"
                         )
                     elif "nodes" in query:
-                        fp_query = (
-                            query + " AND identity_kind NOT IN ('external_module', 'external_provider')"
-                        )
+                        fp_query = query + " AND {self._first_party_filter()}"
                     else:
                         fp_query = query
 
@@ -555,7 +575,7 @@ class ADGDeadCodeZoneControlVerifier:
                 # Check for executive readiness issues
                 readiness_issues = []
 
-                if calculated_metrics.get("l4_unresolved_import", 0) > 0:
+                if calculated_metrics.get("l4_unresolved_import_count", 0) > 0:
                     readiness_issues.append("L4 has unresolved imports")
 
                 if calculated_metrics.get("first_party_low_confidence_ratio", 0) > 15:
@@ -573,6 +593,13 @@ class ADGDeadCodeZoneControlVerifier:
 
         except Exception as e:
             raise DeadCodeZoneControlError(f"Executive readiness verification failed: {e}")
+
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
 
     def verify(self) -> dict[str, Any]:
         """Run complete dead code and low-confidence zone verification."""
@@ -672,8 +699,7 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, "w") as f:
-                json.dump(result, f, indent=2, default=str)
+            verifier._write_json_report(args.output, result)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1

@@ -4,10 +4,12 @@ Removes broken headers and adds proper docstrings.
 """
 
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from tqdm import tqdm
 
 
-def fix_single_test_file(test_file: Path) -> bool:
+def fix_single_test_file(test_file: Path) -> bool | None:
     """Fix a single test file's header."""
     try:
         content = test_file.read_text(encoding="utf-8")
@@ -23,7 +25,7 @@ def fix_single_test_file(test_file: Path) -> bool:
         OSError,
     ) as e:  # guardian: File operations with encoding need error-specific handling
         print(f"Error fixing {test_file}: {e}")
-        return False
+        return None
 
 
 def fix_all_test_headers(project_root: Path):
@@ -36,7 +38,7 @@ def fix_all_test_headers(project_root: Path):
         if test_file.name in ("__init__.py", "conftest.py"):
             continue
         result = fix_single_test_file(test_file)
-        if result:
+        if result is True:
             fixed_count += 1
             if fixed_count % 50 == 0:
                 print(f"Fixed {fixed_count} files...")

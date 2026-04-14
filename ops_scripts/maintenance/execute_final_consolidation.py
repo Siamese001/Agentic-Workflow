@@ -6,6 +6,7 @@ Final Consolidation Script - The End of Sprawl
 3. Runs the final ArchGuard verification.
 """
 
+import argparse
 import os
 import re
 import subprocess
@@ -79,84 +80,87 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
-_emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_1")
-_emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_2")
-_emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_3")
-_emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_4")
-_emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_5")
-_emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_6")
-_emit_records_incident_event("execute_final_consolidation", "p4obs", "incident")
-_emit_captures_runtime_anomaly("execute_final_consolidation", "p4obs", "anomaly")
-_emit_writes_observability_log("execute_final_consolidation", "p4obs", "obs_log")
-_emit_updates_monitoring_state("execute_final_consolidation", "p4obs", "mon_state")
-_emit_triggers_alert("execute_final_consolidation", "p4obs", "alert")
-_emit_links_incident_trace("execute_final_consolidation", "p4obs", "trace_link")
-_emit_captures_pattern("execute_final_consolidation", "p3lm", "pattern")
-_emit_records_learning_event("execute_final_consolidation", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("execute_final_consolidation", "p3lm", "snapshot")
-_emit_feeds_meta_learning("execute_final_consolidation", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("execute_final_consolidation", "p3lm", "routing")
-_emit_improves_agent_policy("execute_final_consolidation", "p3lm", "policy")
-_emit_stores_learning_state("execute_final_consolidation", "p3lm", "state")
-_emit_records_execution_trace("execute_final_consolidation", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("execute_final_consolidation", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("execute_final_consolidation", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("execute_final_consolidation", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("execute_final_consolidation", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("execute_final_consolidation", "env_read", "p2_env_1")
-_emit_reads_environ("execute_final_consolidation", "env_read", "p2_env_2")
-_emit_reads_runtime_state("execute_final_consolidation", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("execute_final_consolidation", "runtime_state", "p2_rt_2")
 
-_emit_records_execution_trace("p0", "evidence", "execute_final_consolidation")
-_emit_applies_guardrail("p0", "execute_final_consolidation", "p0_governance")
-_emit_reads_policy_state("p0", "execute_final_consolidation", "policy_binding")
-_emit_snapshots_state("p0", "execute_final_consolidation", "state_snapshot")
-_emit_pulls_context("p1", "execute_final_consolidation", "context_pull")
-_emit_pulls_context("p1", "execute_final_consolidation", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "execute_final_consolidation", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "execute_final_consolidation", "uwg_term_secondary")
-_emit_writes_through("p1", "execute_final_consolidation", "write_through")
-_emit_writes_through("p1", "execute_final_consolidation", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "execute_final_consolidation", "safety_validation")
-_emit_invokes_eval("p1", "execute_final_consolidation", "eval_call")
-_emit_proposal_commits_routing("p1", "execute_final_consolidation", "routing_commit")
-_emit_escalates_to_human("p1", "execute_final_consolidation", "human_escalation")
-_emit_routes_through("p1", "execute_final_consolidation", "route_through")
-_emit_checks_agent_registry("p1", "execute_final_consolidation", "agent_registry")
-_emit_validates_agent_capability("p1", "execute_final_consolidation", "capability")
-_emit_dispatches_execution_plan("p1", "execute_final_consolidation", "exec_plan")
-_emit_agent_executes_agent("p1", "execute_final_consolidation", "sub_agent")
-_emit_routes_to_agent("p1", "execute_final_consolidation", "target_agent")
-_emit_verifies_policy("p1", "execute_final_consolidation", "policy_check")
-_emit_observes_runtime_state("p1", "execute_final_consolidation", "runtime_state")
-_emit_verifies_boundary("p1", "execute_final_consolidation", "boundary_check")
-_emit_transcripts_response("p1", "execute_final_consolidation", "transcript")
-_emit_hard_fails_untranscripted("p1", "execute_final_consolidation")
-_emit_gated_by_confidence("p1", "execute_final_consolidation", "confidence_gate")
-emit_replay_key("p0", "execute_final_consolidation")
-emit_determinism_digest("p0", "execute_final_consolidation")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "execute_final_consolidation", "execution_auth")
-_emit_validates_capability("p2", "execute_final_consolidation", "capability_check")
-_emit_routes_to_capability("p2", "execute_final_consolidation", "capability_route")
-_emit_writes_via_uwg("p2", "execute_final_consolidation", "uwg_write")
-_emit_blocks_direct_write("p2", "execute_final_consolidation", "direct_write_block")
-_emit_records_tool_invocation("p2", "execute_final_consolidation", "tool_invocation")
-_emit_captures_execution_output("p2", "execute_final_consolidation", "exec_output")
-_emit_dispatches_agent("p3", "execute_final_consolidation", "agent_dispatch")
-_emit_coordinates_agents("p3", "execute_final_consolidation", "agent_coordination")
-_emit_records_workflow_lineage("p3", "execute_final_consolidation", "workflow_lineage")
-_emit_records_healing_outcome("p3", "execute_final_consolidation", "healing_outcome")
-_emit_escalates_failure("p3", "execute_final_consolidation", "failure_escalation")
-_emit_orchestrates_workflow("p3", "execute_final_consolidation", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "execute_final_consolidation", "healing_dispatch")
-_emit_invokes_evaluation("p3", "execute_final_consolidation", "evaluation_signal")
-_emit_records_telemetry_event("p4", "execute_final_consolidation", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "execute_final_consolidation", "eval_metric")
-_emit_stores_embedding("p4", "execute_final_consolidation", "embedding_store")
-_emit_updates_meta_learning_state("p4", "execute_final_consolidation", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "execute_final_consolidation", "exec_snapshot_link")
+def _init_runtime_trace() -> None:
+    _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_1")
+    _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_2")
+    _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_3")
+    _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_4")
+    _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_5")
+    _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_6")
+    _emit_records_incident_event("execute_final_consolidation", "p4obs", "incident")
+    _emit_captures_runtime_anomaly("execute_final_consolidation", "p4obs", "anomaly")
+    _emit_writes_observability_log("execute_final_consolidation", "p4obs", "obs_log")
+    _emit_updates_monitoring_state("execute_final_consolidation", "p4obs", "mon_state")
+    _emit_triggers_alert("execute_final_consolidation", "p4obs", "alert")
+    _emit_links_incident_trace("execute_final_consolidation", "p4obs", "trace_link")
+    _emit_captures_pattern("execute_final_consolidation", "p3lm", "pattern")
+    _emit_records_learning_event("execute_final_consolidation", "p3lm", "learning_event")
+    _emit_writes_learning_snapshot("execute_final_consolidation", "p3lm", "snapshot")
+    _emit_feeds_meta_learning("execute_final_consolidation", "p3lm", "meta_feed")
+    _emit_updates_routing_strategy("execute_final_consolidation", "p3lm", "routing")
+    _emit_improves_agent_policy("execute_final_consolidation", "p3lm", "policy")
+    _emit_stores_learning_state("execute_final_consolidation", "p3lm", "state")
+    _emit_records_execution_trace("execute_final_consolidation", "L0_ROUTING", "p2_trace_1")
+    _emit_records_execution_trace("execute_final_consolidation", "L1_REASONING", "p2_trace_2")
+    _emit_records_execution_trace("execute_final_consolidation", "L2_EXECUTION", "p2_trace_3")
+    _emit_records_execution_trace("execute_final_consolidation", "L3_ORCHESTRATION", "p2_trace_4")
+    _emit_records_execution_trace("execute_final_consolidation", "L4_STATE", "p2_trace_5")
+    _emit_reads_environ("execute_final_consolidation", "env_read", "p2_env_1")
+    _emit_reads_environ("execute_final_consolidation", "env_read", "p2_env_2")
+    _emit_reads_runtime_state("execute_final_consolidation", "runtime_state", "p2_rt_1")
+    _emit_reads_runtime_state("execute_final_consolidation", "runtime_state", "p2_rt_2")
+
+    _emit_records_execution_trace("p0", "evidence", "execute_final_consolidation")
+    _emit_applies_guardrail("p0", "execute_final_consolidation", "p0_governance")
+    _emit_reads_policy_state("p0", "execute_final_consolidation", "policy_binding")
+    _emit_snapshots_state("p0", "execute_final_consolidation", "state_snapshot")
+    _emit_pulls_context("p1", "execute_final_consolidation", "context_pull")
+    _emit_pulls_context("p1", "execute_final_consolidation", "context_pull_secondary")
+    _emit_execution_terminates_at_uwg("p1", "execute_final_consolidation", "uwg_term")
+    _emit_execution_terminates_at_uwg("p1", "execute_final_consolidation", "uwg_term_secondary")
+    _emit_writes_through("p1", "execute_final_consolidation", "write_through")
+    _emit_writes_through("p1", "execute_final_consolidation", "write_through_secondary")
+    _emit_validated_by_safety_plane("p1", "execute_final_consolidation", "safety_validation")
+    _emit_invokes_eval("p1", "execute_final_consolidation", "eval_call")
+    _emit_proposal_commits_routing("p1", "execute_final_consolidation", "routing_commit")
+    _emit_escalates_to_human("p1", "execute_final_consolidation", "human_escalation")
+    _emit_routes_through("p1", "execute_final_consolidation", "route_through")
+    _emit_checks_agent_registry("p1", "execute_final_consolidation", "agent_registry")
+    _emit_validates_agent_capability("p1", "execute_final_consolidation", "capability")
+    _emit_dispatches_execution_plan("p1", "execute_final_consolidation", "exec_plan")
+    _emit_agent_executes_agent("p1", "execute_final_consolidation", "sub_agent")
+    _emit_routes_to_agent("p1", "execute_final_consolidation", "target_agent")
+    _emit_verifies_policy("p1", "execute_final_consolidation", "policy_check")
+    _emit_observes_runtime_state("p1", "execute_final_consolidation", "runtime_state")
+    _emit_verifies_boundary("p1", "execute_final_consolidation", "boundary_check")
+    _emit_transcripts_response("p1", "execute_final_consolidation", "transcript")
+    _emit_hard_fails_untranscripted("p1", "execute_final_consolidation")
+    _emit_gated_by_confidence("p1", "execute_final_consolidation", "confidence_gate")
+    emit_replay_key("p0", "execute_final_consolidation")
+    emit_determinism_digest("p0", "execute_final_consolidation")
+    _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+    _emit_authorize_and_execute("p2", "execute_final_consolidation", "execution_auth")
+    _emit_validates_capability("p2", "execute_final_consolidation", "capability_check")
+    _emit_routes_to_capability("p2", "execute_final_consolidation", "capability_route")
+    _emit_writes_via_uwg("p2", "execute_final_consolidation", "uwg_write")
+    _emit_blocks_direct_write("p2", "execute_final_consolidation", "direct_write_block")
+    _emit_records_tool_invocation("p2", "execute_final_consolidation", "tool_invocation")
+    _emit_captures_execution_output("p2", "execute_final_consolidation", "exec_output")
+    _emit_dispatches_agent("p3", "execute_final_consolidation", "agent_dispatch")
+    _emit_coordinates_agents("p3", "execute_final_consolidation", "agent_coordination")
+    _emit_records_workflow_lineage("p3", "execute_final_consolidation", "workflow_lineage")
+    _emit_records_healing_outcome("p3", "execute_final_consolidation", "healing_outcome")
+    _emit_escalates_failure("p3", "execute_final_consolidation", "failure_escalation")
+    _emit_orchestrates_workflow("p3", "execute_final_consolidation", "workflow_orchestration")
+    _emit_dispatches_healing_run("p3", "execute_final_consolidation", "healing_dispatch")
+    _emit_invokes_evaluation("p3", "execute_final_consolidation", "evaluation_signal")
+    _emit_records_telemetry_event("p4", "execute_final_consolidation", "telemetry_event")
+    _emit_captures_evaluation_metric("p4", "execute_final_consolidation", "eval_metric")
+    _emit_stores_embedding("p4", "execute_final_consolidation", "embedding_store")
+    _emit_updates_meta_learning_state("p4", "execute_final_consolidation", "meta_learning")
+    _emit_links_execution_to_snapshot("p4", "execute_final_consolidation", "exec_snapshot_link")
+
 
 PROJECT_ROOT = get_validated_project_root()
 
@@ -169,39 +173,42 @@ IMPORT_REDIRECTS = {
 }
 
 
-def fix_imports():
+def fix_imports(execute: bool = False) -> int:
     print("--- STARTING FINAL IMPORT REWIRING ---")
     fixed_count = 0
 
-    for root, _dirs, files in tqdm(os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR), desc="Processing", unit="item"):
-        _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
+    python_files: list[Path] = []
+    for root, dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
+        dirs[:] = sorted(d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS)
+        for file_name in sorted(files):
+            if file_name.endswith(".py"):
+                python_files.append(Path(root) / file_name)
 
-        for file in tqdm(files, desc="Processing", unit="item"):
-            if not file.endswith(".py"):
-                continue
+    for file_path in tqdm(python_files, desc="Rewiring imports", unit="file"):
+        try:
+            content = file_path.read_text(encoding="utf-8")
+            original_content = content
 
-            file_path = Path(root) / file
-            try:
-                content = file_path.read_text(encoding="utf-8")
-                original_content = content
+            for bad_pattern, good_path in IMPORT_REDIRECTS.items():
+                if re.search(bad_pattern, content):
+                    content = re.sub(bad_pattern, good_path, content)
 
-                for bad_pattern, good_path in IMPORT_REDIRECTS.items():
-                    if re.search(bad_pattern, content):
-                        content = re.sub(bad_pattern, good_path, content)
-
-                if content != original_content:
+            if content != original_content:
+                fixed_count += 1
+                if execute:
                     file_path.write_text(content, encoding="utf-8")
-                    print(f"[FIXED] Rewired imports in {file}")
-                    fixed_count += 1
-            # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                print(f"[ERROR] processing {file}: {e}")
+                    print(f"[FIXED] Rewired imports in {file_path.relative_to(PROJECT_ROOT)}")
+                else:
+                    print(f"[DRY-RUN] Would rewire imports in {file_path.relative_to(PROJECT_ROOT)}")
+        except (OSError, UnicodeDecodeError) as exc:
+            print(f"[ERROR] processing {file_path.relative_to(PROJECT_ROOT)}: {exc}")
 
-    print(f"--- REWIRING COMPLETE: {fixed_count} files updated ---")
+    verb = "updated" if execute else "would update"
+    print(f"--- REWIRING COMPLETE: {fixed_count} files {verb} ---")
+    return fixed_count
 
 
-def run_verification():
+def run_verification() -> int:
     print("\n--- RUNNING FINAL VERIFICATION ---")
     try:
         result = subprocess.run(
@@ -209,6 +216,8 @@ def run_verification():
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,
+            timeout=300,
+            check=False,
         )
         print(result.stdout)
         if result.returncode == 0:
@@ -216,12 +225,24 @@ def run_verification():
         else:
             print("\n⚠️ SYSTEM HAS REMAINING ISSUES. SEE OUTPUT ABOVE.")
             print(result.stderr)
-    # guardian: allow-silent-swallow
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
+    except (OSError, subprocess.SubprocessError) as e:
         print(f"Verification failed to run: {e}")
+        return 2
+
+    return result.returncode
+
+
+def main(execute: bool = False, verify: bool = False) -> int:
+    _init_runtime_trace()
+    fix_imports(execute=execute)
+    if verify:
+        return run_verification()
+    return 0
 
 
 if __name__ == "__main__":
-    fix_imports()
-    run_verification()
+    parser = argparse.ArgumentParser(description="Final import consolidation")
+    parser.add_argument("--execute", action="store_true", help="Write rewired imports to disk")
+    parser.add_argument("--verify", action="store_true", help="Run the verification suite after rewiring")
+    args = parser.parse_args()
+    raise SystemExit(main(execute=args.execute, verify=args.verify))

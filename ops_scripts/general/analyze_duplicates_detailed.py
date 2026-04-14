@@ -1,22 +1,49 @@
 """
 Detailed Duplicate Analysis Script
 Analyzes duplicate files to determine if they have different functions.
-Uses CodeDeduplicationAgent and FilenameUniquenessGuardianAgent for analysis.
+Falls back to a local hash-based duplicate detector when the legacy detector is unavailable.
 """
 
-# TODO: GRAVITY VIOLATION AUTO-HEALED
-# Downstream imports removed — move shared logic to apps_shared or sovereign utils
-# Original violation: GRAVITY VIOLATION: Upstream 'agentic_core' imports downstream roots: ['apps_lic']. Move shared logic to apps_shared or sovereign utils.
-# Removed: apps_lic.engines.DuplicateCodeDetectorAgent
-
 import asyncio
+import hashlib
 import sys
+from collections import defaultdict
+from pathlib import Path
+
 from tqdm import tqdm
 
-# Add project root to path
-project_root = Path(__file__).parent.parent
+project_root = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
+
+
+class LocalDuplicateCodeDetector:
+    """Small local fallback used when the legacy detector is unavailable."""
+
+    def __init__(self, project_root: Path) -> None:
+        self.project_root = project_root
+
+    async def scan_duplicates(self) -> dict[str, list[Path]]:
+        duplicates: dict[str, list[Path]] = defaultdict(list)
+        for path in self.project_root.rglob("*.py"):
+            if any(part in {"__pycache__", ".git", ".venv", "venv"} for part in path.parts):
+                continue
+            try:
+                content = path.read_bytes()
+            except OSError:
+                continue
+            digest = hashlib.sha256(content).hexdigest()
+            duplicates[digest].append(path)
+        return {key: paths for key, paths in duplicates.items() if len(paths) > 1}
+
+
+def _build_detector():
+    try:
+        from apps_lic.engines.DuplicateCodeDetectorAgent import DuplicateCodeDetectorAgent  # type: ignore
+
+        return DuplicateCodeDetectorAgent(project_root=project_root)
+    except Exception:
+        return LocalDuplicateCodeDetector(project_root=project_root)
 
 
 async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) -> list[dict]:
@@ -32,47 +59,36 @@ async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) 
         if len(paths) < 2:
             continue
 
-        # Group by filename
-        by_filename = {}
+        by_filename: dict[str, list[Path]] = {}
         for path in paths:
             filename = path.name
-            if filename not in by_filename:
-                by_filename[filename] = []
-            by_filename[filename].append(path)
+            by_filename.setdefault(filename, []).append(path)
 
-        # Analyze each filename group
         for filename, file_paths in tqdm(by_filename.items(), desc="Processing", unit="item"):
             if len(file_paths) < 2:
                 continue
 
-            # Read file contents to check for functional differences
             contents = []
             for fpath in file_paths:
                 try:
-                    with open(fpath, encoding="utf-8") as f:
-                        content = f.read()
-                        contents.append(content)
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                    # TODO: Handle specific exception properly
-                    raise  # Re-raise after logging/handling
-                    contents.append(f"ERROR: {e}")
+                    contents.append(fpath.read_text(encoding="utf-8"))
+                except (OSError, UnicodeDecodeError) as exc:
+                    contents.append(f"ERROR: {exc}")
 
-            # Check if contents are identical
             all_identical = len(set(contents)) == 1
-
-            # Extract key info
             file_size = file_paths[0].stat().st_size if file_paths[0].exists() else 0
 
-            result = {
-                "filename": filename,
-                "paths": [str(p) for p in file_paths],
-                "count": len(file_paths),
-                "size": file_size,
-                "identical": all_identical,
-                "hash": hash_key[:8],
-                "action": "DELETE_DUPLICATES" if all_identical else "REVIEW_RENAME",
-            }
-            results.append(result)
+            results.append(
+                {
+                    "filename": filename,
+                    "paths": [str(p) for p in file_paths],
+                    "count": len(file_paths),
+                    "size": file_size,
+                    "identical": all_identical,
+                    "hash": hash_key[:8],
+                    "action": "DELETE_DUPLICATES" if all_identical else "REVIEW_RENAME",
+                }
+            )
 
     return results
 
@@ -83,10 +99,8 @@ async def main():
     print("=" * 100)
     print()
 
-    # Initialize detector
-    detector = DuplicateCodeDetectorAgent(project_root=project_root)
+    detector = _build_detector()
 
-    # Scan for duplicates
     print("[1/3] Scanning for duplicate files...")
     duplicates = await detector.scan_duplicates()
 
@@ -97,17 +111,14 @@ async def main():
     print(f"   Found {len(duplicates)} duplicate sets")
     print()
 
-    # Analyze functional differences
     print("[2/3] Analyzing functional differences...")
     analysis_results = await analyze_functional_differences(duplicates)
 
-    # Filter to only show files with same filename (potential rename candidates)
     same_filename_results = [r for r in analysis_results if r["count"] >= 2]
 
     print(f"   Found {len(same_filename_results)} duplicate filename groups")
     print()
 
-    # Generate detailed table
     print("[3/3] Generating detailed analysis table...")
     print()
     print("=" * 100)
@@ -120,10 +131,8 @@ async def main():
         print()
         return
 
-    # Sort by action (REVIEW_RENAME first, then DELETE_DUPLICATES)
     same_filename_results.sort(key=lambda x: (x["action"], x["filename"]))
 
-    # Print summary
     review_count = sum(1 for r in same_filename_results if r["action"] == "REVIEW_RENAME")
     delete_count = sum(1 for r in same_filename_results if r["action"] == "DELETE_DUPLICATES")
 
@@ -134,10 +143,7 @@ async def main():
     print("-" * 100)
     print()
 
-    # Print detailed table
     for idx, result in tqdm(enumerate(same_filename_results, 1), desc="Processing", unit="item"):
-        "REVIEW" if result["action"] == "REVIEW_RENAME" else "DELETE"
-
         print(f"[{idx}] {result['filename']}")
         print(f"    Action: {result['action']}")
         print(f"    Copies: {result['count']}")
@@ -146,8 +152,7 @@ async def main():
         print(f"    Hash: {result['hash']}")
         print()
         print("    Locations:")
-        for path in tqdm(result["paths"], desc="Processing", unit="item"):
-            # Determine if canonical or stale
+        for path in result["paths"]:
             if "config/blueprint_sovereign" in path or "config/validators" in path:
                 status = "[STALE - Blueprint]"
             elif "observability/dashboard" in path:
@@ -156,7 +161,6 @@ async def main():
                 status = "[CANONICAL]"
             else:
                 status = "[REVIEW]"
-
             print(f"      {status} {path}")
 
         print()
@@ -166,7 +170,7 @@ async def main():
             print("      These files have DIFFERENT content despite same filename.")
             print("      Options:")
             print("        1. Use FilenameUniquenessGuardianAgent to rename non-canonical copies")
-            print("        2. Use CodeDeduplicationAgent to review functional differences")
+            print("        2. Review functional differences")
             print("        3. Manually review and decide which to keep")
             print()
         else:
@@ -179,16 +183,15 @@ async def main():
         print("-" * 100)
         print()
 
-    # Final summary
     print()
     print("=" * 100)
     print("NEXT STEPS")
     print("=" * 100)
     print()
     print("For files marked REVIEW_RENAME:")
-    print("  1. Run CodeDeduplicationAgent to analyze functional differences")
-    print("  2. Run FilenameUniquenessGuardianAgent to suggest unique names")
-    print("  3. Manually review and rename as needed")
+    print("  1. Review functional differences")
+    print("  2. Rename non-canonical copies as needed")
+    print("  3. Manually review and decide which to keep")
     print()
     print("For files marked DELETE_DUPLICATES:")
     print("  1. Review canonical locations marked [CANONICAL]")

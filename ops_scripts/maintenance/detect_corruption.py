@@ -17,123 +17,56 @@ from tqdm import tqdm
 
 
 def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
-    """
-    Scan all Python files for syntax errors.
-
-    Returns:
-        List of (file_path, line_number, error_message) tuples
-    """
+    """Scan all Python files for syntax errors."""
     corrupted = []
     exclude_patterns = list(
-        GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES,
+        GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
     )
 
-    for py_file in tqdm(project_root.rglob("*.py"), desc="Processing", unit="item"):
-        # Skip excluded directories
+    for py_file in tqdm(sorted(project_root.rglob("*.py")), desc="Processing", unit="item"):
         if any(pattern in str(py_file) for pattern in exclude_patterns):
             continue
-
         try:
             content = py_file.read_text(encoding="utf-8")
             ast.parse(content)
-        except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
-            corrupted.append((py_file, e.lineno or 0, str(e)))
-        except UnicodeDecodeError as e:  # guardian: Encoding errors should specify fallback encoding strategy
-            corrupted.append((py_file, 0, f"Encoding error: {e}"))
-        except Exception as e:
-            raise
-            # Catch other parsing issues
-            corrupted.append((py_file, 0, f"Parse error: {e}"))
+        except SyntaxError as exc:
+            corrupted.append((py_file, exc.lineno or 0, str(exc)))
+        except UnicodeDecodeError as exc:
+            corrupted.append((py_file, 0, f"Encoding error: {exc}"))
+        except (OSError, ValueError, TypeError) as exc:
+            corrupted.append((py_file, 0, f"Parse error: {exc}"))
 
     return corrupted
 
 
 def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]]:
-    """
-    Scan for common corruption patterns in Python files.
+    """Scan for common corruption patterns in Python files."""
+    patterns = {
+        r"<<<<<<< HEAD": "Git merge conflict marker",
+        r">>>>>>> ": "Git merge conflict marker",
+        r"=======$": "Git merge conflict marker",
+        r"\x00": "Null byte corruption",
+        r"\ufffd": "Unicode replacement character",
+        r"\.\.\.\s*\)": "Truncated function call",
+        r"except\s+Exception\s+as\s+\w+:\s*\n\s*raise\s*\n": "Dead code after raise",
+    }
 
-    Patterns:
-    - Garbled class definitions (e.g., 'clasAtomicExecutionMixin')
-    - Mangled function definitions
-    - Corrupted import statements
-    - Invalid characters in identifiers
-    """
-    suspicious = []
-    exclude_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
+    corruption_patterns = []
+    exclude_patterns = list(
+        GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
+    )
 
-    for py_file in tqdm(project_root.rglob("*.py"), desc="Processing", unit="item"):
+    for py_file in tqdm(sorted(project_root.rglob("*.py")), desc="Processing", unit="item"):
         if any(pattern in str(py_file) for pattern in exclude_patterns):
             continue
-
         try:
             content = py_file.read_text(encoding="utf-8")
-            lines = content.split("\n")
+        except (OSError, UnicodeDecodeError):
+            continue
 
-            for line_num, line in enumerate(lines, 1):
-                for pattern_name, pattern in patterns.items():
-                    if pattern.search(line):
-                        suspicious.append(
-                            (py_file, line_num, f"{pattern_name}: {line.strip()[:80]}"),
-                        )
-        except (
-            OSError,
-            UnicodeDecodeError,
-        ):  # guardian: File operations with encoding need error-specific handling
-            pass
+        for lineno, line in enumerate(content.splitlines(), start=1):
+            for pattern, description in patterns.items():
+                if re.search(pattern, line):
+                    corruption_patterns.append((py_file, lineno, f"{description}: {line.strip()}"))
 
-    return suspicious
-
-
-def main():
-    """Main entry point."""
-    project_root = Path(__file__).parent.parent.parent
-
-    print("=" * 80)
-    print("GIT CORRUPTION DETECTION REPORT")
-    print("=" * 80)
-
-    # Check for syntax errors
-    print("\n[PHASE 1] Scanning for syntax errors...")
-    corrupted = detect_corrupted_files(project_root)
-
-    if corrupted:
-        print(f"\n❌ Found {len(corrupted)} files with syntax errors:\n")
-        for path, line, error in corrupted:
-            rel_path = path.relative_to(project_root)
-            print(f"  {rel_path}:{line}")
-            print(f"    Error: {error[:100]}")
-    else:
-        print("✅ No syntax errors found")
-
-    # Check for corruption patterns
-    print("\n[PHASE 2] Scanning for corruption patterns...")
-    suspicious = detect_corruption_patterns(project_root)
-
-    if suspicious:
-        print(f"\n⚠️  Found {len(suspicious)} suspicious patterns:\n")
-        for path, line, pattern in suspicious[:50]:  # Show first 50
-            rel_path = path.relative_to(project_root)
-            print(f"  {rel_path}:{line}")
-            print(f"    {pattern}")
-    else:
-        print("✅ No corruption patterns detected")
-
-    # Summary
-    print("\n" + "=" * 80)
-    print("SUMMARY")
-    print("=" * 80)
-    print(f"Syntax errors: {len(corrupted)}")
-    print(f"Suspicious patterns: {len(suspicious)}")
-
-    if corrupted or suspicious:
-        print("\n⚠️  CORRUPTION DETECTED - Manual review required")
-        return 1
-    else:
-        print("\n✅ Repository integrity verified")
-        return 0
-
-
-if __name__ == "__main__":
-    import sys
-
-    sys.exit(main())
+    return corruption_patterns

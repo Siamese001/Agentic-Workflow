@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess as _subprocess
 
 try:
     import orjson as _orjson
@@ -35,10 +36,35 @@ except ImportError:
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[2] if len(start.parents) > 2 else start.parent
+
+
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
+
+
+def _git_rev_parse(*args: str) -> str:
+    """Return git metadata or an empty string when git state is unavailable."""
+    try:
+        # ruff: noqa: S607 - Git command is trusted, internal tool usage
+        return _subprocess.check_output(
+            ["git", "rev-parse", *args],
+            cwd=ROOT,
+            text=True,
+            stderr=_subprocess.DEVNULL,
+        ).strip()
+    except (_subprocess.CalledProcessError, FileNotFoundError, OSError):
+        return ""
 
 
 from agentic_core.adg.analysis.CanonicalSnapshot import (  # noqa: E402
@@ -132,28 +158,18 @@ def generate_full_adg(
     print("[ADG] Starting full scan...")
 
     # Capture provenance information
-    import subprocess as _subprocess
-
-    try:
-        # ruff: noqa: S607 - Git command is trusted, internal tool usage
-        commit_sha = _subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    commit_sha = _git_rev_parse("HEAD")
+    if commit_sha:
         print(f"[ADG] Captured commit SHA: {commit_sha}")
-    except (ValueError, TypeError, RuntimeError) as e:
-        print(f"[ADG] Warning: Failed to capture commit SHA: {e}")
-        commit_sha = ""
+    else:
+        print("[ADG] Warning: Git commit SHA unavailable; continuing without provenance commit id")
 
     # Capture repo state hash (tree hash)
-    try:
-        # ruff: noqa: S607 - Git command is trusted, internal tool usage
-        repo_state_hash = _subprocess.check_output(
-            ["git", "rev-parse", "HEAD^{tree}"],
-            cwd=ROOT,
-            text=True,
-        ).strip()
+    repo_state_hash = _git_rev_parse("HEAD^{tree}")
+    if repo_state_hash:
         print(f"[ADG] Captured repo state hash: {repo_state_hash}")
-    except (ValueError, TypeError, RuntimeError) as e:
-        print(f"[ADG] Warning: Failed to capture repo state hash: {e}")
-        repo_state_hash = ""
+    else:
+        print("[ADG] Warning: Git repo state hash unavailable; concurrent-change guard will be skipped")
 
     cache_path = adg_artifacts_dir / "cache" / "scan_result_cache.json"
     cache_path.parent.mkdir(exist_ok=True)
@@ -616,16 +632,7 @@ def generate_full_adg(
         )
 
     # --- Fail-fast: Repo state change check ---
-    end_repo_state_hash = ""
-    try:
-        # ruff: noqa: S607 - Git command is trusted, internal tool usage
-        end_repo_state_hash = _subprocess.check_output(
-            ["git", "rev-parse", "HEAD^{tree}"],
-            cwd=ROOT,
-            text=True,
-        ).strip()
-    except (ValueError, TypeError, RuntimeError):
-        pass
+    end_repo_state_hash = _git_rev_parse("HEAD^{tree}")
 
     if repo_state_hash and end_repo_state_hash and repo_state_hash != end_repo_state_hash:
         print("\n[ERROR] Repository state changed during ADG generation")

@@ -1,60 +1,54 @@
-"""Classify all skip sites by legitimacy category."""
+"""Classify skip audit entries by legitimacy category."""
 
+from __future__ import annotations
+
+import argparse
+import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE,
-    BUFFER_SIZE,
-    DEFAULT_SLEEP,
-    DEFAULT_TIMEOUT,
-    MAX_DEPTH,
-    MAX_FILES,
-    MAX_RETRIES,
-    THRESHOLD,
-)
-from tqdm import tqdm
 
-lines = Path("c:/Git/Agentic-Workflow/skip_audit.txt").read_text(encoding="utf-8").splitlines()
-LEGITIMATE_EXTERNAL = []
-LEGITIMATE_ENV_FLAG = []
-LEGITIMATE_PLATFORM = []
-LEGITIMATE_CONDITIONAL = []
-ILLEGITIMATE_MODULE_MISSING = []
-ILLEGITIMATE_FILE_MISSING = []
-ILLEGITIMATE_NOT_IMPLEMENTED = []
-ILLEGITIMATE_IMPORTORSKIP = []
-ILLEGITIMATE_ARTIFACT_MISSING = []
-ILLEGITIMATE_OTHER = []
-for line in tqdm(lines, desc="Processing", unit="item"):
-    parts = line.split("|", 3)
-    kind, f, lineno, reason = (parts[0], parts[1], parts[2], parts[3] if len(parts) > 3 else "")
+CATEGORIES = {
+    "LEGITIMATE: external service": [],
+    "LEGITIMATE: opt-in env flag": [],
+    "LEGITIMATE: platform-specific": [],
+    "LEGITIMATE: conditional (faiss-gpu)": [],
+    "ILLEGITIMATE: importorskip": [],
+    "ILLEGITIMATE: module/symbol not importable": [],
+    "ILLEGITIMATE: file/dir not found": [],
+    "ILLEGITIMATE: not yet implemented": [],
+    "ILLEGITIMATE: generated artifact missing": [],
+    "ILLEGITIMATE: other": [],
+}
+
+
+def classify_reason(kind: str, reason: str) -> str:
     r = reason.lower()
-    entry = (f, lineno, reason)
+
     if kind == "importorskip":
-        ILLEGITIMATE_IMPORTORSKIP.append(entry)
-        continue
+        return "ILLEGITIMATE: importorskip"
+
     if any(
-        k in r
-        for k in [
+        token in r
+        for token in (
             "redis not running",
             "playwright not installed",
             "playwright visual tests should be run separately",
-        ]
+        )
     ):
-        LEGITIMATE_EXTERNAL.append(entry)
-        continue
+        return "LEGITIMATE: external service"
+
     if "ssot_orch_negctrl_tamper" in r or "activate tamper" in r:
-        LEGITIMATE_ENV_FLAG.append(entry)
-        continue
+        return "LEGITIMATE: opt-in env flag"
+
     if "read-only directory" in r or "platform" in r:
-        LEGITIMATE_PLATFORM.append(entry)
-        continue
+        return "LEGITIMATE: platform-specific"
+
     if "faiss-gpu" in r:
-        LEGITIMATE_CONDITIONAL.append(entry)
-        continue
+        return "LEGITIMATE: conditional (faiss-gpu)"
+
     if any(
-        k in r
-        for k in [
+        token in r
+        for token in (
             "cannot import",
             "not importable",
             "not found in module",
@@ -62,70 +56,120 @@ for line in tqdm(lines, desc="Processing", unit="item"):
             "not available",
             "module not available",
             "scanner not available",
-        ]
+        )
     ):
-        ILLEGITIMATE_MODULE_MISSING.append(entry)
-        continue
+        return "ILLEGITIMATE: module/symbol not importable"
+
     if any(
-        k in r for k in ["not found", "not present", "does not exist", "directory not found", "not found at"]
+        token in r
+        for token in (
+            "not found",
+            "not present",
+            "does not exist",
+            "directory not found",
+            "not found at",
+        )
     ):
-        ILLEGITIMATE_FILE_MISSING.append(entry)
-        continue
+        return "ILLEGITIMATE: file/dir not found"
+
     if any(
-        k in r
-        for k in [
+        token in r
+        for token in (
             "not yet implemented",
             "using mock for tests",
             "method not implemented yet",
             "should be run separately",
-        ]
+        )
     ):
-        ILLEGITIMATE_NOT_IMPLEMENTED.append(entry)
-        continue
+        return "ILLEGITIMATE: not yet implemented"
+
     if any(
-        k in r
-        for k in [
+        token in r
+        for token in (
             "dashboard html not found",
             "discovery artifact not found",
             "discovery output not found",
             "no snapshot yet",
-        ]
+        )
     ):
-        ILLEGITIMATE_ARTIFACT_MISSING.append(entry)
-        continue
-    ILLEGITIMATE_OTHER.append(entry)
-total_legit = (
-    len(LEGITIMATE_EXTERNAL)
-    + len(LEGITIMATE_ENV_FLAG)
-    + len(LEGITIMATE_PLATFORM)
-    + len(LEGITIMATE_CONDITIONAL)
-)
-total_illegit = (
-    len(ILLEGITIMATE_IMPORTORSKIP)
-    + len(ILLEGITIMATE_MODULE_MISSING)
-    + len(ILLEGITIMATE_FILE_MISSING)
-    + len(ILLEGITIMATE_NOT_IMPLEMENTED)
-    + len(ILLEGITIMATE_ARTIFACT_MISSING)
-    + len(ILLEGITIMATE_OTHER)
-)
-print(f"TOTAL: {len(lines)}  |  LEGITIMATE: {total_legit}  |  ILLEGITIMATE: {total_illegit}")
-print()
+        return "ILLEGITIMATE: generated artifact missing"
+
+    return "ILLEGITIMATE: other"
 
 
-def show(label, items):
-    print(f"=== {label} ({len(items)}) ===")
-    for f, l, r in items:
-        print(f"  tests/{f}:{l}  {r[:120]}")
+def parse_line(line: str) -> tuple[str, str, str, str] | None:
+    parts = line.split("|", 3)
+    if len(parts) < 3:
+        return None
+    kind = parts[0]
+    file_path = parts[1]
+    lineno = parts[2]
+    reason = parts[3] if len(parts) > 3 else ""
+    return kind, file_path, lineno, reason
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--input",
+        type=Path,
+        default=Path.cwd() / "skip_audit.txt",
+        help="Path to the skip audit file generated by audit_skips.py.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    input_path = args.input.resolve()
+
+    if not input_path.exists():
+        print(f"CRITICAL: skip audit file not found: {input_path}", file=sys.stderr)
+        return 1
+
+    try:
+        lines = input_path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        print(f"CRITICAL: could not read skip audit file: {exc}", file=sys.stderr)
+        return 1
+
+    categories = {key: [] for key in CATEGORIES}
+    malformed = 0
+
+    for line in lines:
+        parsed = parse_line(line)
+        if parsed is None:
+            malformed += 1
+            continue
+
+        kind, file_path, lineno, reason = parsed
+        entry = (file_path, lineno, reason)
+        categories[classify_reason(kind, reason)].append(entry)
+
+    total_legit = sum(
+        len(categories[name])
+        for name in (
+            "LEGITIMATE: external service",
+            "LEGITIMATE: opt-in env flag",
+            "LEGITIMATE: platform-specific",
+            "LEGITIMATE: conditional (faiss-gpu)",
+        )
+    )
+    total_illegit = sum(len(categories[name]) for name in categories if name.startswith("ILLEGITIMATE:"))
+
+    print(f"TOTAL: {len(lines)}  |  LEGITIMATE: {total_legit}  |  ILLEGITIMATE: {total_illegit}")
+    if malformed:
+        print(f"MALFORMED LINES: {malformed}")
     print()
 
+    for label, items in categories.items():
+        print(f"=== {label} ({len(items)}) ===")
+        for file_path, lineno, reason in items:
+            print(f"  tests/{file_path}:{lineno}  {reason[:120]}")
+        print()
 
-show("LEGITIMATE: external service", LEGITIMATE_EXTERNAL)
-show("LEGITIMATE: opt-in env flag", LEGITIMATE_ENV_FLAG)
-show("LEGITIMATE: platform-specific", LEGITIMATE_PLATFORM)
-show("LEGITIMATE: conditional (faiss-gpu)", LEGITIMATE_CONDITIONAL)
-show("ILLEGITIMATE: importorskip", ILLEGITIMATE_IMPORTORSKIP)
-show("ILLEGITIMATE: module/symbol not importable", ILLEGITIMATE_MODULE_MISSING)
-show("ILLEGITIMATE: file/dir not found", ILLEGITIMATE_FILE_MISSING)
-show("ILLEGITIMATE: not yet implemented", ILLEGITIMATE_NOT_IMPLEMENTED)
-show("ILLEGITIMATE: generated artifact missing", ILLEGITIMATE_ARTIFACT_MISSING)
-show("ILLEGITIMATE: other", ILLEGITIMATE_OTHER)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

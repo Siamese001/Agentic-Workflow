@@ -9,6 +9,7 @@ All scripts should import get_project_root from here instead of
 computing paths manually.
 """
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Final
@@ -130,7 +131,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-from tqdm import tqdm
 
 _emit_emits_metric_event("project_root_util", "p4obs", "metric_1")
 _emit_emits_metric_event("project_root_util", "p4obs", "metric_2")
@@ -172,6 +172,7 @@ _emit_proposal_commits_routing("p1", "project_root_util", "routing_commit")
 
 # Core package directory name
 AGENTIC_CORE_DIR: str = "agentic_core"
+ENV_PROJECT_ROOT: str = "AGENTIC_PROJECT_ROOT"
 
 # Markers that indicate the root of the project
 ROOT_MARKERS: list[str] = [
@@ -180,6 +181,12 @@ ROOT_MARKERS: list[str] = [
     AGENTIC_CORE_DIR,  # The core package directory itself
     "requirements.txt",
 ]
+
+
+def _looks_like_project_root(path: Path) -> bool:
+    """Return True when the directory strongly resembles the project root."""
+    hits = sum(1 for marker in ROOT_MARKERS if (path / marker).exists())
+    return hits >= 2 or ((path / ".git").exists() and (path / AGENTIC_CORE_DIR).exists())
 
 
 @lru_cache(maxsize=1)
@@ -194,7 +201,7 @@ def get_project_root(start_path: str | None = None) -> Path:
         Path: The absolute path to the project root.
 
     Raises:
-        RuntimeError: If the project root cannot be found after searching 10 levels up.
+        RuntimeError: If the project root cannot be found.
     """
     import uuid as _uuid  # noqa: PLC0415
 
@@ -211,42 +218,39 @@ def get_project_root(start_path: str | None = None) -> Path:
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_project_root")
-    current = Path(start_path).resolve() if start_path else Path.cwd().resolve()
 
-    # Safety: If we are in a file (not dir), start from its parent
+    env_root = os.environ.get(ENV_PROJECT_ROOT)
+    if env_root:
+        candidate = Path(env_root).expanduser().resolve()
+        if _looks_like_project_root(candidate):
+            return candidate
+        raise RuntimeError(
+            f"{ENV_PROJECT_ROOT} is set but does not point at a valid project root: {candidate}",
+        )
+
+    current = Path(start_path).expanduser().resolve() if start_path else Path.cwd().resolve()
+
     if current.is_file():
         current = current.parent
 
-    # Traverse up to 10 levels
-    for _ in tqdm(range(10), desc="Processing", unit="item"):
-        # Check for markers
-        for marker in ROOT_MARKERS:
-            if (current / marker).exists():
-                return current
+    for candidate in (current, *current.parents):
+        if _looks_like_project_root(candidate):
+            return candidate
 
-        # Stop if we hit the filesystem root
-        if current.parent == current:
-            break
-
-        current = current.parent
-
-    # Fallback: If we are inside the 'agentic_core' package structure,
-    # we might be deep inside. Try to find the 'agentic_core' folder specifically.
-    # (This handles cases where markers are missing but structure is intact)
     try:
-        current = Path(start_path).resolve() if start_path else Path.cwd().resolve()
-        parts = current.parts
-        if AGENTIC_CORE_DIR in parts:
-            # Find the index of agentic_core and take the parent of that
-            idx = parts.index("agentic_core")
-            # If agentic_core is at root/agentic_core, the root is parts[:idx]
-            return Path(*parts[:idx])
+        probe = current
+        while True:
+            if probe.name == AGENTIC_CORE_DIR:
+                return probe.parent
+            if probe.parent == probe:
+                break
+            probe = probe.parent
     # guardian: allow-silent-swallow
     except (ValueError, TypeError):
         pass
 
     raise RuntimeError(
-        f"Could not detect project root. Searched 10 levels up from {start_path or Path.cwd()}",
+        f"Could not detect project root from {start_path or Path.cwd()}",
     )
 
 
@@ -270,7 +274,7 @@ def get_validated_project_root() -> Path:
 
     Compatibility alias — delegates to get_project_root().
     """
-    return get_project_root(str(Path(__file__)))
+    return get_project_root(str(Path(__file__).resolve()))
 
 
 __all__ = [

@@ -211,7 +211,11 @@ def get_staged_files() -> list[str]:
             check=True,
         )
         return [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
+    except FileNotFoundError:
+        print("[gatekeeper] git executable not found. Skipping protected-file check.", file=sys.stderr)
+        return []
     except subprocess.CalledProcessError:
+        print("[gatekeeper] unable to inspect staged files. Skipping protected-file check.", file=sys.stderr)
         return []
 
 
@@ -220,18 +224,19 @@ def get_commit_message() -> str:
     try:
         commit_msg_file = Path(".git/COMMIT_EDITMSG")
         if commit_msg_file.exists():
-            return commit_msg_file.read_text()
+            return commit_msg_file.read_text(encoding="utf-8", errors="replace")
         return ""
     # guardian: allow-silent-swallow
     except (ValueError, TypeError):
         return ""
 
 
-def main():
-    """TODO: Add documentation for main."""
+def main() -> int:
+    """Run the protected file gate and return a process exit code."""
     staged_files = get_staged_files()
     if not staged_files:
-        sys.exit(0)
+        return 0
+
     modified_protected = []
     for protected in PROTECTED_FILES:
         protected_path = Path(protected).as_posix()
@@ -240,17 +245,24 @@ def main():
             if staged_path == protected_path or staged_path.endswith(protected_path):
                 modified_protected.append(protected)
                 break
+
     if not modified_protected:
-        sys.exit(0)
+        return 0
+
     commit_message = get_commit_message()
     if OVERRIDE_FLAG in commit_message:
-        for _f in modified_protected:
-            pass
-        sys.exit(0)
-    for _f in modified_protected:
-        pass
-    sys.exit(1)
+        print(
+            "[gatekeeper] override present. Allowing changes to protected files: "
+            + ", ".join(sorted(modified_protected)),
+            file=sys.stderr,
+        )
+        return 0
+
+    print("[gatekeeper] blocked protected file changes without #gatekeeper-override:", file=sys.stderr)
+    for protected in sorted(modified_protected):
+        print(f"  - {protected}", file=sys.stderr)
+    return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

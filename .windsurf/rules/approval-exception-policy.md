@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: Use this rule when evaluating guardian exemptions, approval classes, or exception evidence requirements.
+---
+
 # Approval & Exception Policy
 
 **Status**: ACTIVE  

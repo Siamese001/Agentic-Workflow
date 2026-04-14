@@ -2,6 +2,7 @@
 
 import ast
 import pathlib
+from tempfile import NamedTemporaryFile
 from tqdm import tqdm
 
 
@@ -34,7 +35,7 @@ class TestStubGenerator:
 ''',
         }
 
-    def analyze_source_file(self, source_path: pathlib.Path) -> dict:
+    def analyze_source_file(self, source_path: pathlib.Path) -> dict[str, object]:
         """Analyze a source file and extract testable items."""
         try:
             with open(source_path, encoding="utf-8") as f:
@@ -63,20 +64,38 @@ class TestStubGenerator:
 
             return analysis
 
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, SyntaxError, ValueError) as e:
             print(f"Error analyzing {source_path}: {e}")
             return {"functions": [], "classes": [], "module_name": ""}
 
     def _get_module_name(self, source_path: pathlib.Path) -> str:
         """Convert file path to module name."""
         # Convert path to module import string
-        parts = source_path.parts
-        if "agentic_core" in parts:
-            idx = parts.index("agentic_core")
-            return ".".join(parts[idx:-1])  # Exclude filename
-        return str(source_path.parent).replace("/", ".")
+        parts = source_path.with_suffix("").parts
+        for anchor in tqdm(
+            (
+                "agentic_core",
+                "apps_eval",
+                "apps_exec",
+                "apps_lic",
+                "apps_research",
+                "apps_rfp",
+                "apps_rg",
+                "apps_shared",
+                "system_learning",
+                "tools",
+                "tests",
+            ),
+            desc="Resolving module anchor",
+            unit="anchor",
+            leave=False,
+        ):
+            if anchor in parts:
+                idx = parts.index(anchor)
+                return ".".join(parts[idx:])
+        return ".".join(source_path.with_suffix("").parts)
 
-    def generate_test_stub(self, source_path: pathlib.Path, test_path: pathlib.Path) -> str:
+    def generate_test_stub(self, source_path: pathlib.Path, test_path: pathlib.Path) -> str | None:
         """Generate a test stub for a source file."""
         analysis = self.analyze_source_file(source_path)
 
@@ -208,8 +227,12 @@ def generate_stub(source_file: str, test_file: str) -> bool:
     new_content = generator.generate_test_stub(source_path, test_path)
 
     if new_content:
-        with open(test_path, "w", encoding="utf-8") as f:
-            f.write(new_content)
+        test_path.parent.mkdir(parents=True, exist_ok=True)
+        with NamedTemporaryFile("w", encoding="utf-8", dir=test_path.parent, delete=False) as tmp:
+            tmp.write(new_content)
+            tmp.flush()
+            tmp_path = pathlib.Path(tmp.name)
+        tmp_path.replace(test_path)
         return True
 
     return False

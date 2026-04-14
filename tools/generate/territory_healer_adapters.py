@@ -7,6 +7,7 @@ simplified territory-level healing interface.
 
 import logging
 from pathlib import Path
+from typing import Any
 
 from agentic_core.base_agents.territory_healer_protocol import (
     HealingContext,
@@ -18,6 +19,41 @@ from agentic_core.base_agents.territory_healer_protocol import (
 from tqdm import tqdm
 
 logger = logging.getLogger("TerritoryHealerAdapters")
+
+
+def _normalize_territory_name(territory: str) -> str:
+    """Normalize territory names and reject traversal-like input."""
+    territory_path = Path(territory)
+    if territory_path.is_absolute() or ".." in territory_path.parts:
+        raise ValueError(f"Invalid territory: {territory}")
+    normalized = str(territory_path).replace("\\", "/").strip("./")
+    if not normalized:
+        raise ValueError("Territory must not be empty")
+    return normalized
+
+
+def _path_in_territory(project_root: Path, territory: str, raw_path: str) -> bool:
+    """Return True when a violation path belongs to the requested territory."""
+    if not raw_path:
+        return False
+    territory = _normalize_territory_name(territory)
+    territory_root = (project_root / territory).resolve()
+    try:
+        candidate = Path(raw_path)
+        if not candidate.is_absolute():
+            candidate = (project_root / candidate).resolve()
+        else:
+            candidate = candidate.resolve()
+        candidate.relative_to(territory_root)
+        return True
+    except (OSError, ValueError):
+        normalized = raw_path.replace("\\", "/")
+        return normalized == territory or normalized.startswith(f"{territory}/")
+
+
+def _as_list(value: Any) -> list[Any]:
+    """Coerce possibly-null collections to a list."""
+    return value if isinstance(value, list) else []
 
 
 class HierarchyHealerAdapter(TerritoryHealerProtocol):
@@ -45,6 +81,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
 
     def scan_territory(self, territory: str) -> ScanResult:
         """Scan territory for hierarchy violations."""
+        territory = _normalize_territory_name(territory)
         agent = self._get_agent()
 
         # Scan for root violations in the territory
@@ -53,7 +90,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
         violations = []
 
         # Convert territory root files to Violation objects
-        for v in tqdm(scan_result.get("territory_root_files", []), desc="Processing", unit="item"):
+        for v in tqdm(_as_list(scan_result.get("territory_root_files")), desc="Processing", unit="item"):
             violations.append(
                 Violation(
                     type="TERRITORY_ROOT_FILE",
@@ -65,7 +102,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
             )
 
         # Convert forbidden folders
-        for folder in scan_result.get("forbidden_folders", []):
+        for folder in _as_list(scan_result.get("forbidden_folders")):
             violations.append(
                 Violation(
                     type="FORBIDDEN_FOLDER",
@@ -76,7 +113,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
             )
 
         # Convert archived files
-        for filename in scan_result.get("archived_files_at_root", []):
+        for filename in _as_list(scan_result.get("archived_files_at_root")):
             violations.append(
                 Violation(
                     type="ARCHIVED_FILE_AT_ROOT",
@@ -180,19 +217,16 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
         """Scan territory for location violations (wrong folder, depth issues)."""
         from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
+        territory = _normalize_territory_name(territory)
         # Use LocationValidatorAgent for scanning
         validator = LocationValidatorAgent(project_root=self.project_root)
         scan_result = validator.run()
 
         violations = []
 
-        # Filter violations to this territory
-        territory_path = self.project_root / territory
-
-        for v in tqdm(scan_result.get("violations", []), desc="Processing", unit="item"):
+        for v in tqdm(_as_list(scan_result.get("violations")), desc="Processing", unit="item"):
             file_path = v.get("file", "")
-            # Check if this violation is in our territory
-            if file_path.startswith(str(territory_path)) or file_path.startswith(territory):
+            if _path_in_territory(self.project_root, territory, file_path):
                 violations.append(
                     Violation(
                         type="LOCATION_VIOLATION",
@@ -271,13 +305,17 @@ class GravityHealerAdapter(TerritoryHealerProtocol):
         """Scan for gravity violations (layer inversions, import violations)."""
         from agentic_core.L5_safety.reasoning.gravity_validator import GravityValidatorAgent
 
+        territory = _normalize_territory_name(territory)
         # Use GravityValidatorAgent for scanning
         validator = GravityValidatorAgent(project_root=self.project_root)
         scan_result = validator.to_check_dict()
 
         violations = []
 
-        for v in tqdm(scan_result.get("violations", []), desc="Processing", unit="item"):
+        for v in tqdm(_as_list(scan_result.get("violations")), desc="Processing", unit="item"):
+            file_path = v.get("file", "")
+            if not _path_in_territory(self.project_root, territory, file_path):
+                continue
             violations.append(
                 Violation(
                     type="GRAVITY_VIOLATION",
@@ -356,13 +394,17 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
         """Scan for filesystem SSOT violations."""
         from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import FilesystemSSOTValidatorAgent
 
+        territory = _normalize_territory_name(territory)
         # Use validator for scanning
         validator = FilesystemSSOTValidatorAgent(project_root=self.project_root)
         scan_result = validator.to_check_dict()
 
         violations = []
 
-        for v in tqdm(scan_result.get("violations", []), desc="Processing", unit="item"):
+        for v in tqdm(_as_list(scan_result.get("violations")), desc="Processing", unit="item"):
+            file_path = v.get("path", "")
+            if not _path_in_territory(self.project_root, territory, file_path):
+                continue
             violations.append(
                 Violation(
                     type="FILESYSTEM_DRIFT",
@@ -418,7 +460,7 @@ def create_adapter_coordinator(project_root: Path | None = None) -> "TerritoryHe
         TerritoryHealingCoordinator,
     )
 
-    root = project_root or Path.cwd()
+    root = (project_root or Path.cwd()).resolve()
     coordinator = TerritoryHealingCoordinator(root)
 
     # Register all adapters

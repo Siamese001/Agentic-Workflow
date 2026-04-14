@@ -111,8 +111,12 @@ def _is_allowlisted(rel_path: str) -> bool:
 def _find_latest_sqlite() -> Path | None:
     """Find latest adg_indexed_*.sqlite in artifacts/adg/."""
     adg_dir = ROOT / "artifacts" / "adg"
-    candidates = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
-    return candidates[-1] if candidates else None
+    if not adg_dir.is_dir():
+        return None
+    candidates = [p for p in adg_dir.glob("adg_indexed_*.sqlite") if p.is_file()]
+    if not candidates:
+        return None
+    return max(candidates, key=lambda p: (p.stat().st_mtime_ns, p.name))
 
 
 def _get_executor_bearing_files() -> list[tuple[str, set[str]]]:
@@ -173,7 +177,7 @@ def gate_g1_reachability(sqlite_path: Path) -> list[str]:
     if not sqlite_path.exists():
         return [f"G1: ADG SQLite not found: {sqlite_path}"]
 
-    db_uri = f"file:{sqlite_path.as_posix()}?mode=ro"
+    db_uri = f"file:{sqlite_path.as_posix()}?mode=ro&immutable=1"
     conn = sqlite3.connect(db_uri, uri=True, timeout=5)
     conn.row_factory = sqlite3.Row
 

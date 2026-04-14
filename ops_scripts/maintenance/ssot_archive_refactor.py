@@ -85,84 +85,86 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from tqdm import tqdm
 
-_emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_1")
-_emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_2")
-_emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_3")
-_emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_4")
-_emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_5")
-_emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_6")
-_emit_records_incident_event("ssot_archive_refactor", "p4obs", "incident")
-_emit_captures_runtime_anomaly("ssot_archive_refactor", "p4obs", "anomaly")
-_emit_writes_observability_log("ssot_archive_refactor", "p4obs", "obs_log")
-_emit_updates_monitoring_state("ssot_archive_refactor", "p4obs", "mon_state")
-_emit_triggers_alert("ssot_archive_refactor", "p4obs", "alert")
-_emit_links_incident_trace("ssot_archive_refactor", "p4obs", "trace_link")
-_emit_captures_pattern("ssot_archive_refactor", "p3lm", "pattern")
-_emit_records_learning_event("ssot_archive_refactor", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("ssot_archive_refactor", "p3lm", "snapshot")
-_emit_feeds_meta_learning("ssot_archive_refactor", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("ssot_archive_refactor", "p3lm", "routing")
-_emit_improves_agent_policy("ssot_archive_refactor", "p3lm", "policy")
-_emit_stores_learning_state("ssot_archive_refactor", "p3lm", "state")
-_emit_records_execution_trace("ssot_archive_refactor", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("ssot_archive_refactor", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("ssot_archive_refactor", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("ssot_archive_refactor", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("ssot_archive_refactor", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("ssot_archive_refactor", "env_read", "p2_env_1")
-_emit_reads_environ("ssot_archive_refactor", "env_read", "p2_env_2")
-_emit_reads_runtime_state("ssot_archive_refactor", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("ssot_archive_refactor", "runtime_state", "p2_rt_2")
 
-_emit_records_execution_trace("p0", "evidence", "ssot_archive_refactor")
-_emit_applies_guardrail("p0", "ssot_archive_refactor", "p0_governance")
-_emit_reads_policy_state("p0", "ssot_archive_refactor", "policy_binding")
-_emit_snapshots_state("p0", "ssot_archive_refactor", "state_snapshot")
-_emit_pulls_context("p1", "ssot_archive_refactor", "context_pull")
-_emit_pulls_context("p1", "ssot_archive_refactor", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "ssot_archive_refactor", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "ssot_archive_refactor", "uwg_term_secondary")
-_emit_writes_through("p1", "ssot_archive_refactor", "write_through")
-_emit_writes_through("p1", "ssot_archive_refactor", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "ssot_archive_refactor", "safety_validation")
-_emit_invokes_eval("p1", "ssot_archive_refactor", "eval_call")
-_emit_proposal_commits_routing("p1", "ssot_archive_refactor", "routing_commit")
-_emit_escalates_to_human("p1", "ssot_archive_refactor", "human_escalation")
-_emit_routes_through("p1", "ssot_archive_refactor", "route_through")
-_emit_checks_agent_registry("p1", "ssot_archive_refactor", "agent_registry")
-_emit_validates_agent_capability("p1", "ssot_archive_refactor", "capability")
-_emit_dispatches_execution_plan("p1", "ssot_archive_refactor", "exec_plan")
-_emit_agent_executes_agent("p1", "ssot_archive_refactor", "sub_agent")
-_emit_routes_to_agent("p1", "ssot_archive_refactor", "target_agent")
-_emit_verifies_policy("p1", "ssot_archive_refactor", "policy_check")
-_emit_observes_runtime_state("p1", "ssot_archive_refactor", "runtime_state")
-_emit_verifies_boundary("p1", "ssot_archive_refactor", "boundary_check")
-_emit_transcripts_response("p1", "ssot_archive_refactor", "transcript")
-_emit_hard_fails_untranscripted("p1", "ssot_archive_refactor")
-_emit_gated_by_confidence("p1", "ssot_archive_refactor", "confidence_gate")
-emit_replay_key("p0", "ssot_archive_refactor")
-emit_determinism_digest("p0", "ssot_archive_refactor")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "ssot_archive_refactor", "execution_auth")
-_emit_validates_capability("p2", "ssot_archive_refactor", "capability_check")
-_emit_routes_to_capability("p2", "ssot_archive_refactor", "capability_route")
-_emit_writes_via_uwg("p2", "ssot_archive_refactor", "uwg_write")
-_emit_blocks_direct_write("p2", "ssot_archive_refactor", "direct_write_block")
-_emit_records_tool_invocation("p2", "ssot_archive_refactor", "tool_invocation")
-_emit_captures_execution_output("p2", "ssot_archive_refactor", "exec_output")
-_emit_dispatches_agent("p3", "ssot_archive_refactor", "agent_dispatch")
-_emit_coordinates_agents("p3", "ssot_archive_refactor", "agent_coordination")
-_emit_records_workflow_lineage("p3", "ssot_archive_refactor", "workflow_lineage")
-_emit_records_healing_outcome("p3", "ssot_archive_refactor", "healing_outcome")
-_emit_escalates_failure("p3", "ssot_archive_refactor", "failure_escalation")
-_emit_orchestrates_workflow("p3", "ssot_archive_refactor", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "ssot_archive_refactor", "healing_dispatch")
-_emit_invokes_evaluation("p3", "ssot_archive_refactor", "evaluation_signal")
-_emit_records_telemetry_event("p4", "ssot_archive_refactor", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "ssot_archive_refactor", "eval_metric")
-_emit_stores_embedding("p4", "ssot_archive_refactor", "embedding_store")
-_emit_updates_meta_learning_state("p4", "ssot_archive_refactor", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "ssot_archive_refactor", "exec_snapshot_link")
+def _init_runtime_trace() -> None:
+    _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_1")
+    _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_2")
+    _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_3")
+    _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_4")
+    _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_5")
+    _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_6")
+    _emit_records_incident_event("ssot_archive_refactor", "p4obs", "incident")
+    _emit_captures_runtime_anomaly("ssot_archive_refactor", "p4obs", "anomaly")
+    _emit_writes_observability_log("ssot_archive_refactor", "p4obs", "obs_log")
+    _emit_updates_monitoring_state("ssot_archive_refactor", "p4obs", "mon_state")
+    _emit_triggers_alert("ssot_archive_refactor", "p4obs", "alert")
+    _emit_links_incident_trace("ssot_archive_refactor", "p4obs", "trace_link")
+    _emit_captures_pattern("ssot_archive_refactor", "p3lm", "pattern")
+    _emit_records_learning_event("ssot_archive_refactor", "p3lm", "learning_event")
+    _emit_writes_learning_snapshot("ssot_archive_refactor", "p3lm", "snapshot")
+    _emit_feeds_meta_learning("ssot_archive_refactor", "p3lm", "meta_feed")
+    _emit_updates_routing_strategy("ssot_archive_refactor", "p3lm", "routing")
+    _emit_improves_agent_policy("ssot_archive_refactor", "p3lm", "policy")
+    _emit_stores_learning_state("ssot_archive_refactor", "p3lm", "state")
+    _emit_records_execution_trace("ssot_archive_refactor", "L0_ROUTING", "p2_trace_1")
+    _emit_records_execution_trace("ssot_archive_refactor", "L1_REASONING", "p2_trace_2")
+    _emit_records_execution_trace("ssot_archive_refactor", "L2_EXECUTION", "p2_trace_3")
+    _emit_records_execution_trace("ssot_archive_refactor", "L3_ORCHESTRATION", "p2_trace_4")
+    _emit_records_execution_trace("ssot_archive_refactor", "L4_STATE", "p2_trace_5")
+    _emit_reads_environ("ssot_archive_refactor", "env_read", "p2_env_1")
+    _emit_reads_environ("ssot_archive_refactor", "env_read", "p2_env_2")
+    _emit_reads_runtime_state("ssot_archive_refactor", "runtime_state", "p2_rt_1")
+    _emit_reads_runtime_state("ssot_archive_refactor", "runtime_state", "p2_rt_2")
+
+    _emit_records_execution_trace("p0", "evidence", "ssot_archive_refactor")
+    _emit_applies_guardrail("p0", "ssot_archive_refactor", "p0_governance")
+    _emit_reads_policy_state("p0", "ssot_archive_refactor", "policy_binding")
+    _emit_snapshots_state("p0", "ssot_archive_refactor", "state_snapshot")
+    _emit_pulls_context("p1", "ssot_archive_refactor", "context_pull")
+    _emit_pulls_context("p1", "ssot_archive_refactor", "context_pull_secondary")
+    _emit_execution_terminates_at_uwg("p1", "ssot_archive_refactor", "uwg_term")
+    _emit_execution_terminates_at_uwg("p1", "ssot_archive_refactor", "uwg_term_secondary")
+    _emit_writes_through("p1", "ssot_archive_refactor", "write_through")
+    _emit_writes_through("p1", "ssot_archive_refactor", "write_through_secondary")
+    _emit_validated_by_safety_plane("p1", "ssot_archive_refactor", "safety_validation")
+    _emit_invokes_eval("p1", "ssot_archive_refactor", "eval_call")
+    _emit_proposal_commits_routing("p1", "ssot_archive_refactor", "routing_commit")
+    _emit_escalates_to_human("p1", "ssot_archive_refactor", "human_escalation")
+    _emit_routes_through("p1", "ssot_archive_refactor", "route_through")
+    _emit_checks_agent_registry("p1", "ssot_archive_refactor", "agent_registry")
+    _emit_validates_agent_capability("p1", "ssot_archive_refactor", "capability")
+    _emit_dispatches_execution_plan("p1", "ssot_archive_refactor", "exec_plan")
+    _emit_agent_executes_agent("p1", "ssot_archive_refactor", "sub_agent")
+    _emit_routes_to_agent("p1", "ssot_archive_refactor", "target_agent")
+    _emit_verifies_policy("p1", "ssot_archive_refactor", "policy_check")
+    _emit_observes_runtime_state("p1", "ssot_archive_refactor", "runtime_state")
+    _emit_verifies_boundary("p1", "ssot_archive_refactor", "boundary_check")
+    _emit_transcripts_response("p1", "ssot_archive_refactor", "transcript")
+    _emit_hard_fails_untranscripted("p1", "ssot_archive_refactor")
+    _emit_gated_by_confidence("p1", "ssot_archive_refactor", "confidence_gate")
+    emit_replay_key("p0", "ssot_archive_refactor")
+    emit_determinism_digest("p0", "ssot_archive_refactor")
+    _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+    _emit_authorize_and_execute("p2", "ssot_archive_refactor", "execution_auth")
+    _emit_validates_capability("p2", "ssot_archive_refactor", "capability_check")
+    _emit_routes_to_capability("p2", "ssot_archive_refactor", "capability_route")
+    _emit_writes_via_uwg("p2", "ssot_archive_refactor", "uwg_write")
+    _emit_blocks_direct_write("p2", "ssot_archive_refactor", "direct_write_block")
+    _emit_records_tool_invocation("p2", "ssot_archive_refactor", "tool_invocation")
+    _emit_captures_execution_output("p2", "ssot_archive_refactor", "exec_output")
+    _emit_dispatches_agent("p3", "ssot_archive_refactor", "agent_dispatch")
+    _emit_coordinates_agents("p3", "ssot_archive_refactor", "agent_coordination")
+    _emit_records_workflow_lineage("p3", "ssot_archive_refactor", "workflow_lineage")
+    _emit_records_healing_outcome("p3", "ssot_archive_refactor", "healing_outcome")
+    _emit_escalates_failure("p3", "ssot_archive_refactor", "failure_escalation")
+    _emit_orchestrates_workflow("p3", "ssot_archive_refactor", "workflow_orchestration")
+    _emit_dispatches_healing_run("p3", "ssot_archive_refactor", "healing_dispatch")
+    _emit_invokes_evaluation("p3", "ssot_archive_refactor", "evaluation_signal")
+    _emit_records_telemetry_event("p4", "ssot_archive_refactor", "telemetry_event")
+    _emit_captures_evaluation_metric("p4", "ssot_archive_refactor", "eval_metric")
+    _emit_stores_embedding("p4", "ssot_archive_refactor", "embedding_store")
+    _emit_updates_meta_learning_state("p4", "ssot_archive_refactor", "meta_learning")
+    _emit_links_execution_to_snapshot("p4", "ssot_archive_refactor", "exec_snapshot_link")
 
 
 def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
@@ -189,9 +191,8 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
                     continue
                 matches.append((i, line))
 
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        print(f"  ⚠️  Error reading {file_path}: {e}")
+    except (OSError, UnicodeDecodeError) as exc:
+        print(f"  ⚠️  Error reading {file_path}: {exc}")
 
     return matches
 
@@ -206,8 +207,7 @@ def needs_import(file_path: Path) -> bool:
         if "ARCHIVES_DIR" in content and "import" in content:
             return False
         return True
-    except (ValueError, TypeError, RuntimeError) as e:
-        raise
+    except (OSError, UnicodeDecodeError, ValueError, TypeError, RuntimeError):
         return False
 
 
@@ -241,9 +241,8 @@ def add_import(file_path: Path, dry_run: bool = True) -> bool:
             file_path.write_text("\n".join(lines), encoding="utf-8")
 
         return True
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        print(f"  ❌ Error adding import to {file_path}: {e}")
+    except (OSError, UnicodeDecodeError) as exc:
+        print(f"  ❌ Error adding import to {file_path}: {exc}")
         return False
 
 
@@ -263,13 +262,13 @@ def replace_hardcoded_archives(file_path: Path, dry_run: bool = True) -> int:
             file_path.write_text(content, encoding="utf-8")
 
         return replacements
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        print(f"  ❌ Error replacing in {file_path}: {e}")
+    except (OSError, UnicodeDecodeError) as exc:
+        print(f"  ❌ Error replacing in {file_path}: {exc}")
         return 0
 
 
 def main():
+    _init_runtime_trace()
     parser = argparse.ArgumentParser(description="SSOT Archive Path Refactor")
     parser.add_argument(
         "--execute",
@@ -290,7 +289,7 @@ def main():
     agentic_core = get_validated_project_root() / AGENTIC_CORE_DIR
     files_to_fix = []
 
-    for py_file in agentic_core.rglob("*.py"):
+    for py_file in sorted(agentic_core.rglob("*.py")):
         # Skip archives directory itself
         if ARCHIVES_DIR in py_file.parts:
             continue

@@ -4,6 +4,8 @@ The generated test files have problematic headers with Windows paths.
 """
 
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -34,5 +36,5 @@ def fix_test_headers(project_root: Path):
 
 
 if __name__ == "__main__":
-    project_root = Path(__file__).parent.parent.parent
+    project_root = REPO_ROOT
     fix_test_headers(project_root)

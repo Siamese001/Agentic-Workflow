@@ -31,6 +31,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
@@ -94,27 +95,41 @@ INFRA_OFF_ENV = {
     "HF_DATASETS_OFFLINE": "1",
 }
 
-
 # Maximum age (seconds) before the classification artifact is considered stale
 _MAX_ARTIFACT_AGE_S = 24 * 60 * 60  # 24 hours
+_PYTEST_TIMEOUT_S = 30 * 60
+_CLASSIFIER_TIMEOUT_S = 10 * 60
 
 
-def load_classification(check_freshness: bool = True) -> dict:
+def _die_config_error(message: str) -> None:
+    print(message)
+    sys.exit(2)
+
+
+def load_classification(check_freshness: bool = True) -> dict[str, Any]:
     if not CLASSIFICATION_PATH.exists():
-        print(f"ERROR: classification artifact not found: {CLASSIFICATION_PATH}")
-        print("  Run: python tools/adg_test_classifier.py")
-        sys.exit(2)
+        _die_config_error(
+            f"ERROR: classification artifact not found: {CLASSIFICATION_PATH}\n"
+            "  Run: python tools/adg_test_classifier.py"
+        )
     if check_freshness:
         import time
 
         age = time.time() - CLASSIFICATION_PATH.stat().st_mtime
         if age > _MAX_ARTIFACT_AGE_S:
-            print(
-                f"ERROR: classification artifact is {age / 3600:.1f}h old (limit 24h): {CLASSIFICATION_PATH}",
+            _die_config_error(
+                f"ERROR: classification artifact is {age / 3600:.1f}h old (limit 24h): {CLASSIFICATION_PATH}\n"
+                "  Run: python tools/adg_test_classifier.py --refresh"
             )
-            print("  Run: python tools/adg_test_classifier.py --refresh")
-            sys.exit(2)
-    return json.loads(CLASSIFICATION_PATH.read_text(encoding="utf-8"))
+    try:
+        payload = json.loads(CLASSIFICATION_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _die_config_error(f"ERROR: could not load classification artifact: {exc}")
+    if not isinstance(payload, dict):
+        _die_config_error("ERROR: classification artifact must contain a JSON object")
+    if not isinstance(payload.get("bucket_files"), dict) or not isinstance(payload.get("summary"), dict):
+        _die_config_error("ERROR: classification artifact missing required keys: bucket_files/summary")
+    return payload
 
 
 def get_files_for_lane(art: dict, lane: str) -> list[str]:
@@ -150,7 +165,19 @@ def run_pytest(
         + test_files
     )
 
-    result = subprocess.run(cmd, capture_output=True, text=True, env=env, cwd=str(REPO))
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            env=env,
+            cwd=str(REPO),
+            timeout=_PYTEST_TIMEOUT_S,
+        )
+    except subprocess.TimeoutExpired:
+        return 2, f"ERROR: pytest timed out after {_PYTEST_TIMEOUT_S}s\n"
+    except OSError as exc:
+        return 2, f"ERROR: failed to launch pytest: {exc}\n"
     output = result.stdout + result.stderr
     return result.returncode, output
 
@@ -235,6 +262,7 @@ def lane_violations(art: dict) -> int:
         if v["classification"] == "DEGRADED_PATH" and v["file"].startswith("tests/unit/")
     ]
 
+    RESULT_PATH.parent.mkdir(parents=True, exist_ok=True)
     result = {
         "lane": "violations",
         "integration_infra_in_unit": infra_in_unit,
@@ -284,6 +312,7 @@ def _print_and_save(
             summary = line.strip()
             break
 
+    RESULT_PATH.parent.mkdir(parents=True, exist_ok=True)
     result: dict = {
         "lane": lane,
         "file_count": len(files),
@@ -335,19 +364,37 @@ def main() -> None:
 
     if args.reclassify:
         print("Re-running classifier...")
-        r = subprocess.run([sys.executable, "tools/adg_test_classifier.py"], cwd=str(REPO))
-        if r.returncode != 0:
+        try:
+            result = subprocess.run(
+                [sys.executable, "tools/adg_test_classifier.py"],
+                cwd=str(REPO),
+                capture_output=True,
+                text=True,
+                timeout=_CLASSIFIER_TIMEOUT_S,
+            )
+        except subprocess.TimeoutExpired:
+            print(f"ERROR: classifier timed out after {_CLASSIFIER_TIMEOUT_S}s")
+            sys.exit(2)
+        except OSError as exc:
+            print(f"ERROR: could not start classifier: {exc}")
+            sys.exit(2)
+        if result.returncode != 0:
+            if result.stdout:
+                print(result.stdout.rstrip())
+            if result.stderr:
+                print(result.stderr.rstrip())
             print("ERROR: classifier failed")
             sys.exit(2)
 
     art = load_classification(check_freshness=not args.reclassify)
+    summary = art["summary"]
     schema = art.get("schema", "unknown")
     print(f"Classification: {schema}")
     print(
-        f"  UNIT_STRICT={art['summary']['unit_strict']}  "
-        f"DEGRADED_PATH={art['summary']['degraded_path']}  "
-        f"INTEGRATION_INFRA={art['summary']['integration_infra']}  "
-        f"violations={art['summary']['unit_violations']}",
+        f"  UNIT_STRICT={summary.get('unit_strict', 0)}  "
+        f"DEGRADED_PATH={summary.get('degraded_path', 0)}  "
+        f"INTEGRATION_INFRA={summary.get('integration_infra', 0)}  "
+        f"violations={summary.get('unit_violations', 0)}",
     )
     print()
 

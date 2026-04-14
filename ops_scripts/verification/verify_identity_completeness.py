@@ -135,6 +135,16 @@ class ADGIdentityCompletenessVerifier:
         except Exception as e:
             raise IdentityCompletenessError(f"Failed to get columns for {table_name}: {e}")
 
+    def _first_party_module_where_clause(self) -> str:
+        """Build a consistent first-party module predicate across schema variants."""
+        node_columns = self._get_table_columns("nodes")
+        if "identity_origin" in node_columns:
+            return "entity_type = 'module' AND identity_origin = 'first_party'"
+        return (
+            "entity_type = 'module' "
+            "AND (identity_kind IS NULL OR identity_kind NOT IN ('external_module', 'external_provider'))"
+        )
+
     def _verify_node_schema_completeness(self) -> None:
         """Verify nodes table has required and enhanced fields."""
         print("🏗️  Verifying node schema completeness...")
@@ -221,7 +231,8 @@ class ADGIdentityCompletenessVerifier:
                         self.errors.append(f"Invalid owner_surface values: {invalid_surfaces}")
 
                 # Check authority_level values if field exists
-                if "authority_level" in self._get_table_columns("edges"):
+                edge_columns = self._get_table_columns("edges")
+                if "authority_level" in edge_columns:
                     cursor.execute(
                         "SELECT DISTINCT authority_level FROM edges WHERE authority_level IS NOT NULL"
                     )
@@ -229,6 +240,16 @@ class ADGIdentityCompletenessVerifier:
                     invalid_authority = authority_levels - self.VALID_AUTHORITY_LEVELS
                     if invalid_authority:
                         self.errors.append(f"Invalid authority_level values: {invalid_authority}")
+
+                for column_name in ("replay_relevance", "learning_relevance"):
+                    if column_name in edge_columns:
+                        cursor.execute(
+                            f"SELECT DISTINCT {column_name} FROM edges WHERE {column_name} IS NOT NULL"
+                        )
+                        values = {row[0] for row in cursor.fetchall()}
+                        invalid_values = values - self.VALID_RELEVANCE_FLAGS
+                        if invalid_values:
+                            self.errors.append(f"Invalid {column_name} values: {invalid_values}")
 
         except Exception as e:
             raise IdentityCompletenessError(f"Enum constraint verification failed: {e}")
@@ -243,31 +264,21 @@ class ADGIdentityCompletenessVerifier:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
 
-                # Count first-party modules (assuming identity_origin = 'first_party' or repo modules)
-                if "identity_origin" in self._get_table_columns("nodes"):
-                    cursor.execute("""
-                        SELECT COUNT(*) FROM nodes
-                        WHERE entity_type = 'module' AND identity_origin = 'first_party'
-                    """)
-                else:
-                    # Fallback: assume repo modules are first-party (exclude external providers)
-                    cursor.execute("""
-                        SELECT COUNT(*) FROM nodes
-                        WHERE entity_type = 'module'
-                        AND identity_kind NOT IN ('external_module', 'external_provider')
-                    """)
+                first_party_where = self._first_party_module_where_clause()
+                cursor.execute(f"SELECT COUNT(*) FROM nodes WHERE {first_party_where}")
 
                 first_party_count = cursor.fetchone()[0]
                 print(f"   📊 Found {first_party_count} first-party modules")
 
                 # Check resolved_path completeness
                 if "resolved_path" in self._get_table_columns("nodes"):
-                    cursor.execute("""
+                    cursor.execute(
+                        f"""
                         SELECT COUNT(*) FROM nodes
-                        WHERE entity_type = 'module'
-                        AND identity_kind NOT IN ('external_module', 'external_provider')
+                        WHERE {first_party_where}
                         AND (resolved_path IS NULL OR resolved_path = '')
-                    """)
+                    """
+                    )
                     missing_resolved = cursor.fetchone()[0]
 
                     if missing_resolved > 0:
@@ -275,12 +286,13 @@ class ADGIdentityCompletenessVerifier:
 
                 # Check canonical_symbol completeness
                 if "canonical_symbol" in self._get_table_columns("nodes"):
-                    cursor.execute("""
+                    cursor.execute(
+                        f"""
                         SELECT COUNT(*) FROM nodes
-                        WHERE entity_type = 'module'
-                        AND identity_kind NOT IN ('external_module', 'external_provider')
+                        WHERE {first_party_where}
                         AND (canonical_symbol IS NULL OR canonical_symbol = '')
-                    """)
+                    """
+                    )
                     missing_canonical = cursor.fetchone()[0]
 
                     if missing_canonical > 0:
@@ -289,20 +301,10 @@ class ADGIdentityCompletenessVerifier:
                         )
 
                 # Check L4 layer completeness
-                cursor.execute("""
-                    SELECT COUNT(*) FROM nodes
-                    WHERE entity_type = 'module'
-                    AND layer = 'L4'
-                    AND identity_kind NOT IN ('external_module', 'external_provider')
-                """)
+                cursor.execute(f"SELECT COUNT(*) FROM nodes WHERE {first_party_where} AND layer = 'L4'")
                 l4_count = cursor.fetchone()[0]
 
-                cursor.execute("""
-                    SELECT COUNT(*) FROM nodes
-                    WHERE entity_type = 'module'
-                    AND layer = 'UNKNOWN'
-                    AND identity_kind NOT IN ('external_module', 'external_provider')
-                """)
+                cursor.execute(f"SELECT COUNT(*) FROM nodes WHERE {first_party_where} AND layer = 'UNKNOWN'")
                 unknown_layer_count = cursor.fetchone()[0]
 
                 if unknown_layer_count > 0:
@@ -458,6 +460,13 @@ class ADGIdentityCompletenessVerifier:
 
         return metrics
 
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
+
     def verify(self) -> dict[str, Any]:
         """Run complete identity completeness verification."""
         print("🔍 Starting ADG Identity Completeness Verification...")
@@ -550,8 +559,7 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, "w") as f:
-                json.dump(result, f, indent=2, default=str)
+            verifier._write_json_report(args.output, result)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1

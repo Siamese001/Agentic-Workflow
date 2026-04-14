@@ -215,7 +215,7 @@ def _fix_line(line: str) -> tuple[str | None, str | None]:
     justification = m.group(3).strip()
 
     if not justification:
-        return None, f"guardian comment at has empty justification — skipped: {line.rstrip()}"
+        return None, f"guardian comment has empty justification — skipped: {line.rstrip()}"
 
     canonical_type = _normalize_type(raw_type)
     # Preserve original indentation; normalise to single space after #
@@ -262,7 +262,7 @@ class GuardianCommentFixer:
         changes: list[FixChange] = []
         warnings: list[str] = []
 
-        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
+        for i, line in tqdm(enumerate(lines), total=len(lines), desc="Processing", unit="line"):
             fixed, warn = _fix_line(line.rstrip("\n").rstrip("\r"))
             if warn:
                 warnings.append(f"Line {i + 1}: {warn}")
@@ -316,13 +316,25 @@ class GuardianCommentFixer:
         )
 
 
+def _git_has_head(root: Path) -> bool:
+    result = subprocess.run(
+        ["git", "rev-parse", "--verify", "HEAD"],
+        cwd=str(root),
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",
+        timeout=30,
+    )
+    return result.returncode == 0
+
+
 def _git_changed_files(staged: bool = False, repo_root: Path | None = None) -> list[str]:
     """Return changed Python file paths from git diff."""
     root = repo_root or ROOT
     cmd = ["git", "diff", "--name-only", "--diff-filter=ACMRT"]
     if staged:
         cmd.append("--cached")
-    else:
+    elif _git_has_head(root):
         cmd.append("HEAD")
     try:
         result = subprocess.run(
@@ -337,7 +349,7 @@ def _git_changed_files(staged: bool = False, repo_root: Path | None = None) -> l
         raise RuntimeError(f"git diff timed out: {exc}") from exc
     if result.returncode != 0:
         raise RuntimeError(f"git diff failed: {result.stderr.strip()}")
-    return [f for f in result.stdout.splitlines() if f.endswith(".py")]
+    return sorted({f for f in result.stdout.splitlines() if f.endswith(".py")})
 
 
 def _cli() -> None:
@@ -395,6 +407,8 @@ def _cli() -> None:
         except RuntimeError as exc:  # guardian: Runtime errors should be prevented with proper validation
             print(f"ERROR: {exc}", file=sys.stderr)
             sys.exit(1)
+
+    file_list = list(dict.fromkeys(file_list))
 
     total_fixed = 0
     total_warnings = 0

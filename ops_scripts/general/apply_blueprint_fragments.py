@@ -7,9 +7,29 @@ the corresponding modular file.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
+
+def _resolve_root() -> Path:
+    env_root = os.getenv("AGENTIC_WORKFLOW_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists() or (candidate / AGENTIC_CORE_DIR).exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+def _atomic_write(path: Path, content: str) -> None:
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(content, encoding="utf-8")
+    tmp_path.replace(path)
+
+
+ROOT = _resolve_root()
 MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint"
 FRAG_DIR = ROOT / "data" / "freeze_reports"
 EXTRA_IMPORTS: dict[str, list[str]] = {
@@ -42,6 +62,9 @@ def append_fragment(module_name: str) -> None:
     """Append a migration fragment to its target modular file."""
     frag_path = FRAG_DIR / f"_migrate_{module_name}.py.fragment"
     target_path = MOD_DIR / f"{module_name}.py"
+    if not FRAG_DIR.exists():
+        print(f"  SKIP: fragment directory missing: {FRAG_DIR}")
+        return
     if not frag_path.exists():
         print(f"  SKIP: {frag_path} not found")
         return
@@ -63,7 +86,8 @@ def append_fragment(module_name: str) -> None:
     if extra:
         existing = add_imports_if_missing(existing, extra)
     result = existing.rstrip("\n") + SEPARATOR + fragment
-    target_path.write_text(result, encoding="utf-8")
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_write(target_path, result)
     print(f"  OK: Appended {len(fragment)} chars to {module_name}.py")
 
 

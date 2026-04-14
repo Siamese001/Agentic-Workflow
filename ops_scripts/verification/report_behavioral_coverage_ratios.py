@@ -39,7 +39,7 @@ class ADGRuntimeStructuralBalanceVerifier:
     """Verifies runtime vs structural balance reporting."""
 
     # Runtime-semantic edge types
-    RUNTIME_SEMANTIC_EDGES = {
+    RUNTIME_SEMANTIC_EDGES = (
         "records_execution_trace",
         "signs_execution_trace",
         "emits_replay_key",
@@ -55,10 +55,10 @@ class ADGRuntimeStructuralBalanceVerifier:
         "stores_validation_artifact",
         "captures_execution_output",
         "records_tool_invocation",
-    }
+    )
 
     # Structural edge types
-    STRUCTURAL_EDGES = {
+    STRUCTURAL_EDGES = (
         "imports",
         "calls",
         "belongs_to_layer",
@@ -69,7 +69,7 @@ class ADGRuntimeStructuralBalanceVerifier:
         "decorated_by",
         "exports",
         "re_exports",
-    }
+    )
 
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
@@ -84,6 +84,11 @@ class ADGRuntimeStructuralBalanceVerifier:
             raise RuntimeStructuralBalanceError("No SQLite database found")
 
         return max(sqlite_files, key=lambda p: p.stat().st_mtime)
+
+    @staticmethod
+    def _first_party_filter(alias: str = "n") -> str:
+        prefix = f"{alias}." if alias else ""
+        return f"({prefix}identity_kind IS NULL OR {prefix}identity_kind NOT IN ('external_module', 'external_provider'))"
 
     def _verify_runtime_semantic_edge_detection(self) -> dict[str, Any]:
         """Verify runtime-semantic edges are properly detected."""
@@ -459,7 +464,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                     f"""
                     SELECT COUNT(*) FROM edges e
                     JOIN nodes n ON e.src_id = n.id
-                    WHERE n.identity_kind NOT IN ('external_module', 'external_provider')
+                    WHERE {self._first_party_filter("n")}
                     AND e.relation_type IN ({runtime_placeholders})
                 """,
                     list(self.RUNTIME_SEMANTIC_EDGES),
@@ -473,7 +478,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                     f"""
                     SELECT COUNT(*) FROM edges e
                     JOIN nodes n ON e.src_id = n.id
-                    WHERE n.identity_kind NOT IN ('external_module', 'external_provider')
+                    WHERE {self._first_party_filter("n")}
                     AND e.relation_type IN ({structural_placeholders})
                 """,
                     list(self.STRUCTURAL_EDGES),
@@ -522,6 +527,13 @@ class ADGRuntimeStructuralBalanceVerifier:
 
         except Exception as e:
             raise RuntimeStructuralBalanceError(f"First-party balance analysis failed: {e}")
+
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
 
     def verify(self) -> dict[str, Any]:
         """Run complete runtime vs structural balance verification."""
@@ -623,8 +635,7 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, "w") as f:
-                json.dump(result, f, indent=2, default=str)
+            verifier._write_json_report(args.output, result)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1

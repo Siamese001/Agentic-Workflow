@@ -9,21 +9,40 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[2]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+ROOT = _bootstrap_repo_root()
 DEFAULT_SUBPROCESS_TIMEOUT = 300
 
 
 def run_cmd(args, cwd=None, timeout: int = DEFAULT_SUBPROCESS_TIMEOUT):
     """Run a command and return result."""
-    result = subprocess.run(
-        args,
-        capture_output=True,
-        text=True,
-        cwd=cwd,
-        timeout=timeout,
-        check=False,
-    )
-    return result.returncode, result.stdout, result.stderr
+    try:
+        result = subprocess.run(
+            args,
+            capture_output=True,
+            text=True,
+            cwd=cwd,
+            timeout=timeout,
+            check=False,
+        )
+        return result.returncode, result.stdout, result.stderr
+    except subprocess.TimeoutExpired as exc:
+        stdout = exc.stdout or ""
+        stderr = exc.stderr or ""
+        return 124, stdout, f"Command timed out after {timeout}s\n{stderr}".strip()
+    except (OSError, ValueError) as exc:
+        return 2, "", f"{type(exc).__name__}: {exc}"
+
+
+def _script(rel_path: str) -> Path:
+    return ROOT / rel_path
 
 
 # PRE-WRITE HOOKS INTEGRATION
@@ -69,7 +88,7 @@ def validate_mcp_health():
 
     # Gate: AGENTS.md Quick Reference must document every server in mcp_config.json
     returncode, stdout, stderr = run_cmd(
-        [sys.executable, "ops_scripts/ci/check_agents_mcp_coverage.py"],
+        [sys.executable, str(_script("ops_scripts/ci/check_agents_mcp_coverage.py"))],
         cwd=ROOT,
     )
     if returncode != 0:
@@ -95,7 +114,7 @@ def main():
     # Gate: Infrastructure wiring scan (Rule: no raw infra in forbidden layers)
     print("🔍 Running infrastructure wiring scan...")
     returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(ROOT / "ops_scripts/ci/infra_wiring_scan.py")], cwd=ROOT
+        [sys.executable, str(_script("ops_scripts/ci/infra_wiring_scan.py"))], cwd=ROOT
     )
     if returncode != 0:
         print(stdout)
@@ -106,7 +125,7 @@ def main():
     # Gate: Executor theater (no fake parallelism in production code)
     print("🔍 Running executor theater gate...")
     returncode, stdout, stderr = run_cmd(
-        [sys.executable, str(ROOT / "ops_scripts/ci/executor_theater_gate.py")], cwd=ROOT
+        [sys.executable, str(_script("ops_scripts/ci/executor_theater_gate.py"))], cwd=ROOT
     )
     if returncode != 0:
         print(stdout)

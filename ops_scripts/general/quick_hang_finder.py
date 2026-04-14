@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-Quick hang finder - uses threading with timeout to find hanging imports.
-Simpler approach that works better on Windows.
+Quick hang finder - isolates imports in subprocesses so hanging modules cannot poison the parent process.
 """
 
 import ast
 import os
+import subprocess
 import sys
-import threading
 import time
 from pathlib import Path
 
@@ -24,7 +23,17 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).parent.parent
+DEFAULT_TIMEOUT = 3.0
+
+
+def _resolve_project_root() -> Path:
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+PROJECT_ROOT = _resolve_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -37,34 +46,30 @@ def find_suspicious_patterns(file_path: Path) -> list[str]:
         tree = ast.parse(content)
 
         for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
-            # Top-level assignments with calls
-            if isinstance(node, ast.Assign):
-                if isinstance(node.value, ast.Call):
-                    call = node.value
-                    func_name = ""
-                    if isinstance(call.func, ast.Name):
-                        func_name = call.func.id
-                    elif isinstance(call.func, ast.Attribute):
-                        func_name = call.func.attr
+            if isinstance(node, ast.Assign) and isinstance(node.value, ast.Call):
+                call = node.value
+                func_name = ""
+                if isinstance(call.func, ast.Name):
+                    func_name = call.func.id
+                elif isinstance(call.func, ast.Attribute):
+                    func_name = call.func.attr
 
-                    # Suspicious patterns
-                    if func_name in (
-                        "Pinecone",
-                        "OpenAI",
-                        "Client",
-                        "connect",
-                        "create_client",
-                        "setup",
-                        "configure",
-                        "init",
-                    ):
-                        for target in node.targets:
-                            if isinstance(target, ast.Name):
-                                suspicious.append(
-                                    f"Line {node.lineno}: {target.id} = {func_name}(...)",
-                                )
+                if func_name in (
+                    "Pinecone",
+                    "OpenAI",
+                    "Client",
+                    "connect",
+                    "create_client",
+                    "setup",
+                    "configure",
+                    "init",
+                ):
+                    for target in node.targets:
+                        if isinstance(target, ast.Name):
+                            suspicious.append(
+                                f"Line {node.lineno}: {target.id} = {func_name}(...)",
+                            )
 
-            # Top-level function calls (not in if __name__ == "__main__")
             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
                 call = node.value
                 func_name = ""
@@ -80,7 +85,7 @@ def find_suspicious_patterns(file_path: Path) -> list[str]:
         OSError,
         UnicodeDecodeError,
         SyntaxError,
-    ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
+    ) as e:
         suspicious.append(f"Parse error: {e}")
 
     return suspicious
@@ -102,7 +107,26 @@ def get_python_files() -> list[Path]:
     return sorted(files)
 
 
-def main():
+def _probe_import(module_name: str, timeout: float) -> tuple[str, str | None, float]:
+    start = time.time()
+    probe = f"import sys;sys.path.insert(0, {str(PROJECT_ROOT)!r});__import__({module_name!r})"
+    try:
+        subprocess.run(
+            [sys.executable, "-c", probe],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+        return ("ok", None, time.time() - start)
+    except subprocess.TimeoutExpired:
+        return ("hang", None, time.time() - start)
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or exc.stdout or "").strip().replace("\n", " ")
+        return ("error", detail[:200] or "subprocess import failed", time.time() - start)
+
+
+def main() -> int:
     print("=" * 70)
     print("QUICK HANG FINDER - Static Analysis")
     print("=" * 70)
@@ -129,10 +153,9 @@ def main():
         print("No suspicious patterns found via static analysis.")
 
     print("\n" + "=" * 70)
-    print("Now testing actual imports (will print dots for progress)...")
+    print("Now testing actual imports in isolated subprocesses...")
     print("=" * 70 + "\n")
 
-    # Test imports one by one with simple timeout
     hangs = []
     errors = []
     slow = []
@@ -141,33 +164,16 @@ def main():
         rel = file_path.relative_to(PROJECT_ROOT)
         module_name = str(rel.with_suffix("")).replace(os.sep, ".")
 
-        # Print progress
         if i % 50 == 0:
             print(f"[{i}/{len(files)}] Testing {module_name[:50]}...")
 
-        start = time.time()
-        result = {"status": "unknown", "error": None}
+        status, detail, duration = _probe_import(module_name, DEFAULT_TIMEOUT)
 
-        def do_import():
-            try:
-                __import__(module_name)
-                result["status"] = "ok"
-            except (ImportError, AttributeError, SyntaxError, ValueError, TypeError) as e:
-                result["status"] = "error"
-                result["error"] = f"{type(e).__name__}: {str(e)[:100]}"
-
-        thread = threading.Thread(target=do_import)
-        thread.daemon = True
-        thread.start()
-        thread.join(timeout=DEFAULT_TIMEOUT)  # 3 second timeout
-
-        duration = time.time() - start
-
-        if thread.is_alive():
+        if status == "hang":
             hangs.append((rel, module_name))
             print(f"\n[HANG] {rel} (>{duration:.1f}s)")
-        elif result["status"] == "error":
-            errors.append((rel, result["error"]))
+        elif status == "error":
+            errors.append((rel, detail or "unknown error"))
         elif duration > 1.0:
             slow.append((rel, duration))
             print(f"\n[SLOW] {rel} ({duration:.1f}s)")
@@ -194,7 +200,8 @@ def main():
     print(
         f"\n[OK] Completed: {len(files) - len(hangs)} OK, {len(hangs)} hangs, {len(errors)} errors",
     )
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

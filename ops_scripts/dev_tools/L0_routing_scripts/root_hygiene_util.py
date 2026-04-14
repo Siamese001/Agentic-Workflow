@@ -8,6 +8,7 @@ Rationale:
     3. Deletes the illegal root directories after evacuation.
 """
 
+import argparse
 import shutil
 from pathlib import Path
 
@@ -179,7 +180,7 @@ ROOT_MARKERS = [AGENTIC_CORE_DIR, "pyproject.toml"]
 
 
 def get_project_root() -> Path:
-    """Resolve project root securely."""
+    """Resolve project root securely by walking up from the current working directory."""
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "get_project_root", "state_snapshot")
@@ -195,16 +196,42 @@ def get_project_root() -> Path:
 
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_project_root")
-    current = Path.cwd()
-    for marker in ROOT_MARKERS:
-        if (current / marker).exists():
-            return current
+
+    current = Path.cwd().resolve()
+    for candidate in (current, *current.parents):
+        if all((candidate / marker).exists() for marker in ROOT_MARKERS):
+            return candidate
+
     raise RuntimeError("Must run from Project Root")
 
 
-def enforce_root_hygiene():
+def _safe_move(src: Path, dst: Path, *, dry_run: bool, force: bool) -> None:
+    dst.parent.mkdir(exist_ok=True, parents=True)
+
+    if dst.exists():
+        if not force:
+            raise FileExistsError(f"Refusing to overwrite existing target: {dst}")
+        if dry_run:
+            print(f"    [DRY-RUN] Would remove existing target: {dst}")
+        else:
+            assert_no_persistent_write("L0", "shutil.mutate")
+            if dst.is_dir():
+                shutil.rmtree(dst)
+            else:
+                dst.unlink()
+
+    if dry_run:
+        print(f"    [DRY-RUN] Would move {src} -> {dst}")
+        return
+
+    assert_no_persistent_write("L0", "shutil.mutate")
+    shutil.move(str(src), str(dst))
+
+
+def enforce_root_hygiene(*, dry_run: bool = True, force: bool = False):
     root = get_project_root()
-    print(f"[HYGIENE] Enforcing Root Sovereignty at: {root}")
+    mode = "DRY-RUN" if dry_run else "APPLY"
+    print(f"[HYGIENE] {mode} Root Sovereignty at: {root}")
     print("=" * 60)
 
     # 1. EVACUATE ROOT SCRIPTS
@@ -230,8 +257,7 @@ def enforce_root_hygiene():
                         action = "RELOCATE (Ops)"
 
                     print(f"  - {item.name} -> {action}")
-                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
-                    shutil.move(str(item), str(target))
+                    _safe_move(item, target, dry_run=dry_run, force=force)
                 # guardian: allow-silent-swallow
                 except (ValueError, TypeError) as e:
                     print(f"  [ERROR] Could not move {item.name}: {e}")
@@ -241,16 +267,15 @@ def enforce_root_hygiene():
                 # For simplicity in this phase, dump to ops_scripts root or map specific folders
                 target = ops_scripts / item.name
                 print(f"  - DIR {item.name}/ -> RELOCATE (Ops)")
-                if target.exists():
-                    assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
-                    shutil.rmtree(target)  # Force overwrite logic for dirs
-                assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
-                shutil.move(str(item), str(target))
+                _safe_move(item, target, dry_run=dry_run, force=force)
 
         # Cleanup empty dir
         try:
-            root_scripts.rmdir()
-            print("[SUCCESS] Illegal 'scripts/' directory eliminated.")
+            if dry_run:
+                print("[DRY-RUN] Would remove empty root scripts directory.")
+            else:
+                root_scripts.rmdir()
+                print("[SUCCESS] Illegal 'scripts/' directory eliminated.")
         # guardian: allow-silent-swallow - acceptable exception handling
         except OSError:
             print("[WARNING] 'scripts/' not empty, manual check required.")
@@ -265,13 +290,11 @@ def enforce_root_hygiene():
         print("\n[DETECT] Illegal root 'coverage_html/' found.")
         reports_cov.parent.mkdir(exist_ok=True)
 
-        if reports_cov.exists():
-            assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
-            shutil.rmtree(reports_cov)
+        if reports_cov.exists() and not force:
+            raise FileExistsError(f"Refusing to overwrite existing target: {reports_cov}")
 
         print("  - Moving to reports/coverage_html")
-        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
-        shutil.move(str(cov_html), str(reports_cov))
+        _safe_move(cov_html, reports_cov, dry_run=dry_run, force=force)
         print("[SUCCESS] Coverage report relocated.")
     else:
         print("[CHECK] Root 'coverage_html/' is clean.")
@@ -284,9 +307,12 @@ def enforce_root_hygiene():
         maint_script_dir.mkdir(exist_ok=True)
         target = maint_script_dir / "purge_cache.py"
         print("\n[REFILE] Organizing purge_cache.py -> ops_scripts/maintenance/")
-        assert_no_persistent_write("L0", "shutil.mutate")  # G-12-1: mutation prohibition guard
-        shutil.move(str(purge_script), str(target))
+        _safe_move(purge_script, target, dry_run=dry_run, force=force)
 
 
 if __name__ == "__main__":
-    enforce_root_hygiene()
+    parser = argparse.ArgumentParser(description="Enforce root hygiene safely")
+    parser.add_argument("--apply", action="store_true", help="Perform file moves. Default is dry-run.")
+    parser.add_argument("--force", action="store_true", help="Allow overwriting existing targets.")
+    args = parser.parse_args()
+    enforce_root_hygiene(dry_run=not args.apply, force=args.force)

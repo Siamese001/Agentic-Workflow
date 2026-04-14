@@ -7,9 +7,21 @@ Summarize all completed work and provide final status.
 import json
 from datetime import datetime
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from tqdm import tqdm
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / "agentic_core").exists() or (candidate / ".git").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parent.parent
+
+
+PROJECT_ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 class FinalComplianceReporter:
@@ -42,7 +54,7 @@ class FinalComplianceReporter:
             if report_file.exists():
                 try:
                     if report_path.endswith(".json"):
-                        with open(report_file) as f:
+                        with open(report_file, encoding="utf-8") as f:
                             self.report_data[report_name] = json.load(f)
                     else:
                         # For Python scripts, just note they exist
@@ -99,18 +111,18 @@ class FinalComplianceReporter:
         }
 
         # Calculate remaining work
-        metrics["silent_swallowers"]["remaining_high"] = (
-            metrics["silent_swallowers"]["high_severity"] - metrics["silent_swallowers"]["high_fixed"]
+        metrics["silent_swallowers"]["remaining_high"] = max(
+            0, metrics["silent_swallowers"]["high_severity"] - metrics["silent_swallowers"]["high_fixed"]
         )
-        metrics["silent_swallowers"]["remaining_medium"] = (
-            metrics["silent_swallowers"]["medium_severity"] - metrics["silent_swallowers"]["medium_fixed"]
+        metrics["silent_swallowers"]["remaining_medium"] = max(
+            0, metrics["silent_swallowers"]["medium_severity"] - metrics["silent_swallowers"]["medium_fixed"]
         )
-        metrics["silent_swallowers"]["remaining_low"] = (
-            metrics["silent_swallowers"]["low_severity"] - metrics["silent_swallowers"]["comments_added"]
+        metrics["silent_swallowers"]["remaining_low"] = max(
+            0, metrics["silent_swallowers"]["low_severity"] - metrics["silent_swallowers"]["comments_added"]
         )
 
-        metrics["test_enforcement"]["remaining_high"] = (
-            metrics["test_enforcement"]["high_severity"] - metrics["test_enforcement"]["high_fixed"]
+        metrics["test_enforcement"]["remaining_high"] = max(
+            0, metrics["test_enforcement"]["high_severity"] - metrics["test_enforcement"]["high_fixed"]
         )
 
         self.report_data["final_metrics"] = metrics
@@ -278,17 +290,21 @@ class FinalComplianceReporter:
         }
 
         # Write report
+        timestamp = self.start_time.strftime("%m%d%Y")
         report_file = (
             PROJECT_ROOT
             / "docs"
             / "reports"
             / "plans"
-            / "final_architectural_compliance_report_03242026.json"
+            / f"final_architectural_compliance_report_{timestamp}.json"
         )
         report_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(report_file, "w") as f:
-            json.dump(report, f, indent=2)
+        with NamedTemporaryFile("w", encoding="utf-8", dir=report_file.parent, delete=False) as tmp:
+            json.dump(report, tmp, indent=2)
+            tmp.flush()
+            tmp_path = Path(tmp.name)
+        tmp_path.replace(report_file)
 
         # Also create a markdown summary
         self._create_markdown_summary(report, report_file.with_suffix(".md"))

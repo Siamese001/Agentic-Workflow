@@ -3,10 +3,30 @@
 from __future__ import annotations
 
 import ast
+import os
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from tqdm import tqdm
 
-ROOT = Path(__file__).resolve().parents[2]
+
+def _resolve_root() -> Path:
+    env_root = os.getenv("AGENTIC_WORKFLOW_ROOT")
+    if env_root:
+        return Path(env_root).expanduser().resolve()
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / ".git").exists() or (candidate / AGENTIC_CORE_DIR).exists():
+            return candidate
+    return Path(__file__).resolve().parents[2]
+
+
+def _atomic_write(path: Path, content: str) -> None:
+    tmp_path = path.with_suffix(path.suffix + ".tmp")
+    tmp_path.write_text(content, encoding="utf-8")
+    tmp_path.replace(path)
+
+
+ROOT = _resolve_root()
 MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint"
 
 
@@ -110,17 +130,19 @@ def generate_init(by_module: dict[str, list[str]]) -> str:
     return "\n".join(parts)
 
 
-def main() -> None:
+def main() -> int:
     by_module = collect_public_names()
     total = sum(len(v) for v in by_module.values())
     print(f"Collected {total} public names across {len(by_module)} modules")
     content = generate_init(by_module)
     target = MOD_DIR / "__init__.py"
-    target.write_text(content, encoding="utf-8")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_write(target, content)
     print(f"Wrote {target} ({len(content)} chars, {len(content.splitlines())} lines)")
     ast.parse(content)
     print("Syntax OK")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

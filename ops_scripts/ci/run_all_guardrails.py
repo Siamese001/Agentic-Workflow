@@ -13,6 +13,26 @@ Exit codes:
     2 - Timeout or critical error
 """
 
+import argparse
+import io
+import json
+import subprocess
+import sys
+import time
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+
+def _bootstrap_repo_root() -> Path:
+    repo_root = Path(__file__).resolve().parents[2]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    return repo_root
+
+
+_REPO_ROOT = _bootstrap_repo_root()
+
 from agentic_core.L0_routing.utils.clock_provider import ClockProvider as clock_provider
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -89,26 +109,11 @@ _emit_links_execution_to_snapshot("p4", "run_all_guardrails", "exec_snapshot_lin
 # Configuration constants
 DEFAULT_TIMEOUT = 300
 DEFAULT_REPORT_INTERVAL = 30
-
-import argparse
-import json
-import subprocess
-import sys
-import time
-from dataclasses import dataclass, field
-from datetime import datetime
-
 _FIXED_TS = "2026-01-01T00:00:00"
-import io
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
-_REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(_REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(_REPO_ROOT))
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -213,7 +218,16 @@ _emit_reads_through("l4", "run_all_guardrails", "urg_read_24")
 _emit_reads_through("l4", "run_all_guardrails", "urg_read_25")
 _emit_reads_through("l4", "run_all_guardrails", "urg_read_26")
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = _REPO_ROOT
+
+
+def _display_path(path: Path | None) -> str:
+    if path is None:
+        return ""
+    try:
+        return str(path.relative_to(PROJECT_ROOT))
+    except ValueError:
+        return str(path)
 
 
 @dataclass
@@ -479,13 +493,13 @@ class GuardrailOrchestrator:
             if result.error:
                 print(f"   Error: {result.error}")
             if result.rca_path:
-                print(f"   RCA: {result.rca_path.relative_to(PROJECT_ROOT)}")
+                print(f"   RCA: {_display_path(result.rca_path)}")
             print()
         rca_files = [r.rca_path for r in self.results if r.rca_path]
         if rca_files:
             print("📄 RCA FILES GENERATED:")
             for rca_path in rca_files:
-                print(f"   - {rca_path.relative_to(PROJECT_ROOT)}")
+                print(f"   - {_display_path(rca_path)}")
             print()
         print("=" * 80)
         if passed_count == len(self.results):

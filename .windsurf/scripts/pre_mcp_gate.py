@@ -154,7 +154,7 @@ _SESSION_STATE_MAX_AGE_HOURS = 24
 # Launcher script path — validated by check_filesystem_startup_gate() on first use.
 # The launcher resolves node + npm global prefix dynamically; no version-pinned paths.
 _FS_LAUNCHER = REPO_ROOT / ".windsurf" / "scripts" / "filesystem_mcp_launcher.js"
-_FS_ALLOWED_DIR = Path(r"C:/Git/Agentic-Workflow")
+_FS_ALLOWED_DIR = REPO_ROOT
 
 # ---------------------------------------------------------------------------
 # GitKraken MCP hardening constants

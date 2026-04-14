@@ -36,11 +36,18 @@ def _find_latest_sqlite() -> Path:
     return candidates[0]
 
 
+def _require_positive(value: int, name: str) -> int:
+    if value <= 0:
+        raise ValueError(f"{name} must be > 0 (got {value})")
+    return value
+
+
 def burndown_table(conn: sqlite3.Connection) -> dict:
     """Layer-pair violation counts — the 'burndown' of P1 defects."""
     cur = conn.cursor()
 
-    rows = cur.execute("""
+    rows = cur.execute(
+        """
         SELECT
             n_src.layer AS src_layer,
             n_dst.layer AS dst_layer,
@@ -52,7 +59,8 @@ def burndown_table(conn: sqlite3.Connection) -> dict:
         WHERE e.relation_type = 'violates'
         GROUP BY n_src.layer, n_dst.layer
         ORDER BY violation_count DESC
-    """).fetchall()
+    """
+    ).fetchall()
 
     total = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='violates'",
@@ -84,15 +92,16 @@ def blast_radius(conn: sqlite3.Connection, target: str | None = None, top_n: int
     If target is None, returns top_n highest-blast-radius modules.
     """
     cur = conn.cursor()
+    top_n = _require_positive(top_n, "top_n")
 
     if target:
         node_row = cur.execute(
-            "SELECT id, adg_name, layer FROM nodes WHERE resolved_path LIKE ? OR adg_name LIKE ? LIMIT 1",
+            "SELECT id, adg_name, layer, resolved_path FROM nodes WHERE resolved_path LIKE ? OR adg_name LIKE ? LIMIT 1",
             (f"%{target}%", f"%{target}%"),
         ).fetchone()
         if not node_row:
             return {"error": f"Module not found: {target}"}
-        node_id, adg_name, layer = node_row
+        node_id, adg_name, layer, resolved_path = node_row
 
         visited: set[int] = set()
         frontier = {node_id}
@@ -116,64 +125,73 @@ def blast_radius(conn: sqlite3.Connection, target: str | None = None, top_n: int
             if depth > 20:
                 break
 
-        affected_nodes = (
-            cur.execute(
-                f"SELECT adg_name, layer, resolved_path FROM nodes WHERE id IN ({','.join('?' for _ in depth_map)})",
-                list(depth_map.keys()),
-            ).fetchall()
-            if depth_map
-            else []
+        affected_node_ids = sorted(
+            (nid for nid in depth_map if nid != node_id),
+            key=lambda nid: (depth_map[nid], nid),
         )
+        node_details: dict[int, tuple[str | None, str | None, str | None]] = {}
+        if affected_node_ids:
+            rows = cur.execute(
+                f"SELECT id, adg_name, layer, resolved_path FROM nodes WHERE id IN ({','.join('?' for _ in affected_node_ids)})",
+                affected_node_ids,
+            ).fetchall()
+            node_details = {row[0]: (row[1], row[2], row[3]) for row in rows}
 
         return {
             "target": adg_name,
             "target_layer": layer,
+            "target_resolved_path": resolved_path,
             "blast_radius_depth": max(depth_map.values(), default=0),
-            "affected_module_count": len(depth_map) - 1,
+            "affected_module_count": len(affected_node_ids),
             "affected_modules": [
-                {"adg_name": r[0], "layer": r[1], "depth": depth_map.get(node_id, 0)}
-                for r, node_id in zip(affected_nodes, depth_map.keys())
-            ][:50],
-        }
-
-    else:
-        rows = cur.execute(
-            """
-            SELECT
-                n.adg_name,
-                n.layer,
-                n.resolved_path,
-                COUNT(DISTINCT e.src_id) AS direct_fan_in
-            FROM nodes n
-            JOIN edges e ON e.dst_id = n.id
-            WHERE e.relation_type IN ('imports', 'calls')
-            GROUP BY n.id
-            ORDER BY direct_fan_in DESC
-            LIMIT ?
-        """,
-            (top_n,),
-        ).fetchall()
-
-        return {
-            "mode": "top_n_hotspots",
-            "top_n": top_n,
-            "hotspots": [
                 {
-                    "adg_name": r[0],
-                    "layer": r[1],
-                    "resolved_path": r[2],
-                    "direct_fan_in": r[3],
+                    "adg_name": node_details.get(nid, (None, None, None))[0],
+                    "layer": node_details.get(nid, (None, None, None))[1],
+                    "resolved_path": node_details.get(nid, (None, None, None))[2],
+                    "depth": depth_map[nid],
                 }
-                for r in rows
+                for nid in affected_node_ids[:50]
             ],
         }
+
+    rows = cur.execute(
+        """
+        SELECT
+            n.adg_name,
+            n.layer,
+            n.resolved_path,
+            COUNT(DISTINCT e.src_id) AS direct_fan_in
+        FROM nodes n
+        JOIN edges e ON e.dst_id = n.id
+        WHERE e.relation_type IN ('imports', 'calls')
+        GROUP BY n.id
+        ORDER BY direct_fan_in DESC
+        LIMIT ?
+    """,
+        (top_n,),
+    ).fetchall()
+
+    return {
+        "mode": "top_n_hotspots",
+        "top_n": top_n,
+        "hotspots": [
+            {
+                "adg_name": r[0],
+                "layer": r[1],
+                "resolved_path": r[2],
+                "direct_fan_in": r[3],
+            }
+            for r in rows
+        ],
+    }
 
 
 def seam_detection(conn: sqlite3.Connection) -> dict:
     """All cross-layer boundary edges — the architectural seams."""
     cur = conn.cursor()
 
-    seam_rows = cur.execute("""
+    seam_rows = cur.execute(
+        """
         SELECT
             n_src.layer AS src_layer,
             n_dst.layer AS dst_layer,
@@ -190,9 +208,11 @@ def seam_detection(conn: sqlite3.Connection) -> dict:
         GROUP BY n_src.layer, n_dst.layer, e.relation_type
         ORDER BY edge_count DESC
         LIMIT 100
-    """).fetchall()
+    """
+    ).fetchall()
 
-    total_cross = cur.execute("""
+    total_cross = cur.execute(
+        """
         SELECT COUNT(*)
         FROM edges e
         JOIN nodes n_src ON e.src_id = n_src.id
@@ -201,7 +221,8 @@ def seam_detection(conn: sqlite3.Connection) -> dict:
           AND n_dst.layer IS NOT NULL
           AND n_src.layer != n_dst.layer
           AND e.relation_type IN ('imports', 'calls')
-    """).fetchone()[0]
+    """
+    ).fetchone()[0]
 
     total_violations = cur.execute(
         "SELECT COUNT(*) FROM edges WHERE relation_type='violates'",
@@ -226,6 +247,7 @@ def seam_detection(conn: sqlite3.Connection) -> dict:
 def centrality(conn: sqlite3.Connection, top_n: int = 20) -> dict:
     """Top-N modules by fan-in (most imported/called) — highest centrality."""
     cur = conn.cursor()
+    top_n = _require_positive(top_n, "top_n")
 
     rows = cur.execute(
         """
@@ -342,6 +364,9 @@ def main() -> None:
     parser.add_argument("--top", type=int, default=20, help="Top-N for centrality/blast-radius")
     parser.add_argument("--json", action="store_true", help="Output JSON instead of tables")
     args = parser.parse_args()
+
+    if args.top <= 0:
+        parser.error("--top must be > 0")
 
     sqlite_path = Path(args.sqlite) if args.sqlite else _find_latest_sqlite()
     if not sqlite_path.exists():

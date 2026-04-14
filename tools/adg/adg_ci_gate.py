@@ -19,6 +19,7 @@ Exit codes:
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CLUSTERS_FILE = REPO_ROOT / "artifacts" / "adg_failure_clusters.json"
@@ -27,21 +28,43 @@ GRAPH_FILE = REPO_ROOT / "artifacts" / "adg_semantic_graph.json"
 PHASE_FILE = REPO_ROOT / "artifacts" / "adg_current_phase.json"
 
 
-def _load_json(path: Path) -> dict:
+def _artifact_error(message: str) -> None:
+    print(message, file=sys.stderr)
+    sys.exit(2)
+
+
+def _load_json(path: Path) -> dict[str, Any]:
     if not path.exists():
-        print(f"[ADG-GATE] MISSING ARTIFACT: {path}", file=sys.stderr)
-        print("[ADG-GATE] Run: python tools/adg_semantic_builder.py --rebuild", file=sys.stderr)
-        sys.exit(2)
-    return json.loads(path.read_text(encoding="utf-8"))
+        _artifact_error(
+            f"[ADG-GATE] MISSING ARTIFACT: {path}\n"
+            "[ADG-GATE] Run: python tools/adg_semantic_builder.py --rebuild"
+        )
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        _artifact_error(f"[ADG-GATE] INVALID ARTIFACT: {path} ({exc})")
+    if not isinstance(payload, dict):
+        _artifact_error(f"[ADG-GATE] INVALID ARTIFACT SHAPE: {path} must contain a JSON object")
+    return payload
+
+
+def _coerce_phase(raw: Any) -> int:
+    try:
+        phase = int(raw)
+    except (TypeError, ValueError) as exc:
+        _artifact_error(f"[ADG-GATE] INVALID PHASE VALUE: {raw!r} ({exc})")
+    if phase < 1:
+        _artifact_error(f"[ADG-GATE] INVALID PHASE VALUE: {phase} (must be >= 1)")
+    return phase
 
 
 def cmd_check_phase() -> int:
     """Verify current phase allows full-suite run."""
-    phase_data = {}
+    phase_data: dict[str, Any] = {}
     if PHASE_FILE.exists():
-        phase_data = json.loads(PHASE_FILE.read_text(encoding="utf-8"))
+        phase_data = _load_json(PHASE_FILE)
 
-    phase = phase_data.get("phase", 5)
+    phase = _coerce_phase(phase_data.get("phase", 5))
     if phase < 7:
         print(f"[ADG-GATE] BLOCKED: Full-suite pytest is FORBIDDEN in PHASE {phase}.", file=sys.stderr)
         print(
@@ -165,6 +188,7 @@ def cmd_litmus(cluster_id: str) -> int:
 
 def cmd_advance_phase(phase: int) -> int:
     """Record current phase to artifacts/adg_current_phase.json."""
+    phase = _coerce_phase(phase)
     PHASE_FILE.parent.mkdir(parents=True, exist_ok=True)
     PHASE_FILE.write_text(json.dumps({"phase": phase}, indent=2), encoding="utf-8")
     print(f"[ADG-GATE] Phase set to {phase}.")
@@ -180,27 +204,32 @@ def main() -> int:
 
     if cmd == "check-phase":
         return cmd_check_phase()
-    elif cmd == "cluster-status":
+    if cmd == "cluster-status":
         return cmd_cluster_status()
-    elif cmd == "scoped-tests":
+    if cmd == "scoped-tests":
         if len(sys.argv) < 3:
             print("Usage: adg_ci_gate.py scoped-tests <root_module_path>", file=sys.stderr)
             return 1
         return cmd_scoped_tests(sys.argv[2])
-    elif cmd == "litmus":
+    if cmd == "litmus":
         if len(sys.argv) < 3:
             print("Usage: adg_ci_gate.py litmus <cluster_id>", file=sys.stderr)
             return 1
         return cmd_litmus(sys.argv[2])
-    elif cmd == "advance-phase":
+    if cmd == "advance-phase":
         if len(sys.argv) < 3:
             print("Usage: adg_ci_gate.py advance-phase <phase_number>", file=sys.stderr)
             return 1
-        return cmd_advance_phase(int(sys.argv[2]))
-    else:
-        print(f"Unknown command: {cmd}", file=sys.stderr)
-        print(__doc__)
-        return 1
+        try:
+            phase = int(sys.argv[2])
+        except ValueError:
+            print(f"Invalid phase number: {sys.argv[2]!r}", file=sys.stderr)
+            return 1
+        return cmd_advance_phase(phase)
+
+    print(f"Unknown command: {cmd}", file=sys.stderr)
+    print(__doc__)
+    return 1
 
 
 if __name__ == "__main__":

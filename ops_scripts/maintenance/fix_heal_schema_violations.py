@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 """
-Automated Fix: Replace non-canonical keys with canonical equivalents
-
-This script reads the violations from .schema_violations_tracking.yaml
-and automatically fixes them by replacing non-canonical keys.
-
-USAGE:
-    python scripts/maintenance/fix_heal_schema_violations.py
-    python scripts/maintenance/fix_heal_schema_violations.py --dry-run
+Automated Fix: Replace non-canonical keys with canonical equivalents.
 """
 
 import argparse
@@ -18,27 +11,16 @@ import yaml
 from tqdm import tqdm
 
 
-def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
-    """
-    Fix non-canonical keys in a file.
-
-    Args:
-        filepath: Path to file to fix
-        replacements: Dict of {old_key: new_key}
-
-    Returns:
-        Tuple of (modified, count_of_replacements)
-    """
+def fix_file(filepath: Path, replacements: dict[str, str], dry_run: bool = False) -> tuple[bool, int]:
+    """Fix non-canonical keys in a file."""
     try:
         content = filepath.read_text(encoding="utf-8")
         original_content = content
         replacement_count = 0
 
         for old_key, new_key in replacements.items():
-            # Pattern: 'old_key': value or "old_key": value
             pattern = rf"(['\"]){old_key}\1\s*:"
             replacement = rf"\1{new_key}\1:"
-
             new_content, count = re.subn(pattern, replacement, content)
             if count > 0:
                 content = new_content
@@ -46,34 +28,31 @@ def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
                 print(f"    Replaced '{old_key}' → '{new_key}' ({count} occurrences)")
 
         if content != original_content:
-            filepath.write_text(content, encoding="utf-8")
+            if not dry_run:
+                filepath.write_text(content, encoding="utf-8")
             return True, replacement_count
 
         return False, 0
 
-    except Exception as e:
-        raise
-        print(f"  ❌ Error fixing {filepath}: {e}")
+    except (OSError, UnicodeDecodeError) as exc:
+        print(f"  ❌ Error fixing {filepath}: {exc}")
         return False, 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(description="Fix @standard_heal schema violations")
     parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Show what would be fixed without modifying files",
+        "--dry-run", action="store_true", help="Show what would be fixed without modifying files"
     )
     args = parser.parse_args()
 
-    # Load tracking file
     tracking_file = Path(".schema_violations_tracking.yaml")
     if not tracking_file.exists():
         print("❌ Tracking file not found: .schema_violations_tracking.yaml")
         return 1
 
-    with open(tracking_file) as f:
-        tracking = yaml.safe_load(f)
+    with tracking_file.open(encoding="utf-8") as handle:
+        tracking = yaml.safe_load(handle) or {}
 
     violations = tracking.get("violations", [])
 
@@ -89,39 +68,34 @@ def main():
 
     for violation in tqdm(violations, desc="Processing", unit="item"):
         filepath = Path(violation["file"])
-
         if not filepath.exists():
             print(f"⚠️  File not found: {filepath}")
             continue
 
-        # Build replacements dict
-        replacements = {}
-        for v in violation["violations"]:
-            if v["status"] == "pending":
-                replacements[v["key"]] = v["canonical"]
-
+        replacements = {v["key"]: v["canonical"] for v in violation["violations"] if v["status"] == "pending"}
         if not replacements:
             continue
 
         print(f"\n📝 {filepath}")
-
         if args.dry_run:
             print("  [DRY RUN] Would replace:")
             for old, new in replacements.items():
                 print(f"    '{old}' → '{new}'")
+            modified, count = fix_file(filepath, replacements, dry_run=True)
         else:
-            modified, count = fix_file(filepath, replacements)
-            if modified:
-                total_files_modified += 1
-                total_replacements += count
-                print(f"  ✅ Fixed ({count} replacements)")
-            else:
-                print("  ⚠️  No changes made (patterns not found)")
+            modified, count = fix_file(filepath, replacements, dry_run=False)
+
+        if modified:
+            total_files_modified += 1
+            total_replacements += count
+            print(f"  ✅ Fixed ({count} replacements)")
+        else:
+            print("  ⚠️  No changes made (patterns not found)")
 
     print(f"\n{'=' * 70}")
     if args.dry_run:
         print("DRY RUN COMPLETE")
-        print(f"Would modify {len([v for v in violations if v['violations']])} files")
+        print(f"Would modify {total_files_modified} files")
     else:
         print("FIX COMPLETE")
         print(f"Files modified: {total_files_modified}")
@@ -136,4 +110,4 @@ def main():
 
 
 if __name__ == "__main__":
-    exit(main())
+    raise SystemExit(main())

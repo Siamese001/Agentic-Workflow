@@ -6,6 +6,16 @@ import subprocess
 from pathlib import Path
 
 
+def _discover_repo_root(start: Path) -> Path:
+    """Best-effort repository root discovery for direct script and package execution."""
+    for candidate in (start, *start.parents):
+        if (candidate / ".git").exists() or (candidate / "agentic_core").exists():
+            return candidate
+        if candidate.name == "tools" and (candidate / "generate").exists():
+            return candidate.parent
+    return start.parents[3] if len(start.parents) > 3 else start.parent
+
+
 def _format_subprocess_failure(exc: subprocess.SubprocessError) -> tuple[str, str]:
     """Return bounded stdout/stderr fragments for logging."""
     stdout = getattr(exc, "stdout", "") or ""
@@ -13,7 +23,7 @@ def _format_subprocess_failure(exc: subprocess.SubprocessError) -> tuple[str, st
     return stdout.strip()[:200], stderr.strip()[:200]
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: int) -> None:
@@ -36,9 +46,16 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
         for pattern in artifact_patterns:  # tqdm: bounded ~6-item list, no bar needed
             artifact_path = adg_dir / pattern
             if artifact_path.exists():
+                try:
+                    artifact_arg = str(artifact_path.resolve().relative_to(ROOT))
+                except ValueError:
+                    print(
+                        f"[ADG] WARNING: Artifact is outside repository root; skipping auto-commit: {artifact_path}"
+                    )
+                    continue
                 # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
                 check_ignore = subprocess.run(
-                    ["git", "check-ignore", str(artifact_path)],
+                    ["git", "check-ignore", artifact_arg],
                     cwd=str(ROOT),
                     capture_output=True,
                     text=True,
@@ -59,7 +76,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
 
                 # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage
                 subprocess.run(
-                    ["git", "add", str(artifact_path)],
+                    ["git", "add", artifact_arg],
                     cwd=str(ROOT),
                     capture_output=True,
                     text=True,
@@ -67,6 +84,18 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
                     timeout=30,
                 )
                 staged_count += 1
+
+        # Verify we are in a git worktree before staging deletions/commit.
+        worktree_check = subprocess.run(
+            ["git", "rev-parse", "--is-inside-work-tree"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+        if worktree_check.returncode != 0:
+            print("[ADG] WARNING: Repository is not a git worktree; skipping auto-commit")
+            return
 
         # Stage deletions of old artifacts (moved to _archive/)
         # ruff: noqa: S603,S607 - Git command is trusted, internal tool usage

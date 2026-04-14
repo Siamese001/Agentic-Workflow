@@ -3,7 +3,11 @@ Regenerate proper Python headers for all test files.
 """
 
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from tqdm import tqdm
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def regenerate_headers(project_root: Path):
@@ -54,5 +58,5 @@ def regenerate_headers(project_root: Path):
 
 
 if __name__ == "__main__":
-    project_root = Path(__file__).parent.parent.parent
+    project_root = REPO_ROOT
     regenerate_headers(project_root)

@@ -241,13 +241,13 @@ class ADGLayerAuthorityVerifier:
             with sqlite3.connect(self.sqlite_path) as conn:
                 cursor = conn.cursor()
 
-                # Find modules with write operations
-                write_modules = []
+                # Find modules with write operations and collapse multiple write edge types per module
+                write_modules_by_id: dict[int, dict[str, Any]] = {}
                 placeholders = ",".join(["?" for _ in self.WRITE_EDGE_TYPES])
 
                 cursor.execute(
                     f"""
-                    SELECT DISTINCT e.src_id, n.adg_name, n.layer, e.relation_type
+                    SELECT e.src_id, n.adg_name, n.layer, e.relation_type
                     FROM edges e
                     JOIN nodes n ON e.src_id = n.id
                     WHERE e.relation_type IN ({placeholders})
@@ -256,15 +256,24 @@ class ADGLayerAuthorityVerifier:
                     list(self.WRITE_EDGE_TYPES),
                 )
 
-                for row in cursor.fetchall():
-                    write_modules.append(
+                for module_id, module_name, layer, write_type in tqdm(
+                    cursor.fetchall(), desc="Indexing write modules", unit="row", leave=False
+                ):
+                    module_entry = write_modules_by_id.setdefault(
+                        module_id,
                         {
-                            "module_id": row[0],
-                            "module_name": row[1],
-                            "layer": row[2],
-                            "write_type": row[3],
-                        }
+                            "module_id": module_id,
+                            "module_name": module_name,
+                            "layer": layer,
+                            "write_types": set(),
+                        },
                     )
+                    module_entry["write_types"].add(write_type)
+
+                write_modules = []
+                for module in write_modules_by_id.values():
+                    module["write_types"] = sorted(module["write_types"])
+                    write_modules.append(module)
 
                 print(f"   📊 Found {len(write_modules)} modules with write operations")
 
@@ -286,8 +295,8 @@ class ADGLayerAuthorityVerifier:
                             {
                                 "module_name": module["module_name"],
                                 "layer": module["layer"],
-                                "write_type": module["write_type"],
-                                "violation": "Write operation without UWG termination",
+                                "write_types": module["write_types"],
+                                "violation": "Write-capable module without UWG termination",
                             }
                         )
 
@@ -383,7 +392,7 @@ class ADGLayerAuthorityVerifier:
                 # Check for existing unauthorized write violations
                 cursor.execute("""
                     SELECT COUNT(*) FROM edges
-                    WHERE relation_type IN ('layer_violation', 'uwg_bypass', 'unauthorized_write')
+                    WHERE relation_type IN ('layer_violation', 'layer_authority_violation', 'uwg_bypass', 'unauthorized_write')
                 """)
 
                 existing_violations = cursor.fetchone()[0]
@@ -405,15 +414,25 @@ class ADGLayerAuthorityVerifier:
                     list(self.WRITE_EDGE_TYPES),
                 )
 
-                potential_unauthorized = []
-                for row in cursor.fetchall():
-                    potential_unauthorized.append(
+                potential_unauthorized_by_module: dict[tuple[str, str], dict[str, Any]] = {}
+                for _, module_name, layer, write_type in tqdm(
+                    cursor.fetchall(), desc="Checking unauthorized writes", unit="row", leave=False
+                ):
+                    key = (module_name, layer)
+                    module_entry = potential_unauthorized_by_module.setdefault(
+                        key,
                         {
-                            "module_name": row[1],
-                            "layer": row[2],
-                            "write_type": row[3],
-                        }
+                            "module_name": module_name,
+                            "layer": layer,
+                            "write_types": set(),
+                        },
                     )
+                    module_entry["write_types"].add(write_type)
+
+                potential_unauthorized = []
+                for module in potential_unauthorized_by_module.values():
+                    module["write_types"] = sorted(module["write_types"])
+                    potential_unauthorized.append(module)
 
                 print(f"   📊 Existing write violations: {existing_violations}")
                 print(f"   📊 Potential unauthorized writes: {len(potential_unauthorized)}")
@@ -426,6 +445,13 @@ class ADGLayerAuthorityVerifier:
 
         except Exception as e:
             raise LayerAuthorityError(f"Unauthorized write detection failed: {e}")
+
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
 
     def verify(self) -> dict[str, Any]:
         """Run complete layer authority verification."""
@@ -519,8 +545,7 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, "w") as f:
-                json.dump(result, f, indent=2, default=str)
+            verifier._write_json_report(args.output, result)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1

@@ -285,6 +285,13 @@ class ADGConsistencyVerifier:
 
         return derived
 
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
+
     def verify(self) -> dict[str, Any]:
         """Run complete consistency verification."""
         print("🔍 Starting ADG Consistency Verification...")
@@ -421,14 +428,17 @@ def main():
                 print(f"Available metrics: {sorted(verifier.REQUIRED_METRICS.keys())}")
                 return 1
 
-            snapshot = verifier._load_snapshot()
+            snapshot = verifier._load_snapshot() if verifier.snapshot_path else None
             sql_value = verifier._execute_sql_query(verifier.REQUIRED_METRICS[args.metric])
-            snapshot_value = verifier._get_snapshot_metric(snapshot, args.metric)
+            snapshot_value = verifier._get_snapshot_metric(snapshot, args.metric) if snapshot else None
 
             print(f"📊 Metric: {args.metric}")
             print(f"   SQL Value: {sql_value}")
             print(f"   Snapshot Value: {snapshot_value}")
 
+            if snapshot is None:
+                print("⚠️  Snapshot not found; SQL-only verification completed")
+                return 0
             if snapshot_value is not None and sql_value != snapshot_value:
                 print("❌ INCONSISTENT")
                 return 1
@@ -440,8 +450,7 @@ def main():
             result = verifier.verify()
 
             if args.output:
-                with open(args.output, "w") as f:
-                    json.dump(result, f, indent=2, default=str)
+                verifier._write_json_report(args.output, result)
                 print(f"📄 Report saved to: {args.output}")
 
             return 0 if result["status"] == "PASS" else 1

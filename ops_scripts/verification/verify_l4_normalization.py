@@ -404,6 +404,13 @@ class ADGL4NormalizationVerifier:
         except Exception as e:
             raise L4NormalizationError(f"L4 authoritative location verification failed: {e}")
 
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
+
     def verify(self) -> dict[str, Any]:
         """Run complete L4 normalization verification."""
         print("🔍 Starting ADG L4 Normalization Verification...")
@@ -416,6 +423,9 @@ class ADGL4NormalizationVerifier:
         # Verify L4 identity resolution
         identity_resolution = self._verify_l4_identity_resolution()
 
+        # Verify L4 path integrity
+        path_integrity = self._verify_l4_path_integrity()
+
         # Verify L4 persistence path normalization
         persistence_paths = self._verify_l4_persistence_path_normalization()
 
@@ -425,6 +435,7 @@ class ADGL4NormalizationVerifier:
         # Determine overall status
         critical_issues = (
             layer_classification["unknown_classifications"] > 0
+            or path_integrity["unknown_layer_count"] > 0
             or identity_resolution["identity_issues"] > 0
             or persistence_paths["path_issues"] > 0
             or authoritative_location["misplaced_artifacts"] > 2  # Allow some flexibility
@@ -435,6 +446,7 @@ class ADGL4NormalizationVerifier:
             "status": "FAIL" if critical_issues else "PASS",
             "layer_classification": layer_classification,
             "identity_resolution": identity_resolution,
+            "path_integrity": path_integrity,
             "persistence_paths": persistence_paths,
             "authoritative_location": authoritative_location,
             "errors": self.errors,
@@ -443,6 +455,7 @@ class ADGL4NormalizationVerifier:
                 "total_l4_nodes": layer_classification["total_l4_nodes"],
                 "unknown_classifications": layer_classification["unknown_classifications"],
                 "identity_issues": identity_resolution["identity_issues"],
+                "unknown_path_integrity_nodes": path_integrity["unknown_layer_count"],
                 "path_issues": persistence_paths["path_issues"],
                 "misplaced_artifacts": authoritative_location["misplaced_artifacts"],
                 "identity_compliance_rate": identity_resolution["identity_compliance_rate"],
@@ -464,6 +477,7 @@ class ADGL4NormalizationVerifier:
             print("\n❌ L4 NORMALIZATION ISSUES FOUND")
             print(f"   • Unknown classifications: {layer_classification['unknown_classifications']}")
             print(f"   • Identity issues: {identity_resolution['identity_issues']}")
+            print(f"   • Unknown path-integrity nodes: {path_integrity['unknown_layer_count']}")
             print(f"   • Path issues: {persistence_paths['path_issues']}")
             print(f"   • Misplaced artifacts: {authoritative_location['misplaced_artifacts']}")
         else:
@@ -497,8 +511,7 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, "w") as f:
-                json.dump(result, f, indent=2, default=str)
+            verifier._write_json_report(args.output, result)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1

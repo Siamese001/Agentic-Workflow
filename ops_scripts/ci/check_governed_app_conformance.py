@@ -51,16 +51,28 @@ _EXCEPTION_REASON_MIN_LEN = 20
 _COMPENSATING_CONTROLS_MIN = 2
 
 
+def _safe_import_module(module_name: str) -> tuple[object | None, bool, str]:
+    try:
+        return importlib.import_module(module_name), True, module_name
+    except (
+        Exception
+    ) as exc:  # guardian: CI gate must degrade to a recorded failure, not crash on import side effects
+        return None, False, f"{type(exc).__name__}: {str(exc)[:80]}"
+
+
 def _discover_apps_packages() -> list[str]:
     """Return all apps_* top-level package names found in the repo root."""
-    return sorted(
-        p.name
-        for p in _REPO_ROOT.iterdir()
-        if p.is_dir()
-        and p.name.startswith("apps_")
-        and p.name != "apps_shared"
-        and (p / "__init__.py").exists()
-    )
+    try:
+        return sorted(
+            p.name
+            for p in _REPO_ROOT.iterdir()
+            if p.is_dir()
+            and p.name.startswith("apps_")
+            and p.name != "apps_shared"
+            and (p / "__init__.py").exists()
+        )
+    except OSError as exc:
+        raise RuntimeError(f"could not enumerate apps_* packages: {exc}") from exc
 
 
 def _check_governed_entry(entry: "GovernedAppEntry") -> list[tuple[str, bool, str]]:  # type: ignore[name-defined]  # noqa: F821
@@ -68,14 +80,7 @@ def _check_governed_entry(entry: "GovernedAppEntry") -> list[tuple[str, bool, st
     results: list[tuple[str, bool, str]] = []
 
     # CONF01: runner module importable
-    try:
-        mod = importlib.import_module(entry.runner_module)
-        conf01_pass = True
-        conf01_detail = entry.runner_module
-    except ImportError as exc:
-        mod = None
-        conf01_pass = False
-        conf01_detail = str(exc)[:60]
+    mod, conf01_pass, conf01_detail = _safe_import_module(entry.runner_module)
     results.append((f"CONF01 [{entry.app_name}] runner module importable", conf01_pass, conf01_detail))
 
     # CONF02: runner class is GovernedAppRunner subclass
@@ -227,14 +232,7 @@ def _check_formal_exception_entry(  # noqa: PLR0912
     )
 
     # EXCF07: partial_adoption_module importable
-    try:
-        mod = importlib.import_module(entry.partial_adoption_module)
-        excf07_pass = True
-        excf07_detail = entry.partial_adoption_module
-    except ImportError as exc:
-        mod = None
-        excf07_pass = False
-        excf07_detail = str(exc)[:50]
+    mod, excf07_pass, excf07_detail = _safe_import_module(entry.partial_adoption_module)
     results.append(
         (f"EXCF07 [{entry.app_name}] partial_adoption_module importable", excf07_pass, excf07_detail)
     )
@@ -272,15 +270,26 @@ def _check_formal_exception_entry(  # noqa: PLR0912
 
 def run_conformance_gate() -> bool:
     """Run all conformance checks. Returns True if all pass."""
-    from apps_shared.integrations.app_registry import (  # noqa: PLC0415
-        APP_REGISTRY,
-        ExceptionAppEntry,
-        FormalExceptionEntry,
-        GovernanceStatus,
-        GovernedAppEntry,
-    )
+    try:
+        from apps_shared.integrations.app_registry import (  # noqa: PLC0415
+            APP_REGISTRY,
+            ExceptionAppEntry,
+            FormalExceptionEntry,
+            GovernanceStatus,
+            GovernedAppEntry,
+        )
+    except Exception as exc:  # guardian: CI gate must report registry bootstrap failures as a failed gate
+        print(
+            f"[governed_app_conformance] FAIL: could not import app registry: {type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
+        return False
 
-    discovered = _discover_apps_packages()
+    try:
+        discovered = _discover_apps_packages()
+    except RuntimeError as exc:
+        print(f"[governed_app_conformance] FAIL: {exc}", file=sys.stderr)
+        return False
     all_checks: list[tuple[str, bool, str]] = []
 
     # CONF08: no apps_* absent from registry

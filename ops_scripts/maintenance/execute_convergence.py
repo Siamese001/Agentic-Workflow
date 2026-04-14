@@ -18,6 +18,7 @@ import logging
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -61,109 +62,112 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-_emit_records_execution_trace("p0", "evidence", "execute_convergence")
-_emit_applies_guardrail("p0", "execute_convergence", "p0_governance")
-_emit_reads_policy_state("p0", "execute_convergence", "policy_binding")
-_emit_snapshots_state("p0", "execute_convergence", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
 
-_emit_emits_metric_event("execute_convergence", "p4obs", "metric_1")
-_emit_emits_metric_event("execute_convergence", "p4obs", "metric_2")
-_emit_emits_metric_event("execute_convergence", "p4obs", "metric_3")
-_emit_emits_metric_event("execute_convergence", "p4obs", "metric_4")
-_emit_emits_metric_event("execute_convergence", "p4obs", "metric_5")
-_emit_emits_metric_event("execute_convergence", "p4obs", "metric_6")
-_emit_records_incident_event("execute_convergence", "p4obs", "incident")
-_emit_captures_runtime_anomaly("execute_convergence", "p4obs", "anomaly")
-_emit_writes_observability_log("execute_convergence", "p4obs", "obs_log")
-_emit_updates_monitoring_state("execute_convergence", "p4obs", "mon_state")
-_emit_triggers_alert("execute_convergence", "p4obs", "alert")
-_emit_links_incident_trace("execute_convergence", "p4obs", "trace_link")
-_emit_captures_pattern("execute_convergence", "p3lm", "pattern")
-_emit_records_learning_event("execute_convergence", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("execute_convergence", "p3lm", "snapshot")
-_emit_feeds_meta_learning("execute_convergence", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("execute_convergence", "p3lm", "routing")
-_emit_improves_agent_policy("execute_convergence", "p3lm", "policy")
-_emit_stores_learning_state("execute_convergence", "p3lm", "state")
-_emit_records_execution_trace("execute_convergence", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("execute_convergence", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("execute_convergence", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("execute_convergence", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("execute_convergence", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("execute_convergence", "env_read", "p2_env_1")
-_emit_reads_environ("execute_convergence", "env_read", "p2_env_2")
-_emit_reads_runtime_state("execute_convergence", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("execute_convergence", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "execute_convergence", "context_pull")
-_emit_pulls_context("p1", "execute_convergence", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "execute_convergence", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "execute_convergence", "uwg_term_2")
-_emit_writes_through("p1", "execute_convergence", "write_through")
-_emit_writes_through("p1", "execute_convergence", "write_through_2")
-_emit_validated_by_safety_plane("p1", "execute_convergence", "safety_validation")
-_emit_invokes_eval("p1", "execute_convergence", "eval_call")
-_emit_proposal_commits_routing("p1", "execute_convergence", "routing_commit")
-_emit_escalates_to_human("p1", "execute_convergence", "human_escalation")
-_emit_routes_through("p1", "execute_convergence", "route_through")
-_emit_checks_agent_registry("p1", "execute_convergence", "agent_registry")
-_emit_validates_agent_capability("p1", "execute_convergence", "capability")
-_emit_dispatches_execution_plan("p1", "execute_convergence", "exec_plan")
-_emit_agent_executes_agent("p1", "execute_convergence", "sub_agent")
-_emit_routes_to_agent("p1", "execute_convergence", "target_agent")
-_emit_verifies_policy("p1", "execute_convergence", "policy_check")
-_emit_observes_runtime_state("p1", "execute_convergence", "runtime_state")
-_emit_verifies_boundary("p1", "execute_convergence", "boundary_check")
-_emit_transcripts_response("p1", "execute_convergence", "transcript")
-_emit_hard_fails_untranscripted("p1", "execute_convergence")
-_emit_gated_by_confidence("p1", "execute_convergence", "confidence_gate")
-emit_replay_key("p0", "execute_convergence")
-emit_determinism_digest("p0", "execute_convergence")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "execute_convergence", "execution_auth")
-_emit_validates_capability("p2", "execute_convergence", "capability_check")
-_emit_routes_to_capability("p2", "execute_convergence", "capability_route")
-_emit_writes_via_uwg("p2", "execute_convergence", "uwg_write")
-_emit_blocks_direct_write("p2", "execute_convergence", "direct_write_block")
-_emit_records_tool_invocation("p2", "execute_convergence", "tool_invocation")
-_emit_captures_execution_output("p2", "execute_convergence", "exec_output")
-_emit_dispatches_agent("p3", "execute_convergence", "agent_dispatch")
-_emit_coordinates_agents("p3", "execute_convergence", "agent_coordination")
-_emit_records_workflow_lineage("p3", "execute_convergence", "workflow_lineage")
-_emit_records_healing_outcome("p3", "execute_convergence", "healing_outcome")
-_emit_escalates_failure("p3", "execute_convergence", "failure_escalation")
-_emit_orchestrates_workflow("p3", "execute_convergence", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "execute_convergence", "healing_dispatch")
-_emit_invokes_evaluation("p3", "execute_convergence", "evaluation_signal")
-_emit_records_telemetry_event("p4", "execute_convergence", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "execute_convergence", "eval_metric")
-_emit_stores_embedding("p4", "execute_convergence", "embedding_store")
-_emit_updates_meta_learning_state("p4", "execute_convergence", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "execute_convergence", "exec_snapshot_link")
+def _init_runtime_trace() -> None:
+    _emit_records_execution_trace("p0", "evidence", "execute_convergence")
+    _emit_applies_guardrail("p0", "execute_convergence", "p0_governance")
+    _emit_reads_policy_state("p0", "execute_convergence", "policy_binding")
+    _emit_snapshots_state("p0", "execute_convergence", "state_snapshot")
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+        _emit_captures_pattern,
+        _emit_captures_runtime_anomaly,
+        _emit_emits_metric_event,
+        _emit_execution_terminates_at_uwg,
+        _emit_feeds_meta_learning,
+        _emit_improves_agent_policy,
+        _emit_invokes_eval,
+        _emit_links_incident_trace,
+        _emit_proposal_commits_routing,
+        _emit_pulls_context,
+        _emit_reads_environ,
+        _emit_reads_runtime_state,
+        _emit_records_execution_trace,
+        _emit_records_incident_event,
+        _emit_records_learning_event,
+        _emit_stores_learning_state,
+        _emit_triggers_alert,
+        _emit_updates_monitoring_state,
+        _emit_updates_routing_strategy,
+        _emit_validated_by_safety_plane,
+        _emit_writes_learning_snapshot,
+        _emit_writes_observability_log,
+        _emit_writes_through,
+    )
+
+    _emit_emits_metric_event("execute_convergence", "p4obs", "metric_1")
+    _emit_emits_metric_event("execute_convergence", "p4obs", "metric_2")
+    _emit_emits_metric_event("execute_convergence", "p4obs", "metric_3")
+    _emit_emits_metric_event("execute_convergence", "p4obs", "metric_4")
+    _emit_emits_metric_event("execute_convergence", "p4obs", "metric_5")
+    _emit_emits_metric_event("execute_convergence", "p4obs", "metric_6")
+    _emit_records_incident_event("execute_convergence", "p4obs", "incident")
+    _emit_captures_runtime_anomaly("execute_convergence", "p4obs", "anomaly")
+    _emit_writes_observability_log("execute_convergence", "p4obs", "obs_log")
+    _emit_updates_monitoring_state("execute_convergence", "p4obs", "mon_state")
+    _emit_triggers_alert("execute_convergence", "p4obs", "alert")
+    _emit_links_incident_trace("execute_convergence", "p4obs", "trace_link")
+    _emit_captures_pattern("execute_convergence", "p3lm", "pattern")
+    _emit_records_learning_event("execute_convergence", "p3lm", "learning_event")
+    _emit_writes_learning_snapshot("execute_convergence", "p3lm", "snapshot")
+    _emit_feeds_meta_learning("execute_convergence", "p3lm", "meta_feed")
+    _emit_updates_routing_strategy("execute_convergence", "p3lm", "routing")
+    _emit_improves_agent_policy("execute_convergence", "p3lm", "policy")
+    _emit_stores_learning_state("execute_convergence", "p3lm", "state")
+    _emit_records_execution_trace("execute_convergence", "L0_ROUTING", "p2_trace_1")
+    _emit_records_execution_trace("execute_convergence", "L1_REASONING", "p2_trace_2")
+    _emit_records_execution_trace("execute_convergence", "L2_EXECUTION", "p2_trace_3")
+    _emit_records_execution_trace("execute_convergence", "L3_ORCHESTRATION", "p2_trace_4")
+    _emit_records_execution_trace("execute_convergence", "L4_STATE", "p2_trace_5")
+    _emit_reads_environ("execute_convergence", "env_read", "p2_env_1")
+    _emit_reads_environ("execute_convergence", "env_read", "p2_env_2")
+    _emit_reads_runtime_state("execute_convergence", "runtime_state", "p2_rt_1")
+    _emit_reads_runtime_state("execute_convergence", "runtime_state", "p2_rt_2")
+    _emit_pulls_context("p1", "execute_convergence", "context_pull")
+    _emit_pulls_context("p1", "execute_convergence", "context_pull_2")
+    _emit_execution_terminates_at_uwg("p1", "execute_convergence", "uwg_term")
+    _emit_execution_terminates_at_uwg("p1", "execute_convergence", "uwg_term_2")
+    _emit_writes_through("p1", "execute_convergence", "write_through")
+    _emit_writes_through("p1", "execute_convergence", "write_through_2")
+    _emit_validated_by_safety_plane("p1", "execute_convergence", "safety_validation")
+    _emit_invokes_eval("p1", "execute_convergence", "eval_call")
+    _emit_proposal_commits_routing("p1", "execute_convergence", "routing_commit")
+    _emit_escalates_to_human("p1", "execute_convergence", "human_escalation")
+    _emit_routes_through("p1", "execute_convergence", "route_through")
+    _emit_checks_agent_registry("p1", "execute_convergence", "agent_registry")
+    _emit_validates_agent_capability("p1", "execute_convergence", "capability")
+    _emit_dispatches_execution_plan("p1", "execute_convergence", "exec_plan")
+    _emit_agent_executes_agent("p1", "execute_convergence", "sub_agent")
+    _emit_routes_to_agent("p1", "execute_convergence", "target_agent")
+    _emit_verifies_policy("p1", "execute_convergence", "policy_check")
+    _emit_observes_runtime_state("p1", "execute_convergence", "runtime_state")
+    _emit_verifies_boundary("p1", "execute_convergence", "boundary_check")
+    _emit_transcripts_response("p1", "execute_convergence", "transcript")
+    _emit_hard_fails_untranscripted("p1", "execute_convergence")
+    _emit_gated_by_confidence("p1", "execute_convergence", "confidence_gate")
+    emit_replay_key("p0", "execute_convergence")
+    emit_determinism_digest("p0", "execute_convergence")
+    _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+    _emit_authorize_and_execute("p2", "execute_convergence", "execution_auth")
+    _emit_validates_capability("p2", "execute_convergence", "capability_check")
+    _emit_routes_to_capability("p2", "execute_convergence", "capability_route")
+    _emit_writes_via_uwg("p2", "execute_convergence", "uwg_write")
+    _emit_blocks_direct_write("p2", "execute_convergence", "direct_write_block")
+    _emit_records_tool_invocation("p2", "execute_convergence", "tool_invocation")
+    _emit_captures_execution_output("p2", "execute_convergence", "exec_output")
+    _emit_dispatches_agent("p3", "execute_convergence", "agent_dispatch")
+    _emit_coordinates_agents("p3", "execute_convergence", "agent_coordination")
+    _emit_records_workflow_lineage("p3", "execute_convergence", "workflow_lineage")
+    _emit_records_healing_outcome("p3", "execute_convergence", "healing_outcome")
+    _emit_escalates_failure("p3", "execute_convergence", "failure_escalation")
+    _emit_orchestrates_workflow("p3", "execute_convergence", "workflow_orchestration")
+    _emit_dispatches_healing_run("p3", "execute_convergence", "healing_dispatch")
+    _emit_invokes_evaluation("p3", "execute_convergence", "evaluation_signal")
+    _emit_records_telemetry_event("p4", "execute_convergence", "telemetry_event")
+    _emit_captures_evaluation_metric("p4", "execute_convergence", "eval_metric")
+    _emit_stores_embedding("p4", "execute_convergence", "embedding_store")
+    _emit_updates_meta_learning_state("p4", "execute_convergence", "meta_learning")
+    _emit_links_execution_to_snapshot("p4", "execute_convergence", "exec_snapshot_link")
+
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 Logger = logging.getLogger("ConvergenceDriver")
@@ -171,10 +175,10 @@ Logger = logging.getLogger("ConvergenceDriver")
 
 def run_terminal_convergence() -> int:
     """Execute the terminal sovereign convergence."""
+    _init_runtime_trace()
+
     try:
-        project_root = Path(__file__).resolve().parent.parent.parent
-        # guardian: allow-global-mutation
-        sys.path.insert(0, str(project_root))
+        project_root = get_validated_project_root()
 
         from agentic_core.L5_safety.validators import (
             ArchitectureGovernorAgent,
@@ -235,9 +239,8 @@ def run_terminal_convergence() -> int:
         Logger.error(f"[ERROR] Import Error: {e}")
         Logger.error("Ensure agentic_core is properly installed.")
         return 2
-    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
-        Logger.error(f"[ERROR] Execution Error: {e}")
+    except Exception as e:  # guardian: allow-broad-exception -- operational boundary
+        Logger.exception("[ERROR] Execution Error: %s", e)
         return 2
 
 

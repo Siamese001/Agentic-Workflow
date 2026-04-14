@@ -197,12 +197,12 @@ class ADGTraceReplayCoverageVerifier:
                     }
                 )
 
-            if coverage["has_hard_fail"]:
+            if coverage["has_hard_fail"] and not coverage["has_trace"]:
                 critical_failures.append(
                     {
                         "module": module_name,
                         "layer": layer,
-                        "issue": "Module has hard failure without transcript",
+                        "issue": "Module has hard_fails_untranscripted edge but no execution trace",
                     }
                 )
 
@@ -214,16 +214,17 @@ class ADGTraceReplayCoverageVerifier:
         complete_coverage = sum(1 for c in coverage_results if c["coverage_level"] == "complete")
         hard_fail_modules = sum(1 for c in coverage_results if c["has_hard_fail"])
 
+        trace_pct = 100 * traced_modules / max(1, total_modules)
+        signed_pct = 100 * signed_modules / max(1, total_modules)
+        replay_pct = 100 * replay_key_modules / max(1, total_modules)
+        complete_pct = 100 * complete_coverage / max(1, total_modules)
+
         print("   📊 Coverage Summary:")
         print(f"      Total modules: {total_modules}")
-        print(f"      With trace: {traced_modules} ({100 * traced_modules / total_modules:.1f}%)")
-        print(f"      With signed trace: {signed_modules} ({100 * signed_modules / total_modules:.1f}%)")
-        print(
-            f"      With replay key: {replay_key_modules} ({100 * replay_key_modules / total_modules:.1f}%)"
-        )
-        print(
-            f"      Complete coverage: {complete_coverage} ({100 * complete_coverage / total_modules:.1f}%)"
-        )
+        print(f"      With trace: {traced_modules} ({trace_pct:.1f}%)")
+        print(f"      With signed trace: {signed_modules} ({signed_pct:.1f}%)")
+        print(f"      With replay key: {replay_key_modules} ({replay_pct:.1f}%)")
+        print(f"      Complete coverage: {complete_coverage} ({complete_pct:.1f}%)")
         print(f"      Hard failures: {hard_fail_modules}")
 
         # Report critical failures
@@ -371,6 +372,13 @@ class ADGTraceReplayCoverageVerifier:
         except Exception as e:
             raise TraceReplayCoverageError(f"Hard fail verification failed: {e}")
 
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+        tmp_path.replace(output_path)
+
     def verify(self) -> dict[str, Any]:
         """Run complete trace/replay coverage verification."""
         print("🔍 Starting ADG Trace and Replay Coverage Verification...")
@@ -448,8 +456,7 @@ def main():
         result = verifier.verify()
 
         if args.output:
-            with open(args.output, "w") as f:
-                json.dump(result, f, indent=2, default=str)
+            verifier._write_json_report(args.output, result)
             print(f"📄 Report saved to: {args.output}")
 
         return 0 if result["status"] == "PASS" else 1

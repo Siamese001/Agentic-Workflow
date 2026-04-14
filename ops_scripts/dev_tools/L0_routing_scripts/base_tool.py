@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import inspect
 from collections.abc import Callable
 
 from pydantic import BaseModel, Field
@@ -189,10 +190,15 @@ class FunctionalTool(BaseTool):
 
     async def run(self, **kwargs) -> str:
         try:
-            return str(self.func(**kwargs))
+            result = self.func(**kwargs)
+            if inspect.isawaitable(result):
+                result = await result
+            return str(result)
+        except (KeyboardInterrupt, SystemExit):
+            raise
         # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
-            return f"Error executing {self.name}: {str(e)}"
+        except Exception as e:
+            return f"Error executing {self.name} ({type(e).__name__}): {e}"
 
 
 class ToolRegistry:

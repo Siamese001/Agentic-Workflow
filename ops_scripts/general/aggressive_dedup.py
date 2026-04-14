@@ -8,12 +8,17 @@ Strategies:
 4. Consolidate test files
 """
 
+import argparse
 import ast
+import logging
 import re
 from collections import defaultdict
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
     TESTS_DIR,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -89,6 +94,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from tqdm import tqdm
+
+LOGGER = logging.getLogger(__name__)
 
 _emit_emits_metric_event("aggressive_dedup", "p4obs", "metric_1")
 _emit_emits_metric_event("aggressive_dedup", "p4obs", "metric_2")
@@ -182,9 +189,8 @@ def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ClassDef):
                         class_files[node.name].append(str(py_file))
-            # guardian: allow-silent-swallow
-            except:
-                pass
+            except (OSError, SyntaxError, UnicodeDecodeError) as exc:
+                LOGGER.warning("Skipping class scan for %s: %s", py_file, exc)
     return class_files
 
 
@@ -211,9 +217,8 @@ def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> 
                         break
                 if all_redundant and len(file_classes) > 0:
                     redundant.append(str(py_file))
-            # guardian: allow-silent-swallow
-            except:
-                pass
+            except (OSError, SyntaxError, UnicodeDecodeError) as exc:
+                LOGGER.warning("Skipping redundancy scan for %s: %s", py_file, exc)
     return redundant
 
 
@@ -257,9 +262,8 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
                     if classes and all(c.name.startswith("Test") for c in classes):
                         low_value.append(str(py_file))
                         continue
-            # guardian: allow-silent-swallow
-            except:
-                pass
+            except (OSError, SyntaxError, UnicodeDecodeError) as exc:
+                LOGGER.warning("Skipping low-value scan for %s: %s", py_file, exc)
     return low_value
 
 
@@ -288,7 +292,17 @@ def _adg_startup_warning() -> None:
         pass
 
 
-def main():
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Find duplicate or redundant files in app territories.",
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Actually delete files. Default behavior is dry-run.",
+    )
+    args = parser.parse_args(argv)
+
     _adg_startup_warning()
     print("=" * 80)
     print("AGGRESSIVE DEDUPLICATION")
@@ -328,17 +342,26 @@ def main():
             print(f"    - {f}")
         if len(files) > 10:
             print(f"    ... and {len(files) - 10} more")
-    print("\n[5/5] Executing deletion...")
+    print(
+        "\n[5/5] "
+        + ("Executing deletion..." if args.execute else "Dry run only; no files will be deleted...")
+    )
     deleted = 0
-    for f in to_delete:
+    for f in sorted(to_delete):
+        if not args.execute:
+            print(f"  ○ Would delete: {f}")
+            continue
         try:
             Path(f).unlink()
             deleted += 1
-        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"  ✗ Failed: {Path(f).name}: {e}")
-    print(f"\n  ✓ Deleted {deleted} files")
+    if args.execute:
+        print(f"\n  ✓ Deleted {deleted} files")
+    else:
+        print(f"\n  ✓ Dry run complete; {len(to_delete)} files flagged")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

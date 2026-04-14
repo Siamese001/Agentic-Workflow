@@ -7,6 +7,7 @@ Uses multiprocessing with a 2-second timeout per module.
 import ast
 import multiprocessing
 import os
+import queue as queue_module
 import sys
 import time
 from pathlib import Path
@@ -20,6 +21,8 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 from tqdm import tqdm
+
+DEFAULT_TIMEOUT = 2.0
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -50,6 +53,11 @@ def try_import_module(module_path: str) -> tuple[str, str, float]:
         return (module_path, f"ERROR: {type(e).__name__}: {str(e)[:100]}", duration)
 
 
+def _import_worker(path: str, result_queue) -> None:
+    """Top-level worker required for spawn-based multiprocessing."""
+    result_queue.put(try_import_module(path))
+
+
 # guardian: allow-magic-config
 def import_with_timeout(module_path: str, timeout: float = 2.0) -> tuple[str, str, float]:
     """
@@ -57,13 +65,9 @@ def import_with_timeout(module_path: str, timeout: float = 2.0) -> tuple[str, st
     """
     # Use a simple approach - spawn a process and wait
     ctx = multiprocessing.get_context("spawn")
-    queue = ctx.Queue()
+    result_queue = ctx.Queue()
 
-    def worker(path, q):
-        result = try_import_module(path)
-        q.put(result)
-
-    proc = ctx.Process(target=worker, args=(module_path, queue))
+    proc = ctx.Process(target=_import_worker, args=(module_path, result_queue))
     proc.start()
     proc.join(timeout=timeout)
 
@@ -75,8 +79,8 @@ def import_with_timeout(module_path: str, timeout: float = 2.0) -> tuple[str, st
         return (module_path, "HANG (timeout)", timeout)
 
     try:
-        return queue.get_nowait()
-    except (queue.Empty, OSError):  # guardian: Add error context logging
+        return result_queue.get_nowait()
+    except (queue_module.Empty, OSError):
         return (module_path, "UNKNOWN", 0.0)
 
 

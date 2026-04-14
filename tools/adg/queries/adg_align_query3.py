@@ -114,14 +114,17 @@ def main() -> None:
             "embedder",
         ]
         where_clause, where_params = build_like_clause(("adg_name", "resolved_path"), keywords)
-        cur.execute(f"""
+        cur.execute(
+            f"""
             SELECT id, adg_name, layer, entity_type, resolved_path
             FROM nodes
             WHERE layer NOT IN ('L_TEST', 'L_UNKNOWN', '')
             AND ({where_clause})
             AND entity_type IN ('module','symbol')
             ORDER BY layer, adg_name
-        """, where_params)
+        """,
+            where_params,
+        )
         align_nodes = cur.fetchall()
 
         covered_ids = set()

@@ -22,7 +22,17 @@ from pathlib import Path
 from typing import Any
 from tqdm import tqdm
 
-ROOT = Path(__file__).resolve().parents[2]
+
+def _find_repo_root() -> Path:
+    """Resolve repository root relative to this file, with cwd fallback for ad hoc execution."""
+    file_path = Path(__file__).resolve()
+    for candidate in [file_path.parent, *file_path.parents, Path.cwd().resolve()]:
+        if (candidate / ".git").exists() or (candidate / "pyproject.toml").exists():
+            return candidate
+    return file_path.parents[2]
+
+
+ROOT = _find_repo_root()
 
 
 @dataclass
@@ -50,8 +60,16 @@ class VerificationResult:
 class AppsRefactorVerifier:
     """Deterministic verification of all 11 refactoring phases."""
 
-    def __init__(self) -> None:
+    def __init__(self, root: Path = ROOT) -> None:
+        self.root = Path(root).resolve()
         self.results: list[VerificationResult] = []
+
+    def _write_json_report(self, output_path: Path, payload: dict[str, Any]) -> None:
+        """Persist report atomically with parent directory creation."""
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = output_path.with_suffix(output_path.suffix + ".tmp")
+        tmp_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        tmp_path.replace(output_path)
 
     def verify_all(self) -> bool:
         """Run all verification checks. Returns True if all pass."""
@@ -71,7 +89,7 @@ class AppsRefactorVerifier:
 
     def verify_phase0_adg_baseline(self) -> None:
         """Phase 0: ADG baseline captured and apps_* nodes present."""
-        adg_path = ROOT / "artifacts" / "adg" / "adg_latest.json"
+        adg_path = self.root / "artifacts" / "adg" / "adg_latest.json"
 
         if not adg_path.exists():
             self.results.append(
@@ -116,25 +134,62 @@ class AppsRefactorVerifier:
 
     def verify_phase1_dead_imports(self) -> None:
         """Phase 1: F401 violations = 0 in apps_* (excluding __init__.py)."""
-        result = subprocess.run(
-            [
-                sys.executable,
-                "-m",
-                "ruff",
-                "check",
-                "--select",
-                "F401",
-                "apps_rg/",
-                "apps_lic/",
-                "apps_shared/",
-                "--output-format=json",
-            ],
-            capture_output=True,
-            text=True,
-            cwd=ROOT,
-        )
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "ruff",
+                    "check",
+                    "--select",
+                    "F401",
+                    "apps_rg/",
+                    "apps_lic/",
+                    "apps_shared/",
+                    "--output-format=json",
+                ],
+                capture_output=True,
+                text=True,
+                cwd=self.root,
+                timeout=60,
+            )
+        except subprocess.TimeoutExpired as exc:
+            self.results.append(
+                VerificationResult(
+                    phase="Phase 1",
+                    check_id="P1-F401-001",
+                    description="Zero F401 violations in apps_* (excluding __init__.py re-exports)",
+                    passed=False,
+                    failure_reason=f"ruff timed out after {exc.timeout} seconds",
+                ),
+            )
+            return
 
-        violations = json.loads(result.stdout) if result.stdout.strip().startswith("[") else []
+        if result.returncode not in (0, 1):
+            self.results.append(
+                VerificationResult(
+                    phase="Phase 1",
+                    check_id="P1-F401-001",
+                    description="Zero F401 violations in apps_* (excluding __init__.py re-exports)",
+                    passed=False,
+                    failure_reason=(result.stderr or result.stdout or "ruff invocation failed").strip(),
+                ),
+            )
+            return
+
+        try:
+            violations = json.loads(result.stdout) if result.stdout.strip() else []
+        except json.JSONDecodeError:
+            self.results.append(
+                VerificationResult(
+                    phase="Phase 1",
+                    check_id="P1-F401-001",
+                    description="Zero F401 violations in apps_* (excluding __init__.py re-exports)",
+                    passed=False,
+                    failure_reason="ruff did not return valid JSON output",
+                ),
+            )
+            return
         non_init = [v for v in violations if not v["filename"].endswith("__init__.py")]
 
         self.results.append(
@@ -153,13 +208,13 @@ class AppsRefactorVerifier:
 
     def verify_phase2_shim_removal(self) -> None:
         """Phase 2: ContentStrategyAgent shim deleted, tests updated."""
-        shim_path = ROOT / "apps_rg" / "reasoning" / "ContentStrategyAgent.py"
+        shim_path = self.root / "apps_rg" / "reasoning" / "ContentStrategyAgent.py"
         shim_exists = shim_path.exists()
 
         # Check test files import from canonical location
         test_files = [
-            ROOT / "tests" / "unit" / "test_content_strategy_agent.py",
-            ROOT / "tests" / "unit" / "apps_rg" / "engines" / "utils" / "test_content_strategy_agent.py",
+            self.root / "tests" / "unit" / "test_content_strategy_agent.py",
+            self.root / "tests" / "unit" / "apps_rg" / "engines" / "utils" / "test_content_strategy_agent.py",
         ]
 
         canonical_imports = []
@@ -197,8 +252,8 @@ class AppsRefactorVerifier:
     def verify_phase3_mcp_mixin_dedup(self) -> None:
         """Phase 3: No unconditional duplicate MCPHardenedMixin/HealerMixin stubs."""
         files_to_check = [
-            ROOT / "apps_lic" / "reasoning" / "OutreachSignalRouterAgent.py",
-            ROOT / "apps_lic" / "reasoning" / "OutreachValidationExecutorAgent.py",
+            self.root / "apps_lic" / "reasoning" / "OutreachSignalRouterAgent.py",
+            self.root / "apps_lic" / "reasoning" / "OutreachValidationExecutorAgent.py",
         ]
 
         for file_path in tqdm(files_to_check, desc="Processing", unit="item"):
@@ -254,7 +309,7 @@ class AppsRefactorVerifier:
 
     def verify_phase4_constants_ssot(self) -> None:
         """Phase 4: pipeline_constants_config.py exists and is imported correctly."""
-        ssot_path = ROOT / "apps_shared" / "config" / "pipeline_constants_config.py"
+        ssot_path = self.root / "apps_shared" / "config" / "pipeline_constants_config.py"
 
         if not ssot_path.exists():
             self.results.append(
@@ -306,7 +361,7 @@ class AppsRefactorVerifier:
         # Verify no inline MAX_RETRIES = 3 definitions in apps_* (excluding SSOT itself)
         inline_violations = []
         for app_dir in ["apps_rg", "apps_lic", "apps_shared"]:
-            for py_file in (ROOT / app_dir).rglob("*.py"):
+            for py_file in (self.root / app_dir).rglob("*.py"):
                 if py_file == ssot_path:
                     continue
                 file_content = py_file.read_text(encoding="utf-8")
@@ -330,7 +385,7 @@ class AppsRefactorVerifier:
     def verify_phase5_state_guards(self) -> None:
         """Phase 5: State bleed guards present (field(default_factory), _initialized checks)."""
         # Check LicHealingOrchestrator uses field(default_factory=dict)
-        lic_orch_path = ROOT / "apps_lic" / "reasoning" / "LicHealingOrchestrator.py"
+        lic_orch_path = self.root / "apps_lic" / "reasoning" / "LicHealingOrchestrator.py"
         if lic_orch_path.exists():
             content = lic_orch_path.read_text(encoding="utf-8")
             has_field_factory = "field(default_factory=dict)" in content
@@ -349,7 +404,7 @@ class AppsRefactorVerifier:
             )
 
         # Check ResumeEnhancementOrchestrator has _initialized guard
-        resume_orch_path = ROOT / "apps_rg" / "reasoning" / "ResumeEnhancementOrchestrator.py"
+        resume_orch_path = self.root / "apps_rg" / "reasoning" / "ResumeEnhancementOrchestrator.py"
         if resume_orch_path.exists():
             content = resume_orch_path.read_text(encoding="utf-8")
             has_initialized_guard = "_initialized" in content
@@ -368,8 +423,8 @@ class AppsRefactorVerifier:
     def verify_phase6_layer_violations(self) -> None:
         """Phase 6: meta_learning files moved to system_learning/scripts/, shims in apps_shared."""
         # Check files moved to system_learning/scripts/
-        sl_bridge = ROOT / "system_learning" / "scripts" / "meta_learning_bridge.py"
-        sl_operator = ROOT / "system_learning" / "scripts" / "meta_learning_operator.py"
+        sl_bridge = self.root / "system_learning" / "scripts" / "meta_learning_bridge.py"
+        sl_operator = self.root / "system_learning" / "scripts" / "meta_learning_operator.py"
 
         self.results.append(
             VerificationResult(
@@ -394,8 +449,8 @@ class AppsRefactorVerifier:
         )
 
         # Check backward-compat shims exist in apps_shared/scripts/
-        apps_bridge_shim = ROOT / "apps_shared" / "scripts" / "meta_learning_bridge.py"
-        apps_operator_shim = ROOT / "apps_shared" / "scripts" / "meta_learning_operator.py"
+        apps_bridge_shim = self.root / "apps_shared" / "scripts" / "meta_learning_bridge.py"
+        apps_operator_shim = self.root / "apps_shared" / "scripts" / "meta_learning_operator.py"
 
         for shim_path, check_id, name in tqdm(
             [
@@ -423,7 +478,7 @@ class AppsRefactorVerifier:
             )
 
         # Check test imports updated
-        test_bridge = ROOT / "tests" / "unit" / "test_meta_learning_bridge.py"
+        test_bridge = self.root / "tests" / "unit" / "test_meta_learning_bridge.py"
         if test_bridge.exists():
             content = test_bridge.read_text(encoding="utf-8")
             uses_canonical = "system_learning.scripts.meta_learning_bridge" in content
@@ -444,7 +499,7 @@ class AppsRefactorVerifier:
         for app, check_id in tqdm(
             [("apps_lic", "P7-ENTRY-001"), ("apps_rg", "P7-ENTRY-002")], desc="Processing", unit="item"
         ):
-            main_path = ROOT / app / "__main__.py"
+            main_path = self.root / app / "__main__.py"
 
             if not main_path.exists():
                 self.results.append(
@@ -478,7 +533,7 @@ class AppsRefactorVerifier:
     def verify_phase8_file_relocations(self) -> None:
         """Phase 8: Test files moved, ops tools relocated."""
         # Check no test_*.py files in apps_rg/scripts/
-        apps_rg_scripts = ROOT / "apps_rg" / "scripts"
+        apps_rg_scripts = self.root / "apps_rg" / "scripts"
         if apps_rg_scripts.exists():
             misplaced_tests = list(apps_rg_scripts.glob("test_*.py"))
         else:
@@ -502,9 +557,9 @@ class AppsRefactorVerifier:
 
         # Check test files exist in tests/apps_rg/scripts/
         expected_test_files = [
-            ROOT / "tests" / "apps_rg" / "scripts" / "test_engine.py",
-            ROOT / "tests" / "apps_rg" / "scripts" / "test_input.py",
-            ROOT / "tests" / "apps_rg" / "scripts" / "test_run_grand_unification_tests.py",
+            self.root / "tests" / "apps_rg" / "scripts" / "test_engine.py",
+            self.root / "tests" / "apps_rg" / "scripts" / "test_input.py",
+            self.root / "tests" / "apps_rg" / "scripts" / "test_run_grand_unification_tests.py",
         ]
         relocated_tests = [f for f in expected_test_files if f.exists()]
 
@@ -528,8 +583,8 @@ class AppsRefactorVerifier:
             "fix_duplicate_imports.py",
             "fix_duplicate_realagentdata.py",
         ]
-        still_in_apps_lic = [f for f in ops_tools if (ROOT / "apps_lic" / "tools" / f).exists()]
-        in_ops_scripts = [f for f in ops_tools if (ROOT / "ops_scripts" / "general" / f).exists()]
+        still_in_apps_lic = [f for f in ops_tools if (self.root / "apps_lic" / "tools" / f).exists()]
+        in_ops_scripts = [f for f in ops_tools if (self.root / "ops_scripts" / "general" / f).exists()]
 
         self.results.append(
             VerificationResult(
@@ -550,8 +605,8 @@ class AppsRefactorVerifier:
     def verify_phase9_circuit_breaker(self) -> None:
         """Phase 9: Hardened executors inherit from HardeningMixin (no hand-rolled retry)."""
         executors = [
-            ROOT / "apps_rg" / "enforcement" / "HardenedanthropicexecutorStrategy.py",
-            ROOT / "apps_rg" / "reasoning" / "HardenedopenaiexecutorStrategy.py",
+            self.root / "apps_rg" / "enforcement" / "HardenedanthropicexecutorStrategy.py",
+            self.root / "apps_rg" / "reasoning" / "HardenedopenaiexecutorStrategy.py",
         ]
 
         for executor_path in tqdm(executors, desc="Processing", unit="item"):
@@ -598,7 +653,7 @@ class AppsRefactorVerifier:
     def verify_phase10_architecture_migration(self) -> None:
         """Phase 10: AppGuardianSpec registry, AppHealResult contract, AppRemediationDispatcher."""
         # Check AppGuardianSpec registry
-        registry_path = ROOT / "apps_shared" / "config" / "app_guardian_registry.py"
+        registry_path = self.root / "apps_shared" / "config" / "app_guardian_registry.py"
         if registry_path.exists():
             content = registry_path.read_text(encoding="utf-8")
             spec_count = content.count("AppGuardianSpec(")
@@ -628,7 +683,7 @@ class AppsRefactorVerifier:
             )
 
         # Check AppHealResult contract
-        contract_path = ROOT / "apps_shared" / "types" / "app_heal_contract_types.py"
+        contract_path = self.root / "apps_shared" / "types" / "app_heal_contract_types.py"
         if contract_path.exists():
             content = contract_path.read_text(encoding="utf-8")
             has_heal_result = "class AppHealResult" in content
@@ -658,7 +713,7 @@ class AppsRefactorVerifier:
             )
 
         # Check AppRemediationDispatcher
-        dispatcher_path = ROOT / "apps_shared" / "scripts" / "app_remediation_dispatcher.py"
+        dispatcher_path = self.root / "apps_shared" / "scripts" / "app_remediation_dispatcher.py"
         if dispatcher_path.exists():
             content = dispatcher_path.read_text(encoding="utf-8")
             has_dispatch_func = "def dispatch(" in content
@@ -745,9 +800,10 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Verify apps_* refactoring completion")
     parser.add_argument("--json", type=Path, help="Output JSON report to file")
+    parser.add_argument("--repo-root", type=Path, default=ROOT, help="Repository root to verify")
     args = parser.parse_args()
 
-    verifier = AppsRefactorVerifier()
+    verifier = AppsRefactorVerifier(root=args.repo_root)
     all_passed = verifier.verify_all()
     verifier.generate_report(json_path=args.json)
 

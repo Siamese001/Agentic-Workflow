@@ -1,3 +1,8 @@
+---
+trigger: model_decision
+description: Use this rule when deciding whether HITL is required and when shaping the recommendation packet for architectural or governance decisions.
+---
+
 # HITL SVP Calibration — Target State & Measurable Thresholds
 
 **Status**: ACTIVE  
