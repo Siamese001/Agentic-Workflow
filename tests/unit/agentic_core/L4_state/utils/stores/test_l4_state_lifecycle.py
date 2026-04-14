@@ -1,32 +1,28 @@
-"""Test L4StateLifecycle functionality."""
-
-import sys
-from pathlib import Path
+"""Test l4 state lifecycle functionality."""
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+agentic_core = import_or_skip(
+    "agentic_core",
+    reason="agentic_core unavailable for test_l4_state_lifecycle.py tests",
+)
+module_under_test = getattr(agentic_core, "l4_state_lifecycle")
 
 
 @pytest.mark.unit
 class TestL4StateLifecycle:
-    """Test L4StateLifecycle functionality."""
+    """Test l4 state lifecycle functionality."""
 
-    def test_l4_state_lifecycle_imports(self):
-        """Test l4_state_lifecycle module imports."""
-        from agentic_core import l4_state_lifecycle
+    def test_module_imports(self):
+        assert module_under_test is not None
 
-        assert l4_state_lifecycle is not None
+    def test_module_class(self):
+        exported_class = getattr(agentic_core, "L4StateLifecycle")
+        assert exported_class is not None
 
-    def test_l4_state_lifecycle_class(self):
-        """Test L4StateLifecycle class exists."""
-        from agentic_core import L4StateLifecycle
-
-        assert L4StateLifecycle is not None
-
-    def test_l4_state_lifecycle_callable(self):
-        """Test l4_state_lifecycle functions are callable."""
-        from agentic_core import validate_l4_state_lifecycle
-
-        assert callable(validate_l4_state_lifecycle)
+    def test_module_callable(self):
+        validator = getattr(agentic_core, "validate_l4_state_lifecycle")
+        assert callable(validator)

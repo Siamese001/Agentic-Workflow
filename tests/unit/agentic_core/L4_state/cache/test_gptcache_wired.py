@@ -1,16 +1,17 @@
 """Unit tests for NativePersistentCacheClient integration in SemanticCacheManager"""
 
-import sys
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[5]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+from import_helpers import ensure_project_root, import_or_skip
 
-from agentic_core.L4_state.utils.memory.semantic_cache_manager import SemanticCacheManager
+ensure_project_root(__file__)
+SemanticCacheManager = import_or_skip(
+    "agentic_core.L4_state.utils.memory.semantic_cache_manager",
+    reason="Semantic cache manager module unavailable for GPTCache integration tests",
+).SemanticCacheManager
 
 
 def test_semantic_cache_manager_imports_gptcache() -> None:

@@ -6,15 +6,18 @@ import secrets
 
 import pytest
 
-from agentic_core.L2_execution.reasoning import (
-    AssemblyError,
-    AuthorityLevel,
-    AuthoritySlot,
-    CompiledPromptArtifact,
-    PromptBOM,
-    SlotAssemblyEngine,
-    TemplateManifest,
+_REASONING_MODULE = pytest.importorskip(
+    "agentic_core.L2_execution.reasoning",
+    reason="Artifact signing tests require agentic_core runtime modules",
 )
+
+AssemblyError = _REASONING_MODULE.AssemblyError
+AuthorityLevel = _REASONING_MODULE.AuthorityLevel
+AuthoritySlot = _REASONING_MODULE.AuthoritySlot
+CompiledPromptArtifact = _REASONING_MODULE.CompiledPromptArtifact
+PromptBOM = _REASONING_MODULE.PromptBOM
+SlotAssemblyEngine = _REASONING_MODULE.SlotAssemblyEngine
+TemplateManifest = _REASONING_MODULE.TemplateManifest
 
 
 class TestArtifactSigning:

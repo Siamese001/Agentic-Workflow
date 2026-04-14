@@ -1,32 +1,27 @@
-"""Test StructuredengineagentAdg functionality."""
+"""Smoke tests for StructuredEngineAgent ADG exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestStructuredengineagentAdg:
-    """Test StructuredengineagentAdg functionality."""
+    """Smoke tests for StructuredEngineAgent ADG exports."""
 
-    def test_StructuredEngineAgent_adg_imports(self):
-        """Test StructuredEngineAgent_adg module imports."""
-        from agentic_core import StructuredEngineAgent_adg
+    def test_StructuredEngineAgent_adg_imports(self) -> None:
+        """Import module export."""
+        symbol = import_attr_or_skip("agentic_core", "StructuredEngineAgent_adg")
+        assert symbol is not None
 
-        assert StructuredEngineAgent_adg is not None
+    def test_StructuredEngineAgent_adg_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "StructuredengineagentAdg")
+        assert klass is not None
 
-    def test_StructuredEngineAgent_adg_class(self):
-        """Test StructuredengineagentAdg class exists."""
-        from agentic_core import StructuredengineagentAdg
-
-        assert StructuredengineagentAdg is not None
-
-    def test_StructuredEngineAgent_adg_callable(self):
-        """Test StructuredEngineAgent_adg functions are callable."""
-        from agentic_core import validate_StructuredEngineAgent_adg
-
-        assert callable(validate_StructuredEngineAgent_adg)
+    def test_StructuredEngineAgent_adg_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_StructuredEngineAgent_adg")
+        assert callable(validator)

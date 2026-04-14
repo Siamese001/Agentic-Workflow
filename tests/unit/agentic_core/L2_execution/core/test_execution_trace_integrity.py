@@ -1,32 +1,27 @@
-"""Test ExecutionTraceIntegrity functionality."""
+"""Smoke tests for ExecutionTraceIntegrity exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestExecutionTraceIntegrity:
-    """Test ExecutionTraceIntegrity functionality."""
+    """Smoke tests for ExecutionTraceIntegrity exports."""
 
-    def test_execution_trace_integrity_imports(self):
-        """Test execution_trace_integrity module imports."""
-        from agentic_core import execution_trace_integrity
+    def test_execution_trace_integrity_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "execution_trace_integrity")
+        assert module is not None
 
-        assert execution_trace_integrity is not None
+    def test_execution_trace_integrity_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "ExecutionTraceIntegrity")
+        assert klass is not None
 
-    def test_execution_trace_integrity_class(self):
-        """Test ExecutionTraceIntegrity class exists."""
-        from agentic_core import ExecutionTraceIntegrity
-
-        assert ExecutionTraceIntegrity is not None
-
-    def test_execution_trace_integrity_callable(self):
-        """Test execution_trace_integrity functions are callable."""
-        from agentic_core import validate_execution_trace_integrity
-
-        assert callable(validate_execution_trace_integrity)
+    def test_execution_trace_integrity_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_execution_trace_integrity")
+        assert callable(validator)

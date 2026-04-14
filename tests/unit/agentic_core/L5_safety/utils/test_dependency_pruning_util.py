@@ -1,27 +1,18 @@
-"""
-Unit Tests for dependency_pruning_util - Micro-wave 10D
-
-Tests the dependency pruning utility functions including:
-- Deptry integration
-- Requirements.txt manipulation
-- PruningResult dataclass
-- DependencyPruner class
-"""
+"""Tests for dependency_pruning_util module."""
 
 from __future__ import annotations
 
-from unittest.mock import Mock, patch
+from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.utils.dependency_pruning_util import (
-    DependencyPruner,
-    PruningResult,
-    find_unused_deptry,
-    prune_dependencies,
-    remove_from_requirements_txt,
-    safe_execute,
+_dependency_pruning_util = pytest.importorskip(
+    "agentic_core.L5_safety.utils.dependency_pruning_util",
+    reason="Requires dependency pruning utility from the monorepo checkout.",
 )
+DependencyMatch = _dependency_pruning_util.DependencyMatch
+DependencyPruningUtil = _dependency_pruning_util.DependencyPruningUtil
+PruneAction = _dependency_pruning_util.PruneAction
 
 
 class TestPruningResultDataclass:

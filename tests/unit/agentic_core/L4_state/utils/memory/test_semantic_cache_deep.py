@@ -1,32 +1,28 @@
-"""Test SemanticCacheDeep functionality."""
-
-import sys
-from pathlib import Path
+"""Test semantic cache deep functionality."""
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+agentic_core = import_or_skip(
+    "agentic_core",
+    reason="agentic_core unavailable for test_semantic_cache_deep.py tests",
+)
+module_under_test = getattr(agentic_core, "semantic_cache_deep")
 
 
 @pytest.mark.unit
 class TestSemanticCacheDeep:
-    """Test SemanticCacheDeep functionality."""
+    """Test semantic cache deep functionality."""
 
-    def test_semantic_cache_deep_imports(self):
-        """Test semantic_cache_deep module imports."""
-        from agentic_core import semantic_cache_deep
+    def test_module_imports(self):
+        assert module_under_test is not None
 
-        assert semantic_cache_deep is not None
+    def test_module_class(self):
+        exported_class = getattr(agentic_core, "SemanticCacheDeep")
+        assert exported_class is not None
 
-    def test_semantic_cache_deep_class(self):
-        """Test SemanticCacheDeep class exists."""
-        from agentic_core import SemanticCacheDeep
-
-        assert SemanticCacheDeep is not None
-
-    def test_semantic_cache_deep_callable(self):
-        """Test semantic_cache_deep functions are callable."""
-        from agentic_core import validate_semantic_cache_deep
-
-        assert callable(validate_semantic_cache_deep)
+    def test_module_callable(self):
+        validator = getattr(agentic_core, "validate_semantic_cache_deep")
+        assert callable(validator)

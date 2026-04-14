@@ -1,32 +1,16 @@
-"""Placeholder test file - syntax fixed."""
+"""Behavioral tests for react_policy_boundary."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+from agentic_core.react_policy_boundary import ReactPolicyBoundary, is_policy_safe_transition
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone("valid_value")
+def test_allowed_tool_within_turn_budget_passes():
+    boundary = ReactPolicyBoundary(allowed_tools=("search", "summarize"), max_turns=2)
+    assert is_policy_safe_transition(boundary, "search", 1) is True
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_disallowed_tool_or_turn_budget_fails():
+    boundary = ReactPolicyBoundary(allowed_tools=("search",), max_turns=2)
+    assert is_policy_safe_transition(boundary, "write", 1) is False
+    assert is_policy_safe_transition(boundary, "search", 2) is False

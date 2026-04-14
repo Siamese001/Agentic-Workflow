@@ -1,32 +1,16 @@
-"""Placeholder test file - syntax fixed."""
+"""Behavioral tests for result_types_adg."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+import pytest
+
+from agentic_core.result_types_adg import ResultEnvelope
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+def test_result_envelope_accepts_valid_status():
+    assert ResultEnvelope(status="ok").validate().status == "ok"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_result_envelope_rejects_blank_status():
+    with pytest.raises(ValueError):
+        ResultEnvelope(status=" ").validate()

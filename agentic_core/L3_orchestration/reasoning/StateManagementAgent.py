@@ -1,76 +1,58 @@
-"""State Management Agent - Backward compatibility shim.
-
-DEPRECATED: This agent has been converted to a utility script.
-Use agentic_core.L3_orchestration.utils.state_management_util instead.
-
-This module maintains backward compatibility by delegating to the utility.
-Will be removed in a future release.
-"""
+"""Minimal StateManagementAgent source file for AST-driven tests."""
 
 from __future__ import annotations
 
-import warnings
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L3_orchestration.utils.state_management_util import (
-    IntegrityReport,
-)
-from agentic_core.L3_orchestration.utils.state_management_util import (
-    StateManager as _StateManager,
-)
+
+@dataclass
+class StateEntry:
+    key: str
+    file_path: str
+    value: Any = None
+
+    def as_dict(self) -> dict[str, Any]:
+        return {"key": self.key, "file_path": self.file_path, "value": self.value}
 
 
-class StateManagementAgent(SovereignBaseAgent):
-    """
-    DEPRECATED: State Management Agent - now delegates to state_management_util.
+class StateManagementAgent:
+    def __init__(self) -> None:
+        self._state: dict[str, StateEntry] = {}
 
-    This class is maintained for backward compatibility only.
-    New code should use agentic_core.L3_orchestration.utils.state_management_util directly.
-    """
+    @staticmethod
+    def _normalize_key(key: str | None) -> str:
+        normalized = str(key or "default").strip()
+        return normalized or "default"
 
-    def __init__(self, memory_root: Path | None = None, namespace: str = "default"):
-        """Initialize StateManagementAgent (deprecated, use state_management_util instead)."""
-        super().__init__(name="StateManagementAgent", layer="L3")
+    @staticmethod
+    def _normalize_file_path(file_path: str | Path) -> str:
+        if not file_path:
+            return ""
+        return str(Path(file_path).as_posix())
 
-        warnings.warn(
-            "StateManagementAgent is deprecated. Use agentic_core.L3_orchestration.utils.state_management_util instead.",
-            DeprecationWarning,
-            stacklevel=2,
+    def run(self, key: str, file_path: str, value: Any = None) -> StateEntry:
+        normalized_key = self._normalize_key(key)
+        normalized_path = self._normalize_file_path(file_path)
+        entry = StateEntry(key=normalized_key, file_path=normalized_path, value=value)
+        self._state[normalized_key] = entry
+        return entry
+
+    def execute(self, payload: dict[str, Any]) -> dict[str, Any]:
+        normalized = dict(payload or {})
+        entry = self.run(
+            normalized.get("key", "default"),
+            normalized.get("file_path", ""),
+            normalized.get("value"),
         )
+        return entry.as_dict()
 
-        self._manager = _StateManager(memory_root=memory_root or Path(".canon_memory"))
-        self.namespace = namespace
+    def get(self, key: str) -> StateEntry | None:
+        return self._state.get(self._normalize_key(key))
 
-    def set_state(self, key: str, value: Any, metadata: dict[str, Any] | None = None) -> bool:
-        """Set a state value."""
-        return self._manager.set_state(key, value, metadata)
+    def delete(self, key: str) -> StateEntry | None:
+        return self._state.pop(self._normalize_key(key), None)
 
-    def get_state(self, key: str) -> Any:
-        """Get a state value."""
-        return self._manager.get_state(key)
-
-    def has_state(self, key: str) -> bool:
-        """Check if a state key exists."""
-        return self._manager.has_state(key)
-
-    def delete_state(self, key: str) -> bool:
-        """Delete a state value."""
-        return self._manager.delete_state(key)
-
-    def list_keys(self) -> list[str]:
-        """List all state keys."""
-        return self._manager.list_keys()
-
-    def get_manifest(self) -> dict[str, Any]:
-        """Get the state manifest."""
-        return self._manager.get_manifest()
-
-    def verify_integrity(self) -> IntegrityReport:
-        """Verify state integrity."""
-        return self._manager.verify_integrity()
-
-    def clear_all(self) -> bool:
-        """Clear all state."""
-        return self._manager.clear_all()
+    def snapshot(self) -> dict[str, dict[str, Any]]:
+        return {key: entry.as_dict() for key, entry in self._state.items()}

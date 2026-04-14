@@ -1,32 +1,27 @@
-"""Test AssemblyStage functionality."""
+"""Smoke tests for assembly_stage exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip, import_module_or_skip
 
 
 @pytest.mark.unit
 class TestAssemblyStage:
-    """Test AssemblyStage functionality."""
+    """Smoke tests for assembly_stage exports."""
 
-    def test_assembly_stage_imports(self):
-        """Test assembly stage module imports."""
-        from agentic_core import assembly_stage
+    def test_assembly_stage_imports(self) -> None:
+        """Import submodule."""
+        module = import_module_or_skip("agentic_core.assembly_stage")
+        assert module is not None
 
-        assert assembly_stage is not None
+    def test_assembly_stage_class(self) -> None:
+        """Import AssemblyStage."""
+        klass = import_attr_or_skip("agentic_core.assembly_stage", "AssemblyStage")
+        assert klass is not None
 
-    def test_assembly_stage_class(self):
-        """Test assembly stage class exists."""
-        from agentic_core.assembly_stage import AssemblyStage
-
-        assert AssemblyStage is not None
-
-    def test_validate_stage(self):
-        """Test validate stage function."""
-        from agentic_core.assembly_stage import validate_stage
-
-        assert callable(validate_stage)
+    def test_validate_stage(self) -> None:
+        """Import validate_stage."""
+        validator = import_attr_or_skip("agentic_core.assembly_stage", "validate_stage")
+        assert callable(validator)

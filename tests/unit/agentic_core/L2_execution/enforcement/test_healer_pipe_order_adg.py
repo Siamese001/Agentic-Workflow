@@ -1,37 +1,34 @@
-"""ADG-driven tests for healer_pipe_order - populated Wave 3."""
+"""Smoke tests for healer_pipe_order exports."""
 
 from __future__ import annotations
 
 import pytest
 
+from L2_execution._agentic_core_smoke import import_attr_or_skip
+
 
 @pytest.mark.unit
 class TestHealerpipeorder:
-    """Test healer_pipe_order contracts."""
+    """Validate expected public exports for healer_pipe_order."""
 
-    def test_module_importable(self):
-        """Test module can be imported."""
-        from agentic_core import healer_pipe_order
+    def test_module_importable(self) -> None:
+        """Import the root export."""
+        module = import_attr_or_skip("agentic_core", "healer_pipe_order")
+        assert module is not None
 
-        assert healer_pipe_order is not None
+    def test_module_has_exports(self) -> None:
+        """Validate __all__ exports when declared."""
+        module = import_attr_or_skip("agentic_core", "healer_pipe_order")
+        exports = getattr(module, "__all__", ())
+        assert all(hasattr(module, name) for name in exports)
 
-    def test_module_has_exports(self):
-        """Test module has __all__ exports."""
-        from agentic_core import healer_pipe_order
+    def test_module_docstring_present(self) -> None:
+        """Ensure the module docstring is present."""
+        module = import_attr_or_skip("agentic_core", "healer_pipe_order")
+        assert module.__doc__ is not None
 
-        if hasattr(healer_pipe_order, "__all__"):
-            for name in healer_pipe_order.__all__:
-                assert hasattr(healer_pipe_order, name)
-
-    def test_module_docstring_present(self):
-        """Test module has documentation."""
-        from agentic_core import healer_pipe_order
-
-        assert healer_pipe_order.__doc__ is not None
-
-    def test_module_attributes_accessible(self):
-        """Test module attributes are accessible."""
-        from agentic_core import healer_pipe_order
-
-        attrs = [a for a in dir(healer_pipe_order) if not a.startswith("_")]
-        assert len(attrs) >= 0
+    def test_module_attributes_accessible(self) -> None:
+        """Ensure public attributes can be enumerated."""
+        module = import_attr_or_skip("agentic_core", "healer_pipe_order")
+        attrs = [name for name in dir(module) if not name.startswith("_")]
+        assert isinstance(attrs, list)

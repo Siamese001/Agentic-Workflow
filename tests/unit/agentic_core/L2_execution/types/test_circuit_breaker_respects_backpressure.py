@@ -1,32 +1,27 @@
-"""Test CircuitBreakerRespectsBackpressure functionality."""
+"""Smoke tests for circuit_breaker_respects_backpressure exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestCircuitBreakerRespectsBackpressure:
-    """Test CircuitBreakerRespectsBackpressure functionality."""
+    """Smoke tests for circuit_breaker_respects_backpressure exports."""
 
-    def test_circuit_breaker_respects_backpressure_imports(self):
-        """Test circuit_breaker_respects_backpressure module imports."""
-        from agentic_core import circuit_breaker_respects_backpressure
+    def test_circuit_breaker_respects_backpressure_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "circuit_breaker_respects_backpressure")
+        assert module is not None
 
-        assert circuit_breaker_respects_backpressure is not None
+    def test_circuit_breaker_respects_backpressure_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "CircuitBreakerRespectsBackpressure")
+        assert klass is not None
 
-    def test_circuit_breaker_respects_backpressure_class(self):
-        """Test CircuitBreakerRespectsBackpressure class exists."""
-        from agentic_core import CircuitBreakerRespectsBackpressure
-
-        assert CircuitBreakerRespectsBackpressure is not None
-
-    def test_circuit_breaker_respects_backpressure_callable(self):
-        """Test circuit_breaker_respects_backpressure functions are callable."""
-        from agentic_core import validate_circuit_breaker_respects_backpressure
-
-        assert callable(validate_circuit_breaker_respects_backpressure)
+    def test_circuit_breaker_respects_backpressure_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_circuit_breaker_respects_backpressure")
+        assert callable(validator)

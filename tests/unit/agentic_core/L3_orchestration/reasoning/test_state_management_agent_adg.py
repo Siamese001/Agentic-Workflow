@@ -1,49 +1,40 @@
-"""ADG contract tests for L3_orchestration/reasoning/StateManagementAgent.py.
-
-Uses AST-based source inspection -- immune to broken transitive deps.
-"""
+"""ADG contract tests for StateManagementAgent source structure."""
 
 from __future__ import annotations
 
 import ast
-import pathlib
+from pathlib import Path
 
 import pytest
 
 pytestmark = pytest.mark.unit
 
-_SRC = (
-    pathlib.Path(__file__).parents[5]
-    / "agentic_core"
-    / "L3_orchestration"
-    / "reasoning"
-    / "StateManagementAgent.py"
-)
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SRC = REPO_ROOT / "agentic_core" / "L3_orchestration" / "reasoning" / "StateManagementAgent.py"
 
 
-def _tree():
-    return ast.parse(_SRC.read_text(encoding="utf-8", errors="replace"))
+def _tree() -> ast.AST:
+    return ast.parse(SRC.read_text(encoding="utf-8", errors="replace"))
 
 
-def _class_names():
-    return {n.name for n in ast.walk(_tree()) if isinstance(n, ast.ClassDef)}
+def _class_names() -> set[str]:
+    return {node.name for node in ast.walk(_tree()) if isinstance(node, ast.ClassDef)}
 
 
-def _methods_of(cls_name: str) -> set:
-    tree = _tree()
-    cls = next((n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == cls_name), None)
-    if cls is None:
-        return set()
-    return {n.name for n in ast.walk(cls) if isinstance(n, ast.FunctionDef)}
+def _methods_of(class_name: str) -> set[str]:
+    for node in ast.walk(_tree()):
+        if isinstance(node, ast.ClassDef) and node.name == class_name:
+            return {child.name for child in node.body if isinstance(child, ast.FunctionDef)}
+    return set()
 
 
-def _src_text():
-    return _SRC.read_text(encoding="utf-8", errors="replace")
+def _src_text() -> str:
+    return SRC.read_text(encoding="utf-8", errors="replace")
 
 
 class TestStateManagementAgentSource:
     def test_source_exists(self):
-        assert _SRC.exists()
+        assert SRC.exists()
 
     def test_parses_without_error(self):
         _tree()
@@ -61,15 +52,5 @@ class TestStateManagementAgentSource:
         assert "file_path" in _src_text()
 
     def test_state_management_agent_has_run_or_execute(self):
-        pass
-
-    """Test state_management_agent_has_run_or_execute runtime behavior."""
-    # Arrange
-    input_data = {}  # Replace with actual test data
-
-    # Act
-    result = {}  # Placeholder - replace with actual execution
-
-    # Assert
-    assert result is not None, "Function should return a result"
-    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+        methods = _methods_of("StateManagementAgent")
+        assert "run" in methods or "execute" in methods

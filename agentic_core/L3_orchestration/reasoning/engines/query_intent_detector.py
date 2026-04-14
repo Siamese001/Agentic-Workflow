@@ -1,102 +1,105 @@
-"""Query Intent Detection for Hybrid Search.
+from __future__ import annotations
 
-Determines whether a query is semantic (intent-based) or structural (graph-based).
-"""
-
-import logging
+from enum import Enum
 import re
-from typing import Literal
-
-Logger = logging.getLogger(__name__)
+from typing import Any
 
 
-class QueryIntent:
-    """Query intent classification."""
-
+class QueryIntent(str, Enum):
     SEMANTIC = "semantic"
     STRUCTURAL = "structural"
     HYBRID = "hybrid"
 
 
 class QueryIntentDetector:
-    """Detects query intent based on patterns and keywords."""
+    """Heuristic intent classifier with stable defaults and bounded confidence."""
 
-    # Structural query patterns
-    STRUCTURAL_PATTERNS = [
-        r"calls?\s+\w+",  # "calls X", "call function"
-        r"import(s|ed)?\s+\w+",  # "imports X", "imported from"
-        r"depend(s|encies)?\s+on",  # "depends on", "dependencies of"
-        r"parent\s+of",  # "parent of"
-        r"child\s+of",  # "child of"
-        r"caller(s)?\s+of",  # "callers of"
-        r"callee(s)?\s+of",  # "callees of"
-        r"violat(es|ions)?",  # "violates", "violations"
-        r"layer\s+\w+",  # "layer L2"
-        r"inherits?\s+from",  # "inherits from"
-        r"extends?",  # "extends"
+    _semantic_patterns = [
+        r"\bhow\s+to\b",
+        r"\bpurpose\b",
+        r"\bexplain\b",
+        r"\bimplementation\b",
+        r"\bwhat\s+is\b",
+        r"\bwhy\b",
+        r"\bbehavior\b",
+        r"\bsemantics?\b",
     ]
-
-    # Semantic query patterns
-    SEMANTIC_PATTERNS = [
-        r"how\s+to\s+\w+",  # "how to do X"
-        r"what\s+is",  # "what is X"
-        r"explain\s+\w+",  # "explain X"
-        r"describe\s+\w+",  # "describe X"
-        r"why\s+does",  # "why does X"
-        r"when\s+to\s+use",  # "when to use X"
+    _structural_patterns = [
+        r"\bcalls?\b",
+        r"\bimports?\b",
+        r"\bcallers?\b",
+        r"\bdepends?\s+on\b",
+        r"\bfile\b",
+        r"\bpath\b",
+        r"\broute\b",
+        r"\bedge\b",
     ]
+    _path_tokens = ("/", "\\", ".py", "::", "->", "@")
 
-    def __init__(self):
-        self._structural_regex = re.compile("|".join(self.STRUCTURAL_PATTERNS), re.IGNORECASE)
-        self._semantic_regex = re.compile("|".join(self.SEMANTIC_PATTERNS), re.IGNORECASE)
+    def __init__(self) -> None:
+        self._semantic_regexes = [re.compile(pattern, re.IGNORECASE) for pattern in self._semantic_patterns]
+        self._structural_regexes = [
+            re.compile(pattern, re.IGNORECASE) for pattern in self._structural_patterns
+        ]
 
-    def detect_intent(self, query: str) -> Literal["semantic", "structural", "hybrid"]:
-        """Detect query intent.
+    @staticmethod
+    def _normalize_query(query: Any) -> str:
+        if query is None:
+            return ""
+        if isinstance(query, str):
+            return query.strip()
+        return str(query).strip()
 
-        Args:
-            query: Query string
+    def _pattern_hits(self, text: str, regexes: list[re.Pattern[str]]) -> int:
+        return sum(1 for regex in regexes if regex.search(text))
 
-        Returns:
-            Intent classification: semantic, structural, or hybrid
-        """
-        if not query or not isinstance(query, str):
+    def _structural_bonus(self, text: str) -> int:
+        bonus = 0
+        if any(token in text for token in self._path_tokens):
+            bonus += 1
+        if re.search(r"\b[A-Za-z_][A-Za-z0-9_]*\([^)]*\)", text):
+            bonus += 1
+        if re.search(r"\bline\s+\d+\b", text, re.IGNORECASE):
+            bonus += 1
+        return bonus
+
+    def _semantic_bonus(self, text: str) -> int:
+        bonus = 0
+        if "?" in text:
+            bonus += 1
+        if re.search(r"\b(meaning|intent|goal|overview|summary)\b", text, re.IGNORECASE):
+            bonus += 1
+        return bonus
+
+    def detect_intent(self, query: Any) -> QueryIntent:
+        text = self._normalize_query(query)
+        if not text:
             return QueryIntent.SEMANTIC
 
-        # Check for structural patterns
-        structural_matches = self._structural_regex.findall(query)
-        has_structural = len(structural_matches) > 0
+        semantic_hits = self._pattern_hits(text, self._semantic_regexes) + self._semantic_bonus(text)
+        structural_hits = self._pattern_hits(text, self._structural_regexes) + self._structural_bonus(text)
 
-        # Check for semantic patterns
-        semantic_matches = self._semantic_regex.findall(query)
-        has_semantic = len(semantic_matches) > 0
-
-        # Determine intent
-        if has_structural and has_semantic:
+        if semantic_hits > 0 and structural_hits > 0:
             return QueryIntent.HYBRID
-        elif has_structural:
+        if structural_hits > semantic_hits:
             return QueryIntent.STRUCTURAL
-        elif has_semantic:
-            return QueryIntent.SEMANTIC
-        else:
-            # Default to semantic for unknown patterns
-            return QueryIntent.SEMANTIC
+        return QueryIntent.SEMANTIC
 
-    def get_confidence(self, query: str) -> float:
-        """Get confidence score for intent detection.
+    def get_confidence(self, query: Any) -> float:
+        text = self._normalize_query(query)
+        if not text:
+            return 0.3
 
-        Args:
-            query: Query string
+        semantic_hits = self._pattern_hits(text, self._semantic_regexes) + self._semantic_bonus(text)
+        structural_hits = self._pattern_hits(text, self._structural_regexes) + self._structural_bonus(text)
+        total_hits = semantic_hits + structural_hits
 
-        Returns:
-            Confidence score between 0.0 and 1.0
-        """
-        structural_matches = len(self._structural_regex.findall(query))
-        semantic_matches = len(self._semantic_regex.findall(query))
+        if total_hits == 0:
+            return 0.3
+        if semantic_hits > 0 and structural_hits > 0:
+            return min(0.95, 0.55 + (min(semantic_hits, structural_hits) * 0.1))
+        dominant_hits = max(semantic_hits, structural_hits)
+        return min(0.95, 0.4 + (dominant_hits * 0.12))
 
-        total_matches = structural_matches + semantic_matches
-        if total_matches == 0:
-            return 0.3  # Low confidence for no matches
 
-        # Higher confidence with more matches
-        confidence = min(total_matches * 0.2, 1.0)
-        return confidence
+__all__ = ["QueryIntent", "QueryIntentDetector"]

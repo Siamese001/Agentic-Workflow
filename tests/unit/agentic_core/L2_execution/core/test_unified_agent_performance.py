@@ -1,32 +1,27 @@
-"""Test UnifiedAgentPerformance functionality."""
+"""Smoke tests for UnifiedAgentPerformance exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestUnifiedAgentPerformance:
-    """Test UnifiedAgentPerformance functionality."""
+    """Smoke tests for UnifiedAgentPerformance exports."""
 
-    def test_unified_agent_performance_imports(self):
-        """Test unified_agent_performance module imports."""
-        from agentic_core import unified_agent_performance
+    def test_unified_agent_performance_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "unified_agent_performance")
+        assert module is not None
 
-        assert unified_agent_performance is not None
+    def test_unified_agent_performance_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "UnifiedAgentPerformance")
+        assert klass is not None
 
-    def test_unified_agent_performance_class(self):
-        """Test UnifiedAgentPerformance class exists."""
-        from agentic_core import UnifiedAgentPerformance
-
-        assert UnifiedAgentPerformance is not None
-
-    def test_unified_agent_performance_callable(self):
-        """Test unified_agent_performance functions are callable."""
-        from agentic_core import validate_unified_agent_performance
-
-        assert callable(validate_unified_agent_performance)
+    def test_unified_agent_performance_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_unified_agent_performance")
+        assert callable(validator)

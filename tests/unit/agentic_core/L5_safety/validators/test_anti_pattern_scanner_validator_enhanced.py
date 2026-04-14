@@ -1,8 +1,4 @@
-"""Enhanced test for AntiPatternScanner with strong assertions and behavioral validation.
-
-This test replaces weak assertions with comprehensive behavioral validation,
-error handling tests, and edge case coverage.
-"""
+"""Enhanced tests for AntiPatternScanner with strong behavioral validation."""
 
 from __future__ import annotations
 
@@ -10,21 +6,19 @@ from unittest.mock import patch
 
 import pytest
 
-# Check if anti_pattern_scanner_validator is available
-try:
-    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
-        AntiPatternScanner,
-        ScanReport,
-    )
-    from agentic_core.L5_safety.validators.base_detector_validator import (
-        AntiPatternCategory,
-        AntiPatternViolation,
-    )
+_validator = pytest.importorskip(
+    "agentic_core.L5_safety.validators.anti_pattern_scanner_validator",
+    reason="Requires anti_pattern_scanner_validator from the monorepo checkout.",
+)
+_base = pytest.importorskip(
+    "agentic_core.L5_safety.validators.base_detector_validator",
+    reason="Requires base detector validator types from the monorepo checkout.",
+)
 
-    ANTI_PATTERN_AVAILABLE = True
-except ImportError:
-    ANTI_PATTERN_AVAILABLE = False
-
+AntiPatternScanner = _validator.AntiPatternScanner
+ScanReport = _validator.ScanReport
+AntiPatternCategory = _base.AntiPatternCategory
+AntiPatternViolation = _base.AntiPatternViolation
 
 pytestmark = pytest.mark.unit
 

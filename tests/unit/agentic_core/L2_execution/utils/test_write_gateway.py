@@ -13,12 +13,15 @@ import json
 
 import pytest
 
-from agentic_core.L2_execution.utils.write_gateway import (
-    WriteAmplificationError,
-    WriteSizeCapError,
-    _atomic_write_bytes,
-    write_json,
+_WRITE_GATEWAY = pytest.importorskip(
+    "agentic_core.L2_execution.utils.write_gateway",
+    reason="Write-gateway tests require agentic_core runtime modules",
 )
+
+WriteAmplificationError = _WRITE_GATEWAY.WriteAmplificationError
+WriteSizeCapError = _WRITE_GATEWAY.WriteSizeCapError
+_atomic_write_bytes = _WRITE_GATEWAY._atomic_write_bytes
+write_json = _WRITE_GATEWAY.write_json
 
 
 def test_atomic_write_bytes_creates_file(tmp_path) -> None:

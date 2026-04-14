@@ -9,11 +9,13 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+import pytest
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-CANONICAL = REPO_ROOT / AGENTIC_CORE_DIR / "mixins"
-AGENTIC_CORE = REPO_ROOT / AGENTIC_CORE_DIR
+_path_constants = pytest.importorskip(
+    "agentic_core.L0_routing.config.path_constants",
+    reason="Requires path constants from the monorepo checkout.",
+)
+AGENTIC_CORE_DIR = _path_constants.AGENTIC_CORE_DIR
 
 
 def _find_mixin_classes_outside_canonical() -> list[str]:

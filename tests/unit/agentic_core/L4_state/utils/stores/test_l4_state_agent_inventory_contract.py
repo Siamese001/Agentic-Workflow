@@ -1,32 +1,28 @@
-"""Test L4StateAgentInventoryContract functionality."""
-
-import sys
-from pathlib import Path
+"""Test l4 state agent inventory contract functionality."""
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+agentic_core = import_or_skip(
+    "agentic_core",
+    reason="agentic_core unavailable for test_l4_state_agent_inventory_contract.py tests",
+)
+module_under_test = getattr(agentic_core, "l4_state_agent_inventory_contract")
 
 
 @pytest.mark.unit
 class TestL4StateAgentInventoryContract:
-    """Test L4StateAgentInventoryContract functionality."""
+    """Test l4 state agent inventory contract functionality."""
 
-    def test_l4_state_agent_inventory_contract_imports(self):
-        """Test l4_state_agent_inventory_contract module imports."""
-        from agentic_core import l4_state_agent_inventory_contract
+    def test_module_imports(self):
+        assert module_under_test is not None
 
-        assert l4_state_agent_inventory_contract is not None
+    def test_module_class(self):
+        exported_class = getattr(agentic_core, "L4StateAgentInventoryContract")
+        assert exported_class is not None
 
-    def test_l4_state_agent_inventory_contract_class(self):
-        """Test L4StateAgentInventoryContract class exists."""
-        from agentic_core import L4StateAgentInventoryContract
-
-        assert L4StateAgentInventoryContract is not None
-
-    def test_l4_state_agent_inventory_contract_callable(self):
-        """Test l4_state_agent_inventory_contract functions are callable."""
-        from agentic_core import validate_l4_state_agent_inventory_contract
-
-        assert callable(validate_l4_state_agent_inventory_contract)
+    def test_module_callable(self):
+        validator = getattr(agentic_core, "validate_l4_state_agent_inventory_contract")
+        assert callable(validator)

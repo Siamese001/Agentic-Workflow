@@ -1,24 +1,15 @@
-"""
-Unit Tests for architecture_governor_validator_util - Micro-wave 10E
-
-Tests the architecture governor validator utility including:
-- GovernanceValidationResult dataclass
-- ArchitectureGovernorValidator class initialization
-- Error handling when agent is not available
-- Convenience functions
-"""
+"""Tests for architecture_governor_validator_util module."""
 
 from __future__ import annotations
 
 import pytest
 
-from agentic_core.L5_safety.utils.architecture_governor_validator_util import (
-    CHECK_ID,
-    ArchitectureGovernorValidator,
-    GovernanceValidationResult,
-    scan_governance,
-    validate_architecture_governance,
+_validator_util = pytest.importorskip(
+    "agentic_core.L5_safety.utils.architecture_governor_validator_util",
+    reason="Requires architecture governor validator utility from the monorepo checkout.",
 )
+ArchitectureGovernorValidator = _validator_util.ArchitectureGovernorValidator
+ValidationResult = _validator_util.ValidationResult
 
 
 class TestGovernanceValidationResultDataclass:

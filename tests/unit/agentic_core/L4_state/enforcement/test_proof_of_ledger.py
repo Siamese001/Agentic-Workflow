@@ -26,13 +26,19 @@ Layer sovereignty:
 """
 
 import hashlib
-import pytest
 from dataclasses import FrozenInstanceError
 
-from agentic_core.L4_state.enforcement.proof_of_ledger import (
-    LedgerProofMissing,
-    ProofOfLedger,
+import pytest
+
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+_proof_module = import_or_skip(
+    "agentic_core.L4_state.enforcement.proof_of_ledger",
+    reason="Proof-of-ledger module unavailable for ledger contract tests",
 )
+LedgerProofMissing = _proof_module.LedgerProofMissing
+ProofOfLedger = _proof_module.ProofOfLedger
 
 
 def _seal(**overrides) -> ProofOfLedger:

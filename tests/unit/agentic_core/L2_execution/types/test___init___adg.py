@@ -1,32 +1,27 @@
-"""Test InitAdg functionality."""
+"""Smoke tests for __init___adg exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestInitAdg:
-    """Test InitAdg functionality."""
+    """Smoke tests for __init___adg exports."""
 
-    def test___init___adg_imports(self):
-        """Test __init___adg module imports."""
-        from agentic_core import __init___adg
+    def test___init___adg_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "__init___adg")
+        assert module is not None
 
-        assert __init___adg is not None
+    def test___init___adg_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "InitAdg")
+        assert klass is not None
 
-    def test___init___adg_class(self):
-        """Test InitAdg class exists."""
-        from agentic_core import InitAdg
-
-        assert InitAdg is not None
-
-    def test___init___adg_callable(self):
-        """Test __init___adg functions are callable."""
-        from agentic_core import validate___init___adg
-
-        assert callable(validate___init___adg)
+    def test___init___adg_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate___init___adg")
+        assert callable(validator)

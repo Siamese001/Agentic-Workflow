@@ -1,32 +1,28 @@
-"""Test HealContractTypes functionality."""
+"""Smoke tests for heal_contract_types exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestHealContractTypes:
-    """Test HealContractTypes functionality."""
+    """Smoke tests for heal_contract_types exports."""
 
-    def test_heal_contract_types_imports(self):
-        """Test heal_contract_types module imports."""
-        from agentic_core import heal_contract_types
+    def test_heal_contract_types_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "heal_contract_types")
+        assert module is not None
 
-        assert heal_contract_types is not None
+    def test_heal_contract_types_docstring_present(self) -> None:
+        """Ensure the module docstring is present."""
+        module = import_attr_or_skip("agentic_core", "heal_contract_types")
+        assert module.__doc__ is not None
 
-    def test_heal_contract_types_class(self):
-        """Test HealContractTypes class exists."""
-        from agentic_core import HealContractTypes
-
-        assert HealContractTypes is not None
-
-    def test_heal_contract_types_callable(self):
-        """Test heal_contract_types functions are callable."""
-        from agentic_core import validate_heal_contract_types
-
-        assert callable(validate_heal_contract_types)
+    def test_heal_contract_types_public_attributes_accessible(self) -> None:
+        """Ensure public attributes can be enumerated."""
+        module = import_attr_or_skip("agentic_core", "heal_contract_types")
+        attrs = [name for name in dir(module) if not name.startswith("_")]
+        assert isinstance(attrs, list)

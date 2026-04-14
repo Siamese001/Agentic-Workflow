@@ -1,46 +1,37 @@
-"""Placeholder test file - syntax fixed."""
+"""Smoke tests for L5 safety detection-signal config exports."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
+
 import unittest
+
+import pytest
+
+_config = pytest.importorskip(
+    "agentic_core.L5_safety.config",
+    reason="Requires agentic_core L5 config exports from the monorepo checkout.",
+)
+
+
+def _require_attr(name: str):
+    value = getattr(_config, name)
+    assert value is not None
+    return value
 
 
 class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L5_safety.config."""
+    """Generated smoke tests for agentic_core.L5_safety.config."""
 
     def test_to_dict(self):
-        """Test to_dict function."""
-        from agentic_core.L5_safety.config import to_dict
+        to_dict = _require_attr("to_dict")
+        self.assertIsNotNone(to_dict)
 
-        result = to_dict()
-        self.assertIsNotNone(result)
+    def test_severity_init(self):
+        severity = _require_attr("Severity")
+        self.assertIsNotNone(severity)
 
-    def test_to_dict(self):
-        """Test to_dict function."""
-        from agentic_core.L5_safety.config import to_dict
-
-        result = to_dict()
-        self.assertIsNotNone(result)
-
-    def test_Severity_init(self):
-        """Test Severity initialization."""
-        from agentic_core.L5_safety.config import Severity
-
-        instance = Severity()
-        self.assertIsNotNone(instance)
-
-    def test_ImpactScope_init(self):
-        """Test ImpactScope initialization."""
-        from agentic_core.L5_safety.config import ImpactScope
-
-        instance = ImpactScope()
-        self.assertIsNotNone(instance)
+    def test_impact_scope_init(self):
+        impact_scope = _require_attr("ImpactScope")
+        self.assertIsNotNone(impact_scope)
 
 
 if __name__ == "__main__":

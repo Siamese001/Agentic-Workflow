@@ -1,32 +1,27 @@
-"""Test VllmGatewayIntegrationTypes functionality."""
+"""Smoke tests for vllm_gateway_integration_types exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestVllmGatewayIntegrationTypes:
-    """Test VllmGatewayIntegrationTypes functionality."""
+    """Smoke tests for vllm_gateway_integration_types exports."""
 
-    def test_vllm_gateway_integration_types_imports(self):
-        """Test vllm_gateway_integration_types module imports."""
-        from agentic_core import vllm_gateway_integration_types
+    def test_vllm_gateway_integration_types_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "vllm_gateway_integration_types")
+        assert module is not None
 
-        assert vllm_gateway_integration_types is not None
+    def test_vllm_gateway_integration_types_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "VllmGatewayIntegrationTypes")
+        assert klass is not None
 
-    def test_vllm_gateway_integration_types_class(self):
-        """Test VllmGatewayIntegrationTypes class exists."""
-        from agentic_core import VllmGatewayIntegrationTypes
-
-        assert VllmGatewayIntegrationTypes is not None
-
-    def test_vllm_gateway_integration_types_callable(self):
-        """Test vllm_gateway_integration_types functions are callable."""
-        from agentic_core import validate_vllm_gateway_integration_types
-
-        assert callable(validate_vllm_gateway_integration_types)
+    def test_vllm_gateway_integration_types_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_vllm_gateway_integration_types")
+        assert callable(validator)

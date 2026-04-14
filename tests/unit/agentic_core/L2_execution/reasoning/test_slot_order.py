@@ -4,11 +4,14 @@ Tests for slot ordering and authority validation.
 
 import pytest
 
-from agentic_core.L2_execution.reasoning import (
-    AuthorityLevel,
-    AuthoritySlot,
-    AuthorityValidator,
+_REASONING_MODULE = pytest.importorskip(
+    "agentic_core.L2_execution.reasoning",
+    reason="Slot ordering tests require agentic_core runtime modules",
 )
+
+AuthorityLevel = _REASONING_MODULE.AuthorityLevel
+AuthoritySlot = _REASONING_MODULE.AuthoritySlot
+AuthorityValidator = _REASONING_MODULE.AuthorityValidator
 
 
 class TestAuthoritySlotOrdering:

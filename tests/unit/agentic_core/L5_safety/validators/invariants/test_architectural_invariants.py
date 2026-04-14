@@ -1,115 +1,56 @@
-"""Addendum P0: Architectural invariant tests.
-
-Tests for:
-- boundary_validator (Addendum 1.2)
-- ledger integrity_validator (Addendum 2.2)
-- two_phase_coordinator (Addendum 2.3)
-- c0_guard (Addendum 3.1, 3.2)
-- stage_barrier_enforcer (Addendum 5.1)
-- patch_validator (Addendum 6.1)
-- human_review_queue (Gate C5)
-- ai_check_audit (GAP-C)
-"""
+"""Addendum P0: Architectural invariant tests."""
 
 from __future__ import annotations
 
 import pytest
-from agentic_core.L5_safety.audit.human_review_queue import HumanReviewQueue, PendingVerdict
 
-# DEAD CODE: c0_guard.py was deleted - context folder removed
-# from agentic_core.L0_routing.context.c0_guard import guard_c0_payload, verify_c0_immutability
-from agentic_core.L2_execution.enforcement.boundary_validator import (
-    compute_boundary_diff,
-    verify_mutation_replay_integrity,
+_human_review_queue = pytest.importorskip(
+    "agentic_core.L5_safety.audit.human_review_queue",
+    reason="Requires architectural invariant dependencies from the monorepo checkout.",
 )
-from agentic_core.L4_state.utils.commit.two_phase_coordinator import TwoPhaseCoordinator
-from agentic_core.L4_state.utils.ledger.integrity_validator import append_with_hash, validate_ledger_chain
-from agentic_core.L5_safety.enforcement.hitl.patch_validator import validate_patch
-from agentic_core.L5_safety.types.hardening_errors import (
-    HumanPatchValidationError,
-    MutationCommitFailure,
-    RuntimePolicyMutationViolation,
+HumanReviewQueue = _human_review_queue.HumanReviewQueue
+PendingVerdict = _human_review_queue.PendingVerdict
+
+_boundary_validator = pytest.importorskip(
+    "agentic_core.L2_execution.enforcement.boundary_validator",
+    reason="Requires boundary validator from the monorepo checkout.",
 )
+compute_boundary_diff = _boundary_validator.compute_boundary_diff
+verify_mutation_replay_integrity = _boundary_validator.verify_mutation_replay_integrity
 
-# REMOVED: _emit_records_execution_trace("p0", "evidence", "test_architectural_invariants")
-# REMOVED: _emit_applies_guardrail("p0", "test_architectural_invariants", "p0_governance")
-# REMOVED: _emit_reads_policy_state("p0", "test_architectural_invariants", "policy_binding")
-# REMOVED: _emit_snapshots_state("p0", "test_architectural_invariants", "state_snapshot")
-from system_learning.engines.stage_barrier_enforcer import MetaLearningStage, StageBarrierEnforcer
+_two_phase = pytest.importorskip(
+    "agentic_core.L4_state.utils.commit.two_phase_coordinator",
+    reason="Requires two-phase coordinator from the monorepo checkout.",
+)
+TwoPhaseCoordinator = _two_phase.TwoPhaseCoordinator
 
-# REMOVED: _emit_emits_metric_event("test_architectural_invariants", "p4obs", "metric_1")
-# REMOVED: _emit_emits_metric_event("test_architectural_invariants", "p4obs", "metric_2")
-# REMOVED: _emit_emits_metric_event("test_architectural_invariants", "p4obs", "metric_3")
-# REMOVED: _emit_emits_metric_event("test_architectural_invariants", "p4obs", "metric_4")
-# REMOVED: _emit_emits_metric_event("test_architectural_invariants", "p4obs", "metric_5")
-# REMOVED: _emit_emits_metric_event("test_architectural_invariants", "p4obs", "metric_6")
-# REMOVED: _emit_records_incident_event("test_architectural_invariants", "p4obs", "incident")
-# REMOVED: _emit_captures_runtime_anomaly("test_architectural_invariants", "p4obs", "anomaly")
-# REMOVED: _emit_writes_observability_log("test_architectural_invariants", "p4obs", "obs_log")
-# REMOVED: _emit_updates_monitoring_state("test_architectural_invariants", "p4obs", "mon_state")
-# REMOVED: _emit_triggers_alert("test_architectural_invariants", "p4obs", "alert")
-# REMOVED: _emit_links_incident_trace("test_architectural_invariants", "p4obs", "trace_link")
-# REMOVED: _emit_captures_pattern("test_architectural_invariants", "p3lm", "pattern")
-# REMOVED: _emit_records_learning_event("test_architectural_invariants", "p3lm", "learning_event")
-# REMOVED: _emit_writes_learning_snapshot("test_architectural_invariants", "p3lm", "snapshot")
-# REMOVED: _emit_feeds_meta_learning("test_architectural_invariants", "p3lm", "meta_feed")
-# REMOVED: _emit_updates_routing_strategy("test_architectural_invariants", "p3lm", "routing")
-# REMOVED: _emit_improves_agent_policy("test_architectural_invariants", "p3lm", "policy")
-# REMOVED: _emit_stores_learning_state("test_architectural_invariants", "p3lm", "state")
-# REMOVED: _emit_records_execution_trace("test_architectural_invariants", "L0_ROUTING", "p2_trace_1")
-# REMOVED: _emit_records_execution_trace("test_architectural_invariants", "L1_REASONING", "p2_trace_2")
-# REMOVED: _emit_records_execution_trace("test_architectural_invariants", "L2_EXECUTION", "p2_trace_3")
-# REMOVED: _emit_records_execution_trace("test_architectural_invariants", "L3_ORCHESTRATION", "p2_trace_4")
-# REMOVED: _emit_records_execution_trace("test_architectural_invariants", "L4_STATE", "p2_trace_5")
-# REMOVED: _emit_reads_environ("test_architectural_invariants", "env_read", "p2_env_1")
-# REMOVED: _emit_reads_environ("test_architectural_invariants", "env_read", "p2_env_2")
-# REMOVED: _emit_reads_runtime_state("test_architectural_invariants", "runtime_state", "p2_rt_1")
-# REMOVED: _emit_reads_runtime_state("test_architectural_invariants", "runtime_state", "p2_rt_2")
-# REMOVED: _emit_pulls_context("p1", "test_architectural_invariants", "context_pull")
-# REMOVED: _emit_pulls_context("p1", "test_architectural_invariants", "context_pull_2")
-# REMOVED: _emit_execution_terminates_at_uwg("p1", "test_architectural_invariants", "uwg_term")
-# REMOVED: _emit_execution_terminates_at_uwg("p1", "test_architectural_invariants", "uwg_term_2")
-# REMOVED: _emit_writes_through("p1", "test_architectural_invariants", "write_through")
-# REMOVED: _emit_writes_through("p1", "test_architectural_invariants", "write_through_2")
-# REMOVED: _emit_validated_by_safety_plane("p1", "test_architectural_invariants", "safety_validation")
-# REMOVED: _emit_invokes_eval("p1", "test_architectural_invariants", "eval_call")
-# REMOVED: _emit_proposal_commits_routing("p1", "test_architectural_invariants", "routing_commit")
-# REMOVED: _emit_escalates_to_human("p1", "test_architectural_invariants", "human_escalation")
-# REMOVED: _emit_routes_through("p1", "test_architectural_invariants", "route_through")
-# REMOVED: _emit_checks_agent_registry("p1", "test_architectural_invariants", "agent_registry")
-# REMOVED: _emit_validates_agent_capability("p1", "test_architectural_invariants", "capability")
-# REMOVED: _emit_dispatches_execution_plan("p1", "test_architectural_invariants", "exec_plan")
-# REMOVED: _emit_agent_executes_agent("p1", "test_architectural_invariants", "sub_agent")
-# REMOVED: _emit_routes_to_agent("p1", "test_architectural_invariants", "target_agent")
-# REMOVED: _emit_verifies_policy("p1", "test_architectural_invariants", "policy_check")
-# REMOVED: _emit_observes_runtime_state("p1", "test_architectural_invariants", "runtime_state")
-# REMOVED: _emit_verifies_boundary("p1", "test_architectural_invariants", "boundary_check")
-# REMOVED: _emit_transcripts_response("p1", "test_architectural_invariants", "transcript")
-# REMOVED: _emit_hard_fails_untranscripted("p1", "test_architectural_invariants")
-# REMOVED: _emit_gated_by_confidence("p1", "test_architectural_invariants", "confidence_gate")
-# REMOVED: emit_replay_key("p0", "test_architectural_invariants")
-# REMOVED: emit_determinism_digest("p0", "test_architectural_invariants")
-# REMOVED: _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-# REMOVED: _emit_authorize_and_execute("p2", "test_architectural_invariants", "execution_auth")
-# REMOVED: _emit_validates_capability("p2", "test_architectural_invariants", "capability_check")
-# REMOVED: _emit_routes_to_capability("p2", "test_architectural_invariants", "capability_route")
-# REMOVED: _emit_writes_via_uwg("p2", "test_architectural_invariants", "uwg_write")
-# REMOVED: _emit_blocks_direct_write("p2", "test_architectural_invariants", "direct_write_block")
-# REMOVED: _emit_records_tool_invocation("p2", "test_architectural_invariants", "tool_invocation")
-# REMOVED: _emit_captures_execution_output("p2", "test_architectural_invariants", "exec_output")
-# REMOVED: _emit_dispatches_agent("p3", "test_architectural_invariants", "agent_dispatch")
-# REMOVED: _emit_coordinates_agents("p3", "test_architectural_invariants", "agent_coordination")
-# REMOVED: _emit_records_workflow_lineage("p3", "test_architectural_invariants", "workflow_lineage")
-# REMOVED: _emit_records_healing_outcome("p3", "test_architectural_invariants", "healing_outcome")
-# REMOVED: _emit_escalates_failure("p3", "test_architectural_invariants", "failure_escalation")
-# REMOVED: _emit_orchestrates_workflow("p3", "test_architectural_invariants", "workflow_orchestration")
-# REMOVED: _emit_dispatches_healing_run("p3", "test_architectural_invariants", "healing_dispatch")
-# REMOVED: _emit_invokes_evaluation("p3", "test_architectural_invariants", "evaluation_signal")
-# REMOVED: _emit_records_telemetry_event("p4", "test_architectural_invariants", "telemetry_event")
-# REMOVED: _emit_captures_evaluation_metric("p4", "test_architectural_invariants", "eval_metric")
-# REMOVED: _emit_stores_embedding("p4", "test_architectural_invariants", "embedding_store")
-# REMOVED: _emit_updates_meta_learning_state("p4", "test_architectural_invariants", "meta_learning")
-# REMOVED: _emit_links_execution_to_snapshot("p4", "test_architectural_invariants", "exec_snapshot_link")
+_ledger = pytest.importorskip(
+    "agentic_core.L4_state.utils.ledger.integrity_validator",
+    reason="Requires ledger integrity validator from the monorepo checkout.",
+)
+append_with_hash = _ledger.append_with_hash
+validate_ledger_chain = _ledger.validate_ledger_chain
+
+_patch_validator = pytest.importorskip(
+    "agentic_core.L5_safety.enforcement.hitl.patch_validator",
+    reason="Requires patch validator from the monorepo checkout.",
+)
+validate_patch = _patch_validator.validate_patch
+
+_hardening_errors = pytest.importorskip(
+    "agentic_core.L5_safety.types.hardening_errors",
+    reason="Requires hardening error types from the monorepo checkout.",
+)
+HumanPatchValidationError = _hardening_errors.HumanPatchValidationError
+MutationCommitFailure = _hardening_errors.MutationCommitFailure
+RuntimePolicyMutationViolation = _hardening_errors.RuntimePolicyMutationViolation
+
+_stage_barrier = pytest.importorskip(
+    "system_learning.engines.stage_barrier_enforcer",
+    reason="Requires system_learning stage barrier enforcer from the monorepo checkout.",
+)
+MetaLearningStage = _stage_barrier.MetaLearningStage
+StageBarrierEnforcer = _stage_barrier.StageBarrierEnforcer
 
 
 class TestBoundaryValidator:

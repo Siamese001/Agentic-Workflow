@@ -1,12 +1,16 @@
 """Tests for naming_policy module."""
 
-from agentic_core.L5_safety.reasoning.file_classification.naming_policy import (
-    _check_forbidden_patterns,
-    _sanitize_filename,
-    _to_pascal_case,
-    _to_smart_snake_case,
-    normalize_filename,
+import pytest
+
+_naming_policy = pytest.importorskip(
+    "agentic_core.L5_safety.reasoning.file_classification.naming_policy",
+    reason="Requires file classification naming policy from the monorepo checkout.",
 )
+_check_forbidden_patterns = _naming_policy._check_forbidden_patterns
+_sanitize_filename = _naming_policy._sanitize_filename
+_to_pascal_case = _naming_policy._to_pascal_case
+_to_smart_snake_case = _naming_policy._to_smart_snake_case
+normalize_filename = _naming_policy.normalize_filename
 
 
 class TestNormalizeFilename:

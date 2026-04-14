@@ -1,32 +1,17 @@
-"""Placeholder test file - syntax fixed."""
+"""Behavioral tests for react_determinism."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+from agentic_core.react_determinism import stable_react_signature
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone("valid_value")
+def test_same_inputs_produce_same_signature():
+    left = stable_react_signature("hash-1", ("retrieve", "synthesize"))
+    right = stable_react_signature("hash-1", ("retrieve", "synthesize"))
+    assert left == right
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_different_steps_produce_different_signatures():
+    left = stable_react_signature("hash-1", ("retrieve",))
+    right = stable_react_signature("hash-1", ("retrieve", "act"))
+    assert left != right

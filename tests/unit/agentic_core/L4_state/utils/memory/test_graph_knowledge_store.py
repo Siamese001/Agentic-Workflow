@@ -8,10 +8,19 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L4_state.types.graph_store_types import (
-    GraphEntity,
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+_graph_types_module = import_or_skip(
+    "agentic_core.L4_state.types.graph_store_types",
+    reason="Graph store types unavailable for SQLiteGraphStore tests",
 )
-from agentic_core.L4_state.utils.memory.graph_knowledge_store import SQLiteGraphStore
+_graph_store_module = import_or_skip(
+    "agentic_core.L4_state.utils.memory.graph_knowledge_store",
+    reason="Graph knowledge store module unavailable for SQLiteGraphStore tests",
+)
+GraphEntity = _graph_types_module.GraphEntity
+SQLiteGraphStore = _graph_store_module.SQLiteGraphStore
 
 
 def test_sqlite_graph_store_init_raises_on_nonexistent_path() -> None:

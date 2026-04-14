@@ -10,24 +10,21 @@ import os
 
 import pytest
 
-# Check if GraphMemoryBridge is available
+from conftest_isolation import IsolatedTest, StateValidator
+from import_helpers import ensure_project_root
+
+ensure_project_root(__file__)
+
 try:
     from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-
-    GRAPH_MEMORY_AVAILABLE = True
 except ImportError:
-    GRAPH_MEMORY_AVAILABLE = False
+    pytest.skip("GraphMemoryBridge not available", allow_module_level=True)
 
 
-from tests.conftest_isolation import IsolatedTest, StateValidator
-
-
-@pytest.mark.skipif(not GRAPH_MEMORY_AVAILABLE, reason="GraphMemoryBridge not available")
 class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
     """Test that multiple bridge instances don't share state."""
 
-    def test_multiple_instances_isolated_state(self):
-        """Test that multiple instances have independent state."""
+    def test_multiple_instances_isolated_state(self) -> None:
         bridge1 = GraphMemoryBridge()
         bridge2 = GraphMemoryBridge()
         success1 = bridge1.create_agent_entity("test_entity_1", "test_type")
@@ -41,8 +38,7 @@ class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
         assert len(bridge1._registered_entities) == 1
         assert len(bridge2._registered_entities) == 1
 
-    def test_cleanup_resets_state_completely(self):
-        """Test that cleanup method resets all state."""
+    def test_cleanup_resets_state_completely(self) -> None:
         bridge = GraphMemoryBridge()
         bridge.create_agent_entity("test_entity_1", "test_type")
         bridge.create_agent_entity("test_entity_2", "test_type")
@@ -54,9 +50,7 @@ class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
         assert bridge.stats["entities_created"] == 0
         assert bridge._cleanup_registered is True
 
-    def test_context_manager_automatic_cleanup(self):
-        """Test that context manager automatically cleans up."""
-        initial_stats = None
+    def test_context_manager_automatic_cleanup(self) -> None:
         with GraphMemoryBridge() as bridge:
             bridge.create_agent_entity("test_entity", "test_type")
             initial_stats = bridge.stats.copy()
@@ -64,8 +58,7 @@ class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
         assert bridge.stats["entities_created"] == 0
         assert len(bridge._registered_entities) == 0
 
-    def test_multiple_cleanup_calls_safe(self):
-        """Test that cleanup can be called multiple times safely."""
+    def test_multiple_cleanup_calls_safe(self) -> None:
         bridge = GraphMemoryBridge()
         bridge.create_agent_entity("test_entity", "test_type")
         bridge.cleanup()
@@ -73,8 +66,7 @@ class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
         bridge.cleanup()
         assert bridge._cleanup_registered is True
 
-    def test_isolated_instance_creation(self):
-        """Test create_isolated method creates clean instances."""
+    def test_isolated_instance_creation(self) -> None:
         bridge1 = GraphMemoryBridge.create_isolated()
         bridge2 = GraphMemoryBridge.create_isolated()
         validation1 = bridge1.validate_state_isolation()
@@ -84,8 +76,7 @@ class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
         assert validation1["stats_totals"] == 0
         assert validation2["stats_totals"] == 0
 
-    def test_state_validation_method(self):
-        """Test the validate_state_isolation method."""
+    def test_state_validation_method(self) -> None:
         bridge = GraphMemoryBridge()
         validation = bridge.validate_state_isolation()
         assert validation["registered_entities_count"] == 0
@@ -101,11 +92,10 @@ class TestGraphMemoryBridgeStateIsolation(IsolatedTest):
         assert validation["is_clean"] is True
 
 
-class TestStateValidator:
+class TestStateValidatorHelpers:
     """Test the StateValidator utility functions."""
 
-    def test_validate_no_state_leak_with_multiple_instances(self):
-        """Test StateValidator with multiple bridge instances."""
+    def test_validate_no_state_leak_with_multiple_instances(self) -> None:
         bridges = [GraphMemoryBridge() for _ in range(5)]
         for i, bridge in enumerate(bridges):
             for j in range(i + 1):
@@ -118,16 +108,14 @@ class TestStateValidator:
             assert result["is_clean"] is False
             assert result["registered_entities"] > 0
 
-    def test_validate_no_state_leak_with_clean_instances(self):
-        """Test StateValidator with clean bridge instances."""
+    def test_validate_no_state_leak_with_clean_instances(self) -> None:
         bridges = [GraphMemoryBridge() for _ in range(3)]
         validation = StateValidator.validate_no_state_leak(bridges)
         assert validation["total_instances"] == 3
         assert validation["clean_instances"] == 3
         assert validation["leaky_instances"] == 0
 
-    def test_validate_global_state_integrity(self):
-        """Test global state integrity validation."""
+    def test_validate_global_state_integrity(self) -> None:
         validation = StateValidator.validate_global_state_integrity()
         assert isinstance(validation["sys_path_clean"], bool)
         assert isinstance(validation["environment_clean"], bool)
@@ -140,8 +128,7 @@ class TestStateValidator:
 class TestIsolationFramework(IsolatedTest):
     """Test the isolation framework itself."""
 
-    def test_isolated_test_fixture_works(self):
-        """Test that the IsolatedTest fixture provides isolation."""
+    def test_isolated_test_fixture_works(self) -> None:
         import sys
 
         sys.path.insert(0, "/test/path")
@@ -151,22 +138,19 @@ class TestIsolationFramework(IsolatedTest):
         assert test_file.exists()
         assert self.validate_isolation()
 
-    def test_cleanup_after_test_modifications(self):
-        """Test that cleanup works after test modifications."""
+    def test_cleanup_after_test_modifications(self) -> None:
         import sys
 
         sys.path.insert(0, "/another/test/path")
         os.environ["ANOTHER_TEST_VAR"] = "another_value"
 
-    def test_temp_directory_isolation(self, temp_directory):
-        """Test that temp_directory fixture provides isolation."""
+    def test_temp_directory_isolation(self, temp_directory) -> None:
         test_file = temp_directory / "isolation_test.txt"
         test_file.write_text("test content")
         assert test_file.exists()
         assert test_file.read_text() == "test content"
 
-    def test_isolated_cwd_fixture(self, isolated_cwd):
-        """Test that isolated_cwd fixture provides isolation."""
+    def test_isolated_cwd_fixture(self, isolated_cwd) -> None:
         import os
 
         assert os.getcwd() == str(isolated_cwd)
@@ -174,8 +158,7 @@ class TestIsolationFramework(IsolatedTest):
         test_file.write_text("cwd test")
         assert test_file.exists()
 
-    def test_clean_env_fixture(self, clean_env):
-        """Test that clean_env fixture provides clean environment."""
+    def test_clean_env_fixture(self, clean_env) -> None:
         import os
 
         env_vars = list(os.environ.keys())

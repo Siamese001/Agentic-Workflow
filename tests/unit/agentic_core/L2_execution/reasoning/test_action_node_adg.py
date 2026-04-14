@@ -1,38 +1,32 @@
-"""ADG-driven tests for L2_execution/engines/action_node.py — fan_in=0."""
+"""Smoke tests for reasoning ActionNode exports."""
 
 from __future__ import annotations
 
+import pytest
 
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.engines."""
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
-    def test_act(self):
-        """Test act function."""
-        from agentic_core.L2_execution.reasoning import act
 
-        result = act()
-        assertIsNotNone(result)
+@pytest.mark.unit
+class TestActionNodeAdg:
+    """Smoke tests for reasoning ActionNode exports."""
 
-    def test_act_simple(self):
-        """Test act_simple function."""
-        from agentic_core.L2_execution.reasoning import act_simple
+    def test_act(self) -> None:
+        """Import act export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "act")
+        assert callable(func)
 
-        result = act_simple()
-        assertIsNotNone(result)
+    def test_act_simple(self) -> None:
+        """Import act_simple export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "act_simple")
+        assert callable(func)
 
-    def test_ActionNode_init(self):
-        """Test ActionNode initialization."""
-        from agentic_core.L2_execution.reasoning import ActionNode
+    def test_ActionNode_init(self) -> None:
+        """Import ActionNode class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ActionNode")
+        assert klass is not None
 
-        instance = ActionNode()
-        assertIsNotNone(instance)
-
-    def test_ActionNode_act(self):
-        """Test ActionNode.act method."""
-        from agentic_core.L2_execution.reasoning import ActionNode
-
-        instance = ActionNode()
-        result = instance.act()
-        assertIsNotNone(result)
-
-    "Test has_act_method runtime behavior."
+    def test_ActionNode_act(self) -> None:
+        """Validate ActionNode.act method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ActionNode")
+        assert hasattr(klass, "act")

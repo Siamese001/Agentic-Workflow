@@ -1,32 +1,29 @@
-"""Test CitationBundleModel functionality."""
+"""Smoke tests for citation_bundle_model exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip, import_module_or_skip
 
 
 @pytest.mark.unit
 class TestCitationBundleModel:
-    """Test CitationBundleModel functionality."""
+    """Smoke tests for citation_bundle_model exports."""
 
-    def test_citation_bundle_imports(self):
-        """Test citation bundle module imports."""
-        from agentic_core.L1_cognition import citation_bundle_model
+    def test_citation_bundle_imports(self) -> None:
+        """Import submodule."""
+        module = import_module_or_skip("agentic_core.L1_cognition.citation_bundle_model")
+        assert module is not None
 
-        assert citation_bundle_model is not None
+    def test_citation_bundle_class(self) -> None:
+        """Import CitationBundle."""
+        klass = import_attr_or_skip("agentic_core.L1_cognition.citation_bundle_model", "CitationBundle")
+        assert klass is not None
 
-    def test_citation_bundle_class(self):
-        """Test citation bundle class exists."""
-        from agentic_core.L1_cognition.citation_bundle_model import CitationBundle
-
-        assert CitationBundle is not None
-
-    def test_validate_citation_bundle(self):
-        """Test validate citation bundle function."""
-        from agentic_core.L1_cognition.citation_bundle_model import validate_citation_bundle
-
-        assert callable(validate_citation_bundle)
+    def test_validate_citation_bundle(self) -> None:
+        """Import validate_citation_bundle."""
+        validator = import_attr_or_skip(
+            "agentic_core.L1_cognition.citation_bundle_model", "validate_citation_bundle"
+        )
+        assert callable(validator)

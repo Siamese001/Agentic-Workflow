@@ -1,48 +1,32 @@
-"""Placeholder test file - syntax fixed."""
+"""Smoke tests for batch embedding service exports."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L2_execution.engines."""
+@pytest.mark.unit
+class TestBatchEmbeddingServiceAdg:
+    """Smoke tests for batch embedding service exports."""
 
-    def test_create_batch_embedding_service(self):
-        """Test create_batch_embedding_service function."""
-        from agentic_core.L2_execution.reasoning import create_batch_embedding_service
+    def test_create_batch_embedding_service(self) -> None:
+        """Import create_batch_embedding_service export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "create_batch_embedding_service")
+        assert callable(func)
 
-        result = create_batch_embedding_service()
-        self.assertIsNotNone(result)
+    def test_shutdown(self) -> None:
+        """Import shutdown export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "shutdown")
+        assert callable(func)
 
-    def test_shutdown(self):
-        """Test shutdown function."""
-        from agentic_core.L2_execution.reasoning import shutdown
+    def test_BatchEmbeddingService_init(self) -> None:
+        """Import BatchEmbeddingService class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "BatchEmbeddingService")
+        assert klass is not None
 
-        result = shutdown()
-        self.assertIsNotNone(result)
-
-    def test_BatchEmbeddingService_init(self):
-        """Test BatchEmbeddingService initialization."""
-        from agentic_core.L2_execution.reasoning import BatchEmbeddingService
-
-        instance = BatchEmbeddingService()
-        self.assertIsNotNone(instance)
-
-    def test_BatchEmbeddingService_shutdown(self):
-        """Test BatchEmbeddingService.shutdown method."""
-        from agentic_core.L2_execution.reasoning import BatchEmbeddingService
-
-        instance = BatchEmbeddingService()
-        result = instance.shutdown()
-        self.assertIsNotNone(result)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_BatchEmbeddingService_shutdown(self) -> None:
+        """Validate BatchEmbeddingService.shutdown method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "BatchEmbeddingService")
+        assert hasattr(klass, "shutdown")

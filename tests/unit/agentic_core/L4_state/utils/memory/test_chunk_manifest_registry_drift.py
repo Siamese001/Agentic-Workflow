@@ -10,10 +10,15 @@ import json
 import tempfile
 from pathlib import Path
 
-from agentic_core.L4_state.utils.memory.chunk_manifest_registry import (
-    ChunkManifestRegistry,
-    EnrichedChunkManifest,
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+_chunk_manifest_module = import_or_skip(
+    "agentic_core.L4_state.utils.memory.chunk_manifest_registry",
+    reason="Chunk manifest registry module unavailable for drift-detection tests",
 )
+ChunkManifestRegistry = _chunk_manifest_module.ChunkManifestRegistry
+EnrichedChunkManifest = _chunk_manifest_module.EnrichedChunkManifest
 
 
 class TestChunkManifestRegistryDriftDetection:

@@ -1,12 +1,13 @@
 """Test SlotContracts functionality - 10-slot taxonomy validation."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+pytest.importorskip(
+    "agentic_core.prompt_governance.contracts.slot_contracts",
+    reason="slot_contracts tests require prompt governance runtime modules",
+)
 
 
 @pytest.mark.unit

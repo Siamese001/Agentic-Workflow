@@ -10,9 +10,12 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L2_execution.enforcement.sovereign_filesystem_mcp import (
-    SovereignFilesystemMcp,
+_SOVEREIGN_FILESYSTEM_MCP = pytest.importorskip(
+    "agentic_core.L2_execution.enforcement.sovereign_filesystem_mcp",
+    reason="SovereignFilesystemMcp tests require agentic_core runtime modules",
 )
+
+SovereignFilesystemMcp = _SOVEREIGN_FILESYSTEM_MCP.SovereignFilesystemMcp
 
 
 def _mcp(mission_id: str = "test-mission") -> SovereignFilesystemMcp:

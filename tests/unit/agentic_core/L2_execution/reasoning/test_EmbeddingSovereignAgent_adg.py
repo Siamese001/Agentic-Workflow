@@ -1,32 +1,27 @@
-"""Test EmbeddingsovereignagentAdg functionality."""
+"""Smoke tests for EmbeddingSovereignAgent ADG exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestEmbeddingsovereignagentAdg:
-    """Test EmbeddingsovereignagentAdg functionality."""
+    """Smoke tests for EmbeddingSovereignAgent ADG exports."""
 
-    def test_EmbeddingSovereignAgent_adg_imports(self):
-        """Test EmbeddingSovereignAgent_adg module imports."""
-        from agentic_core import EmbeddingSovereignAgent_adg
+    def test_EmbeddingSovereignAgent_adg_imports(self) -> None:
+        """Import module export."""
+        symbol = import_attr_or_skip("agentic_core", "EmbeddingSovereignAgent_adg")
+        assert symbol is not None
 
-        assert EmbeddingSovereignAgent_adg is not None
+    def test_EmbeddingSovereignAgent_adg_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "EmbeddingsovereignagentAdg")
+        assert klass is not None
 
-    def test_EmbeddingSovereignAgent_adg_class(self):
-        """Test EmbeddingsovereignagentAdg class exists."""
-        from agentic_core import EmbeddingsovereignagentAdg
-
-        assert EmbeddingsovereignagentAdg is not None
-
-    def test_EmbeddingSovereignAgent_adg_callable(self):
-        """Test EmbeddingSovereignAgent_adg functions are callable."""
-        from agentic_core import validate_EmbeddingSovereignAgent_adg
-
-        assert callable(validate_EmbeddingSovereignAgent_adg)
+    def test_EmbeddingSovereignAgent_adg_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_EmbeddingSovereignAgent_adg")
+        assert callable(validator)

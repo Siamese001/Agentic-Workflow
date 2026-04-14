@@ -1,32 +1,27 @@
-"""Test SandboxEnvelopeTypes functionality."""
+"""Smoke tests for sandbox_envelope_types exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestSandboxEnvelopeTypes:
-    """Test SandboxEnvelopeTypes functionality."""
+    """Smoke tests for sandbox_envelope_types exports."""
 
-    def test_sandbox_envelope_types_imports(self):
-        """Test sandbox_envelope_types module imports."""
-        from agentic_core import sandbox_envelope_types
+    def test_sandbox_envelope_types_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "sandbox_envelope_types")
+        assert module is not None
 
-        assert sandbox_envelope_types is not None
+    def test_sandbox_envelope_types_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "SandboxEnvelopeTypes")
+        assert klass is not None
 
-    def test_sandbox_envelope_types_class(self):
-        """Test SandboxEnvelopeTypes class exists."""
-        from agentic_core import SandboxEnvelopeTypes
-
-        assert SandboxEnvelopeTypes is not None
-
-    def test_sandbox_envelope_types_callable(self):
-        """Test sandbox_envelope_types functions are callable."""
-        from agentic_core import validate_sandbox_envelope_types
-
-        assert callable(validate_sandbox_envelope_types)
+    def test_sandbox_envelope_types_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_sandbox_envelope_types")
+        assert callable(validator)

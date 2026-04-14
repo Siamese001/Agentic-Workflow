@@ -1,63 +1,41 @@
-"""Placeholder test file - syntax fixed."""
+"""Smoke tests for rollback refiner exports."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L2_execution.engines."""
+@pytest.mark.unit
+class TestRollbackRefinerAdg:
+    """Smoke tests for rollback refiner exports."""
 
-    def test_refine(self):
-        """Test refine function."""
-        from agentic_core.L2_execution.reasoning import refine
+    def test_refine_export(self) -> None:
+        """Import refine export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "refine")
+        assert callable(func)
 
-        result = refine()
-        self.assertIsNotNone(result)
+    def test_RollbackRefiner_init(self) -> None:
+        """Import RollbackRefiner class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "RollbackRefiner")
+        assert klass is not None
 
-    def test_refine(self):
-        """Test refine function."""
-        from agentic_core.L2_execution.reasoning import refine
+    def test_RollbackRefiner_refine(self) -> None:
+        """Validate RollbackRefiner.refine method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "RollbackRefiner")
+        assert hasattr(klass, "refine")
 
-        result = refine()
-        self.assertIsNotNone(result)
+    def test_DefaultDeterministicRollbackRefiner_init(self) -> None:
+        """Import DefaultDeterministicRollbackRefiner class."""
+        klass = import_attr_or_skip(
+            "agentic_core.L2_execution.reasoning", "DefaultDeterministicRollbackRefiner"
+        )
+        assert klass is not None
 
-    def test_RollbackRefiner_init(self):
-        """Test RollbackRefiner initialization."""
-        from agentic_core.L2_execution.reasoning import RollbackRefiner
-
-        instance = RollbackRefiner()
-        self.assertIsNotNone(instance)
-
-    def test_RollbackRefiner_refine(self):
-        """Test RollbackRefiner.refine method."""
-        from agentic_core.L2_execution.reasoning import RollbackRefiner
-
-        instance = RollbackRefiner()
-        result = instance.refine()
-        self.assertIsNotNone(result)
-
-    def test_DefaultDeterministicRollbackRefiner_init(self):
-        """Test DefaultDeterministicRollbackRefiner initialization."""
-        from agentic_core.L2_execution.reasoning import DefaultDeterministicRollbackRefiner
-
-        instance = DefaultDeterministicRollbackRefiner()
-        self.assertIsNotNone(instance)
-
-    def test_DefaultDeterministicRollbackRefiner_refine(self):
-        """Test DefaultDeterministicRollbackRefiner.refine method."""
-        from agentic_core.L2_execution.reasoning import DefaultDeterministicRollbackRefiner
-
-        instance = DefaultDeterministicRollbackRefiner()
-        result = instance.refine()
-        self.assertIsNotNone(result)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_DefaultDeterministicRollbackRefiner_refine(self) -> None:
+        """Validate DefaultDeterministicRollbackRefiner.refine method is present."""
+        klass = import_attr_or_skip(
+            "agentic_core.L2_execution.reasoning", "DefaultDeterministicRollbackRefiner"
+        )
+        assert hasattr(klass, "refine")

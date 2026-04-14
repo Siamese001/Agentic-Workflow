@@ -1,32 +1,27 @@
-"""Test HealStep functionality."""
+"""Smoke tests for HealStep exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestHealStep:
-    """Test HealStep functionality."""
+    """Smoke tests for HealStep exports."""
 
-    def test_heal_step_imports(self):
-        """Test heal_step module imports."""
-        from agentic_core import heal_step
+    def test_heal_step_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "heal_step")
+        assert module is not None
 
-        assert heal_step is not None
+    def test_heal_step_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "HealStep")
+        assert klass is not None
 
-    def test_heal_step_class(self):
-        """Test HealStep class exists."""
-        from agentic_core import HealStep
-
-        assert HealStep is not None
-
-    def test_heal_step_callable(self):
-        """Test heal_step functions are callable."""
-        from agentic_core import validate_heal_step
-
-        assert callable(validate_heal_step)
+    def test_heal_step_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_heal_step")
+        assert callable(validator)

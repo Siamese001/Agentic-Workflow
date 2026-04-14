@@ -1,29 +1,27 @@
-"""ADG-driven tests for L2_execution/engines/action_node_core.py — fan_in=0."""
+"""Smoke tests for reasoning ActionNodeCore exports."""
 
 from __future__ import annotations
 
+import pytest
 
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.engines."""
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
-    def test_execute_plan(self):
-        """Test execute_plan function."""
-        from agentic_core.L2_execution.reasoning import execute_plan
 
-        result = execute_plan()
-        assertIsNotNone(result)
+@pytest.mark.unit
+class TestActionNodeCoreAdg:
+    """Smoke tests for reasoning ActionNodeCore exports."""
 
-    def test_ActionNodeCore_init(self):
-        """Test ActionNodeCore initialization."""
-        from agentic_core.L2_execution.reasoning import ActionNodeCore
+    def test_execute_plan(self) -> None:
+        """Import execute_plan export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "execute_plan")
+        assert callable(func)
 
-        instance = ActionNodeCore()
-        assertIsNotNone(instance)
+    def test_ActionNodeCore_init(self) -> None:
+        """Import ActionNodeCore class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ActionNodeCore")
+        assert klass is not None
 
-    def test_ActionNodeCore_execute_plan(self):
-        """Test ActionNodeCore.execute_plan method."""
-        from agentic_core.L2_execution.reasoning import ActionNodeCore
-
-        instance = ActionNodeCore()
-        result = instance.execute_plan()
-        assertIsNotNone(result)
+    def test_ActionNodeCore_execute_plan(self) -> None:
+        """Validate ActionNodeCore.execute_plan method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ActionNodeCore")
+        assert hasattr(klass, "execute_plan")

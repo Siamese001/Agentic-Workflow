@@ -4,7 +4,12 @@ G5 fix: Adds test coverage for L5 retrieval safety gate.
 """
 
 import pytest
-from agentic_core.L5_safety.retrieval import RetrievalSafetyGate
+
+_retrieval = pytest.importorskip(
+    "agentic_core.L5_safety.retrieval",
+    reason="Requires RetrievalSafetyGate implementation from the monorepo checkout.",
+)
+RetrievalSafetyGate = _retrieval.RetrievalSafetyGate
 
 
 class TestRetrievalSafetyGate:

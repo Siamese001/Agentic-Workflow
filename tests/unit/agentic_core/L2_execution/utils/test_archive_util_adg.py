@@ -1,37 +1,34 @@
-"""ADG-driven tests for archive_util - populated Wave 3."""
+"""Smoke tests for archive_util exports."""
 
 from __future__ import annotations
 
 import pytest
 
+from L2_execution._agentic_core_smoke import import_attr_or_skip
+
 
 @pytest.mark.unit
 class TestArchiveutil:
-    """Test archive_util contracts."""
+    """Smoke tests for archive_util exports."""
 
-    def test_module_importable(self):
-        """Test module can be imported."""
-        from agentic_core import archive_util
+    def test_module_importable(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "archive_util")
+        assert module is not None
 
-        assert archive_util is not None
+    def test_module_has_exports(self) -> None:
+        """Validate __all__ exports when declared."""
+        module = import_attr_or_skip("agentic_core", "archive_util")
+        exports = getattr(module, "__all__", ())
+        assert all(hasattr(module, name) for name in exports)
 
-    def test_module_has_exports(self):
-        """Test module has __all__ exports."""
-        from agentic_core import archive_util
+    def test_module_docstring_present(self) -> None:
+        """Ensure the module docstring is present."""
+        module = import_attr_or_skip("agentic_core", "archive_util")
+        assert module.__doc__ is not None
 
-        if hasattr(archive_util, "__all__"):
-            for name in archive_util.__all__:
-                assert hasattr(archive_util, name)
-
-    def test_module_docstring_present(self):
-        """Test module has documentation."""
-        from agentic_core import archive_util
-
-        assert archive_util.__doc__ is not None
-
-    def test_module_attributes_accessible(self):
-        """Test module attributes are accessible."""
-        from agentic_core import archive_util
-
-        attrs = [a for a in dir(archive_util) if not a.startswith("_")]
-        assert len(attrs) >= 0
+    def test_module_attributes_accessible(self) -> None:
+        """Ensure public attributes can be enumerated."""
+        module = import_attr_or_skip("agentic_core", "archive_util")
+        attrs = [name for name in dir(module) if not name.startswith("_")]
+        assert isinstance(attrs, list)

@@ -1,32 +1,28 @@
-"""Test MetaLearningRollout functionality."""
-
-import sys
-from pathlib import Path
+"""Test meta learning rollout functionality."""
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+agentic_core = import_or_skip(
+    "agentic_core",
+    reason="agentic_core unavailable for test_meta_learning_rollout.py tests",
+)
+module_under_test = getattr(agentic_core, "meta_learning_rollout")
 
 
 @pytest.mark.unit
 class TestMetaLearningRollout:
-    """Test MetaLearningRollout functionality."""
+    """Test meta learning rollout functionality."""
 
-    def test_meta_learning_rollout_imports(self):
-        """Test meta_learning_rollout module imports."""
-        from agentic_core import meta_learning_rollout
+    def test_module_imports(self):
+        assert module_under_test is not None
 
-        assert meta_learning_rollout is not None
+    def test_module_class(self):
+        exported_class = getattr(agentic_core, "MetaLearningRollout")
+        assert exported_class is not None
 
-    def test_meta_learning_rollout_class(self):
-        """Test MetaLearningRollout class exists."""
-        from agentic_core import MetaLearningRollout
-
-        assert MetaLearningRollout is not None
-
-    def test_meta_learning_rollout_callable(self):
-        """Test meta_learning_rollout functions are callable."""
-        from agentic_core import validate_meta_learning_rollout
-
-        assert callable(validate_meta_learning_rollout)
+    def test_module_callable(self):
+        validator = getattr(agentic_core, "validate_meta_learning_rollout")
+        assert callable(validator)

@@ -1,32 +1,16 @@
-"""Placeholder test file - syntax fixed."""
+"""Behavioral tests for thought_engine_agent."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+import pytest
+
+from agentic_core.thought_engine_agent import ThoughtEngineAgent, validate_thought_engine_agent
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+def test_default_agent_passes_validation():
+    assert validate_thought_engine_agent().name == "thought-engine"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_invalid_iteration_budget_raises():
+    with pytest.raises(ValueError):
+        ThoughtEngineAgent(max_iterations=0).validate()

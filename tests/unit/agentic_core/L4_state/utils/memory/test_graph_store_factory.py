@@ -7,11 +7,16 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L4_state.utils.memory.graph_store_factory import (
-    create_sqlite_graph_store,
-    create_sqlite_graph_store_or_none,
-    get_default_adg_db_path,
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+_graph_store_factory_module = import_or_skip(
+    "agentic_core.L4_state.utils.memory.graph_store_factory",
+    reason="Graph-store factory module unavailable for SQLiteGraphStore factory tests",
 )
+create_sqlite_graph_store = _graph_store_factory_module.create_sqlite_graph_store
+create_sqlite_graph_store_or_none = _graph_store_factory_module.create_sqlite_graph_store_or_none
+get_default_adg_db_path = _graph_store_factory_module.get_default_adg_db_path
 
 
 def test_get_default_adg_db_path_returns_none_when_not_found() -> None:

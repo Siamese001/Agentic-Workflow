@@ -1,37 +1,19 @@
 """
 Wave 2 Invariant: GravityLeakRepairAgent must exclude ops_scripts/ and scripts/
 from gravity scan, and apply_fix() must accept privileged_mutation_context kwarg.
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
 """
 
 import ast
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR
+import pytest
 
-GRAVITY_PATH = (
-    Path(__file__).parent.parent.parent
-    / AGENTIC_CORE_DIR
-    / "L5_safety"
-    / "reasoning"
-    / "GravityLeakRepairAgent.py"
+_path_constants = pytest.importorskip(
+    "agentic_core.L0_routing.config.path_constants",
+    reason="Requires path constants from the monorepo checkout.",
 )
-STRUCTURE_PATH = (
-    Path(__file__).parent.parent.parent
-    / AGENTIC_CORE_DIR
-    / "L5_safety"
-    / "reasoning"
-    / "StructuralValidatorAgent.py"
-)
+AGENTIC_CORE_DIR = _path_constants.AGENTIC_CORE_DIR
+OPS_SCRIPTS_DIR = _path_constants.OPS_SCRIPTS_DIR
 
 
 def _parse(path: Path) -> ast.Module:

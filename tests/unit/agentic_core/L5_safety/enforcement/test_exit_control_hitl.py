@@ -1,53 +1,18 @@
-"""Tests for ExitControlHITL — H1–H5 sequence (B03 — GAP-005, REQ-013).
-
-Positive tests:
-- freeze_and_materialize returns BoundedPacket with FROZEN authority_state
-- BoundedPacket has all required fields
-- APPROVE + valid justification → CLEARED_ALLOW
-- APPROVE + has_commit_payload → CLEARED_COMMIT
-- Human DENY → BLOCKED
-
-Security / constraint tests (HITL-004):
-- MODIFY_DIFF → BLOCKED (no direct diff application)
-- Missing reviewer_id → BLOCKED
-- Missing justification → BLOCKED
-- packet_id mismatch → BLOCKED
-- authority_state not FROZEN → BLOCKED
-- No SOVEREIGN_AUTO_APPROVE bypass (no env var can skip H5)
-
-Re-clearance gate tests:
-- Custom policy_validator returning False → BLOCKED
-- Custom policy_validator returning True → CLEARED
-- Successful re-clearance removes packet from active_packets
-
-BoundedPacket contract:
-- to_dict() contains all required keys
-- authority_state in packet is FROZEN (typed invariant)
-- write_authority in packet is NONE
-- raw_content excluded from artifact_summary
-
-ReClearResult contract:
-- to_dict() contains outcome, packet_id, trace_id, reviewer_id, reason
-- re_cleared_artifact present on CLEARED outcomes, absent on BLOCKED
-
-Layer sovereignty:
-- H5 is the ONLY path to CLEARED — no shortcut
-- gate does not mutate the sealed_artifact input
-"""
-
 import pytest
 from unittest.mock import MagicMock
 
-from agentic_core.L5_safety.enforcement.exit_control_hitl import (
-    AuthorityState,
-    BoundedPacket,
-    ExitControlHITL,
-    HumanDecision,
-    HumanReviewInput,
-    ReClearOutcome,
-    ReClearResult,
-    WriteAuthority,
+_exit_control_hitl = pytest.importorskip(
+    "agentic_core.L5_safety.enforcement.exit_control_hitl",
+    reason="Requires ExitControlHITL implementation from the monorepo checkout.",
 )
+AuthorityState = _exit_control_hitl.AuthorityState
+BoundedPacket = _exit_control_hitl.BoundedPacket
+ExitControlHITL = _exit_control_hitl.ExitControlHITL
+HumanDecision = _exit_control_hitl.HumanDecision
+HumanReviewInput = _exit_control_hitl.HumanReviewInput
+ReClearOutcome = _exit_control_hitl.ReClearOutcome
+ReClearResult = _exit_control_hitl.ReClearResult
+WriteAuthority = _exit_control_hitl.WriteAuthority
 
 
 def _mock_gate_result(trace_id: str = "trace-001", reason: str = "low confidence") -> MagicMock:

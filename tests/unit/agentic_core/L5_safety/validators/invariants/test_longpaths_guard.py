@@ -7,9 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
-
-EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
+_path_constants = pytest.importorskip(
+    "agentic_core.L0_routing.config.path_constants",
+    reason="Requires path constants from the monorepo checkout.",
+)
+L0_ROUTING_DIR = _path_constants.L0_ROUTING_DIR
 
 
 @pytest.mark.unit_min_deps

@@ -1,32 +1,18 @@
-"""Placeholder test file - syntax fixed."""
+"""Behavioral tests for react_prompt_provenance."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+import pytest
+
+from agentic_core.react_prompt_provenance import build_prompt_provenance
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone("valid_value")
+def test_prompt_provenance_builds_expected_shape():
+    provenance = build_prompt_provenance("tmpl-1", "hash-1", ("doc-a", "doc-b"))
+    assert provenance.template_id == "tmpl-1"
+    assert provenance.sources == ("doc-a", "doc-b")
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_blank_template_rejected():
+    with pytest.raises(ValueError):
+        build_prompt_provenance("", "hash-1", tuple())

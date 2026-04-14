@@ -1,11 +1,12 @@
 """Tests for FAISS Vector Store implementation."""
 
+from __future__ import annotations
+
 from unittest.mock import patch
 
 import numpy as np
 import pytest
 
-# Check if faiss_store is available
 try:
     from agentic_core.L4_state.utils.memory.faiss_store import (
         FaissEmbeddingStore,
@@ -13,28 +14,25 @@ try:
         VectorDocument,
         get_global_faiss_store,
     )
-
-    FAISS_AVAILABLE = True
 except ImportError:
-    FAISS_AVAILABLE = False
+    pytest.skip("FAISS store not available", allow_module_level=True)
 
 
-@pytest.mark.skipif(not FAISS_AVAILABLE, reason="FAISS store not available")
 class TestFAISSVectorStore:
     """Test FAISS Vector Store functionality."""
 
-    def setup_method(self):
+    def setup_method(self) -> None:
         """Setup test fixtures."""
         self.store = FaissVectorStore(dimension=128, index_type="Flat")
 
-    def test_initialization(self):
+    def test_initialization(self) -> None:
         """Test store initialization."""
         assert self.store.dimension == 128
         assert self.store.index_type == "Flat"
         assert self.store._index is not None
         assert len(self.store._documents) == 0
 
-    def test_add_documents(self):
+    def test_add_documents(self) -> None:
         """Test adding documents."""
         docs = [
             VectorDocument(
@@ -56,9 +54,8 @@ class TestFAISSVectorStore:
         assert "doc1" in self.store._documents
         assert "doc2" in self.store._documents
 
-    def test_search(self):
+    def test_search(self) -> None:
         """Test vector search."""
-        # Add documents
         docs = [
             VectorDocument(
                 id="doc1",
@@ -75,8 +72,6 @@ class TestFAISSVectorStore:
         ]
 
         self.store.add_documents(docs)
-
-        # Search with query similar to doc1
         query_vector = docs[0].vector + np.random.normal(0, 0.01, 128)
         results = self.store.search(query_vector, k=2)
 
@@ -84,7 +79,7 @@ class TestFAISSVectorStore:
         assert results[0]["id"] in ["doc1", "doc2"]
         assert results[0]["score"] >= 0.0
 
-    def test_delete_document(self):
+    def test_delete_document(self) -> None:
         """Test document deletion."""
         doc = VectorDocument(
             id="doc1",
@@ -99,7 +94,7 @@ class TestFAISSVectorStore:
         self.store.delete_document("doc1")
         assert len(self.store._documents) == 0
 
-    def test_get_document(self):
+    def test_get_document(self) -> None:
         """Test document retrieval."""
         doc = VectorDocument(
             id="doc1",
@@ -116,7 +111,7 @@ class TestFAISSVectorStore:
         assert retrieved.content == "test content"
         assert retrieved.metadata["type"] == "test"
 
-    def test_stats(self):
+    def test_stats(self) -> None:
         """Test statistics."""
         doc = VectorDocument(
             id="doc1",
@@ -132,25 +127,24 @@ class TestFAISSVectorStore:
         assert stats["dimension"] == 128
         assert stats["index_type"] == "Flat"
 
-    def test_global_instance(self):
+    def test_global_instance(self) -> None:
         """Test global store instance."""
         store = get_global_faiss_store()
         assert store is not None
         assert isinstance(store, FaissEmbeddingStore)
 
     @patch("faiss.IndexFlat")
-    def test_ivf_index(self, mock_index):
+    def test_ivf_index(self, mock_index) -> None:
         """Test IVF index creation."""
         store = FaissVectorStore(dimension=64, index_type="IVF")
         assert store.index_type == "IVF"
 
-    def test_normalization(self):
+    def test_normalization(self) -> None:
         """Test vector normalization."""
         store = FaissVectorStore(dimension=4, normalize=True)
 
         vector = np.array([1.0, 2.0, 3.0, 4.0])
         normalized = store._normalize_vector(vector)
 
-        # Check L2 norm is 1
         norm = np.linalg.norm(normalized)
         assert abs(norm - 1.0) < 1e-6

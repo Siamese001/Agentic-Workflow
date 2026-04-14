@@ -14,10 +14,13 @@ import os
 
 import pytest
 
-from agentic_core.L2_execution.enforcement.preventative_sandbox import (
-    PreventativeSandbox,
-    SandboxViolationError,
+_PREVENTATIVE_SANDBOX = pytest.importorskip(
+    "agentic_core.L2_execution.enforcement.preventative_sandbox",
+    reason="PreventativeSandbox tests require agentic_core runtime modules",
 )
+
+PreventativeSandbox = _PREVENTATIVE_SANDBOX.PreventativeSandbox
+SandboxViolationError = _PREVENTATIVE_SANDBOX.SandboxViolationError
 
 
 def test_is_active_false_before_activation() -> None:

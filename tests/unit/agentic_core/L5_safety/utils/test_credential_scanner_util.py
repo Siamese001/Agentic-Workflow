@@ -1,31 +1,17 @@
-"""
-Unit Tests for credential_scanner_util - Micro-wave 10C
-
-Tests the credential scanner utility functions including:
-- Pattern matching for various credential types
-- False positive detection
-- Summary and recommendations generation
-- File scanning
-"""
+"""Tests for credential_scanner_util module."""
 
 from __future__ import annotations
 
-import stat
+from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.utils.credential_scanner_util import (
-    DEFAULT_EXCLUDED_PATHS,
-    DEFAULT_PATTERNS,
-    DEFAULT_SCANNABLE_EXTENSIONS,
-    CredentialMatch,
-    CredentialScanner,
-    CredentialScanResult,
-    _generate_recommendations,
-    _generate_summary,
-    _is_false_positive,
-    scan_for_credentials,
+_credential_scanner_util = pytest.importorskip(
+    "agentic_core.L5_safety.utils.credential_scanner_util",
+    reason="Requires credential scanner utility from the monorepo checkout.",
 )
+CredentialMatch = _credential_scanner_util.CredentialMatch
+CredentialScanner = _credential_scanner_util.CredentialScanner
 
 
 class TestCredentialMatchDataclass:

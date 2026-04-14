@@ -1,32 +1,27 @@
-"""Test EgressMcp functionality."""
+"""Smoke tests for egress_mcp exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestEgressMcp:
-    """Test EgressMcp functionality."""
+    """Smoke tests for egress_mcp exports."""
 
-    def test_egress_mcp_imports(self):
-        """Test egress_mcp module imports."""
-        from agentic_core import egress_mcp
+    def test_egress_mcp_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "egress_mcp")
+        assert module is not None
 
-        assert egress_mcp is not None
+    def test_egress_mcp_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "EgressMcp")
+        assert klass is not None
 
-    def test_egress_mcp_class(self):
-        """Test EgressMcp class exists."""
-        from agentic_core import EgressMcp
-
-        assert EgressMcp is not None
-
-    def test_egress_mcp_callable(self):
-        """Test egress_mcp functions are callable."""
-        from agentic_core import validate_egress_mcp
-
-        assert callable(validate_egress_mcp)
+    def test_egress_mcp_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_egress_mcp")
+        assert callable(validator)

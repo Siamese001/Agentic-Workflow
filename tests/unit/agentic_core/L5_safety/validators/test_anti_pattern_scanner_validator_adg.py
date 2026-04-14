@@ -1,25 +1,26 @@
-"""ADG-driven tests for L5_safety/validators/anti_pattern_scanner_validator.py — fan_in=1."""
+"""ADG-driven tests for anti_pattern_scanner_validator."""
 
 from __future__ import annotations
 
 import pytest
 
-# Check if anti_pattern_scanner_validator is available
-try:
-    from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
-        AntiPatternScanner,
-        ScanReport,
-    )
+_validator = pytest.importorskip(
+    "agentic_core.L5_safety.validators.anti_pattern_scanner_validator",
+    reason="Requires anti_pattern_scanner_validator from the monorepo checkout.",
+)
+_base = pytest.importorskip(
+    "agentic_core.L5_safety.validators.base_detector_validator",
+    reason="Requires base detector validator types from the monorepo checkout.",
+)
 
-    ANTI_PATTERN_AVAILABLE = True
-except ImportError:
-    ANTI_PATTERN_AVAILABLE = False
-
+AntiPatternScanner = _validator.AntiPatternScanner
+ScanReport = _validator.ScanReport
+AntiPatternCategory = _base.AntiPatternCategory
+AntiPatternViolation = _base.AntiPatternViolation
 
 pytestmark = pytest.mark.unit
 
 
-@pytest.mark.skipif(not ANTI_PATTERN_AVAILABLE, reason="anti_pattern_scanner_validator not available")
 class TestScanReport:
     def test_creates_with_valid_project_root(self, tmp_path):
         """ScanReport should create successfully with valid project root."""

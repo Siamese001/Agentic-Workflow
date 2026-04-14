@@ -1,32 +1,27 @@
-"""Test SelfHealingTrigger functionality."""
+"""Smoke tests for self_healing_trigger exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestSelfHealingTrigger:
-    """Test SelfHealingTrigger functionality."""
+    """Smoke tests for self_healing_trigger exports."""
 
-    def test_self_healing_trigger_imports(self):
-        """Test self_healing_trigger module imports."""
-        from agentic_core import self_healing_trigger
+    def test_self_healing_trigger_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "self_healing_trigger")
+        assert module is not None
 
-        assert self_healing_trigger is not None
+    def test_self_healing_trigger_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "SelfHealingTrigger")
+        assert klass is not None
 
-    def test_self_healing_trigger_class(self):
-        """Test SelfHealingTrigger class exists."""
-        from agentic_core import SelfHealingTrigger
-
-        assert SelfHealingTrigger is not None
-
-    def test_self_healing_trigger_callable(self):
-        """Test self_healing_trigger functions are callable."""
-        from agentic_core import validate_self_healing_trigger
-
-        assert callable(validate_self_healing_trigger)
+    def test_self_healing_trigger_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_self_healing_trigger")
+        assert callable(validator)

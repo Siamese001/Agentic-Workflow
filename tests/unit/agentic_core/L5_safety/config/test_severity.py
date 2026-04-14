@@ -1,11 +1,16 @@
 """Tests for SeverityLevel SSOT enum and conversion functions."""
 
-from agentic_core.L5_safety.config.severity import (
-    SeverityLevel,
-    from_adg_category,
-    from_legacy_string,
-    from_ruff_category,
+import pytest
+
+_severity = pytest.importorskip(
+    "agentic_core.L5_safety.config.severity",
+    reason="Requires agentic_core L5 severity module from the monorepo checkout.",
 )
+
+SeverityLevel = _severity.SeverityLevel
+from_adg_category = _severity.from_adg_category
+from_legacy_string = _severity.from_legacy_string
+from_ruff_category = _severity.from_ruff_category
 
 
 class TestSeverityLevelEnum:

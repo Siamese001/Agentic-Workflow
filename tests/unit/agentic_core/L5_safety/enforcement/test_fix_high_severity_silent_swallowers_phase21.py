@@ -5,14 +5,22 @@ Tests follow windsurfrules §1.1-§1.8 requirements.
 """
 
 import json
-
-# Import the module we're testing
-import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from fix_high_severity_silent_swallowers import HighSeveritySilentSwallowerFixer
+
+_fixer_module = pytest.importorskip(
+    "fix_high_severity_silent_swallowers",
+    reason="Requires fix_high_severity_silent_swallowers.py alongside the monorepo checkout.",
+)
+HighSeveritySilentSwallowerFixer = _fixer_module.HighSeveritySilentSwallowerFixer
+
+
+def _write_json(path: Path, payload: dict) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
 
 
 class TestHighSeveritySilentSwallowerFixerPhase21:
@@ -61,22 +69,16 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
 
     def _create_violations_file(self, temp_workspace, violations_data):
         """Helper to create violations file in correct location."""
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir()
-        violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, "w") as f:
-            json.dump(violations_data, f)
-        return violations_file
+        return _write_json(
+            temp_workspace / "tools" / "silent_swallower_report.json",
+            violations_data,
+        )
 
     @pytest.fixture
     def fixer(self, temp_workspace, sample_violations):
         """Create fixer instance with test data."""
         # Create tools directory and violations file
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir()
-        violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, "w") as f:
-            json.dump(sample_violations, f)
+        _write_json(temp_workspace / "tools" / "silent_swallower_report.json", sample_violations)
 
         # Patch the report file path
         with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
@@ -87,11 +89,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
     def test_empty_violations_list(self, temp_workspace):
         """Test handling of empty violation list."""
         # Create tools directory and empty violations file
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir()
-        violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, "w") as f:
-            json.dump({"violations": []}, f)
+        _write_json(temp_workspace / "tools" / "silent_swallower_report.json", {"violations": []})
 
         with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
@@ -104,11 +102,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
     def test_malformed_violation_data(self, temp_workspace):
         """Test handling of malformed violation data."""
         # Create tools directory and malformed violations file
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir()
-        violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, "w") as f:
-            json.dump({"invalid": "data"}, f)
+        _write_json(temp_workspace / "tools" / "silent_swallower_report.json", {"invalid": "data"})
 
         with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             # Should handle malformed data gracefully
@@ -129,10 +123,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
             },
         )
 
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir(exist_ok=True)
-        with open(tools_dir / "silent_swallower_report.json", "w") as f:
-            json.dump(sample_violations, f)
+        _write_json(temp_workspace / "tools" / "silent_swallower_report.json", sample_violations)
 
         with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
@@ -148,11 +139,8 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         restricted_file.write_text("except ImportError:\n    pass\n")
 
         # Create violations report in the expected location
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir(exist_ok=True)
         sample_violations["violations"][0]["file_path"] = str(restricted_file)
-        with open(tools_dir / "silent_swallower_report.json", "w") as f:
-            json.dump(sample_violations, f)
+        _write_json(temp_workspace / "tools" / "silent_swallower_report.json", sample_violations)
 
         # Mock Path.read_text to simulate permission denied (cross-platform)
         with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
@@ -169,11 +157,8 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         unicode_file = temp_workspace / "tëst_ünïcødë.py"
         unicode_file.write_text("except ImportError:\n    pass\n")
 
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir(exist_ok=True)
         sample_violations["violations"][0]["file_path"] = str(unicode_file)
-        with open(tools_dir / "silent_swallower_report.json", "w") as f:
-            json.dump(sample_violations, f)
+        _write_json(temp_workspace / "tools" / "silent_swallower_report.json", sample_violations)
 
         with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
@@ -221,10 +206,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
             },
         )
 
-        tools_dir = temp_workspace / "tools"
-        tools_dir.mkdir(exist_ok=True)
-        with open(tools_dir / "silent_swallower_report.json", "w") as f:
-            json.dump(sample_violations, f)
+        _write_json(temp_workspace / "tools" / "silent_swallower_report.json", sample_violations)
 
         with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()

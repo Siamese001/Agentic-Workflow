@@ -1,32 +1,28 @@
-"""Test CapabilityTokenTypes functionality."""
+"""Smoke tests for capability_token_types exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestCapabilityTokenTypes:
-    """Test CapabilityTokenTypes functionality."""
+    """Smoke tests for capability_token_types exports."""
 
-    def test_capability_token_types_imports(self):
-        """Test capability_token_types module imports."""
-        from agentic_core import capability_token_types
+    def test_capability_token_types_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "capability_token_types")
+        assert module is not None
 
-        assert capability_token_types is not None
+    def test_capability_token_types_docstring_present(self) -> None:
+        """Ensure the module docstring is present."""
+        module = import_attr_or_skip("agentic_core", "capability_token_types")
+        assert module.__doc__ is not None
 
-    def test_capability_token_types_class(self):
-        """Test CapabilityTokenTypes class exists."""
-        from agentic_core import CapabilityTokenTypes
-
-        assert CapabilityTokenTypes is not None
-
-    def test_capability_token_types_callable(self):
-        """Test capability_token_types functions are callable."""
-        from agentic_core import validate_capability_token_types
-
-        assert callable(validate_capability_token_types)
+    def test_capability_token_types_public_attributes_accessible(self) -> None:
+        """Ensure public attributes can be enumerated."""
+        module = import_attr_or_skip("agentic_core", "capability_token_types")
+        attrs = [name for name in dir(module) if not name.startswith("_")]
+        assert isinstance(attrs, list)

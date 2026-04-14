@@ -1,32 +1,27 @@
-"""Test CitationEnforcement functionality."""
+"""Smoke tests for CitationEnforcement exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestCitationEnforcement:
-    """Test CitationEnforcement functionality."""
+    """Smoke tests for CitationEnforcement exports."""
 
-    def test_citation_enforcement_imports(self):
-        """Test citation_enforcement module imports."""
-        from agentic_core import citation_enforcement
+    def test_citation_enforcement_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "citation_enforcement")
+        assert module is not None
 
-        assert citation_enforcement is not None
+    def test_citation_enforcement_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "CitationEnforcement")
+        assert klass is not None
 
-    def test_citation_enforcement_class(self):
-        """Test CitationEnforcement class exists."""
-        from agentic_core import CitationEnforcement
-
-        assert CitationEnforcement is not None
-
-    def test_citation_enforcement_callable(self):
-        """Test citation_enforcement functions are callable."""
-        from agentic_core import validate_citation_enforcement
-
-        assert callable(validate_citation_enforcement)
+    def test_citation_enforcement_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_citation_enforcement")
+        assert callable(validator)

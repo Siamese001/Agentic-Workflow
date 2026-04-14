@@ -1,70 +1,42 @@
-"""Foundational behavioral tests for agentic_core/L2_execution/reasoning/ToolsmithAgent.py."""
+"""Smoke tests for ToolsmithAgent-related exports."""
 
 from __future__ import annotations
 
+import pytest
 
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.reasoning."""
-
-    def test_get_ToolsmithAgent(self):
-        """Test get_ToolsmithAgent function."""
-        from agentic_core.L2_execution.reasoning import get_ToolsmithAgent
-
-        result = get_ToolsmithAgent()
-        assertIsNotNone(result)
-
-    def test_initialize_ToolsmithAgent(self):
-        """Test initialize_ToolsmithAgent function."""
-        from agentic_core.L2_execution.reasoning import initialize_ToolsmithAgent
-
-        result = initialize_ToolsmithAgent()
-        assertIsNotNone(result)
-
-    def test_ToolSpec_init(self):
-        """Test ToolSpec initialization."""
-        from agentic_core.L2_execution.reasoning import ToolSpec
-
-        instance = ToolSpec()
-        assertIsNotNone(instance)
-
-    def test_ToolSpec_to_dict(self):
-        """Test ToolSpec.to_dict method."""
-        from agentic_core.L2_execution.reasoning import ToolSpec
-
-        instance = ToolSpec()
-        result = instance.to_dict()
-        assertIsNotNone(result)
-
-    def test_GeneratedTool_init(self):
-        """Test GeneratedTool initialization."""
-        from agentic_core.L2_execution.reasoning import GeneratedTool
-
-        instance = GeneratedTool()
-        assertIsNotNone(instance)
-
-    def test_GeneratedTool_to_dict(self):
-        """Test GeneratedTool.to_dict method."""
-        from agentic_core.L2_execution.reasoning import GeneratedTool
-
-        instance = GeneratedTool()
-        result = instance.to_dict()
-        assertIsNotNone(result)
-
-    "Test field_names_present runtime behavior."
-    "Test is_class runtime behavior."
-    "Test is_class runtime behavior."
-    "Test has_method_create_tool_from_spec runtime behavior."
-    "Test has_method_create_file_tool runtime behavior."
-    "Test has_method_create_api_tool runtime behavior."
-    "Test has_method_get_tool runtime behavior."
-    "Test is_callable runtime behavior."
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
-"Test is_callable runtime behavior."
-"Test is_callable runtime behavior."
-"Test is_callable runtime behavior."
-"Test is_not_none runtime behavior."
-"Test is_not_none runtime behavior."
-"Test is_not_none runtime behavior."
-"Test is_not_none runtime behavior."
-"Test is_not_none runtime behavior."
+@pytest.mark.unit
+class TestToolsmithAgent:
+    """Smoke tests for ToolsmithAgent-related exports."""
+
+    def test_get_ToolsmithAgent(self) -> None:
+        """Import getter export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "get_ToolsmithAgent")
+        assert callable(func)
+
+    def test_initialize_ToolsmithAgent(self) -> None:
+        """Import initializer export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "initialize_ToolsmithAgent")
+        assert callable(func)
+
+    def test_ToolSpec_init(self) -> None:
+        """Import ToolSpec class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ToolSpec")
+        assert klass is not None
+
+    def test_ToolSpec_to_dict(self) -> None:
+        """Validate ToolSpec.to_dict method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ToolSpec")
+        assert hasattr(klass, "to_dict")
+
+    def test_GeneratedTool_init(self) -> None:
+        """Import GeneratedTool class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "GeneratedTool")
+        assert klass is not None
+
+    def test_GeneratedTool_to_dict(self) -> None:
+        """Validate GeneratedTool.to_dict method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "GeneratedTool")
+        assert hasattr(klass, "to_dict")

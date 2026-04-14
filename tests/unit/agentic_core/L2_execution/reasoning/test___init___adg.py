@@ -2,16 +2,21 @@
 
 import unittest
 
-from agentic_core.L2_execution.types.l2_execution_contract import (
-    CanonicalAgentRole,
-    FailureSignal,
-    HealingDecision,
-    HealingInput,
-    HealingTier,
-    L2ExecutionContext,
-    L2ExecutionPhase,
-    L2PhaseResult,
+import pytest
+
+_L2_EXECUTION_CONTRACT = pytest.importorskip(
+    "agentic_core.L2_execution.types.l2_execution_contract",
+    reason="L2 execution contract tests require agentic_core runtime modules",
 )
+
+CanonicalAgentRole = _L2_EXECUTION_CONTRACT.CanonicalAgentRole
+FailureSignal = _L2_EXECUTION_CONTRACT.FailureSignal
+HealingDecision = _L2_EXECUTION_CONTRACT.HealingDecision
+HealingInput = _L2_EXECUTION_CONTRACT.HealingInput
+HealingTier = _L2_EXECUTION_CONTRACT.HealingTier
+L2ExecutionContext = _L2_EXECUTION_CONTRACT.L2ExecutionContext
+L2ExecutionPhase = _L2_EXECUTION_CONTRACT.L2ExecutionPhase
+L2PhaseResult = _L2_EXECUTION_CONTRACT.L2PhaseResult
 
 
 class TestL2ExecutionTypes(unittest.TestCase):

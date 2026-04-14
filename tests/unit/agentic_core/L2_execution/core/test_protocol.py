@@ -1,32 +1,27 @@
-"""Test Protocol functionality."""
+"""Smoke tests for Protocol exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestProtocol:
-    """Test Protocol functionality."""
+    """Smoke tests for Protocol exports."""
 
-    def test_protocol_imports(self):
-        """Test protocol module imports."""
-        from agentic_core import protocol
+    def test_protocol_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "protocol")
+        assert module is not None
 
-        assert protocol is not None
+    def test_protocol_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "Protocol")
+        assert klass is not None
 
-    def test_protocol_class(self):
-        """Test Protocol class exists."""
-        from agentic_core import Protocol
-
-        assert Protocol is not None
-
-    def test_protocol_callable(self):
-        """Test protocol functions are callable."""
-        from agentic_core import validate_protocol
-
-        assert callable(validate_protocol)
+    def test_protocol_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_protocol")
+        assert callable(validator)

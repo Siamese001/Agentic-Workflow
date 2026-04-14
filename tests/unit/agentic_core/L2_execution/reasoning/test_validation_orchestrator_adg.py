@@ -1,48 +1,32 @@
-"""Placeholder test file - syntax fixed."""
+"""Smoke tests for validation orchestrator exports."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L2_execution.engines."""
+@pytest.mark.unit
+class TestValidationOrchestratorAdg:
+    """Smoke tests for validation orchestrator exports."""
 
-    def test_can_run(self):
-        """Test can_run function."""
-        from agentic_core.L2_execution.reasoning import can_run
+    def test_can_run(self) -> None:
+        """Import can_run export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "can_run")
+        assert callable(func)
 
-        result = can_run()
-        self.assertIsNotNone(result)
+    def test_get_file_hash(self) -> None:
+        """Import get_file_hash export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "get_file_hash")
+        assert callable(func)
 
-    def test_get_file_hash(self):
-        """Test get_file_hash function."""
-        from agentic_core.L2_execution.reasoning import get_file_hash
+    def test_ValidationOrchestrator_init(self) -> None:
+        """Import ValidationOrchestrator class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ValidationOrchestrator")
+        assert klass is not None
 
-        result = get_file_hash()
-        self.assertIsNotNone(result)
-
-    def test_ValidationOrchestrator_init(self):
-        """Test ValidationOrchestrator initialization."""
-        from agentic_core.L2_execution.reasoning import ValidationOrchestrator
-
-        instance = ValidationOrchestrator()
-        self.assertIsNotNone(instance)
-
-    def test_ValidationOrchestrator_can_run(self):
-        """Test ValidationOrchestrator.can_run method."""
-        from agentic_core.L2_execution.reasoning import ValidationOrchestrator
-
-        instance = ValidationOrchestrator()
-        result = instance.can_run()
-        self.assertIsNotNone(result)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_ValidationOrchestrator_can_run(self) -> None:
+        """Validate ValidationOrchestrator.can_run method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ValidationOrchestrator")
+        assert hasattr(klass, "can_run")

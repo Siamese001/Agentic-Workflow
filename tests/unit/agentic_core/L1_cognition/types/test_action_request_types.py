@@ -1,21 +1,30 @@
-"""Foundational behavioral tests for agentic_core/L1_cognition/types/action_request_types.py."""
+"""Foundational behavioral tests for agentic_core/action_request_types.py."""
 
 from __future__ import annotations
+
+from dataclasses import is_dataclass
+
+import pytest
+
+from agentic_core.action_request_types import ActionRequest, validate_action_request
 
 
 class TestActionRequestContract:
     def test_is_dataclass(self):
-        """Test is_dataclass runtime behavior."""
-        """Test field_names_present runtime behavior."""
+        assert is_dataclass(ActionRequest)
 
-    """Test field_names_present runtime behavior."""
+    def test_field_names_present(self):
+        field_names = {field.name for field in ActionRequest.__dataclass_fields__.values()}
+        assert field_names == {"action", "target", "metadata"}
 
-    """Test field_names_present runtime behavior."""
+    def test_is_not_none(self):
+        request = ActionRequest(action="retrieve", target="codebase")
+        assert request is not None
 
-    """Test field_names_present runtime behavior."""
+    def test_validate_round_trip(self):
+        request = ActionRequest(action="retrieve", target="docs")
+        assert validate_action_request(request) is request
 
-    """Test is_not_none runtime behavior."""
-    """Test is_not_none runtime behavior."""
-    """Test is_not_none runtime behavior."""
-    """Test is_not_none runtime behavior."""
-    """Test is_not_none runtime behavior."""
+    def test_empty_action_raises(self):
+        with pytest.raises(ValueError):
+            ActionRequest(action="", target="docs").validate()

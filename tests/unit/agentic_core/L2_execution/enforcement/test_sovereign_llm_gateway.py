@@ -6,26 +6,32 @@ import time
 
 import pytest
 
-from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-    REASONING_PATH_TABLE,
-    CircuitBreaker,
-    CircuitBreakerOpenError,
-    GatewayError,
-    ProviderConfig,
-    ProviderType,
-    ReasoningPath,
-    SignatureVerificationError,
-    SovereignLLMGateway,
-    TelemetryLedger,
-    TelemetryRecord,
-    create_gateway,
-    create_openai_gateway,
+_GATEWAY_MODULE = pytest.importorskip(
+    "agentic_core.L2_execution.enforcement.SovereignLLMGateway",
+    reason="SovereignLLMGateway tests require agentic_core runtime modules",
 )
-from agentic_core.L2_execution.reasoning import (
-    AuthorityLevel,
-    AuthoritySlot,
-    SlotAssemblyEngine,
+_REASONING_MODULE = pytest.importorskip(
+    "agentic_core.L2_execution.reasoning",
+    reason="SovereignLLMGateway tests require L2 reasoning primitives",
 )
+
+REASONING_PATH_TABLE = _GATEWAY_MODULE.REASONING_PATH_TABLE
+CircuitBreaker = _GATEWAY_MODULE.CircuitBreaker
+CircuitBreakerOpenError = _GATEWAY_MODULE.CircuitBreakerOpenError
+GatewayError = _GATEWAY_MODULE.GatewayError
+ProviderConfig = _GATEWAY_MODULE.ProviderConfig
+ProviderType = _GATEWAY_MODULE.ProviderType
+ReasoningPath = _GATEWAY_MODULE.ReasoningPath
+SignatureVerificationError = _GATEWAY_MODULE.SignatureVerificationError
+SovereignLLMGateway = _GATEWAY_MODULE.SovereignLLMGateway
+TelemetryLedger = _GATEWAY_MODULE.TelemetryLedger
+TelemetryRecord = _GATEWAY_MODULE.TelemetryRecord
+create_gateway = _GATEWAY_MODULE.create_gateway
+create_openai_gateway = _GATEWAY_MODULE.create_openai_gateway
+
+AuthorityLevel = _REASONING_MODULE.AuthorityLevel
+AuthoritySlot = _REASONING_MODULE.AuthoritySlot
+SlotAssemblyEngine = _REASONING_MODULE.SlotAssemblyEngine
 
 
 class TestCircuitBreaker:

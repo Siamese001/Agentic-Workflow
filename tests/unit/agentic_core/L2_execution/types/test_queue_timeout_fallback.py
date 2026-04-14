@@ -1,32 +1,27 @@
-"""Test QueueTimeoutFallback functionality."""
+"""Smoke tests for queue_timeout_fallback exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestQueueTimeoutFallback:
-    """Test QueueTimeoutFallback functionality."""
+    """Smoke tests for queue_timeout_fallback exports."""
 
-    def test_queue_timeout_fallback_imports(self):
-        """Test queue_timeout_fallback module imports."""
-        from agentic_core import queue_timeout_fallback
+    def test_queue_timeout_fallback_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "queue_timeout_fallback")
+        assert module is not None
 
-        assert queue_timeout_fallback is not None
+    def test_queue_timeout_fallback_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "QueueTimeoutFallback")
+        assert klass is not None
 
-    def test_queue_timeout_fallback_class(self):
-        """Test QueueTimeoutFallback class exists."""
-        from agentic_core import QueueTimeoutFallback
-
-        assert QueueTimeoutFallback is not None
-
-    def test_queue_timeout_fallback_callable(self):
-        """Test queue_timeout_fallback functions are callable."""
-        from agentic_core import validate_queue_timeout_fallback
-
-        assert callable(validate_queue_timeout_fallback)
+    def test_queue_timeout_fallback_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_queue_timeout_fallback")
+        assert callable(validator)

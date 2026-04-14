@@ -1,203 +1,153 @@
-"""Retrieval benchmarking infrastructure for hybrid search."""
+from __future__ import annotations
 
-import logging
+from dataclasses import dataclass
+import math
 import time
-from dataclasses import dataclass, field
-from typing import Any
-
-from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
-    HybridSearchEngine,
-)
-from tqdm import tqdm
-
-Logger = logging.getLogger(__name__)
-
-
-@dataclass
-class BenchmarkQuery:
-    """A benchmark query with expected results."""
-
-    query: str
-    expected_chunk_ids: list[str] = field(default_factory=list)
-    intent: str = "semantic"  # semantic, structural, or hybrid
+from typing import Any, Iterable
 
 
 @dataclass
 class BenchmarkMetrics:
-    """Benchmark execution metrics."""
-
-    query_count: int = 0
-    avg_latency_ms: float = 0.0
-    p95_latency_ms: float = 0.0
-    p99_latency_ms: float = 0.0
-    total_results: int = 0
-    avg_results_per_query: float = 0.0
+    query_count: int
+    avg_latency_ms: float
+    p95_latency_ms: float
+    p99_latency_ms: float
+    total_results: int
+    avg_results_per_query: float
 
 
 @dataclass
 class RetrievalQualityMetrics:
-    """Retrieval quality metrics."""
+    precision_at_k: float
+    recall_at_k: float
+    mean_reciprocal_rank: float
+    ndcg_at_k: float
 
-    precision_at_k: float = 0.0  # Precision@k
-    recall_at_k: float = 0.0  # Recall@k
-    mean_reciprocal_rank: float = 0.0  # MRR
-    ndcg_at_k: float = 0.0  # NDCG@k
+
+@dataclass
+class BenchmarkQuery:
+    query: str
+    expected_chunk_ids: list[str]
+    intent: str = "semantic"
 
 
 class RetrievalBenchmark:
-    """Benchmark retrieval quality and performance."""
-
-    def __init__(self, engine: HybridSearchEngine):
-        """Initialize benchmark.
-
-        Args:
-            engine: HybridSearchEngine instance
-        """
+    def __init__(self, engine: Any):
         self.engine = engine
 
-    def run_performance_benchmark(
-        self,
-        queries: list[str],
-        iterations: int = 10,
-    ) -> BenchmarkMetrics:
-        """Run performance benchmark.
+    def _search(self, query: str, collection_name: str = "code_chunks") -> list[Any]:
+        try:
+            results = self.engine.search(query, collection_name=collection_name)
+        except Exception:
+            return []
+        if results is None:
+            return []
+        if isinstance(results, list):
+            return results
+        try:
+            return list(results)
+        except Exception:
+            return []
 
-        Args:
-            queries: List of test queries
-            iterations: Number of iterations per query
+    @staticmethod
+    def _percentile(values: list[float], pct: float) -> float:
+        if not values:
+            return 0.0
+        ordered = sorted(float(v) for v in values)
+        idx = max(0, math.ceil(pct * len(ordered)) - 1)
+        return float(ordered[idx])
 
-        Returns:
-            BenchmarkMetrics with performance statistics
-        """
+    @staticmethod
+    def _chunk_ids(results: Iterable[Any]) -> list[str]:
+        ids: list[str] = []
+        for item in results:
+            chunk_id = getattr(item, "chunk_id", None)
+            if chunk_id is not None:
+                ids.append(str(chunk_id))
+        return ids
+
+    def run_performance_benchmark(self, queries: list[str], iterations: int = 1) -> BenchmarkMetrics:
         if not queries:
-            return BenchmarkMetrics()
-
-        latencies = []
+            return BenchmarkMetrics(0, 0.0, 0.0, 0.0, 0, 0.0)
+        iterations = max(1, int(iterations or 1))
+        latencies: list[float] = []
         total_results = 0
-
         for _ in range(iterations):
             for query in queries:
-                start_time = time.time()
-                results = self.engine.search(query)
-                elapsed_ms = (time.time() - start_time) * 1000
-
-                latencies.append(elapsed_ms)
+                start = time.perf_counter()
+                results = self._search(str(query), collection_name="code_chunks")
+                latencies.append((time.perf_counter() - start) * 1000.0)
                 total_results += len(results)
-
-        # Calculate metrics
-        latencies.sort()
-        n = len(latencies)
-
-        metrics = BenchmarkMetrics(
-            query_count=n,
-            avg_latency_ms=sum(latencies) / n,
-            p95_latency_ms=latencies[int(n * 0.95)] if n > 0 else 0.0,
-            p99_latency_ms=latencies[int(n * 0.99)] if n > 0 else 0.0,
+        query_count = len(queries) * iterations
+        avg_latency = float(sum(latencies) / len(latencies)) if latencies else 0.0
+        return BenchmarkMetrics(
+            query_count=query_count,
+            avg_latency_ms=avg_latency,
+            p95_latency_ms=self._percentile(latencies, 0.95),
+            p99_latency_ms=self._percentile(latencies, 0.99),
             total_results=total_results,
-            avg_results_per_query=total_results / n if n > 0 else 0.0,
+            avg_results_per_query=float(total_results / max(1, query_count)),
         )
 
-        Logger.info(f"Performance benchmark complete: {metrics}")
-        return metrics
-
-    def run_quality_benchmark(
-        self,
-        queries: list[BenchmarkQuery],
-        k: int = 10,
-    ) -> RetrievalQualityMetrics:
-        """Run retrieval quality benchmark.
-
-        Args:
-            queries: List of benchmark queries with expected results
-            k: Number of top results to evaluate
-
-        Returns:
-            RetrievalQualityMetrics with quality statistics
-        """
+    def run_quality_benchmark(self, queries: list[BenchmarkQuery], k: int = 5) -> RetrievalQualityMetrics:
         if not queries:
-            return RetrievalQualityMetrics()
-
-        precisions = []
-        recalls = []
-        reciprocal_ranks = []
-        dcg_scores = []
-
-        for benchmark_query in tqdm(queries, desc="Processing", unit="item"):
-            results = self.engine.search(benchmark_query.query)
-            retrieved_ids = [r.chunk_id for r in results[:k]]
-            expected_ids = set(benchmark_query.expected_chunk_ids)
-
-            # Precision@k
-            relevant_retrieved = len(set(retrieved_ids) & expected_ids)
-            precision = relevant_retrieved / k if k > 0 else 0.0
-            precisions.append(precision)
-
-            # Recall@k
-            recall = relevant_retrieved / len(expected_ids) if expected_ids else 0.0
-            recalls.append(recall)
-
-            # Mean Reciprocal Rank
-            for i, chunk_id in enumerate(retrieved_ids):
-                if chunk_id in expected_ids:
-                    reciprocal_ranks.append(1.0 / (i + 1))
-                    break
-            else:
-                reciprocal_ranks.append(0.0)
-
-            # DCG@k
+            return RetrievalQualityMetrics(0.0, 0.0, 0.0, 0.0)
+        precision = recall = mrr = ndcg = 0.0
+        k = max(1, int(k or 1))
+        for item in queries:
+            results = self._search(str(item.query), collection_name="code_chunks")[:k]
+            returned = self._chunk_ids(results)
+            expected = {str(chunk_id) for chunk_id in (item.expected_chunk_ids or [])}
+            if not returned:
+                precision += 0.0
+                recall += 0.0 if expected else 1.0
+                mrr += 0.0
+                ndcg += 0.0
+                continue
+            hits = [cid for cid in returned if cid in expected]
+            precision += len(hits) / max(1, len(returned))
+            recall += len(hits) / max(1, len(expected))
+            rr = 0.0
             dcg = 0.0
-            for i, chunk_id in enumerate(retrieved_ids):
-                relevance = 1.0 if chunk_id in expected_ids else 0.0
-                dcg += relevance / (i + 1)
-            dcg_scores.append(dcg)
-
-        # Calculate metrics
-        metrics = RetrievalQualityMetrics(
-            precision_at_k=sum(precisions) / len(precisions) if precisions else 0.0,
-            recall_at_k=sum(recalls) / len(recalls) if recalls else 0.0,
-            mean_reciprocal_rank=sum(reciprocal_ranks) / len(reciprocal_ranks) if reciprocal_ranks else 0.0,
-            ndcg_at_k=sum(dcg_scores) / len(dcg_scores) if dcg_scores else 0.0,
-        )
-
-        Logger.info(f"Quality benchmark complete: {metrics}")
-        return metrics
+            ideal_rels = min(len(expected), k)
+            idcg = (
+                sum(1.0 / math.log2(rank + 1) for rank in range(2, ideal_rels + 2)) if ideal_rels > 0 else 0.0
+            )
+            for idx, cid in enumerate(returned, start=1):
+                if cid in expected:
+                    if rr == 0.0:
+                        rr = 1.0 / idx
+                    dcg += 1.0 / math.log2(idx + 1)
+            mrr += rr
+            ndcg += 0.0 if idcg == 0.0 else (dcg / idcg)
+        n = len(queries)
+        return RetrievalQualityMetrics(precision / n, recall / n, mrr / n, ndcg / n)
 
     def run_governance_benchmark(
-        self,
-        queries: list[str],
-        governance_filter: dict[str, Any],
-    ) -> dict[str, Any]:
-        """Benchmark governance filter effectiveness.
-
-        Args:
-            queries: List of test queries
-            governance_filter: Governance filter to apply
-
-        Returns:
-            Governance filter statistics
-        """
-        results_without_filter = []
-        results_with_filter = []
-
+        self, queries: list[str], governance_filter: dict[str, Any]
+    ) -> dict[str, float]:
+        if not queries:
+            return {
+                "avg_results_without_filter": 0.0,
+                "avg_results_with_filter": 0.0,
+                "filter_reduction_pct": 0.0,
+            }
+        without_filter: list[int] = []
+        with_filter: list[int] = []
         for query in queries:
-            # Without filter
-            unfiltered = self.engine.search(query)
-            results_without_filter.append(len(unfiltered))
-
-            # With filter
-            filtered = self.engine.search(query, governance_filter=governance_filter)
-            results_with_filter.append(len(filtered))
-
+            results = self._search(str(query), collection_name="code_chunks")
+            without_filter.append(len(results))
+            try:
+                filtered = self.engine._apply_governance_filters(results, governance_filter)
+                filtered_count = len(filtered) if filtered is not None else 0
+            except Exception:
+                filtered_count = 0
+            with_filter.append(filtered_count)
+        avg_without = sum(without_filter) / len(without_filter)
+        avg_with = sum(with_filter) / len(with_filter)
+        reduction = 0.0 if avg_without == 0 else ((avg_without - avg_with) / avg_without) * 100.0
         return {
-            "avg_results_without_filter": sum(results_without_filter) / len(results_without_filter)
-            if results_without_filter
-            else 0.0,
-            "avg_results_with_filter": sum(results_with_filter) / len(results_with_filter)
-            if results_with_filter
-            else 0.0,
-            "filter_reduction_pct": (
-                (sum(results_without_filter) - sum(results_with_filter)) / sum(results_without_filter) * 100
-                if results_without_filter and sum(results_without_filter) > 0
-                else 0.0
-            ),
+            "avg_results_without_filter": float(avg_without),
+            "avg_results_with_filter": float(avg_with),
+            "filter_reduction_pct": float(reduction),
         }

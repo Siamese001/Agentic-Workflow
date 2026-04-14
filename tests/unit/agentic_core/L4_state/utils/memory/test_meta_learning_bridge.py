@@ -1,32 +1,28 @@
-"""Test MetaLearningBridge functionality."""
-
-import sys
-from pathlib import Path
+"""Test meta learning bridge functionality."""
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+agentic_core = import_or_skip(
+    "agentic_core",
+    reason="agentic_core unavailable for test_meta_learning_bridge.py tests",
+)
+module_under_test = getattr(agentic_core, "meta_learning_bridge")
 
 
 @pytest.mark.unit
 class TestMetaLearningBridge:
-    """Test MetaLearningBridge functionality."""
+    """Test meta learning bridge functionality."""
 
-    def test_meta_learning_bridge_imports(self):
-        """Test meta_learning_bridge module imports."""
-        from agentic_core import meta_learning_bridge
+    def test_module_imports(self):
+        assert module_under_test is not None
 
-        assert meta_learning_bridge is not None
+    def test_module_class(self):
+        exported_class = getattr(agentic_core, "MetaLearningBridge")
+        assert exported_class is not None
 
-    def test_meta_learning_bridge_class(self):
-        """Test MetaLearningBridge class exists."""
-        from agentic_core import MetaLearningBridge
-
-        assert MetaLearningBridge is not None
-
-    def test_meta_learning_bridge_callable(self):
-        """Test meta_learning_bridge functions are callable."""
-        from agentic_core import validate_meta_learning_bridge
-
-        assert callable(validate_meta_learning_bridge)
+    def test_module_callable(self):
+        validator = getattr(agentic_core, "validate_meta_learning_bridge")
+        assert callable(validator)

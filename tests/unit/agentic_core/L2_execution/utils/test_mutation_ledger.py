@@ -1,32 +1,27 @@
-"""Test MutationLedger functionality."""
+"""Smoke tests for mutation_ledger exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestMutationLedger:
-    """Test MutationLedger functionality."""
+    """Smoke tests for mutation_ledger exports."""
 
-    def test_mutation_ledger_imports(self):
-        """Test mutation_ledger module imports."""
-        from agentic_core import mutation_ledger
+    def test_mutation_ledger_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "mutation_ledger")
+        assert module is not None
 
-        assert mutation_ledger is not None
+    def test_mutation_ledger_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "MutationLedger")
+        assert klass is not None
 
-    def test_mutation_ledger_class(self):
-        """Test MutationLedger class exists."""
-        from agentic_core import MutationLedger
-
-        assert MutationLedger is not None
-
-    def test_mutation_ledger_callable(self):
-        """Test mutation_ledger functions are callable."""
-        from agentic_core import validate_mutation_ledger
-
-        assert callable(validate_mutation_ledger)
+    def test_mutation_ledger_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_mutation_ledger")
+        assert callable(validator)

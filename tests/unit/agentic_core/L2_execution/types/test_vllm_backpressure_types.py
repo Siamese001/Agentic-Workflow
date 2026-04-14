@@ -1,32 +1,27 @@
-"""Test VllmBackpressureTypes functionality."""
+"""Smoke tests for vllm_backpressure_types exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestVllmBackpressureTypes:
-    """Test VllmBackpressureTypes functionality."""
+    """Smoke tests for vllm_backpressure_types exports."""
 
-    def test_vllm_backpressure_types_imports(self):
-        """Test vllm_backpressure_types module imports."""
-        from agentic_core import vllm_backpressure_types
+    def test_vllm_backpressure_types_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "vllm_backpressure_types")
+        assert module is not None
 
-        assert vllm_backpressure_types is not None
+    def test_vllm_backpressure_types_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "VllmBackpressureTypes")
+        assert klass is not None
 
-    def test_vllm_backpressure_types_class(self):
-        """Test VllmBackpressureTypes class exists."""
-        from agentic_core import VllmBackpressureTypes
-
-        assert VllmBackpressureTypes is not None
-
-    def test_vllm_backpressure_types_callable(self):
-        """Test vllm_backpressure_types functions are callable."""
-        from agentic_core import validate_vllm_backpressure_types
-
-        assert callable(validate_vllm_backpressure_types)
+    def test_vllm_backpressure_types_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_vllm_backpressure_types")
+        assert callable(validator)

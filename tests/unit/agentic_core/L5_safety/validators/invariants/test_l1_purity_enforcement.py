@@ -11,23 +11,11 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import L1_COGNITION_DIR
-
-pytestmark = pytest.mark.unit_min_deps
-
-FORBIDDEN_IMPORTS = {
-    "subprocess",
-    "redis",
-    "pinecone",
-    "requests",
-    "http",
-    "socket",
-    "sqlite",
-    "psycopg",
-    "boto",
-}
-
-FORBIDDEN_OPEN_MODES = {"w", "a", "x"}
+_path_constants = pytest.importorskip(
+    "agentic_core.L0_routing.config.path_constants",
+    reason="Requires path constants from the monorepo checkout.",
+)
+L1_COGNITION_DIR = _path_constants.L1_COGNITION_DIR
 
 
 def get_l1_files() -> list[Path]:

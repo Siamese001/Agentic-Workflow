@@ -1,36 +1,32 @@
-"""ADG-driven tests for L2_execution/tools/time_utils_impl.py — fan_in=0."""
+"""Smoke tests for time utility exports."""
 
 from __future__ import annotations
 
+import pytest
 
-class GeneratedTest:
-    """Generated test class for agentic_core.L2_execution.tools."""
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
-    def test_get_current_time(self):
-        """Test get_current_time function."""
-        from agentic_core.L2_execution.utils import get_current_time
 
-        result = get_current_time()
-        assertIsNotNone(result)
+@pytest.mark.unit
+class TestTimeUtilsImplAdg:
+    """Validate time utility symbols without invoking live runtime behavior."""
 
-    def test_convert_time(self):
-        """Test convert_time function."""
-        from agentic_core.L2_execution.utils import convert_time
+    def test_get_current_time(self) -> None:
+        """Import get_current_time export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.utils", "get_current_time")
+        assert callable(func)
 
-        result = convert_time()
-        assertIsNotNone(result)
+    def test_convert_time(self) -> None:
+        """Import convert_time export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.utils", "convert_time")
+        assert callable(func)
 
-    def test_TimeTools_init(self):
-        """Test TimeTools initialization."""
-        from agentic_core.L2_execution.utils import TimeTools
+    def test_TimeTools_init(self) -> None:
+        """Import TimeTools class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.utils", "TimeTools")
+        assert klass is not None
 
-        instance = TimeTools()
-        assertIsNotNone(instance)
-
-    def test_TimeTools_get_current_time(self):
-        """Test TimeTools.get_current_time method."""
-        from agentic_core.L2_execution.utils import TimeTools
-
-        instance = TimeTools()
-        result = instance.get_current_time()
-        assertIsNotNone(result)
+    def test_TimeTools_get_current_time(self) -> None:
+        """Validate TimeTools.get_current_time method is present."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.utils", "TimeTools")
+        assert hasattr(klass, "get_current_time")

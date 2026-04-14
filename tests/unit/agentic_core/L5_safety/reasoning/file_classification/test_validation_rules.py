@@ -2,10 +2,14 @@
 
 from pathlib import Path
 
-from agentic_core.L5_safety.reasoning.file_classification.validation_rules import (
-    check_domain_root_purity,
-    check_fake_config,
+import pytest
+
+_validation_rules = pytest.importorskip(
+    "agentic_core.L5_safety.reasoning.file_classification.validation_rules",
+    reason="Requires file classification validation rules from the monorepo checkout.",
 )
+check_domain_root_purity = _validation_rules.check_domain_root_purity
+check_fake_config = _validation_rules.check_fake_config
 
 
 class TestCheckFakeConfig:

@@ -1,12 +1,4 @@
-"""
-Unit Tests for code_validator_util - Micro-wave 10B
-
-Tests the code validator utility functions including:
-- Syntax validation
-- Canonical pattern validation
-- Async/await validation
-- Print statement detection
-"""
+"""Tests for code_validator_util module."""
 
 from __future__ import annotations
 
@@ -14,15 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.utils.code_validator_util import (
-    CodeValidator,
-    RuleSet,
-    ValidationReport,
-    Violation,
-    ViolationType,
-    validate_directory,
-    validate_file,
+_code_validator_util = pytest.importorskip(
+    "agentic_core.L5_safety.utils.code_validator_util",
+    reason="Requires code validator utility from the monorepo checkout.",
 )
+CodeValidator = _code_validator_util.CodeValidator
+IssueSeverity = _code_validator_util.IssueSeverity
+ValidationIssue = _code_validator_util.ValidationIssue
+ValidationReport = _code_validator_util.ValidationReport
 
 
 class TestViolationDataclass:

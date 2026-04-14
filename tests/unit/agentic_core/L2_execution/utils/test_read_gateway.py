@@ -1,32 +1,27 @@
-"""Test ReadGateway functionality."""
+"""Smoke tests for read_gateway exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestReadGateway:
-    """Test ReadGateway functionality."""
+    """Smoke tests for read_gateway exports."""
 
-    def test_read_gateway_imports(self):
-        """Test read_gateway module imports."""
-        from agentic_core import read_gateway
+    def test_read_gateway_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "read_gateway")
+        assert module is not None
 
-        assert read_gateway is not None
+    def test_read_gateway_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "ReadGateway")
+        assert klass is not None
 
-    def test_read_gateway_class(self):
-        """Test ReadGateway class exists."""
-        from agentic_core import ReadGateway
-
-        assert ReadGateway is not None
-
-    def test_read_gateway_callable(self):
-        """Test read_gateway functions are callable."""
-        from agentic_core import validate_read_gateway
-
-        assert callable(validate_read_gateway)
+    def test_read_gateway_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_read_gateway")
+        assert callable(validator)

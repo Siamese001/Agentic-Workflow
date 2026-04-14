@@ -1,28 +1,28 @@
-"""Foundational behavioral tests for agentic_core/L2_execution/utils/egress_util.py."""
+"""Smoke tests for egress_util exports."""
 
 from __future__ import annotations
 
+import pytest
 
-class TestEgressResultContract:
-    def test_is_dataclass(self):
-        """Test is_dataclass runtime behavior."""
-
-    """Test is_class runtime behavior."""
-    """Test has_method_strict_egress_filter runtime behavior."""
-    """Test has_method_send_email runtime behavior."""
-    """Test has_method_fetch_url runtime behavior."""
-    """Test has_method_get_stats runtime behavior."""
-    """Test is_callable runtime behavior."""
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
-"""Test is_callable runtime behavior."""
+@pytest.mark.unit
+class TestEgressUtil:
+    """Validate the egress_util module surface without invoking live behavior."""
 
+    def test_egress_util_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "egress_util")
+        assert module is not None
 
-"""Test is_callable runtime behavior."""
+    def test_egress_util_docstring_present(self) -> None:
+        """Ensure the module docstring is present."""
+        module = import_attr_or_skip("agentic_core", "egress_util")
+        assert module.__doc__ is not None
 
-
-"""Test is_not_none runtime behavior."""
-"""Test is_not_none runtime behavior."""
-"""Test is_not_none runtime behavior."""
-"""Test is_not_none runtime behavior."""
-"""Test is_not_none runtime behavior."""
+    def test_egress_util_public_attributes_accessible(self) -> None:
+        """Ensure public attributes can be enumerated."""
+        module = import_attr_or_skip("agentic_core", "egress_util")
+        attrs = [name for name in dir(module) if not name.startswith("_")]
+        assert isinstance(attrs, list)

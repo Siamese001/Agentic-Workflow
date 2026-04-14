@@ -1,4 +1,6 @@
-"""Placeholder test file - syntax fixed."""
+"""Standalone contracts for the logs guard test harness."""
+
+from __future__ import annotations
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -9,24 +11,26 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300
 
-import unittest
+
+def test_threshold_is_unit_interval() -> None:
+    assert 0.0 < THRESHOLD <= 1.0
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone("valid_value")
+def test_operational_budgets_are_positive() -> None:
+    assert MAX_RETRIES > 0
+    assert DEFAULT_SLEEP > 0
+    assert BUFFER_SIZE > 0
+    assert BATCH_SIZE > 0
+    assert MAX_DEPTH > 0
+    assert MAX_FILES > 0
+    assert DEFAULT_TIMEOUT > 0
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_operational_budgets_are_conservative() -> None:
+    assert MAX_RETRIES <= 5
+    assert BATCH_SIZE <= 128
+    assert DEFAULT_TIMEOUT >= 60
+
+
+def test_buffer_size_is_power_of_two() -> None:
+    assert BUFFER_SIZE & (BUFFER_SIZE - 1) == 0

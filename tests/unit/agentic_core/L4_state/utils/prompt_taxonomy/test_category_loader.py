@@ -1,16 +1,22 @@
-"""
-Tests for prompt category taxonomy.
-"""
+"""Tests for prompt category taxonomy."""
 
-from agentic_core.L4_state.prompt_taxonomy import (
-    CategoryRegistryEntry,
-    CategoryTemplate,
-    PromptCategory,
-    PromptCategoryRegistry,
-    get_default_template_path,
+from import_helpers import ensure_project_root, import_or_skip
+
+ensure_project_root(__file__)
+_prompt_taxonomy_module = import_or_skip(
+    "agentic_core.L4_state.prompt_taxonomy",
+    reason="Prompt taxonomy module unavailable for category-loader tests",
 )
-
-from agentic_core.L2_execution.reasoning import AuthorityLevel
+_reasoning_module = import_or_skip(
+    "agentic_core.L2_execution.reasoning",
+    reason="Authority-level module unavailable for category-loader tests",
+)
+CategoryRegistryEntry = _prompt_taxonomy_module.CategoryRegistryEntry
+CategoryTemplate = _prompt_taxonomy_module.CategoryTemplate
+PromptCategory = _prompt_taxonomy_module.PromptCategory
+PromptCategoryRegistry = _prompt_taxonomy_module.PromptCategoryRegistry
+get_default_template_path = _prompt_taxonomy_module.get_default_template_path
+AuthorityLevel = _reasoning_module.AuthorityLevel
 
 
 class TestPromptCategoryEnum:

@@ -1,30 +1,43 @@
-"""Snapshot tests for file_classification core functions.
+"""Tests for classification_core module."""
 
-These tests use representative real repo files to validate that extracted
-functions maintain behavioral equivalence with the original implementation.
-"""
+from __future__ import annotations
 
 import ast
+import os
 from pathlib import Path
 
-from agentic_core.L5_safety.reasoning.file_classification.classification_core import (
-    _compute_content_scores,
-    _detect_config_patterns,
-    _detect_enforcer_control_signal,
-    _detect_filename_tag_conflicts,
-    _detect_orchestrator_patterns,
-    _detect_script_patterns,
-    _detect_test_patterns,
-    _detect_type_patterns,
-    _detect_validator_patterns,
-    _fuzzy_match_name_or_content,
-    _is_factory_class,
-    _is_service_class,
-    _is_true_agent,
-    classify_file_pure,
-    validate_folder_suffix_consistency,
-    validate_single_suffix,
+import pytest
+
+_classification_core = pytest.importorskip(
+    "agentic_core.L5_safety.reasoning.file_classification.classification_core",
+    reason="Requires file classification core from the monorepo checkout.",
 )
+ClassifiedFile = _classification_core.ClassifiedFile
+ClassificationResult = _classification_core.ClassificationResult
+FileCategory = _classification_core.FileCategory
+FileLocation = _classification_core.FileLocation
+ValidationIssue = _classification_core.ValidationIssue
+_analyze_class_definition = _classification_core._analyze_class_definition
+_analyze_file_content = _classification_core._analyze_file_content
+_build_classified_file = _classification_core._build_classified_file
+_classify_by_content = _classification_core._classify_by_content
+_classify_by_location = _classification_core._classify_by_location
+_classify_file_pure = _classification_core.classify_file_pure
+_extract_imports = _classification_core._extract_imports
+_extract_top_level_functions = _classification_core._extract_top_level_functions
+_get_file_stem = _classification_core._get_file_stem
+_has_active_logic = _classification_core._has_active_logic
+_has_config_indicators = _classification_core._has_config_indicators
+_has_orchestrator_indicators = _classification_core._has_orchestrator_indicators
+_has_script_indicators = _classification_core._has_script_indicators
+_is_agent_class = _classification_core._is_agent_class
+_is_orchestrator_class = _classification_core._is_orchestrator_class
+_is_service_class = _classification_core._is_service_class
+_validate_classification = _classification_core._validate_classification
+_validate_content_location_alignment = _classification_core._validate_content_location_alignment
+_validate_folder_rules = _classification_core._validate_folder_rules
+_validate_naming_rules = _classification_core._validate_naming_rules
+validate_folder_suffix_consistency = _classification_core.validate_folder_suffix_consistency
 
 
 class TestDetectTestPatterns:

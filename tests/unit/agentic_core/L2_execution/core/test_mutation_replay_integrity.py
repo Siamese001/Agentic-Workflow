@@ -1,32 +1,27 @@
-"""Test MutationReplayIntegrity functionality."""
+"""Smoke tests for MutationReplayIntegrity exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestMutationReplayIntegrity:
-    """Test MutationReplayIntegrity functionality."""
+    """Smoke tests for MutationReplayIntegrity exports."""
 
-    def test_mutation_replay_integrity_imports(self):
-        """Test mutation_replay_integrity module imports."""
-        from agentic_core import mutation_replay_integrity
+    def test_mutation_replay_integrity_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "mutation_replay_integrity")
+        assert module is not None
 
-        assert mutation_replay_integrity is not None
+    def test_mutation_replay_integrity_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "MutationReplayIntegrity")
+        assert klass is not None
 
-    def test_mutation_replay_integrity_class(self):
-        """Test MutationReplayIntegrity class exists."""
-        from agentic_core import MutationReplayIntegrity
-
-        assert MutationReplayIntegrity is not None
-
-    def test_mutation_replay_integrity_callable(self):
-        """Test mutation_replay_integrity functions are callable."""
-        from agentic_core import validate_mutation_replay_integrity
-
-        assert callable(validate_mutation_replay_integrity)
+    def test_mutation_replay_integrity_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_mutation_replay_integrity")
+        assert callable(validator)

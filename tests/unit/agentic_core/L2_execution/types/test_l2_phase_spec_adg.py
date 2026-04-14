@@ -1,32 +1,27 @@
-"""Test L2PhaseSpecAdg functionality."""
+"""Smoke tests for l2_phase_spec_adg exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestL2PhaseSpecAdg:
-    """Test L2PhaseSpecAdg functionality."""
+    """Smoke tests for l2_phase_spec_adg exports."""
 
-    def test_l2_phase_spec_adg_imports(self):
-        """Test l2_phase_spec_adg module imports."""
-        from agentic_core import l2_phase_spec_adg
+    def test_l2_phase_spec_adg_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "l2_phase_spec_adg")
+        assert module is not None
 
-        assert l2_phase_spec_adg is not None
+    def test_l2_phase_spec_adg_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "L2PhaseSpecAdg")
+        assert klass is not None
 
-    def test_l2_phase_spec_adg_class(self):
-        """Test L2PhaseSpecAdg class exists."""
-        from agentic_core import L2PhaseSpecAdg
-
-        assert L2PhaseSpecAdg is not None
-
-    def test_l2_phase_spec_adg_callable(self):
-        """Test l2_phase_spec_adg functions are callable."""
-        from agentic_core import validate_l2_phase_spec_adg
-
-        assert callable(validate_l2_phase_spec_adg)
+    def test_l2_phase_spec_adg_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_l2_phase_spec_adg")
+        assert callable(validator)

@@ -1,32 +1,27 @@
-"""Test VllmProfileSelection functionality."""
+"""Smoke tests for vllm_profile_selection exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestVllmProfileSelection:
-    """Test VllmProfileSelection functionality."""
+    """Smoke tests for vllm_profile_selection exports."""
 
-    def test_vllm_profile_selection_imports(self):
-        """Test vllm_profile_selection module imports."""
-        from agentic_core import vllm_profile_selection
+    def test_vllm_profile_selection_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "vllm_profile_selection")
+        assert module is not None
 
-        assert vllm_profile_selection is not None
+    def test_vllm_profile_selection_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "VllmProfileSelection")
+        assert klass is not None
 
-    def test_vllm_profile_selection_class(self):
-        """Test VllmProfileSelection class exists."""
-        from agentic_core import VllmProfileSelection
-
-        assert VllmProfileSelection is not None
-
-    def test_vllm_profile_selection_callable(self):
-        """Test vllm_profile_selection functions are callable."""
-        from agentic_core import validate_vllm_profile_selection
-
-        assert callable(validate_vllm_profile_selection)
+    def test_vllm_profile_selection_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_vllm_profile_selection")
+        assert callable(validator)

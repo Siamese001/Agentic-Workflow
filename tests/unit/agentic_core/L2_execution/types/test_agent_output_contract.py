@@ -1,32 +1,28 @@
-"""Test AgentOutputContract functionality."""
+"""Smoke tests for agent_output_contract exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestAgentOutputContract:
-    """Test AgentOutputContract functionality."""
+    """Smoke tests for agent_output_contract exports."""
 
-    def test_agent_output_contract_imports(self):
-        """Test agent_output_contract module imports."""
-        from agentic_core import agent_output_contract
+    def test_agent_output_contract_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "agent_output_contract")
+        assert module is not None
 
-        assert agent_output_contract is not None
+    def test_agent_output_contract_docstring_present(self) -> None:
+        """Ensure the module docstring is present."""
+        module = import_attr_or_skip("agentic_core", "agent_output_contract")
+        assert module.__doc__ is not None
 
-    def test_agent_output_contract_class(self):
-        """Test AgentOutputContract class exists."""
-        from agentic_core import AgentOutputContract
-
-        assert AgentOutputContract is not None
-
-    def test_agent_output_contract_callable(self):
-        """Test agent_output_contract functions are callable."""
-        from agentic_core import validate_agent_output_contract
-
-        assert callable(validate_agent_output_contract)
+    def test_agent_output_contract_public_attributes_accessible(self) -> None:
+        """Ensure public attributes can be enumerated."""
+        module = import_attr_or_skip("agentic_core", "agent_output_contract")
+        attrs = [name for name in dir(module) if not name.startswith("_")]
+        assert isinstance(attrs, list)

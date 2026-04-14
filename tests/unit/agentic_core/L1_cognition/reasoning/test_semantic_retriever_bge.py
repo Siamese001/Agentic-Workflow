@@ -1,10 +1,11 @@
 """Regression tests: SemanticRetriever BGE alignment.
 
-Four invariants proven:
+Core invariants proven:
   T1 — collection routing targets BGE collections, not repo_* 384-dim collections
-  T2 — _embed_query returns exactly 1024-dim vectors
+  T2 — bge_embed_query returns exactly 1024-dim float vectors
   T3 — stored-dim mismatch raises BGE_DIM_MISMATCH RuntimeError
   T4 — _query_collection never calls SovereignChromaClient.embed_texts()
+  T5 — query contracts and hit normalization stay deterministic offline
 
 All tests are fully offline: SentenceTransformer is stubbed with a controlled fake.
 No live Chroma store or GPU required.
@@ -13,10 +14,7 @@ No live Chroma store or GPU required.
 from __future__ import annotations
 
 import asyncio
-import sys
-import types
 import unittest
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import numpy as np
@@ -24,15 +22,9 @@ import pytest
 
 pytestmark = pytest.mark.retrieval_guard
 
-# ---------------------------------------------------------------------------
-# Path bootstrap — mirrors what semantic_retriever.py does at import time
-# ---------------------------------------------------------------------------
-_L4_UTILS = str(Path(__file__).resolve().parents[6] / "agentic_core" / "L4_state" / "utils")
-if _L4_UTILS not in sys.path:
-    sys.path.insert(0, _L4_UTILS)
 
 # ---------------------------------------------------------------------------
-# Shared fake ST model that returns controlled-dimension vectors
+# Shared fakes
 # ---------------------------------------------------------------------------
 
 
@@ -43,7 +35,16 @@ def _make_fake_st(dim: int):
     return fake
 
 
-def _make_fake_chroma_client(collection_dim: int | None = 1024):
+def _make_named_collection(name: str):
+    col = MagicMock()
+    col.name = name
+    return col
+
+
+def _make_fake_chroma_client(
+    collection_dim: int | None = 1024,
+    query_payload: dict[str, object] | None = None,
+):
     """Return a chromadb.PersistentClient fake with one collection of given dim."""
     fake_col = MagicMock()
 
@@ -53,14 +54,12 @@ def _make_fake_chroma_client(collection_dim: int | None = 1024):
     else:
         fake_col.get.return_value = {"embeddings": None}
 
-    fake_col.query.return_value = {
+    fake_col.query.return_value = query_payload or {
         "ids": [["id1"]],
         "documents": [["doc content"]],
-        "metadatas": [["{}"]],  # will be accessed but not asserted
+        "metadatas": [[{"file_path": "x.py"}]],
         "distances": [[0.1]],
     }
-    # Make metadatas return proper dicts so RetrievalResult construction works
-    fake_col.query.return_value["metadatas"] = [[{"file_path": "x.py"}]]
 
     fake_client = MagicMock()
     fake_client.list_collections.return_value = [
@@ -71,26 +70,20 @@ def _make_fake_chroma_client(collection_dim: int | None = 1024):
     return fake_client, fake_col
 
 
-def _make_named_collection(name: str):
-    col = MagicMock()
-    col.name = name
-    return col
-
-
 # ---------------------------------------------------------------------------
 # Helper: build a SemanticRetriever with all I/O stubbed out
 # ---------------------------------------------------------------------------
 
 
-def _build_retriever(st_dim: int = 1024, chroma_stored_dim: int | None = 1024):
-    """Return (retriever, fake_chroma_col, fake_sovereign_chroma) tuple.
-
-    SentenceTransformer and chromadb.PersistentClient are both patched so no
-    filesystem or GPU access occurs.
-    """
+def _build_retriever(
+    st_dim: int = 1024,
+    chroma_stored_dim: int | None = 1024,
+    query_payload: dict[str, object] | None = None,
+):
+    """Return (retriever, fake_chroma_col, fake_sovereign_chroma) tuple."""
     from agentic_core.L1_cognition.reasoning.semantic_retriever import SemanticRetriever
 
-    fake_bge_client, fake_col = _make_fake_chroma_client(chroma_stored_dim)
+    fake_bge_client, fake_col = _make_fake_chroma_client(chroma_stored_dim, query_payload)
     fake_sovereign = MagicMock()
     fake_sovereign.list_collections.return_value = ["code_chunks", "docs"]
 
@@ -100,15 +93,8 @@ def _build_retriever(st_dim: int = 1024, chroma_stored_dim: int | None = 1024):
     ):
         retriever = SemanticRetriever(chroma_persist_dir="/fake/path")
 
-    # Pre-load a controlled fake ST model so _embed_query never hits disk
     retriever._bge_model = _make_fake_st(st_dim)
-
     return retriever, fake_col, fake_sovereign
-
-
-# ---------------------------------------------------------------------------
-# T1 — collection routing only targets BGE collections
-# ---------------------------------------------------------------------------
 
 
 class TestCollectionRouting(unittest.TestCase):
@@ -123,7 +109,6 @@ class TestCollectionRouting(unittest.TestCase):
         "repo_runtime_evidence",
         "repo_tests_guardrails",
     }
-    _REQUIRED = {"code_chunks"}
 
     def setUp(self):
         self.retriever, _, _ = _build_retriever()
@@ -156,34 +141,23 @@ class TestCollectionRouting(unittest.TestCase):
         self.assertIn("docs", self.retriever.collection_routing["documentation"])
 
 
-# ---------------------------------------------------------------------------
-# T2 — bge_embed_query (SR's embedding path) returns exactly 1024-dim vectors
-# ---------------------------------------------------------------------------
-
-
 class TestEmbedQueryDimension(unittest.TestCase):
-    """T2: bge_embed_query (used directly by _query_collection) must always return 1024 dims.
-
-    _embed_query was removed; SR's call site is now a direct call to bge_embed_query.
-    These tests exercise that function through the module-level binding SR imports.
-    """
+    """T2: bge_embed_query must always return 1024 dims."""
 
     def test_embed_query_returns_1024_dim(self):
-        """bge_embed_query returns a 1024-element list."""
         with patch(
             "agentic_core.embeddings.bge_runtime.SentenceTransformer",
             return_value=_make_fake_st(1024),
         ):
             from agentic_core.embeddings import bge_runtime
 
-            bge_runtime._bge_model = None  # reset singleton
+            bge_runtime._bge_model = None
             from agentic_core.embeddings.bge_runtime import bge_embed_query
 
             vec = bge_embed_query("what does UniversalWriteGateway do?")
         self.assertEqual(len(vec), 1024, f"Expected 1024-dim, got {len(vec)}")
 
     def test_embed_query_returns_floats(self):
-        """All values returned by bge_embed_query are Python floats."""
         with patch(
             "agentic_core.embeddings.bge_runtime.SentenceTransformer",
             return_value=_make_fake_st(1024),
@@ -194,10 +168,12 @@ class TestEmbedQueryDimension(unittest.TestCase):
             from agentic_core.embeddings.bge_runtime import bge_embed_query
 
             vec = bge_embed_query("test query")
-        self.assertTrue(all(isinstance(v, float) for v in vec), "All embedding values must be Python floats")
+        self.assertTrue(
+            all(isinstance(v, float) for v in vec),
+            "All embedding values must be Python floats",
+        )
 
     def test_embed_query_raises_on_wrong_model_dim(self):
-        """If the model returns wrong dim, the BGE_DIM_MISMATCH guard must fire."""
         with patch(
             "agentic_core.embeddings.bge_runtime.SentenceTransformer",
             return_value=_make_fake_st(384),
@@ -214,11 +190,6 @@ class TestEmbedQueryDimension(unittest.TestCase):
         self.assertIn("expected 1024", str(ctx.exception))
 
 
-# ---------------------------------------------------------------------------
-# T3 — stored-dim mismatch raises BGE_DIM_MISMATCH
-# ---------------------------------------------------------------------------
-
-
 class TestStoredDimGuard(unittest.TestCase):
     """T3: _query_collection must raise RuntimeError when stored dim != 1024."""
 
@@ -226,7 +197,6 @@ class TestStoredDimGuard(unittest.TestCase):
         return asyncio.run(coro)
 
     def test_384_stored_dim_raises_bge_dim_mismatch(self):
-        """A collection ingested with 384-dim hash embeddings must be rejected."""
         from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
 
         retriever, _, _ = _build_retriever(st_dim=1024, chroma_stored_dim=384)
@@ -241,20 +211,17 @@ class TestStoredDimGuard(unittest.TestCase):
         self.assertIn("vs query dim=1024", error_msg)
 
     def test_1024_stored_dim_does_not_raise(self):
-        """A correctly-ingested 1024-dim BGE collection must not raise."""
         from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
 
         retriever, _, _ = _build_retriever(st_dim=1024, chroma_stored_dim=1024)
         query = RetrievalQuery(text="test", collections=["code_chunks"], max_results=3)
 
-        # Should complete without raising
         try:
             self._run(retriever._query_collection("code_chunks", query))
         except RuntimeError as exc:
             self.fail(f"Unexpected RuntimeError for matching dims: {exc}")
 
     def test_none_stored_embeddings_skips_guard(self):
-        """When get() returns no embeddings (empty collection), guard is skipped."""
         from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
 
         retriever, _, _ = _build_retriever(st_dim=1024, chroma_stored_dim=None)
@@ -264,11 +231,6 @@ class TestStoredDimGuard(unittest.TestCase):
             self._run(retriever._query_collection("code_chunks", query))
         except RuntimeError as exc:
             self.fail(f"Unexpected RuntimeError when embeddings=None: {exc}")
-
-
-# ---------------------------------------------------------------------------
-# T4 — SovereignChromaClient.embed_texts() is never called during retrieval
-# ---------------------------------------------------------------------------
 
 
 class TestNoSovereignEmbedTexts(unittest.TestCase):
@@ -284,19 +246,81 @@ class TestNoSovereignEmbedTexts(unittest.TestCase):
         query = RetrievalQuery(text="UniversalWriteGateway", collections=["code_chunks"], max_results=3)
 
         self._run(retriever._query_collection("code_chunks", query))
-
         fake_sovereign.embed_texts.assert_not_called()
 
     def test_sovereign_query_not_called_during_retrieval(self):
-        """The sovereign client's .query() method must not be invoked."""
         from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
 
         retriever, _, fake_sovereign = _build_retriever(st_dim=1024, chroma_stored_dim=1024)
         query = RetrievalQuery(text="test", collections=["code_chunks"], max_results=3)
 
         self._run(retriever._query_collection("code_chunks", query))
-
         fake_sovereign.query.assert_not_called()
+
+
+class TestQueryContractAndNormalization(unittest.TestCase):
+    """T5: request validation and hit normalization remain stable."""
+
+    def _run(self, coro):
+        return asyncio.run(coro)
+
+    def test_query_contract_rejects_blank_text(self):
+        from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
+
+        with self.assertRaises(ValueError):
+            RetrievalQuery(text="   ", collections=["code_chunks"], max_results=1).validate()
+
+    def test_query_contract_rejects_duplicate_collections(self):
+        from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
+
+        with self.assertRaises(ValueError):
+            RetrievalQuery(
+                text="test",
+                collections=["code_chunks", "code_chunks"],
+                max_results=1,
+            ).validate()
+
+    def test_query_contract_rejects_non_positive_max_results(self):
+        from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
+
+        with self.assertRaises(ValueError):
+            RetrievalQuery(text="test", collections=["code_chunks"], max_results=0).validate()
+
+    def test_query_collection_requires_mapping_payload(self):
+        from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
+
+        retriever, fake_col, _ = _build_retriever(st_dim=1024, chroma_stored_dim=1024)
+        fake_col.query.return_value = ["not", "a", "mapping"]
+        query = RetrievalQuery(text="test", collections=["code_chunks"], max_results=3)
+
+        with self.assertRaises(RuntimeError) as ctx:
+            self._run(retriever._query_collection("code_chunks", query))
+        self.assertIn("mapping payload", str(ctx.exception))
+
+    def test_normalization_handles_missing_documents_metadata_and_distances(self):
+        from agentic_core.L1_cognition.reasoning.semantic_retriever import RetrievalQuery
+
+        payload = {
+            "ids": [["id1", "id2"]],
+            "documents": [["doc content"]],
+            "metadatas": [[{"file_path": "x.py"}, None]],
+            "distances": [[0.1]],
+        }
+        retriever, _, _ = _build_retriever(
+            st_dim=1024,
+            chroma_stored_dim=1024,
+            query_payload=payload,
+        )
+        query = RetrievalQuery(text="test", collections=["code_chunks"], max_results=3)
+
+        results = self._run(retriever._query_collection("code_chunks", query))
+        self.assertEqual(len(results), 2)
+        self.assertEqual(results[0].document, "doc content")
+        self.assertEqual(results[0].metadata, {"file_path": "x.py"})
+        self.assertEqual(results[0].distance, 0.1)
+        self.assertEqual(results[1].document, "")
+        self.assertEqual(results[1].metadata, {})
+        self.assertIsNone(results[1].distance)
 
 
 if __name__ == "__main__":

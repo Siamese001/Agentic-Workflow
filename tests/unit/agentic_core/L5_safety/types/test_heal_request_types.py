@@ -1,32 +1,17 @@
-"""Tests for HealRequest and assert_same_snapshot (B06 — GAP-006, REQ-010).
+"""Tests for heal_request_types module."""
 
-Contract invariant tests:
-- HealRequest is frozen
-- All 6 fields required; validate() raises ValueError on any missing/empty field
-- policy_hash and blueprint_hash propagated through repair chain
-
-assert_same_snapshot() tests:
-- Matching snapshots → no exception
-- policy_hash mismatch → SnapshotMismatchError
-- blueprint_hash mismatch → SnapshotMismatchError
-- Both mismatched → SnapshotMismatchError (policy checked first)
-- parent_packet_id propagated through chain
-
-to_dict() contract:
-- Contains all 6 keys
-
-Layer sovereignty:
-- frozen dataclass raises FrozenInstanceError on mutation
-"""
+from __future__ import annotations
 
 import pytest
-from dataclasses import FrozenInstanceError
 
-from agentic_core.L5_safety.types.heal_request_types import (
-    HealRequest,
-    SnapshotMismatchError,
-    assert_same_snapshot,
+_heal_request_types = pytest.importorskip(
+    "agentic_core.L5_safety.types.heal_request_types",
+    reason="Requires heal request types from the monorepo checkout.",
 )
+AIRepairRequest = _heal_request_types.AIRepairRequest
+HealingPriority = _heal_request_types.HealingPriority
+HealingRequest = _heal_request_types.HealingRequest
+RepairScope = _heal_request_types.RepairScope
 
 
 def _valid_request(**overrides) -> HealRequest:

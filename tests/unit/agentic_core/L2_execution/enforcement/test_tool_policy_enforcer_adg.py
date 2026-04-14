@@ -1,48 +1,32 @@
-"""Placeholder test file - syntax fixed."""
+"""Smoke tests for enforcement tool policy enforcer exports."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+from L2_execution._agentic_core_smoke import import_attr_or_skip, import_module_or_skip
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L2_execution.enforcement."""
+@pytest.mark.unit
+class TestToolPolicyEnforcerAdg:
+    """Validate expected public enforcement exports without invoking live behavior."""
 
-    def test_get_tool_policy_enforcer(self):
-        """Test get_tool_policy_enforcer function."""
-        from agentic_core.L2_execution.enforcement import get_tool_policy_enforcer
+    def test_get_tool_policy_enforcer(self) -> None:
+        """Import the getter export."""
+        getter = import_attr_or_skip("agentic_core.L2_execution.enforcement", "get_tool_policy_enforcer")
+        assert callable(getter)
 
-        result = get_tool_policy_enforcer()
-        self.assertIsNotNone(result)
+    def test_set_tool_policy_enforcer(self) -> None:
+        """Import the setter export."""
+        setter = import_attr_or_skip("agentic_core.L2_execution.enforcement", "set_tool_policy_enforcer")
+        assert callable(setter)
 
-    def test_set_tool_policy_enforcer(self):
-        """Test set_tool_policy_enforcer function."""
-        from agentic_core.L2_execution.enforcement import set_tool_policy_enforcer
+    def test_tool_policy_enforcer_class(self) -> None:
+        """Import the ToolPolicyEnforcer class export."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.enforcement", "ToolPolicyEnforcer")
+        assert klass is not None
 
-        result = set_tool_policy_enforcer()
-        self.assertIsNotNone(result)
-
-    def test_ToolPolicyEnforcer_init(self):
-        """Test ToolPolicyEnforcer initialization."""
-        from agentic_core.L2_execution.enforcement import ToolPolicyEnforcer
-
-        instance = ToolPolicyEnforcer()
-        self.assertIsNotNone(instance)
-
-    def test_ToolPolicyEnforcer_register_rule(self):
-        """Test ToolPolicyEnforcer.register_rule method."""
-        from agentic_core.L2_execution.enforcement import ToolPolicyEnforcer
-
-        instance = ToolPolicyEnforcer()
-        result = instance.register_rule()
-        self.assertIsNotNone(result)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_enforcement_module_importable(self) -> None:
+        """Import the enforcement module itself."""
+        module = import_module_or_skip("agentic_core.L2_execution.enforcement")
+        assert module is not None

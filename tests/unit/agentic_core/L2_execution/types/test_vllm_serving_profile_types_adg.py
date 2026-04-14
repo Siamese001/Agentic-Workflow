@@ -1,32 +1,27 @@
-"""Test VllmServingProfileTypesAdg functionality."""
+"""Smoke tests for vllm_serving_profile_types_adg exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestVllmServingProfileTypesAdg:
-    """Test VllmServingProfileTypesAdg functionality."""
+    """Smoke tests for vllm_serving_profile_types_adg exports."""
 
-    def test_vllm_serving_profile_types_adg_imports(self):
-        """Test vllm_serving_profile_types_adg module imports."""
-        from agentic_core import vllm_serving_profile_types_adg
+    def test_vllm_serving_profile_types_adg_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "vllm_serving_profile_types_adg")
+        assert module is not None
 
-        assert vllm_serving_profile_types_adg is not None
+    def test_vllm_serving_profile_types_adg_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "VllmServingProfileTypesAdg")
+        assert klass is not None
 
-    def test_vllm_serving_profile_types_adg_class(self):
-        """Test VllmServingProfileTypesAdg class exists."""
-        from agentic_core import VllmServingProfileTypesAdg
-
-        assert VllmServingProfileTypesAdg is not None
-
-    def test_vllm_serving_profile_types_adg_callable(self):
-        """Test vllm_serving_profile_types_adg functions are callable."""
-        from agentic_core import validate_vllm_serving_profile_types_adg
-
-        assert callable(validate_vllm_serving_profile_types_adg)
+    def test_vllm_serving_profile_types_adg_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_vllm_serving_profile_types_adg")
+        assert callable(validator)

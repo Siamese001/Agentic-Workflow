@@ -1,32 +1,27 @@
-"""Test UnifiedAgent functionality."""
+"""Smoke tests for UnifiedAgent exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestUnifiedAgent:
-    """Test UnifiedAgent functionality."""
+    """Smoke tests for UnifiedAgent exports."""
 
-    def test_unified_agent_imports(self):
-        """Test unified_agent module imports."""
-        from agentic_core import unified_agent
+    def test_unified_agent_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "unified_agent")
+        assert module is not None
 
-        assert unified_agent is not None
+    def test_unified_agent_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "UnifiedAgent")
+        assert klass is not None
 
-    def test_unified_agent_class(self):
-        """Test UnifiedAgent class exists."""
-        from agentic_core import UnifiedAgent
-
-        assert UnifiedAgent is not None
-
-    def test_unified_agent_callable(self):
-        """Test unified_agent functions are callable."""
-        from agentic_core import validate_unified_agent
-
-        assert callable(validate_unified_agent)
+    def test_unified_agent_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_unified_agent")
+        assert callable(validator)

@@ -1,32 +1,16 @@
-"""Placeholder test file - syntax fixed."""
+"""Behavioral tests for spiffe_validator_adg."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+from __future__ import annotations
 
-import unittest
+import pytest
+
+from agentic_core.spiffe_validator_adg import SpiffeValidatorAdg
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+def test_spiffe_validator_accepts_domain():
+    assert SpiffeValidatorAdg(trust_domain="example.org").validate().trust_domain == "example.org"
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_spiffe_validator_rejects_blank_domain():
+    with pytest.raises(ValueError):
+        SpiffeValidatorAdg(trust_domain="").validate()

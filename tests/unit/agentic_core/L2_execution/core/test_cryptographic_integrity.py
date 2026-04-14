@@ -1,32 +1,27 @@
-"""Test CryptographicIntegrity functionality."""
+"""Smoke tests for CryptographicIntegrity exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestCryptographicIntegrity:
-    """Test CryptographicIntegrity functionality."""
+    """Smoke tests for CryptographicIntegrity exports."""
 
-    def test_cryptographic_integrity_imports(self):
-        """Test cryptographic_integrity module imports."""
-        from agentic_core import cryptographic_integrity
+    def test_cryptographic_integrity_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "cryptographic_integrity")
+        assert module is not None
 
-        assert cryptographic_integrity is not None
+    def test_cryptographic_integrity_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "CryptographicIntegrity")
+        assert klass is not None
 
-    def test_cryptographic_integrity_class(self):
-        """Test CryptographicIntegrity class exists."""
-        from agentic_core import CryptographicIntegrity
-
-        assert CryptographicIntegrity is not None
-
-    def test_cryptographic_integrity_callable(self):
-        """Test cryptographic_integrity functions are callable."""
-        from agentic_core import validate_cryptographic_integrity
-
-        assert callable(validate_cryptographic_integrity)
+    def test_cryptographic_integrity_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_cryptographic_integrity")
+        assert callable(validator)

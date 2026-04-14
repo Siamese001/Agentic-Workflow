@@ -1,32 +1,27 @@
-"""Test VllmGatewayAdapter functionality."""
+"""Smoke tests for vllm_gateway_adapter exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestVllmGatewayAdapter:
-    """Test VllmGatewayAdapter functionality."""
+    """Smoke tests for vllm_gateway_adapter exports."""
 
-    def test_vllm_gateway_adapter_imports(self):
-        """Test vllm_gateway_adapter module imports."""
-        from agentic_core import vllm_gateway_adapter
+    def test_vllm_gateway_adapter_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "vllm_gateway_adapter")
+        assert module is not None
 
-        assert vllm_gateway_adapter is not None
+    def test_vllm_gateway_adapter_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "VllmGatewayAdapter")
+        assert klass is not None
 
-    def test_vllm_gateway_adapter_class(self):
-        """Test VllmGatewayAdapter class exists."""
-        from agentic_core import VllmGatewayAdapter
-
-        assert VllmGatewayAdapter is not None
-
-    def test_vllm_gateway_adapter_callable(self):
-        """Test vllm_gateway_adapter functions are callable."""
-        from agentic_core import validate_vllm_gateway_adapter
-
-        assert callable(validate_vllm_gateway_adapter)
+    def test_vllm_gateway_adapter_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_vllm_gateway_adapter")
+        assert callable(validator)

@@ -1,32 +1,27 @@
-"""Test SafeSubprocess functionality."""
+"""Smoke tests for safe_subprocess exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestSafeSubprocess:
-    """Test SafeSubprocess functionality."""
+    """Smoke tests for safe_subprocess exports."""
 
-    def test_safe_subprocess_imports(self):
-        """Test safe_subprocess module imports."""
-        from agentic_core import safe_subprocess
+    def test_safe_subprocess_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "safe_subprocess")
+        assert module is not None
 
-        assert safe_subprocess is not None
+    def test_safe_subprocess_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "SafeSubprocess")
+        assert klass is not None
 
-    def test_safe_subprocess_class(self):
-        """Test SafeSubprocess class exists."""
-        from agentic_core import SafeSubprocess
-
-        assert SafeSubprocess is not None
-
-    def test_safe_subprocess_callable(self):
-        """Test safe_subprocess functions are callable."""
-        from agentic_core import validate_safe_subprocess
-
-        assert callable(validate_safe_subprocess)
+    def test_safe_subprocess_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_safe_subprocess")
+        assert callable(validator)

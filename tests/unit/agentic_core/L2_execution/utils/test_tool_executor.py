@@ -1,32 +1,27 @@
-"""Test ToolExecutor functionality."""
+"""Smoke tests for tool_executor exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestToolExecutor:
-    """Test ToolExecutor functionality."""
+    """Smoke tests for tool_executor exports."""
 
-    def test_tool_executor_imports(self):
-        """Test tool_executor module imports."""
-        from agentic_core import tool_executor
+    def test_tool_executor_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "tool_executor")
+        assert module is not None
 
-        assert tool_executor is not None
+    def test_tool_executor_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "ToolExecutor")
+        assert klass is not None
 
-    def test_tool_executor_class(self):
-        """Test ToolExecutor class exists."""
-        from agentic_core import ToolExecutor
-
-        assert ToolExecutor is not None
-
-    def test_tool_executor_callable(self):
-        """Test tool_executor functions are callable."""
-        from agentic_core import validate_tool_executor
-
-        assert callable(validate_tool_executor)
+    def test_tool_executor_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_tool_executor")
+        assert callable(validator)

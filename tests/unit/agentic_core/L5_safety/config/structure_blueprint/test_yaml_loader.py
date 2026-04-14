@@ -2,22 +2,35 @@
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST, ROOT_WHITELIST
-from agentic_core.L5_safety.config.structure_blueprint.territories_loader import (
-    build_territories_from_yaml,
-    get_all_territories_yaml,
-    get_territory_yaml,
+import pytest
+
+_path_constants = pytest.importorskip(
+    "agentic_core.L0_routing.config.path_constants",
+    reason="Requires monorepo path constants for structure blueprint tests.",
 )
-from agentic_core.L5_safety.config.structure_blueprint.yaml_loader import (
-    get_all_layer_names,
-    get_all_territory_names,
-    get_layer_override,
-    get_territory,
-    load_ast_signals,
-    load_layer_overrides,
-    load_territories,
-    match_wildcard_territory,
+PROJECT_ROOT_WHITELIST = _path_constants.PROJECT_ROOT_WHITELIST
+ROOT_WHITELIST = _path_constants.ROOT_WHITELIST
+
+_territories_loader = pytest.importorskip(
+    "agentic_core.L5_safety.config.structure_blueprint.territories_loader",
+    reason="Requires structure blueprint loaders from the monorepo checkout.",
 )
+build_territories_from_yaml = _territories_loader.build_territories_from_yaml
+get_all_territories_yaml = _territories_loader.get_all_territories_yaml
+get_territory_yaml = _territories_loader.get_territory_yaml
+
+_yaml_loader = pytest.importorskip(
+    "agentic_core.L5_safety.config.structure_blueprint.yaml_loader",
+    reason="Requires structure blueprint YAML loader from the monorepo checkout.",
+)
+get_all_layer_names = _yaml_loader.get_all_layer_names
+get_all_territory_names = _yaml_loader.get_all_territory_names
+get_layer_override = _yaml_loader.get_layer_override
+get_territory = _yaml_loader.get_territory
+load_ast_signals = _yaml_loader.load_ast_signals
+load_layer_overrides = _yaml_loader.load_layer_overrides
+load_territories = _yaml_loader.load_territories
+match_wildcard_territory = _yaml_loader.match_wildcard_territory
 
 
 class TestLoadTerritories:

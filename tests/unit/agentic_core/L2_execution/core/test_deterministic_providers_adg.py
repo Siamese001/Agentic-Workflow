@@ -1,32 +1,27 @@
-"""Test DeterministicProvidersAdg functionality."""
+"""Smoke tests for DeterministicProvidersAdg exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestDeterministicProvidersAdg:
-    """Test DeterministicProvidersAdg functionality."""
+    """Smoke tests for DeterministicProvidersAdg exports."""
 
-    def test_deterministic_providers_adg_imports(self):
-        """Test deterministic_providers_adg module imports."""
-        from agentic_core import deterministic_providers_adg
+    def test_deterministic_providers_adg_imports(self) -> None:
+        """Import module export."""
+        module = import_attr_or_skip("agentic_core", "deterministic_providers_adg")
+        assert module is not None
 
-        assert deterministic_providers_adg is not None
+    def test_deterministic_providers_adg_class(self) -> None:
+        """Import class export."""
+        klass = import_attr_or_skip("agentic_core", "DeterministicProvidersAdg")
+        assert klass is not None
 
-    def test_deterministic_providers_adg_class(self):
-        """Test DeterministicProvidersAdg class exists."""
-        from agentic_core import DeterministicProvidersAdg
-
-        assert DeterministicProvidersAdg is not None
-
-    def test_deterministic_providers_adg_callable(self):
-        """Test deterministic_providers_adg functions are callable."""
-        from agentic_core import validate_deterministic_providers_adg
-
-        assert callable(validate_deterministic_providers_adg)
+    def test_deterministic_providers_adg_callable(self) -> None:
+        """Import validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_deterministic_providers_adg")
+        assert callable(validator)

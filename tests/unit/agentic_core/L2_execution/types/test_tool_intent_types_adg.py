@@ -1,32 +1,27 @@
-"""Test ToolIntentTypesAdg functionality."""
+"""Smoke tests for tool_intent_types_adg exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestToolIntentTypesAdg:
-    """Test ToolIntentTypesAdg functionality."""
+    """Smoke tests for tool_intent_types_adg exports."""
 
-    def test_tool_intent_types_adg_imports(self):
-        """Test tool_intent_types_adg module imports."""
-        from agentic_core import tool_intent_types_adg
+    def test_tool_intent_types_adg_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "tool_intent_types_adg")
+        assert module is not None
 
-        assert tool_intent_types_adg is not None
+    def test_tool_intent_types_adg_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "ToolIntentTypesAdg")
+        assert klass is not None
 
-    def test_tool_intent_types_adg_class(self):
-        """Test ToolIntentTypesAdg class exists."""
-        from agentic_core import ToolIntentTypesAdg
-
-        assert ToolIntentTypesAdg is not None
-
-    def test_tool_intent_types_adg_callable(self):
-        """Test tool_intent_types_adg functions are callable."""
-        from agentic_core import validate_tool_intent_types_adg
-
-        assert callable(validate_tool_intent_types_adg)
+    def test_tool_intent_types_adg_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_tool_intent_types_adg")
+        assert callable(validator)

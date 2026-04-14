@@ -1,32 +1,27 @@
-"""Test InstructionPacketTypes functionality."""
+"""Smoke tests for instruction_packet_types exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestInstructionPacketTypes:
-    """Test InstructionPacketTypes functionality."""
+    """Smoke tests for instruction_packet_types exports."""
 
-    def test_instruction_packet_types_imports(self):
-        """Test instruction_packet_types module imports."""
-        from agentic_core import instruction_packet_types
+    def test_instruction_packet_types_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "instruction_packet_types")
+        assert module is not None
 
-        assert instruction_packet_types is not None
+    def test_instruction_packet_types_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "InstructionPacketTypes")
+        assert klass is not None
 
-    def test_instruction_packet_types_class(self):
-        """Test InstructionPacketTypes class exists."""
-        from agentic_core import InstructionPacketTypes
-
-        assert InstructionPacketTypes is not None
-
-    def test_instruction_packet_types_callable(self):
-        """Test instruction_packet_types functions are callable."""
-        from agentic_core import validate_instruction_packet_types
-
-        assert callable(validate_instruction_packet_types)
+    def test_instruction_packet_types_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_instruction_packet_types")
+        assert callable(validator)

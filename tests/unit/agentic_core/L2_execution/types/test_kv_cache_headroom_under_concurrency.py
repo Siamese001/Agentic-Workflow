@@ -1,32 +1,27 @@
-"""Test KvCacheHeadroomUnderConcurrency functionality."""
+"""Smoke tests for kv_cache_headroom_under_concurrency exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestKvCacheHeadroomUnderConcurrency:
-    """Test KvCacheHeadroomUnderConcurrency functionality."""
+    """Smoke tests for kv_cache_headroom_under_concurrency exports."""
 
-    def test_kv_cache_headroom_under_concurrency_imports(self):
-        """Test kv_cache_headroom_under_concurrency module imports."""
-        from agentic_core import kv_cache_headroom_under_concurrency
+    def test_kv_cache_headroom_under_concurrency_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "kv_cache_headroom_under_concurrency")
+        assert module is not None
 
-        assert kv_cache_headroom_under_concurrency is not None
+    def test_kv_cache_headroom_under_concurrency_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "KvCacheHeadroomUnderConcurrency")
+        assert klass is not None
 
-    def test_kv_cache_headroom_under_concurrency_class(self):
-        """Test KvCacheHeadroomUnderConcurrency class exists."""
-        from agentic_core import KvCacheHeadroomUnderConcurrency
-
-        assert KvCacheHeadroomUnderConcurrency is not None
-
-    def test_kv_cache_headroom_under_concurrency_callable(self):
-        """Test kv_cache_headroom_under_concurrency functions are callable."""
-        from agentic_core import validate_kv_cache_headroom_under_concurrency
-
-        assert callable(validate_kv_cache_headroom_under_concurrency)
+    def test_kv_cache_headroom_under_concurrency_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_kv_cache_headroom_under_concurrency")
+        assert callable(validator)

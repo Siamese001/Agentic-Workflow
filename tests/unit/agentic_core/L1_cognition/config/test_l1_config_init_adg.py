@@ -1,32 +1,16 @@
-"""Test L1ConfigInitAdg functionality."""
+"""Smoke tests for the L1 config init surface."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L1_cognition.test_support import assert_module_surface
 
 
 @pytest.mark.unit
-class TestL1ConfigInitAdg:
-    """Test L1ConfigInitAdg functionality."""
-
-    def test_l1_config_init_adg_imports(self):
-        """Test l1_config_init_adg module imports."""
-        from agentic_core import l1_config_init_adg
-
-        assert l1_config_init_adg is not None
-
-    def test_l1_config_init_adg_class(self):
-        """Test L1ConfigInitAdg class exists."""
-        from agentic_core import L1ConfigInitAdg
-
-        assert L1ConfigInitAdg is not None
-
-    def test_l1_config_init_adg_callable(self):
-        """Test l1_config_init_adg functions are callable."""
-        from agentic_core import validate_l1_config_init_adg
-
-        assert callable(validate_l1_config_init_adg)
+def test_l1_config_init_surface():
+    assert_module_surface(
+        "agentic_core.l1_config_init_adg",
+        "L1ConfigInitAdg",
+        "validate_l1_config_init_adg",
+    )

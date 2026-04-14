@@ -1,32 +1,27 @@
-"""Test ResourcePredictionTypes functionality."""
+"""Smoke tests for resource_prediction_types exports."""
 
-import sys
-from pathlib import Path
+from __future__ import annotations
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
 @pytest.mark.unit
 class TestResourcePredictionTypes:
-    """Test ResourcePredictionTypes functionality."""
+    """Smoke tests for resource_prediction_types exports."""
 
-    def test_resource_prediction_types_imports(self):
-        """Test resource_prediction_types module imports."""
-        from agentic_core import resource_prediction_types
+    def test_resource_prediction_types_imports(self) -> None:
+        """Import the module export."""
+        module = import_attr_or_skip("agentic_core", "resource_prediction_types")
+        assert module is not None
 
-        assert resource_prediction_types is not None
+    def test_resource_prediction_types_class(self) -> None:
+        """Import the class export."""
+        klass = import_attr_or_skip("agentic_core", "ResourcePredictionTypes")
+        assert klass is not None
 
-    def test_resource_prediction_types_class(self):
-        """Test ResourcePredictionTypes class exists."""
-        from agentic_core import ResourcePredictionTypes
-
-        assert ResourcePredictionTypes is not None
-
-    def test_resource_prediction_types_callable(self):
-        """Test resource_prediction_types functions are callable."""
-        from agentic_core import validate_resource_prediction_types
-
-        assert callable(validate_resource_prediction_types)
+    def test_resource_prediction_types_callable(self) -> None:
+        """Import the validator export."""
+        validator = import_attr_or_skip("agentic_core", "validate_resource_prediction_types")
+        assert callable(validator)

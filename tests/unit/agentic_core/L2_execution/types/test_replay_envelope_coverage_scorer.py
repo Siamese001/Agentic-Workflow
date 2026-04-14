@@ -21,12 +21,21 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+_REPLAY_ENVELOPE_MODULE = pytest.importorskip(
+    "agentic_core.L2_execution.determinism.replay_envelope",
+    reason="Replay-envelope tests require agentic_core determinism modules",
+)
+_RETRIEVAL_COVERAGE_MODULE = pytest.importorskip(
+    "agentic_core.L3_orchestration.reasoning.engines.retrieval_coverage_scorer",
+    reason="Coverage-scorer tests require L3 retrieval coverage modules",
+)
+
+EnvelopeBuilder = _REPLAY_ENVELOPE_MODULE.EnvelopeBuilder
+
 
 # ---------------------------------------------------------------------------
 # Replay envelope tests
 # ---------------------------------------------------------------------------
-
-from agentic_core.L2_execution.determinism.replay_envelope import EnvelopeBuilder
 
 
 def _valid_builder() -> EnvelopeBuilder:
@@ -238,10 +247,8 @@ def test_to_dict_coverage_summary_aggregates_multiple_captures() -> None:
 # off mode emits no scorer metadata; shadow mode drains into result
 # ---------------------------------------------------------------------------
 
-from agentic_core.L3_orchestration.reasoning.engines.retrieval_coverage_scorer import (
-    drain_shadow_buffer,
-    score_coverage,
-)
+drain_shadow_buffer = _RETRIEVAL_COVERAGE_MODULE.drain_shadow_buffer
+score_coverage = _RETRIEVAL_COVERAGE_MODULE.score_coverage
 
 
 @dataclass

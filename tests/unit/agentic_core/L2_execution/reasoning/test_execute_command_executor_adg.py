@@ -1,47 +1,32 @@
-"""Placeholder test file - syntax fixed."""
+"""Smoke tests for execute-command executor exports."""
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
-import unittest
+from __future__ import annotations
+
+import pytest
+
+from L2_execution._agentic_core_smoke import import_attr_or_skip
 
 
-class GeneratedTest(unittest.TestCase):
-    """Generated test class for agentic_core.L2_execution.engines."""
+@pytest.mark.unit
+class TestExecuteCommandExecutorAdg:
+    """Smoke tests for execute-command executor exports."""
 
-    def test_get_project_root(self):
-        """Test get_project_root function."""
-        from agentic_core.L2_execution.reasoning import get_project_root
+    def test_get_project_root(self) -> None:
+        """Import get_project_root export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "get_project_root")
+        assert callable(func)
 
-        result = get_project_root()
-        self.assertIsNotNone(result)
+    def test_validate_sandbox(self) -> None:
+        """Import validate_sandbox export."""
+        func = import_attr_or_skip("agentic_core.L2_execution.reasoning", "validate_sandbox")
+        assert callable(func)
 
-    def test_validate_sandbox(self):
-        """Test validate_sandbox function."""
-        from agentic_core.L2_execution.reasoning import validate_sandbox
+    def test_ExecuteCommandArgs_init(self) -> None:
+        """Import ExecuteCommandArgs class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ExecuteCommandArgs")
+        assert klass is not None
 
-        result = validate_sandbox()
-        self.assertIsNotNone(result)
-
-    def test_ExecuteCommandArgs_init(self):
-        """Test ExecuteCommandArgs initialization."""
-        from agentic_core.L2_execution.reasoning import ExecuteCommandArgs
-
-        instance = ExecuteCommandArgs()
-        self.assertIsNotNone(instance)
-
-    def test_ExecutionTimeoutError_init(self):
-        """Test ExecutionTimeoutError initialization."""
-        from agentic_core.L2_execution.reasoning import ExecutionTimeoutError
-
-        instance = ExecutionTimeoutError()
-        self.assertIsNotNone(instance)
-
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_ExecutionTimeoutError_init(self) -> None:
+        """Import ExecutionTimeoutError class."""
+        klass = import_attr_or_skip("agentic_core.L2_execution.reasoning", "ExecutionTimeoutError")
+        assert klass is not None

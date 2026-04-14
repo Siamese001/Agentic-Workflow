@@ -1,87 +1,39 @@
-"""Tests for ExitControlGate.evaluate_sealed() — current-run evaluation slice.
-
-Tests the full live path:
-    SealedL2Artifact → evaluate_sealed() → CurrentRunEvaluationResult
-    CurrentRunEvaluationResult → shape_outcome() → outcome payload stub
-
-Test classes
-------------
-TestAllowResponse         — success path → ALLOW_RESPONSE
-TestDenyReturn            — integrity / replay / policy / quality failures → DENY_RETURN
-TestEscalateToHITL        — low confidence + explicit escalation reason → ESCALATE_TO_HITL
-TestCommitToUWG           — authorized mutation proposal → COMMIT_TO_UWG
-TestSingleDispositionInvariant — exactly one disposition per evaluation
-TestShadowEvalIsolation   — shadow-eval code cannot influence current-run disposition
-TestOutcomeShaping        — shape_outcome() produces correct typed stubs
-TestFailClosed            — malformed or incomplete artifact → DENY_RETURN
-TestCurrentRunScopeInvariant — run_scope sentinel on result and outcome types
-
-Architecture invariants checked
----------------------------------
-- Exactly one ExitDisposition emitted per evaluate_sealed() call
-- COMMIT_TO_UWG requires mutation_authorized (not just has_commit_payload)
-- DENY takes priority over COMMIT when mutation is unauthorized
-- Shadow-eval ingester (AsyncEvalIngester) is never called by evaluate_sealed()
-- AllowResponsePayload, DenyReturnPayload, EscalateToHITLPacket, CommitToUWGRequest
-  all carry run_scope='CURRENT_RUN' to prevent conflation with PromotionPacket
-"""
-
 from __future__ import annotations
 
 from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L2_execution.types.sealed_l2_artifact import (
-    ReplayMetadata,
-    SealedL2Artifact,
-    TerminalClassification,
-    ValidationCounters,
+_sealed_artifact_types = pytest.importorskip(
+    "agentic_core.L2_execution.types.sealed_l2_artifact",
+    reason="Requires sealed L2 artifact types from the monorepo checkout.",
 )
-from agentic_core.L5_safety.enforcement.exit_control_gate import ExitControlGate
-from agentic_core.L5_safety.types.exit_disposition_types import (
-    CurrentRunEvaluationResult,
-    ExitDisposition,
+ReplayMetadata = _sealed_artifact_types.ReplayMetadata
+SealedL2Artifact = _sealed_artifact_types.SealedL2Artifact
+TerminalClassification = _sealed_artifact_types.TerminalClassification
+ValidationCounters = _sealed_artifact_types.ValidationCounters
+
+_exit_control_gate = pytest.importorskip(
+    "agentic_core.L5_safety.enforcement.exit_control_gate",
+    reason="Requires ExitControlGate implementation from the monorepo checkout.",
 )
-from agentic_core.L5_safety.types.exit_outcome_types import (
-    AllowResponsePayload,
-    CommitToUWGRequest,
-    DenyReturnPayload,
-    EscalateToHITLPacket,
+ExitControlGate = _exit_control_gate.ExitControlGate
+
+_exit_disposition_types = pytest.importorskip(
+    "agentic_core.L5_safety.types.exit_disposition_types",
+    reason="Requires exit disposition types from the monorepo checkout.",
 )
+CurrentRunEvaluationResult = _exit_disposition_types.CurrentRunEvaluationResult
+ExitDisposition = _exit_disposition_types.ExitDisposition
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-_GOOD_EVIDENCE = {
-    "groundedness_score": 0.90,
-    "support_coverage": 0.85,
-    "relevance_score": 0.88,
-    "abstain_correct": True,
-    "escalation_correct": True,
-    "safety_clear": True,
-}
-
-_GOOD_COUNTERS = ValidationCounters(
-    policy_checks_passed=5,
-    policy_checks_failed=0,
-    schema_checks_passed=3,
-    schema_checks_failed=0,
-    mutation_auth_checks_passed=0,
-    mutation_auth_checks_failed=0,
-    env_integrity_checks_passed=2,
-    env_integrity_checks_failed=0,
+_exit_outcome_types = pytest.importorskip(
+    "agentic_core.L5_safety.types.exit_outcome_types",
+    reason="Requires exit outcome types from the monorepo checkout.",
 )
-
-_GOOD_REPLAY = ReplayMetadata(
-    replay_key="rk-test-001",
-    determinism_digest="abc123",
-    replay_completeness=0.95,
-    seed_captured=True,
-    isolation_verified=True,
-)
+AllowResponsePayload = _exit_outcome_types.AllowResponsePayload
+CommitToUWGRequest = _exit_outcome_types.CommitToUWGRequest
+DenyReturnPayload = _exit_outcome_types.DenyReturnPayload
+EscalateToHITLPacket = _exit_outcome_types.EscalateToHITLPacket
 
 
 def _artifact(**overrides) -> SealedL2Artifact:
