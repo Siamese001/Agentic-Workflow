@@ -1,6 +1,6 @@
 """ADG Core Models — Pydantic models for type-safe ADG entities."""
 
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -41,7 +41,10 @@ class ADGResponse(BaseModel):
 
     status: str = "ok"
     data: dict[str, Any]
-    backend_used: str = Field(..., description="redis|sqlite")
+    backend_used: Literal["redis", "sqlite", "projection"] = Field(
+        ...,
+        description="redis|sqlite|projection",
+    )
     cache_meta: dict[str, Any] = Field(default_factory=dict)
 
 

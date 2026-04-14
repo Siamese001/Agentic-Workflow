@@ -12,6 +12,8 @@ import sqlite3
 from pathlib import Path
 from typing import Any
 
+from urllib.parse import quote
+
 from tqdm import tqdm
 
 from tools.adg.core.graph_projection_backend import GraphProjectionBackend
@@ -22,23 +24,50 @@ logger = logging.getLogger(__name__)
 
 # Query timeout in seconds
 SQLITE_QUERY_TIMEOUT = 5.0
+_MAX_QUERY_LIMIT = 1000
+_MAX_TRAVERSAL_DEPTH = 10
 
 
 class SQLiteBackend:
     """Canonical ADG backend using SQLite as source of truth.
 
-    Enhanced with optional SQLiteGraphStore for graph-native operations.
+    Enhanced with optional GraphProjectionBackend for graph-native operations.
     """
 
     _conn: sqlite3.Connection | None = None
     _sqlite_path: Path | None = None
     _last_mtime: float = 0.0
-    _graph_store: Any = None  # Optional SQLiteGraphStore instance
+    _graph_store: Any = None  # Optional GraphProjectionBackend instance
 
     def __init__(self, use_graph_store: bool = True):
         self._connect()
         if use_graph_store:
             self._init_graph_store()
+
+    @staticmethod
+    def _normalize_limit(limit: int, default: int) -> int:
+        """Clamp caller-provided LIMIT values to a safe positive range."""
+        if limit <= 0:
+            return default
+        return min(limit, _MAX_QUERY_LIMIT)
+
+    @staticmethod
+    def _normalize_depth(max_depth: int) -> int:
+        """Clamp traversal depth so callers cannot trigger unbounded graph walks."""
+        if max_depth <= 0:
+            return 1
+        return min(max_depth, _MAX_TRAVERSAL_DEPTH)
+
+    @staticmethod
+    def _readonly_uri(path: Path) -> str:
+        """Build a cross-platform SQLite URI that enforces read-only mode."""
+        return f"file:{quote(str(path.resolve()))}?mode=ro"
+
+    def _require_conn(self) -> sqlite3.Connection:
+        """Return an open SQLite connection or raise a clear lifecycle error."""
+        if self._conn is None:
+            raise RuntimeError("SQLiteBackend connection is closed")
+        return self._conn
 
     def _init_graph_store(self) -> None:
         """Initialize GraphProjectionBackend for graph-native operations.
@@ -51,11 +80,12 @@ class SQLiteBackend:
             self._graph_store = GraphProjectionBackend(
                 canonical_sqlite_path=self._sqlite_path,
             )
-        except Exception:  # guardian: allow-broad-exception -- GraphProjectionBackend init can fail for many environmental reasons (missing file, sqlite error, bad schema); all are non-fatal and must not block SQLiteBackend construction
+        except Exception as exc:  # guardian: allow-broad-exception -- GraphProjectionBackend init can fail for many environmental reasons (missing file, sqlite error, bad schema); all are non-fatal and must not block SQLiteBackend construction
+            logger.debug("GraphProjectionBackend initialization failed: %s", exc)
             self._graph_store = None
 
     def _connect(self) -> None:
-        """Establish connection to latest SQLite file."""
+        """Establish read-only connection to latest SQLite file."""
         adg_dir = get_adg_dir()
         files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
         if not files:
@@ -63,10 +93,14 @@ class SQLiteBackend:
 
         self._sqlite_path = files[-1]
         self._last_mtime = self._sqlite_path.stat().st_mtime
-        self._conn = sqlite3.connect(str(self._sqlite_path), timeout=SQLITE_QUERY_TIMEOUT)
+        self._conn = sqlite3.connect(
+            self._readonly_uri(self._sqlite_path),
+            timeout=SQLITE_QUERY_TIMEOUT,
+            uri=True,
+        )
         self._conn.row_factory = sqlite3.Row
-        # Enable WAL mode for better concurrency
-        self._conn.execute("PRAGMA journal_mode=WAL")
+        self._conn.execute(f"PRAGMA busy_timeout = {int(SQLITE_QUERY_TIMEOUT * 1000)}")
+        self._conn.execute("PRAGMA query_only = ON")
 
     def health(self) -> tuple[str, dict[str, Any]]:
         """Return health status and metadata."""
@@ -107,7 +141,8 @@ class SQLiteBackend:
 
     def get_node(self, node_id: str) -> ADGNode | None:
         """Fetch node by ID from SQLite."""
-        cur = self._conn.execute(
+        conn = self._require_conn()
+        cur = conn.execute(
             "SELECT * FROM nodes WHERE id = ?",
             (node_id,),
         )
@@ -118,9 +153,11 @@ class SQLiteBackend:
 
     def get_nodes_by_layer(self, layer: str, limit: int = 100) -> list[ADGNode]:
         """Fetch nodes by layer."""
-        cur = self._conn.execute(
+        conn = self._require_conn()
+        safe_limit = self._normalize_limit(limit, default=100)
+        cur = conn.execute(
             "SELECT * FROM nodes WHERE layer = ? LIMIT ?",
-            (layer, limit),
+            (layer, safe_limit),
         )
         return [self._row_to_node(row) for row in cur.fetchall()]
 
@@ -130,19 +167,22 @@ class SQLiteBackend:
         Tries exact match first (index-friendly), then suffix LIKE match as fallback.
         The leading-wildcard LIKE used previously caused full-table scans and false matches.
         """
+        conn = self._require_conn()
+        safe_limit = self._normalize_limit(limit, default=100)
+
         # 1. Exact match — uses idx_nodes_resolved_path if present
-        cur = self._conn.execute(
+        cur = conn.execute(
             "SELECT * FROM nodes WHERE resolved_path = ? LIMIT ?",
-            (file_path, limit),
+            (file_path, safe_limit),
         )
         rows = cur.fetchall()
         if rows:
             return [self._row_to_node(r) for r in rows]
 
-        # 2. Suffix LIKE fallback — anchored at right side only, avoids leading-wildcard scan
-        cur = self._conn.execute(
+        # 2. Suffix LIKE fallback — still scans, but only after exact-match miss.
+        cur = conn.execute(
             "SELECT * FROM nodes WHERE resolved_path LIKE ? LIMIT ?",
-            (f"%{file_path}", limit),
+            (f"%{file_path}", safe_limit),
         )
         return [self._row_to_node(r) for r in cur.fetchall()]
 
@@ -152,46 +192,57 @@ class SQLiteBackend:
         Enables human-readable name resolution without knowing the integer node ID.
         Returns exact matches first, then prefix matches if no exact hit.
         """
+        conn = self._require_conn()
+        safe_limit = self._normalize_limit(limit, default=10)
+
         # 1. Exact adg_name match
-        cur = self._conn.execute(
+        cur = conn.execute(
             "SELECT * FROM nodes WHERE adg_name = ? LIMIT ?",
-            (name, limit),
+            (name, safe_limit),
         )
         rows = cur.fetchall()
         if rows:
             return [self._row_to_node(r) for r in rows]
 
         # 2. Prefix match on adg_name
-        cur = self._conn.execute(
+        cur = conn.execute(
             "SELECT * FROM nodes WHERE adg_name LIKE ? LIMIT ?",
-            (f"{name}%", limit),
+            (f"{name}%", safe_limit),
         )
         return [self._row_to_node(r) for r in cur.fetchall()]
 
     def get_edge_fanout(self, src_id: str, relation_type: str, limit: int = 30) -> list[ADGEdge]:
         """Fetch outgoing edges."""
-        cur = self._conn.execute(
+        conn = self._require_conn()
+        safe_limit = self._normalize_limit(limit, default=30)
+        cur = conn.execute(
             """SELECT id, src_id, dst_id, relation_type, edge_kind,
                       source_file, line_no, symbol
                FROM edges WHERE src_id = ? AND relation_type = ? LIMIT ?""",
-            (src_id, relation_type, limit),
+            (src_id, relation_type, safe_limit),
         )
         return [self._row_to_edge(row) for row in cur.fetchall()]
 
     def get_edge_fanin(self, tgt_id: str, relation_type: str, limit: int = 30) -> list[ADGEdge]:
         """Fetch incoming edges."""
-        cur = self._conn.execute(
+        conn = self._require_conn()
+        safe_limit = self._normalize_limit(limit, default=30)
+        cur = conn.execute(
             """SELECT id, src_id, dst_id, relation_type, edge_kind,
                       source_file, line_no, symbol
                FROM edges WHERE dst_id = ? AND relation_type = ? LIMIT ?""",
-            (tgt_id, relation_type, limit),
+            (tgt_id, relation_type, safe_limit),
         )
         return [self._row_to_edge(row) for row in cur.fetchall()]
 
     def get_status(self) -> dict[str, Any]:
         """Get ADG snapshot status."""
-        nodes = self._conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
-        edges = self._conn.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
+        conn = self._require_conn()
+        if self._sqlite_path is None:
+            raise RuntimeError("SQLiteBackend path is unavailable")
+
+        nodes = conn.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
+        edges = conn.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
 
         return {
             "timestamp": self._sqlite_path.stem.replace("adg_indexed_", ""),
@@ -202,43 +253,49 @@ class SQLiteBackend:
 
     def get_violations(self, limit: int = 100) -> list[dict[str, Any]]:
         """Fetch anti-pattern violations."""
+        conn = self._require_conn()
+        safe_limit = self._normalize_limit(limit, default=100)
         try:
-            cur = self._conn.execute(
+            cur = conn.execute(
                 # Include both relation types: 'violates' (layer boundary breaks) and
                 # 'antipattern' (code-level anti-pattern instances, ~8800 rows in practice).
                 """SELECT id, source_file, relation_type, symbol, line_no
                    FROM edges WHERE relation_type IN ('violates', 'antipattern') LIMIT ?""",
-                (limit,),
+                (safe_limit,),
             )
             return [dict(row) for row in cur.fetchall()]
-        except sqlite3.Error as e:
+        except sqlite3.Error as exc:
             # Table or column may not exist
-            logger.debug(f"get_violations query failed: {e}")
+            logger.debug("get_violations query failed: %s", exc)
             return []
 
     def close(self) -> None:
-        """Close SQLite connection and release file locks."""
+        """Close SQLite connection and release file handles."""
         if self._conn:
             try:
-                # Checkpoint WAL to release locks before closing
-                self._conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
                 self._conn.close()
-                logger.info(f"Closed SQLite connection to {self._sqlite_path}")
-            except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
-                logger.error(f"Error closing SQLite connection: {e}")
+                logger.info("Closed SQLite connection to %s", self._sqlite_path)
+            except Exception as exc:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+                logger.error("Error closing SQLite connection: %s", exc)
             finally:
                 self._conn = None
 
+        graph_store = self._graph_store
+        if graph_store is not None and hasattr(graph_store, "close"):
+            try:
+                graph_store.close()
+            except Exception as exc:  # guardian: allow-broad-exception -- optional graph store teardown must not block backend shutdown
+                logger.debug("Error closing graph projection backend: %s", exc)
+        self._graph_store = None
+
     def reopen(self) -> None:
         """Reopen SQLite connection after closing to refresh/release locks lifecycle."""
-        if self._conn is not None:
-            self.close()
+        self.close()
         self._connect()
-        if self._graph_store is None:
-            self._init_graph_store()
-        logger.info(f"Reopened SQLite connection to {self._sqlite_path}")
+        self._init_graph_store()
+        logger.info("Reopened SQLite connection to %s", self._sqlite_path)
 
-    # Graph-native methods that delegate to SQLiteGraphStore when available
+    # Graph-native methods that delegate to GraphProjectionBackend when available
 
     def get_centrality(self, node_id: str) -> float:
         """Get centrality score for a node using graph store if available.
@@ -253,8 +310,10 @@ class SQLiteBackend:
                 return float(proj.get("blast_radius_direct", 0))
             if isinstance(proj, (int, float)):
                 return float(proj)
+
+        conn = self._require_conn()
         # Fallback: degree centrality from direct edge count
-        cur = self._conn.execute(
+        cur = conn.execute(
             "SELECT COUNT(*) FROM edges WHERE src_id = ? OR dst_id = ?",
             (node_id, node_id),
         )
@@ -375,22 +434,24 @@ class SQLiteBackend:
 
     def _traverse_sql(self, start_id: str, max_depth: int, relation_types: list[str] | None) -> list:
         """Fallback SQL-based traversal when graph store unavailable."""
+        conn = self._require_conn()
+        safe_depth = self._normalize_depth(max_depth)
         paths = []
         visited = {start_id}
         current_level = [(start_id, [])]  # (node_id, path)
 
-        for depth in tqdm(range(max_depth), desc="traverse-depth", leave=False, disable=True):
+        for depth in tqdm(range(safe_depth), desc="traverse-depth", leave=False, disable=True):
             next_level = []
             for node_id, path in tqdm(current_level, desc="traverse-level", leave=False, disable=True):
                 # Get neighbors
                 query = "SELECT dst_id FROM edges WHERE src_id = ?"
-                params = [node_id]
+                params: list[Any] = [node_id]
                 if relation_types:
                     placeholders = ",".join(["?" for _ in relation_types])
                     query += f" AND relation_type IN ({placeholders})"
                     params.extend(relation_types)
 
-                cur = self._conn.execute(query, params)
+                cur = conn.execute(query, params)
                 for row in cur.fetchall():
                     neighbor_id = row[0]
                     if neighbor_id not in visited:

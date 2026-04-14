@@ -26,6 +26,7 @@ import logging
 import sqlite3
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 from tools.adg.shared_modules.path_resolver import get_adg_dir
 
@@ -34,6 +35,8 @@ logger = logging.getLogger(__name__)
 _PROJ_QUERY_TIMEOUT = 5.0
 _PROJ_FILE_GLOB = "adg_graph_*.sqlite"
 _CANONICAL_FILE_GLOB = "adg_indexed_*.sqlite"
+_MAX_QUERY_LIMIT = 1000
+_MAX_HOPS = 5
 
 
 class GraphProjectionBackend:
@@ -72,6 +75,29 @@ class GraphProjectionBackend:
 
         self._connect(canonical_sqlite_path)
 
+    @staticmethod
+    def _normalize_limit(limit: int, default: int) -> int:
+        """Clamp caller-provided LIMIT values to a safe positive range."""
+        if limit <= 0:
+            return default
+        return min(limit, _MAX_QUERY_LIMIT)
+
+    @staticmethod
+    def _normalize_hops(hops: int) -> int:
+        """Clamp hop requests to the bounded reachability window the projection supports."""
+        if hops <= 0:
+            return 1
+        return min(hops, _MAX_HOPS)
+
+    @staticmethod
+    def _readonly_uri(path: Path) -> str:
+        """Build a cross-platform SQLite URI that enforces read-only mode."""
+        return f"file:{quote(str(path.resolve()))}?mode=ro"
+
+    def _queryable(self) -> bool:
+        """Return True only when the backend is both available and fresh enough to trust."""
+        return self._available and not self._stale and self._conn is not None
+
     # ------------------------------------------------------------------
     # Connection lifecycle
     # ------------------------------------------------------------------
@@ -93,10 +119,12 @@ class GraphProjectionBackend:
 
         try:
             self._conn = sqlite3.connect(
-                str(self._proj_path),
+                self._readonly_uri(self._proj_path),
                 timeout=_PROJ_QUERY_TIMEOUT,
+                uri=True,
             )
             self._conn.row_factory = sqlite3.Row
+            self._conn.execute(f"PRAGMA busy_timeout = {int(_PROJ_QUERY_TIMEOUT * 1000)}")
             self._conn.execute("PRAGMA query_only = ON")
         except sqlite3.Error as exc:
             logger.debug(
@@ -182,10 +210,13 @@ class GraphProjectionBackend:
             return
 
         try:
-            canon_conn = sqlite3.connect(str(canonical_path), timeout=_PROJ_QUERY_TIMEOUT)
-            canon_conn.row_factory = sqlite3.Row
-            row = canon_conn.execute("SELECT value FROM meta WHERE key = 'artifact_digest'").fetchone()
-            canon_conn.close()
+            with sqlite3.connect(
+                self._readonly_uri(canonical_path),
+                timeout=_PROJ_QUERY_TIMEOUT,
+                uri=True,
+            ) as canon_conn:
+                canon_conn.row_factory = sqlite3.Row
+                row = canon_conn.execute("SELECT value FROM meta WHERE key = 'artifact_digest'").fetchone()
         except sqlite3.Error as exc:
             logger.debug(
                 "GraphProjectionBackend: could not read canonical meta (%s) — treating projection as stale",
@@ -224,8 +255,8 @@ class GraphProjectionBackend:
         """Return True if the projection's source_artifact_digest ≠ canonical artifact_digest.
 
         A stale projection contains metrics computed from an older canonical run.
-        Query methods return results even when stale — the `get_status()` response
-        carries `stale=True` so callers can surface it in logs or MCP metadata.
+        Query methods fail closed when stale, while `get_status()` still reports
+        `stale=True` so callers can surface the reason explicitly.
         """
         return self._stale
 
@@ -236,28 +267,10 @@ class GraphProjectionBackend:
     def get_centrality(self, adg_name: str) -> dict[str, Any] | None:
         """Return centrality metrics for a single node by adg_name.
 
-        Returns None if the backend is unavailable, the node is not in the
+        Returns None if the backend is unavailable, stale, the node is not in the
         projection, or any sqlite error occurs.
-
-        Return shape (when found):
-            {
-                "adg_name": str,
-                "fan_in": int,
-                "fan_out": int,
-                "import_fan_in": int,
-                "import_fan_out": int,
-                "betweenness_approx": float,
-                "reverse_dep_score": float,
-                "blast_radius_direct": int,
-                "blast_radius_2hop": int,
-                "bridge_score": float,
-                "bridge_type": str,
-                "snapshot_id": str,
-                "derived_from": str,   # source_artifact_digest[:16]
-                "stale": bool,
-            }
         """
-        if not self._available or self._conn is None:
+        if not self._queryable():
             return None
 
         try:
@@ -280,34 +293,23 @@ class GraphProjectionBackend:
     def get_blast_radius(self, adg_name: str, hops: int = 2) -> dict[str, Any]:
         """Return blast-radius summary for a node.
 
-        Always returns a dict — empty counts when unavailable or node not found.
+        Always returns a dict — empty counts when unavailable, stale, or node not found.
         For hops=1, returns blast_radius_direct from proj_centrality.
         For hops=2+, also returns blast_radius_2hop and proj_reachability row count.
-
-        Return shape:
-            {
-                "adg_name": str,
-                "blast_radius_direct": int,
-                "blast_radius_2hop": int,
-                "reachability_rows": int,   # rows in proj_reachability for this seed
-                "hops_requested": int,
-                "derived_from": str,
-                "stale": bool,
-                "available": bool,
-            }
         """
+        safe_hops = self._normalize_hops(hops)
         base: dict[str, Any] = {
             "adg_name": adg_name,
             "blast_radius_direct": 0,
             "blast_radius_2hop": 0,
             "reachability_rows": 0,
-            "hops_requested": hops,
+            "hops_requested": safe_hops,
             "derived_from": self._source_artifact_digest[:16],
             "stale": self._stale,
             "available": self._available,
         }
 
-        if not self._available or self._conn is None:
+        if not self._queryable():
             return base
 
         try:
@@ -323,7 +325,7 @@ class GraphProjectionBackend:
             base["blast_radius_direct"] = row["blast_radius_direct"]
             base["blast_radius_2hop"] = row["blast_radius_2hop"]
 
-        if hops >= 2:
+        if safe_hops >= 2:
             try:
                 count_row = self._conn.execute(
                     "SELECT COUNT(*) AS cnt FROM proj_reachability WHERE src_adg_name = ?",
@@ -338,24 +340,10 @@ class GraphProjectionBackend:
     def get_scc(self, adg_name: str) -> dict[str, Any] | None:
         """Return SCC membership for a node.
 
-        Returns None if the backend is unavailable, the node is not in any
-        non-trivial SCC, or any sqlite error occurs. A None return for a given
-        node means it is in a trivial SCC (size=1) — architecturally positive.
-
-        Return shape (when found):
-            {
-                "adg_name": str,
-                "scc_id": str,
-                "scc_size": int,
-                "scc_type": str,
-                "scc_risk_score": float,
-                "members": [str, ...],   # all adg_names in the same SCC
-                "snapshot_id": str,
-                "derived_from": str,
-                "stale": bool,
-            }
+        Returns None if the backend is unavailable, stale, the node is not in any
+        non-trivial SCC, or any sqlite error occurs.
         """
-        if not self._available or self._conn is None:
+        if not self._queryable():
             return None
 
         try:
@@ -404,29 +392,12 @@ class GraphProjectionBackend:
         """Return violations joined with blast-radius impact.
 
         Filters by layer prefix on `adg_name_from` and/or `severity`.
-        Returns [] if backend is unavailable or any sqlite error occurs.
-
-        Return shape (each item):
-            {
-                "adg_name_from": str,
-                "adg_name_to": str,
-                "relation_type": str,
-                "edge_kind": str,
-                "source_file": str,
-                "line_no": int,
-                "severity": str,
-                "violation_class": str,
-                "disposition": str,
-                "category": str,
-                "blast_radius_direct": int,
-                "snapshot_id": str,
-                "derived_from": str,
-                "stale": bool,
-            }
+        Returns [] if backend is unavailable, stale, or any sqlite error occurs.
         """
-        if not self._available or self._conn is None:
+        if not self._queryable():
             return []
 
+        safe_limit = self._normalize_limit(limit, default=100)
         conditions: list[str] = []
         params: list[Any] = []
 
@@ -439,7 +410,7 @@ class GraphProjectionBackend:
             params.append(severity.upper())
 
         where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-        params.append(limit)
+        params.append(safe_limit)
 
         sql = (
             f"SELECT adg_name_from, adg_name_to, relation_type, edge_kind, "
@@ -469,23 +440,6 @@ class GraphProjectionBackend:
         """Return backend availability, staleness, and projection metadata.
 
         Always returns a dict — never raises.
-
-        Return shape:
-            {
-                "available": bool,
-                "stale": bool,
-                "projection_path": str | None,
-                "source_artifact_digest": str,
-                "proj_schema_version": str,
-                "node_count": int,
-                # Build-quality fields (present only when schema_version >= 1.1):
-                "build_duration_s": float | None,
-                "reachability_seed_count": int | None,
-                "reachability_row_count": int | None,
-                "reachability_per_seed_cap": int | None,
-                "diff_row_count": int | None,
-                "diff_changed_count": int | None,
-            }
         """
         status: dict[str, Any] = {
             "available": self._available,
@@ -539,7 +493,7 @@ class GraphProjectionBackend:
         """Return cross-run metric deltas from proj_diff.
 
         Filters to changed rows only (direction != 'unchanged') unless
-        direction is explicitly passed. Returns [] if unavailable.
+        direction is explicitly passed. Returns [] if unavailable or stale.
 
         Schema note: as of schema_version 1.1, `proj_diff` only stores changed rows
         (worsened or improved). Passing direction='unchanged' will return [] on 1.1+
@@ -551,26 +505,11 @@ class GraphProjectionBackend:
             direction: 'worsened', 'improved', or None (all changed rows, default).
             layer:     Layer prefix filter (e.g. 'L0', 'L3').
             limit:     Maximum rows to return (default 100).
-
-        Return shape (each item):
-            {
-                "adg_name": str,
-                "metric": str,
-                "prev_value": float,
-                "curr_value": float,
-                "delta": float,
-                "delta_pct": float,
-                "direction": str,
-                "layer": str,
-                "prev_snapshot_id": str,
-                "curr_snapshot_id": str,
-                "derived_from": str,
-                "stale": bool,
-            }
         """
-        if not self._available or self._conn is None:
+        if not self._queryable():
             return []
 
+        safe_limit = self._normalize_limit(limit, default=100)
         conditions: list[str] = []
         params: list[Any] = []
 
@@ -591,7 +530,7 @@ class GraphProjectionBackend:
             params.append(layer)
 
         where = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-        params.append(limit)
+        params.append(safe_limit)
 
         sql = (
             f"SELECT adg_name, metric, prev_value, curr_value, delta, delta_pct, "
@@ -618,25 +557,12 @@ class GraphProjectionBackend:
     def get_top_bridges(self, limit: int = 20) -> list[dict[str, Any]]:
         """Return the top bridge/chokepoint nodes by bridge_score descending.
 
-        Bridge nodes are critical connectors whose removal would fragment the
-        dependency graph. Returns [] if unavailable or no bridge data exists.
-
-        Return shape (each item):
-            {
-                "adg_name": str,
-                "bridge_score": float,
-                "bridge_type": str,
-                "fan_in": int,
-                "fan_out": int,
-                "blast_radius_direct": int,
-                "layer": str,
-                "derived_from": str,
-                "stale": bool,
-            }
+        Returns [] if unavailable or stale.
         """
-        if not self._available or self._conn is None:
+        if not self._queryable():
             return []
 
+        safe_limit = self._normalize_limit(limit, default=20)
         try:
             rows = self._conn.execute(
                 "SELECT c.adg_name, c.bridge_score, c.bridge_type, "
@@ -646,7 +572,7 @@ class GraphProjectionBackend:
                 "WHERE c.bridge_score > 0 "
                 "ORDER BY c.bridge_score DESC "
                 "LIMIT ?",
-                (limit,),
+                (safe_limit,),
             ).fetchall()
         except sqlite3.Error as exc:
             logger.debug("GraphProjectionBackend.get_top_bridges failed: %s", exc)
@@ -665,28 +591,11 @@ class GraphProjectionBackend:
         metric: str = "blast_radius_direct",
         limit: int = 20,
     ) -> list[dict[str, Any]]:
-        """Return the top regressions (largest increases) from proj_diff.
-
-        Args:
-            metric: Metric to rank by (default: blast_radius_direct).
-            limit:  Maximum rows (default 20).
-
-        Return shape (each item):
-            {
-                "adg_name": str,
-                "metric": str,
-                "prev_value": float,
-                "curr_value": float,
-                "delta": float,
-                "delta_pct": float,
-                "layer": str,
-                "derived_from": str,
-                "stale": bool,
-            }
-        """
-        if not self._available or self._conn is None:
+        """Return the top regressions (largest increases) from proj_diff."""
+        if not self._queryable():
             return []
 
+        safe_limit = self._normalize_limit(limit, default=20)
         try:
             rows = self._conn.execute(
                 "SELECT adg_name, metric, prev_value, curr_value, delta, delta_pct, layer "
@@ -694,7 +603,7 @@ class GraphProjectionBackend:
                 "WHERE metric = ? AND direction = 'worsened' "
                 "ORDER BY delta DESC "
                 "LIMIT ?",
-                (metric, limit),
+                (metric, safe_limit),
             ).fetchall()
         except sqlite3.Error as exc:
             logger.debug("GraphProjectionBackend.get_top_regressions failed: %s", exc)
@@ -715,31 +624,19 @@ class GraphProjectionBackend:
     ) -> list[dict[str, Any]]:
         """Return proj_reachability rows for a given seed module.
 
-        These represent nodes reachable from src_adg_name within the hop
-        budget used at build time (_REACHABILITY_MAX_HOPS).
-
-        Returns [] if unavailable or the node is not a reachability seed.
-
-        Return shape (each item):
-            {
-                "src_adg_name": str,
-                "dst_adg_name": str,
-                "hop_count": int,
-                "path_weight": float,
-                "derived_from": str,
-                "stale": bool,
-            }
+        Returns [] if unavailable, stale, or the node is not a reachability seed.
         """
-        if not self._available or self._conn is None:
+        if not self._queryable():
             return []
 
+        safe_limit = self._normalize_limit(limit, default=50)
         try:
             rows = self._conn.execute(
                 "SELECT src_adg_name, dst_adg_name, hop_count, path_weight "
                 "FROM proj_reachability WHERE src_adg_name = ? "
                 "ORDER BY hop_count ASC, dst_adg_name ASC "
                 "LIMIT ?",
-                (src_adg_name, limit),
+                (src_adg_name, safe_limit),
             ).fetchall()
         except sqlite3.Error as exc:
             logger.debug("GraphProjectionBackend.get_reachability failed: %s", exc)

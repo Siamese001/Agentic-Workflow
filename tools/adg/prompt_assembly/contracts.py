@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from typing import Any, Literal
 
 
@@ -164,6 +163,8 @@ class PromptEnvelope:
     def __post_init__(self) -> None:
         if not self.packet_id:
             self.packet_id = self._generate_packet_id()
+        if self.assembly_status is not None and not self.assembly_status.packet_id:
+            self.assembly_status.packet_id = self.packet_id
 
     def _generate_packet_id(self) -> str:
         """Generate a deterministic packet ID from type + replay metadata."""
@@ -285,7 +286,8 @@ class PromptAssemblyStatus:
 
     def __post_init__(self) -> None:
         if not self.assembly_timestamp:
-            self.assembly_timestamp = datetime.now(timezone.utc).isoformat()
+            replay_ts = self.replay_metadata.get("assembly_timestamp", "")
+            self.assembly_timestamp = replay_ts if isinstance(replay_ts, str) else ""
 
     def to_dict(self) -> dict[str, Any]:
         return {

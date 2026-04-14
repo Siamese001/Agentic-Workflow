@@ -62,8 +62,18 @@ def _assemble(
         bundle = shape_evidence(all_items, must_use_sources=template.must_use_sources)
 
     # Separate must-use (canonical) from optional (derived)
-    must_dicts = [item.to_dict() for item in must_items if not item.data.get("error")]
-    opt_dicts = [item.to_dict() for item in opt_items if not item.data.get("error")]
+    # When a pre-shaped bundle is supplied (for example from the C0 bridge),
+    # preserve the translated evidence items instead of emitting an empty packet.
+    display_must_items = must_items
+    display_opt_items = opt_items
+    if pre_shaped_bundle is not None and not (must_items or opt_items):
+        display_must_items = [item for item in pre_shaped_bundle.items if not item.is_derived]
+        display_opt_items = [item for item in pre_shaped_bundle.items if item.is_derived]
+
+    # Keep canonical error markers visible so downstream consumers can see why
+    # coverage is partial or empty. Optional derived errors stay suppressed.
+    must_dicts = [item.to_dict() for item in display_must_items]
+    opt_dicts = [item.to_dict() for item in display_opt_items if not item.data.get("error")]
 
     # Token budget for fixed blocks
     fixed_tokens = (
@@ -116,6 +126,7 @@ def _assemble(
         overflow_action=budget_result.overflow_action,
         assembly_result=assembly_result,  # type: ignore[arg-type]
         replay_metadata=replay,
+        assembly_timestamp=bundle.freshness,
     )
 
     # Abstain / refine instructions
@@ -129,7 +140,7 @@ def _assemble(
     if budget_result.summary_note:
         refine = f"{budget_result.summary_note}\n{refine}"
 
-    return PromptEnvelope(
+    envelope = PromptEnvelope(
         packet_type=template.packet_type,
         schema_version="1.0.0",
         system_block=template.system_block,
@@ -144,6 +155,9 @@ def _assemble(
         replay_metadata=replay,
         assembly_status=status,
     )
+    if envelope.assembly_status is not None and not envelope.assembly_status.packet_id:
+        envelope.assembly_status.packet_id = envelope.packet_id
+    return envelope
 
 
 # ---------------------------------------------------------------------------
@@ -365,10 +379,10 @@ def build_graph_path_explanation(
 
     if graph is not None:
         gdb = GraphDBAdapter(graph)
-        must_items.append(gdb.fetch_violating_path(from_node, to_node))
+        opt_items.append(gdb.fetch_violating_path(from_node, to_node))
         opt_items.append(gdb.fetch_blast_radius(to_node, max_depth=3))
     else:
-        must_items.append(
+        opt_items.append(
             EvidenceItem(
                 source_artifact="graph_db_projection",
                 source_type="graph_db",

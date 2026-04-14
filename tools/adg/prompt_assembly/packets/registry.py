@@ -298,8 +298,8 @@ TEMPLATES: dict[str, PacketTemplate] = {
                 "cross_snapshot_diff": {"type": "object"},
             },
         },
-        must_use_sources=["graph_db", "sqlite"],
-        optional_sources=["structural"],
+        must_use_sources=["sqlite"],
+        optional_sources=["graph_db", "structural"],
         token_budget=TokenBudget(
             total=6000,
             system_policy=400,

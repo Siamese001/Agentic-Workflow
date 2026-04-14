@@ -14,7 +14,6 @@ Public API:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from typing import Any, cast
 
 from agentic_core.L3_orchestration.types.c0_evidence_contract_types import (
@@ -107,7 +106,7 @@ def _translate_span(span: CitedSpan, freshness: str) -> EvidenceItem:
         source_artifact=span.source_ref,
         source_type=_classify_source_type(span.source_ref),
         snapshot_id="c0",
-        row_references=[span.chunk_hash],
+        row_references=[span.chunk_hash] if span.chunk_hash else [],
         cited_spans=[span.span_id],
         support_score=span.relevance_score,
         coverage_score=1.0,  # per-item placeholder; bundle merger overrides at bundle level
@@ -224,7 +223,7 @@ def translate_contract(
         return None, _build_abstain_extras(contract, packet_type)
 
     # Step 4: translate CitedSpan → EvidenceItem
-    freshness = datetime.now(tz=timezone.utc).isoformat()
+    freshness = getattr(contract, "retrieval_timestamp", "") or ""
     items = [_translate_span(span, freshness) for span in pruned_spans]
 
     # Step 5: shape evidence (must_use_sources=[] — C0 provides no must-use catalog)

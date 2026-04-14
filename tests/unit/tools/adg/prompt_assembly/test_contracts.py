@@ -301,7 +301,16 @@ class TestPromptAssemblyStatus:
         assert status.evidence_contract_status == "empty"
         assert status.assembly_result == "pass"
         assert status.overflow_action == "none"
-        assert status.assembly_timestamp  # auto-set
+        assert status.assembly_timestamp == ""  # no runtime timestamp injection
+
+    def test_replay_metadata_timestamp_used(self) -> None:
+        """When assembly_timestamp is empty, replay_metadata value is used."""
+        replay_ts = "2026-01-01T00:00:00+00:00"
+        status = PromptAssemblyStatus(
+            packet_type="test",
+            replay_metadata={"assembly_timestamp": replay_ts},
+        )
+        assert status.assembly_timestamp == replay_ts
 
     def test_custom_timestamp_preserved(self) -> None:
         """Explicit assembly_timestamp is not overwritten by __post_init__."""

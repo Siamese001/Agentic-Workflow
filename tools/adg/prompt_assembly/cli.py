@@ -15,6 +15,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from tqdm import tqdm
 
 from tools.adg.prompt_assembly.packets.builders import build_packet
 from tools.adg.prompt_assembly.packets.registry import list_packet_types
@@ -25,7 +26,9 @@ def _write_output(envelope_data: str, output_dir: Path | None, filename: str) ->
     if output_dir:
         output_dir.mkdir(parents=True, exist_ok=True)
         out_path = output_dir / filename
-        out_path.write_text(envelope_data, encoding="utf-8")
+        tmp_path = output_dir / f".{filename}.tmp"
+        tmp_path.write_text(envelope_data, encoding="utf-8")
+        tmp_path.replace(out_path)
         print(f"[prompt_assembly] Written: {out_path}")
     else:
         print(envelope_data)
@@ -106,6 +109,9 @@ def main() -> None:
     sqlite_path = Path(args.sqlite) if args.sqlite else None
     output_dir = Path(args.output) if args.output else None
 
+    if args.top_n < 1:
+        parser.error("--top-n must be >= 1")
+
     # Determine which packets to build
     if args.all:
         types_to_build = list_packet_types()
@@ -120,10 +126,12 @@ def main() -> None:
         types_to_build = [args.packet]
 
     # Build and output
-    for ptype in types_to_build:
+    for ptype in tqdm(types_to_build, desc="Building packets", unit="packet"):
         try:
             kwargs: dict = {}
             if ptype == "graph_path_explanation":
+                if not args.from_node or not args.to_node:
+                    raise ValueError("graph_path_explanation requires both --from-node and --to-node")
                 kwargs["from_node"] = args.from_node
                 kwargs["to_node"] = args.to_node
             if ptype == "hotspot_investigation":

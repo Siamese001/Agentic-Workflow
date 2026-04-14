@@ -22,24 +22,44 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import re
+
+from tqdm import tqdm
+
 from tools.adg.prompt_assembly.contracts import EvidenceItem
 
 _ROOT = Path(__file__).resolve().parents[4]
 _ADG_DIR = _ROOT / "artifacts" / "adg"
 
 
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+def _mtime_iso(path: Path | None) -> str:
+    if path is None or not path.exists():
+        return ""
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).isoformat()
+
+
+def _artifact_sort_key(path: Path) -> tuple[datetime, float, str]:
+    match = re.search(r"_(\d{8})_(\d{4})(?:\.|$)", path.name)
+    if match:
+        try:
+            ts = datetime.strptime("".join(match.groups()), "%m%d%Y%H%M").replace(tzinfo=timezone.utc)
+            return (ts, path.stat().st_mtime, path.name)
+        except ValueError:
+            pass
+    return (datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc), path.stat().st_mtime, path.name)
 
 
 def _find_latest(pattern: str) -> Path | None:
     """Find the latest file matching a glob pattern in artifacts/adg/."""
-    candidates = sorted(_ADG_DIR.glob(pattern), reverse=True)
-    return candidates[0] if candidates else None
+    candidates = list(_ADG_DIR.glob(pattern))
+    return max(candidates, key=_artifact_sort_key) if candidates else None
 
 
 def _load_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return {"error": "json_decode_error", "artifact": path.name, "message": str(exc)}
 
 
 def _extract_snapshot_id(filename: str) -> str:
@@ -68,7 +88,7 @@ class SQLiteAdapter:
             source_type="sqlite",
             snapshot_id=snapshot_id,
             row_references=row_refs or [],
-            freshness=_now_iso(),
+            freshness=_mtime_iso(self.path),
             data=data,
         )
 
@@ -162,13 +182,18 @@ class SQLiteAdapter:
         results: dict[str, Any] = {}
         with sqlite3.connect(str(self.path)) as conn:
             conn.row_factory = sqlite3.Row
-            for view_name in [
-                "v_infra_spread",
-                "v_write_bypass",
-                "v_provider_bypass",
-                "v_infra_callers",
-                "v_process_boundary",
-            ]:
+            for view_name in tqdm(
+                [
+                    "v_infra_spread",
+                    "v_write_bypass",
+                    "v_provider_bypass",
+                    "v_infra_callers",
+                    "v_process_boundary",
+                ],
+                desc="Querying views",
+                unit="view",
+                leave=False,
+            ):
                 try:
                     rows = conn.execute(f"SELECT * FROM {view_name} LIMIT ?", (limit,)).fetchall()
                     results[view_name] = [dict(r) for r in rows]
@@ -185,52 +210,52 @@ class SQLiteAdapter:
 class ReportAdapter:
     """Fetch parsed JSON reports."""
 
-    def _load_report(self, pattern: str) -> tuple[dict[str, Any], str]:
-        """Load the latest report matching a pattern. Returns (data, filename)."""
+    def _load_report(self, pattern: str) -> tuple[dict[str, Any], str, Path | None]:
+        """Load the latest report matching a pattern. Returns (data, filename, path)."""
         path = _find_latest(pattern)
         if path and path.exists():
-            return _load_json(path), path.name
-        return {"error": "report_missing", "pattern": pattern}, "MISSING"
+            return _load_json(path), path.name, path
+        return {"error": "report_missing", "pattern": pattern}, "MISSING", None
 
     def _evidence(
-        self, data: dict[str, Any], filename: str, source_type: str = "json_report"
+        self, data: dict[str, Any], filename: str, path: Path | None, source_type: str = "json_report"
     ) -> EvidenceItem:
         return EvidenceItem(
             source_artifact=filename,
-            source_type="json_report",
+            source_type=source_type,
             snapshot_id=_extract_snapshot_id(filename),
             artifact_digest=data.get("artifact_digest", ""),
             scanner_digest=data.get("scanner_digest", ""),
             commit_sha=data.get("commit_sha", ""),
-            freshness=_now_iso(),
+            freshness=_mtime_iso(path),
             data=data,
         )
 
     def fetch_provenance(self) -> EvidenceItem:
-        data, name = self._load_report("provenance_report_*.json")
-        return self._evidence(data, name)
+        data, name, path = self._load_report("provenance_report_*.json")
+        return self._evidence(data, name, path)
 
     def fetch_closure(self) -> EvidenceItem:
-        data, name = self._load_report("closure_validation_report_*.json")
-        return self._evidence(data, name)
+        data, name, path = self._load_report("closure_validation_report_*.json")
+        return self._evidence(data, name, path)
 
     def fetch_edge_density(self) -> EvidenceItem:
-        data, name = self._load_report("edge_density_report_*.json")
-        return self._evidence(data, name)
+        data, name, path = self._load_report("edge_density_report_*.json")
+        return self._evidence(data, name, path)
 
     def fetch_layer_coverage(self) -> EvidenceItem:
-        data, name = self._load_report("layer_coverage_report_*.json")
-        return self._evidence(data, name)
+        data, name, path = self._load_report("layer_coverage_report_*.json")
+        return self._evidence(data, name, path)
 
     def fetch_snapshot(self) -> EvidenceItem:
-        data, name = self._load_report("adg_snapshot_*.json")
-        return self._evidence(data, name)
+        data, name, path = self._load_report("adg_snapshot_*.json")
+        return self._evidence(data, name, path)
 
     def fetch_sc_ap_config(self) -> EvidenceItem:
         path = _ADG_DIR / "sc_ap_config.json"
         if path.exists():
-            return self._evidence(_load_json(path), path.name)
-        return self._evidence({"error": "sc_ap_config_missing"}, "MISSING")
+            return self._evidence(_load_json(path), path.name, path)
+        return self._evidence({"error": "sc_ap_config_missing"}, "MISSING", None)
 
 
 # ---------------------------------------------------------------------------
@@ -249,14 +274,14 @@ class RatchetAdapter:
                 source_artifact=path.name,
                 source_type="ratchet",
                 snapshot_id="",
-                freshness=_now_iso(),
+                freshness=_mtime_iso(path),
                 data=data,
             )
         return EvidenceItem(
             source_artifact="MISSING",
             source_type="ratchet",
             snapshot_id="",
-            freshness=_now_iso(),
+            freshness=_mtime_iso(path),
             data={"error": "p1_ratchet_missing"},
         )
 
@@ -268,14 +293,14 @@ class RatchetAdapter:
                 source_artifact=path.name,
                 source_type="ratchet",
                 snapshot_id="",
-                freshness=_now_iso(),
+                freshness=_mtime_iso(path),
                 data=data,
             )
         return EvidenceItem(
             source_artifact="MISSING",
             source_type="ratchet",
             snapshot_id="",
-            freshness=_now_iso(),
+            freshness=_mtime_iso(path),
             data={"error": "p2_ratchet_missing"},
         )
 
@@ -287,14 +312,14 @@ class RatchetAdapter:
                 source_artifact=path.name,
                 source_type="ratchet",
                 snapshot_id="",
-                freshness=_now_iso(),
+                freshness=_mtime_iso(path),
                 data=data,
             )
         return EvidenceItem(
             source_artifact="MISSING",
             source_type="ratchet",
             snapshot_id="",
-            freshness=_now_iso(),
+            freshness=_mtime_iso(path),
             data={"error": "burndown_missing"},
         )
 
@@ -319,7 +344,7 @@ class GraphDBAdapter:
             source_type="graph_db",
             snapshot_id="",
             is_derived=True,
-            freshness=_now_iso(),
+            freshness=_mtime_iso(None),
             data=data,
         )
 
@@ -401,7 +426,7 @@ class StructuralAdapter:
             source_artifact=self.path.name if self.path else "MISSING",
             source_type="structural",
             snapshot_id=_extract_snapshot_id(self.path.name) if self.path else "",
-            freshness=_now_iso(),
+            freshness=_mtime_iso(self.path),
             data=data,
         )
 

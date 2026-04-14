@@ -11,6 +11,7 @@ Public API:
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 from agentic_core.L3_orchestration.types.c0_evidence_contract_types import C0EvidenceContract
 from tools.adg.prompt_assembly.adapters.c0_bridge_adapter import translate_contract
@@ -19,6 +20,11 @@ from tools.adg.prompt_assembly.packets.builders import _assemble
 from tools.adg.prompt_assembly.packets.registry import get_template
 
 _GRAPH_INTENT_KEYWORDS: frozenset[str] = frozenset({"path", "graph", "route", "hop", "hops", "edge", "node"})
+
+
+def _select_packet_type(intent_hint: str) -> str:
+    words = {word for word in re.findall(r"[a-z0-9_]+", intent_hint.lower()) if word}
+    return "graph_path_explanation" if words & _GRAPH_INTENT_KEYWORDS else "executive_summary"
 
 
 def _maybe_write_packet(
@@ -47,7 +53,9 @@ def _maybe_write_packet(
     out.mkdir(parents=True, exist_ok=True)
     filename = f"packet_{envelope.packet_type}_{envelope.packet_id}.json"
     out_path = out / filename
-    out_path.write_text(envelope.to_json(), encoding="utf-8")
+    tmp_path = out / f".{filename}.tmp"
+    tmp_path.write_text(envelope.to_json(), encoding="utf-8")
+    tmp_path.replace(out_path)
     return out_path
 
 
@@ -78,11 +86,7 @@ def assemble_from_c0_contract(
         PromptEnvelope on success, None on abstain.
     """
     # 1. Packet type selection
-    _hint_words = set(intent_hint.lower().split())
-    if _hint_words & _GRAPH_INTENT_KEYWORDS:
-        packet_type = "graph_path_explanation"
-    else:
-        packet_type = "executive_summary"
+    packet_type = _select_packet_type(intent_hint)
 
     # 2. Bridge: C0EvidenceContract → shaped EvidenceBundle
     bundle, replay_extras = translate_contract(contract, packet_type)
@@ -93,10 +97,12 @@ def assemble_from_c0_contract(
 
     # 4. Fetch template and assemble envelope
     template = get_template(packet_type)
+    must_items = [item for item in bundle.items if not item.is_derived]
+    opt_items = [item for item in bundle.items if item.is_derived]
     envelope = _assemble(
         template,
-        [],
-        [],
+        must_items,
+        opt_items,
         task_block,
         replay_extras=replay_extras,
         pre_shaped_bundle=bundle,

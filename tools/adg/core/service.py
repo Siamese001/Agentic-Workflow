@@ -27,7 +27,8 @@ class ADGService:
     """
 
     _sqlite: SQLiteBackend
-    _redis: RedisCache
+    _redis: RedisCache | None
+    _redis_url: str
     _adg_snapshot_id: str
 
     def __init__(self, redis_url: str | None = None):
@@ -42,14 +43,34 @@ class ADGService:
         # Use `or` so an empty-string env var falls through to the localhost default.
         if redis_url is None:
             redis_url = os.getenv("ADG_REDIS_URL") or "redis://localhost:6379/0"
+        self._redis_url = redis_url
+        self._redis = None
+        self._connect_redis()
 
-        # Redis is optional — gracefully degrade
-        self._redis = RedisCache(redis_url)
+    def _connect_redis(self) -> None:
+        """Best-effort Redis initialization that never blocks SQLite-only mode."""
+        try:
+            self._redis = RedisCache(self._redis_url)
+        except Exception as exc:  # guardian: allow-broad-exception -- Redis init can fail for heterogeneous transport/auth/env reasons and must degrade to sqlite-only mode
+            logger.warning("Redis initialization failed; continuing in sqlite-only mode: %s", exc)
+            self._redis = None
+
+    def _redis_available(self) -> bool:
+        """Return True when the optional Redis accelerator is present and usable."""
+        return bool(self._redis is not None and getattr(self._redis, "_available", False))
 
     def health(self) -> HealthStatus:
         """Return comprehensive health status."""
-        sqlite_status, sqlite_meta = self._sqlite.health()
-        redis_status, redis_meta = self._redis.health()
+        sqlite_status, _sqlite_meta = self._sqlite.health()
+
+        if self._redis is None:
+            redis_status, _redis_meta = "unavailable", {}
+        else:
+            try:
+                redis_status, _redis_meta = self._redis.health()
+            except Exception as exc:  # guardian: allow-broad-exception -- Redis health probes can fail for the same optional-cache reasons as reads; service health must still return
+                logger.debug("Redis health probe failed: %s", exc)
+                redis_status, _redis_meta = "unavailable", {}
 
         mode = "full" if redis_status == "healthy" else "sqlite_only"
         cache_hit_capable = redis_status == "healthy"
@@ -71,8 +92,10 @@ class ADGService:
         method: str = "",
     ) -> tuple[Any, str]:
         """Generic read-through pattern with structured backend telemetry."""
+        redis_available = self._redis_available()
+
         # Try Redis first
-        if self._redis._available:
+        if redis_available:
             try:
                 result = redis_query()
                 # Treat [] the same as None: an empty cached list is indistinguishable
@@ -84,8 +107,8 @@ class ADGService:
                         self._adg_snapshot_id,
                     )
                     return result, "redis"
-            except Exception as e:  # guardian: allow-broad-exception -- Redis client can raise varied transport/timeout/serialization errors; all are non-fatal and should fall through to SQLite
-                logger.debug(f"Redis query failed: {e}")
+            except Exception as exc:  # guardian: allow-broad-exception -- Redis client can raise varied transport/timeout/serialization errors; all are non-fatal and should fall through to SQLite
+                logger.debug("Redis query failed: %s", exc)
 
         # Fall back to SQLite
         result = sqlite_query()
@@ -94,17 +117,17 @@ class ADGService:
         # Empty lists are excluded: the hit-check above treats [] as a miss, so
         # caching [] would write a Redis entry that is immediately ignored on
         # re-read, creating a wasted write on every repeated empty-result call.
-        if self._redis._available and result:
+        if redis_available and result:
             try:
                 cache_set(result)
-            except Exception as e:  # guardian: allow-broad-exception -- cache_set delegates to RedisCache which raises heterogeneous transport/serialization errors; backfill is best-effort and must not crash the request
-                logger.debug(f"Cache backfill failed: {e}")
+            except Exception as exc:  # guardian: allow-broad-exception -- cache_set delegates to RedisCache which raises heterogeneous transport/serialization errors; backfill is best-effort and must not crash the request
+                logger.debug("Cache backfill failed: %s", exc)
 
         logger.debug(
             "adg.backend method=%s snapshot=%s cache=%s backend=sqlite",
             method,
             self._adg_snapshot_id,
-            "miss" if self._redis._available else "unavailable",
+            "miss" if redis_available else "unavailable",
         )
         return result, "sqlite"
 
@@ -259,7 +282,7 @@ class ADGService:
         """Close all backend connections and release resources."""
         if self._sqlite:
             self._sqlite.close()
-        if self._redis:
+        if self._redis is not None:
             self._redis.close()
         logger.info("ADGService closed all connections")
 
@@ -271,7 +294,11 @@ class ADGService:
             # Without this, Redis lookups after a reload use the stale snapshot ID.
             status = self._sqlite.get_status()
             self._adg_snapshot_id = status["timestamp"]
-        logger.info("ADGService reopened SQLite connection")
+
+        if self._redis is not None:
+            self._redis.close()
+        self._connect_redis()
+        logger.info("ADGService reopened backend connections")
 
     def get_projection_status(self) -> ADGResponse:
         """Return graph projection availability, staleness, and metadata."""
