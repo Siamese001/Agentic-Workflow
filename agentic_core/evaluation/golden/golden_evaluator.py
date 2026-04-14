@@ -92,13 +92,25 @@ class GoldenDatasetEvaluator:
     - L6 observability emission
     """
 
-    # Canonical golden dataset paths
+    # Canonical golden dataset paths. Each entry is ordered by preference.
     GOLDEN_DATASET_PATHS = {
-        "test_cases": Path("data/golden_state/datasets/test_cases.json"),
-        "retrieval_ground_truth": Path("data/golden_state/datasets/retrieval_ground_truth.jsonl"),
-        "classification": Path("agentic_core/evaluation/datasets/classification_eval_set.json"),
-        "rag": Path("agentic_core/evaluation/datasets/rag_eval_set.json"),
-        "groundedness": Path("agentic_core/evaluation/datasets/groundedness_eval_set.json"),
+        "test_cases": (Path("data/golden_state/datasets/test_cases.json"),),
+        "retrieval_ground_truth": (Path("data/golden_state/datasets/retrieval_ground_truth.jsonl"),),
+        "classification": (
+            Path("agentic_core/evaluation/datasets/classification_eval_set.json"),
+            Path("evaluation/datasets/classification_eval_set.json"),
+            Path("datasets/classification_eval_set.json"),
+        ),
+        "rag": (
+            Path("agentic_core/evaluation/datasets/rag_eval_set.json"),
+            Path("evaluation/datasets/rag_eval_set.json"),
+            Path("datasets/rag_eval_set.json"),
+        ),
+        "groundedness": (
+            Path("agentic_core/evaluation/datasets/groundedness_eval_set.json"),
+            Path("evaluation/datasets/groundedness_eval_set.json"),
+            Path("datasets/groundedness_eval_set.json"),
+        ),
     }
 
     def __init__(self, repo_root: Path | None = None):
@@ -113,18 +125,31 @@ class GoldenDatasetEvaluator:
 
     def _detect_repo_root(self) -> Path:
         """Detect repository root from module location."""
-        # agentic_core/evaluation/golden/golden_evaluator.py -> repo root
-        return Path(__file__).parent.parent.parent.parent
+        current = Path(__file__).resolve()
+        for parent in current.parents:
+            if (parent / "agentic_core/evaluation/datasets").exists():
+                return parent
+            if (parent / "evaluation/datasets").exists():
+                return parent
+        return current.parent.parent
+
+    def _resolve_dataset_path(self, candidates: tuple[Path, ...]) -> Path | None:
+        """Resolve the first available dataset path from an ordered candidate list."""
+        for rel_path in candidates:
+            full_path = self.repo_root / rel_path
+            if full_path.exists():
+                return full_path
+        return None
 
     def load_datasets(self) -> None:
         """Load all golden datasets into memory (immutable)."""
         if self._loaded:
             return
 
-        for name, rel_path in self.GOLDEN_DATASET_PATHS.items():
-            full_path = self.repo_root / rel_path
-            if not full_path.exists():
-                Logger.warning(f"Golden dataset not found: {full_path}")
+        for name, candidate_paths in self.GOLDEN_DATASET_PATHS.items():  # progress_bar: load golden datasets
+            full_path = self._resolve_dataset_path(candidate_paths)
+            if full_path is None:
+                Logger.warning("Golden dataset not found for %s in %s", name, self.repo_root)
                 continue
 
             try:
@@ -138,26 +163,30 @@ class GoldenDatasetEvaluator:
                     if isinstance(data, list)
                     else len(data.get("test_cases", data.get("examples", [])))
                 )
-                Logger.info(f"Loaded golden dataset: {name} ({record_count} records)")
-            except Exception as e:
-                Logger.error(f"Failed to load {name}: {e}")
+                Logger.info("Loaded golden dataset: %s (%s records)", name, record_count)
+            except (OSError, ValueError, json.JSONDecodeError) as exc:
+                Logger.error("Failed to load %s from %s: %s", name, full_path, exc)
 
         self._loaded = True
 
     def _load_json(self, path: Path) -> dict[str, Any]:
         """Load JSON dataset."""
-        with open(path, encoding="utf-8") as f:
-            result: dict[str, Any] = json.load(f)
+        with path.open(encoding="utf-8") as handle:
+            result: dict[str, Any] = json.load(handle)
             return result
 
     def _load_jsonl(self, path: Path) -> list[dict]:
         """Load JSONL dataset."""
-        records = []
-        with open(path, encoding="utf-8") as f:
-            for line in f:
+        records: list[dict[str, Any]] = []
+        with path.open(encoding="utf-8") as handle:
+            for line_number, line in enumerate(handle, start=1):
                 line = line.strip()
-                if line:
+                if not line:
+                    continue
+                try:
                     records.append(json.loads(line))
+                except json.JSONDecodeError as exc:
+                    raise ValueError(f"Invalid JSONL at {path}:{line_number}") from exc
         return records
 
     def evaluate_against_test_cases(

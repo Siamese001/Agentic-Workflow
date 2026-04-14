@@ -7,15 +7,26 @@ validation without blocking L2 routing. Runs in shadow mode only.
 from __future__ import annotations
 
 import logging
-from concurrent.futures import Future, ThreadPoolExecutor
-from typing import Any
+from concurrent.futures import Future, ThreadPoolExecutor, TimeoutError
+from typing import Any, Protocol
 
-from agentic_core.evaluation.golden.golden_evaluator import (
-    GoldenDatasetEvaluator,
-    GoldenEvalResult,
-    get_evaluator,
-)
-from agentic_core.runtime.engine.eval_spine import EvalSpine
+from .golden_evaluator import GoldenDatasetEvaluator, GoldenEvalResult, get_evaluator
+
+try:
+    from agentic_core.runtime.engine.eval_spine import EvalSpine
+except ModuleNotFoundError:
+
+    class EvalSpine(Protocol):
+        report: Any
+
+        def emit_drift_alert(
+            self,
+            metric_name: str,
+            current_value: float,
+            baseline_value: float,
+            threshold: float,
+        ) -> None: ...
+
 
 Logger = logging.getLogger(__name__)
 
@@ -35,6 +46,7 @@ class GoldenEvalIntegration:
         eval_spine: EvalSpine,
         evaluator: GoldenDatasetEvaluator | None = None,
         max_workers: int = 2,
+        max_pending: int = 128,
     ):
         """Initialize integration.
 
@@ -45,8 +57,9 @@ class GoldenEvalIntegration:
         """
         self.eval_spine = eval_spine
         self.evaluator = evaluator or get_evaluator()
-        self._executor = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="golden_eval_")
+        self._executor = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="golden_eval")
         self._pending: list[Future] = []
+        self._max_pending = max_pending
 
     def evaluate_query_async(
         self,
@@ -64,6 +77,9 @@ class GoldenEvalIntegration:
         Returns:
             Future with evaluation results (non-blocking)
         """
+        if len(self._pending) >= self._max_pending:
+            self.process_pending()
+
         future = self._executor.submit(
             self._evaluate_query,
             query,
@@ -86,7 +102,7 @@ class GoldenEvalIntegration:
                 actual_output=actual_output,
                 actual_actions=actual_actions,
             )
-        except Exception:
+        except (OSError, RuntimeError, TypeError, ValueError):
             Logger.exception("Golden dataset evaluation failed for query: %s", query)
             return []
 
@@ -106,6 +122,9 @@ class GoldenEvalIntegration:
         Returns:
             Future with evaluation results (non-blocking)
         """
+        if len(self._pending) >= self._max_pending:
+            self.process_pending()
+
         future = self._executor.submit(
             self._evaluate_retrieval,
             query,
@@ -128,9 +147,35 @@ class GoldenEvalIntegration:
                 retrieved_doc_ids=retrieved_doc_ids,
                 generated_answer=generated_answer,
             )
-        except Exception:
+        except (OSError, RuntimeError, TypeError, ValueError):
             Logger.exception("Golden retrieval evaluation failed for query: %s", query)
             return []
+
+    def _record_metric(self, result: GoldenEvalResult) -> None:
+        """Record a metric using a public EvalSpine hook when available."""
+        metadata = {
+            "case_id": result.case_id,
+            "dataset": result.dataset_name,
+            "query": result.query,
+            "passed": result.passed,
+            "missing_spans": result.missing_spans,
+        }
+        record_metric = getattr(self.eval_spine, "record_metric", None)
+        if callable(record_metric):
+            record_metric(
+                name=f"golden_match_{result.dataset_name}",
+                value=result.match_score,
+                metadata=metadata,
+            )
+            return
+
+        private_record = getattr(self.eval_spine, "_record", None)
+        if callable(private_record):
+            private_record(
+                name=f"golden_match_{result.dataset_name}",
+                value=result.match_score,
+                metadata=metadata,
+            )
 
     def emit_golden_metrics(self, results: list[GoldenEvalResult]) -> None:
         """Emit golden evaluation metrics to Eval Spine.
@@ -138,19 +183,8 @@ class GoldenEvalIntegration:
         Args:
             results: Golden evaluation results to record
         """
-        for result in results:
-            # Record match score as metric
-            self.eval_spine._record(
-                name=f"golden_match_{result.dataset_name}",
-                value=result.match_score,
-                metadata={
-                    "case_id": result.case_id,
-                    "dataset": result.dataset_name,
-                    "query": result.query,
-                    "passed": result.passed,
-                    "missing_spans": result.missing_spans,
-                },
-            )
+        for result in results:  # progress_bar: emit golden eval metrics
+            self._record_metric(result)
 
             # Emit drift alert if match score is low
             if result.match_score < 0.5:
@@ -173,22 +207,23 @@ class GoldenEvalIntegration:
         completed = []
         still_pending = []
 
-        for future in self._pending:
+        for future in self._pending:  # progress_bar: drain pending eval futures
             if future.done():
                 try:
                     results = future.result(timeout=0)
                     self.emit_golden_metrics(results)
                     completed.extend(results)
-                except Exception:
+                except (TimeoutError, RuntimeError, TypeError, ValueError):
                     Logger.exception("Failed to process golden evaluation result")
             elif timeout > 0:
                 try:
                     results = future.result(timeout=timeout)
                     self.emit_golden_metrics(results)
                     completed.extend(results)
-                except Exception:
-                    Logger.exception("Failed to process golden evaluation result")
+                except TimeoutError:
                     still_pending.append(future)
+                except (RuntimeError, TypeError, ValueError):
+                    Logger.exception("Failed to process golden evaluation result")
             else:
                 still_pending.append(future)
 
@@ -219,5 +254,6 @@ def attach_golden_eval(eval_spine: EvalSpine) -> GoldenEvalIntegration:
         GoldenEvalIntegration instance
     """
     integration = GoldenEvalIntegration(eval_spine)
-    Logger.info(f"Golden eval attached to EvalSpine [{eval_spine.report.agent_id}]")
+    agent_id = getattr(getattr(eval_spine, "report", None), "agent_id", "unknown")
+    Logger.info("Golden eval attached to EvalSpine [%s]", agent_id)
     return integration

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import logging
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 from typing import Any, Callable
 
@@ -18,6 +19,16 @@ from agentic_core.L2_execution.utils import (
 )
 
 logger = logging.getLogger(__name__)
+
+_SQLITE_TIMEOUT_SECONDS = 30
+
+
+def _connect_sqlite_readonly(db_path: str) -> sqlite3.Connection:
+    """Open a read-only SQLite connection for worker-safe queries."""
+    resolved = Path(db_path).resolve()
+    conn = sqlite3.connect(f"file:{resolved}?mode=ro", uri=True, timeout=_SQLITE_TIMEOUT_SECONDS)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 class OptimizedCoverageAnalyzer:
@@ -46,51 +57,44 @@ class OptimizedCoverageAnalyzer:
 
         start = time.time()
 
-        conn = sqlite3.connect(self.db_path)
-        conn.row_factory = sqlite3.Row
-
-        # Get all source modules
-        cursor = conn.execute("""
-            SELECT DISTINCT resolved_path
-            FROM nodes
-            WHERE resolved_path LIKE 'agentic_core/%'
-            AND resolved_path NOT LIKE '%__pycache__%'
-        """)
-
-        src_paths = [row["resolved_path"] for row in cursor]
+        with closing(_connect_sqlite_readonly(self.db_path)) as conn:
+            cursor = conn.execute("""
+                SELECT DISTINCT resolved_path
+                FROM nodes
+                WHERE resolved_path LIKE 'agentic_core/%'
+                AND resolved_path NOT LIKE '%__pycache__%'
+            """)
+            src_paths = [row["resolved_path"] for row in cursor]
 
         # Get test coverage in parallel
         processor = get_file_processor(max_workers=self.max_workers)
 
-        def check_coverage(src_path: str) -> dict:
-            """Check coverage for single source file."""
-            cursor = conn.execute(
-                """
-                SELECT COUNT(*) as test_count
-                FROM edges e
-                JOIN nodes n1 ON e.src_id = n1.id
-                JOIN nodes n2 ON e.dst_id = n2.id
-                WHERE e.relation_type = 'imports'
-                AND n1.resolved_path LIKE 'tests/%'
-                AND n2.resolved_path = ?
-            """,
-                (src_path,),
-            )
+        def check_coverage(src_path: str) -> dict[str, Any]:
+            """Check coverage for single source file using a worker-local SQLite connection."""
+            with closing(_connect_sqlite_readonly(self.db_path)) as worker_conn:
+                cursor = worker_conn.execute(
+                    """
+                    SELECT COUNT(*) as test_count
+                    FROM edges e
+                    JOIN nodes n1 ON e.src_id = n1.id
+                    JOIN nodes n2 ON e.dst_id = n2.id
+                    WHERE e.relation_type = 'imports'
+                    AND n1.resolved_path LIKE 'tests/%'
+                    AND n2.resolved_path = ?
+                """,
+                    (src_path,),
+                )
 
-            row = cursor.fetchone()
-            return {
-                "src_path": src_path,
-                "test_count": row["test_count"] if row else 0,
-                "covered": (row["test_count"] if row else 0) > 0,
-            }
+                row = cursor.fetchone()
+                test_count = row["test_count"] if row else 0
+                return {
+                    "src_path": src_path,
+                    "test_count": test_count,
+                    "covered": test_count > 0,
+                }
 
         # Process in parallel
-        results = processor.process_files(
-            src_paths[:100],  # Limit for testing
-            lambda path: check_coverage(path),
-        )
-
-        conn.close()
+        results = processor.process_files(src_paths, check_coverage)
 
         # Calculate statistics
         covered = sum(1 for r in results if r.success and r.data and r.data.get("covered"))
@@ -158,8 +162,8 @@ class OptimizedLayerBoundaryChecker:
                         if violation:
                             violations.append(violation)
 
-            except Exception as e:
-                logger.warning(f"Failed to check {file_path}: {e}")
+            except (OSError, UnicodeDecodeError) as exc:
+                logger.warning("Failed to check %s: %s", file_path, exc)
 
             return violations
 
@@ -253,8 +257,8 @@ class OptimizedRedisIngest:
 
         start = time.time()
 
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
+        if self.pipeline_size <= 0:
+            raise ValueError("pipeline_size must be greater than zero")
 
         metrics = {
             "nodes_ingested": 0,
@@ -262,49 +266,48 @@ class OptimizedRedisIngest:
             "time_ms": 0.0,
         }
 
-        # Ingest nodes in batches
-        cursor = conn.execute("SELECT * FROM nodes")
-        pipe = self.redis.pipeline(transaction=False)
-        pending = 0
+        with closing(_connect_sqlite_readonly(db_path)) as conn:
+            # Ingest nodes in batches
+            cursor = conn.execute("SELECT * FROM nodes")
+            pipe = self.redis.pipeline(transaction=False)
+            pending = 0
 
-        for row in cursor:
-            node_data = dict(row)
-            node_id = node_data.pop("id", None)
-            if node_id:
-                pipe.hset(f"adg:node:{node_id}", mapping=node_data)
-                pending += 1
-                metrics["nodes_ingested"] += 1
+            for row in cursor:  # progress_bar: ingest node rows into Redis
+                node_data = dict(row)
+                node_id = node_data.pop("id", None)
+                if node_id:
+                    pipe.hset(f"adg:node:{node_id}", mapping=node_data)
+                    pending += 1
+                    metrics["nodes_ingested"] += 1
 
-                if pending >= self.pipeline_size:
-                    pipe.execute()
-                    pipe = self.redis.pipeline(transaction=False)
-                    pending = 0
+                    if pending >= self.pipeline_size:
+                        pipe.execute()
+                        pipe = self.redis.pipeline(transaction=False)
+                        pending = 0
 
-        if pending:
-            pipe.execute()
+            if pending:
+                pipe.execute()
 
-        # Ingest edges in batches
-        cursor = conn.execute("SELECT * FROM edges")
-        pipe = self.redis.pipeline(transaction=False)
-        pending = 0
+            # Ingest edges in batches
+            cursor = conn.execute("SELECT * FROM edges")
+            pipe = self.redis.pipeline(transaction=False)
+            pending = 0
 
-        for row in cursor:
-            edge_data = dict(row)
-            edge_id = edge_data.pop("id", None)
-            if edge_id:
-                pipe.hset(f"adg:edge:{edge_id}", mapping=edge_data)
-                pending += 1
-                metrics["edges_ingested"] += 1
+            for row in cursor:  # progress_bar: ingest edge rows into Redis
+                edge_data = dict(row)
+                edge_id = edge_data.pop("id", None)
+                if edge_id:
+                    pipe.hset(f"adg:edge:{edge_id}", mapping=edge_data)
+                    pending += 1
+                    metrics["edges_ingested"] += 1
 
-                if pending >= self.pipeline_size:
-                    pipe.execute()
-                    pipe = self.redis.pipeline(transaction=False)
-                    pending = 0
+                    if pending >= self.pipeline_size:
+                        pipe.execute()
+                        pipe = self.redis.pipeline(transaction=False)
+                        pending = 0
 
-        if pending:
-            pipe.execute()
-
-        conn.close()
+            if pending:
+                pipe.execute()
 
         elapsed_ms = (time.time() - start) * 1000
         metrics["time_ms"] = elapsed_ms

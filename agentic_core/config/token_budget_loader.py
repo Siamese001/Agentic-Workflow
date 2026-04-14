@@ -1,11 +1,14 @@
-"""Token budget loader — loads from YAML SSOT."""
+"""Token budget loader - loads from YAML SSOT."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 
 import yaml
+
+CONFIG_PATH = Path(__file__).resolve().parents[2] / "config" / "token_budget.yaml"
 
 
 @dataclass(frozen=True)
@@ -20,7 +23,6 @@ class TokenBudgetConfig:
     token_rates: dict[str, float]
 
     def validate(self) -> None:
-        """Validate budget invariants."""
         if not (0 < self.warning_threshold <= self.safe_operating_cap <= self.hard_max_context):
             raise ValueError(
                 "Budget invariants violated: WARNING_THRESHOLD <= SAFE_OPERATING_CAP <= HARD_MAX_CONTEXT"
@@ -29,25 +31,36 @@ class TokenBudgetConfig:
             raise ValueError("Reserved output and safety buffer must be >= 0")
 
 
-def load_token_budget(model: str = "kimi_k2_5") -> TokenBudgetConfig:
-    """Load token budget configuration from YAML."""
-    config_path = Path(__file__).parent.parent.parent / "config" / "token_budget.yaml"
-
-    with open(config_path) as f:
+@lru_cache(maxsize=1)
+def _load_raw_config() -> dict:
+    if not CONFIG_PATH.is_file():
+        raise FileNotFoundError(f"Token budget config not found: {CONFIG_PATH}")
+    with CONFIG_PATH.open(encoding="utf-8") as f:
         data = yaml.safe_load(f)
+    if not isinstance(data, dict) or not isinstance(data.get("models"), dict):
+        raise ValueError(f"Token budget file must contain a top-level 'models' mapping: {CONFIG_PATH}")
+    return data
 
-    model_data = data["models"][model]
+
+def load_token_budget(model: str = "kimi_k2_5") -> TokenBudgetConfig:
+    data = _load_raw_config()
+    try:
+        model_data = data["models"][model]
+    except KeyError as exc:
+        raise KeyError(f"Unknown token budget model '{model}' in {CONFIG_PATH}") from exc
+    if not isinstance(model_data, dict):
+        raise ValueError(f"Token budget entry for '{model}' must be a mapping")
     config = TokenBudgetConfig(**model_data)
     config.validate()
     return config
 
 
-# Default instance for backward compatibility
-DEFAULT_TOKEN_BUDGET = load_token_budget("kimi_k2_5")
+def get_default_token_budget() -> TokenBudgetConfig:
+    return load_token_budget("kimi_k2_5")
 
 
 __all__ = [
     "TokenBudgetConfig",
     "load_token_budget",
-    "DEFAULT_TOKEN_BUDGET",
+    "get_default_token_budget",
 ]

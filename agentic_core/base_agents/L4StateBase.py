@@ -28,28 +28,17 @@ class L4StateBase(SovereignBaseAgent):
         """Cooperative MRO initialization."""
         super().__post_init__()
 
-    # guardian: allow-type-erasure
-    def get_state(self, key: str) -> Any:
-        """
-        Retrieve state by key.
-
-        Override in subclasses for specialized state retrieval.
-        """
-        return None
+    def get_state(self, key: str) -> Any | None:
+        """Retrieve state by key using the sovereign backing store."""
+        return super().get_state(key)
 
     def set_state(self, key: str, value: Any) -> bool:
-        """
-        Set state by key.
+        """Set state by key using the sovereign backing store."""
+        super().set_state(key, value)
+        return True
 
-        Override in subclasses for specialized state storage.
-        """
-        return False
-
-    # guardian: allow-type-erasure
     def validate_state(self, state: dict[str, Any]) -> dict[str, Any]:
-        """
-        Validate state consistency.
-
-        Override in subclasses for specialized state validation.
-        """
+        """Validate state consistency with a minimal fail-closed schema check."""
+        if not isinstance(state, dict):
+            return {"valid": False, "errors": ["state must be a dictionary"]}
         return {"valid": True, "errors": []}

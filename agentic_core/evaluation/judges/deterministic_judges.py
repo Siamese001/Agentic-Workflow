@@ -15,13 +15,12 @@ Judges implemented:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
-import uuid
-from datetime import datetime, timezone
 from typing import Any
 
-from agentic_core.evaluation.judges.types import (
+from .types import (
     EvidenceBundle,
     EvidenceItem,
     JudgeVerdict,
@@ -72,13 +71,25 @@ _IMPORT_ALLOWLIST_PATHS = frozenset(
 )
 
 
-def _verdict_id() -> str:
-    """Generate a short deterministic-friendly verdict ID."""
-    return uuid.uuid4().hex[:12]
+def _verdict_id(bundle: EvidenceBundle, rubric_id: str) -> str:
+    """Generate a stable verdict ID derived from rubric and evidence."""
+    canonical = json.dumps(
+        {
+            "target": bundle.target,
+            "rubric_id": rubric_id,
+            "evidence_hash": bundle.evidence_hash,
+            "adg_digest": bundle.adg_digest,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:12]
 
 
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+def _created_at(bundle: EvidenceBundle) -> str:
+    """Prefer an injected evaluation timestamp to preserve replayability."""
+    raw_value = bundle.config_context.get("evaluation_timestamp", "")
+    return str(raw_value) if raw_value else ""
 
 
 # ===================================================================
@@ -94,7 +105,7 @@ def judge_arch_001(bundle: EvidenceBundle) -> JudgeVerdict:
     import_edges = bundle.adg_edges.get("imports", [])
     if not import_edges:
         return JudgeVerdict(
-            verdict_id=_verdict_id(),
+            verdict_id=_verdict_id(bundle, "ARCH-001"),
             target=bundle.target,
             dimension="architecture",
             rubric_id="ARCH-001",
@@ -105,12 +116,12 @@ def judge_arch_001(bundle: EvidenceBundle) -> JudgeVerdict:
             adg_digest=bundle.adg_digest,
             provider_id="deterministic",
             evidence_hash=bundle.evidence_hash,
-            created_at=_now_iso(),
+            created_at=_created_at(bundle),
         )
 
     if module_level < 0:
         return JudgeVerdict(
-            verdict_id=_verdict_id(),
+            verdict_id=_verdict_id(bundle, "ARCH-001"),
             target=bundle.target,
             dimension="architecture",
             rubric_id="ARCH-001",
@@ -121,13 +132,13 @@ def judge_arch_001(bundle: EvidenceBundle) -> JudgeVerdict:
             adg_digest=bundle.adg_digest,
             provider_id="deterministic",
             evidence_hash=bundle.evidence_hash,
-            created_at=_now_iso(),
+            created_at=_created_at(bundle),
         )
 
     violations: list[EvidenceItem] = []
     total = 0
 
-    for edge in import_edges:
+    for edge in import_edges:  # progress_bar: check layer boundary violations
         target_layer = edge.get("target_layer", "")
         target_level = _LAYER_ORDER.get(target_layer, -1)
         if target_level < 0:
@@ -171,7 +182,7 @@ def judge_arch_001(bundle: EvidenceBundle) -> JudgeVerdict:
         )
 
     return JudgeVerdict(
-        verdict_id=_verdict_id(),
+        verdict_id=_verdict_id(bundle, "ARCH-001"),
         target=bundle.target,
         dimension="architecture",
         rubric_id="ARCH-001",
@@ -184,7 +195,7 @@ def judge_arch_001(bundle: EvidenceBundle) -> JudgeVerdict:
         adg_digest=bundle.adg_digest,
         provider_id="deterministic",
         evidence_hash=bundle.evidence_hash,
-        created_at=_now_iso(),
+        created_at=_created_at(bundle),
     )
 
 
@@ -228,7 +239,7 @@ def judge_qual_001(bundle: EvidenceBundle) -> JudgeVerdict:
         )
 
     return JudgeVerdict(
-        verdict_id=_verdict_id(),
+        verdict_id=_verdict_id(bundle, "QUAL-001"),
         target=bundle.target,
         dimension="code_quality",
         rubric_id="QUAL-001",
@@ -241,7 +252,7 @@ def judge_qual_001(bundle: EvidenceBundle) -> JudgeVerdict:
         adg_digest=bundle.adg_digest,
         provider_id="deterministic",
         evidence_hash=bundle.evidence_hash,
-        created_at=_now_iso(),
+        created_at=_created_at(bundle),
     )
 
 
@@ -272,7 +283,7 @@ def judge_qual_002(bundle: EvidenceBundle) -> JudgeVerdict:
         )
 
     return JudgeVerdict(
-        verdict_id=_verdict_id(),
+        verdict_id=_verdict_id(bundle, "QUAL-002"),
         target=bundle.target,
         dimension="code_quality",
         rubric_id="QUAL-002",
@@ -283,7 +294,7 @@ def judge_qual_002(bundle: EvidenceBundle) -> JudgeVerdict:
         adg_digest=bundle.adg_digest,
         provider_id="deterministic",
         evidence_hash=bundle.evidence_hash,
-        created_at=_now_iso(),
+        created_at=_created_at(bundle),
         suggestions=tuple(suggestions),
     )
 
@@ -304,7 +315,7 @@ def judge_dep_001(bundle: EvidenceBundle) -> JudgeVerdict:
     import_edges = bundle.adg_edges.get("imports", [])
     if not import_edges:
         return JudgeVerdict(
-            verdict_id=_verdict_id(),
+            verdict_id=_verdict_id(bundle, "DEP-001"),
             target=bundle.target,
             dimension="dependency_health",
             rubric_id="DEP-001",
@@ -315,7 +326,7 @@ def judge_dep_001(bundle: EvidenceBundle) -> JudgeVerdict:
             adg_digest=bundle.adg_digest,
             provider_id="deterministic",
             evidence_hash=bundle.evidence_hash,
-            created_at=_now_iso(),
+            created_at=_created_at(bundle),
         )
 
     # Check if any import target also imports us back (2-hop cycle)
@@ -329,7 +340,7 @@ def judge_dep_001(bundle: EvidenceBundle) -> JudgeVerdict:
 
     if not cycles:
         return JudgeVerdict(
-            verdict_id=_verdict_id(),
+            verdict_id=_verdict_id(bundle, "DEP-001"),
             target=bundle.target,
             dimension="dependency_health",
             rubric_id="DEP-001",
@@ -340,7 +351,7 @@ def judge_dep_001(bundle: EvidenceBundle) -> JudgeVerdict:
             adg_digest=bundle.adg_digest,
             provider_id="deterministic",
             evidence_hash=bundle.evidence_hash,
-            created_at=_now_iso(),
+            created_at=_created_at(bundle),
         )
 
     evidence_items = [
@@ -353,7 +364,7 @@ def judge_dep_001(bundle: EvidenceBundle) -> JudgeVerdict:
     ]
 
     return JudgeVerdict(
-        verdict_id=_verdict_id(),
+        verdict_id=_verdict_id(bundle, "DEP-001"),
         target=bundle.target,
         dimension="dependency_health",
         rubric_id="DEP-001",
@@ -366,7 +377,7 @@ def judge_dep_001(bundle: EvidenceBundle) -> JudgeVerdict:
         adg_digest=bundle.adg_digest,
         provider_id="deterministic",
         evidence_hash=bundle.evidence_hash,
-        created_at=_now_iso(),
+        created_at=_created_at(bundle),
     )
 
 
@@ -410,7 +421,7 @@ def judge_cov_001(bundle: EvidenceBundle) -> JudgeVerdict:
     ]
 
     return JudgeVerdict(
-        verdict_id=_verdict_id(),
+        verdict_id=_verdict_id(bundle, "COV-001"),
         target=bundle.target,
         dimension="governance_coverage",
         rubric_id="COV-001",
@@ -423,7 +434,7 @@ def judge_cov_001(bundle: EvidenceBundle) -> JudgeVerdict:
         adg_digest=bundle.adg_digest,
         provider_id="deterministic",
         evidence_hash=bundle.evidence_hash,
-        created_at=_now_iso(),
+        created_at=_created_at(bundle),
     )
 
 
@@ -443,7 +454,7 @@ def judge_gov_002(bundle: EvidenceBundle) -> JudgeVerdict:
 
     if total_writes == 0:
         return JudgeVerdict(
-            verdict_id=_verdict_id(),
+            verdict_id=_verdict_id(bundle, "GOV-002"),
             target=bundle.target,
             dimension="governance_coverage",
             rubric_id="GOV-002",
@@ -454,7 +465,7 @@ def judge_gov_002(bundle: EvidenceBundle) -> JudgeVerdict:
             adg_digest=bundle.adg_digest,
             provider_id="deterministic",
             evidence_hash=bundle.evidence_hash,
-            created_at=_now_iso(),
+            created_at=_created_at(bundle),
         )
 
     score = round(governed_writes / max(1, total_writes), 4)
@@ -474,7 +485,7 @@ def judge_gov_002(bundle: EvidenceBundle) -> JudgeVerdict:
         )
 
     return JudgeVerdict(
-        verdict_id=_verdict_id(),
+        verdict_id=_verdict_id(bundle, "GOV-002"),
         target=bundle.target,
         dimension="governance_coverage",
         rubric_id="GOV-002",
@@ -486,7 +497,7 @@ def judge_gov_002(bundle: EvidenceBundle) -> JudgeVerdict:
         adg_digest=bundle.adg_digest,
         provider_id="deterministic",
         evidence_hash=bundle.evidence_hash,
-        created_at=_now_iso(),
+        created_at=_created_at(bundle),
     )
 
 
@@ -505,7 +516,7 @@ def judge_sec_002(bundle: EvidenceBundle) -> JudgeVerdict:
 
     if is_allowlisted:
         return JudgeVerdict(
-            verdict_id=_verdict_id(),
+            verdict_id=_verdict_id(bundle, "SEC-002"),
             target=bundle.target,
             dimension="security",
             rubric_id="SEC-002",
@@ -516,13 +527,13 @@ def judge_sec_002(bundle: EvidenceBundle) -> JudgeVerdict:
             adg_digest=bundle.adg_digest,
             provider_id="deterministic",
             evidence_hash=bundle.evidence_hash,
-            created_at=_now_iso(),
+            created_at=_created_at(bundle),
         )
 
     violations: list[EvidenceItem] = []
-    for edge in import_edges:
+    for edge in import_edges:  # progress_bar: check forbidden imports
         target_name = edge.get("target_name", "")
-        for forbidden in _FORBIDDEN_IMPORTS:
+        for forbidden in _FORBIDDEN_IMPORTS:  # progress_bar: match forbidden import patterns
             if forbidden in target_name:
                 violations.append(
                     EvidenceItem(
@@ -545,7 +556,7 @@ def judge_sec_002(bundle: EvidenceBundle) -> JudgeVerdict:
         )
 
     return JudgeVerdict(
-        verdict_id=_verdict_id(),
+        verdict_id=_verdict_id(bundle, "SEC-002"),
         target=bundle.target,
         dimension="security",
         rubric_id="SEC-002",
@@ -560,7 +571,7 @@ def judge_sec_002(bundle: EvidenceBundle) -> JudgeVerdict:
         adg_digest=bundle.adg_digest,
         provider_id="deterministic",
         evidence_hash=bundle.evidence_hash,
-        created_at=_now_iso(),
+        created_at=_created_at(bundle),
     )
 
 

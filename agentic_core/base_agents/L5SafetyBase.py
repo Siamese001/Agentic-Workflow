@@ -29,25 +29,23 @@ class L5SafetyBase(SovereignBaseAgent):
         super().__post_init__()
 
     def validate(self, target: Any) -> dict[str, Any]:
-        """
-        Validate a target for safety compliance.
-
-        Override in subclasses for specialized validation.
-        """
-        return {"valid": True, "violations": [], "warnings": []}
+        """Fail closed until a concrete safety implementation is provided."""
+        return {
+            "valid": False,
+            "violations": ["L5SafetyBase.validate() must be overridden"],
+            "warnings": [],
+            "target_type": type(target).__name__,
+        }
 
     def enforce_guardrail(self, guardrail_name: str, context: dict[str, Any]) -> bool:
-        """
-        Enforce a specific guardrail.
-
-        Override in subclasses for specialized guardrail enforcement.
-        """
-        return True
+        """Fail closed until a concrete guardrail implementation is provided."""
+        _ = context
+        return False
 
     def check_gravity(self, path: Any) -> dict[str, Any]:
-        """
-        Check structural integrity (gravity) of a path.
-
-        Override in subclasses for specialized gravity checks.
-        """
-        return {"compliant": True, "violations": []}
+        """Fail closed until a concrete structural validation is provided."""
+        return {
+            "compliant": False,
+            "violations": ["L5SafetyBase.check_gravity() must be overridden"],
+            "path": str(path),
+        }

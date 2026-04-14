@@ -231,17 +231,18 @@ class L0RoutingBase(L0DelegationTestingMixin, SovereignBaseAgent):
         )
         return result
 
-    def _run_self_tests(self) -> dict:
-        """Run internal self-tests."""
-        results = {"passed": 0, "failed": 0, TESTS_DIR: []}
-        try:
-            assert self is not None
+    def _run_self_tests(self) -> dict[str, Any]:
+        """Run minimal internal self-tests without using a tautological assertion."""
+        results: dict[str, Any] = {"passed": 0, "failed": 0, TESTS_DIR: []}
+        initialized = getattr(self, "_initialized", False)
+        if initialized:
             results["passed"] += 1
-            # guardian: allow-silent-swallow - acceptable exception handling
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "passed"})
-        except AssertionError as e:
+            results[TESTS_DIR].append({"name": "test_initialization", "status": "passed"})
+        else:
             results["failed"] += 1
-            results[TESTS_DIR].append({"name": "test_instantiation", "status": "failed", "error": str(e)})
+            results[TESTS_DIR].append(
+                {"name": "test_initialization", "status": "failed", "error": "agent not initialized"}
+            )
         return results
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
@@ -263,6 +264,13 @@ class L0RoutingBase(L0DelegationTestingMixin, SovereignBaseAgent):
         """
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")
+        if not file_path:
+            return {
+                "status": "failed",
+                "details": "L0RoutingBase heal() requires 'file' or 'file_path'",
+                "artifacts": [],
+                "errors": ["missing file path"],
+            }
         try:
             if hasattr(self, "heal_repository"):
                 result = self.heal_repository(target_path=file_path)
@@ -279,14 +287,7 @@ class L0RoutingBase(L0DelegationTestingMixin, SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-        except (ValueError, TypeError, RuntimeError) as e:
-            return {
-                "status": "failed",
-                "details": f"L0RoutingBase heal() failed: {str(e)}",
-                "artifacts": [],
-                "errors": [str(e)],
-            }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError, OSError) as e:
             return {
                 "status": "failed",
                 "details": f"L0RoutingBase heal() failed: {str(e)}",

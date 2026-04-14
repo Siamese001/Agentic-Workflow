@@ -6,17 +6,14 @@ Complete golden dataset wiring for agentic architecture:
 - GoldenL6Emitter: Emit golden eval metrics to L6 observability
 """
 
-from agentic_core.evaluation.golden.eval_spine_integration import (
-    GoldenEvalIntegration,
-    attach_golden_eval,
-)
-from agentic_core.evaluation.golden.golden_evaluator import (
+from .eval_spine_integration import GoldenEvalIntegration, attach_golden_eval
+from .golden_evaluator import (
     GoldenDatasetEvaluator,
     GoldenDatasetSummary,
     GoldenEvalResult,
     get_evaluator,
 )
-from agentic_core.evaluation.golden.l6_emitter import (
+from .l6_emitter import (
     GoldenL6Emitter,
     emit_golden_batch,
     emit_golden_result,

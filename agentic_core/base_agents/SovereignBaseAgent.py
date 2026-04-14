@@ -228,6 +228,10 @@ def _get_sanitize_tool_output():
     return sanitize_tool_output
 
 
+ConfigurationError = _get_configuration_error()
+SovereignError = _get_sovereign_error()
+sanitize_tool_output = _get_sanitize_tool_output()
+
 logger = logging.getLogger(__name__)
 
 
@@ -333,11 +337,12 @@ class SovereignBaseAgent(
     def _is_safe_path(self, path: Path) -> bool:
         """Check if path is safe for access."""
         try:
-            path.resolve().relative_to(Path.cwd().resolve())
+            candidate = path.resolve(strict=False)
+            root = Path(getattr(self, "project_root", Path.cwd())).resolve(strict=False)
+            candidate.relative_to(root)
             return True
         except ValueError as e:
-            # TODO: Add proper input validation
-            logger.warning(f"Invalid input: {e}")
+            logger.warning(f"Path escapes project_root boundary: {path} ({e})")
             return False
 
     def _is_safe_directory(self, dir_path: Path) -> bool:
@@ -447,10 +452,12 @@ class SovereignBaseAgent(
     def _v15_enhanced_heal(self, violation: dict[str, Any], **kwargs) -> dict[str, Any]:
         """V15-enforced healing through V15ExecutionGateway."""
         import hashlib as _hl
+        import json as _json
 
         # §15.5 — Generate V15-compliant trace ID: CC3AL1-{8 uppercase hex}
-        # Derive deterministic 8-char hex suffix from violation + agent class name
-        _seed = f"{self.__class__.__name__}:{violation.get('id', 'unknown')}:{id(violation)}"
+        # Use canonical violation content instead of object identity to preserve determinism.
+        _seed_payload = _json.dumps(violation, sort_keys=True, default=str)
+        _seed = f"{self.__class__.__name__}:{violation.get('id', 'unknown')}:{_seed_payload}"
         _hex8 = _hl.sha256(_seed.encode()).hexdigest()[:8].upper()
         trace_id = kwargs.get("trace_id", generate_trace_id(_hex8))
 
@@ -517,9 +524,9 @@ class SovereignBaseAgent(
             _core_dir = self.project_root / AGENTIC_CORE_DIR
             _fs_parts: list[str] = []
             if _core_dir.is_dir():
-                for _root, _dirs, _files in _os.walk(str(_core_dir)):
+                for _root, _dirs, _files in _os.walk(str(_core_dir)):  # progress_bar: walk core dir
                     _dirs[:] = sorted(d for d in _dirs if d not in _SEF)
-                    for _f in sorted(_files):
+                    for _f in sorted(_files):  # progress_bar: scan py files
                         if _f.endswith(".py"):
                             _fp = _os.path.join(_root, _f)
                             try:
@@ -630,7 +637,8 @@ class SovereignBaseAgent(
         Returns:
             Dict containing healing result with canonical HealResult schema.
         """
-        import time
+        import os
+        from time import perf_counter
 
         # Cycle detection: if this agent class is already in the call path, skip
         agent_name = self.__class__.__name__
@@ -656,13 +664,14 @@ class SovereignBaseAgent(
         from agentic_core.L3_orchestration.healers.healing_tier_router import route_by_confidence
         from agentic_core.L3_orchestration.healers.healing_tier_types import HealingTier
 
-        start_time = time.time()
+        start_time = perf_counter()
 
         # Extract inputs from kwargs
         confidence_value = kwargs.pop("_confidence", 0.75)
         kwargs.pop("_task_complexity", None)
         kwargs.pop("_prior_failures", None)
         retry_count = kwargs.pop("_retry_count", 0)
+        enable_llm = kwargs.pop("enable_llm", os.getenv("HEAL_POLICY_MODEL_ESCALATION", "0") == "1")
 
         # Delegate to canonical routing choke-point
         heal_decision = route_by_confidence(
@@ -676,7 +685,7 @@ class SovereignBaseAgent(
             HealingTier.QWEN_VLLM,
             HealingTier.GEMINI_2_5_PRO,
         ):
-            execution_time_ms = (time.time() - start_time) * 1000
+            execution_time_ms = (perf_counter() - start_time) * 1000
             rationale = " | ".join(heal_decision.reason_codes)
             return {
                 "violations_found": 0,
@@ -730,7 +739,7 @@ class SovereignBaseAgent(
             errors = 1
             logger.error(f"[heal_repository] {agent_name} error: {e}")
 
-        execution_time_ms = (time.time() - start_time) * 1000
+        execution_time_ms = (perf_counter() - start_time) * 1000
         status = "PASS" if violations_found == 0 and errors == 0 else "FAIL"
 
         return {

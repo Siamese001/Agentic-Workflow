@@ -22,6 +22,7 @@ Usage from execute_ssot:
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from dataclasses import dataclass
 from pathlib import Path
@@ -230,18 +231,20 @@ class PreRunADGReport:
     @classmethod
     def unavailable(cls, changed_files: list[str], reason: str) -> PreRunADGReport:
         """Return a degraded report when ADG is unavailable."""
+        normalized_files = sorted({f for f in changed_files if f})
+        digest_payload = "\n".join([*normalized_files, reason]).encode("utf-8")
         return cls(
-            changed_files=sorted(changed_files),
-            impacted_module_count=0,
-            impacted_modules=[],
+            changed_files=normalized_files,
+            impacted_module_count=len(normalized_files),
+            impacted_modules=normalized_files,
             impacted_test_count=0,
             impacted_tests=[],
-            risk_score=0,
-            route_mode="NORMAL",
-            scope_widening_events=[],
-            uncovered_changed_files=sorted(changed_files),
+            risk_score=max(25, len(normalized_files) * 10),
+            route_mode="RESTRICTED",
+            scope_widening_events=["ADG_UNAVAILABLE"],
+            uncovered_changed_files=normalized_files,
             layer_violation_count=0,
-            impact_digest="",
+            impact_digest=hashlib.sha256(digest_payload).hexdigest(),
             adg_available=False,
             adg_error=reason,
         )
@@ -266,8 +269,16 @@ def build_pre_run_report(
     force_fresh:
         If True, bypass the ADG cache and run a fresh scan.
     """
-    repo_root = Path(repo_root) if repo_root else Path.cwd()
-    norm_files = [f.replace("\\", "/") for f in (changed_files or [])]
+    repo_root = (Path(repo_root) if repo_root else Path.cwd()).expanduser().resolve()
+    if not repo_root.exists() or not repo_root.is_dir():
+        return PreRunADGReport.unavailable(
+            changed_files or [],
+            f"invalid_repo_root:{repo_root}",
+        )
+
+    norm_files = sorted(
+        {f.replace("\\", "/").lstrip("./") for f in (changed_files or []) if isinstance(f, str) and f.strip()}
+    )
 
     try:
         from tools.change_impact_engine import ChangeImpactEngine
@@ -297,10 +308,10 @@ def build_pre_run_report(
             adg_error="",
         )
 
-    # guardian: allow-silent-swallow -- ADG pre-run report is optional; failure logged and execution continues
-    except Exception as exc:  # guardian: allow-silent-swallower
+    # ADG pre-run report is optional; expected environmental/runtime failures degrade safely.
+    except (ImportError, ModuleNotFoundError, FileNotFoundError, OSError, RuntimeError, ValueError) as exc:
         logger.warning(
-            "ADG pre-run report unavailable: %s — proceeding without impact analysis",
+            "ADG pre-run report unavailable: %s - proceeding in restricted mode",
             exc,
         )
         return PreRunADGReport.unavailable(norm_files, str(exc))
@@ -312,7 +323,7 @@ def _count_layer_violations_in_scope(result: ScanResult, impacted_modules: list[
 
     impacted_set = set(impacted_modules)
     count = 0
-    for edge in result.edges:
+    for edge in result.edges:  # progress_bar: layer-violation scan
         if edge.relation_type != "imports":
             continue
         module_prefix = "ADG::Module::"

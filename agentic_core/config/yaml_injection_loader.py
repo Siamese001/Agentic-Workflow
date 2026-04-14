@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, List
 
 import yaml
 
@@ -197,7 +197,7 @@ class YamlInjectionLoader:
         "output_governance": InjectionLayer.OUTPUT,
     }
 
-    def __init__(self, yaml_root: pathlib.Path | None = None):
+    def __init__(self, yaml_root: Path | None = None):
         """Initialize the YAML loader.
 
         Args:
@@ -206,7 +206,7 @@ class YamlInjectionLoader:
         """
         if yaml_root is None:
             yaml_root = Path("data/prompt_governance/injections")
-        self.yaml_root = Path(yaml_root)
+        self.yaml_root = Path(yaml_root).expanduser().resolve()
         self._cache: dict[str, list[InstructionalPattern]] = {}
 
     def enumerate_yaml_files(self) -> list[Path]:
@@ -225,10 +225,14 @@ class YamlInjectionLoader:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "YamlInjectionLoader.enumerate_yaml_files"
         )
 
-        if not self.yaml_root.exists():
+        if not self.yaml_root.is_dir():
             raise FileNotFoundError(f"YAML root directory not found: {self.yaml_root}")
-        yaml_files = list(self.yaml_root.rglob("*.y*ml"))
+        yaml_files = [path.resolve() for path in self.yaml_root.rglob("*.y*ml") if path.is_file()]
         yaml_files.sort()
+        if len(yaml_files) > 5000:
+            raise YamlValidationError(
+                filename=str(self.yaml_root), parse_error="Too many YAML files to load safely"
+            )
         return yaml_files
 
     def load_all_patterns(self) -> dict[str, list[InstructionalPattern]]:
@@ -240,12 +244,13 @@ class YamlInjectionLoader:
         Raises:
             YamlValidationError: If any YAML file fails validation.
         """
-        if "all_patterns" in self._cache:
-            return self._cache["all_patterns"]
+        cache_key = f"all_patterns::{self.yaml_root}"
+        if cache_key in self._cache:
+            return self._cache[cache_key]
         patterns_by_layer: dict[str, list[InstructionalPattern]] = {
             layer.value: [] for layer in InjectionLayer
         }
-        for yaml_file in self.enumerate_yaml_files():
+        for yaml_file in self.enumerate_yaml_files():  # progress_bar: load yaml patterns
             try:
                 layer_patterns = self._load_yaml_file(yaml_file)
                 layer_name = self._determine_layer_from_path(yaml_file)
@@ -260,7 +265,7 @@ class YamlInjectionLoader:
                 ) from e
         for layer_patterns in patterns_by_layer.values():
             layer_patterns.sort(key=lambda p: p.id)
-        self._cache["all_patterns"] = patterns_by_layer
+        self._cache[cache_key] = patterns_by_layer
         return patterns_by_layer
 
     def load_by_layer(self, layer: InjectionLayer | str) -> list[InstructionalPattern]:
@@ -292,8 +297,14 @@ class YamlInjectionLoader:
             YamlValidationError: If validation fails.
         """
         try:
+            if yaml_file.stat().st_size > 1024 * 1024:
+                raise YamlValidationError(
+                    filename=str(yaml_file), parse_error="YAML file exceeds 1 MiB safety limit"
+                )
             with open(yaml_file, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
+        except OSError as e:
+            raise YamlValidationError(filename=str(yaml_file), parse_error=str(e)) from e
         except yaml.YAMLError as e:
             raise YamlValidationError(filename=str(yaml_file), parse_error=str(e)) from e
         if not isinstance(data, dict):
@@ -332,7 +343,7 @@ class YamlInjectionLoader:
         sorted_pattern_names = sorted(pattern_dict.keys())
         pattern_id = 1
         skipped_count = 0
-        for pattern_name in sorted_pattern_names:
+        for pattern_name in sorted_pattern_names:  # progress_bar: build instructional patterns
             pattern_data = pattern_dict[pattern_name]
             if not isinstance(pattern_data, dict):
                 continue
@@ -360,8 +371,8 @@ class YamlInjectionLoader:
                 layer=layer,
                 description=description,
                 template=prompt_template,
-                enabled=pattern_data.get("enabled", True),
-                required=pattern_data.get("required", False),
+                enabled=bool(pattern_data.get("enabled", True)),
+                required=bool(pattern_data.get("required", False)),
             )
             patterns.append(pattern)
             pattern_id += 1

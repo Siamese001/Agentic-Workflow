@@ -164,6 +164,7 @@ _emit_links_execution_to_snapshot("p4", "sovereign_config", "exec_snapshot_link"
 
 # Setup basic logger since we can't depend on complex agent loggers here
 Logger = logging.getLogger("SovereignConfig")
+logger = Logger
 
 
 @dataclass
@@ -227,12 +228,14 @@ class SovereignConfigManager:
         if val is None:
             return default
         try:
-            return int(val)
-        except ValueError as e:
-            # TODO: Add proper input validation
-            logger.warning(f"Config key {key} expected int, got {val}. Using default {default}.")
+            parsed = int(val)
+        except ValueError:
+            logger.warning("Config key %s expected int, got %s. Using default %s.", key, val, default)
             return default
+        if parsed < 0:
+            logger.warning("Config key %s must be >= 0, got %s. Using default %s.", key, parsed, default)
             return default
+        return parsed
 
     def get_bool(self, key: str, default: bool = False) -> bool:
         """Get bool env var (true/false/1/0)."""

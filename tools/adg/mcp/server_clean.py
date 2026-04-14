@@ -38,7 +38,9 @@ def main() -> int:
         from tools.adg.mcp.server import _init_service, mcp
 
         _init_service()
-    except Exception as exc:  # guardian: allow-broad-exception -- emergency launcher must fail closed with durable logs
+    except (
+        Exception
+    ) as exc:  # guardian: allow-broad-exception -- emergency launcher must fail closed with durable logs
         _log.exception("FATAL during clean launcher startup: %s", exc)
         return 1
 

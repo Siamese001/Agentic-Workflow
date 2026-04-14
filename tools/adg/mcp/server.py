@@ -88,7 +88,9 @@ def _safe_close_service(service: ADGService | None) -> None:
         return
     try:
         service.close()
-    except Exception as exc:  # guardian: allow-broad-exception -- shutdown paths must be best-effort and non-fatal
+    except (
+        Exception
+    ) as exc:  # guardian: allow-broad-exception -- shutdown paths must be best-effort and non-fatal
         _log.exception("ADGService close failed during shutdown: %s", exc)
 
 

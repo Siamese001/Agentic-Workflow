@@ -16,151 +16,19 @@ from typing import Any, Protocol
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
 )
-
-_emit_applies_guardrail("p0", "IHealingStrategyProtocol", "p0_governance")
-_emit_reads_policy_state("p0", "IHealingStrategyProtocol", "policy_binding")
-_emit_snapshots_state("p0", "IHealingStrategyProtocol", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_emits_metric_event,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_stores_learning_state,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,
-)
-
-_emit_emits_metric_event("IHealingStrategyProtocol", "p4obs", "metric_1")
-_emit_emits_metric_event("IHealingStrategyProtocol", "p4obs", "metric_2")
-_emit_emits_metric_event("IHealingStrategyProtocol", "p4obs", "metric_3")
-_emit_emits_metric_event("IHealingStrategyProtocol", "p4obs", "metric_4")
-_emit_emits_metric_event("IHealingStrategyProtocol", "p4obs", "metric_5")
-_emit_emits_metric_event("IHealingStrategyProtocol", "p4obs", "metric_6")
-_emit_records_incident_event("IHealingStrategyProtocol", "p4obs", "incident")
-_emit_captures_runtime_anomaly("IHealingStrategyProtocol", "p4obs", "anomaly")
-_emit_writes_observability_log("IHealingStrategyProtocol", "p4obs", "obs_log")
-_emit_updates_monitoring_state("IHealingStrategyProtocol", "p4obs", "mon_state")
-_emit_triggers_alert("IHealingStrategyProtocol", "p4obs", "alert")
-_emit_links_incident_trace("IHealingStrategyProtocol", "p4obs", "trace_link")
-_emit_captures_pattern("IHealingStrategyProtocol", "p3lm", "pattern")
-_emit_records_learning_event("IHealingStrategyProtocol", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("IHealingStrategyProtocol", "p3lm", "snapshot")
-_emit_feeds_meta_learning("IHealingStrategyProtocol", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("IHealingStrategyProtocol", "p3lm", "routing")
-_emit_improves_agent_policy("IHealingStrategyProtocol", "p3lm", "policy")
-_emit_stores_learning_state("IHealingStrategyProtocol", "p3lm", "state")
-_emit_records_execution_trace("IHealingStrategyProtocol", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("IHealingStrategyProtocol", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("IHealingStrategyProtocol", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("IHealingStrategyProtocol", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("IHealingStrategyProtocol", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("IHealingStrategyProtocol", "env_read", "p2_env_1")
-_emit_reads_environ("IHealingStrategyProtocol", "env_read", "p2_env_2")
-_emit_reads_runtime_state("IHealingStrategyProtocol", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("IHealingStrategyProtocol", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "IHealingStrategyProtocol", "context_pull")
-_emit_pulls_context("p1", "IHealingStrategyProtocol", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "IHealingStrategyProtocol", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "IHealingStrategyProtocol", "uwg_term_2")
-_emit_writes_through("p1", "IHealingStrategyProtocol", "write_through")
-_emit_writes_through("p1", "IHealingStrategyProtocol", "write_through_2")
-_emit_validated_by_safety_plane("p1", "IHealingStrategyProtocol", "safety_validation")
-_emit_invokes_eval("p1", "IHealingStrategyProtocol", "eval_call")
-_emit_proposal_commits_routing("p1", "IHealingStrategyProtocol", "routing_commit")
-_emit_escalates_to_human("p1", "IHealingStrategyProtocol", "human_escalation")
-_emit_routes_through("p1", "IHealingStrategyProtocol", "route_through")
-_emit_checks_agent_registry("p1", "IHealingStrategyProtocol", "agent_registry")
-_emit_validates_agent_capability("p1", "IHealingStrategyProtocol", "capability")
-_emit_dispatches_execution_plan("p1", "IHealingStrategyProtocol", "exec_plan")
-_emit_agent_executes_agent("p1", "IHealingStrategyProtocol", "sub_agent")
-_emit_routes_to_agent("p1", "IHealingStrategyProtocol", "target_agent")
-_emit_verifies_policy("p1", "IHealingStrategyProtocol", "policy_check")
-_emit_observes_runtime_state("p1", "IHealingStrategyProtocol", "runtime_state")
-_emit_verifies_boundary("p1", "IHealingStrategyProtocol", "boundary_check")
-_emit_transcripts_response("p1", "IHealingStrategyProtocol", "transcript")
-_emit_hard_fails_untranscripted("p1", "IHealingStrategyProtocol")
-_emit_gated_by_confidence("p1", "IHealingStrategyProtocol", "confidence_gate")
-emit_replay_key("p0", "IHealingStrategyProtocol")
-emit_determinism_digest("p0", "IHealingStrategyProtocol")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-_emit_authorize_and_execute("p2", "IHealingStrategyProtocol", "execution_auth")
-_emit_validates_capability("p2", "IHealingStrategyProtocol", "capability_check")
-_emit_routes_to_capability("p2", "IHealingStrategyProtocol", "capability_route")
-_emit_writes_via_uwg("p2", "IHealingStrategyProtocol", "uwg_write")
-_emit_blocks_direct_write("p2", "IHealingStrategyProtocol", "direct_write_block")
-_emit_records_tool_invocation("p2", "IHealingStrategyProtocol", "tool_invocation")
-_emit_captures_execution_output("p2", "IHealingStrategyProtocol", "exec_output")
-_emit_dispatches_agent("p3", "IHealingStrategyProtocol", "agent_dispatch")
-_emit_coordinates_agents("p3", "IHealingStrategyProtocol", "agent_coordination")
-_emit_records_workflow_lineage("p3", "IHealingStrategyProtocol", "workflow_lineage")
-_emit_records_healing_outcome("p3", "IHealingStrategyProtocol", "healing_outcome")
-_emit_escalates_failure("p3", "IHealingStrategyProtocol", "failure_escalation")
-_emit_orchestrates_workflow("p3", "IHealingStrategyProtocol", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "IHealingStrategyProtocol", "healing_dispatch")
-_emit_invokes_evaluation("p3", "IHealingStrategyProtocol", "evaluation_signal")
-_emit_records_telemetry_event("p4", "IHealingStrategyProtocol", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "IHealingStrategyProtocol", "eval_metric")
-_emit_stores_embedding("p4", "IHealingStrategyProtocol", "embedding_store")
-_emit_updates_meta_learning_state("p4", "IHealingStrategyProtocol", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "IHealingStrategyProtocol", "exec_snapshot_link")
 
 Logger = logging.getLogger(__name__)
+
+
+def _run_agent(agent) -> dict:
+    """Run an async agent's act() method in a dedicated event loop."""
+    loop = asyncio.new_event_loop()
+    try:
+        return loop.run_until_complete(agent.act())
+    finally:
+        loop.close()
 
 
 class IHealingStrategyProtocol(Protocol):
@@ -247,11 +115,7 @@ class ChaosResilienceStrategy:
                 "scenarios_tested": 0,
             }
         try:
-            loop = asyncio.new_event_loop()
-            try:
-                result = loop.run_until_complete(self._agent.act())
-            finally:
-                loop.close()
+            result = _run_agent(self._agent)
             failures = result.get("failures_detected", 0)
             tests_executed = max(1, result.get("tests_executed", 1))
             recovery_metrics = result.get("recovery_metrics", {})
@@ -285,23 +149,26 @@ def register_chaos_healing() -> dict[str, Any]:
     Returns:
         dict with registration status
     """
-    registered = []
-    errors = []
+    registered: list[str] = []
+    errors: list[str] = []
+
     try:
         from agentic_core.L5_safety.types.healing_orchestration_types import get_healing_orchestrator
+    except ImportError as exc:
+        errors.append(f"HealingSovereignOrchestrator import failed: {exc}")
+        Logger.warning("[Chaos Integration] Could not import orchestrator: %s", exc)
+        return {"registered": registered, "errors": errors, "success": False}
 
-        orchestrator = get_healing_orchestrator()
-        try:
-            orchestrator.register_strategy("chaos_resilience", get_chaos_strategy())
-            registered.append("chaos_resilience")
-        except (ValueError, TypeError, RuntimeError) as e:
-            raise
-            errors.append(f"chaos_resilience: {e}")
-        Logger.info(f"[Chaos Integration] Registered {len(registered)} strategies")
-    except ImportError as e:
-        errors.append(f"HealingSovereignOrchestrator import failed: {e}")
-        Logger.warning(f"[Chaos Integration] Could not import orchestrator: {e}")
-    return {"registered": registered, "errors": errors, "success": len(errors) == 0}
+    orchestrator = get_healing_orchestrator()
+
+    try:
+        orchestrator.register_strategy("chaos_resilience", get_chaos_strategy())
+        registered.append("chaos_resilience")
+    except (ValueError, TypeError, RuntimeError) as exc:
+        errors.append(f"chaos_resilience: {exc}")
+
+    Logger.info("[Chaos Integration] Registered %s strategies", len(registered))
+    return {"registered": registered, "errors": errors, "success": not errors}
 
 
 def get_integration_status() -> dict[str, Any]:

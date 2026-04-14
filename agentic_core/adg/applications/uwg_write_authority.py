@@ -266,6 +266,15 @@ def _classify_side_effect(sym: str) -> str:
     return "filesystem_write"
 
 
+def _is_side_effect_edge(edge) -> bool:
+    if edge.edge_kind == "write":
+        return True
+    if edge.relation_type == "imports":
+        return False
+    sym = _symbol_name(edge.to_name)
+    return _classify_side_effect(sym) != "filesystem_write"
+
+
 @dataclass
 class UWGViolation:
     """A UWG write authority violation."""
@@ -304,10 +313,26 @@ def check_uwg_write_authority(
     client: ADGMCPClient | None = None,
 ) -> UWGReport:
     """Check that all side-effect writes route through UniversalWriteGateway."""
-    write_edges = [e for e in result.edges if e.edge_kind == "write" and e.relation_type == "writes_to"]
+    write_edges = []
+    seen_edges: set[tuple[str, str, str, int, str, str]] = set()
+    for edge in result.edges:  # progress_bar: deduplicate side-effect edges
+        if not _is_side_effect_edge(edge):
+            continue
+        edge_key = (
+            edge.from_name,
+            edge.to_name,
+            edge.source_file,
+            edge.line_no,
+            edge.relation_type,
+            edge.edge_kind,
+        )
+        if edge_key in seen_edges:
+            continue
+        seen_edges.add(edge_key)
+        write_edges.append(edge)
 
     violations: list[UWGViolation] = []
-    for edge in write_edges:
+    for edge in write_edges:  # progress_bar: check UWG authority per edge
         from_rel = _module_rel(edge.from_name)
         if _is_allowed_module(from_rel):
             continue

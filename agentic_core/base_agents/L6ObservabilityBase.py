@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import logging
+
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -40,7 +42,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    record_execution_trace,
 )
 
 _emit_applies_guardrail("p0", "L6ObservabilityBase", "p0_governance")
@@ -102,8 +103,6 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 
-record_execution_trace("L6ObservabilityBase", "L6ObservabilityBase_trace")
-
 
 _emit_emits_metric_event("L6ObservabilityBase", "p4obs", "metric_1")
 _emit_emits_metric_event("L6ObservabilityBase", "p4obs", "metric_2")
@@ -156,6 +155,8 @@ _emit_transcripts_response("p1", "L6ObservabilityBase", "transcript")
 _emit_hard_fails_untranscripted("p1", "L6ObservabilityBase")
 _emit_gated_by_confidence("p1", "L6ObservabilityBase", "confidence_gate")
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class L6ObservabilityBase(SovereignBaseAgent):
@@ -197,7 +198,8 @@ class L6ObservabilityBase(SovereignBaseAgent):
 
             from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex as _ADGIdx
 
-            _root = _Path(__file__).resolve().parents[2]
+            _self_file = _Path(__file__).resolve()
+            _root = _Path(getattr(self, "project_root", _self_file.parents[2])).resolve()
             _idx = _ADGIdx.from_latest(_root)
             if _idx is not None:
                 _adg_health = {
@@ -206,11 +208,8 @@ class L6ObservabilityBase(SovereignBaseAgent):
                     "adg_layer_violations": len(getattr(_idx, "layer_violations", [])),
                     "adg_orphan_modules": len(getattr(_idx, "orphan_modules", [])),
                 }
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            import logging
-
-            logging.getLogger(__name__).debug("L6ObservabilityBase: Exception swallowed at L207: %s", e)
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError) as e:
+            logger.debug("L6ObservabilityBase.collect_metrics degraded gracefully: %s", e)
         return {"metrics": {}, "timestamp": None, **_adg_health}
 
     def emit_telemetry(self, event: dict[str, Any]) -> bool:

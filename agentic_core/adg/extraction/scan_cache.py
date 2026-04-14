@@ -30,6 +30,8 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
+import tempfile
 
 try:
     import orjson as _orjson
@@ -285,17 +287,22 @@ class ScanCache:
                     "(visitor/schema change detected)"
                 )
                 return cls()
+            raw_entries = raw.get("entries", {})
+            if not isinstance(raw_entries, dict):
+                raise ValueError("cache entries payload must be a mapping")
+
             entries: dict[str, _CacheEntry] = {}
-            for rel, entry in raw.get("entries", {}).items():
+            for rel, entry in raw_entries.items():
+                if not isinstance(rel, str) or not isinstance(entry, dict):
+                    raise ValueError("cache entry keys and values must be structured objects")
                 entries[rel] = _CacheEntry(
-                    file_hash=entry["file_hash"],
+                    file_hash=str(entry["file_hash"]),
                     edges=entry["edges"],
-                    type_surface_map=entry.get("type_surface_map", {}),
-                    surface_evidence=entry.get("surface_evidence", {}),
+                    type_surface_map=dict(entry.get("type_surface_map", {})),
+                    surface_evidence=dict(entry.get("surface_evidence", {})),
                 )
             return cls(entries)
-        # guardian: allow-silent-swallow -- Cache corruption is non-critical; fallback to fresh scan
-        except Exception as exc:
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError, KeyError, TypeError, ValueError) as exc:
             logger.debug("ScanCache load error (%s) — starting fresh", exc)
             return cls()
 
@@ -314,16 +321,33 @@ class ScanCache:
                 for rel, e in self._entries.items()
             },
         }
-        tmp = cache_path.with_suffix(".tmp")
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_name: str | None = None
         try:
-            if _ORJSON_AVAILABLE:
-                tmp.write_bytes(_orjson.dumps(payload, option=_orjson.OPT_INDENT_2))
-            else:
-                tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-            tmp.replace(cache_path)
-        # guardian: allow-silent-swallow -- Cache write failure is non-critical; scan can continue without persistence
-        except Exception as exc:
+            serialized = (
+                _orjson.dumps(payload, option=_orjson.OPT_INDENT_2)
+                if _ORJSON_AVAILABLE
+                else json.dumps(payload, indent=2).encode("utf-8")
+            )
+            with tempfile.NamedTemporaryFile(
+                mode="wb",
+                dir=cache_path.parent,
+                prefix=f"{cache_path.stem}.",
+                suffix=".tmp",
+                delete=False,
+            ) as tmp_file:
+                tmp_name = tmp_file.name
+                tmp_file.write(serialized)
+                tmp_file.flush()
+                os.fsync(tmp_file.fileno())
+            Path(tmp_name).replace(cache_path)
+        except (OSError, TypeError, ValueError) as exc:
             logger.warning("ScanCache save failed: %s", exc)
+            if tmp_name:
+                try:
+                    Path(tmp_name).unlink(missing_ok=True)
+                except OSError:
+                    logger.debug("Failed to clean up temporary cache file %s", tmp_name)
 
     def get(
         self,

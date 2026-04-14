@@ -198,6 +198,48 @@ _MODULE_PREFIX = "ADG::Module::"
 # Git helpers
 # ---------------------------------------------------------------------------
 
+_GIT_TIMEOUT_SECONDS = 10
+
+
+def _normalize_changed_files(repo_root: Path, files: list[str]) -> list[str]:
+    """Return repo-relative Python file paths constrained to repo_root."""
+    normalized: list[str] = []
+    for raw in files:  # progress_bar: normalize changed file paths
+        candidate = raw.strip()
+        if not candidate or not candidate.endswith(".py"):
+            continue
+        abs_candidate = (repo_root / candidate).resolve()
+        try:
+            rel = abs_candidate.relative_to(repo_root.resolve())
+        except ValueError:
+            logger.warning("Ignoring out-of-repo changed file path: %s", raw)
+            continue
+        normalized.append(str(rel).replace("\\", "/"))
+    return normalized
+
+
+def _run_git_diff(repo_root: Path, args: list[str]) -> list[str]:
+    """Run a git diff command and return normalized repo-relative Python paths."""
+    try:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True,
+            timeout=_GIT_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except (FileNotFoundError, subprocess.SubprocessError, OSError) as exc:
+        logger.debug("git diff command failed: %s", exc)
+        return []
+
+    if result.returncode != 0:
+        stderr = (result.stderr or "").strip()
+        logger.debug("git diff returned %s: %s", result.returncode, stderr)
+        return []
+
+    return _normalize_changed_files(repo_root, result.stdout.splitlines())
+
 
 def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
     """Return repo-relative paths of files changed since base_ref.
@@ -205,43 +247,14 @@ def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
     Returns an empty list if git is unavailable or the ref doesn't exist
     (e.g., first commit).
     """
-    try:
-        # guardian: allow-magic-config -- git diff base_ref is the canonical way to detect changed files
-        result = subprocess.run(
-            ["git", "diff", "--name-only", base_ref, "HEAD"],
-            cwd=str(repo_root),
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        if result.returncode != 0:
-            logger.debug("git diff failed: %s", result.stderr.strip())
-            return []
-        lines = [l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")]
-        return lines
-    # guardian: allow-silent-swallow -- git unavailability is non-fatal; caller falls back to full scan
-    except Exception as exc:
-        logger.debug("_git_changed_files error: %s", exc)
-        return []
+    # guardian: allow-magic-config -- git diff base_ref is the canonical way to detect changed files
+    return _run_git_diff(repo_root, ["diff", "--name-only", base_ref, "HEAD"])
 
 
 def _git_staged_files(repo_root: Path) -> list[str]:
     """Return staged .py files (for pre-commit hook integration)."""
-    try:
-        # guardian: allow-magic-config -- git diff --cached is the canonical way to detect staged files
-        result = subprocess.run(
-            ["git", "diff", "--cached", "--name-only"],
-            cwd=str(repo_root),
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-        if result.returncode != 0:
-            return []
-        return [l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")]
-    # guardian: allow-silent-swallow -- git unavailability is non-fatal; caller falls back to full scan
-    except Exception:
-        return []
+    # guardian: allow-magic-config -- git diff --cached is the canonical way to detect staged files
+    return _run_git_diff(repo_root, ["diff", "--cached", "--name-only"])
 
 
 # ---------------------------------------------------------------------------
@@ -256,7 +269,7 @@ def _build_reverse_import_index(ng: NormalizedGraph) -> dict[str, set[str]]:
     Returns: {imported_module_adg_name → {importer_adg_name, ...}}
     """
     reverse: dict[str, set[str]] = {}
-    for edge in ng.edges:
+    for edge in ng.edges:  # progress_bar: build reverse import index
         if edge["r"] != "imports":
             continue
         src_id = str(edge["s"])
@@ -408,10 +421,11 @@ def incremental_scan(
 
     # Step 3: load snapshot for reverse-import index
     try:
-        ng = NormalizedGraph.load(Path(full_snapshot_path))
-    # guardian: allow-silent-swallow -- snapshot load failure triggers full scan fallback; logged below
-    except Exception as exc:
-        logger.warning("Failed to load snapshot %s: %s — full scan", full_snapshot_path, exc)
+        snapshot_path = Path(full_snapshot_path).resolve(strict=True)
+        snapshot_path.relative_to(repo_root.resolve())
+        ng = NormalizedGraph.load(snapshot_path)
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        logger.warning("Failed to access snapshot %s: %s — full scan", full_snapshot_path, exc)
         scanner = ADGStaticScanner(repo_root=repo_root)
         result = scanner.scan(commit_sha="")
         stats.total_modules = len(result.modules)

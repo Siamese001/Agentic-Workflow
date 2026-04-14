@@ -247,10 +247,7 @@ def _baseline_citation_completeness(results: list[Any], top_k: int = 5) -> float
     complete = 0
     for result in top:
         metadata = getattr(result, "metadata", {}) or {}
-        if metadata.get("canonical_digest") and (
-            metadata.get("file_path")
-            or metadata.get("source_url")
-        ):
+        if metadata.get("canonical_digest") and (metadata.get("file_path") or metadata.get("source_url")):
             complete += 1
     return complete / len(top)
 

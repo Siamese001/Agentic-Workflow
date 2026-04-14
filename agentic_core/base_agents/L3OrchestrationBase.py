@@ -17,6 +17,8 @@ MRO HARDENING:
 
 from __future__ import annotations
 
+import logging
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -169,6 +171,8 @@ emit_replay_key("p0", "L3OrchestrationBase")
 emit_determinism_digest("p0", "L3OrchestrationBase")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
+logger = logging.getLogger(__name__)
+
 
 @dataclass
 class L3OrchestrationBase(SovereignBaseAgent):
@@ -222,11 +226,11 @@ class L3OrchestrationBase(SovereignBaseAgent):
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
             return {"violations_found": 0, "violations_fixed": 0, "errors": [], "skipped": []}
-        if depth > max_depth:
+        if depth >= max_depth:
             return {"violations_found": 0, "violations_fixed": 0, "errors": [], "skipped": []}
         _call_path.add(agent_name)
         try:
-            result = super().heal_repository(
+            return super().heal_repository(
                 dry_run=dry_run,
                 execute=execute,
                 depth=depth,
@@ -234,10 +238,11 @@ class L3OrchestrationBase(SovereignBaseAgent):
                 _call_path=_call_path,
                 **kwargs,
             )
-            return result
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (RuntimeError, ValueError, TypeError, OSError) as e:
+            logger.warning("L3OrchestrationBase.heal_repository failed: %s", e)
             return {"violations_found": 0, "violations_fixed": 0, "errors": [str(e)], "skipped": []}
+        finally:
+            _call_path.discard(agent_name)
 
     def coordinate_workflow(self, workflow_id: str, context: dict[str, Any]) -> dict[str, Any]:
         """
@@ -271,14 +276,14 @@ class L3OrchestrationBase(SovereignBaseAgent):
             Execution plan
         """
         _adg_route_mode: str = "static"
-        _adg_scope_widening: list = []
+        _adg_scope_widening: list[str] = []
         try:
             from pathlib import Path as _Path
 
             from agentic_core.adg.runtime.behavioral_index import get_behavioral_profile as _gbp
 
             _self_file = _Path(__file__).resolve()
-            _root = _self_file.parents[2]
+            _root = _Path(getattr(self, "project_root", _self_file.parents[2])).resolve()
             _bp = _gbp(_self_file, _root)
             _adg_route_mode = (
                 "agent"
@@ -288,11 +293,8 @@ class L3OrchestrationBase(SovereignBaseAgent):
                 else "hybrid"
             )
             _adg_scope_widening = sorted(_bp.antipattern_signals)
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            import logging
-
-            logging.getLogger(__name__).debug("L3OrchestrationBase: Exception swallowed at L289: %s", e)
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError) as e:
+            logger.debug("L3OrchestrationBase.plan_execution degraded to static mode: %s", e)
         return {
             "task": task,
             "plan": [],

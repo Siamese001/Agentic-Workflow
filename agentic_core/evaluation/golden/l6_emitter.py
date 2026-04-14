@@ -9,12 +9,25 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.evaluation.golden.golden_evaluator import GoldenEvalResult
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
-    _emit_captures_evaluation_metric,
-    _emit_emits_metric_event,
-    _emit_records_telemetry_event,
-)
+from .golden_evaluator import GoldenEvalResult
+
+try:
+    from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+        _emit_captures_evaluation_metric,
+        _emit_emits_metric_event,
+        _emit_records_telemetry_event,
+    )
+except ModuleNotFoundError:
+
+    def _emit_captures_evaluation_metric(*args: Any, **kwargs: Any) -> None:
+        return None
+
+    def _emit_emits_metric_event(*args: Any, **kwargs: Any) -> None:
+        return None
+
+    def _emit_records_telemetry_event(*args: Any, **kwargs: Any) -> None:
+        return None
+
 
 Logger = logging.getLogger(__name__)
 

@@ -7,9 +7,11 @@ All feature flags, default values, and configuration constants should be defined
 SSOT Location: agentic_core/config/core/constants.py
 """
 
+import logging
 import os
-import sys
 from pathlib import Path
+
+LOGGER = logging.getLogger(__name__)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -22,9 +24,17 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 _ROOT = Path(__file__).resolve().parents[3]
-# guardian: allow-global-mutation
-if str(_ROOT) not in sys.path:
-    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
+
+def _read_int_env(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None or not raw.strip():
+        return default
+    try:
+        return int(raw)
+    except ValueError:
+        LOGGER.warning("Invalid integer for %s=%r. Using default %s.", name, raw, default)
+        return default
 
 
 def _get_ssot_exclusions():
@@ -60,7 +70,10 @@ CACHE_METRICS_ENABLED: bool = os.getenv("CACHE_METRICS_ENABLED", "false").lower(
 try:
     _DET, _GED, _SEF = _get_ssot_exclusions()
     DEFAULT_EXCLUDE_DIRS: frozenset[str] = _GED | _SEF | _DET
-except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
+except (ImportError, ModuleNotFoundError, ValueError, TypeError, RuntimeError) as exc:
+    LOGGER.warning(
+        "Falling back to default exclude dirs because SSOT exclusions could not be loaded: %s", exc
+    )
     DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset(
         {"__pycache__", ".git", "node_modules", "venv", ".venv", "archives"}
     )
@@ -71,10 +84,10 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 # =============================================================================
 
 # Default timeout for agent operations (in seconds)
-AGENT_TIMEOUT_SECONDS: int = int(os.getenv("AGENT_TIMEOUT_SECONDS", "300"))
+AGENT_TIMEOUT_SECONDS: int = _read_int_env("AGENT_TIMEOUT_SECONDS", 300)
 
 # Default timeout for mission operations (in seconds)
-MISSION_TIMEOUT_SECONDS: int = int(os.getenv("MISSION_TIMEOUT_SECONDS", "3600"))
+MISSION_TIMEOUT_SECONDS: int = _read_int_env("MISSION_TIMEOUT_SECONDS", 3600)
 
 
 # =============================================================================

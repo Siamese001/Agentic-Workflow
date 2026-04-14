@@ -181,6 +181,8 @@ _emit_links_execution_to_snapshot("p4", "agent_registry_scanner", "exec_snapshot
 
 logger = logging.getLogger(__name__)
 
+_MAX_SPEC_FILE_BYTES = 2 * 1024 * 1024
+
 _SPEC_FILE_PATTERNS: tuple[str, ...] = (
     "**/agent_spec*.json",
     "**/agent_specs*.json",
@@ -243,16 +245,24 @@ def scan_agent_registry(repo_root: Path) -> AgentRegistryResult:
     """
     result = AgentRegistryResult()
     seen_files: set[str] = set()
+    resolved_repo_root = repo_root.resolve()
 
-    for pattern in _SPEC_FILE_PATTERNS:
-        for spec_path in sorted(repo_root.glob(pattern)):
-            rel = _repo_relative(spec_path, repo_root)
+    for pattern in _SPEC_FILE_PATTERNS:  # progress_bar: scan agent spec file patterns
+        for spec_path in sorted(repo_root.glob(pattern)):  # progress_bar: scan agent spec files
+            if not spec_path.is_file() or any(part in _EXCLUDED_DIRS for part in spec_path.parts):
+                continue
+            try:
+                resolved_spec = spec_path.resolve(strict=True)
+                resolved_spec.relative_to(resolved_repo_root)
+            except (FileNotFoundError, OSError, ValueError) as exc:
+                logger.warning("Skipping invalid agent spec path %s: %s", spec_path, exc)
+                continue
+
+            rel = _repo_relative(resolved_spec, resolved_repo_root)
             if rel in seen_files:
                 continue
-            if any(part in _EXCLUDED_DIRS for part in spec_path.parts):
-                continue
             seen_files.add(rel)
-            _scan_spec_file(spec_path, rel, result)
+            _scan_spec_file(resolved_spec, rel, result)
 
     return result
 
@@ -264,20 +274,23 @@ def _scan_spec_file(
 ) -> None:
     """Parse a single agent spec JSON and emit registration edges."""
     try:
+        if spec_path.stat().st_size > _MAX_SPEC_FILE_BYTES:
+            logger.warning("Skipping oversized agent spec %s", spec_path)
+            return
         raw = spec_path.read_text(encoding="utf-8")
         data = json.loads(raw)
-    # guardian: allow-silent-swallow - acceptable exception handling
     except (OSError, json.JSONDecodeError) as exc:
         logger.debug("Skipping %s: %s", spec_path, exc)
         return
 
     if not isinstance(data, dict):
+        logger.debug("Skipping non-object agent spec %s", spec_path)
         return
 
     result.scanned_files.append(rel)
     module_adg = canonical_name("Module", rel)
 
-    for agent_name, spec_body in data.items():
+    for agent_name, spec_body in data.items():  # progress_bar: extract agent registration edges
         if not isinstance(agent_name, str):
             continue
         agent_sym = canonical_name("Symbol", agent_name)
@@ -299,7 +312,7 @@ def _scan_spec_file(
             continue
 
         # G6b: has_capability edges — each top-level key in spec body is a capability facet
-        for capability_key in spec_body:
+        for capability_key in spec_body:  # progress_bar: extract capability edges
             if not isinstance(capability_key, str):
                 continue
             cap_sym = canonical_name("Symbol", f"{agent_name}.{capability_key}")
@@ -317,7 +330,7 @@ def _scan_spec_file(
         # G6c: depends_on_agent edges — explicit dependency declarations
         deps = spec_body.get("depends_on", spec_body.get("agent_dependencies", []))
         if isinstance(deps, list):
-            for dep in deps:
+            for dep in deps:  # progress_bar: extract dependency edges
                 if isinstance(dep, str):
                     dep_sym = canonical_name("Symbol", dep)
                     result.edges.append(
