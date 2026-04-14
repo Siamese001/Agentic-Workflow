@@ -77,7 +77,7 @@ class FixExecutionEngine:
         try:
             rel_path = src.resolve().relative_to(Path.cwd().resolve())
         except ValueError:
-            rel_path = Path(src.anchor.replace('\\', '').replace('/', '')) / src.relative_to(src.anchor)
+            rel_path = Path(src.anchor.replace("\\", "").replace("/", "")) / src.relative_to(src.anchor)
         backup_path = self.run_backup_dir / rel_path
         backup_path.parent.mkdir(parents=True, exist_ok=True)
 
