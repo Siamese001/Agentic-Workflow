@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("cognitive_batch_processor_util", "p4obs", "metric_1")
 _emit_emits_metric_event("cognitive_batch_processor_util", "p4obs", "metric_2")
@@ -286,7 +287,7 @@ class CognitiveBatchProcessor:
         Logger.info(f"[BATCH] Rate Limit: {self.rate_limit_delay}s between calls")
         Logger.info(f"[BATCH] Checkpoint Interval: Every {self.checkpoint_interval} items")
         Logger.info("=" * 60)
-        for i, violation in enumerate(violations, 1):
+        for i, violation in tqdm(enumerate(violations, 1), desc="Processing", unit="item"):
             file_path = self._get_file_path(violation)
             if not file_path:
                 Logger.warning(f"[BATCH] [{i}/{len(violations)}] No file path in violation")
@@ -347,7 +348,7 @@ class CognitiveBatchProcessor:
             True if successful, False otherwise
         """
         v_type = self._get_violation_type(violation)
-        for attempt in range(1, self.max_retries + 1):
+        for attempt in tqdm(range(1, self.max_retries + 1), desc="Processing", unit="item"):
             try:
                 decision = self.agent.analyze_violation(file_path_str, v_type)
                 self.results[file_path_str] = {

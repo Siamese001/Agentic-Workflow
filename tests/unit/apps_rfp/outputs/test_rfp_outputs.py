@@ -69,3 +69,38 @@ class TestRfpOutputs:
         renderer = SectionRenderer()
         markdown = renderer.render_markdown(mock_section)
         assert "Test Section" in markdown
+
+    def test_section_renderer_json_dict_fallback(self):
+        """G4: render_json uses .dict() when model_dump is absent (Pydantic v1 compat path)."""
+        import json as _json
+        from types import SimpleNamespace
+
+        from apps_rfp.outputs.section_renderer import SectionRenderer
+
+        obj = SimpleNamespace()
+        obj.dict = lambda: {"heading": "V1Section", "body": "pydantic v1 fallback"}
+        # SimpleNamespace has no model_dump → hasattr returns False → else branch taken
+
+        renderer = SectionRenderer()
+        json_output = renderer.render_json(obj)
+
+        assert "V1Section" in json_output
+        data = _json.loads(json_output)
+        assert data["heading"] == "V1Section"
+
+    def test_proposal_renderer_json_dict_fallback(self):
+        """G4: ProposalRenderer.render_json uses .dict() when model_dump is absent."""
+        import json as _json
+        from types import SimpleNamespace
+
+        from apps_rfp.outputs.proposal_renderer import ProposalRenderer
+
+        obj = SimpleNamespace()
+        obj.dict = lambda: {"industry": "V1Industry", "status": "v1"}
+
+        renderer = ProposalRenderer()
+        json_output = renderer.render_json(obj)
+
+        assert "V1Industry" in json_output
+        data = _json.loads(json_output)
+        assert data["industry"] == "V1Industry"

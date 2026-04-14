@@ -191,6 +191,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: E
     _emit_validates_request,
     _emit_verifies_blast_radius,
 )
+from tqdm import tqdm
 
 _emit_validates_request("handoff", "graph_persister", "validates_request_bootstrap")
 _emit_produces_plan("handoff", "graph_persister", "produces_plan_bootstrap")
@@ -271,7 +272,7 @@ def _ensure_layer_nodes(client: ADGMCPClient) -> None:
 
 
 def _ensure_gateway_nodes(client: ADGMCPClient) -> None:
-    for gw_name, gw_path in GATEWAY_ALLOWLIST.items():
+    for gw_name, gw_path in tqdm(GATEWAY_ALLOWLIST.items(), desc="Processing", unit="item"):
         node = canonical_name("Gateway", gw_name)
         client.upsert_entity(
             node,
@@ -310,7 +311,7 @@ def _persist_edges(
 ) -> None:
     symbol_obs_map: dict[str, list[str]] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         client.upsert_relation(edge.from_name, edge.relation_type, edge.to_name)
 
         sym_node = edge.to_name

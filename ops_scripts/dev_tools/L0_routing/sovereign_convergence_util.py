@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_convergence_util", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_convergence_util", "p4obs", "metric_2")
@@ -195,7 +196,7 @@ def align_territory() -> Any:
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "align_territory")
     print("[*] STARTING SOVEREIGN CONVERGENCE...")
-    for source, target in MIGRATION_MAP.items():
+    for source, target in tqdm(MIGRATION_MAP.items(), desc="Processing", unit="item"):
         src_path: Any = ROOT / source
         dest_path: Any = ROOT / target
         if src_path.exists():
@@ -220,7 +221,7 @@ def align_territory() -> Any:
     count: Any = 0
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(ROOT):
+    for py_file in tqdm(get_python_files(ROOT), desc="Processing", unit="item"):
         if "legacy_code" in str(py_file):
             continue
         try:

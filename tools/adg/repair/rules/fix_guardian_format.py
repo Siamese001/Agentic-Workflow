@@ -12,6 +12,7 @@ from pathlib import Path
 from tools.adg.repair.base_rule import BaseRepairRule
 from tools.adg.repair.rule_engine import repair_rule
 from tools.adg.repair.types import Deficiency, FixCategory, FixResult
+from tqdm import tqdm
 
 
 @repair_rule("fix_guardian_format", priority=20)
@@ -174,7 +175,7 @@ class FixGuardianFormatRule(BaseRepairRule):
             new_lines = []
             changes_made = 0
 
-            for line in lines:
+            for line in tqdm(lines, desc="Processing", unit="item"):
                 if self._is_canonical(line):
                     # Already canonical, keep as-is
                     new_lines.append(line)

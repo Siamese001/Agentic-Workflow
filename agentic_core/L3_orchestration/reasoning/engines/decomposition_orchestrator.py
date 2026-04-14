@@ -293,7 +293,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
         plan = MissionPlan(mission_id=mission_id, created_at=datetime.utcnow().isoformat(), prompt=prompt)
         task_hints = self._extract_task_hints(prompt)
         previous_task_id: str | None = None
-        for i, hint in enumerate(task_hints[:max_tasks]):
+        for i, hint in tqdm(enumerate(task_hints[:max_tasks]), desc="Processing", unit="item"):
             task_id = f"task_{i + 1:03d}"
             agent_name, agent_path = self._match_agent_for_task(hint)
             task = AtomicTask(
@@ -727,6 +727,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("decomposition_orchestrator", "p4obs", "metric_1")
 _emit_emits_metric_event("decomposition_orchestrator", "p4obs", "metric_2")

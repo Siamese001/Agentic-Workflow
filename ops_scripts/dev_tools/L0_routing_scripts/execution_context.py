@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 
 def _get_subatomic_testing_mixin():
@@ -257,7 +258,7 @@ class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
             "output": None,
             "error": None,
         }
-        for attempt in range(self.max_retries):
+        for attempt in tqdm(range(self.max_retries), desc="Processing", unit="item"):
             try:
                 result["output"] = self._do_execute(task)
                 result["status"] = "success"

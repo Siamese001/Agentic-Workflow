@@ -44,6 +44,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -131,7 +132,7 @@ class StrategistBioWriter:
 
         self.recovery_loop.reset(self.config.temperature)
         validation_results: Any = []
-        for attempt in range(1, self.config.max_attempts + 1):
+        for attempt in tqdm(range(1, self.config.max_attempts + 1), desc="Processing", unit="item"):
             summary: Any = self._generate_content(
                 bullet_pool=bullet_pool,
                 context=context,

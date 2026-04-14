@@ -38,6 +38,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,  # noqa: E402
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 _STRATEGY_LOG = logging.getLogger("adg.execution_strategy_chosen")
@@ -252,7 +253,7 @@ def _analyze_candidate_strategies(
     available_tools = set(execution_context.available_tools)
 
     analyzed = []
-    for strategy in strategies:
+    for strategy in tqdm(strategies, desc="Processing", unit="item"):
         # Check if all required tools are available
         required_tools = set(strategy.tool_sequence)
         if required_tools.issubset(available_tools):
@@ -274,7 +275,7 @@ def _evaluate_historical_metrics(
     """Evaluate strategies against historical metrics."""
     evaluated = []
 
-    for strategy in strategies:
+    for strategy in tqdm(strategies, desc="Processing", unit="item"):
         # Calculate strategy score based on historical metrics
         # Higher success rate, lower latency, lower cost, higher safety = better score
         success_weight = 0.4
@@ -316,7 +317,7 @@ def _apply_governance_guard(
     """Apply governance guard to ensure safety and policy compliance."""
     safe_strategies = []
 
-    for strategy in strategies:
+    for strategy in tqdm(strategies, desc="Processing", unit="item"):
         # Safety check
         if strategy.safety_score < 0.5:
             _SAFETY_LOG.warning(

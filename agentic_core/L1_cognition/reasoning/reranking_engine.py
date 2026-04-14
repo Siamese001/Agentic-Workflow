@@ -12,6 +12,7 @@ import numpy as np
 
 from .multi_query_fusion import FusionResult
 from .semantic_retriever import RetrievalResult
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -354,7 +355,7 @@ class RerankingEngine:
         """Rerank using rule-based approach."""
         # Calculate composite scores
         scores = []
-        for features in features_list:
+        for features in tqdm(features_list, desc="Processing", unit="item"):
             # Weighted combination of features
             score = (
                 features.semantic_score * 0.3
@@ -396,7 +397,9 @@ class RerankingEngine:
         features = []
         labels = []
 
-        for query, results, relevance in zip(queries, results_list, relevance_labels):
+        for query, results, relevance in tqdm(
+            zip(queries, results_list, relevance_labels), desc="Processing", unit="item"
+        ):
             # Create dummy fusion result
             class DummyFusionResult:
                 def __init__(self, collection_results):
@@ -404,7 +407,7 @@ class RerankingEngine:
 
             dummy_fusion = DummyFusionResult({r.collection: [r] for r in results})
 
-            for result, rel_label in zip(results, relevance):
+            for result, rel_label in tqdm(zip(results, relevance), desc="Processing", unit="item"):
                 feature_vector = self._extract_features(result, query, dummy_fusion)
                 features.append(
                     [

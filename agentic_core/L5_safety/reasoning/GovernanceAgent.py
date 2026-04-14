@@ -1,4 +1,4 @@
-# guardian: allow-silent_swallower -- Governance validation failures logged, non-critical for system operation
+# guardian: allow-silent-swallower -- Governance validation failures logged, non-critical for system operation
 from __future__ import annotations
 
 import importlib
@@ -205,6 +205,7 @@ _emit_validated_by_safety_plane("p1", "GovernanceAgent", "safety_validation")
 _emit_invokes_eval("p1", "GovernanceAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "GovernanceAgent", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_entry")
 emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_exit")
@@ -311,7 +312,7 @@ class DependencyGraph:
         self.reverse_graph.clear()
         self.class_map.clear()
         self.module_map.clear()
-        for file_path in files:
+        for file_path in tqdm(files, desc="Processing", unit="item"):
             file_path: Any = str(Path(file_path).relative_to(root_path))
             self.graph[file_path] = {
                 "imports": [],
@@ -324,7 +325,7 @@ class DependencyGraph:
                 with open(file_path, encoding="utf-8") as f:
                     content: Any = f.read()
                     tree: Any = ast.parse(content)
-                for node in ast.walk(tree):
+                for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                     if isinstance(node, ast.Import):
                         for n in node.names:
                             self.graph[file_path]["imports"].append(n.name)
@@ -816,7 +817,7 @@ class GovernanceAgent(SovereignBaseAgent):
         try:
             with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
-            for line_num, line in enumerate(lines, 1):
+            for line_num, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
                 if line.startswith(" "):
                     spaces = len(line) - len(line.lstrip(" "))
                     if spaces > self.MAX_NESTING_SPACES:
@@ -847,7 +848,7 @@ class GovernanceAgent(SovereignBaseAgent):
             with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
             tree: Any = ast.parse(content)
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.FunctionDef):
                     complexity: Any = self._calculate_mccabe(node)
                     func_lines: Any = node.end_lineno - node.lineno + 1 if hasattr(node, "end_lineno") else 0
@@ -1038,7 +1039,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 },
             )
         if file_paths:
-            for fp in file_paths:
+            for fp in tqdm(file_paths, desc="Processing", unit="item"):
                 depth_v = self.check_depth_law(fp)
                 if depth_v:
                     actions.append(

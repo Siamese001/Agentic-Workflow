@@ -93,7 +93,7 @@ class TestGoldenDatasetEvaluator:
         """Test loading JSON dataset."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_test_cases.parent)
         # Override paths for testing
-        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": Path("test_cases.json")}
+        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": (Path("test_cases.json"),)}
 
         evaluator.load_datasets()
 
@@ -105,7 +105,7 @@ class TestGoldenDatasetEvaluator:
     def test_load_jsonl_dataset(self, sample_retrieval_ground_truth: Path):
         """Test loading JSONL dataset."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_retrieval_ground_truth.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"retrieval_ground_truth": Path("retrieval_ground_truth.jsonl")}
+        evaluator.GOLDEN_DATASET_PATHS = {"retrieval_ground_truth": (Path("retrieval_ground_truth.jsonl"),)}
 
         evaluator.load_datasets()
 
@@ -117,7 +117,7 @@ class TestGoldenDatasetEvaluator:
     def test_evaluate_against_test_cases_pass(self, sample_test_cases: Path):
         """Test evaluation when output matches expected content."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_test_cases.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": Path("test_cases.json")}
+        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": (Path("test_cases.json"),)}
 
         results = evaluator.evaluate_against_test_cases(
             query="Find the weather in San Francisco",
@@ -136,7 +136,7 @@ class TestGoldenDatasetEvaluator:
     def test_evaluate_against_test_cases_fail(self, sample_test_cases: Path):
         """Test evaluation when output missing expected content."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_test_cases.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": Path("test_cases.json")}
+        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": (Path("test_cases.json"),)}
 
         results = evaluator.evaluate_against_test_cases(
             query="Get stock price for AAPL",
@@ -153,7 +153,7 @@ class TestGoldenDatasetEvaluator:
     def test_evaluate_no_matching_query(self, sample_test_cases: Path):
         """Test evaluation when query doesn't match any test case."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_test_cases.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": Path("test_cases.json")}
+        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": (Path("test_cases.json"),)}
 
         results = evaluator.evaluate_against_test_cases(
             query="Non-existent query",
@@ -165,7 +165,7 @@ class TestGoldenDatasetEvaluator:
     def test_evaluate_retrieval_ground_truth(self, sample_retrieval_ground_truth: Path):
         """Test retrieval evaluation against ground truth."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_retrieval_ground_truth.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"retrieval_ground_truth": Path("retrieval_ground_truth.jsonl")}
+        evaluator.GOLDEN_DATASET_PATHS = {"retrieval_ground_truth": (Path("retrieval_ground_truth.jsonl"),)}
 
         results = evaluator.evaluate_retrieval_ground_truth(
             query="What is the UniversalWriteGateway?",
@@ -184,7 +184,7 @@ class TestGoldenDatasetEvaluator:
     def test_evaluate_retrieval_partial_match(self, sample_retrieval_ground_truth: Path):
         """Test retrieval with partial document match."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_retrieval_ground_truth.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"retrieval_ground_truth": Path("retrieval_ground_truth.jsonl")}
+        evaluator.GOLDEN_DATASET_PATHS = {"retrieval_ground_truth": (Path("retrieval_ground_truth.jsonl"),)}
 
         results = evaluator.evaluate_retrieval_ground_truth(
             query="What is the UniversalWriteGateway?",
@@ -202,7 +202,7 @@ class TestGoldenDatasetEvaluator:
     def test_get_dataset_summary(self, sample_test_cases: Path):
         """Test getting dataset summary."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_test_cases.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": Path("test_cases.json")}
+        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": (Path("test_cases.json"),)}
 
         summary = evaluator.get_dataset_summary("test_cases")
 
@@ -214,7 +214,7 @@ class TestGoldenDatasetEvaluator:
     def test_list_available_datasets(self, sample_test_cases: Path):
         """Test listing available datasets."""
         evaluator = GoldenDatasetEvaluator(repo_root=sample_test_cases.parent)
-        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": Path("test_cases.json")}
+        evaluator.GOLDEN_DATASET_PATHS = {"test_cases": (Path("test_cases.json"),)}
 
         datasets = evaluator.list_available_datasets()
 

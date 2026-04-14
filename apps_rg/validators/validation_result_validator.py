@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validation_result_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("validation_result_validator", "p4obs", "metric_2")
@@ -217,7 +218,7 @@ class WordCountEnforcementEngine:
         Returns Dict containing {content, signature, metadata}.
         """
         current_content = content
-        for _attempt in range(max_attempts):
+        for _attempt in tqdm(range(max_attempts), desc="Processing", unit="item"):
             result = self.validate_content(current_content, content_type)
             if result.is_valid:
                 payload = {

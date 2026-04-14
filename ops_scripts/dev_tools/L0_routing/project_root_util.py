@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("project_root_util", "p4obs", "metric_1")
 _emit_emits_metric_event("project_root_util", "p4obs", "metric_2")
@@ -217,7 +218,7 @@ def get_project_root(start_path: str | None = None) -> Path:
         current = current.parent
 
     # Traverse up to 10 levels
-    for _ in range(10):
+    for _ in tqdm(range(10), desc="Processing", unit="item"):
         # Check for markers
         for marker in ROOT_MARKERS:
             if (current / marker).exists():

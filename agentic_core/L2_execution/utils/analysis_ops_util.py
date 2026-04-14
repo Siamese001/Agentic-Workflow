@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.security_util import safe_execute
+from tqdm import tqdm
 
 _emit_emits_metric_event("analysis_ops_util", "p4obs", "metric_1")
 _emit_emits_metric_event("analysis_ops_util", "p4obs", "metric_2")
@@ -282,7 +283,7 @@ def analyze_ast(file_path: str) -> dict[str, Any]:
             source: Any = f.read()
         tree: Any = ast.parse(source)
         analysis: Any = {"functions": [], "classes": [], "imports": [], "globals": [], "complexity": 0}
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef):
                 analysis["functions"].append(
                     {
@@ -365,7 +366,7 @@ def detect_security_issues(file_path: str) -> list[dict[str, Any]]:
         with open(file_path, encoding="utf-8") as f:
             source: Any = f.read()
         tree: Any = ast.parse(source)
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Call):
                 if isinstance(node.func, ast.Name) and node.func.id == "eval":
                     issues.append(
@@ -389,7 +390,7 @@ def detect_security_issues(file_path: str) -> list[dict[str, Any]]:
                     )
                 elif isinstance(node.func, ast.Attribute):
                     if node.func.attr in ["run", "call", "Popen"]:
-                        for keyword in node.keywords:
+                        for keyword in tqdm(node.keywords, desc="Processing", unit="item"):
                             if keyword.arg == "shell" and isinstance(keyword.value, ast.Constant):
                                 if keyword.value.value is True:
                                     issues.append(

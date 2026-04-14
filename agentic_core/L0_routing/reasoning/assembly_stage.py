@@ -21,6 +21,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 
 # Lazy imports to avoid L0->L_PG gravity violations
@@ -172,7 +173,7 @@ class AirlockAssembler:
         """
         lines = u0_user_prompt.strip().split("\n")
         check_ids = []
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             line = line.strip()
             if not line:
                 continue

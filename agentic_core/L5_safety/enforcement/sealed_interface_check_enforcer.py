@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sealed_interface_check_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("sealed_interface_check_enforcer", "p4obs", "metric_2")
@@ -217,7 +218,7 @@ def check_file(path: Path) -> list[str]:
     except ValueError:
         rel = path
 
-    for module in _get_import_modules(tree):
+    for module in tqdm(_get_import_modules(tree), desc="Processing", unit="item"):
         for pat in FORBIDDEN_IMPORT_PATTERNS:
             if module.startswith(pat):
                 violations.append(

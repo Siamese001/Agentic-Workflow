@@ -17,6 +17,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 
 def calculate_relative_import(file_path: Path, import_path: str, project_root: Path) -> str:
@@ -107,7 +108,7 @@ def fix_imports_in_file(
     pattern: Any = "^(\\s*)from agentic_core\\.([a-zA-Z0-9_\\.]+) import (.+)$"
     lines: Any = content.split("\n")
     modified_lines: Any = []
-    for line in lines:
+    for line in tqdm(lines, desc="Processing", unit="item"):
         match: Any = re.match(pattern, line)
         if match:
             indent: Any = match.group(1)

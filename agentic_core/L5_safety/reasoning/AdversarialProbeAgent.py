@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("AdversarialProbeAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("AdversarialProbeAgent", "p4obs", "metric_2")
@@ -234,7 +235,7 @@ class AdversarialProbeAgent(SovereignBaseAgent):
             "threat_assessment": {},
         }
         try:
-            for pattern in self.attack_patterns:
+            for pattern in tqdm(self.attack_patterns, desc="Processing", unit="item"):
                 probe_result = await self._execute_attack_pattern(pattern)
                 results["probes_executed"] += 1
                 if probe_result.get("vulnerability_exposed"):

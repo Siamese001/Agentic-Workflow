@@ -33,6 +33,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_verifies_policy,  # noqa: E402
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 _OPTIMIZATION_LOG = logging.getLogger("adg.optimizes_routing")
@@ -284,7 +285,7 @@ def _analyze_historical_routing_outcomes(
     }
 
     # Simulate analyzing routing events
-    for event in routing_history.routing_events:
+    for event in tqdm(routing_history.routing_events, desc="Processing", unit="item"):
         route_hash = hashlib.md5(str(event).encode()).hexdigest()[:16]
         analysis["route_hashes"].add(route_hash)
 

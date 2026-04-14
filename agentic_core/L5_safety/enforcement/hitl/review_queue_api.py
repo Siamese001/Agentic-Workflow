@@ -26,6 +26,7 @@ from agentic_core.L5_safety.enforcement.hitl.hitl_graph import (
     HITLGraph,
     HITLRuntimeRecorder,
 )
+from tqdm import tqdm
 
 # Lazy import to avoid L5->L_TOOLS gravity violation
 _runtime_graph = None
@@ -257,7 +258,7 @@ def batch_decide() -> tuple[Any, int]:
     decisions = data["decisions"]
     results = []
 
-    for dec_data in decisions:
+    for dec_data in tqdm(decisions, desc="Processing", unit="item"):
         checkpoint_id = dec_data.get("checkpoint_id")
         decision_str = dec_data.get("decision")
         reviewer = dec_data.get("reviewer")

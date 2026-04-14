@@ -15,6 +15,7 @@ import argparse
 import sqlite3
 import sys
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 SPARSE_PATH = REPO_ROOT / "data" / "cache" / "sparse"
@@ -185,7 +186,7 @@ def validate_collection(collection_name: str, verbose: bool = False) -> bool:
     probes = PROBES.get(collection_name, [])
     passed = 0
     failed = 0
-    for label, fts_query, expect_min in probes:
+    for label, fts_query, expect_min in tqdm(probes, desc="Processing", unit="item"):
         hits = fts5_search(conn, fts_query, limit=3)
         ok = len(hits) >= expect_min
         status = "[OK]  " if ok else "[FAIL]"

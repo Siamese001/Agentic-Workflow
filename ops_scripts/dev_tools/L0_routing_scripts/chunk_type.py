@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("chunk_type", "p4obs", "metric_1")
 _emit_emits_metric_event("chunk_type", "p4obs", "metric_2")
@@ -278,7 +279,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
                 end_line=end,
             ),
         )
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             end_line = node.end_lineno or node.lineno
             chunks.append(
@@ -319,7 +320,7 @@ def chunk_text_fallback(text: str, file_path: Path) -> list[SemanticChunk]:
     chunks = []
     lines = text.splitlines()
     chunk_size = 50
-    for i in range(0, len(lines), chunk_size):
+    for i in tqdm(range(0, len(lines), chunk_size), desc="Processing", unit="item"):
         chunk_lines = lines[i : i + chunk_size]
         chunk_text = "\n".join(chunk_lines).strip()
         if chunk_text:
@@ -374,7 +375,7 @@ async def process_file(file_path: Path, embedder: Any, vector_store: Any) -> int
         return 0
     batch_size: Any = 10
     total_processed: Any = 0
-    for i in range(0, len(chunks), batch_size):
+    for i in tqdm(range(0, len(chunks), batch_size), desc="Processing", unit="item"):
         batch: Any = chunks[i : i + batch_size]
         texts: Any = [chunk["text"] for chunk in batch]
         embeddings: Any = await embedder.embed_documents(texts)
@@ -397,7 +398,7 @@ async def scan_directory(directory: Path, embedder: Any, vector_store: Any) -> d
     from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(directory)) + list(get_data_files(directory))
-    for file_path in all_files:
+    for file_path in tqdm(all_files, desc="Processing", unit="item"):
         if file_path.is_file() and file_path.suffix in extensions:
             if file_path.name.startswith(".") or "__pycache__" in str(file_path):
                 continue

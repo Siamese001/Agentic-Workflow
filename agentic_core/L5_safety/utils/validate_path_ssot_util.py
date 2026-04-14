@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validate_path_ssot_util", "p4obs", "metric_1")
 _emit_emits_metric_event("validate_path_ssot_util", "p4obs", "metric_2")
@@ -242,7 +243,7 @@ def validate_file(file_path: Path) -> list[tuple[int, str, str]]:
             # File uses SSOT, but still check for violations
             pass
 
-        for line_num, line in enumerate(lines, 1):
+        for line_num, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
             # Skip import lines
             if "import" in line and "structure_blueprint" in line:
                 continue

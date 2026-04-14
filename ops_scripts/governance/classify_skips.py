@@ -12,6 +12,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
+from tqdm import tqdm
 
 lines = Path("c:/Git/Agentic-Workflow/skip_audit.txt").read_text(encoding="utf-8").splitlines()
 LEGITIMATE_EXTERNAL = []
@@ -24,7 +25,7 @@ ILLEGITIMATE_NOT_IMPLEMENTED = []
 ILLEGITIMATE_IMPORTORSKIP = []
 ILLEGITIMATE_ARTIFACT_MISSING = []
 ILLEGITIMATE_OTHER = []
-for line in lines:
+for line in tqdm(lines, desc="Processing", unit="item"):
     parts = line.split("|", 3)
     kind, f, lineno, reason = (parts[0], parts[1], parts[2], parts[3] if len(parts) > 3 else "")
     r = reason.lower()

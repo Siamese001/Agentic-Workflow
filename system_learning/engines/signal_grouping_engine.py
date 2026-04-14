@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("signal_grouping_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("signal_grouping_engine", "p4obs", "metric_2")
@@ -271,7 +272,7 @@ class SignalGroupingEngine:
             key = f"{sig_type}::{component}"
             buckets[key].append(sig)
         groups: list[SignalGroup] = []
-        for key in sorted(buckets.keys()):
+        for key in tqdm(sorted(buckets.keys()), desc="Processing", unit="item"):
             items = buckets[key]
             sig_type, component = key.split("::", 1)
             timestamps = [
@@ -356,7 +357,7 @@ class SignalGroupingEngine:
         spike_signals = []
         spike_detected = False
 
-        for sig_type, current_count in current_counts.items():
+        for sig_type, current_count in tqdm(current_counts.items(), desc="Processing", unit="item"):
             baseline = baseline_counts.get(sig_type, 1)  # Default baseline
             spike_ratio = (
                 current_count / baseline if baseline > 0 else current_count

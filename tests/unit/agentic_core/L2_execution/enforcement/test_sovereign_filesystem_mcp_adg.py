@@ -1,32 +1,51 @@
-"""Placeholder test file - syntax fixed."""
+"""Targeted gap-closure tests for SovereignFilesystemMcp path-validation hardening.
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300
+Covers the newly hardened _validate_path logic:
+- forbidden_path_patterns ('..' / '.env' / '/etc') raise PermissionError
+- absolute paths raise PermissionError from _resolve_repo_relative_path
+- a relative allowed path passes when _is_allowed_root returns True
+"""
 
-import unittest
+from __future__ import annotations
 
+import pytest
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertTrue(True)
+from agentic_core.L2_execution.enforcement.sovereign_filesystem_mcp import (
+    SovereignFilesystemMcp,
+)
 
 
-if __name__ == "__main__":
-    unittest.main()
+def _mcp(mission_id: str = "test-mission") -> SovereignFilesystemMcp:
+    return SovereignFilesystemMcp(manager=None, mission_id=mission_id)  # type: ignore[arg-type]
+
+
+def test_dotdot_in_path_raises_permission_error() -> None:
+    mcp = _mcp()
+    with pytest.raises(PermissionError, match="Sovereignty Breach"):
+        mcp._validate_path("some/../../../etc/passwd")
+
+
+def test_dotenv_in_path_raises_permission_error() -> None:
+    mcp = _mcp()
+    with pytest.raises(PermissionError, match="Sovereignty Breach"):
+        mcp._validate_path("config/.env")
+
+
+def test_etc_pattern_raises_permission_error() -> None:
+    mcp = _mcp()
+    with pytest.raises(PermissionError, match="Sovereignty Breach"):
+        mcp._validate_path("/etc/hosts")
+
+
+def test_absolute_path_raises_permission_error() -> None:
+    mcp = _mcp()
+    with pytest.raises(PermissionError, match="Sovereignty Breach"):
+        mcp._validate_path("/absolute/path/to/file.txt")
+
+
+def test_relative_allowed_path_passes(monkeypatch) -> None:
+    mcp = _mcp()
+    monkeypatch.setattr(mcp, "_is_allowed_root", lambda _resolved: True)
+    result = mcp._validate_path("config/settings.yaml")
+    assert isinstance(result, str)
+    assert "settings.yaml" in result

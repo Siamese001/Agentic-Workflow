@@ -19,6 +19,7 @@ from apps_exec.reasoning.enterprise_brief_orchestrator import (
     EnterpriseBriefOrchestrator,
     EnterpriseBriefRequest,
 )
+from tqdm import tqdm
 
 logging.basicConfig(
     level=logging.INFO,
@@ -275,7 +276,7 @@ async def test_with_style_retrieval():
     orchestrator = EnterpriseBriefOrchestrator()
 
     # Index some historical briefs first
-    for i in range(3):
+    for i in tqdm(range(3), desc="Processing", unit="item"):
         orchestrator.retrieval_engine.index_brief(
             content=f"Historical brief {i} for recruiter...",
             audience_persona="recruiter",
@@ -344,8 +345,8 @@ async def test_full_enterprise_pipeline():
     orchestrator = EnterpriseBriefOrchestrator()
 
     # Index some past briefs for all personas
-    for persona in ["recruiter", "cto", "board"]:
-        for i in range(2):
+    for persona in tqdm(["recruiter", "cto", "board"], desc="Processing", unit="item"):
+        for i in tqdm(range(2), desc="Processing", unit="item"):
             orchestrator.retrieval_engine.index_brief(
                 content=f"Past {persona} brief {i}...",
                 audience_persona=persona,

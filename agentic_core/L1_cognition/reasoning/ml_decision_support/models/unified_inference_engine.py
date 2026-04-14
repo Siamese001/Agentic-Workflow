@@ -6,7 +6,6 @@ including intelligent routing, semantic reranking, anomaly detection, and
 unified inference orchestration with governance compliance.
 """
 
-import pickle
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -18,6 +17,7 @@ from .advanced_c0_reranker import AdvancedC0Reranker
 # Import Phase 4 models
 from .advanced_l0_router import AdvancedL0Router
 from .advanced_l6_detector import AdvancedL6Detector
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
 
 
@@ -158,8 +158,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.unified_config = model_data.get("unified_config", self.unified_config)
             self.model_weights = model_data.get("model_weights", self.model_weights)
@@ -167,7 +166,7 @@ class UnifiedInferenceEngine(BaseMLModel):
 
             self.is_loaded = True
 
-        except (OSError, IOError, pickle.PickleError, KeyError, TypeError) as e:
+        except (OSError, IOError, KeyError, TypeError) as e:
             raise RuntimeError(f"Failed to load model: {e}")
 
     def save_model(self, model_file_path: Path) -> None:
@@ -185,8 +184,7 @@ class UnifiedInferenceEngine(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,

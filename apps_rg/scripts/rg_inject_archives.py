@@ -9,6 +9,7 @@ import logging
 import os
 import shutil
 from pathlib import Path
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO, format="[INJECT] %(message)s")
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ def inject_archives():
     success_count = 0
     error_count = 0
     logger.info(f"Initiating injection of {len(plan)} files...")
-    for item in plan:
+    for item in tqdm(plan, desc="Processing", unit="item"):
         src = Path(item["path"])
         target_rel = item["target_destination"].replace("/", os.sep).replace("\\", os.sep)
         dest = BASE_DIR / target_rel

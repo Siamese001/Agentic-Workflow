@@ -30,6 +30,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from system_learning.runtime_adg import (
     RuntimeADGSnapshot,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("advanced_adg_analytics", "advanced_adg_analytics_digest")
 record_execution_trace("advanced_adg_analytics", "advanced_adg_analytics_trace")
@@ -161,7 +162,7 @@ class AdvancedADGAnalytics:
         # Identify bottlenecks (top 10% slowest operations)
         if durations:
             threshold = statistics.quantile(durations, 0.9)
-            for node in snapshot.nodes:
+            for node in tqdm(snapshot.nodes, desc="Processing", unit="item"):
                 if node.duration_ms and node.duration_ms >= threshold:
                     metrics.bottleneck_nodes.append(
                         {
@@ -174,7 +175,7 @@ class AdvancedADGAnalytics:
                     )
 
         # Identify slow and fast operations
-        for node in snapshot.nodes:
+        for node in tqdm(snapshot.nodes, desc="Processing", unit="item"):
             if node.duration_ms:
                 if node.duration_ms > self._anomaly_thresholds["slow_operation_threshold_ms"]:
                     metrics.slow_operations.append(
@@ -210,7 +211,7 @@ class AdvancedADGAnalytics:
         patterns = PatternMetrics()
 
         # Node-based patterns
-        for node in snapshot.nodes:
+        for node in tqdm(snapshot.nodes, desc="Processing", unit="item"):
             # Layer distribution
             patterns.layer_distribution[node.layer] = patterns.layer_distribution.get(node.layer, 0) + 1
 
@@ -534,7 +535,7 @@ class AdvancedADGAnalytics:
             mean_duration = statistics.mean(durations)
             std_duration = statistics.stdev(durations) if len(durations) > 1 else 0
 
-            for node in snapshot.nodes:
+            for node in tqdm(snapshot.nodes, desc="Processing", unit="item"):
                 if node.duration_ms:
                     z_score = abs(node.duration_ms - mean_duration) / std_duration if std_duration > 0 else 0
                     if z_score > 3:  # 3 standard deviations
@@ -550,7 +551,7 @@ class AdvancedADGAnalytics:
 
         # Component frequency anomalies
         total_operations = sum(patterns.layer_distribution.values())
-        for component, count in patterns.component_distribution.items():
+        for component, count in tqdm(patterns.component_distribution.items(), desc="Processing", unit="item"):
             frequency = count / total_operations if total_operations > 0 else 0
             if frequency > 0.5:  # Component appears in >50% of operations
                 anomalies.append(

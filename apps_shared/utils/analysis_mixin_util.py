@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("analysis_mixin_util", "p4obs", "metric_1")
 _emit_emits_metric_event("analysis_mixin_util", "p4obs", "metric_2")
@@ -194,7 +195,7 @@ class AnalysisMixin:
         )
 
         results = {}
-        for key in metric_keys:
+        for key in tqdm(metric_keys, desc="Processing", unit="item"):
             values = [item.get(key) for item in data if key in item and item[key] is not None]
             if not values:
                 results[key] = {"error": "No data available"}
@@ -314,7 +315,7 @@ class AnalysisMixin:
         """
         insights = []
         thresholds = thresholds or {}
-        for key, value in analysis_data.items():
+        for key, value in tqdm(analysis_data.items(), desc="Processing", unit="item"):
             if isinstance(value, dict):
                 if "mean" in value:
                     mean_val = value["mean"]

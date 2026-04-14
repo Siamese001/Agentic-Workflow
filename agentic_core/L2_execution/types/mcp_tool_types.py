@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("mcp_tool_types", "p4obs", "metric_1")
 _emit_emits_metric_event("mcp_tool_types", "p4obs", "metric_2")
@@ -619,7 +620,7 @@ def execute_tool_calls(
         List of MCPToolResult
     """
     results = []
-    for tool_call in tool_calls:
+    for tool_call in tqdm(tool_calls, desc="Processing", unit="item"):
         if "function" in tool_call:
             function = tool_call["function"]
             name = function.get("name")

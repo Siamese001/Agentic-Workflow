@@ -79,8 +79,10 @@ def get_project_root() -> Path:
 
 
 def validate_sandbox(path: str) -> Path:
-    project_root = get_project_root()
+    if not path:
+        raise SandboxViolationError("Empty path is not allowed")
     try:
+        project_root = get_project_root()
         resolved = (project_root / path).resolve()
         resolved.relative_to(project_root)
     except (OSError, RuntimeError, ValueError) as exc:
@@ -101,7 +103,7 @@ def require_healing_lease(func):
     def wrapper(*args, **kwargs):
         blackboard = kwargs.get("blackboard")
         agent_id = kwargs.get("agent_id")
-        file_path = kwargs.get("path") or (args[0].path if args else None)
+        file_path = kwargs.get("path") or (getattr(args[0], "path", None) if args else None)
         if blackboard and agent_id and file_path:
             verifier = getattr(blackboard, "verify_healing_lease", None)
             if callable(verifier) and not verifier(agent_id, file_path):
@@ -132,7 +134,7 @@ def write_file(
         try:
             original_lines = len(resolved_path.read_text(encoding="utf-8").splitlines())
             new_lines = len(args.content.splitlines())
-            min_lines = int(original_lines * 0.9)
+            min_lines = max(1, int(original_lines * 0.9)) if original_lines > 0 else 0
             if new_lines < min_lines:
                 logger = getattr(blackboard, "log_security_event", None)
                 if callable(logger):
@@ -161,6 +163,8 @@ def write_file(
         mode="w", encoding="utf-8", dir=tmp_dir, delete=False, suffix=".tmp"
     ) as tmp_file:
         tmp_file.write(args.content)
+        tmp_file.flush()
+        os.fsync(tmp_file.fileno())
         tmp_path = Path(tmp_file.name)
     tmp_path.replace(resolved_path)
 

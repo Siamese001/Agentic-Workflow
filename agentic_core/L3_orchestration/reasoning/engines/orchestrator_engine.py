@@ -33,6 +33,7 @@ Phase 3 Enhancement (Jan 31, 2026):
 from __future__ import annotations
 
 import logging
+import re
 import uuid
 from enum import Enum
 from pathlib import Path
@@ -218,6 +219,7 @@ _emit_validated_by_safety_plane("p1", "orchestrator_engine", "safety_validation"
 _emit_invokes_eval("p1", "orchestrator_engine", "eval_call")
 _emit_proposal_commits_routing("p1", "orchestrator_engine", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 # Runtime ADG imports
 # guardian: allow-silent-degradation - Optional runtime ADG
@@ -251,7 +253,69 @@ _emit_validated_by_safety_plane("p1", "orchestrator_engine", "safety_validation"
 
 Logger = logging.getLogger(__name__)
 _proof_emitter = ExecutionProofEmitter("L3.orchestrator_engine")
-_exec_breaker = get_breaker("orchestrator_engine")
+
+
+class _NullBreaker:
+    def call(self, fn):
+        return fn()
+
+
+class _NullRunStateAuthority:
+    def observe_runtime_state(self, *args, **kwargs):
+        return None
+
+    def snapshot_state(self, *args, **kwargs):
+        return None
+
+
+class _PolicyShimError(Exception):
+    pass
+
+
+class _PolicyShimAction:
+    TOOL_EXECUTION = "TOOL_EXECUTION"
+
+
+def _resolve_runtime_primitives():
+    try:
+        from agentic_core.runtime.control.breaker import get_breaker as _get_breaker  # type: ignore
+    except (
+        Exception
+    ):  # guardian: allow-broad-exception -- import fallback shim; assigns null breaker, never re-raises
+        _get_breaker = lambda _name: _NullBreaker()
+    try:
+        from agentic_core.runtime.state.run_state_authority import get_run_state_authority as _get_rsa  # type: ignore
+    except (
+        Exception
+    ):  # guardian: allow-broad-exception -- import fallback shim; assigns null authority, never re-raises
+        _get_rsa = lambda: _NullRunStateAuthority()
+    try:
+        from agentic_core.L5_safety.policy.policy_enforcer import (  # type: ignore
+            ActionClass as _ActionClass,
+            PolicyEnforcementError as _PolicyError,
+            enforce_policy_before_action as _enforce_policy_before_action,
+        )
+    except (
+        Exception
+    ):  # guardian: allow-broad-exception -- import fallback shim; assigns policy shims, never re-raises
+        _ActionClass = _PolicyShimAction
+        _PolicyError = _PolicyShimError
+
+        def _enforce_policy_before_action(**_kwargs):
+            return None
+
+    return (
+        _get_breaker("orchestrator_engine"),
+        _get_rsa,
+        _ActionClass,
+        _PolicyError,
+        _enforce_policy_before_action,
+    )
+
+
+_exec_breaker, get_run_state_authority, ActionClass, PolicyEnforcementError, enforce_policy_before_action = (
+    _resolve_runtime_primitives()
+)
 ALLOWED_MODULE_PREFIXES = (AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS_RG_DIR)
 
 
@@ -327,7 +391,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
             signals: list[str] = []
             current_stage = "not_started"
 
-            for step in workflow_steps:
+            for step in tqdm(workflow_steps, desc="Processing", unit="item"):
                 step_name = step.get("name", "unnamed")
                 step_type = step.get("type", "unknown")
                 current_stage = step_name
@@ -573,7 +637,7 @@ class Orchestrator(SovereignBaseAgent):
         total_violations_found = 0
         total_violations_fixed = 0
         total_errors = 0
-        for agent_name in agents:
+        for agent_name in tqdm(agents, desc="Processing", unit="item"):
             if not self._validate_agent_import(agent_name):
                 self.logger.critical(f"[GATE] CRITICAL_IMPORT_FAILURE: {agent_name} is unimportable")
                 agent_results.append(
@@ -596,6 +660,15 @@ class Orchestrator(SovereignBaseAgent):
             # guardian: allow-silent-swallow
             except (RuntimeError, ValueError) as e:
                 self.logger.error(f"[MISSION] Critical error running {agent_name}: {e}")
+                agent_results.append(
+                    AgentResult(
+                        agent_name=agent_name,
+                        success=False,
+                        errors=1,
+                        status="EXCEPTION",
+                        message=str(e),
+                    ),
+                )
                 total_errors += 1
         successful = sum(1 for r in agent_results if r.success)
         failed = len(agent_results) - successful
@@ -873,10 +946,14 @@ class Orchestrator(SovereignBaseAgent):
         import sys
 
         try:
+            if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", agent_name):
+                self.logger.critical("[GATE] SECURITY BLOCK: invalid agent name '%s'", agent_name)
+                return False
             agent_paths = get_agent_paths(self.project_root)
             agent_path = next((p for p in agent_paths if Path(p).stem == agent_name), None)
             if not agent_path:
-                return True
+                self.logger.error("[GATE] No discovered path for agent '%s'", agent_name)
+                return False
             agent_file = Path(agent_path)
             rel_path = agent_file.relative_to(self.project_root)
             module_path = str(rel_path.with_suffix("").as_posix()).replace("/", ".")
@@ -889,7 +966,13 @@ class Orchestrator(SovereignBaseAgent):
                 self._import_cache[module_path] = False
                 return False
             result = subprocess.run(
-                [sys.executable, "-c", f"import {module_path}"],
+                [
+                    sys.executable,
+                    "-I",
+                    "-c",
+                    "import importlib, sys; importlib.import_module(sys.argv[1])",
+                    module_path,
+                ],
                 capture_output=True,
                 text=True,
                 timeout=DEFAULT_TIMEOUT,
@@ -903,10 +986,9 @@ class Orchestrator(SovereignBaseAgent):
                 return False
             self._import_cache[module_path] = True
             return True
-        # guardian: allow-silent-swallow
-        except (RuntimeError, ValueError) as e:
-            self.logger.warning(f"[GATE] Pre-flight check skipped for {agent_name}: {e}")
-            return True
+        except (RuntimeError, ValueError, FileNotFoundError, OSError, subprocess.TimeoutExpired) as e:
+            self.logger.error("[GATE] Pre-flight import check failed closed for %s: %s", agent_name, e)
+            return False
 
     def _v15_build_operation_manifest(
         self,

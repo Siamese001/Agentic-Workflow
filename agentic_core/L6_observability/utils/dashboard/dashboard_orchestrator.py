@@ -32,6 +32,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_snapshots_state,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 record_execution_trace("dashboard_orchestrator", "dashboard_orchestrator_trace")
 
@@ -338,7 +339,7 @@ def _compute_health_flags(
     # Compute health for each component
     components = ["routing", "reasoning", "execution", "escalation", "policy"]
 
-    for component in components:
+    for component in tqdm(components, desc="Processing", unit="item"):
         # Default to healthy
         health = HealthFlag.HEALTHY
 

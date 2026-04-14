@@ -127,6 +127,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("factory_util", "p4obs", "metric_1")
 _emit_emits_metric_event("factory_util", "p4obs", "metric_2")
@@ -197,7 +198,7 @@ def parse_mcp_client_specs(raw_specs: list[dict[str, Any]]) -> list[MCPClientSpe
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L2_EXECUTION, "parse_mcp_client_specs")
     specs: list[MCPClientSpec] = []
-    for raw in raw_specs:
+    for raw in tqdm(raw_specs, desc="Processing", unit="item"):
         if not isinstance(raw, dict):
             raise ValueError("Each MCP client entry must be a mapping.")
         name = raw.get("name")
@@ -308,7 +309,7 @@ def create_mcp_registry(specs: list[MCPClientSpec], fail_on_error: bool = False)
         MCPClientInitializationError: If fail_on_error=True and init fails
     """
     registry = MCPClientRegistry()
-    for spec in specs:
+    for spec in tqdm(specs, desc="Processing", unit="item"):
         try:
             client = instantiate_mcp_client(spec)
             registry.register(spec, client)

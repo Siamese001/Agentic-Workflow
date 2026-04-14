@@ -36,6 +36,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 
 @dataclass
@@ -98,7 +99,7 @@ class ASTAnalyzer:
         self.function_calls = []
         self.docstring_markers = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Extract imports
             if isinstance(node, ast.Import):
                 for alias in node.names:
@@ -340,7 +341,7 @@ def _determine_test_routing(file_path: Path, ast_matches: dict[str, Any]) -> Rou
 
     from agentic_core.L0_routing.reasoning.RootCustomsAgent import TEST_TYPE_SIGNALS
 
-    for destination, config in TEST_TYPE_SIGNALS.items():
+    for destination, config in tqdm(TEST_TYPE_SIGNALS.items(), desc="Processing", unit="item"):
         score = 0
 
         # Check required imports
@@ -442,7 +443,7 @@ def _determine_ast_placement_routing(
     best_match = None
     best_score = 0
 
-    for destination, config in AST_PLACEMENT_SIGNALS.items():
+    for destination, config in tqdm(AST_PLACEMENT_SIGNALS.items(), desc="Processing", unit="item"):
         score = 0
 
         # Check import signals
@@ -589,7 +590,7 @@ def run_inspection(
     routing_decisions: list[RoutingDecision] = []
     ast_analyzer = ASTAnalyzer()
 
-    for file_path in root_files:
+    for file_path in tqdm(root_files, desc="Processing", unit="item"):
         print(f"\n📄 Analyzing: {file_path.name}")
 
         # Analyze content

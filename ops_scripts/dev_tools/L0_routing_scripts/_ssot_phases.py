@@ -391,7 +391,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
     if json_path.exists():
         try:
             data = json.loads(json_path.read_text(encoding="utf-8"))
-            for agent in data:
+            for agent in tqdm(data, desc="Processing", unit="item"):
                 if agent.get("class_name"):
                     try:
                         raw_path = agent.get("path", "")
@@ -424,7 +424,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
 
             logger.info("Running live agent discovery...")
             discovery_data = discover_all_agents(project_root)
-            for agent in discovery_data:
+            for agent in tqdm(discovery_data, desc="Processing", unit="item"):
                 if agent.get("class_name"):
                     try:
                         raw_path = agent.get("path", "")
@@ -1009,7 +1009,7 @@ def execute_phase3_validation(
         return {"status": "skipped", "message": "Dry run - validation skipped"}
     remaining_issues = []
     validator = ASTCodeQualityValidator(REPO_ROOT)
-    for v in original_violations:
+    for v in tqdm(original_violations, desc="Processing", unit="item"):
         fpath = v.get("file")
         # guardian: allow-path-string
         if not fpath or not os.path.exists(fpath):
@@ -1477,7 +1477,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     arch_violations = compliance_report.get("violations", [])
     all_violations.extend(arch_violations)
     location_violations = state_mgr.state.get("location_violations", [])
-    for loc_violation in location_violations:
+    for loc_violation in tqdm(location_violations, desc="Processing", unit="item"):
         if isinstance(loc_violation, tuple) and len(loc_violation) >= 2:
             file_path = str(loc_violation[0])
             message = str(loc_violation[1])
@@ -1535,7 +1535,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
         }
         all_violations.append(violation_dict)
     conversational_violations = state_mgr.state.get("conversational_violations", [])
-    for conv_violation in conversational_violations:
+    for conv_violation in tqdm(conversational_violations, desc="Processing", unit="item"):
         if isinstance(conv_violation, dict):
             violation_dict = {
                 **conv_violation,
@@ -1552,7 +1552,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
             }
             all_violations.append(violation_dict)
     classification_violations = state_mgr.state.get("classification_violations", [])
-    for class_violation in classification_violations:
+    for class_violation in tqdm(classification_violations, desc="Processing", unit="item"):
         if isinstance(class_violation, dict):
             subtype = class_violation.get("subtype", "UNKNOWN")
             count = class_violation.get("count", 1)

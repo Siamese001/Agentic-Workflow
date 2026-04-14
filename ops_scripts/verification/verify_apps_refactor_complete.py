@@ -20,6 +20,7 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -200,7 +201,7 @@ class AppsRefactorVerifier:
             ROOT / "apps_lic" / "reasoning" / "OutreachValidationExecutorAgent.py",
         ]
 
-        for file_path in files_to_check:
+        for file_path in tqdm(files_to_check, desc="Processing", unit="item"):
             if not file_path.exists():
                 self.results.append(
                     VerificationResult(
@@ -223,7 +224,7 @@ class AppsRefactorVerifier:
             # Check for unconditional duplicates (not in try/except)
             # A duplicate is OK if it's in a try/except fallback pattern
             unconditional_dupes = []
-            for name in set(class_names):
+            for name in tqdm(set(class_names), desc="Processing", unit="item"):
                 if class_names.count(name) > 1:
                     # Check if all occurrences are in try/except blocks
                     occurrences = [c for c in class_defs if c.name == name]
@@ -396,10 +397,14 @@ class AppsRefactorVerifier:
         apps_bridge_shim = ROOT / "apps_shared" / "scripts" / "meta_learning_bridge.py"
         apps_operator_shim = ROOT / "apps_shared" / "scripts" / "meta_learning_operator.py"
 
-        for shim_path, check_id, name in [
-            (apps_bridge_shim, "P6-LAYER-003", "meta_learning_bridge"),
-            (apps_operator_shim, "P6-LAYER-004", "meta_learning_operator"),
-        ]:
+        for shim_path, check_id, name in tqdm(
+            [
+                (apps_bridge_shim, "P6-LAYER-003", "meta_learning_bridge"),
+                (apps_operator_shim, "P6-LAYER-004", "meta_learning_operator"),
+            ],
+            desc="Processing",
+            unit="item",
+        ):
             if shim_path.exists():
                 content = shim_path.read_text(encoding="utf-8")
                 is_shim = "system_learning.scripts" in content and "Backward-compatibility" in content
@@ -436,7 +441,9 @@ class AppsRefactorVerifier:
 
     def verify_phase7_entrypoints(self) -> None:
         """Phase 7: apps_lic/__main__.py and apps_rg/__main__.py exist with ADG bootstrap."""
-        for app, check_id in [("apps_lic", "P7-ENTRY-001"), ("apps_rg", "P7-ENTRY-002")]:
+        for app, check_id in tqdm(
+            [("apps_lic", "P7-ENTRY-001"), ("apps_rg", "P7-ENTRY-002")], desc="Processing", unit="item"
+        ):
             main_path = ROOT / app / "__main__.py"
 
             if not main_path.exists():
@@ -547,7 +554,7 @@ class AppsRefactorVerifier:
             ROOT / "apps_rg" / "reasoning" / "HardenedopenaiexecutorStrategy.py",
         ]
 
-        for executor_path in executors:
+        for executor_path in tqdm(executors, desc="Processing", unit="item"):
             if not executor_path.exists():
                 self.results.append(
                     VerificationResult(
@@ -703,7 +710,7 @@ class AppsRefactorVerifier:
                 phases[result.phase] = []
             phases[result.phase].append(result)
 
-        for phase in sorted(phases.keys()):
+        for phase in tqdm(sorted(phases.keys()), desc="Processing", unit="item"):
             phase_results = phases[phase]
             phase_passed = sum(1 for r in phase_results if r.passed)
             phase_total = len(phase_results)

@@ -106,6 +106,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("dpo_batch_builder", "p4obs", "metric_1")
 _emit_emits_metric_event("dpo_batch_builder", "p4obs", "metric_2")
@@ -219,14 +220,14 @@ class DPOBatchBuilder:
         for example in human_decisions:
             grouped.setdefault(example.query, []).append(example)
         pairs: list[DPOPair] = []
-        for query in sorted(grouped.keys()):
+        for query in tqdm(sorted(grouped.keys()), desc="Processing", unit="item"):
             query_examples = sorted(grouped[query], key=lambda e: e.example_id)
             positive = [e for e in query_examples if e.human_annotation.is_positive]
             negative = [e for e in query_examples if not e.human_annotation.is_positive]
             if not positive or not negative:
                 continue
-            for pos in positive:
-                for neg in negative:
+            for pos in tqdm(positive, desc="Processing", unit="item"):
+                for neg in tqdm(negative, desc="Processing", unit="item"):
                     chosen_score = pos.human_annotation.quality_score
                     rejected_score = neg.human_annotation.quality_score
                     if chosen_score - rejected_score < self.min_score_delta:

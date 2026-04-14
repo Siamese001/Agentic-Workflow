@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_gym_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_gym_engine", "p4obs", "metric_2")
@@ -291,7 +292,7 @@ class AgentGym(SovereignBaseAgent):
     async def _execute_test_cases(self, test_cases: list, agent_fn: Callable) -> dict:
         """Execute all test cases."""
         OUTPUTS = {}
-        for case in test_cases:
+        for case in tqdm(test_cases, desc="Processing", unit="item"):
             try:
                 await agent_fn(case.mission, case.scene)
                 OUTPUTS[CASE.ID] = GoldenOutput(

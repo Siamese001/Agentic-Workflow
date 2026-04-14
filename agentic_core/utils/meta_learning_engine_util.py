@@ -170,6 +170,27 @@ _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 Logger = logging.getLogger(__name__)
 
 
+def _schedule_learn_task(agent_name: str, context: str, payload: dict[str, Any]) -> None:
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        Logger.debug("[%s] No running event loop; skipping async meta-learning write", agent_name)
+        return
+
+    task = loop.create_task(MetaLearningStorage.learn_async(context, agent_name, payload))
+
+    def _log_task_failure(done_task: asyncio.Task[Any]) -> None:
+        try:
+            exc = done_task.exception()
+        except asyncio.CancelledError:
+            Logger.debug("[%s] Async meta-learning write cancelled", agent_name)
+            return
+        if exc is not None:
+            Logger.warning("[%s] Async meta-learning write failed: %s", agent_name, exc)
+
+    task.add_done_callback(_log_task_failure)
+
+
 class MetaLearningEngine:
     """Core meta-learning logic: KG bridging, recall/execute, reflection.
 
@@ -193,9 +214,11 @@ class MetaLearningEngine:
                         cls._kg_bridge.register_agent(agent_name, agent_type="Agent")
                         Logger.debug(f"[{agent_name}] Connected to Knowledge Graph")
                     # guardian: allow-silent-swallow
-                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                        raise
-                        Logger.warning(f"[{agent_name}] Knowledge Graph unavailable: {e}")
+                    except (
+                        Exception
+                    ) as e:  # guardian: allow-broad-exception -- optional subsystem must not fail caller
+                        cls._kg_bridge = None
+                        Logger.warning("[%s] Knowledge Graph unavailable: %s", agent_name, e)
 
     @classmethod
     def discover_agent_context(cls, agent_name: str) -> dict[str, Any]:
@@ -248,10 +271,10 @@ class MetaLearningEngine:
                 payload = result
                 if not isinstance(result, dict):
                     payload = {"result": result, "_wrapped": True}
-                asyncio.create_task(MetaLearningStorage.learn_async(context, agent_name, payload))
+                _schedule_learn_task(agent_name, context, payload)
         # guardian: allow-silent-swallow
-        except Exception as e:
-            Logger.warning(f"[{agent_name}] DNA WRITE ERROR: Could not learn experience: {e}")
+        except Exception as e:  # guardian: allow-broad-exception -- background DNA write must not fail caller
+            Logger.warning("[%s] DNA WRITE ERROR: Could not learn experience: %s", agent_name, e)
         return result
 
     @classmethod
@@ -280,9 +303,10 @@ class MetaLearningEngine:
             )
             cls._kg_bridge.reflect_on_execution(trace)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{agent_name}] Reflection failed: {e}")
+        except (
+            Exception
+        ) as e:  # guardian: allow-broad-exception -- optional reflection path must not fail caller
+            Logger.warning("[%s] Reflection failed: %s", agent_name, e)
 
     @classmethod
     def record_agent_interaction(
@@ -303,9 +327,10 @@ class MetaLearningEngine:
                 error_type=error_type,
             )
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{caller_agent}] Interaction recording failed: {e}")
+        except (
+            Exception
+        ) as e:  # guardian: allow-broad-exception -- optional interaction path must not fail caller
+            Logger.warning("[%s] Interaction recording failed: %s", caller_agent, e)
 
     @classmethod
     def inherit_rules_from(cls, child_entity: str, parent_entity: str) -> None:
@@ -315,9 +340,10 @@ class MetaLearningEngine:
         try:
             cls._kg_bridge.establish_inheritance(child_entity=child_entity, parent_entity=parent_entity)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{child_entity}] Inheritance setup failed: {e}")
+        except (
+            Exception
+        ) as e:  # guardian: allow-broad-exception -- optional inheritance path must not fail caller
+            Logger.warning("[%s] Inheritance setup failed: %s", child_entity, e)
 
     @classmethod
     def mark_incompatible_with(cls, entity_a: str, entity_b: str, reason: str) -> None:
@@ -327,9 +353,10 @@ class MetaLearningEngine:
         try:
             cls._kg_bridge.mark_incompatibility(entity_a=entity_a, entity_b=entity_b, reason=reason)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{entity_a}] Incompatibility marking failed: {e}")
+        except (
+            Exception
+        ) as e:  # guardian: allow-broad-exception -- optional incompatibility path must not fail caller
+            Logger.warning("[%s] Incompatibility marking failed: %s", entity_a, e)
 
     @classmethod
     def add_architectural_observation(cls, agent_name: str, observation: str) -> None:
@@ -339,9 +366,10 @@ class MetaLearningEngine:
         try:
             cls._kg_bridge.add_observation(entity_name=agent_name, observation=observation)
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{agent_name}] Observation recording failed: {e}")
+        except (
+            Exception
+        ) as e:  # guardian: allow-broad-exception -- optional observation path must not fail caller
+            Logger.warning("[%s] Observation recording failed: %s", agent_name, e)
 
     @classmethod
     def get_kg_stats(cls) -> dict[str, Any] | None:

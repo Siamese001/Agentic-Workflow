@@ -35,6 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 try:
     from rank_bm25 import BM25Okapi
@@ -133,7 +134,7 @@ class ASTAwareTokenizer:
         try:
             tree = ast.parse(text)
 
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.FunctionDef) or isinstance(node, ast.AsyncFunctionDef):
                     tokens.extend(
                         cls.split_identifier(node.name) * (cls.BOOST_FUNCTION_CLASS if boost_symbols else 1),
@@ -290,7 +291,7 @@ class HybridRetriever:
         doc_scores: Any = self.bm25_index.get_scores(tokenized_query)
         top_indices: Any = doc_scores.argsort()[-top_k:][::-1]
         results: Any = []
-        for idx in top_indices:
+        for idx in tqdm(top_indices, desc="Processing", unit="item"):
             if doc_scores[idx] > 0:
                 chunk: Any = self.local_chunks[idx]
                 results.append(

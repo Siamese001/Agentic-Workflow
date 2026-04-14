@@ -6,6 +6,18 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
+def _validated_root(candidate: Path | None) -> Path | None:
+    if candidate is None:
+        return None
+    try:
+        resolved = candidate.expanduser().resolve(strict=True)
+    except (OSError, RuntimeError):
+        return None
+    if (resolved / ".git").is_dir() and (resolved / AGENTIC_CORE_DIR).is_dir():
+        return resolved
+    return None
+
+
 def get_project_root(start_path: Path | None = None) -> Path:
     """
     Get the project root directory by searching for .git directory.
@@ -19,18 +31,18 @@ def get_project_root(start_path: Path | None = None) -> Path:
     Raises:
         RuntimeError: If .git directory not found
     """
-    if start_path is None:
-        start_path = Path(__file__).resolve()
-    current = start_path
+    current = (start_path or Path(__file__).resolve()).expanduser().resolve()
+    if current.is_file():
+        current = current.parent
     while current != current.parent:
-        if (current / ".git").exists():
-            return current
+        validated = _validated_root(current)
+        if validated is not None:
+            return validated
         current = current.parent
     # guardian: allow-global-mutation
-    if "PROJECT_ROOT" in os.environ:
-        env_root = Path(os.environ["PROJECT_ROOT"])
-        if (env_root / ".git").exists():
-            return env_root
+    env_root = _validated_root(Path(os.environ["PROJECT_ROOT"])) if "PROJECT_ROOT" in os.environ else None
+    if env_root is not None:
+        return env_root
     raise RuntimeError(
         f"Could not find project root starting from {start_path}. Ensure you're in a git repository.",
     )
@@ -45,16 +57,24 @@ def get_project_root_safe(start_path: Path | None = None) -> Path:
         return get_project_root(start_path)
     # guardian: allow-silent-swallow - acceptable exception handling
     except RuntimeError:
-        current = start_path or Path(__file__).resolve()
+        current = (start_path or Path(__file__).resolve()).expanduser().resolve()
+        if current.is_file():
+            current = current.parent
         while current != current.parent:
+            validated = _validated_root(current)
+            if validated is not None:
+                return validated
             if (current / AGENTIC_CORE_DIR).is_dir():
                 return current
             current = current.parent
         known_roots = [Path.cwd() / "Agentic-Workflow", Path.home() / "Git" / "Agentic-Workflow"]
         for root in known_roots:
+            validated = _validated_root(root)
+            if validated is not None:
+                return validated
             if root.exists() and (root / AGENTIC_CORE_DIR).is_dir():
-                return root
+                return root.resolve()
         raise RuntimeError("Could not determine project root")
 
 
-PROJECT_ROOT = get_project_root()
+PROJECT_ROOT = get_project_root_safe()

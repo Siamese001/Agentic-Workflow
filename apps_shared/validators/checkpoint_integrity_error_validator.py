@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("checkpoint_integrity_error_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("checkpoint_integrity_error_validator", "p4obs", "metric_2")
@@ -294,7 +295,9 @@ class SecureCheckpointManager:
 
         latest_checkpoint = None
         latest_time = 0
-        for checkpoint_file in self.checkpoint_dir.glob(f"{self.hop_id}_*.secure"):
+        for checkpoint_file in tqdm(
+            self.checkpoint_dir.glob(f"{self.hop_id}_*.secure"), desc="Processing", unit="item"
+        ):
             try:
                 checkpoint = await self._load_checkpoint_file(checkpoint_file)
                 if checkpoint and checkpoint.timestamp > latest_time:

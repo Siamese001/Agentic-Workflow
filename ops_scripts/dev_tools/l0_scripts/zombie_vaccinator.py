@@ -25,6 +25,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "zombie_vaccinator", "uwg_governed_write")
 _emit_writes_through("p1", "zombie_vaccinator", "uwg_governed_write_2")
@@ -211,7 +212,7 @@ class ZombieVaccinator:
             insertion_idx = None
             indent = "        "
             in_heal_repo = False
-            for i, line in enumerate(lines):
+            for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
                 if "def heal_repository(" in line:
                     in_heal_repo = True
                     match = re.match("^(\\s*)", line)

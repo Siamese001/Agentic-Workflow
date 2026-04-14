@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("mcp_security_types", "p4obs", "metric_1")
 _emit_emits_metric_event("mcp_security_types", "p4obs", "metric_2")
@@ -305,9 +306,9 @@ class MCPSecurityGuardrail:
     def _check_arguments(self, tool_name: str, args: dict[str, Any]) -> list[MCPSecurityViolation]:
         """Check arguments for dangerous patterns."""
         violations = []
-        for key, value in args.items():
+        for key, value in tqdm(args.items(), desc="Processing", unit="item"):
             if isinstance(value, str):
-                for pattern in self.dangerous_patterns:
+                for pattern in tqdm(self.dangerous_patterns, desc="Processing", unit="item"):
                     if re.search(pattern, value, re.IGNORECASE):
                         violations.append(
                             MCPSecurityViolation(
@@ -324,7 +325,7 @@ class MCPSecurityGuardrail:
     def _sanitize_arguments(self, args: dict[str, Any]) -> dict[str, Any]:
         """Sanitize arguments by removing dangerous patterns."""
         sanitized = {}
-        for key, value in args.items():
+        for key, value in tqdm(args.items(), desc="Processing", unit="item"):
             if isinstance(value, str):
                 clean = value
                 for pattern in self.dangerous_patterns:

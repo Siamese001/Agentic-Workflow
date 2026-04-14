@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+from tqdm import tqdm
 
 
 @dataclass
@@ -74,7 +75,9 @@ class HybridMerger:
 
         # Build SearchResult objects
         results: list[SearchResult] = []
-        for doc_id, (sparse_s, dense_s, combined_s) in sorted_results[:top_k]:
+        for doc_id, (sparse_s, dense_s, combined_s) in tqdm(
+            sorted_results[:top_k], desc="Processing", unit="item"
+        ):
             # Determine primary source
             if sparse_s > 0 and dense_s > 0:
                 source = "hybrid"

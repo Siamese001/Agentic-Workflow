@@ -164,6 +164,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_guardrail", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_guardrail", "p4obs", "metric_2")
@@ -341,7 +342,7 @@ def scan_shadow_functions(
     if rel_path in ALLOWLISTED_FILES:
         return violations
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if node.name in SHADOW_FUNCTION_NAMES:
                 violations.append(
@@ -373,7 +374,7 @@ def scan_endswith_agent(
     if rel_path in ENDSWITH_AGENT_ALLOWLIST:
         return violations
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.Call):
             continue
         # Match: <expr>.endswith("Agent") or <expr>.endswith("Agent")
@@ -382,7 +383,7 @@ def scan_endswith_agent(
         if node.func.attr != "endswith":
             continue
         # Check if any argument is a string containing "Agent"
-        for arg in node.args:
+        for arg in tqdm(node.args, desc="Processing", unit="item"):
             if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
                 if "Agent" in arg.value:
                     violations.append(
@@ -399,7 +400,7 @@ def scan_endswith_agent(
                     )
             # Also check tuples: endswith(("Agent", "BaseAgent"))
             if isinstance(arg, ast.Tuple):
-                for elt in arg.elts:
+                for elt in tqdm(arg.elts, desc="Processing", unit="item"):
                     if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
                         if "Agent" in elt.value:
                             violations.append(
@@ -436,12 +437,12 @@ def scan_repository(project_root: Path) -> ScanResult:
         project_root / TESTS_DIR,
     ]
 
-    for scan_dir in scan_dirs:
+    for scan_dir in tqdm(scan_dirs, desc="Processing", unit="item"):
         if not scan_dir.exists():
             continue
-        for dirpath, dirnames, filenames in os.walk(scan_dir):
+        for dirpath, dirnames, filenames in tqdm(os.walk(scan_dir), desc="Processing", unit="item"):
             dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
-            for fn in filenames:
+            for fn in tqdm(filenames, desc="Processing", unit="item"):
                 if not fn.endswith(".py"):
                     continue
                 fp = Path(dirpath) / fn

@@ -36,6 +36,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -318,7 +319,7 @@ class ADGConsistencyVerifier:
         snapshot_results = {}
         consistency_results = {}
 
-        for metric_name, sql_query in self.REQUIRED_METRICS.items():
+        for metric_name, sql_query in tqdm(self.REQUIRED_METRICS.items(), desc="Processing", unit="item"):
             print(f"   • {metric_name}")
 
             # Execute SQL query

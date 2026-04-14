@@ -122,6 +122,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("behavioral_index", "p4obs", "metric_1")
 _emit_emits_metric_event("behavioral_index", "p4obs", "metric_2")
@@ -564,7 +565,7 @@ class ADGBehavioralIndex:
                 elif rtype in SCRIPT_SIDE_EDGES:
                     per_node[nid]["script"].add(rtype)
 
-            for nid, path in id_to_path.items():
+            for nid, path in tqdm(id_to_path.items(), desc="Processing", unit="item"):
                 buckets = per_node[nid]
                 score = _compute_score(len(buckets["agent"]), len(buckets["script"]), len(buckets["anti"]))
                 det_cov = len(buckets["script"]) > 0 and len(buckets["agent"]) == 0

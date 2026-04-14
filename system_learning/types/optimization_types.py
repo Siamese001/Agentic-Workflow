@@ -112,6 +112,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from system_learning.enforcement.determinism import deterministic_json
+from tqdm import tqdm
 
 _emit_emits_metric_event("optimization_types", "p4obs", "metric_1")
 _emit_emits_metric_event("optimization_types", "p4obs", "metric_2")
@@ -552,12 +553,16 @@ class GovernanceRewardSignal:
     timestamp_utc: int
 
     def __post_init__(self) -> None:
-        for attr in (
-            "groundedness_score",
-            "policy_compliance",
-            "replay_stability",
-            "guardrail_cleanliness",
-            "mutation_correctness",
+        for attr in tqdm(
+            (
+                "groundedness_score",
+                "policy_compliance",
+                "replay_stability",
+                "guardrail_cleanliness",
+                "mutation_correctness",
+            ),
+            desc="Processing",
+            unit="item",
         ):
             val = getattr(self, attr)
             if not 0.0 <= val <= 1.0:
@@ -646,14 +651,18 @@ class GovernanceRewardScore:
     timestamp_utc: int
 
     def __post_init__(self) -> None:
-        for attr in (
-            "aggregate_score",
-            "groundedness_contrib",
-            "policy_compliance_contrib",
-            "replay_stability_contrib",
-            "guardrail_cleanliness_contrib",
-            "mutation_correctness_contrib",
-            "human_approval_rate",
+        for attr in tqdm(
+            (
+                "aggregate_score",
+                "groundedness_contrib",
+                "policy_compliance_contrib",
+                "replay_stability_contrib",
+                "guardrail_cleanliness_contrib",
+                "mutation_correctness_contrib",
+                "human_approval_rate",
+            ),
+            desc="Processing",
+            unit="item",
         ):
             val = getattr(self, attr)
             if not 0.0 <= val <= 1.0:

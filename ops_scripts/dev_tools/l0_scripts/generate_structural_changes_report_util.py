@@ -116,6 +116,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("generate_structural_changes_report_util", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_structural_changes_report_util", "p4obs", "metric_2")
@@ -179,9 +180,9 @@ def scan_archives_for_moved_files() -> list[dict[str, Any]]:
     if not archive_root.exists():
         return archived_files
 
-    for root, _dirs, files in os.walk(archive_root):
+    for root, _dirs, files in tqdm(os.walk(archive_root), desc="Processing", unit="item"):
         _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if file.endswith(".py") or file.endswith(".json") or file.endswith(".txt"):
                 file_path = Path(root) / file
                 relative_path = file_path.relative_to(archive_root)
@@ -218,7 +219,7 @@ def scan_l0_maintenance_scripts() -> list[dict[str, Any]]:
         "generate_structural_changes_report_util.py",
     ]
 
-    for file in scripts_dir.glob("*.py"):
+    for file in tqdm(scripts_dir.glob("*.py"), desc="Processing", unit="item"):
         if file.name in known_relocations or file.stat().st_mtime > datetime(2026, 1, 22, 11, 0).timestamp():
             relocated_files.append(
                 {
@@ -244,9 +245,9 @@ def scan_created_directories() -> list[dict[str, Any]]:
         return created_dirs
 
     # Scan all subdirectories
-    for layer_dir in agentic_core.iterdir():
+    for layer_dir in tqdm(agentic_core.iterdir(), desc="Processing", unit="item"):
         if layer_dir.is_dir() and layer_dir.name.startswith("L"):
-            for subdir in layer_dir.rglob("*"):
+            for subdir in tqdm(layer_dir.rglob("*"), desc="Processing", unit="item"):
                 if subdir.is_dir():
                     # Check if directory was created recently (during boundary tests)
                     if subdir.stat().st_mtime > datetime(2026, 1, 22, 11, 0).timestamp():

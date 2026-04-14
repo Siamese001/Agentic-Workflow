@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any
+from typing import Any, Iterable
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -34,12 +34,26 @@ class EnvironmentValidatorService:
     def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize the environment validator service."""
         self.config = config or {}
+        self.required_vars = self._build_required_vars()
 
         # Lifecycle trace emission
         emit_replay_key("env_validator", "init")
         emit_determinism_digest("env_validator", "init")
         _emit_applies_guardrail("p0", "env_validator", "service_init")
         _emit_snapshots_state("p0", "env_validator", "service_state")
+
+    def _build_required_vars(self) -> tuple[str, ...]:
+        configured = self.config.get("required_vars", self.REQUIRED_VARS)
+        if isinstance(configured, str):
+            configured = [configured]
+        cleaned = []
+        seen: set[str] = set()
+        for item in configured:
+            name = str(item).strip()
+            if name and name not in seen:
+                cleaned.append(name)
+                seen.add(name)
+        return tuple(cleaned)
 
     def validate_environment(self) -> dict[str, Any]:
         """Validate required environment variables."""
@@ -58,8 +72,8 @@ class EnvironmentValidatorService:
         missing: list[str] = []
         present: list[str] = []
 
-        for var in self.REQUIRED_VARS:
-            if os.environ.get(var):
+        for var in self.required_vars:
+            if self.is_var_set(var):
                 present.append(var)
             else:
                 missing.append(var)
@@ -68,7 +82,7 @@ class EnvironmentValidatorService:
             "valid": len(missing) == 0,
             "present": present,
             "missing": missing,
-            "total_required": len(self.REQUIRED_VARS),
+            "total_required": len(self.required_vars),
         }
 
         if missing:
@@ -85,8 +99,19 @@ class EnvironmentValidatorService:
 
     def get_env_var(self, var_name: str, default: str | None = None) -> str | None:
         """Get environment variable with optional default."""
-        return os.environ.get(var_name, default)
+        value = os.environ.get(var_name)
+        if value is None or value.strip() == "":
+            return default
+        return value
 
     def is_var_set(self, var_name: str) -> bool:
         """Check if an environment variable is set and non-empty."""
-        return bool(os.environ.get(var_name))
+        return self.get_env_var(var_name) is not None
+
+    def redact_env_snapshot(self, names: Iterable[str] | None = None) -> dict[str, str]:
+        """Return a redacted snapshot suitable for logs or telemetry."""
+        result: dict[str, str] = {}
+        for name in names or self.required_vars:
+            value = self.get_env_var(name)
+            result[name] = "<set>" if value is not None else "<missing>"
+        return result

@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from tqdm import tqdm
 
 
 class CapabilityEgressGate(ADGGateBase):
@@ -55,7 +56,7 @@ class CapabilityEgressGate(ADGGateBase):
                 FROM mv_capability_and_egress_gaps
                 WHERE gap_type != 'ok'
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 (
                     node_id,
                     file,
@@ -111,7 +112,7 @@ class CapabilityEgressGate(ADGGateBase):
                 SELECT edge_id, src_file, src_layer, provider_symbol, source_file, line_no, bypass_type
                 FROM mv_gateway_bypass_paths
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 edge_id, src_file, src_layer, provider_symbol, source_file, line_no, bypass_type = row
 
                 summary["gateway_bypass_paths"] += 1

@@ -68,6 +68,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_1")
 _emit_emits_metric_event("LicCodeInterpreter", "p4obs", "metric_2")
@@ -427,7 +428,7 @@ class LICCodeInterpreter:
         if criteria is None:
             criteria = ScoringCriteria()
         scored: list[ScoredCandidate] = []
-        for i, candidate in enumerate(candidates):
+        for i, candidate in tqdm(enumerate(candidates), desc="Processing", unit="item"):
             scores: dict[str, float] = {}
             alignment_result = self.run_similarity_check(candidate, strategic_brief, method="cosine")
             scores["strategic_alignment"] = alignment_result.score

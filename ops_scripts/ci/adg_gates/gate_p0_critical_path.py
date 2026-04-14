@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from tqdm import tqdm
 
 
 class CriticalPathIntegrityGate(ADGGateBase):
@@ -71,7 +72,7 @@ class CriticalPathIntegrityGate(ADGGateBase):
                 FROM mv_runtime_spine_gaps
                 WHERE gap_count > 0
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 layer, module_count, gap_count, gap_pct = row
                 summary["spine_gap_count"] += gap_count
 
@@ -98,7 +99,7 @@ class CriticalPathIntegrityGate(ADGGateBase):
 
         # Check 2: Forbidden cross-layer hops
         try:
-            for src_layer, dst_layer in self.FORBIDDEN_HOPS:
+            for src_layer, dst_layer in tqdm(self.FORBIDDEN_HOPS, desc="Processing", unit="item"):
                 cursor = self.conn.execute(
                     """
                     SELECT COUNT(*), SUM(edge_count)
@@ -147,7 +148,7 @@ class CriticalPathIntegrityGate(ADGGateBase):
                 ORDER BY criticality_score DESC
                 LIMIT 50
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 node_id, adg_name, layer, resolved_path, fan_in, fan_out, vcount, score = row
 
                 if score > summary["max_criticality"]:

@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("state_lineage", "p4obs", "metric_1")
 _emit_emits_metric_event("state_lineage", "p4obs", "metric_2")
@@ -284,7 +285,7 @@ def build_lineage_index(result: ScanResult) -> LineageIndex:
     """
     # Pass 1: raw writes_to records
     raw_records: list[LineageRecord] = []
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type not in ("writes_to", "writes_through"):
             continue
         if not edge.from_name.startswith(_MODULE_PREFIX):

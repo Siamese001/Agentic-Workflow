@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("integrity_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("integrity_validator", "p4obs", "metric_2")
@@ -204,7 +205,7 @@ def validate_ledger_chain(entries: list[dict[str, Any]]) -> None:
     """
     _emit_snapshots_state(str(uuid.uuid4()), "Module.validate_ledger_chain", "L4_STATE")
     prev_hash = _GENESIS_HASH
-    for idx, entry in enumerate(entries):
+    for idx, entry in tqdm(enumerate(entries), desc="Processing", unit="item"):
         stored_hash = entry.get("_hash")
         if stored_hash is None:
             raise LedgerIntegrityViolation(

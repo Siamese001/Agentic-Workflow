@@ -116,6 +116,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("proposer_bridge", "p4obs", "metric_1")
 _emit_emits_metric_event("proposer_bridge", "p4obs", "metric_2")
@@ -313,7 +314,9 @@ class EvaluatorProposerBridge:
     def _signals_from_eval(self, report: EvaluationReport) -> list[ImprovementSignal]:
         """Extract improvement signals from eval report aggregate scores."""
         signals = []
-        for metric, target in {**self.RETRIEVAL_TARGETS, **self.QUALITY_TARGETS}.items():
+        for metric, target in tqdm(
+            {**self.RETRIEVAL_TARGETS, **self.QUALITY_TARGETS}.items(), desc="Processing", unit="item"
+        ):
             current = report.aggregate_scores.get(metric)
             if current is None:
                 continue

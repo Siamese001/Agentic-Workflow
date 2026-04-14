@@ -4,6 +4,7 @@ Removes broken headers and adds proper docstrings.
 """
 
 from pathlib import Path
+from tqdm import tqdm
 
 
 def fix_single_test_file(test_file: Path) -> bool:
@@ -31,7 +32,7 @@ def fix_all_test_headers(project_root: Path):
     fixed_count = 0
     skipped_count = 0
     error_count = 0
-    for test_file in test_dir.rglob("*.py"):
+    for test_file in tqdm(test_dir.rglob("*.py"), desc="Processing", unit="item"):
         if test_file.name in ("__init__.py", "conftest.py"):
             continue
         result = fix_single_test_file(test_file)

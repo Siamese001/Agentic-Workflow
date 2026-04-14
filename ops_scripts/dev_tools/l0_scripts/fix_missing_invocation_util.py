@@ -17,6 +17,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "fix_missing_invocation_util", "uwg_governed_write")
 _emit_writes_through("p1", "fix_missing_invocation_util", "uwg_governed_write_2")
@@ -161,7 +162,7 @@ def main():
     status_counts = {"Yes": 0, "No (missing super)": 0, "Inherited": 0}
     missing_invocation = []
 
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         path_str = agent.get("path", "")
         if not path_str:
             continue
@@ -199,7 +200,7 @@ def main():
         fixed_count = 0
         skipped_count = 0
 
-        for agent in missing_invocation:
+        for agent in tqdm(missing_invocation, desc="Processing", unit="item"):
             path = Path(agent["path"])
             try:
                 content = path.read_text(encoding="utf-8")

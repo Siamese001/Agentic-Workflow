@@ -7,7 +7,10 @@ This module provides:
 - Phase lock persistence and activation flags
 """
 
+import hashlib
+import json
 import logging
+import os
 import time
 import uuid
 from dataclasses import dataclass
@@ -101,8 +104,6 @@ class MetricsEmissionEnforcer:
             raise ValueError(
                 f"Blast radius {blast_radius} exceeds maximum {self._blast_radius_config.max_blast_radius_per_proposal}",
             )
-        import hashlib
-
         artifact_hash = hashlib.sha256(str(artifact).encode()).hexdigest()
         record = EmissionRecord(
             trace_id=trace_id,
@@ -231,13 +232,14 @@ class PhaseLockStore:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "PhaseLockStore.persist")
 
-        import json
-        import os
-
         lock_data = {"phase": phase, "locked": locked, "metadata": metadata or {}, "timestamp": time.time()}
         os.makedirs(self._lock_file.parent, exist_ok=True)
-        with open(self._lock_file, "w") as f:
-            json.dump(lock_data, f, indent=2)
+        temp_path = self._lock_file.with_suffix(".json.tmp")
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(lock_data, f, indent=2, sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, self._lock_file)
         Logger.info(f"Phase lock persisted: phase={phase}, locked={locked}")
 
     def restore(self) -> dict | None:
@@ -246,16 +248,14 @@ class PhaseLockStore:
         Returns:
             Lock data dictionary or None if not found
         """
-        import json
-
         if not self._lock_file.exists():
             return None
         try:
-            with open(self._lock_file) as f:
+            with open(self._lock_file, encoding="utf-8") as f:
                 lock_data = json.load(f)
             Logger.info(f"Phase lock restored: phase={lock_data.get('phase')}")
             return lock_data
-        except Exception as e:
+        except (OSError, ValueError, json.JSONDecodeError) as e:
             Logger.error(f"Failed to restore phase lock: {e}")
             return None
 
@@ -290,9 +290,10 @@ class ActivationFlagsStore:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationFlagsStore.persist_flags")
 
-        import json
-        import os
-
+        if not flags.signature:
+            raise RuntimeError("Signature required for activation flag persistence")
+        if flags.meta_learning_enabled and not flags.replay_digest_hash:
+            raise RuntimeError("Replay digest required before enabling meta-learning")
         flags_data = {
             "execution_hardened": flags.execution_hardened,
             "mutation_surface_zero": flags.mutation_surface_zero,
@@ -307,8 +308,12 @@ class ActivationFlagsStore:
             "timestamp": time.time(),
         }
         os.makedirs(self._flags_file.parent, exist_ok=True)
-        with open(self._flags_file, "w") as f:
-            json.dump(flags_data, f, indent=2)
+        temp_path = self._flags_file.with_suffix(".json.tmp")
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(flags_data, f, indent=2, sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, self._flags_file)
         Logger.info("Activation flags persisted to L4")
 
     def restore_flags(self) -> ActivationFlags | None:
@@ -317,12 +322,10 @@ class ActivationFlagsStore:
         Returns:
             ActivationFlags or None if not found
         """
-        import json
-
         if not self._flags_file.exists():
             return None
         try:
-            with open(self._flags_file) as f:
+            with open(self._flags_file, encoding="utf-8") as f:
                 flags_data = json.load(f)
             flags = ActivationFlags(
                 execution_hardened=flags_data.get("execution_hardened", False),
@@ -338,7 +341,7 @@ class ActivationFlagsStore:
             )
             Logger.info("Activation flags restored from L4")
             return flags
-        except Exception as e:
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
             Logger.error(f"Failed to restore activation flags: {e}")
             return None
 

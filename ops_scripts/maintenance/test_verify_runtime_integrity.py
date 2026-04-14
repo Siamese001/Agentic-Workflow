@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("test_verify_runtime_integrity", "p4obs", "metric_1")
 _emit_emits_metric_event("test_verify_runtime_integrity", "p4obs", "metric_2")
@@ -217,7 +218,7 @@ def test_instantiation():
         ("L2_execution.L2ExecutionBase", "L2ExecutionBase"),
     ]
 
-    for module_path, class_name in agents_to_test:
+    for module_path, class_name in tqdm(agents_to_test, desc="Processing", unit="item"):
         try:
             print(f"[TEST] Loading {class_name} from {module_path}...")
             module = __import__(f"agentic_core.{module_path}", fromlist=[class_name])

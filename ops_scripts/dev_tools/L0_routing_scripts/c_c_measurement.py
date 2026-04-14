@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("c_c_measurement", "p4obs", "metric_1")
 _emit_emits_metric_event("c_c_measurement", "p4obs", "metric_2")
@@ -240,10 +241,12 @@ class CCMeasurement:
         if not data:
             return metrics
         all_functions = []
-        for file_path, file_data in data.items():
+        for file_path, file_data in tqdm(data.items(), desc="Processing", unit="item"):
             if isinstance(file_data, dict) and "functions" in file_data:
                 metrics["files_analyzed"] += 1
-                for func_name, func_cc in file_data["functions"].items():
+                for func_name, func_cc in tqdm(
+                    file_data["functions"].items(), desc="Processing", unit="item"
+                ):
                     metrics["total_functions"] += 1
                     metrics["total_cc"] += func_cc
                     func_info = {"file": file_path, "function": func_name, "cc": func_cc}

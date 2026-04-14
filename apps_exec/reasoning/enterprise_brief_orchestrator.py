@@ -46,6 +46,7 @@ from apps_exec.services.repo_signal_service import RepoSignalService
 from apps_exec.validators.brief_style_validator import (
     BriefValidationAgent,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -295,7 +296,7 @@ class EnterpriseBriefOrchestrator:
         all_similar: list[dict[str, Any]] = []
         benchmarks: dict[str, Any] = {}
 
-        for persona in personas:
+        for persona in tqdm(personas, desc="Processing", unit="item"):
             # Get similar briefs
             query = {"audience_persona": persona}
             similar = self.retrieval_engine.find_similar_briefs(

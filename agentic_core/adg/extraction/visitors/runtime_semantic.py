@@ -13,6 +13,7 @@ import ast
 from typing import TYPE_CHECKING
 
 from . import BaseRuntimeVisitor, VisitorContext, register_visitor
+from tqdm import tqdm
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import Edge
@@ -226,7 +227,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
         """Emit one edge per control structure (if/for/while/try) in a function."""
         if self._current_function == "":
             return
-        for stmt in ast.walk(ast.Module(body=body, type_ignores=[])):
+        for stmt in tqdm(ast.walk(ast.Module(body=body, type_ignores=[])), desc="Processing", unit="item"):
             if isinstance(stmt, ast.If):
                 self._func_seq += 1
                 self._emit(
@@ -266,7 +267,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
         """Emit flows_to edges for variable assignments within functions."""
         if self._current_function == "":
             return
-        for stmt in ast.walk(ast.Module(body=body, type_ignores=[])):
+        for stmt in tqdm(ast.walk(ast.Module(body=body, type_ignores=[])), desc="Processing", unit="item"):
             if not isinstance(stmt, ast.Assign):
                 continue
             # Collect source variables read in the RHS
@@ -277,7 +278,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
             if not sources:
                 continue
             # For each target, emit a flows_to edge
-            for tgt in stmt.targets:
+            for tgt in tqdm(stmt.targets, desc="Processing", unit="item"):
                 if isinstance(tgt, ast.Name):
                     self._func_seq += 1
                     self._emit(
@@ -294,7 +295,7 @@ class _ExecutionSemanticVisitor(BaseRuntimeVisitor):
         """Emit side-effect and callsite-resolution edges for calls."""
         if self._current_function == "":
             return
-        for stmt in ast.walk(ast.Module(body=body, type_ignores=[])):
+        for stmt in tqdm(ast.walk(ast.Module(body=body, type_ignores=[])), desc="Processing", unit="item"):
             if not isinstance(stmt, ast.Call):
                 continue
             sym = self._sym_of_call(stmt)

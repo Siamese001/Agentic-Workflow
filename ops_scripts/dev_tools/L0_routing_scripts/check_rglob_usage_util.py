@@ -90,6 +90,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("check_rglob_usage_util", "p4obs", "metric_1")
 _emit_emits_metric_event("check_rglob_usage_util", "p4obs", "metric_2")
@@ -241,7 +242,7 @@ def scan_for_rglob_usage(root_dir: Path) -> tuple[int, list[dict]]:
     total_count = 0
     offenders = []
 
-    for py_file in root_dir.rglob("*.py"):
+    for py_file in tqdm(root_dir.rglob("*.py"), desc="Processing", unit="item"):
         # Skip excluded paths
         if should_exclude_path(py_file):
             continue

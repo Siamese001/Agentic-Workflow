@@ -33,6 +33,7 @@ import hashlib
 import sys
 import time
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -129,7 +130,7 @@ def collect_from_chroma(chroma_path: str) -> tuple[list[dict], int, int]:
         if not batch_docs:
             break
 
-        for doc, meta in zip(batch_docs, batch_metas):
+        for doc, meta in tqdm(zip(batch_docs, batch_metas), desc="Processing", unit="item"):
             meta = meta or {}
             if is_garbage(doc):
                 garbage_skipped += 1
@@ -170,13 +171,13 @@ def collect_from_disk(repo_root: Path) -> list[dict]:
     all_docs: list[dict] = []
     seen: set[str] = set()
 
-    for dir_rel, doc_type, globs in ON_DISK_DIRS:
+    for dir_rel, doc_type, globs in tqdm(ON_DISK_DIRS, desc="Processing", unit="item"):
         base = repo_root / dir_rel
         if not base.exists():
             continue
         batch = []
-        for glob in globs:
-            for f in sorted(base.rglob(glob)):
+        for glob in tqdm(globs, desc="Processing", unit="item"):
+            for f in tqdm(sorted(base.rglob(glob)), desc="Processing", unit="item"):
                 if not f.is_file():
                     continue
                 rel_path = str(f.relative_to(repo_root)).replace("\\", "/")
@@ -190,7 +191,7 @@ def collect_from_disk(repo_root: Path) -> list[dict]:
                 if is_garbage(source):
                     continue
                 canonical_digest = compute_digest(source)
-                for chunk_idx, chunk in enumerate(chunk_text(source)):
+                for chunk_idx, chunk in tqdm(enumerate(chunk_text(source)), desc="Processing", unit="item"):
                     batch.append(
                         {
                             "text": chunk,

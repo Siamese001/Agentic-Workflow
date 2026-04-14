@@ -19,7 +19,7 @@ from __future__ import annotations
 import functools
 import logging
 import os
-import threading
+import contextvars
 import uuid
 from typing import Any, Callable, TypeVar
 
@@ -43,21 +43,35 @@ Logger = logging.getLogger(__name__)
 
 F = TypeVar("F", bound=Callable[..., Any])
 
-# Thread-local storage for tracking active guard contexts
-_guard_context = threading.local()
+_ACTIVE_GUARDS: contextvars.ContextVar[frozenset[str]] = contextvars.ContextVar(
+    "v15_active_guards",
+    default=frozenset(),
+)
+_CORRELATION_ID: contextvars.ContextVar[str | None] = contextvars.ContextVar(
+    "v15_correlation_id",
+    default=None,
+)
 
 
-def _get_active_guards() -> set[str]:
+def _get_active_guards() -> frozenset[str]:
     """Return the set of currently active guard entry point IDs."""
     _emit_applies_guardrail(str(uuid.uuid4()), "Module._get_active_guards", "L0_ROUTING")
-    if not hasattr(_guard_context, "active"):
-        _guard_context.active = set()
-    return _guard_context.active
+    return _ACTIVE_GUARDS.get()
 
 
 def _get_correlation_id() -> str | None:
     """Return the current correlation_id if inside a guarded context."""
-    return getattr(_guard_context, "correlation_id", None)
+    return _CORRELATION_ID.get()
+
+
+def _resolve_correlation_id(entry_point_id: str) -> str:
+    """Prefer the active execution trace ID; otherwise use a deterministic fallback."""
+    from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+    active = get_active_execution_trace()
+    if active and getattr(active, "trace_id", None):
+        return active.trace_id
+    return f"guard:{entry_point_id}"
 
 
 def runtime_guard(entry_point_id: str) -> Callable[[F], F]:
@@ -106,12 +120,11 @@ def _guarded_call(
     kwargs: dict[str, Any],
 ) -> Any:
     """Execute a synchronous function under V15 guard."""
-    correlation_id = str(uuid.uuid4())
-    active = _get_active_guards()
-    old_corr = getattr(_guard_context, "correlation_id", None)
-
+    correlation_id = _resolve_correlation_id(entry_point_id)
+    active = set(_get_active_guards())
     active.add(entry_point_id)
-    _guard_context.correlation_id = correlation_id
+    active_token = _ACTIVE_GUARDS.set(frozenset(active))
+    corr_token = _CORRELATION_ID.set(correlation_id)
 
     Logger.debug(
         "[V15-GUARD] ENTER %s correlation_id=%s",
@@ -127,18 +140,16 @@ def _guarded_call(
             correlation_id,
         )
         return result
-    except (ValueError, TypeError, RuntimeError) as e:
-        # TODO: Handle specific exception properly
-        raise  # Re-raise after logging/handling
-        Logger.debug(
+    except Exception:  # guardian: allow-broad-exception -- guard enforcement boundary must capture and log all exceptions before re-raising
+        Logger.exception(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,
             correlation_id,
         )
         raise
     finally:
-        active.discard(entry_point_id)
-        _guard_context.correlation_id = old_corr
+        _ACTIVE_GUARDS.reset(active_token)
+        _CORRELATION_ID.reset(corr_token)
 
 
 async def _async_guarded_call(
@@ -148,12 +159,11 @@ async def _async_guarded_call(
     kwargs: dict[str, Any],
 ) -> Any:
     """Execute an async function under V15 guard."""
-    correlation_id = str(uuid.uuid4())
-    active = _get_active_guards()
-    old_corr = getattr(_guard_context, "correlation_id", None)
-
+    correlation_id = _resolve_correlation_id(entry_point_id)
+    active = set(_get_active_guards())
     active.add(entry_point_id)
-    _guard_context.correlation_id = correlation_id
+    active_token = _ACTIVE_GUARDS.set(frozenset(active))
+    corr_token = _CORRELATION_ID.set(correlation_id)
 
     Logger.debug(
         "[V15-GUARD] ENTER %s correlation_id=%s",
@@ -169,18 +179,16 @@ async def _async_guarded_call(
             correlation_id,
         )
         return result
-    except (ValueError, TypeError, RuntimeError) as e:
-        # TODO: Handle specific exception properly
-        raise  # Re-raise after logging/handling
-        Logger.debug(
+    except Exception:  # guardian: allow-broad-exception -- guard enforcement boundary must capture and log all exceptions before re-raising
+        Logger.exception(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,
             correlation_id,
         )
         raise
     finally:
-        active.discard(entry_point_id)
-        _guard_context.correlation_id = old_corr
+        _ACTIVE_GUARDS.reset(active_token)
+        _CORRELATION_ID.reset(corr_token)
 
 
 def assert_v15_guarded(entry_point_id: str) -> None:

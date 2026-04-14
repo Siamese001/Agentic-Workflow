@@ -17,6 +17,7 @@ from concurrent.futures import ThreadPoolExecutor, Future
 
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from .contextual_engine import ContextualIntelligenceEngine, AnalysisResult
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -218,7 +219,7 @@ class CollaborativeIntelligence:
         # Auto-select based on context and capabilities
         candidates = []
 
-        for agent_id, profile in self.agent_profiles.items():
+        for agent_id, profile in tqdm(self.agent_profiles.items(), desc="Processing", unit="item"):
             if agent_id == requesting_agent or not profile.availability:
                 continue
 

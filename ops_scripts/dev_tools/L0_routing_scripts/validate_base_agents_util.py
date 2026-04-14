@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validate_base_agents_util", "p4obs", "metric_1")
 _emit_emits_metric_event("validate_base_agents_util", "p4obs", "metric_2")
@@ -206,7 +207,7 @@ def find_base_agents() -> dict[str, list[dict]]:
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "find_base_agents")
     base_agents_by_layer = defaultdict(list)
-    for agent in data:
+    for agent in tqdm(data, desc="Processing", unit="item"):
         class_name = agent.get("class_name", "")
         layer = agent.get("layer", "")
         is_base_agent = (
@@ -230,7 +231,7 @@ def validate_base_agents() -> tuple[bool, list[str]]:
     print("BASE AGENT UNIQUENESS VALIDATION")
     print("=" * 80)
     print()
-    for layer in LAYERS:
+    for layer in tqdm(LAYERS, desc="Processing", unit="item"):
         agents = base_agents.get(layer, [])
         canonical = CANONICAL_BASE_AGENTS.get(layer)
         print(f"{layer} Layer:")
@@ -287,7 +288,7 @@ def suggest_fixes() -> list[str]:
     """Suggest fixes for base agent violations."""
     base_agents = find_base_agents()
     fixes = []
-    for layer in LAYERS:
+    for layer in tqdm(LAYERS, desc="Processing", unit="item"):
         agents = base_agents.get(layer, [])
         canonical = CANONICAL_BASE_AGENTS.get(layer)
         if len(agents) > 1:

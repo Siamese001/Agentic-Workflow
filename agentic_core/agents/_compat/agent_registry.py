@@ -1,11 +1,21 @@
-"""Shim: re-exports from canonical location for backward compatibility."""
+"""Compatibility shim that re-exports the canonical agent registry module."""
 
-import importlib as _il
-import sys as _sys
-import types as _types
+from __future__ import annotations
 
-_p = _types.ModuleType(__name__)
-_sys.modules[__name__] = _p
-_c = _il.import_module("agentic_core.agents.types.agent_registry")
-_sys.modules[__name__] = _c
-_p.__dict__.update(_c.__dict__)
+from agentic_core.agents.types import agent_registry as _canonical_agent_registry
+
+AGENT_REGISTRY = _canonical_agent_registry.AGENT_REGISTRY
+get_execution_profile = _canonical_agent_registry.get_execution_profile
+get_profile = _canonical_agent_registry.get_profile
+has_profile = _canonical_agent_registry.has_profile
+list_agent_ids = _canonical_agent_registry.list_agent_ids
+registry_digest = _canonical_agent_registry.registry_digest
+
+__all__ = [
+    "AGENT_REGISTRY",
+    "get_execution_profile",
+    "get_profile",
+    "has_profile",
+    "list_agent_ids",
+    "registry_digest",
+]

@@ -86,7 +86,7 @@ class InvalidationMessage:
     affected_keys: list[str]
     version: str | None = None
     reason: str = ""
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = field(default_factory=datetime.utcnow)
     source_layer: LayerType | None = None
     cascade_to_layers: list[LayerType] = field(default_factory=list)
 
@@ -223,32 +223,28 @@ class DistributedLockManager:
         self._lock = asyncio.Lock()
 
     async def acquire_lock(self, key: str, holder: str, timeout_seconds: int = 30) -> bool:
-        """Acquire distributed lock."""
+        """Acquire distributed lock without awaiting while holding the manager lock."""
         async with self._lock:
-            # Check if lock is available
+            timeout = self.lock_timeouts.get(key)
             if key in self.lock_holders:
-                holder_info = self.lock_holders[key]
-                timeout = self.lock_timeouts.get(key)
-
-                # Check if lock has expired
-                if timeout and datetime.now() > timeout:
+                if timeout and datetime.utcnow() > timeout:
                     del self.lock_holders[key]
                     del self.lock_timeouts[key]
                 else:
-                    return False  # Lock is held and not expired
+                    return False
 
-            # Acquire lock
-            if key not in self.locks:
-                self.locks[key] = asyncio.Lock()
+            lock_obj = self.locks.setdefault(key, asyncio.Lock())
 
-            try:
-                await asyncio.wait_for(self.locks[key].acquire(), timeout=timeout_seconds)
-                self.lock_holders[key] = holder
-                self.lock_timeouts[key] = datetime.now() + timedelta(seconds=timeout_seconds)
-                logger.info(f"Lock acquired for {key} by {holder}")
-                return True
-            except asyncio.TimeoutError:
-                return False
+        try:
+            await asyncio.wait_for(lock_obj.acquire(), timeout=timeout_seconds)
+        except asyncio.TimeoutError:
+            return False
+
+        async with self._lock:
+            self.lock_holders[key] = holder
+            self.lock_timeouts[key] = datetime.utcnow() + timedelta(seconds=timeout_seconds)
+        logger.info(f"Lock acquired for {key} by {holder}")
+        return True
 
     async def release_lock(self, key: str, holder: str) -> bool:
         """Release distributed lock."""
@@ -356,7 +352,7 @@ class ConsistencyMonitor:
         """Resolve consistency inconsistency."""
         resolution = {
             "key": key,
-            "timestamp": datetime.now(),
+            "timestamp": datetime.utcnow(),
             "inconsistencies": inconsistencies,
             "entries": {layer.value: entry.__dict__ for layer, entry in entries.items()},
             "resolution": "automatic",
@@ -421,18 +417,28 @@ class CrossLayerCoherenceManager:
             self.sync_status[layer_type] = SyncStatusInfo(
                 layer_type=layer_type,
                 status=SyncStatus.SYNCED,
-                last_sync=datetime.now(),
+                last_sync=datetime.utcnow(),
                 pending_operations=0,
                 failed_operations=0,
             )
 
     async def start_monitoring(self):
         """Start consistency monitoring."""
-        asyncio.create_task(self.consistency_monitor.start_monitoring(self))
+        if getattr(self, "_monitoring_task", None) and not self._monitoring_task.done():
+            return
+        self._monitoring_task = asyncio.create_task(
+            self.consistency_monitor.start_monitoring(self),
+            name="cross-layer-coherence-monitor",
+        )
 
     async def stop_monitoring(self):
         """Stop consistency monitoring."""
         await self.consistency_monitor.stop_monitoring()
+        task = getattr(self, "_monitoring_task", None)
+        if task:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+            self._monitoring_task = None
 
     async def add_cache_entry(
         self,
@@ -475,7 +481,7 @@ class CrossLayerCoherenceManager:
 
             # Publish update event
             message = InvalidationMessage(
-                event_id=f"update_{int(time.time())}_{key}",
+                event_id=str(uuid.uuid4()),
                 event_type=InvalidationEvent.DATA_UPDATE,
                 layer_type=layer_type,
                 affected_keys=[key],
@@ -528,7 +534,7 @@ class CrossLayerCoherenceManager:
 
                 # Publish update event
                 message = InvalidationMessage(
-                    event_id=f"update_{int(time.time())}_{key}",
+                    event_id=str(uuid.uuid4()),
                     event_type=InvalidationEvent.VERSION_CHANGE,
                     layer_type=layer_type,
                     affected_keys=[key],

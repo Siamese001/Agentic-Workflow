@@ -40,6 +40,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 # Self-bootstrap emitters for this module
 emit_replay_key("p0", "mcp_drift_recorder")
@@ -386,7 +387,7 @@ class MCPDriftRecorder:
         servers: dict[str, MCPServerState] = {}
         mcp_servers = config_data.get("mcpServers", {})
 
-        for server_name, server_config in mcp_servers.items():
+        for server_name, server_config in tqdm(mcp_servers.items(), desc="Processing", unit="item"):
             # Determine target layer from capabilities or default to L2
             capabilities = server_config.get("capabilities") or []
             target_layer = self._infer_layer(server_name, capabilities)
@@ -470,7 +471,7 @@ class MCPDriftRecorder:
         events: list[MCPDriftEvent] = []
 
         # Detect added servers
-        for name in current.servers:
+        for name in tqdm(current.servers, desc="Processing", unit="item"):
             if name not in baseline.servers:
                 events.append(
                     MCPDriftEvent(
@@ -485,7 +486,7 @@ class MCPDriftRecorder:
                 )
 
         # Detect removed servers
-        for name in baseline.servers:
+        for name in tqdm(baseline.servers, desc="Processing", unit="item"):
             if name not in current.servers:
                 events.append(
                     MCPDriftEvent(
@@ -500,7 +501,7 @@ class MCPDriftRecorder:
                 )
 
         # Detect changes in existing servers
-        for name in baseline.servers:
+        for name in tqdm(baseline.servers, desc="Processing", unit="item"):
             if name in current.servers:
                 baseline_state = baseline.servers[name]
                 current_state = current.servers[name]

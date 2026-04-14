@@ -3,7 +3,7 @@ Underwriting Engine - Main orchestrator for the underwriting workflow.
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from ..engines.decision_packet_assembler import AssemblerInput, DecisionPacketAssembler
@@ -104,7 +104,7 @@ class UnderwritingEngine:
         """
         result = UnderwritingResult()
         result.request_id = request.request_id
-        start_time = datetime.now()
+        start_time = datetime.now(timezone.utc)
 
         try:
             # Step 1: Initialize evidence register
@@ -195,15 +195,24 @@ class UnderwritingEngine:
             # Processing metadata
             result.processing_metadata = {
                 "start_time": start_time.isoformat(),
-                "end_time": datetime.now().isoformat(),
+                "end_time": datetime.now(timezone.utc).isoformat(),
+                "duration_ms": int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
                 "reconciliation_pass_rate": reconciliation.pass_rate,
                 "validator_results": list(validator_results.keys()),
                 "exception_count": exception_summary.exception_count,
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- top-level workflow catch-all; any engine sub-failure must escalate to human review without crashing the orchestrator
             result.success = False
+            result.human_review_required = True
+            result.human_review_reason = "workflow_execution_error"
             result.errors.append(f"Underwriting processing error: {str(e)}")
+            result.processing_metadata = {
+                "start_time": start_time.isoformat(),
+                "end_time": datetime.now(timezone.utc).isoformat(),
+                "duration_ms": int((datetime.now(timezone.utc) - start_time).total_seconds() * 1000),
+                "error_type": type(e).__name__,
+            }
             result.decision = "ESCALATE_TO_HUMAN"
 
         return result

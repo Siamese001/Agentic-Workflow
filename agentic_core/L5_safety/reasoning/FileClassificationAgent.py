@@ -297,6 +297,7 @@ _emit_validated_by_safety_plane("p1", "FileClassificationAgent", "safety_validat
 _emit_invokes_eval("p1", "FileClassificationAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "FileClassificationAgent", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_FileClassificationAgent", "FileClassificationAgent_dispatch_entry")
 emit_determinism_digest("trace_FileClassificationAgent", "FileClassificationAgent_dispatch_exit")
@@ -740,7 +741,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 self.logger.warning(f"[DUPLICATE] {dv['message']}")
 
         # Iterating over a copy to allow registry updates during renames
-        for idx, path in enumerate(list(self.file_registry)):
+        for idx, path in tqdm(enumerate(list(self.file_registry)), desc="Processing", unit="item"):
             if not path.exists():
                 continue
 
@@ -1226,7 +1227,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         is_exception = primary_name.endswith(("Error", "Exception"))
 
         # Protocol via bases
-        for base in primary_node.bases:
+        for base in tqdm(primary_node.bases, desc="Processing", unit="item"):
             if isinstance(base, ast.Name):
                 if base.id == "Protocol":
                     is_protocol = True
@@ -1537,7 +1538,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         - raise *Error inside validate_* or assert_*_allowed
         - OR function returning (False, "...") pattern
         """
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if node.name.startswith(("validate_", "assert_")) or node.name.startswith("verify_"):
                     for child in ast.walk(node):
@@ -1725,7 +1726,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             "utils": "UTILITY",
         }
         detected_roles: set[str] = set()
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, (ast.Import, ast.ImportFrom)):
                 module = ""
                 if isinstance(node, ast.ImportFrom) and node.module:
@@ -1879,7 +1880,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             "L3OrchestrationBase",
             "IOrchestratorProtocol",
         }
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 for base in node.bases:
                     bname = ""
@@ -2172,7 +2173,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         stem = path.stem
 
         # Stuttering detection: r_g_ should be rg_, l_i_c_ should be lic_
-        for stutter, correct in STUTTERING_PREFIX_MAP.items():
+        for stutter, correct in tqdm(STUTTERING_PREFIX_MAP.items(), desc="Processing", unit="item"):
             if stem.startswith(stutter):
                 return {
                     "file": str(path),
@@ -2186,7 +2187,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 }
 
         # App-prefix placement: rg_* files must be in apps_rg/
-        for prefix, target_app in APP_SPECIFIC_PREFIXES.items():
+        for prefix, target_app in tqdm(APP_SPECIFIC_PREFIXES.items(), desc="Processing", unit="item"):
             if stem.startswith(prefix):
                 if target_app not in path.parts:
                     return {
@@ -2364,7 +2365,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if "scripts" in parts:
             import re as _re
 
-            for pattern in SCRIPTS_FORBIDDEN_PATTERNS:
+            for pattern in tqdm(SCRIPTS_FORBIDDEN_PATTERNS, desc="Processing", unit="item"):
                 if _re.match(pattern, path.name):
                     vtype = "PASCALCASE_IN_SCRIPTS" if pattern.startswith(r"^[A-Z]") else "TEST_IN_SCRIPTS"
                     return {
@@ -2686,7 +2687,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         import_scores: dict[str, int] = {}
         import_evidence: dict[str, list[str]] = {}
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             mod = None
             if isinstance(node, ast.Import):
                 for alias in node.names:
@@ -2705,14 +2706,18 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                         import_evidence.setdefault(layer, []).append(mod)
             # Check cross-layer agentic_core imports
             if mod.startswith("agentic_core."):
-                for layer_name in (
-                    "L0_routing",
-                    "L1_cognition",
-                    "L2_execution",
-                    "L3_orchestration",
-                    "L4_state",
-                    "L5_safety",
-                    "L6_observability",
+                for layer_name in tqdm(
+                    (
+                        "L0_routing",
+                        "L1_cognition",
+                        "L2_execution",
+                        "L3_orchestration",
+                        "L4_state",
+                        "L5_safety",
+                        "L6_observability",
+                    ),
+                    desc="Processing",
+                    unit="item",
                 ):
                     if f"agentic_core.{layer_name}" in mod and layer_name != current_layer:
                         import_scores[layer_name] = import_scores.get(layer_name, 0) + cross_layer_weight
@@ -3148,7 +3153,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if AGENTIC_CORE_DIR not in path_str:
             return None
 
-        for prefix in APP_DOMAIN_PREFIXES:
+        for prefix in tqdm(APP_DOMAIN_PREFIXES, desc="Processing", unit="item"):
             if filename.startswith(prefix):
                 # Determine which app domain this belongs to
                 app_domain = f"apps_{prefix.lower()}"
@@ -3191,7 +3196,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 return None
 
         # Check forbidden patterns
-        for pattern in FORBIDDEN_EPHEMERAL_PATTERNS:
+        for pattern in tqdm(FORBIDDEN_EPHEMERAL_PATTERNS, desc="Processing", unit="item"):
             if re.search(pattern, filename):
                 return {
                     "type": "EPHEMERAL_SCRIPT",
@@ -3297,7 +3302,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             filename_index.setdefault(path.name, []).append(path)
 
         violations = []
-        for filename, paths in filename_index.items():
+        for filename, paths in tqdm(filename_index.items(), desc="Processing", unit="item"):
             if len(paths) < 2:
                 continue
 
@@ -3313,7 +3318,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             canonical = scored[0]
             duplicates = scored[1:]
 
-            for dup in duplicates:
+            for dup in tqdm(duplicates, desc="Processing", unit="item"):
                 violations.append(
                     {
                         "type": "DUPLICATE_FILE",
@@ -3357,7 +3362,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         # This replaces the O(n^2) per-candidate AST re-parse that caused execute_ssot
         # Phase 2 reconciliation to hang on large repositories.
         _import_index: dict[str, int] = {}
-        for path in file_registry:
+        for path in tqdm(file_registry, desc="Processing", unit="item"):
             if not path.name.endswith(".py"):
                 continue
             try:
@@ -3382,16 +3387,16 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             ):  # guardian: Parsing and encoding errors need separate handling strategies
                 continue
 
-        for directory, paths in dir_index.items():
+        for directory, paths in tqdm(dir_index.items(), desc="Processing", unit="item"):
             if len(paths) < 2:
                 continue
 
             # Extract primary class name per file (first ClassDef in AST)
             class_map: dict[str, list[Path]] = {}
-            for path in paths:
+            for path in tqdm(paths, desc="Processing", unit="item"):
                 try:
                     tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
-                    for node in ast.walk(tree):
+                    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                         if isinstance(node, ast.ClassDef):
                             # Normalise: strip I-prefix and Protocol/Base suffixes
                             norm = node.name
@@ -3415,7 +3420,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
             # Flag groups with >1 file sharing the same normalised primary class
             seen_pairs: set[tuple[str, str]] = set()
-            for norm_key, group_paths in class_map.items():
+            for norm_key, group_paths in tqdm(class_map.items(), desc="Processing", unit="item"):
                 unique = list(dict.fromkeys(group_paths))  # dedupe, preserve order
                 if len(unique) < 2:
                     continue
@@ -3423,7 +3428,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 # Determine canonical: most module-level importers wins, then shorter name.
                 scored = sorted(unique, key=lambda p: (-_import_index.get(p.stem, 0), len(p.name), p.name))
                 canonical = scored[0]
-                for dup in scored[1:]:
+                for dup in tqdm(scored[1:], desc="Processing", unit="item"):
                     pair_key = (str(canonical), str(dup))
                     if pair_key in seen_pairs:
                         continue
@@ -3481,7 +3486,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         if module_doc:
             text_signals.append(module_doc.lower())
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 text_signals.append(node.name.lower())
                 class_doc = ast.get_docstring(node)
@@ -3552,7 +3557,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         ):  # guardian: Parsing and encoding errors need separate handling strategies
             return scores
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 # Agent indicators
                 if node.name.endswith("Agent"):
@@ -3572,7 +3577,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                             scores["TYPES"] += 10
 
                 # Type indicators: BaseModel, Enum, Protocol inheritance
-                for base in node.bases:
+                for base in tqdm(node.bases, desc="Processing", unit="item"):
                     if isinstance(base, ast.Name):
                         if base.id == "BaseModel":
                             scores["TYPES"] += 10
@@ -3726,7 +3731,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             tree = ast.parse(content)
             content_lower = content.lower()
 
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 # Check in function/class names
                 if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
                     if any(pattern.lower() in node.name.lower() for pattern in patterns):
@@ -3792,7 +3797,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         constant_assignments = 0
         config_methods = 0
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Check classes
             if isinstance(node, ast.ClassDef):
                 # Check naming
@@ -3849,7 +3854,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         check_functions = 0
         assert_usage = 0
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Check classes
             if isinstance(node, ast.ClassDef):
                 if any(pattern in node.name for pattern in patterns):
@@ -4229,8 +4234,8 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         # Regex to parse 'OriginalName.py.CONFLICT_123456' -> 'OriginalName.py'
         conflict_pattern = re.compile(r"^(.*)\.CONFLICT_\d+$")
 
-        for dirpath, _, filenames in os.walk(root):
-            for filename in filenames:
+        for dirpath, _, filenames in tqdm(os.walk(root), desc="Processing", unit="item"):
+            for filename in tqdm(filenames, desc="Processing", unit="item"):
                 match = conflict_pattern.match(filename)
                 if match:
                     conflict_path = Path(dirpath) / filename
@@ -4280,7 +4285,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         # Try common patterns
         candidates = [test_dir / f"test_{stem}.py", test_dir / f"{stem}_test.py"]
 
-        for test_file in candidates:
+        for test_file in tqdm(candidates, desc="Processing", unit="item"):
             if test_file.exists():
                 # Determine new test name based on found pattern
                 if test_file.name.startswith("test_"):
@@ -4306,7 +4311,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
 
         regex_symbol = re.compile(rf"\b{re.escape(old_name)}\b")
 
-        for path in config_files:
+        for path in tqdm(config_files, desc="Processing", unit="item"):
             if not path.exists():
                 continue  # guardian: File operations with encoding need error-specific handling
             try:
@@ -4337,7 +4342,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         # Strict word boundary regex to prevent substring matches
         regex_symbol = re.compile(rf"\b{re.escape(old_name)}\b")
 
-        for path in self.file_registry:
+        for path in tqdm(self.file_registry, desc="Processing", unit="item"):
             if not path or not path.exists():
                 continue
 
@@ -4393,7 +4398,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         # ensuring that 'from ..llm_mixin' correctly becomes 'from ..new_name' (or the new name).
 
         # Optimized: Scans in-memory file_registry instead of hitting disk rglob
-        for _i, path in enumerate(self.file_registry):
+        for _i, path in tqdm(enumerate(self.file_registry), desc="Processing", unit="item"):
             if path.name == new_name or not path.exists():
                 continue
             try:
@@ -4767,7 +4772,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
             except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
                 return None
 
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
                     # Check if it's a dataclass or BaseModel
                     is_passive = False
@@ -4946,7 +4951,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
                 # CONFIG, PROTOCOL, TYPES, STRATEGY, ADAPTER etc. should NOT be in base_agents
                 # Flag for movement to appropriate location
                 if file_type in ("CONFIG", "PROTOCOL", "TYPES", "STRATEGY", "ADAPTER"):
-                    for i, part in enumerate(path.parts):
+                    for i, part in tqdm(enumerate(path.parts), desc="Processing", unit="item"):
                         if part == AGENTIC_CORE_DIR:
                             # Route to appropriate folder based on type
                             target_folder = {
@@ -5506,7 +5511,7 @@ class FileClassificationHealerAgent(*BASE_CLASSES):
         rename_map: dict[str, str] = {}
         existing_files: set[str] = set()
 
-        for path in self.file_registry:
+        for path in tqdm(self.file_registry, desc="Processing", unit="item"):
             if path is None or not path.exists():
                 continue
             try:

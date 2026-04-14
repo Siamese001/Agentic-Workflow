@@ -185,6 +185,7 @@ _emit_validated_by_safety_plane("p1", "ArchitectureGovernorAgent", "safety_valid
 _emit_invokes_eval("p1", "ArchitectureGovernorAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "ArchitectureGovernorAgent", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_ArchitectureGovernorAgent", "ArchitectureGovernorAgent_dispatch_entry")
 emit_determinism_digest("trace_ArchitectureGovernorAgent", "ArchitectureGovernorAgent_dispatch_exit")
@@ -464,7 +465,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
             else:
                 target_roots = sorted(PROJECT_ROOT_WHITELIST)
-            for root_name in target_roots:
+            for root_name in tqdm(target_roots, desc="Processing", unit="item"):
                 root_path = self.project_root / root_name
                 if not root_path.exists():
                     continue
@@ -472,7 +473,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 Logger.info(f"  Scanning territory: {root_name}")
                 validator = self._get_structure_validator()
                 report = validator.validate_structure(root_path)
-                for violation in report.violations:
+                for violation in tqdm(report.violations, desc="Processing", unit="item"):
                     if "must end with 'Agent'" in violation.message:
                         if "'Error'" in violation.message or "'Exception'" in violation.message:
                             continue
@@ -648,7 +649,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         Logger.warning(f"⚠️ Target territory not found: {t}")
             else:
                 scan_targets = [self.project_root / k for k in sorted(PROJECT_ROOT_WHITELIST)]
-            for root_path in scan_targets:
+            for root_path in tqdm(scan_targets, desc="Processing", unit="item"):
                 if not root_path.exists():
                     continue
                 root_name = root_path.name
@@ -661,7 +662,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
                     hierarchy = HierarchyAgent(project_root=self.project_root)
                     h_report = hierarchy.scan_root_violations(target_territory=root_name)
-                    for h_violation in h_report.get("violations", []):
+                    for h_violation in tqdm(h_report.get("violations", []), desc="Processing", unit="item"):
                         total_violations += 1
                         violation_details.append(
                             {
@@ -676,7 +677,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     Logger.warning(f"Hierarchy cross-check failed for {root_name}: {e}")
-                for violation in report.violations:
+                for violation in tqdm(report.violations, desc="Processing", unit="item"):
                     if "must end with 'Agent'" in violation.message:
                         if "'Error'" in violation.message or "'Exception'" in violation.message:
                             continue
@@ -962,7 +963,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         Logger.info(f"[{agent_name}] Triggering Deduplication Audit...")
         collisions: list[dict[str, Any]] = []
         validator = self._get_structure_validator()
-        for root_name in roots:
+        for root_name in tqdm(roots, desc="Processing", unit="item"):
             root_path = self.project_root / root_name
             if not root_path.exists():
                 continue
@@ -1048,7 +1049,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         to_archive = sorted_files[1:]
         archived_count = 0
         gatekeeper = self._get_archival_gatekeeper()
-        for file_path in to_archive:
+        for file_path in tqdm(to_archive, desc="Processing", unit="item"):
             try:
                 result = gatekeeper.safe_move(
                     file_path,
@@ -1175,7 +1176,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         try:
             with open(baseline_path) as f:
                 baseline = json.load(f)
-            for rel_path, expected_hash in baseline["files"].items():
+            for rel_path, expected_hash in tqdm(baseline["files"].items(), desc="Processing", unit="item"):
                 full_path = self.project_root / rel_path
                 if not full_path.exists():
                     violations.append({"type": "MISSING_FILE", "path": rel_path, "severity": "CRITICAL"})
@@ -1256,7 +1257,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         """
         agent_name = self.__class__.__name__
         report = {"GRAVITY": 0, "NAMING": 0, "ORPHAN": 0, "DUPLICATE": 0, "OTHER": 0}
-        for v in violations:
+        for v in tqdm(violations, desc="Processing", unit="item"):
             if isinstance(v, dict):
                 v_type = v.get("type", "OTHER")
             else:
@@ -1378,7 +1379,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
             hierarchy = HierarchyAgent(project_root=self.project_root)
-            for territory in target_territories:
+            for territory in tqdm(target_territories, desc="Processing", unit="item"):
                 h_report = hierarchy.scan_root_violations(target_territory=territory)
                 for v in h_report.get("violations", []):
                     audit_results["violations"].append(
@@ -1397,7 +1398,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
 
             architect = SystemArchitectAgent(project_root=self.project_root)
-            for territory in target_territories:
+            for territory in tqdm(target_territories, desc="Processing", unit="item"):
                 arch_path = territory if territory.startswith("agentic_core") else f"agentic_core/{territory}"
                 arch_report = architect.validate_core_architecture(arch_path)
                 if not arch_report.get("imports_valid", True):
@@ -1432,7 +1433,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         if not territory_path.exists():
             return []
         violations: list[dict[str, Any]] = []
-        for py_file in territory_path.rglob("*.py"):
+        for py_file in tqdm(territory_path.rglob("*.py"), desc="Processing", unit="item"):
             try:
                 line_count = len(py_file.read_text(encoding="utf-8", errors="replace").splitlines())
                 if line_count > max_lines:

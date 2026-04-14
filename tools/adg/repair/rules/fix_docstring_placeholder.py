@@ -12,6 +12,7 @@ from pathlib import Path
 from tools.adg.repair.base_rule import BaseRepairRule
 from tools.adg.repair.rule_engine import repair_rule
 from tools.adg.repair.types import Deficiency, FixCategory, FixResult
+from tqdm import tqdm
 
 
 @repair_rule("fix_docstring_placeholder", priority=70)
@@ -92,7 +93,15 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
             # Add docstrings (simplified approach)
             new_lines = list(lines)
 
-            for node, element_type in sorted(missing, key=lambda item: item[0].lineno if hasattr(item[0], "lineno") else 0, reverse=True):
+            for node, element_type in tqdm(
+                sorted(
+                    missing,
+                    key=lambda item: item[0].lineno if hasattr(item[0], "lineno") else 0,
+                    reverse=True,
+                ),
+                desc="Processing",
+                unit="item",
+            ):
                 line_idx = node.lineno - 1
                 indent = self._get_indent(new_lines[line_idx])
 
@@ -165,7 +174,7 @@ class FixDocstringPlaceholderRule(BaseRepairRule):
             missing.append((tree, "module"))
 
         # Check classes and functions
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 # Skip private classes
                 if node.name.startswith("_"):

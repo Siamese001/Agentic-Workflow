@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("silent_swallower_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("silent_swallower_validator", "p4obs", "metric_2")
@@ -280,7 +281,7 @@ class SilentSwallowerDetector(AntiPatternDetector):
         has_return = False
         has_proper_handling = False
 
-        for stmt in ast.walk(node):
+        for stmt in tqdm(ast.walk(node), desc="Processing", unit="item"):
             if isinstance(stmt, ast.Raise):
                 has_raise = True
                 has_proper_handling = True

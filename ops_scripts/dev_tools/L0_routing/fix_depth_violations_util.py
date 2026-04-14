@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_depth_violations_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_depth_violations_util", "p4obs", "metric_2")
@@ -206,13 +207,13 @@ def fix_depth_violations() -> Any:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "fix_depth_violations")
     print("[*] FIXING DEPTH VIOLATIONS...")
     moved: Any = 0
-    for layer_name, default_stage in STAGE_MAPPINGS.items():
+    for layer_name, default_stage in tqdm(STAGE_MAPPINGS.items(), desc="Processing", unit="item"):
         layer_path: Any = CORE / layer_name
         if not layer_path.exists():
             continue
         all_py = get_python_files(PROJECT_ROOT)
         layer_files = [f for f in all_py if str(f).startswith(str(layer_path)) and f.parent == layer_path]
-        for py_file in layer_files:
+        for py_file in tqdm(layer_files, desc="Processing", unit="item"):
             if py_file.name == "__init__.py":
                 continue
             stage_path: Any = layer_path / default_stage

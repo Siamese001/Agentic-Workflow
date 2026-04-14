@@ -12,6 +12,7 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 
 @dataclass
@@ -140,7 +141,7 @@ class ReasoningOutcomeTracker:
             groups.setdefault(key, []).append(o)
 
         aggregates = []
-        for (tier, path_id), outcomes in groups.items():
+        for (tier, path_id), outcomes in tqdm(groups.items(), desc="Processing", unit="item"):
             if len(outcomes) < min_samples:
                 continue
 

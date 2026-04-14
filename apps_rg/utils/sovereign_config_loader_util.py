@@ -78,7 +78,7 @@ _emit_captures_evaluation_metric("p4", "sovereign_config_loader_util", "eval_met
 _emit_stores_embedding("p4", "sovereign_config_loader_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "sovereign_config_loader_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "sovereign_config_loader_util", "exec_snapshot_link")
-from .AgentSpec import AgentSpec, OrchestrationTopology, RGAgentSpecs
+from apps_rg.config.agent_spec_config import AgentSpec, OrchestrationTopology, RGAgentSpecs
 
 _emit_applies_guardrail("p0", "sovereign_config_loader_util", "p0_governance")
 _emit_reads_policy_state("p0", "sovereign_config_loader_util", "policy_binding")
@@ -168,7 +168,7 @@ _RG_SPECS_CACHE: RGAgentSpecs | None = None
 
 def get_config_path() -> Path:
     """Returns the directory containing configuration files."""
-    return Path(__file__).parent
+    return Path(__file__).resolve().parents[1] / "config"
 
 
 def load_rg_specs(force_reload: bool = False) -> RGAgentSpecs:
@@ -204,7 +204,7 @@ def load_rg_specs(force_reload: bool = False) -> RGAgentSpecs:
         Logger.info("Falling back to default configuration")
         specs = RGAgentSpecs()
         _RG_SPECS_CACHE = specs
-        return None
+        return specs
 
 
 def save_rg_specs(specs: RGAgentSpecs) -> None:
@@ -215,8 +215,11 @@ def save_rg_specs(specs: RGAgentSpecs) -> None:
         specs: The configuration to save.
     """
     config_path = get_config_path() / "rg_agent_specs.json"
-    with open(config_path, "w", encoding="utf-8") as f:
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = config_path.with_suffix(config_path.suffix + ".tmp")
+    with open(tmp_path, "w", encoding="utf-8") as f:
         json.dump(specs.model_dump(), f, indent=2)
+    tmp_path.replace(config_path)
     global _RG_SPECS_CACHE
     _RG_SPECS_CACHE = specs
 

@@ -209,7 +209,7 @@ class SecretsManagementMixin:
             raise SecretAccessError(f"Invalid secret key format: {key}")
         if key in self._secret_cache:
             value, expiry = self._secret_cache[key]
-            if time.time() < expiry:
+            if time.monotonic() < expiry:
                 self._audit_access(key, success=True)
                 return value
             del self._secret_cache[key]
@@ -223,7 +223,7 @@ class SecretsManagementMixin:
                 f"Secret '{key}' not found for agent '{self.__class__.__name__}' in environment '{self._env_context}'",
             )
         self._audit_access(key, success=True)
-        self._secret_cache[key] = (value, time.time() + self._CACHE_TTL)
+        self._secret_cache[key] = (value, time.monotonic() + self._CACHE_TTL)
         return value
 
     async def rotate_secret(self, key: str) -> bool:

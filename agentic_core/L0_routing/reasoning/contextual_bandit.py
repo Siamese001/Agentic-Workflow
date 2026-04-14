@@ -23,6 +23,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_stores_learning_state,
     _emit_updates_routing_strategy,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -203,7 +204,7 @@ class LinUCBBandit:
 
         # Calculate UCB for each arm
         arm_scores = {}
-        for arm_id, arm in self.arms.items():
+        for arm_id, arm in tqdm(self.arms.items(), desc="Processing", unit="item"):
             # Expected reward
             expected_reward = float(arm.theta @ context_vector)
 
@@ -336,7 +337,7 @@ class LinUCBBandit:
     def get_arm_statistics(self) -> dict[str, dict[str, float]]:
         """Get statistics for all arms"""
         stats = {}
-        for arm_id, arm in self.arms.items():
+        for arm_id, arm in tqdm(self.arms.items(), desc="Processing", unit="item"):
             # Estimate success rate from theta parameters
             estimated_success_rate = float(np.mean(arm.theta))
 
@@ -409,7 +410,7 @@ class LinUCBBandit:
 
         # Restore arms
         self.arms = {}
-        for arm_id, arm_data in state["arms"].items():
+        for arm_id, arm_data in tqdm(state["arms"].items(), desc="Processing", unit="item"):
             arm = BanditArm(
                 arm_id=arm_data["arm_id"],
                 agent_name=arm_data["agent_name"],

@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
+from tqdm import tqdm
 
 
 @dataclass
@@ -78,8 +79,8 @@ class DebtScheduleParser:
             r"([^\n]+?)\s+(Term Loan|Line of Credit|Revolver|Equipment Loan|Real Estate Loan)[\s\S]*?\$?([\d,\.]+)[\s\S]*?\$?([\d,\.]+)",
         ]
 
-        for pattern in patterns:
-            for match in re.finditer(pattern, text, re.IGNORECASE):
+        for pattern in tqdm(patterns, desc="Processing", unit="item"):
+            for match in tqdm(re.finditer(pattern, text, re.IGNORECASE), desc="Processing", unit="item"):
                 try:
                     entry = DebtEntry(
                         lender=match.group(1).strip() if len(match.groups()) > 0 else "Unknown",

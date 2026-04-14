@@ -87,20 +87,17 @@ _emit_links_execution_to_snapshot("p4", "ASTValidatorAgent", "exec_snapshot_link
 
 
 def _get_unified_cst_healer():
-    import uuid as _uuid  # noqa: PLC0415
-
-    _emit_snapshots_state(str(_uuid.uuid4()), "_get_unified_cst_healer", "state_snapshot")
     import hashlib as _hashlib  # noqa: PLC0415
     import uuid as _uuid  # noqa: PLC0415
 
     _tid = str(_uuid.uuid4())
+    _emit_snapshots_state(_tid, "_get_unified_cst_healer", "state_snapshot")
     _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-    import uuid as _uuid  # noqa: PLC0415
+    _emit_applies_guardrail(_tid, "_get_unified_cst_healer", "p0_governance")
 
-    _emit_applies_guardrail(str(_uuid.uuid4()), "_get_unified_cst_healer", "p0_governance")
-    from agentic_core.interfaces.safety import UnifiedCSTHealer
+    from agentic_core.interfaces.safety import HealingConfig, UnifiedCSTHealer
 
-    return (None, UnifiedCSTHealer)
+    return HealingConfig, UnifiedCSTHealer
 
 
 "\nASTValidatorAgent - Consolidated AST validator replacing 5 micro-agents.\n\nConsolidates:\n- BareExceptValidatorAgent (Key 5)\n- EmptyExceptValidatorAgent (Key 4)\n- EvalExecValidatorAgent (Key 6)\n- DangerousBuiltinsValidatorAgent (Key 42)\n- DebuggerValidatorAgent (Key 3)\n\nThis consolidation eliminates ~200 lines of duplicated boilerplate while\nmaintaining 100% validation rigor and identical violation detection.\n\nTerritory: agentic_core/L1_cognition/thought_engine/\n"
@@ -151,6 +148,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("ASTValidatorAgent", "p4obs", "metric_2")
@@ -378,7 +376,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
             "debugger": [],
             "other": [],
         }
-        for v in violations:
+        for v in tqdm(violations, desc="Processing", unit="item"):
             msg = v.get("message", "").lower()
             if "bare except" in msg:
                 grouped["bare_except"].append(v)
@@ -556,7 +554,7 @@ class ASTValidatorAgent(ASTValidatorBase, SovereignBaseAgent):
                     "artifacts": [],
                     "errors": [],
                 }
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             return {
                 "status": "failed",
                 "details": f"ASTValidatorAgent heal() failed: {e!s}",

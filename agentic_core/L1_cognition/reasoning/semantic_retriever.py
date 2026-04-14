@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "L4_state" / "utils
 
 from client.chroma_client import SovereignChromaClient
 from agentic_core.embeddings.bge_runtime import BGE_MODEL, BGE_QUERY_DIM, bge_embed_query
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -316,7 +317,7 @@ class SemanticRetriever:
 
         cited_spans: list[CitedSpan] = []
         # progress_bar: not required — loop bounded to top_k items (default ≤20, sub-ms/item)
-        for chunk in bundle.ranked_chunks[:top_k]:
+        for chunk in tqdm(bundle.ranked_chunks[:top_k], desc="Processing", unit="item"):
             anchor = bundle.citation_anchors.get(chunk.chunk_id)
             source_ref = (
                 (anchor.file_path or anchor.source_url or collection_name) if anchor else collection_name

@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("SafetyDetectorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SafetyDetectorAgent", "p4obs", "metric_2")
@@ -352,7 +353,7 @@ class SafetyDetectorAgent(SovereignBaseAgent):
     def detect_bias(self, text: str, source: str = "model_output") -> list[SafetyThreat]:
         """Detect bias patterns in text."""
         threats = []
-        for pattern in self._compiled_bias:
+        for pattern in tqdm(self._compiled_bias, desc="Processing", unit="item"):
             match = pattern.search(text)
             if match:
                 threat = SafetyThreat(
@@ -369,7 +370,7 @@ class SafetyDetectorAgent(SovereignBaseAgent):
     def detect_hallucination(self, text: str, source: str = "model_output") -> list[SafetyThreat]:
         """Detect hallucination indicators in text."""
         threats = []
-        for pattern in self.HALLUCINATION_PATTERNS:
+        for pattern in tqdm(self.HALLUCINATION_PATTERNS, desc="Processing", unit="item"):
             if re.search(pattern, text, re.IGNORECASE):
                 threat = SafetyThreat(
                     threat_type=SafetyThreatType.HALLUCINATION,

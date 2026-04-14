@@ -24,6 +24,7 @@ import textwrap
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -172,13 +173,15 @@ class CodeDuplicateDetector:
         # Collect candidates
         candidates: list[tuple[Path, str, int, str, str, int]] = []
 
-        for file_str in python_files:
+        for file_str in tqdm(python_files, desc="Processing", unit="item"):
             file_path = Path(file_str)
             if not file_path.exists():
                 self.errors.append(f"File not found: {file_path}")
                 continue
 
-            for name, code, line in _extract_functions_classes(file_path, self.min_lines):
+            for name, code, line in tqdm(
+                _extract_functions_classes(file_path, self.min_lines), desc="Processing", unit="item"
+            ):
                 norm_str = ""
                 try:
                     tree = ast.parse(code)

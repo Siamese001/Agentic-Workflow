@@ -30,3 +30,22 @@ class TestSovereignHealingEngineEnforcer:
         from agentic_core import validate_sovereign_healing_engine_enforcer
 
         assert callable(validate_sovereign_healing_engine_enforcer)
+
+    def test_create_healing_commit_wraps_exception_as_runtime_error(self):
+        """_create_healing_commit must wrap inner errors as RuntimeError(...) from e."""
+        import asyncio
+        from unittest.mock import AsyncMock
+
+        from agentic_core.L5_safety.enforcement.sovereign_healing_engine_enforcer import (
+            SovereignHealingEngine,
+        )
+
+        engine = SovereignHealingEngine.__new__(SovereignHealingEngine)
+        engine.applied_fixes = 1
+        mock_git = AsyncMock()
+        mock_git.add_and_commit.side_effect = ConnectionError("git unreachable")
+        engine.git_client = mock_git
+
+        with pytest.raises(RuntimeError, match="Failed to create healing commit") as exc_info:
+            asyncio.run(engine._create_healing_commit(["file.py"]))
+        assert isinstance(exc_info.value.__cause__, ConnectionError)

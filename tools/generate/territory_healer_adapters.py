@@ -15,6 +15,7 @@ from agentic_core.base_agents.territory_healer_protocol import (
     TerritoryHealerProtocol,
     Violation,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger("TerritoryHealerAdapters")
 
@@ -52,7 +53,7 @@ class HierarchyHealerAdapter(TerritoryHealerProtocol):
         violations = []
 
         # Convert territory root files to Violation objects
-        for v in scan_result.get("territory_root_files", []):
+        for v in tqdm(scan_result.get("territory_root_files", []), desc="Processing", unit="item"):
             violations.append(
                 Violation(
                     type="TERRITORY_ROOT_FILE",
@@ -188,7 +189,7 @@ class LocationHealerAdapter(TerritoryHealerProtocol):
         # Filter violations to this territory
         territory_path = self.project_root / territory
 
-        for v in scan_result.get("violations", []):
+        for v in tqdm(scan_result.get("violations", []), desc="Processing", unit="item"):
             file_path = v.get("file", "")
             # Check if this violation is in our territory
             if file_path.startswith(str(territory_path)) or file_path.startswith(territory):
@@ -276,7 +277,7 @@ class GravityHealerAdapter(TerritoryHealerProtocol):
 
         violations = []
 
-        for v in scan_result.get("violations", []):
+        for v in tqdm(scan_result.get("violations", []), desc="Processing", unit="item"):
             violations.append(
                 Violation(
                     type="GRAVITY_VIOLATION",
@@ -361,7 +362,7 @@ class FilesystemReconcilerAdapter(TerritoryHealerProtocol):
 
         violations = []
 
-        for v in scan_result.get("violations", []):
+        for v in tqdm(scan_result.get("violations", []), desc="Processing", unit="item"):
             violations.append(
                 Violation(
                     type="FILESYSTEM_DRIFT",

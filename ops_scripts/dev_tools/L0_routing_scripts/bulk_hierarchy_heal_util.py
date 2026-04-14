@@ -148,6 +148,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("bulk_hierarchy_heal_util", "p4obs", "metric_1")
 _emit_emits_metric_event("bulk_hierarchy_heal_util", "p4obs", "metric_2")
@@ -212,7 +213,7 @@ def main() -> Any:
         f.write(f"Target: {TARGET_ROOT}\n")
         f.write(f"Timestamp: {datetime.now().isoformat()}\n")
         f.write(f"configuration: DRY_RUN = {DRY_RUN}\n\n")
-        for file_path in python_files:
+        for file_path in tqdm(python_files, desc="Processing", unit="item"):
             rel: Any = file_path.relative_to(project_root)
             parts: Any = rel.parts
             if len(parts) < 3 or not parts[1].startswith("L"):
@@ -299,10 +300,10 @@ def main() -> Any:
             "policy",
             "validators",
         ]
-        for layer_folder in target_dir.iterdir():
+        for layer_folder in tqdm(target_dir.iterdir(), desc="Processing", unit="item"):
             if not layer_folder.is_dir() or not layer_folder.name.startswith("L"):
                 continue
-            for legacy in legacy_partitions:
+            for legacy in tqdm(legacy_partitions, desc="Processing", unit="item"):
                 legacy_path: Any = layer_folder / legacy
                 if legacy_path.exists():
                     remaining: Any = [

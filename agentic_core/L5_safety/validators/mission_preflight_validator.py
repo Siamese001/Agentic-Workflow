@@ -126,6 +126,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("mission_preflight_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("mission_preflight_validator", "p4obs", "metric_2")
@@ -342,11 +343,11 @@ class MissionPreflight:
         print(f"   [GRAVITY SCAN] Starting bounded scan (max {MAX_SCAN_FILES} files)...")
         if target_path.is_dir():
             scan_limit_reached = False
-            for root, dirs, files in os.walk(target_path):
+            for root, dirs, files in tqdm(os.walk(target_path), desc="Processing", unit="item"):
                 if scan_limit_reached:
                     break
                 dirs[:] = [d for d in dirs if d not in self.protected_folders]
-                for file in files:
+                for file in tqdm(files, desc="Processing", unit="item"):
                     if scanned_count >= MAX_SCAN_FILES:
                         print(f"   [WARNING] Scan limit reached ({MAX_SCAN_FILES} files) - stopping early")
                         scan_limit_reached = True
@@ -382,9 +383,9 @@ class MissionPreflight:
             return 0
         location_violations = []
         if target_path.is_dir():
-            for root, dirs, files in os.walk(target_path):
+            for root, dirs, files in tqdm(os.walk(target_path), desc="Processing", unit="item"):
                 dirs[:] = [d for d in dirs if d not in self.protected_folders and d != ".git"]
-                for file in files:
+                for file in tqdm(files, desc="Processing", unit="item"):
                     if not file.endswith(".py"):
                         continue
                     py_file = Path(root) / file

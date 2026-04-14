@@ -20,6 +20,7 @@ import json
 import logging
 from dataclasses import dataclass
 from typing import Any
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -67,7 +68,7 @@ def discover_capable_agents(
     results = registry.find_method(task, top_k=top_k) if hasattr(registry, "find_method") else []
 
     capable = []
-    for r in results:
+    for r in tqdm(results, desc="Processing", unit="item"):
         score = r.get("score", 0.0)
         if score >= min_confidence:
             meta = r.get("metadata", {})

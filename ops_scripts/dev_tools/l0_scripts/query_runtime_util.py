@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("query_runtime_util", "p4obs", "metric_1")
 _emit_emits_metric_event("query_runtime_util", "p4obs", "metric_2")
@@ -178,7 +179,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             last_exception = None
-            for attempt in range(max_retries + 1):
+            for attempt in tqdm(range(max_retries + 1), desc="Processing", unit="item"):
                 try:
                     return func(*args, **kwargs)
                 # guardian: allow-silent-swallow

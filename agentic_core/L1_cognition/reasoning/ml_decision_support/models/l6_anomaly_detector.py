@@ -5,7 +5,6 @@ Isolation Forest model for detecting system anomalies including
 performance issues, behavioral changes, and semantic drift.
 """
 
-import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -21,7 +20,9 @@ except ImportError:
 
 from ..config.model_registry import DecisionMode
 from ..features.l6_features import L6FeatureExtractor
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class L6AnomalyDetector(BaseMLModel):
@@ -76,8 +77,7 @@ class L6AnomalyDetector(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.pipeline = model_data.get("pipeline")
             self.feature_names = model_data.get("feature_names", [])
@@ -115,8 +115,7 @@ class L6AnomalyDetector(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -277,7 +276,9 @@ class L6AnomalyDetector(BaseMLModel):
         # Detect anomalies for each context
         anomaly_results = []
 
-        for i, (context, features) in enumerate(zip(contexts, batch_features)):
+        for i, (context, features) in tqdm(
+            enumerate(zip(contexts, batch_features)), desc="Processing", unit="item"
+        ):
             context_trace_id = f"{trace_id}_batch_{i}"
 
             # Validate input
@@ -327,7 +328,7 @@ class L6AnomalyDetector(BaseMLModel):
             # Calculate feature contributions by perturbation
             contributions = []
 
-            for i, feature_name in enumerate(self.feature_names):
+            for i, feature_name in tqdm(enumerate(self.feature_names), desc="Processing", unit="item"):
                 if i < len(feature_vector):
                     # Create perturbed feature vector
                     perturbed_vector = feature_vector.copy()
@@ -371,7 +372,7 @@ class L6AnomalyDetector(BaseMLModel):
 
         try:
             feature_vector = []
-            for feature_name in self.feature_names:
+            for feature_name in tqdm(self.feature_names, desc="Processing", unit="item"):
                 value = features.get(feature_name, 0.0)  # Default to 0 if missing
 
                 # Convert to numeric
@@ -456,7 +457,7 @@ class L6AnomalyDetector(BaseMLModel):
             "semantic_drift_score": 0.2,
         }
 
-        for feature_name, threshold in feature_thresholds.items():
+        for feature_name, threshold in tqdm(feature_thresholds.items(), desc="Processing", unit="item"):
             value = features.get(feature_name, 0.0)
 
             if feature_name == "healing_success_rate":
@@ -489,7 +490,7 @@ class L6AnomalyDetector(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for Isolation Forest
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:

@@ -228,7 +228,10 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_client = get_meta_learning_client()
                 Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                ImportError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] MetaLearningClient unavailable: {e}")
@@ -243,7 +246,10 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_embedder = get_healing_memory_embedder()
                 Logger.debug(f"[{self.__class__.__name__}] HealingMemoryEmbedder initialized")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                ImportError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] HealingMemoryEmbedder unavailable: {e}")
@@ -258,7 +264,10 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_cache_manager = get_cache_strategy_manager()
                 Logger.debug(f"[{self.__class__.__name__}] CacheStrategyManager initialized")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                ImportError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] CacheStrategyManager unavailable: {e}")
@@ -271,7 +280,10 @@ class MetaLearningClientMixin:
 
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                ImportError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] Guardrails unavailable: {e}")
@@ -376,7 +388,7 @@ class MetaLearningClientMixin:
 
             return None
 
-        except Exception as e:
+        except (AttributeError, RuntimeError, ValueError) as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern recall failed: {e}")
             return None
 
@@ -432,7 +444,7 @@ class MetaLearningClientMixin:
 
             return pattern_id
 
-        except Exception as e:
+        except (AttributeError, RuntimeError, ValueError) as e:
             Logger.error(f"[{self.__class__.__name__}] Pattern storage failed: {e}")
             return None
 
@@ -470,7 +482,7 @@ class MetaLearningClientMixin:
 
         try:
             return MetaLearningClientMixin._ml_client.cache_get(key, domain)
-        except Exception as e:
+        except (AttributeError, RuntimeError, OSError) as e:
             Logger.error(f"[{self.__class__.__name__}] Cache get failed: {e}")
             return None
 
@@ -526,7 +538,7 @@ class MetaLearningClientMixin:
                 MetaLearningClientMixin._ml_guardrails.update_cache_size(domain, 1)
 
             return success
-        except Exception as e:
+        except (AttributeError, RuntimeError, OSError) as e:
             Logger.error(f"[{self.__class__.__name__}] Cache set failed: {e}")
             return False
 
@@ -707,7 +719,7 @@ class MetaLearningClientMixin:
 
             return result
 
-        except Exception as e:
+        except (AttributeError, RuntimeError, ValueError) as e:
             Logger.error(f"[{self.__class__.__name__}] Healing failed: {e}")
             return {
                 "status": "error",

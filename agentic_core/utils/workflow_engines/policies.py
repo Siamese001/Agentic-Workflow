@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("policies", "p4obs", "metric_1")
 _emit_emits_metric_event("policies", "p4obs", "metric_2")
@@ -266,7 +267,9 @@ class FixedTokenChunkPolicy(ChunkPolicy):
 
         words = document.split()
         chunks: list[Chunk] = []
-        for idx, start in enumerate(range(0, len(words), self.chunk_size)):
+        for idx, start in tqdm(
+            enumerate(range(0, len(words), self.chunk_size)), desc="Processing", unit="item"
+        ):
             word_slice = words[start : start + self.chunk_size]
             content = " ".join(word_slice)
             chunks.append(
@@ -359,7 +362,7 @@ class SectionAwareChunkPolicy(ChunkPolicy):
         sections = re.split("(?m)^#{1,3}\\s+", document)
         chunks: list[Chunk] = []
         char_offset = 0
-        for idx, section in enumerate(sections):
+        for idx, section in tqdm(enumerate(sections), desc="Processing", unit="item"):
             section = section.strip()
             if not section:
                 char_offset += len(sections[idx]) + 1
@@ -424,7 +427,7 @@ class SemanticChunkPolicy(ChunkPolicy):
             groups.append(current_group)
         chunks: list[Chunk] = []
         char_offset = 0
-        for idx, group in enumerate(groups):
+        for idx, group in tqdm(enumerate(groups), desc="Processing", unit="item"):
             content = " ".join(group)
             token_count = _approx_token_count(content)
             chunks.append(

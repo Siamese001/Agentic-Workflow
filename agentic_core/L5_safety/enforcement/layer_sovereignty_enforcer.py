@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("layer_sovereignty_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("layer_sovereignty_enforcer", "p4obs", "metric_2")
@@ -350,7 +351,7 @@ class LayerSovereigntyEnforcer:
         if importer_layer is None:
             return
 
-        for imported_module in self._collect_imports(tree):
+        for imported_module in tqdm(self._collect_imports(tree), desc="Processing", unit="item"):
             imported_layer = self.extract_layer_from_module(imported_module)
             if imported_layer is None:
                 continue
@@ -454,7 +455,7 @@ class LayerSovereigntyEnforcer:
         if importer_layer is None:
             return violations
 
-        for imported_module in self._collect_imports(tree):
+        for imported_module in tqdm(self._collect_imports(tree), desc="Processing", unit="item"):
             imported_layer = self.extract_layer_from_module(imported_module)
             if imported_layer is None:
                 continue
@@ -480,11 +481,11 @@ class LayerSovereigntyEnforcer:
         """
         import_map: dict[str, set[str]] = {}
 
-        for root_name in self.scan_roots:
+        for root_name in tqdm(self.scan_roots, desc="Processing", unit="item"):
             root_path = self.repo_root / root_name
             if not root_path.is_dir():
                 continue
-            for py_file in sorted(root_path.rglob("*.py")):
+            for py_file in tqdm(sorted(root_path.rglob("*.py")), desc="Processing", unit="item"):
                 if "__pycache__" in py_file.parts:
                     continue
                 try:

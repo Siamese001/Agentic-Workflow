@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("powershell_ban", "p4obs", "metric_1")
 _emit_emits_metric_event("powershell_ban", "p4obs", "metric_2")
@@ -263,7 +264,9 @@ def scan_file_for_powershell(file_path: Path) -> list[tuple[int, str, str]]:
         violations.extend(visitor.violations)
         if _is_docs_evidence:
             ast_linenos = {v[0] for v in violations}
-            for lineno, line in enumerate(content.splitlines(), start=1):
+            for lineno, line in tqdm(
+                enumerate(content.splitlines(), start=1), desc="Processing", unit="item"
+            ):
                 stripped = line.strip()
                 if not stripped.startswith("#"):
                     continue
@@ -291,7 +294,7 @@ def scan_repository_for_powershell(repo_root: Path) -> list[tuple[str, int, str,
     """
     all_violations = []
     scan_dirs = ["docs/evidence"]
-    for scan_dir in scan_dirs:
+    for scan_dir in tqdm(scan_dirs, desc="Processing", unit="item"):
         dir_path = repo_root / scan_dir
         if not dir_path.exists():
             continue

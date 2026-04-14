@@ -20,7 +20,7 @@ import threading
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -187,6 +187,17 @@ _emit_invokes_eval("p1", "human_review_queue_enforcer", "eval_call")
 _emit_proposal_commits_routing("p1", "human_review_queue_enforcer", "routing_commit")
 
 Logger = logging.getLogger(__name__)
+
+
+def _utc_now() -> datetime:
+    """Return timezone-aware UTC timestamp."""
+    return datetime.now(timezone.utc)
+
+
+def _require_signing_secret(secret: bytes) -> None:
+    """Reject unsigned HIL decisions."""
+    if not secret:
+        raise ValueError("Human review decisions must be signed with a non-empty secret")
 
 
 class ReviewStatus(Enum):
@@ -398,6 +409,8 @@ class HumanReviewQueue:
 
         Returns (ReviewRequest, signed HumanDecisionArtifact).
         """
+        _require_signing_secret(secret)
+
         with self._lock:
             request = self._pending_requests.get(request_id)
             if not request:
@@ -405,7 +418,7 @@ class HumanReviewQueue:
 
             request.status = ReviewStatus.APPROVED
             request.reviewer_id = reviewer_id
-            request.review_completed_at = datetime.utcnow()
+            request.review_completed_at = _utc_now()
             request.review_notes = notes
 
             del self._pending_requests[request_id]
@@ -438,6 +451,9 @@ class HumanReviewQueue:
 
         Returns (ReviewRequest, signed HumanDecisionArtifact).
         """
+        _require_signing_secret(secret)
+        if not reviewer_id:
+            raise ValueError("reviewer_id is required")
         if not notes:
             raise ValueError("Rejection notes are required")
 
@@ -448,7 +464,7 @@ class HumanReviewQueue:
 
             request.status = ReviewStatus.REJECTED
             request.reviewer_id = reviewer_id
-            request.review_completed_at = datetime.utcnow()
+            request.review_completed_at = _utc_now()
             request.review_notes = notes
 
             del self._pending_requests[request_id]
@@ -483,6 +499,12 @@ class HumanReviewQueue:
         """
         from agentic_core.L5_safety.types.human_decision_artifact_types import HumanDecisionArtifact
 
+        _require_signing_secret(secret)
+        if not reviewer_id:
+            raise ValueError("reviewer_id is required")
+        if not structured_patch_schema:
+            raise ValueError("structured_patch_schema is required for MODIFY_DIFF")
+
         with self._lock:
             request = self._pending_requests.get(request_id)
             if not request:
@@ -490,7 +512,7 @@ class HumanReviewQueue:
 
             request.status = ReviewStatus.MODIFY_DIFF
             request.reviewer_id = reviewer_id
-            request.review_completed_at = datetime.utcnow()
+            request.review_completed_at = _utc_now()
             del self._pending_requests[request_id]
             self._completed_requests.append(request)
 
@@ -579,10 +601,8 @@ class HumanReviewQueue:
             try:
                 callback(request_id, action)
             # guardian: allow-silent-swallow -- review queue persistence is best-effort; logged
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                # TODO: Handle specific exception properly
-                raise  # Re-raise after logging/handling
-                Logger.error(f"[REVIEW_QUEUE] Callback error: {e}")
+            except Exception:  # guardian: allow-broad-exception -- callback errors are best-effort; intentional silent-swallow logged via Logger.exception
+                Logger.exception("[REVIEW_QUEUE] Callback error for %s", request_id)
 
     def _emit_policy_update_proposal(
         self,
@@ -617,12 +637,10 @@ class HumanReviewQueue:
             _log_dir = Path(__file__).resolve().parents[2] / "L0_routing" / "logs"
             emitter.flush_to_artifacts_dir(_log_dir)
         # guardian: allow-silent-swallow -- review queue persistence is best-effort; logged
-        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            # TODO: Handle specific exception properly
-            raise  # Re-raise after logging/handling
-            Logger.error(
-                "§Wave2.3 PolicyUpdateProposal emission failed at HIL boundary: %s",
-                exc,
+        except Exception:  # guardian: allow-broad-exception -- policy proposal emission is best-effort; intentional silent-swallow logged via Logger.exception
+            Logger.exception(
+                "§Wave2.3 PolicyUpdateProposal emission failed at HIL boundary for %s",
+                request.request_id,
             )
 
     def get_queue_stats(self) -> dict[str, Any]:

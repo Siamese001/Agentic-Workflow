@@ -8,6 +8,7 @@ import pkgutil
 import sys
 from dataclasses import is_dataclass
 from pathlib import Path
+from tqdm import tqdm
 
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -41,11 +42,11 @@ def generate():
         "| :--- | :--- | :--- | :--- | :--- |",
     ]
     domains = ["apps_rg.engines", "apps_lic.engines"]
-    for domain in domains:
+    for domain in tqdm(domains, desc="Processing", unit="item"):
         try:
             package = importlib.import_module(domain)
             path = Path(package.__file__).parent
-            for _, name, _ in pkgutil.iter_modules([str(path)]):
+            for _, name, _ in tqdm(pkgutil.iter_modules([str(path)]), desc="Processing", unit="item"):
                 try:
                     module = importlib.import_module(f"{domain}.{name}")
                     for cls_name, cls in inspect.getmembers(module, inspect.isclass):

@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TARGET_DIR = str(REPO_ROOT / "apps_shared" / "common_utils")
@@ -51,7 +52,7 @@ class AgentVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_FunctionDef(self, node):
-        for decorator in node.decorator_list:
+        for decorator in tqdm(node.decorator_list, desc="Processing", unit="item"):
             if isinstance(decorator, ast.Name) and decorator.id in self.agent_decorators:
                 self.is_agent = True
                 self.signals.append(f"Decorator detected: @{decorator.id}")
@@ -71,9 +72,9 @@ def analyze_directory(directory: str) -> list[FileDisposition]:
     if not os.path.exists(directory):
         print(f"Directory not found: {directory}")
         return []
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in tqdm(os.walk(directory), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if not file.endswith(".py"):
                 continue
             full_path = Path(root) / file

@@ -148,6 +148,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_contract_integrity", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_contract_integrity", "p4obs", "metric_2")
@@ -295,7 +296,7 @@ def _check_no_raise_exception_for_caps(tree: ast.AST) -> list[tuple[int, str]]:
     Catches RuntimeError, ValueError, Exception, or any custom exception.
     """
     violations: list[tuple[int, str]] = []
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.Raise) and node.exc is not None:
             exc = node.exc
             if isinstance(exc, ast.Call) and isinstance(exc.func, ast.Name):
@@ -370,7 +371,7 @@ def run_contract_integrity_guardian(
     scripts_checked = 0
     violations_found = 0
 
-    for spec in guardians_to_check:
+    for spec in tqdm(guardians_to_check, desc="Processing", unit="item"):
         scripts_checked += 1
         gid = spec.guardian_id
         script_path = repo_root / _module_to_path(spec.entrypoint_module)

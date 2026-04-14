@@ -8,6 +8,8 @@ do not count as upward seams in the gravity scanner.
 
 from __future__ import annotations
 
+from importlib import import_module
+import logging
 from typing import Any, Protocol, runtime_checkable
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -156,6 +158,39 @@ _emit_stores_embedding("p4", "safety_agents", "embedding_store")
 _emit_updates_meta_learning_state("p4", "safety_agents", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "safety_agents", "exec_snapshot_link")
 
+logger = logging.getLogger(__name__)
+
+_AGENT_IMPORTS: dict[str, tuple[str, str]] = {
+    "HygieneGuardianAgent": (
+        "agentic_core.L5_safety.validators.HygieneGuardianAgent",
+        "HygieneGuardianAgent",
+    ),
+    "NamingAgent": (
+        "agentic_core.L5_safety.reasoning.NamingAgent",
+        "NamingAgent",
+    ),
+    "LocationAgent": (
+        "agentic_core.L5_safety.reasoning.LocationHealerAgent",
+        "LocationHealerAgent",
+    ),
+    "StructureEnforcerAgent": (
+        "agentic_core.L5_safety.reasoning.StructureEnforcerAgent",
+        "StructureEnforcerAgent",
+    ),
+    "StructuralHealerAgent": (
+        "agentic_core.L5_safety.validators.StructuralHealerAgent",
+        "StructuralHealerAgent",
+    ),
+    "GovernanceAgent": (
+        "agentic_core.L5_safety.reasoning.GovernanceAgent",
+        "GovernanceAgent",
+    ),
+    "HierarchyAgent": (
+        "agentic_core.L5_safety.reasoning.hierarchy_healer",
+        "HierarchyAgent",
+    ),
+}
+
 
 @runtime_checkable
 class HealingAgentProtocol(Protocol):
@@ -184,51 +219,49 @@ class SafetyAgentFactory:
         """Return an agent instance by name, or None if unavailable."""
         import uuid as _uuid  # noqa: PLC0415
 
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyAgentFactory.get")
+        trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "SafetyAgentFactory.get")
 
-        try:
-            if agent_name == "HygieneGuardianAgent":
-                from agentic_core.L5_safety.validators.HygieneGuardianAgent import HygieneGuardianAgent
+        if not agent_name:
+            raise ValueError("agent_name must be non-empty")
 
-                return HygieneGuardianAgent(project_root=self.project_root)
-            elif agent_name == "NamingAgent":
-                from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
-
-                return NamingAgent(project_root=self.project_root)
-            elif agent_name == "LocationAgent":
-                from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-
-                return LocationHealerAgent(project_root=self.project_root)
-            elif agent_name == "StructureEnforcerAgent":
-                from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import StructureEnforcerAgent
-
-                return StructureEnforcerAgent(project_root=self.project_root)
-            elif agent_name == "StructuralHealerAgent":
-                from agentic_core.L5_safety.validators.StructuralHealerAgent import StructuralHealerAgent
-
-                return StructuralHealerAgent(project_root=self.project_root)
-            elif agent_name == "GovernanceAgent":
-                from agentic_core.L5_safety.reasoning.GovernanceAgent import GovernanceAgent
-
-                return GovernanceAgent(project_root=self.project_root)
-            elif agent_name == "HierarchyAgent":
-                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-
-                return HierarchyAgent(project_root=self.project_root)
-        # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+        target = _AGENT_IMPORTS.get(agent_name)
+        if target is None:
+            logger.warning("Unknown safety agent requested: %s", agent_name)
             return None
-        return None
+
+        module_name, class_name = target
+        try:
+            module = import_module(module_name)
+            agent_cls = getattr(module, class_name)
+        except (ImportError, AttributeError) as exc:
+            logger.warning(
+                "Safety agent unavailable agent=%s module=%s class=%s error=%s",
+                agent_name,
+                module_name,
+                class_name,
+                exc,
+            )
+            return None
+
+        agent = agent_cls(project_root=self.project_root)
+        if not isinstance(agent, HealingAgentProtocol):
+            logger.error("Agent %s does not satisfy HealingAgentProtocol", agent_name)
+            return None
+        return agent
 
     def get_legacy_import_healer_factory(self):
         """Return create_legacy_import_healer callable, or None."""
         try:
-            from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
-
-            return create_legacy_import_healer
-        except ImportError:
+            module = import_module("agentic_core.L5_safety.reasoning.CodeHealerAgent")
+            factory = getattr(module, "create_legacy_import_healer")
+        except (ImportError, AttributeError) as exc:
+            logger.warning("Legacy import healer factory unavailable: %s", exc)
             return None
+
+        if not callable(factory):
+            raise TypeError("create_legacy_import_healer must be callable")
+        return factory
 
 
 __all__ = ["HealingAgentProtocol", "SafetyAgentFactory"]

@@ -7,6 +7,7 @@ Focuses on edge types surfaced in the snapshot graph_plane_counts.
 import os
 
 import redis
+from tqdm import tqdm
 
 # Target edge types most relevant to LLM alignment
 ALIGNMENT_EDGE_TYPES = [
@@ -53,13 +54,13 @@ def main() -> None:
     edge_src_map: dict[str, list[str]] = {}  # edge_type -> list of src node ids
 
     # Scan for adg:edge:*:<relation_type> keys
-    for edge_type in ALIGNMENT_EDGE_TYPES:
+    for edge_type in tqdm(ALIGNMENT_EDGE_TYPES, desc="Processing", unit="item"):
         pattern = f"adg:edge:*:{edge_type}"
         cur = 0
         src_ids: list[str] = []
         while True:
             cur, keys = r.scan(cur, match=pattern, count=1000)
-            for key in keys:
+            for key in tqdm(keys, desc="Processing", unit="item"):
                 # key format: adg:edge:<src_id>:<relation_type>
                 parts = key.decode().split(":")
                 if len(parts) >= 4:
@@ -83,14 +84,14 @@ def main() -> None:
             node_cache[nid] = {k.decode(): v.decode() for k, v in data.items()}
 
     # Print results per edge type
-    for edge_type in ALIGNMENT_EDGE_TYPES:
+    for edge_type in tqdm(ALIGNMENT_EDGE_TYPES, desc="Processing", unit="item"):
         src_ids = edge_src_map.get(edge_type, [])
         if not src_ids:
             print(f"[{edge_type}] NO SOURCES FOUND")
             continue
         print(f"\n[{edge_type}] ({len(src_ids)} sources)")
         seen: set[str] = set()
-        for sid in src_ids:
+        for sid in tqdm(src_ids, desc="Processing", unit="item"):
             if sid in seen:
                 continue
             seen.add(sid)
@@ -118,14 +119,18 @@ def main() -> None:
 
     # Find nodes with alignment edge types and check if they have 'covers' fan-in
     alignment_prod_nodes: dict[str, tuple[dict[str, str], str]] = {}
-    for edge_type in [
-        "builds_dpo_batch",
-        "produces_preference_pair",
-        "scores_groundedness",
-        "validated_by_llm_gateway",
-        "applies_guardrail",
-        "gated_by_confidence",
-    ]:
+    for edge_type in tqdm(
+        [
+            "builds_dpo_batch",
+            "produces_preference_pair",
+            "scores_groundedness",
+            "validated_by_llm_gateway",
+            "applies_guardrail",
+            "gated_by_confidence",
+        ],
+        desc="Processing",
+        unit="item",
+    ):
         for sid in edge_src_map.get(edge_type, []):
             node = node_cache.get(sid, {})
             layer = node.get("layer", "")

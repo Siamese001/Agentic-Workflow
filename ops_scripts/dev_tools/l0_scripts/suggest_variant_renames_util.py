@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import SCRIPTS_DIR, TESTS_DIR
+from tqdm import tqdm
 
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
@@ -50,7 +51,7 @@ def suggest_rename_for_init_files(file_paths):
     """Suggest renames for __init__.py variants."""
     suggestions = []
 
-    for file_path in file_paths:
+    for file_path in tqdm(file_paths, desc="Processing", unit="item"):
         content = read_file_content(file_path)
         rel_path = file_path.relative_to(project_root)
 
@@ -120,7 +121,7 @@ def suggest_rename_for_canon_validator(file_paths):
     """Suggest renames for canon_validator___init__.py variants."""
     suggestions = []
 
-    for file_path in file_paths:
+    for file_path in tqdm(file_paths, desc="Processing", unit="item"):
         read_file_content(file_path)
         rel_path = file_path.relative_to(project_root)
 

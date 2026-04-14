@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("workflow_review_pending_merge_util", "p4obs", "metric_1")
 _emit_emits_metric_event("workflow_review_pending_merge_util", "p4obs", "metric_2")
@@ -178,7 +179,7 @@ def count_real_lines(path: Path) -> int:
         content.split("\n")
         REAL: Any = 0
         in_docstring: Any = False
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             line.strip()
             if '"""' in stripped or "'''" in stripped:
                 in_docstring: Any = not in_docstring
@@ -256,7 +257,7 @@ def _categorize_pending_file(f: Path, approved_by_name: dict[str, list[Path]]) -
     pending_has_code = has_real_code(f)
     RESULT = {"file": f, "pending_real": pending_real, "pending_has_code": pending_has_code, "category": None}
     if f.name in approved_by_name:
-        for approved in approved_by_name[f.name]:
+        for approved in tqdm(approved_by_name[f.name], desc="Processing", unit="item"):
             approved_real = count_real_lines(approved)
             approved_has_code = has_real_code(approved)
             if pending_real > approved_real and pending_has_code:

@@ -7,9 +7,14 @@ Every artifact carries provenance metadata.
 
 from __future__ import annotations
 
-from typing import Literal
+import re
+from typing import Any, Literal
+from urllib.parse import urlparse
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+_SAFE_ID_RE = re.compile(r"^[A-Za-z0-9._:\-]{1,128}$")
+_ALLOWED_URL_SCHEMES = frozenset({"http", "https", "urn"})
 
 ResearchStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
 
@@ -23,6 +28,8 @@ AudienceStyle = Literal["technical", "executive", "market-facing"]
 class SourceEntry(BaseModel):
     """A single entry in the source register."""
 
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
     source_id: str = Field(..., min_length=1, description="Unique source ID")
     title: str = Field(..., min_length=1, description="Source title")
     claim_type: ClaimType = Field("direct_evidence", description="Type of claim")
@@ -30,6 +37,32 @@ class SourceEntry(BaseModel):
     summary: str = Field("", description="Source summary")
     url: str = Field("", description="Source URL")
     section_id: str = Field("", description="Related section ID")
+
+    @field_validator("source_id")
+    @classmethod
+    def validate_source_id(cls, v: str) -> str:
+        if not _SAFE_ID_RE.match(v):
+            raise ValueError(f"source_id contains unsafe characters or exceeds 128 chars: {v!r}")
+        return v
+
+    @field_validator("url")
+    @classmethod
+    def validate_url(cls, v: str) -> str:
+        if not v:
+            return v
+        parsed = urlparse(v)
+        if parsed.scheme not in _ALLOWED_URL_SCHEMES:
+            raise ValueError(f"url scheme must be one of {sorted(_ALLOWED_URL_SCHEMES)}: {v!r}")
+        if not parsed.netloc and parsed.scheme != "urn":
+            raise ValueError(f"url must have a host: {v!r}")
+        return v
+
+    @field_validator("section_id")
+    @classmethod
+    def validate_section_id(cls, v: str) -> str:
+        if v and not _SAFE_ID_RE.match(v):
+            raise ValueError(f"section_id contains unsafe characters: {v!r}")
+        return v
 
 
 class ComparisonRow(BaseModel):
@@ -71,6 +104,8 @@ class ResearchConfig(BaseModel):
 class ResearchRequest(BaseModel):
     """Input contract for a single research run."""
 
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
     topic: str = Field(..., min_length=1, description="Research topic")
     mode: ArtifactMode = Field("brief", description="Artifact mode")
     audience_style: AudienceStyle = Field("technical", description="Target audience style")
@@ -82,10 +117,27 @@ class ResearchRequest(BaseModel):
 
     @field_validator("topic")
     @classmethod
-    def validate_topic(cls, v):
-        if len(v.strip()) < 1:
+    def validate_topic(cls, v: str) -> str:
+        stripped = v.strip()
+        if not stripped:
             raise ValueError("topic cannot be empty")
-        return v.strip()
+        if len(stripped) > 4096:
+            raise ValueError("topic must be <= 4096 characters")
+        return stripped
+
+    @field_validator("trace_id")
+    @classmethod
+    def validate_trace_id(cls, v: str) -> str:
+        if not v:
+            return v
+        if len(v) > 128 or not re.match(r"^[A-Za-z0-9._:\-]+$", v):
+            raise ValueError(f"trace_id contains unsafe characters or exceeds 128 chars: {v!r}")
+        return v
+
+    @field_validator("comparison_subjects")
+    @classmethod
+    def validate_comparison_subjects(cls, v: list[Any]) -> list[str]:
+        return [str(s).strip() for s in v if str(s).strip()]
 
 
 class ResearchResult(BaseModel):

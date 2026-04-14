@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("refactoring_planner", "p4obs", "metric_1")
 _emit_emits_metric_event("refactoring_planner", "p4obs", "metric_2")
@@ -315,7 +316,7 @@ def build_refactoring_plan(
     total_blast = 0
     seen_targets: set[str] = set()
 
-    for target in targets:
+    for target in tqdm(targets, desc="Processing", unit="item"):
         if target in seen_targets:
             continue
         seen_targets.add(target)

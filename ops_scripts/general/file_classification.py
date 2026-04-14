@@ -47,6 +47,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
+from tqdm import tqdm
 
 
 @dataclass
@@ -94,7 +95,7 @@ class AppsLicASTAuditor:
         imports = self._extract_imports(tree)
         classification.has_immutable_buffer = "ImmutableStagingBuffer" in imports
         classification.has_state_manager = "StateManager" in imports or "state_mgr" in content.lower()
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 classification.class_name = node.name
                 classification.base_classes = self._extract_base_classes(node)
@@ -210,7 +211,7 @@ class AppsLicASTAuditor:
     def generate_refactoring_recommendations(self) -> list[str]:
         """Generate refactoring recommendations."""
         recommendations = []
-        for c in self.classifications:
+        for c in tqdm(self.classifications, desc="Processing", unit="item"):
             if c.has_enum and "Agent" in c.class_name:
                 new_name = c.path.stem.replace("Agent", "").lower() + "_types.py"
                 recommendations.append(f"RENAME: {c.path.name} → {new_name} (Enum, not Agent)")

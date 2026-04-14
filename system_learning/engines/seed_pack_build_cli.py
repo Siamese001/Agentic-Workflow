@@ -126,6 +126,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from system_learning.engines.seed_embedding_pack_builder import build_seed_embedding_pack
 from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+from tqdm import tqdm
 
 _emit_emits_metric_event("seed_pack_build_cli", "p4obs", "metric_1")
 _emit_emits_metric_event("seed_pack_build_cli", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ def load_canonical_corpus(namespace: str, corpus_path: Path | None = None) -> li
         )
     corpus_rows: list[dict[str, Any]] = []
     with open(corpus_path, encoding="utf-8") as f:
-        for line_num, line in enumerate(f, 1):
+        for line_num, line in tqdm(enumerate(f, 1), desc="Processing", unit="item"):
             line = line.strip()
             if not line:
                 continue

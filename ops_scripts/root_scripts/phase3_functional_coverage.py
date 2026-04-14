@@ -196,7 +196,7 @@ def analyze_module_structure(module_path: pathlib.Path) -> dict:
         functions = []
         constants = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 classes.append(node.name)
             elif isinstance(node, ast.FunctionDef):
@@ -242,7 +242,7 @@ def test_{module_name}_can_import():
 '''
 
     # Add tests for classes
-    for class_name in structure["classes"]:
+    for class_name in tqdm(structure["classes"], desc="Processing", unit="item"):
         test_content += f'''
 
 def test_{class_name}_exists():
@@ -262,7 +262,7 @@ def test_{class_name}_exists():
 '''
 
     # Add tests for functions
-    for func_name in structure["functions"]:
+    for func_name in tqdm(structure["functions"], desc="Processing", unit="item"):
         test_content += f'''
 
 def test_{func_name}_exists():
@@ -275,7 +275,9 @@ def test_{func_name}_exists():
 '''
 
     # Add tests for constants
-    for const_name in structure["constants"][:5]:  # Limit to first 5 constants
+    for const_name in tqdm(
+        structure["constants"][:5], desc="Processing", unit="item"
+    ):  # Limit to first 5 constants
         test_content += f'''
 
 def test_{const_name}_exists():
@@ -294,6 +296,7 @@ def test_module_has_minimum_coverage():
     # This test ensures we're not just importing empty modules
     import {module_import_path}
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from tqdm import tqdm
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,
@@ -433,7 +436,7 @@ def validate_minimum_behavioral_bar():
     violations = []
     checked_count = 0
 
-    for test_file in test_root.rglob("test_*.py"):
+    for test_file in tqdm(test_root.rglob("test_*.py"), desc="Processing", unit="item"):
         # Skip contract tests themselves
         if "_contracts" in str(test_file):
             continue

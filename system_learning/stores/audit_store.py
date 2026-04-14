@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("audit_store", "p4obs", "metric_1")
 _emit_emits_metric_event("audit_store", "p4obs", "metric_2")
@@ -204,7 +205,7 @@ class FileBackedAuditStore:
         if not self._reports_dir.exists():
             return b"[]"
         matched: list[dict] = []
-        for report_path in sorted(self._reports_dir.glob("*.json")):
+        for report_path in tqdm(sorted(self._reports_dir.glob("*.json")), desc="Processing", unit="item"):
             try:
                 data = json.loads(report_path.read_text(encoding="utf-8"))
                 ts = data.get("timestamp_utc") or data.get("created_utc", 0)

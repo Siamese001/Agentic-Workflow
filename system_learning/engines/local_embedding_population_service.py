@@ -106,6 +106,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("local_embedding_population_service", "p4obs", "metric_1")
 _emit_emits_metric_event("local_embedding_population_service", "p4obs", "metric_2")
@@ -292,7 +293,7 @@ class LocalEmbeddingPopulationService:
         self.faiss_store.begin_build(index_id, dimension, self.build_seed)
         vectors = []
         metadatas = []
-        for i, (_, record) in enumerate(all_records):
+        for i, (_, record) in tqdm(enumerate(all_records), desc="Processing", unit="item"):
             canonical_record = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
             text = extract_embedding_text(record)
             vectors.append(text)

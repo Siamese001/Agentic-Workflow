@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("force_app_depth_util", "p4obs", "metric_1")
 _emit_emits_metric_event("force_app_depth_util", "p4obs", "metric_2")
@@ -199,11 +200,11 @@ def force_app_depth() -> Any:
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "force_app_depth")
     print("[*] FORCING DEPTH-4 ON TERRITORIES...")
-    for app_path in APPS:
+    for app_path in tqdm(APPS, desc="Processing", unit="item"):
         if not app_path.exists():
             continue
         print(f"\n[HARDENING] {app_path.name}...")
-        for item in app_path.iterdir():
+        for item in tqdm(app_path.iterdir(), desc="Processing", unit="item"):
             if item.is_dir() and item.name.endswith("_engine"):
                 engine_folder = item
                 dest: Any = CORE / "L2_execution" / "P3_engines" / engine_folder.name
@@ -218,7 +219,7 @@ def force_app_depth() -> Any:
                 except (ValueError, TypeError):
                     pass
                     print(f"  [✓] ENGINE EXTRICATED: {engine_folder.name} -> Core/L2_execution/P3_engines")
-        for item in app_path.iterdir():
+        for item in tqdm(app_path.iterdir(), desc="Processing", unit="item"):
             if item.is_dir() and item.name.startswith("L"):
                 layer_folder = item
             layer_map: Any = {

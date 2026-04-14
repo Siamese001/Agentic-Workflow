@@ -125,6 +125,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("replay_failure_embedder", "replay_failure_embedder_trace")
 
@@ -405,7 +406,7 @@ class ReplayFailureEmbedder:
         top_n = min(top_n, 50)
         counts: dict[str, int] = {}
         with self._lock:
-            for record in self._records:
+            for record in tqdm(self._records, desc="Processing", unit="item"):
                 text = record.text
                 subsystems_segment = ""
                 for part in text.split(" ## "):
@@ -481,7 +482,7 @@ class ReplayFailureEmbedder:
 
             raw_results = query_similarity(query_text, top_k=k, namespace=namespace)
             out: list[ReplayFailureRetrievalResult] = []
-            for r in raw_results:
+            for r in tqdm(raw_results, desc="Processing", unit="item"):
                 ch = r.content_hash
                 meta = self._meta.get(ch, {})
                 out.append(

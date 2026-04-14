@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verify_all_checkpoint_files_util", "p4obs", "metric_1")
 _emit_emits_metric_event("verify_all_checkpoint_files_util", "p4obs", "metric_2")
@@ -196,7 +197,7 @@ all_files = edited_files + viewed_files + renamed_agents
 active_count = 0
 archived_count = 0
 missing_count = 0
-for file_path in all_files:
+for file_path in tqdm(all_files, desc="Processing", unit="item"):
     full_path = PROJECT_ROOT / file_path
     exists_active = full_path.exists()
     filename = Path(file_path).name

@@ -100,6 +100,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_structure_validation_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_structure_validation_enforcer", "p4obs", "metric_2")
@@ -484,7 +485,7 @@ class SSOTStructureValidator:
         result.total_agents = len(agents)
 
         # Validate each agent
-        for agent in agents:
+        for agent in tqdm(agents, desc="Processing", unit="item"):
             agent_violations = self.validate_agent(agent)
 
             if agent_violations:

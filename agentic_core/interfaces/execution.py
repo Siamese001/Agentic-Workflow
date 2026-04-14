@@ -1,5 +1,6 @@
 """Execution interfaces - Stub implementation for test compatibility."""
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import Any
 
@@ -35,8 +36,31 @@ class ExecutionResult:
         self.error = error
 
 
+@dataclass(frozen=True)
+class ExecutionCycle:
+    """Execution lifecycle cycle record."""
+
+    cid: str
+    attempt: int = 1
+
+
+class CIDRegistry:
+    """In-memory registry that issues and tracks execution cycles by CID."""
+
+    def __init__(self) -> None:
+        self._attempts: dict[str, int] = {}
+
+    def new_cycle(self, cid: str) -> ExecutionCycle:
+        """Register a new attempt for *cid* and return its cycle record."""
+        attempt = self._attempts.get(cid, 0) + 1
+        self._attempts[cid] = attempt
+        return ExecutionCycle(cid=cid, attempt=attempt)
+
+
 __all__ = [
+    "CIDRegistry",
     "ExecutionContext",
+    "ExecutionCycle",
     "ExecutionResult",
     "ExecutionStatus",
 ]

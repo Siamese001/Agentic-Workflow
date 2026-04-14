@@ -6,6 +6,7 @@ import ast
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
+from tqdm import tqdm
 
 
 def _audit_semantic_surfaces(repo_root: Path, realized_node_names: set[str]) -> dict[str, int]:
@@ -214,7 +215,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
     eligible_edge_count = 0
     eligible_module_targets: set[str] = set()
 
-    for violating_module in violating_modules:
+    for violating_module in tqdm(violating_modules, desc="Processing", unit="item"):
         violating_key = _module_to_key(violating_module)
         visited: set[str] = {violating_module}
         frontier = {
@@ -228,7 +229,7 @@ def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | fl
         visited |= frontier
         eligible_module_targets |= frontier
         eligible_edge_count += len(frontier)
-        for _depth in range(2, 4):
+        for _depth in tqdm(range(2, 4), desc="Processing", unit="item"):
             next_frontier: set[str] = set()
             for node in frontier:
                 node_key = _module_to_key(
@@ -361,7 +362,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
             print(f"[ADG] Cleanup: error removing {manifest_file.name}: {e}")
 
     # Remove non-timestamped report files (legacy cleanup)
-    for report_file in adg_dir.glob("*_report.json"):
+    for report_file in tqdm(adg_dir.glob("*_report.json"), desc="Processing", unit="item"):
         # Skip if it has a timestamp (format: *_report_MMDDYYYY_HHMM.json)    # guardian: Add error context logging
         if "_" in report_file.stem and len(report_file.stem.split("_")) >= 3:
             # Check if the last part looks like a timestamp
@@ -392,7 +393,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
         "adg_validation_package_*.zip",
     ]
 
-    for pattern in validation_patterns:
+    for pattern in tqdm(validation_patterns, desc="Processing", unit="item"):
         for val_file in adg_dir.glob(pattern):
             # guardian: allow-silent-swallow - acceptable exception handling
             # Extract timestamp from validation package filename

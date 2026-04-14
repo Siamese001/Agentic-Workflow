@@ -21,6 +21,7 @@ import re
 import sys
 import time
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -170,7 +171,7 @@ def collect_documents(repo_root: Path) -> list[dict]:
         layer = detect_layer(md_file)
 
         chunks = chunk_text(source)
-        for chunk_idx, chunk_text_val in enumerate(chunks):
+        for chunk_idx, chunk_text_val in tqdm(enumerate(chunks), desc="Processing", unit="item"):
             docs.append(
                 {
                     "text": chunk_text_val,

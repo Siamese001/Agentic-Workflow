@@ -31,6 +31,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_learning_event,
     _emit_stores_embedding,
 )
+from tqdm import tqdm
 
 # ParentChildExpander, ExpansionContext, L4ERetrievalIntegrator, ChunkManifestRegistry, EnrichedChunkManifest
 # imported lazily to avoid L3->L4 violation
@@ -184,7 +185,7 @@ class ADGEdgeHydrator:
         nodes = self.adg_client.get_nodes_for_file(source_file)
         reads_from = []
 
-        for node in nodes:
+        for node in tqdm(nodes, desc="Processing", unit="item"):
             edges = self.adg_client.get_edges_for_node(
                 node.node_id,
                 relation_type="reads_from",
@@ -208,7 +209,7 @@ class ADGEdgeHydrator:
         nodes = self.adg_client.get_nodes_for_file(source_file)
         writes_to = []
 
-        for node in nodes:
+        for node in tqdm(nodes, desc="Processing", unit="item"):
             edges = self.adg_client.get_edges_for_node(
                 node.node_id,
                 relation_type="writes_to",
@@ -372,12 +373,16 @@ class GraphRetrievalEngine:
             )
 
             formatted = []
-            for i, (doc_id, document, metadata) in enumerate(
-                zip(
-                    results["ids"][0],
-                    results["documents"][0],
-                    results["metadatas"][0],
-                )
+            for i, (doc_id, document, metadata) in tqdm(
+                enumerate(
+                    zip(
+                        results["ids"][0],
+                        results["documents"][0],
+                        results["metadatas"][0],
+                    )
+                ),
+                desc="Processing",
+                unit="item",
             ):
                 formatted.append(
                     {
@@ -406,7 +411,7 @@ class GraphRetrievalEngine:
         all_results = list(initial_results)
         seen_ids = {r["chunk_id"] for r in initial_results}
 
-        for seed in initial_results:
+        for seed in tqdm(initial_results, desc="Processing", unit="item"):
             chunk_id = seed["chunk_id"]
             content = seed["content"]
 
@@ -416,7 +421,7 @@ class GraphRetrievalEngine:
                 seed_content=content,
             )
 
-            for ctx in expanded:
+            for ctx in tqdm(expanded, desc="Processing", unit="item"):
                 if ctx.chunk_id in seen_ids:
                     continue
 
@@ -473,7 +478,7 @@ class GraphRetrievalEngine:
         contexts: list[GraphRetrievalContext],
     ) -> list[GraphRetrievalContext]:
         """Score groundedness of retrieval contexts."""
-        for ctx in contexts:
+        for ctx in tqdm(contexts, desc="Processing", unit="item"):
             score = 0.0
 
             # Factor 1: Source reliability
@@ -531,7 +536,7 @@ class GraphRetrievalEngine:
         formatted_chunks = []
         total_tokens = 0
 
-        for ctx in filtered:
+        for ctx in tqdm(filtered, desc="Processing", unit="item"):
             chunk_tokens = len(ctx.content.split())  # Approximate
             if total_tokens + chunk_tokens > max_tokens:
                 break

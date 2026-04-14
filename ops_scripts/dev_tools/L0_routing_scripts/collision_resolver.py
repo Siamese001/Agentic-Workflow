@@ -150,6 +150,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("collision_resolver", "p4obs", "metric_1")
 _emit_emits_metric_event("collision_resolver", "p4obs", "metric_2")
@@ -246,8 +247,8 @@ class CollisionResolver:
             target = self._get_target_name(path)
             if target and target != path.name:
                 dir_targets[path.parent][target].append(path)
-        for directory, targets in dir_targets.items():
-            for target_name, sources in targets.items():
+        for directory, targets in tqdm(dir_targets.items(), desc="Processing", unit="item"):
+            for target_name, sources in tqdm(targets.items(), desc="Processing", unit="item"):
                 target_path = directory / target_name
                 if target_path.exists() and target_path not in sources:
                     key = str(target_path)
@@ -268,12 +269,14 @@ class CollisionResolver:
             return 0
         print(f"\n⚠️  Found {len(self.collisions)} collision groups requiring manual resolution.\n")
         print("=" * 80)
-        for i, (target, sources) in enumerate(self.collisions.items(), 1):
+        for i, (target, sources) in tqdm(
+            enumerate(self.collisions.items(), 1), desc="Processing", unit="item"
+        ):
             target_path = Path(target)
             print(f"\n[{i}] TARGET: {target_path.name}")
             print(f"    Directory: {target_path.parent.relative_to(self.root)}")
             print("    Contenders:")
-            for src in sources:
+            for src in tqdm(sources, desc="Processing", unit="item"):
                 try:
                     size = src.stat().st_size
                     content = src.read_text(encoding="utf-8")
@@ -302,7 +305,7 @@ class CollisionResolver:
         print(f"   {len(self.collisions)} groups to process")
         print("   Commands: [1-N] Keep file N, [S] Skip, [Q] Quit\n")
         resolved = 0
-        for target, sources in list(self.collisions.items()):
+        for target, sources in tqdm(list(self.collisions.items()), desc="Processing", unit="item"):
             target_path = Path(target)
             print("\n" + "=" * 60)
             print(f"TARGET: {target_path.name}")

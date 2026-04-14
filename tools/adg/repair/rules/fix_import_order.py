@@ -13,6 +13,7 @@ from pathlib import Path
 from tools.adg.repair.base_rule import BaseRepairRule
 from tools.adg.repair.rule_engine import repair_rule
 from tools.adg.repair.types import Deficiency, FixCategory, FixResult
+from tqdm import tqdm
 
 
 @repair_rule("fix_import_order", priority=50)
@@ -200,7 +201,7 @@ class FixImportOrderRule(BaseRepairRule):
         current_block_start = None
         current_block_lines = []
 
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             stripped = line.strip()
 
             # Check if this is an import line
@@ -255,7 +256,7 @@ class FixImportOrderRule(BaseRepairRule):
         """Categorize an import block."""
         lines = block_text.strip().split("\n")
 
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             line = line.strip()
             if line.startswith("import "):
                 module = line.split()[1].split(".")[0]

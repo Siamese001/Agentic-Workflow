@@ -234,6 +234,20 @@ class ComparisonResult:
 _ENV_ALLOWLIST = {"AGENTIC_BYPASS_LONGPATHS_CHECK", "PYTHONUTF8", "PYTHONPATH", "PATH"}
 
 
+def _validate_replay_command(command: ReplayCommand) -> None:
+    if not command.argv:
+        raise ValueError("ReplayCommand.argv must not be empty")
+    if not os.path.isdir(command.cwd):
+        raise ValueError(f"ReplayCommand.cwd must exist and be a directory: {command.cwd}")
+    unexpected = sorted(set(command.env_allowlist) - _ENV_ALLOWLIST)
+    if unexpected:
+        raise ValueError(f"ReplayCommand.env_allowlist contains non-allowlisted keys: {unexpected}")
+    if command.timeout_s <= 0 or command.timeout_s > 3600:
+        raise ValueError(f"ReplayCommand.timeout_s out of range: {command.timeout_s}")
+    if command.max_stdout_bytes <= 0 or command.max_stderr_bytes <= 0:
+        raise ValueError("ReplayCommand max byte limits must be positive")
+
+
 def _hash_command_result(command: ReplayCommand, result: ReplayResult) -> str:
     """Compute SHA256 hash of command and result for integrity verification."""
     import uuid as _uuid  # noqa: PLC0415
@@ -316,6 +330,7 @@ def run_and_record(commands: list[ReplayCommand]) -> ReplayRecord:
     per_command_bytes_out = []
     per_command_bytes_err = []
     for command in commands:
+        _validate_replay_command(command)
         if len(command.argv) > 0 and ("pwsh" in command.argv[0] or "powershell" in command.argv[0]):
             raise RuntimeError(f"PowerShell usage forbidden in argv0: {command.argv[0]}")
         env = _filter_env_vars()
@@ -360,7 +375,14 @@ def record_to_json(record: ReplayRecord) -> str:
         "version": record.version,
         "created_utc": record.created_utc,
         "commands": [
-            {"argv": cmd.argv, "cwd": cmd.cwd, "env_allowlist": cmd.env_allowlist, "timeout_s": cmd.timeout_s}
+            {
+                "argv": cmd.argv,
+                "cwd": cmd.cwd,
+                "env_allowlist": cmd.env_allowlist,
+                "timeout_s": cmd.timeout_s,
+                "max_stdout_bytes": cmd.max_stdout_bytes,
+                "max_stderr_bytes": cmd.max_stderr_bytes,
+            }
             for cmd in record.commands
         ],
         "results": [
@@ -387,6 +409,8 @@ def record_from_json(json_str: str) -> ReplayRecord:
             cwd=cmd["cwd"],
             env_allowlist=cmd["env_allowlist"],
             timeout_s=cmd.get("timeout_s", 300),
+            max_stdout_bytes=cmd.get("max_stdout_bytes", 1024 * 1024),
+            max_stderr_bytes=cmd.get("max_stderr_bytes", 1024 * 1024),
         )
         for cmd in data["commands"]
     ]
@@ -441,6 +465,7 @@ def replay_and_compare(record: ReplayRecord) -> ComparisonResult:
     first_diff_lines = []
     for i, (command, original_result) in enumerate(zip(record.commands, record.results)):
         try:
+            _validate_replay_command(command)
             env = _filter_env_vars()
             env.update(command.env_allowlist)
             result = subprocess.run(
@@ -452,10 +477,12 @@ def replay_and_compare(record: ReplayRecord) -> ComparisonResult:
                 env=env,
                 timeout=command.timeout_s,
             )
+            current_stdout, _ = _truncate_if_needed(result.stdout, command.max_stdout_bytes)
+            current_stderr, _ = _truncate_if_needed(result.stderr, command.max_stderr_bytes)
             current_result = ReplayResult(
                 exit_code=result.returncode,
-                stdout=result.stdout,
-                stderr=result.stderr,
+                stdout=current_stdout,
+                stderr=current_stderr,
             )
             if current_result.exit_code != original_result.exit_code:
                 mismatches.append(
@@ -484,8 +511,7 @@ def replay_and_compare(record: ReplayRecord) -> ComparisonResult:
                 mismatches.append(f"Command {i + 1}: Stderr mismatch after normalization")
         except subprocess.TimeoutExpired:
             mismatches.append(f"Command {i + 1}: Timeout during replay")
-        # guardian: allow-silent-swallow
-        except (ValueError, TypeError) as e:
+        except (FileNotFoundError, OSError, ValueError, TypeError) as e:
             mismatches.append(f"Command {i + 1}: Exception during replay: {e}")
     return ComparisonResult(
         is_match=len(mismatches) == 0,

@@ -35,6 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from agentic_core.utils.canonical_serializer_util import (
     canonical_bytes,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -196,7 +197,7 @@ class HashChainAuditLog:
         if not self._entries:
             return True
 
-        for i, entry in enumerate(self._entries):
+        for i, entry in tqdm(enumerate(self._entries), desc="Processing", unit="item"):
             if not entry.verify_hash():
                 Logger.error(f"[audit] hash mismatch at entry {i}")
                 return False

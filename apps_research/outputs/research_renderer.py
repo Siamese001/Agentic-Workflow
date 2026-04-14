@@ -21,18 +21,22 @@ _log = logging.getLogger(__name__)
 class ResearchRenderer:
     """Renderer for research artifacts."""
 
+    @staticmethod
+    def _safe_markdown(value: str) -> str:
+        return value.replace("\x00", "").replace("\r\n", "\n").replace("```", "``\u200b`").strip()
+
     def render_json(self, result: ResearchResult) -> str:
         """Render result as formatted JSON."""
-        return json.dumps(result.model_dump(), indent=2, default=str)
+        return json.dumps(result.model_dump(), indent=2, sort_keys=True, ensure_ascii=False, default=str)
 
     def render_markdown(self, result: ResearchResult) -> str:
         """Render result as Markdown research report."""
         status = "✅ PASSED" if result.passed_gate else "❌ FAILED"
         lines = [
-            f"# Research: {result.topic}",
+            f"# Research: {self._safe_markdown(result.topic)}",
             "",
-            f"**Mode:** {result.mode}",
-            f"**Status:** {result.status}",
+            f"**Mode:** {self._safe_markdown(result.mode)}",
+            f"**Status:** {self._safe_markdown(result.status)}",
             f"**Quality Score:** {result.quality_score:.0%}",
             f"**Gate Status:** {status}",
             "",
@@ -41,7 +45,9 @@ class ResearchRenderer:
         if result.sections:
             lines.extend(["## Sections", ""])
             for section in result.sections:
-                lines.extend([f"### {section.heading}", "", section.body, ""])
+                lines.extend(
+                    [f"### {self._safe_markdown(section.heading)}", "", self._safe_markdown(section.body), ""]
+                )
                 lines.append(
                     f"*Word count: {section.word_count} | Sources: {len(section.sources)} | Claim: {section.claim_type}*"
                 )
@@ -52,10 +58,10 @@ class ResearchRenderer:
             for source in result.source_register:
                 lines.extend(
                     [
-                        f"### {source.title}",
+                        f"### {self._safe_markdown(source.title)}",
                         f"**Confidence:** {source.confidence:.0%}",
-                        f"**Type:** {source.claim_type}",
-                        f"**URL:** {source.url}",
+                        f"**Type:** {self._safe_markdown(source.claim_type)}",
+                        f"**URL:** {self._safe_markdown(source.url)}",
                         "",
                     ]
                 )
@@ -63,19 +69,19 @@ class ResearchRenderer:
         if result.comparison_matrix:
             lines.extend(["## Comparison Matrix", ""])
             for row in result.comparison_matrix:
-                lines.append(f"### {row.subject}")
+                lines.append(f"### {self._safe_markdown(row.subject)}")
                 for dim, val in row.dimensions.items():
-                    lines.append(f"- **{dim}:** {val}")
+                    lines.append(f"- **{dim}:** {self._safe_markdown(val)}")
                 lines.append("")
 
         if result.gate_violations:
             lines.extend(["## Gate Violations", ""])
             for violation in result.gate_violations:
-                lines.append(f"- ⚠️ {violation}")
+                lines.append(f"- ⚠️ {self._safe_markdown(violation)}")
             lines.append("")
 
         if result.error:
-            lines.extend(["## Error", "", f"```\n{result.error}\n```", ""])
+            lines.extend(["## Error", "", f"```\n{self._safe_markdown(result.error)}\n```", ""])
 
         return "\n".join(lines)
 
@@ -83,9 +89,9 @@ class ResearchRenderer:
         """Render as compact dict for embedding."""
         return {
             "trace_id": result.trace_id,
-            "topic": result.topic,
-            "mode": result.mode,
-            "status": result.status,
+            "topic": self._safe_markdown(result.topic),
+            "mode": self._safe_markdown(result.mode),
+            "status": self._safe_markdown(result.status),
             "score": result.quality_score,
             "passed": result.passed_gate,
             "violations": len(result.gate_violations),
@@ -97,9 +103,13 @@ class ResearchRenderer:
 class ResearchSummaryRenderer:
     """Renderer for research run summaries."""
 
+    @staticmethod
+    def _safe_markdown(value: str) -> str:
+        return value.replace("\x00", "").replace("\r\n", "\n").replace("```", "``\u200b`").strip()
+
     def render_json(self, summary: ResearchRunSummary) -> str:
         """Render summary as formatted JSON."""
-        return json.dumps(summary.to_dict(), indent=2, default=str)
+        return json.dumps(summary.to_dict(), indent=2, sort_keys=True, ensure_ascii=False, default=str)
 
     def render_markdown(self, summary: ResearchRunSummary) -> str:
         """Render summary as Markdown report."""

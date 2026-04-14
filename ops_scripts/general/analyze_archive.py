@@ -5,6 +5,7 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import (
     ARCHIVES_DIR,
 )
+from tqdm import tqdm
 
 RESUME_KEYWORDS = {"resume", "cv", "ats", "job", "skill", "experience", "bullet", "section"}
 OUTREACH_KEYWORDS = {"outreach", "linkedin", "recipient", "campaign", "personalization", "message", "sender"}
@@ -16,7 +17,7 @@ def analyze_archive(archive_path: Path):
         print(f"Error: Path {archive_path} does not exist.")
         return []
     results = []
-    for f in sorted(archive_path.rglob("*.py")):
+    for f in tqdm(sorted(archive_path.rglob("*.py")), desc="Processing", unit="item"):
         if "__pycache__" in str(f):
             continue
         try:
@@ -81,7 +82,7 @@ def main():
     print("ARCHIVE ANALYSIS - FILES POTENTIALLY RELEVANT TO apps_* FOLDERS")
     print("=" * 80)
     all_restore_candidates = []
-    for archive_name, description in archives_to_check:
+    for archive_name, description in tqdm(archives_to_check, desc="Processing", unit="item"):
         archive_path = archives_root / archive_name
         if not archive_path.exists():
             continue
@@ -113,7 +114,7 @@ def main():
     deprecated_today = [r for r in all_restore_candidates if r["archive"] == "deprecated_2026_01_20"]
     if deprecated_today:
         print("\n### deprecated_2026_01_20 (Today's archive)")
-        for r in deprecated_today:
+        for r in tqdm(deprecated_today, desc="Processing", unit="item"):
             print(f"\n  {r['path']}")
             if r["tag"] == "RG":
                 print("    DECISION: Consider restore to apps_rg/engines/")

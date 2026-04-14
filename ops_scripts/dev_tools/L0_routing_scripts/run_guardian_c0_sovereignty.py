@@ -156,6 +156,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_c0_sovereignty", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_c0_sovereignty", "p4obs", "metric_2")
@@ -287,7 +288,7 @@ def scan_embedding_control_flow(
     tier_viols: list[dict] = []
     threshold_viols: list[dict] = []
 
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         rel = normalize_repo_path(fpath.relative_to(repo_root))
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
@@ -295,7 +296,7 @@ def scan_embedding_control_flow(
         except SyntaxError:
             continue
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # embedding_drives_routing / embedding_drives_tier_selection:
             # If or While condition contains an embedding attribute
             if isinstance(node, (ast.If, ast.While)):
@@ -307,7 +308,7 @@ def scan_embedding_control_flow(
             # where the right-hand side contains an embedding attribute
             if isinstance(node, ast.Assign):
                 if _node_contains_embedding_attr(node.value):
-                    for target in node.targets:
+                    for target in tqdm(node.targets, desc="Processing", unit="item"):
                         tname = None
                         if isinstance(target, ast.Name):
                             tname = target.id
@@ -345,10 +346,14 @@ def run_c0_sovereignty_guardian(
 
     viols = scan_embedding_control_flow(repo_root)
 
-    for check_id in (
-        "embedding_drives_routing",
-        "embedding_drives_tier_selection",
-        "embedding_mutates_threshold",
+    for check_id in tqdm(
+        (
+            "embedding_drives_routing",
+            "embedding_drives_tier_selection",
+            "embedding_mutates_threshold",
+        ),
+        desc="Processing",
+        unit="item",
     ):
         v = viols[check_id]
         if v:

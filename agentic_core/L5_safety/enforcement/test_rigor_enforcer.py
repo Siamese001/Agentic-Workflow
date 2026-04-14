@@ -146,6 +146,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("test_rigor_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("test_rigor_enforcer", "p4obs", "metric_2")
@@ -418,7 +419,7 @@ class TestRigorEnforcer:
             failed = 0
             skipped = 0
 
-            for line in result.stdout.splitlines():
+            for line in tqdm(result.stdout.splitlines(), desc="Processing", unit="item"):
                 line_lower = line.lower()
                 if "passed" in line_lower:
                     parts = line.split()

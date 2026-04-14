@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from dataclasses import dataclass
 from typing import Any, Protocol
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -16,6 +17,29 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 
 Logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ValidationReport:
+    """Structured result from a validation scan."""
+
+    total_violations: int
+    compliance_score: float
+    violations: list
+    scan_duration: float
+    is_compliant: bool
+
+    def to_markdown(self) -> str:
+        status = "COMPLIANT" if self.is_compliant else "NON-COMPLIANT"
+        lines = [
+            "# Validation Report",
+            f"**Status**: {status}",
+            f"**Compliance Score**: {self.compliance_score}%",
+            f"**Scan Duration**: {self.scan_duration:.2f}s",
+        ]
+        if self.violations:
+            lines.append(f"**Violations**: {len(self.violations)} violations")
+        return "\n".join(lines)
 
 
 def _run_agent(agent) -> dict[str, Any]:

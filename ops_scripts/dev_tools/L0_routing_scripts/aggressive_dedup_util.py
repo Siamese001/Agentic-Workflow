@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("aggressive_dedup_util", "p4obs", "metric_1")
 _emit_emits_metric_event("aggressive_dedup_util", "p4obs", "metric_2")
@@ -198,10 +199,10 @@ def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "get_all_classes_in_codebase")
     class_files = defaultdict(list)
 
-    for d in dirs:
+    for d in tqdm(dirs, desc="Processing", unit="item"):
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob("*.py"):
+        for py_file in tqdm(Path(d).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
             try:
@@ -221,10 +222,10 @@ def find_redundant_files(dirs: list[str], class_files: dict[str, list[str]]) -> 
     """Find files where ALL classes exist in other files."""
     redundant = []
 
-    for d in dirs:
+    for d in tqdm(dirs, desc="Processing", unit="item"):
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob("*.py"):
+        for py_file in tqdm(Path(d).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
 
@@ -258,10 +259,10 @@ def find_similar_named_files(dirs: list[str]) -> list[tuple[str, str]]:
     """Find files with similar names that might be duplicates."""
     all_files = {}
 
-    for d in dirs:
+    for d in tqdm(dirs, desc="Processing", unit="item"):
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob("*.py"):
+        for py_file in tqdm(Path(d).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
 
@@ -283,10 +284,10 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
     """Find files that are likely low value (small, no docstrings, test-like)."""
     low_value = []
 
-    for d in dirs:
+    for d in tqdm(dirs, desc="Processing", unit="item"):
         if not Path(d).exists():
             continue
-        for py_file in Path(d).rglob("*.py"):
+        for py_file in tqdm(Path(d).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
 

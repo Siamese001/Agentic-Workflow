@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("PredictiveCostAuditorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("PredictiveCostAuditorAgent", "p4obs", "metric_2")
@@ -294,10 +295,10 @@ class PredictiveCostAuditorAgent(SovereignBaseAgent, SubAtomicAgent):
         if not hasattr(self.ctx, "healing_history"):
             Logger.warning("   No healing history available")
             return
-        for file_path, history in self.ctx.healing_history.items():
+        for file_path, history in tqdm(self.ctx.healing_history.items(), desc="Processing", unit="item"):
             if file_path not in self.healing_history:
                 self.healing_history[file_path] = []
-            for key_id, data in history.items():
+            for key_id, data in tqdm(history.items(), desc="Processing", unit="item"):
                 metrics = HealingMetrics(
                     file_path=file_path,
                     attempt_number=data.get("round", 1),

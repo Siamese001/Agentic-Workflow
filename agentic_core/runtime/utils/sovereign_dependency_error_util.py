@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_dependency_error_util", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_dependency_error_util", "p4obs", "metric_2")
@@ -345,7 +346,7 @@ class SubatomicHop:
 
     async def _sanitize_input(self, context: dict, trace_id: str) -> dict:
         """Sanitize all inputs through the membrane."""
-        for _key, _value in ConfigurationService().context.items():
+        for _key, _value in tqdm(ConfigurationService().context.items(), desc="Processing", unit="item"):
             if isinstance(ConfigurationService().value, str):
                 await self.membrane.sanitize(
                     ConfigurationService().value,
@@ -439,7 +440,7 @@ class SubatomicHop:
         """Execute the action stage with airlock protection."""
         total_cost = 0.0
         results = []
-        for call in plan.tool_calls:
+        for call in tqdm(plan.tool_calls, desc="Processing", unit="item"):
             tool_name = call.get("name", "unknown")
             tool_args = call.get("args", {})
             try:

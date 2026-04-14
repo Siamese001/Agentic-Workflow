@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("_ssot_reporting", "p4obs", "metric_1")
 _emit_emits_metric_event("_ssot_reporting", "p4obs", "metric_2")
@@ -247,7 +248,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> "Path | Non
         agents_seen: set[str] = set()
         total_violation_count = total_violations_fixed = total_drift_count = total_errors = 0
         non_compliant = compliant = 0
-        for t in targets:
+        for t in tqdm(targets, desc="Processing", unit="item"):
             t_path = reports_dir / f"compliance_report_{t}.json"
             if not t_path.exists():
                 continue
@@ -335,7 +336,7 @@ def _collect_llm_call_trace(state_mgr: Any, decision_engine: Any) -> dict:
     decisions = getattr(decision_engine, "decisions_made", [])
     call_trace = []
     blocked_calls = []
-    for action in healing_actions:
+    for action in tqdm(healing_actions, desc="Processing", unit="item"):
         tier = TIER_ALIASES.get(str(action.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
         if tier not in LLM_TIERS:
             continue
@@ -382,7 +383,7 @@ def _collect_llm_call_trace(state_mgr: Any, decision_engine: Any) -> dict:
             )
     llm_disabled = not getattr(decision_engine, "enable_llm", True)
     seen_agents = {e["agent"] for e in call_trace} | {e["agent"] for e in blocked_calls}
-    for d in decisions:
+    for d in tqdm(decisions, desc="Processing", unit="item"):
         tier = TIER_ALIASES.get(str(d.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
         if tier not in LLM_TIERS:
             continue
@@ -429,7 +430,7 @@ def _collect_blocker_scan(state_mgr: Any) -> list:
 
     raw = state_mgr.state.get("blocked_agents", [])
     result = []
-    for rec in raw:
+    for rec in tqdm(raw, desc="Processing", unit="item"):
         if not isinstance(rec, dict):
             continue
         trace = rec.get("stack_trace", [])
@@ -539,7 +540,7 @@ def _build_calibration_proof(state_mgr: Any, decision_engine: Any) -> dict:
         actual = 1.0 if _lookup_outcome(agent) in ("SUCCESS", "PARTIAL") else 0.0
         tier_data.setdefault(tier, []).append((float(conf), actual))
     result = {}
-    for tier, pairs in tier_data.items():
+    for tier, pairs in tqdm(tier_data.items(), desc="Processing", unit="item"):
         if not pairs:
             continue
         pred_avg = round(sum(p for p, _ in pairs) / len(pairs), 4)
@@ -705,7 +706,7 @@ def _write_mandatory_json_output(state_mgr: Any, decision_engine: Any) -> None:
         _hm_totals = {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0}
         _bge_total = 0
         _partial_agents: list[str] = []
-        for _ag, _tiers in sorted(heatmap.items()):
+        for _ag, _tiers in tqdm(sorted(heatmap.items()), desc="Processing", unit="item"):
             _d = _tiers.get("DETERMINISTIC", 0)
             _q = _tiers.get("QWEN_VLLM", 0)
             _g = _tiers.get("GEMINI_2_5_PRO", 0)
@@ -820,7 +821,7 @@ def _write_heal_run_complete(state_mgr: Any, decision_engine: Any) -> dict:
     _zero_fix_agents: list[str] = []
     _summaries_with_text = _summaries_parsed = 0
     _parse_errors: list[str] = []
-    for _a in healing_actions:
+    for _a in tqdm(healing_actions, desc="Processing", unit="item"):
         _summary = str(_a.get("fix_summary", "") or "").strip()
         _outcome = str(_a.get("outcome", "")).upper()
         if _outcome in ("PARTIAL", "SKIPPED"):
@@ -1230,7 +1231,7 @@ def _write_failure_forensics(state_mgr: Any, decision_engine: Any) -> None:
     calibration = _build_calibration_proof(state_mgr, decision_engine)
     decision_index: dict = {d.get("agent", "unknown"): d for d in decisions}
     failed_agents = []
-    for action in healing_actions:
+    for action in tqdm(healing_actions, desc="Processing", unit="item"):
         outcome = str(action.get("outcome", "")).upper()
         if outcome not in ("FAIL", "FAILED", "ERROR"):
             continue
@@ -1270,7 +1271,7 @@ def _write_failure_forensics(state_mgr: Any, decision_engine: Any) -> None:
             },
         )
     misrouted_agents = []
-    for action in healing_actions:
+    for action in tqdm(healing_actions, desc="Processing", unit="item"):
         outcome = str(action.get("outcome", "")).upper()
         if outcome not in ("FAIL", "FAILED", "ERROR"):
             continue
@@ -1482,7 +1483,7 @@ def _print_run_manifest(state_mgr: Any, targets: list[str]) -> int:
     print(
         f"\n{'=' * _W}\n  RUN MANIFEST — AGENT & PHASE COVERAGE\n  Zero-tolerance: every expected agent/phase must appear below as RAN\n{'=' * _W}\n\n  GLOBAL AGENTS (run once, repo-wide)\n  {'-' * 40}",
     )
-    for agent in GLOBAL_AGENTS:
+    for agent in tqdm(GLOBAL_AGENTS, desc="Processing", unit="item"):
         errs = error_msgs.get("__global__", [])
         agent_errs = [e for e in errs if agent in e]
         if agent in completed and agent not in failed_agents:
@@ -1500,7 +1501,7 @@ def _print_run_manifest(state_mgr: Any, targets: list[str]) -> int:
             print(f"  ✗  {agent}  [DID NOT RUN — no record in completed_agents]")
             gaps += 1
     print(f"\n  PER-TERRITORY AGENTS\n  {'-' * 40}")
-    for territory in targets:
+    for territory in tqdm(targets, desc="Processing", unit="item"):
         crashed = territory in territory_crashed
         p1_fail = territory in phase1_failed
         t_errs = error_msgs.get(territory, [])
@@ -1516,7 +1517,7 @@ def _print_run_manifest(state_mgr: Any, targets: list[str]) -> int:
             print("    ✗  [ALL DOWNSTREAM PHASES SKIPPED — Phase 1 did not produce drift report]")
             gaps += len(PER_TERRITORY_AGENTS)
             continue
-        for agent in PER_TERRITORY_AGENTS:
+        for agent in tqdm(PER_TERRITORY_AGENTS, desc="Processing", unit="item"):
             a_errs = [e for e in t_errs if agent in e]
             if agent in completed and agent not in failed_agents:
                 print(f"    ✓  {agent}")
@@ -1565,7 +1566,7 @@ def _print_executive_summary(complete_output: dict) -> None:
         "\nTable 6: Executive Gate Criteria (Full Detail)\n\n| Gate Criterion | Target | Actual | Status | Blocker |",
     )
     print("|----------------|--------|--------|--------|---------|")
-    for g in gate_criteria:
+    for g in tqdm(gate_criteria, desc="Processing", unit="item"):
         crit = str(g.get("criterion", ""))[:40]
         tgt = str(g.get("target", ""))[:10]
         actual_raw = g.get("actual")

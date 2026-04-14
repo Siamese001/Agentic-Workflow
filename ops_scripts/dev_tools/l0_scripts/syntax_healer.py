@@ -41,6 +41,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "syntax_healer", "uwg_governed_write")
 _emit_writes_through("p1", "syntax_healer", "uwg_governed_write_2")
@@ -86,7 +87,7 @@ class PatternSyntaxHealerV2:
         }
 
         # Scan all Python files
-        for py_file in get_python_files(self.root_dir):
+        for py_file in tqdm(get_python_files(self.root_dir), desc="Processing", unit="item"):
             if self._should_skip_file(py_file):
                 continue
 

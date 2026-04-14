@@ -71,6 +71,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
+from tqdm import tqdm
 
 VALID_TERRITORIES: frozenset[str] = frozenset(
     {
@@ -186,7 +187,7 @@ def validate_base_agent_location(file_path: str) -> tuple[bool, str]:
                 f"[CONSTITUTIONAL VIOLATION] Core base agent '{path.name}' must reside in {BASE_AGENT_CANONICAL_DIR}/, found in: {file_path}",
             )
     app_prefixes = ["RG", "LIC", "SHARED"]
-    for prefix in app_prefixes:
+    for prefix in tqdm(app_prefixes, desc="Processing", unit="item"):
         if path.name.startswith(prefix) and path.name.endswith("BaseAgent.py"):
             expected_app_dir = f"apps_{prefix.lower()}" if prefix != "SHARED" else "apps_shared"
             # guardian: allow-path-string
@@ -306,7 +307,7 @@ def main() -> int:
         return 0
     all_violations: list[str] = []
     constitutional_violations: list[str] = []
-    for file_path in files:
+    for file_path in tqdm(files, desc="Processing", unit="item"):
         if constitutional_only:
             is_valid, error = validate_base_agent_location(Path(file_path))
             if not is_valid:

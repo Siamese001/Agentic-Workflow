@@ -84,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("standard_type_types", "p4obs", "metric_1")
 _emit_emits_metric_event("standard_type_types", "p4obs", "metric_2")
@@ -511,7 +512,7 @@ class CrossEngineQualityStandards:
             "detailed_results": {},
         }
         total_score = 0.0
-        for standard_name in required_standards:
+        for standard_name in tqdm(required_standards, desc="Processing", unit="item"):
             standard = self.get_standard(standard_name)
             if not standard:
                 continue

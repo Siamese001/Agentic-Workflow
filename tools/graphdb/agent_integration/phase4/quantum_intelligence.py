@@ -19,6 +19,7 @@ from datetime import datetime
 
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from ..phase3.ecosystem_intelligence import EcosystemIntelligenceEngine
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -471,7 +472,7 @@ class QuantumIntelligenceEngine:
         # VQE with parameterized gates
         parameters = [random.uniform(0, 2 * math.pi) for _ in range(10)]
 
-        for iteration in range(20):
+        for iteration in tqdm(range(20), desc="Processing", unit="item"):
             # Apply parameterized gates
             for i, param in enumerate(parameters):
                 qubit_id = list(qubits.keys())[i % len(qubits)]

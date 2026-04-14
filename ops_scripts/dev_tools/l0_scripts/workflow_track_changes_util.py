@@ -106,6 +106,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.security_util import safe_git_execute
+from tqdm import tqdm
 
 _emit_emits_metric_event("workflow_track_changes_util", "p4obs", "metric_1")
 _emit_emits_metric_event("workflow_track_changes_util", "p4obs", "metric_2")
@@ -170,7 +171,7 @@ def main() -> None:
     )
     if result.returncode != 0:
         sys.exit(1)
-    for line in result.stdout.splitlines():
+    for line in tqdm(result.stdout.splitlines(), desc="Processing", unit="item"):
         line.strip()
         if not line:
             continue

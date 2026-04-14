@@ -9,6 +9,7 @@ import argparse
 import json
 import sqlite3
 from pathlib import Path
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -88,7 +89,7 @@ class GuardianSweepFixer:
                 """)
 
             self.violations = []
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 file_path, line_no, evidence, severity, disposition, disposition_source = row
 
                 # Parse evidence to extract exception type
@@ -131,7 +132,7 @@ class GuardianSweepFixer:
 
         print(f"  Processing {len(self.violations)} total violations...")
 
-        for violation in self.violations:
+        for violation in tqdm(self.violations, desc="Processing", unit="item"):
             if "file_path" not in violation:
                 continue
             file_path = Path(violation["file_path"])

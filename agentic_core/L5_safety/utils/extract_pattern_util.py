@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("extract_pattern_util", "p4obs", "metric_1")
 _emit_emits_metric_event("extract_pattern_util", "p4obs", "metric_2")
@@ -191,7 +192,7 @@ def extract_class_with_context(content: str, class_name: str) -> tuple[str, int,
     _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "extract_class_with_context")
     lines = content.split("\n")
     tree = ast.parse(content)
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef) and node.name == class_name:
             start_line = node.lineno - 1
             end_line = node.end_lineno
@@ -223,7 +224,7 @@ def update_source_file(source_file: Path):
     tree = ast.parse(content)
     classes_to_remove = ["PatternEnforcerAgent", "SubAtomicAgent"]
     ranges_to_remove = []
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef) and node.name in classes_to_remove:
             start_line = node.lineno - 1
             end_line = node.end_lineno

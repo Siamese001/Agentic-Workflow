@@ -16,6 +16,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +114,7 @@ class AgenticSpanProcessor:
             Processed span or None if filtered out
         """
         # Apply filters
-        for filter_func in self._filters:
+        for filter_func in tqdm(self._filters, desc="Processing", unit="item"):
             if not filter_func(span):
                 return None
 
@@ -138,7 +139,7 @@ class AgenticSpanProcessor:
             Filtered and enriched spans
         """
         processed = []
-        for span in spans:
+        for span in tqdm(spans, desc="Processing", unit="item"):
             result = self.process_span(span)
             if result is not None:
                 processed.append(result)

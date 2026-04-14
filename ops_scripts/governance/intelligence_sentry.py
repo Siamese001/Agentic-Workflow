@@ -123,6 +123,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.project_root_util import get_project_root
+from tqdm import tqdm
 
 _emit_emits_metric_event("intelligence_sentry", "p4obs", "metric_1")
 _emit_emits_metric_event("intelligence_sentry", "p4obs", "metric_2")
@@ -216,7 +217,7 @@ def execute_sentry():
         and (ARCHIVES_DIR not in str(f.as_posix()))
     ]
     moved = 0
-    for test_file in all_tests:
+    for test_file in tqdm(all_tests, desc="Processing", unit="item"):
         target_stem = test_file.stem.replace("test_", "")
         if target_stem in source_map:
             dest_dir = TEST_UNIT_ROOT / source_map[target_stem]

@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import chromadb
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -146,7 +147,7 @@ class NativePersistentCacheClient:
     def _evict_if_needed(self) -> None:
         """Evict least-recently-accessed entries if over max_entries."""
         max_retries = 2
-        for attempt in range(max_retries):
+        for attempt in tqdm(range(max_retries), desc="Processing", unit="item"):
             try:
                 cursor = self._sqlite_conn.cursor()
                 cursor.execute("SELECT COUNT(*) FROM l2_cache")
@@ -485,7 +486,7 @@ class NativePersistentCacheClient:
 
             formatted_results = []
             if results["ids"] and results["ids"][0]:
-                for i, entry_id in enumerate(results["ids"][0]):
+                for i, entry_id in tqdm(enumerate(results["ids"][0]), desc="Processing", unit="item"):
                     distance = results["distances"][0][i] if results["distances"] else 1.0
                     similarity = 1.0 - distance
 

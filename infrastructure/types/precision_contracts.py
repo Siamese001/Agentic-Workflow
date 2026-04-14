@@ -7,6 +7,7 @@ import hashlib
 import logging
 import re
 import time
+from threading import Lock
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
@@ -151,7 +152,7 @@ class PrecisionContractError(Exception):
 
 
 class PrecisionTokenBucket(Generic[T]):
-    """Mathematically precise token bucket rate limiter with O(1) operations."""
+    """Mathematically precise token bucket rate limiter with per-key isolation."""
 
     def __init__(self, capacity: int, refill_rate: float):
         if capacity <= 0 or refill_rate <= 0:
@@ -159,43 +160,35 @@ class PrecisionTokenBucket(Generic[T]):
 
         self.capacity = capacity
         self.refill_rate = refill_rate  # tokens per second
-        self.tokens = float(capacity)
-        self.last_refill = time.time()
-        self._lock = defaultdict(lambda: 0.0)  # Simple lock simulation
+        self._tokens: defaultdict[T, float] = defaultdict(lambda: float(capacity))
+        self._last_refill: defaultdict[T, float] = defaultdict(time.monotonic)
+        self._lock = Lock()
 
     def _refill(self, key: T) -> None:
-        """Refill tokens based on elapsed time with mathematical precision."""
-        now = time.time()
-        elapsed = now - self.last_refill
+        """Refill tokens for a specific key using monotonic time."""
+        now = time.monotonic()
+        elapsed = now - self._last_refill[key]
         if elapsed > 0:
-            self.tokens = min(self.capacity, self.tokens + elapsed * self.refill_rate)
-            self.last_refill = now
+            self._tokens[key] = min(self.capacity, self._tokens[key] + elapsed * self.refill_rate)
+            self._last_refill[key] = now
 
     def consume(self, key: T, tokens: int = 1) -> bool:
-        """Consume tokens with atomic O(1) operation."""
+        """Consume tokens with thread-safe per-key accounting."""
         if tokens <= 0:
             return False
 
-        # Simple lock simulation (in production, use proper locks)
-        lock_time = self._lock[key]
-        if time.time() - lock_time < 0.001:  # 1ms lock timeout
-            return False
-
-        self._lock[key] = time.time()
-
-        try:
+        with self._lock:
             self._refill(key)
-            if self.tokens >= tokens:
-                self.tokens -= tokens
+            if self._tokens[key] >= tokens:
+                self._tokens[key] -= tokens
                 return True
             return False
-        finally:
-            del self._lock[key]
 
     def available_tokens(self, key: T) -> int:
-        """Get available tokens without consuming."""
-        self._refill(key)
-        return int(self.tokens)
+        """Get available tokens for a key without consuming."""
+        with self._lock:
+            self._refill(key)
+            return int(self._tokens[key])
 
 
 class PrecisionFourLayerContractGuard:
@@ -334,10 +327,10 @@ class PrecisionFourLayerContractGuard:
         """Check Layer-4 rate limiting with precision token bucket."""
         self.contract_checks["rate_limiting"] += 1
 
-        # Use query_id as key for rate limiting (fallback to user_id if needed)
-        key = request.query_id if request.query_id else request.user_id
+        # Use stable principal identity for rate limiting.
+        key = request.user_id or request.session_id or request.query_id
         if not key:
-            key = f"anonymous_{int(time.time())}"
+            key = hashlib.sha256(request.user_query.encode()).hexdigest()[:16]
 
         if not self.l4_rate_limiter.consume(key):
             self._record_violation(
@@ -418,7 +411,6 @@ class PrecisionFourLayerContractGuard:
             },
             "layer4_rate_limit": {
                 "limit_per_minute": self.l4_rate_limit_per_minute,
-                "current_tokens": int(self.l4_rate_limiter.tokens),
                 "capacity": self.l4_rate_limiter.capacity,
             },
         }

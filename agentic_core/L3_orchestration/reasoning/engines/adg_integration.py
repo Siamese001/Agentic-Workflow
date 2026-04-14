@@ -32,6 +32,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -440,10 +441,10 @@ class ADGQueryClient:
         # BFS traversal
         current_level: list[str] = [root_node_id]
 
-        for depth in range(max_depth):
+        for depth in tqdm(range(max_depth), desc="Processing", unit="item"):
             next_level: list[str] = []
 
-            for node_id in current_level:
+            for node_id in tqdm(current_level, desc="Processing", unit="item"):
                 if node_id in visited:
                     continue
                 visited.add(node_id)
@@ -516,8 +517,8 @@ class ADGQueryClient:
         affected_nodes: list[ADGNode] = []
         affected_edges: list[ADGEdge] = []
 
-        for path in paths:
-            for node in path.nodes:
+        for path in tqdm(paths, desc="Processing", unit="item"):
+            for node in tqdm(path.nodes, desc="Processing", unit="item"):
                 if node.id not in affected_node_ids:
                     affected_node_ids.add(node.id)
                     # Convert GraphEntity to ADGNode
@@ -532,7 +533,7 @@ class ADGQueryClient:
                         ),
                     )
 
-            for rel in path.relationships:
+            for rel in tqdm(path.relationships, desc="Processing", unit="item"):
                 # Convert GraphRelationship to ADGEdge
                 affected_edges.append(
                     ADGEdge(
@@ -635,7 +636,7 @@ class ADGQueryClient:
 
         rows = cursor.fetchall()
 
-        for row in rows:
+        for row in tqdm(rows, desc="Processing", unit="item"):
             src_layer = row["src_layer"]
             dst_layer = row["dst_layer"]
 
@@ -695,14 +696,14 @@ class ADGQueryClient:
                 "Full graph-based layer violation detection not yet implemented for all files",
             )
 
-        for node in nodes:
+        for node in tqdm(nodes, desc="Processing", unit="item"):
             # Get all outgoing relationships
             relationships = graph_store.get_relationships(
                 node.id,
                 direction="outgoing",
             )
 
-            for rel in relationships:
+            for rel in tqdm(relationships, desc="Processing", unit="item"):
                 # Get source and target nodes
                 src_node = node
                 dst_node = graph_store.get_entity(rel.target_id)
@@ -753,7 +754,7 @@ class ADGQueryClient:
         _emit_records_execution_trace(_trace_id, "L4_STATE", "ADGQueryClient.resolve_pulls_context")
 
         resolved = []
-        for source in context_sources:
+        for source in tqdm(context_sources, desc="Processing", unit="item"):
             # Check if source exists in ADG
             node = self.get_node_by_symbol(source)
 
@@ -968,7 +969,7 @@ class GraphRAGADGIntegration:
         all_affected: set[str] = set()
         all_edges: list[dict] = []
 
-        for node in nodes:
+        for node in tqdm(nodes, desc="Processing", unit="item"):
             impact = self.adg_client.analyze_impact(
                 node.node_id,
                 max_depth=max_depth,

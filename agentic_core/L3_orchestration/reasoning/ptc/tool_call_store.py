@@ -8,6 +8,8 @@ Ensures deterministic storage and retrieval of tool call artifacts.
 from __future__ import annotations
 
 import json
+import logging
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -88,6 +90,7 @@ from .tool_contract import (
 
 emit_replay_key("p0", "tool_call_store")
 emit_determinism_digest("p0", "tool_call_store")
+Logger = logging.getLogger(__name__)
 
 _emit_dispatches_healing_run("p1", "tool_call_store", "L3")
 _emit_routes_through("p1", "tool_call_store", "L3")
@@ -301,9 +304,13 @@ class ToolCallStore:
                 )
                 if artifact.payload["call"]["tool_id"] == tool_id:
                     return artifact.payload
-        # guardian: allow-silent-swallow -- tool call lookup is best-effort; returns None on failure
-        except (ValueError, TypeError):  # guardian: allow-silent-swallower -- see above
-            pass
+        except (ValueError, TypeError, FileNotFoundError, KeyError) as exc:
+            Logger.debug(
+                "ToolCallStore.get_call best-effort lookup failed for tool_id=%s call_id=%s: %s",
+                tool_id,
+                call_id,
+                exc,
+            )
 
         return None
 
@@ -314,19 +321,19 @@ class ToolCallStore:
             Git commit hash or "unknown"
         """
         try:
-            import subprocess
-
             result = subprocess.run(
                 ["git", "rev-parse", "HEAD"],
                 capture_output=True,
                 text=True,
                 shell=False,
+                cwd=str(Path.cwd()),
+                timeout=5,
             )
             if result.returncode == 0:
                 return result.stdout.strip()
-        # guardian: allow-silent-swallow -- tool call lookup is best-effort; returns None on failure
-        except (ValueError, TypeError):  # guardian: allow-silent-swallower -- see above
-            pass
+        except (ValueError, TypeError, FileNotFoundError, OSError, subprocess.TimeoutExpired) as exc:
+            Logger.debug("ToolCallStore._get_code_commit falling back to 'unknown': %s", exc)
+        return "unknown"
 
 
 # =============================================================================

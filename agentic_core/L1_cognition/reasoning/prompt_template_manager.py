@@ -7,7 +7,10 @@ validation, and template selection.
 from __future__ import annotations
 
 import json
+import os
+import re
 from datetime import datetime
+from tempfile import NamedTemporaryFile
 from pathlib import Path
 from typing import Any
 
@@ -54,6 +57,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 emit_replay_key("p0", "prompt_template_manager")
 emit_determinism_digest("p0", "prompt_template_manager")
@@ -201,12 +205,19 @@ class PromptTemplateManager:
         )
         self.templates["code_qa_default"] = code_qa_template
 
+    @staticmethod
+    def _sanitize_template_id(template_id: str) -> str:
+        sanitized = re.sub(r"[^A-Za-z0-9_.-]", "_", template_id).strip("._")
+        if not sanitized:
+            raise ValueError("Template ID must contain at least one safe character")
+        return sanitized
+
     def _load_templates_from_disk(self) -> None:
         """Load custom templates from disk."""
         if not self.templates_path.exists():
             return
 
-        for template_file in self.templates_path.glob("*.json"):
+        for template_file in tqdm(self.templates_path.glob("*.json"), desc="Processing", unit="item"):
             try:
                 with open(template_file, encoding="utf-8") as f:
                     template_data = json.load(f)
@@ -226,7 +237,7 @@ class PromptTemplateManager:
 
                 self.templates[template.template_id] = template
 
-            except Exception as e:
+            except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError) as e:
                 # Log error but continue loading other templates
                 print(f"Error loading template {template_file}: {e}")
 
@@ -383,7 +394,8 @@ class PromptTemplateManager:
         if not self.templates_path.exists():
             self.templates_path.mkdir(parents=True, exist_ok=True)
 
-        template_file = self.templates_path / f"{template.template_id}.json"
+        safe_template_id = self._sanitize_template_id(template.template_id)
+        template_file = self.templates_path / f"{safe_template_id}.json"
 
         try:
             template_data = {
@@ -399,12 +411,19 @@ class PromptTemplateManager:
                 "version": template.version,
             }
 
-            with open(template_file, "w", encoding="utf-8") as f:
+            with NamedTemporaryFile("w", dir=self.templates_path, delete=False, encoding="utf-8") as f:
+                tmp_path = Path(f.name)
                 json.dump(template_data, f, indent=2)
+
+            try:
+                os.replace(tmp_path, template_file)
+            except Exception:  # guardian: allow-broad-exception -- temp file cleanup before re-raise; all exception types must trigger unlink
+                tmp_path.unlink(missing_ok=True)
+                raise
 
             return True
 
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             print(f"Error saving template to disk: {e}")
             return False
 

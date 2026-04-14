@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.report_location_validator_types_util import SSOT_REPORTS_DIR, ReportLocationValidator
+from tqdm import tqdm
 
 _emit_emits_metric_event("migrate_reports_to_ssot", "p4obs", "metric_1")
 _emit_emits_metric_event("migrate_reports_to_ssot", "p4obs", "metric_2")
@@ -383,7 +384,7 @@ class ReportMigrator:
         print(f"Files to migrate: {len(misplaced)}")
         print(f"Destination: {SSOT_REPORTS_DIR}/")
         print(f"{'=' * 60}\n")
-        for result in misplaced:
+        for result in tqdm(misplaced, desc="Processing", unit="item"):
             source = self.project_root / result.current_location
             entry = self.migrate_file(source)
             self.manifest.entries.append(entry)
@@ -452,7 +453,7 @@ class ReportMigrator:
             skipped_files=data["skipped_files"],
             rollback_available=data.get("rollback_available", True),
         )
-        for entry_data in data["entries"]:
+        for entry_data in tqdm(data["entries"], desc="Processing", unit="item"):
             manifest.entries.append(
                 MigrationEntry(
                     source=entry_data["source"],
@@ -482,7 +483,7 @@ class ReportMigrator:
             print("❌ Rollback not available for this migration")
             return False
         rollback_count = 0
-        for entry in manifest.entries:
+        for entry in tqdm(manifest.entries, desc="Processing", unit="item"):
             if entry.status != "migrated":
                 continue
             source = self.project_root / entry.destination

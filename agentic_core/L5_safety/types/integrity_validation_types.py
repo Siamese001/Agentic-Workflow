@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("integrity_validation_types", "p4obs", "metric_1")
 _emit_emits_metric_event("integrity_validation_types", "p4obs", "metric_2")
@@ -319,7 +320,7 @@ class IntegrityValidationGuardrail:
                 validation_time_ms=(time.time() - start_time) * 1000,
             )
         allowed_imports = self.gravity_rules.get(source_layer, [])
-        for imported in imported_layers:
+        for imported in tqdm(imported_layers, desc="Processing", unit="item"):
             if imported not in allowed_imports and imported != source_layer:
                 violations.append(
                     IntegrityViolation(

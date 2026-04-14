@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("GovernanceShieldAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("GovernanceShieldAgent", "p4obs", "metric_2")
@@ -417,7 +418,9 @@ class GovernanceShieldAgent(LICAgentBase):
                     sensitivity = IndustrySensitivity.HIGH
                     logger.info("Boosted to HIGH sensitivity due to JD compliance keywords")
             additional_compliance = []
-            for framework in ["GDPR", "CCPA", "SOC 2", "ISO 27001", "NIST", "CMMC"]:
+            for framework in tqdm(
+                ["GDPR", "CCPA", "SOC 2", "ISO 27001", "NIST", "CMMC"], desc="Processing", unit="item"
+            ):
                 if framework.lower() in jd_lower:
                     additional_compliance.append(framework)
             compliance.extend(additional_compliance)

@@ -35,6 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,  # noqa: E402
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 _CAPACITY_LOG = logging.getLogger("adg.capacity_aware_routing")
@@ -296,7 +297,7 @@ def choose_route_with_capacity(
 def _load_capacity_metrics(candidate_routes: list[str]) -> dict[str, RouteCapacityMetrics]:
     """Load capacity metrics for candidate routes."""
     metrics = {}
-    for route in candidate_routes:
+    for route in tqdm(candidate_routes, desc="Processing", unit="item"):
         # In a real implementation, this would query actual capacity monitoring systems
         # For now, we'll create mock metrics with reasonable defaults
         metrics[route] = RouteCapacityMetrics.create(
@@ -318,7 +319,7 @@ def _filter_by_policy_constraints(
     """Filter routes by policy constraints."""
     available = []
 
-    for route in candidate_routes:
+    for route in tqdm(candidate_routes, desc="Processing", unit="item"):
         metrics = capacity_metrics[route]
 
         # Skip unavailable routes (hard rule - Gate C)

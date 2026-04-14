@@ -25,6 +25,7 @@ from dataclasses import dataclass, replace
 from typing import Any, Callable, Iterator, TypeVar
 
 import psutil
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -391,7 +392,7 @@ class AMD9950X3DOptimizer:
         try:
             futures = [executor.submit(func, item) for item in items]
 
-            for future in concurrent.futures.as_completed(futures):
+            for future in tqdm(concurrent.futures.as_completed(futures), desc="Processing", unit="item"):
                 # Check temperature periodically
                 if self.should_stop_for_temperature():
                     # Cancel pending futures
@@ -422,7 +423,7 @@ class AMD9950X3DOptimizer:
         batch_size = batch_size or self.config.batch_size
         results = []
 
-        for i in range(0, len(items), batch_size):
+        for i in tqdm(range(0, len(items), batch_size), desc="Processing", unit="item"):
             batch = items[i : i + batch_size]
             batch_results = func(batch)
             results.extend(batch_results)

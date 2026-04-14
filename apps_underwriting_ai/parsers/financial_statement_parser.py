@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
+from tqdm import tqdm
 
 
 @dataclass
@@ -143,7 +144,7 @@ class FinancialStatementParser:
             r"(\d{1,2}/\d{1,2}/\d{4})",
         ]
 
-        for pattern in date_patterns:
+        for pattern in tqdm(date_patterns, desc="Processing", unit="item"):
             match = re.search(pattern, text, re.IGNORECASE)
             if match:
                 date_str = match.group(1)

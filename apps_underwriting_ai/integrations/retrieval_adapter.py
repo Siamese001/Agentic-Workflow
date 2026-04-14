@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from ..types import UnderwritingRequest
+from tqdm import tqdm
 
 # L1-L5 retrieval wiring (Turn 3): Import creates ADG edges to all retrieval layers
 
@@ -115,7 +116,7 @@ class RetrievalAdapter:
 
         # Guarantor credit evidence
         if request.requested_structure.guarantor_required:
-            for owner in request.borrower.ownership:
+            for owner in tqdm(request.borrower.ownership, desc="Processing", unit="item"):
                 if owner.guarantor:
                     requests.append(
                         EvidenceRequest(
@@ -170,7 +171,7 @@ class RetrievalAdapter:
         """Process retrieval results and match to evidence requests."""
         matched_evidence = {}
 
-        for request in evidence_requests:
+        for request in tqdm(evidence_requests, desc="Processing", unit="item"):
             # Find matching retrieval result
             for result in retrieval_results:
                 if self._matches_request(request, result):

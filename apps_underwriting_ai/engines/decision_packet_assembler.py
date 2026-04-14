@@ -15,6 +15,7 @@ from ..types import (
     RiskFeatures,
     UnderwritingRequest,
 )
+from tqdm import tqdm
 
 # L4 retrieval wiring (Turn 3, Wave 37): Import creates ADG edge to L4_state
 
@@ -79,7 +80,7 @@ class DecisionPacketAssembler:
         # Build evidence items from register
         evidence_items = []
         if input_data.evidence_register:
-            for entry in input_data.evidence_register.entries:
+            for entry in tqdm(input_data.evidence_register.entries, desc="Processing", unit="item"):
                 evidence_items.append(
                     EvidenceItem(
                         claim_id=entry.entry_id,

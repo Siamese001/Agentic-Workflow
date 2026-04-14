@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 from typing import Any
+from tqdm import tqdm
 
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import (
@@ -55,7 +56,7 @@ def move_files_to_silos() -> Any:
     moved_count: Any = 0
     # guardian: allow-path-string
     root_files: Any = [f for f in os.listdir("/app") if f.endswith(".py") and os.path.isfile(f"/app/{f}")]
-    for filename in root_files:
+    for filename in tqdm(root_files, desc="Processing", unit="item"):
         if filename in ["entrypoint.sh", "Dockerfile", "docker-compose.yml", "requirements.txt"]:
             continue
         target_silo: Any = None

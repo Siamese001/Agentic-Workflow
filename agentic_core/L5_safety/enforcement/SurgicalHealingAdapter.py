@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("SurgicalHealingAdapter", "p4obs", "metric_1")
 _emit_emits_metric_event("SurgicalHealingAdapter", "p4obs", "metric_2")
@@ -347,7 +348,7 @@ class SurgicalHealingAdapter:
         violations: list[ViolationConstraint] = []
         coordinates: list[ASTCoordinate] = []
 
-        for dr in detection_results:
+        for dr in tqdm(detection_results, desc="Processing", unit="item"):
             line = dr.get("line", 1) or 1
             constraint_type = dr.get("type", "unknown")
             fix_type = self._infer_fix_type(constraint_type)

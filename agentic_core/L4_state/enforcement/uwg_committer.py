@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from .uwg_clerk import WriteRequest, WriteReceipt
+from tqdm import tqdm
 
 
 @dataclass
@@ -126,7 +127,7 @@ class UWGCommitter:
         """
         expected_hash = "0" * 64
 
-        for link in self._chain:
+        for link in tqdm(self._chain, desc="Processing", unit="item"):
             if link.previous_hash != expected_hash:
                 return False
 

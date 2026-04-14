@@ -211,6 +211,7 @@ _emit_validated_by_safety_plane("p1", "CodeHealerAgent", "safety_validation")
 _emit_invokes_eval("p1", "CodeHealerAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "CodeHealerAgent", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_dispatch_entry")
 emit_determinism_digest("trace_CodeHealerAgent", "CodeHealerAgent_dispatch_exit")
@@ -510,7 +511,7 @@ class CodeHealerAgent(
         imports: list[tuple[ast.AST, str, int]] = []
         used_names: set[str] = set()
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     name = alias.asname or alias.name.split(".")[0]
@@ -528,7 +529,7 @@ class CodeHealerAgent(
         # Find unused imports
         unused_imports = []
 
-        for node, name, lineno in imports:
+        for node, name, lineno in tqdm(imports, desc="Processing", unit="item"):
             if name not in used_names and name not in ("*", "__future__"):
                 unused_imports.append((name, lineno))
 
@@ -595,7 +596,7 @@ class CodeHealerAgent(
             violations.append(violation)
 
         # Check for bare except clauses
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             if re.match(r"^\s*except\s*:\s*$", line):
                 action = HealingAction(
                     healing_type="CANON",
@@ -671,7 +672,7 @@ class CodeHealerAgent(
         has_excessive_blanks = False
 
         # Check for trailing whitespace
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             if line.rstrip() != line:
                 action = HealingAction(
                     healing_type="STRUCTURAL",
@@ -686,7 +687,7 @@ class CodeHealerAgent(
 
         # Check for multiple blank lines
         blank_count = 0
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             if line.strip() == "":
                 blank_count += 1
                 if blank_count > 2:

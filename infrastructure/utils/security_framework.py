@@ -6,7 +6,7 @@ and comprehensive audit logging for the 4-layer retrieval pattern.
 
 import asyncio
 import logging
-import time
+import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -420,8 +420,8 @@ class AuditLogger:
     ):
         """Log access event."""
         entry = AuditLogEntry(
-            entry_id=f"audit_{int(time.time() * 1000000)}_{hash(user_id)}",
-            timestamp=datetime.now(),
+            entry_id=f"audit_{uuid.uuid4().hex}",
+            timestamp=datetime.utcnow(),
             user_id=user_id,
             action=action,
             resource_type=resource_type,
@@ -499,7 +499,7 @@ class AuditLogger:
         )
 
         report = ComplianceReport(
-            report_id=f"report_{framework.value}_{int(time.time())}",
+            report_id=f"report_{framework.value}_{uuid.uuid4().hex}",
             framework=framework,
             period_start=period_start,
             period_end=period_end,
@@ -600,7 +600,9 @@ class SecurityGateway:
     async def start(self):
         """Start security gateway services."""
         self._running = True
-        self._cleanup_task = asyncio.create_task(self._periodic_cleanup())
+        if self._cleanup_task and not self._cleanup_task.done():
+            return
+        self._cleanup_task = asyncio.create_task(self._periodic_cleanup(), name="security-gateway-cleanup")
         logger.info("Started security gateway")
 
     async def stop(self):
@@ -608,6 +610,8 @@ class SecurityGateway:
         self._running = False
         if self._cleanup_task:
             self._cleanup_task.cancel()
+            await asyncio.gather(self._cleanup_task, return_exceptions=True)
+            self._cleanup_task = None
         logger.info("Stopped security gateway")
 
     async def _periodic_cleanup(self):

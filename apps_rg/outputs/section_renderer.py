@@ -8,6 +8,7 @@ SVP Standards:
 
 from __future__ import annotations
 
+import html
 import json
 import logging
 from typing import Any
@@ -66,7 +67,7 @@ class SectionRenderer:
         lines = [
             f"<h2>{heading}</h2>",
             "",
-            f'<div class="section">{section.content.replace(chr(10), "<br/>")}</div>',
+            f'<div class="section">{html.escape(section.content).replace(chr(10), "<br/>")}</div>',
             "",
             f"<p><em>Word count: {section.word_count}</em></p>",
         ]

@@ -20,6 +20,7 @@ from agentic_core.L1_cognition.types.search_types import SearchResponse
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_telemetry_event,  # noqa: E402
 )
+from tqdm import tqdm
 
 
 class ContextAssembler:
@@ -148,7 +149,7 @@ class ContextAssembler:
         """Convert search results to context items."""
         context_items = []
 
-        for result in search_response.results:
+        for result in tqdm(search_response.results, desc="Processing", unit="item"):
             # Determine context type based on relevance
             if result.relevance_score >= 0.8:
                 context_type = "primary"
@@ -186,7 +187,7 @@ class ContextAssembler:
         # Apply filters
         filtered_items = []
 
-        for item in items:
+        for item in tqdm(items, desc="Processing", unit="item"):
             # Minimum relevance filter
             if item.relevance_score < self.config.min_relevance_threshold:
                 continue
@@ -225,7 +226,7 @@ class ContextAssembler:
         if items[0].source_file:
             seen_sources.add(items[0].source_file)
 
-        for item in items[1:]:
+        for item in tqdm(items[1:], desc="Processing", unit="item"):
             # Check source diversity
             if item.source_file and item.source_file in seen_sources:
                 # Skip if we already have an item from this source
@@ -253,7 +254,7 @@ class ContextAssembler:
         # Simple text similarity check
         item_words = set(item.content.lower().split())
 
-        for existing in existing_items:
+        for existing in tqdm(existing_items, desc="Processing", unit="item"):
             existing_words = set(existing.content.lower().split())
 
             if not item_words or not existing_words:
@@ -286,7 +287,7 @@ class ContextAssembler:
         current_length = 0
         truncation_applied = True
 
-        for item in items:
+        for item in tqdm(items, desc="Processing", unit="item"):
             item_length = len(item.content)
 
             if current_length + item_length <= query.max_context_length:
@@ -382,7 +383,7 @@ class ContextAssembler:
         """Get context assembly statistics."""
         stats = {}
 
-        for metric, values in self._assembly_stats.items():
+        for metric, values in tqdm(self._assembly_stats.items(), desc="Processing", unit="item"):
             if values:
                 stats[metric] = {
                     "avg": sum(values) / len(values),

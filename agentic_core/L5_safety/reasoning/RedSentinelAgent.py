@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("RedSentinelAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("RedSentinelAgent", "p4obs", "metric_2")
@@ -246,7 +247,7 @@ class RedSentinelAgent(SovereignBaseAgent):
             "vulnerabilities": [],
             "crashes": [],
         }
-        for input_data in hostile_inputs:
+        for input_data in tqdm(hostile_inputs, desc="Processing", unit="item"):
             result: dict[str, Any] = await self._test_with_input(func_name, input_data)
             if result["crashed"]:
                 results["crashes"].append(
@@ -397,7 +398,7 @@ class RedSentinelAgent(SovereignBaseAgent):
             with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
             tree: Any = ast.parse(content)
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.FunctionDef) and (not node.name.startswith("_")):
                     func_lines: Any = content.split("\n")[node.lineno - 1 : node.end_lineno]
                     func_code: Any = "\n".join(func_lines)

@@ -238,6 +238,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("DagEngineAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("DagEngineAgent", "p4obs", "metric_2")
@@ -434,7 +435,7 @@ class DagEngineAgent(SovereignBaseAgent):
         skipped_tasks: list[str] = []
         task_results: dict[str, Any] = {}
         self._log_dag_start(execution_order)
-        for task_id in execution_order:
+        for task_id in tqdm(execution_order, desc="Processing", unit="item"):
             Task: Any = self.tasks[task_id]
             if not self._should_execute_task(
                 Task,

@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("add_dataclass_to_agents_util", "p4obs", "metric_1")
 _emit_emits_metric_event("add_dataclass_to_agents_util", "p4obs", "metric_2")
@@ -235,7 +236,7 @@ def add_dataclass_to_file(file_path: Path) -> bool:
         except SyntaxError:
             return False
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
                 # Check if already has @dataclass decorator
                 has_dc = False
@@ -295,7 +296,7 @@ def main():
     fixed_count = 0
     skipped_count = 0
 
-    for agent in agents_to_fix:
+    for agent in tqdm(agents_to_fix, desc="Processing", unit="item"):
         path = agent["path"]
         file_path = PROJECT_ROOT / path
 

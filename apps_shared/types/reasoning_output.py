@@ -17,6 +17,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
+from tqdm import tqdm
 
 
 @dataclass
@@ -71,10 +72,10 @@ def scan_for_violations(scan_dirs: list[Path] | None = None) -> list[tuple[str, 
 
     violations: list[tuple[str, int, str]] = []
 
-    for scan_dir in scan_dirs:
+    for scan_dir in tqdm(scan_dirs, desc="Processing", unit="item"):
         if not scan_dir.exists():
             continue
-        for py_file in sorted(scan_dir.rglob("*.py")):
+        for py_file in tqdm(sorted(scan_dir.rglob("*.py")), desc="Processing", unit="item"):
             try:
                 source = py_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(source, filename=str(py_file))
@@ -84,7 +85,7 @@ def scan_for_violations(scan_dirs: list[Path] | None = None) -> list[tuple[str, 
             ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
                 continue
 
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                     continue
                 if node.name not in ("process", "execute", "run"):
@@ -93,7 +94,7 @@ def scan_for_violations(scan_dirs: list[Path] | None = None) -> list[tuple[str, 
                 has_bare_dict_return = False
                 has_reasoning_output_return = False
 
-                for child in ast.walk(node):
+                for child in tqdm(ast.walk(node), desc="Processing", unit="item"):
                     if isinstance(child, ast.Return) and child.value is not None:
                         if isinstance(child.value, ast.Dict):
                             has_bare_dict_return = True

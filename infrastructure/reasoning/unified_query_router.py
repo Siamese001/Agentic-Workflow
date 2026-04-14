@@ -6,7 +6,6 @@ and health monitoring for the 4-layer retrieval pattern.
 
 import asyncio
 import logging
-import random
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass
@@ -192,20 +191,8 @@ class LoadBalancer:
         return instance
 
     def _weighted_select(self, instances: list[LayerInstance]) -> LayerInstance:
-        """Weighted instance selection."""
-        total_weight = sum(inst.weight for inst in instances)
-        if total_weight == 0:
-            return instances[0]
-
-        rand = random.uniform(0, total_weight)
-        current_weight = 0
-
-        for instance in instances:
-            current_weight += instance.weight
-            if rand <= current_weight:
-                return instance
-
-        return instances[-1]
+        """Deterministic weighted selection."""
+        return max(instances, key=lambda inst: (inst.weight, -inst.active_connections, inst.instance_id))
 
     def _least_connections_select(self, instances: list[LayerInstance]) -> LayerInstance:
         """Least connections instance selection."""
@@ -244,32 +231,34 @@ class HealthChecker:
 
     async def _check_instance_health(self, instance: LayerInstance):
         """Check health of individual instance."""
-        start_time = time.time()
+        start_time = time.monotonic()
 
         try:
             # Simulate health check - in real implementation, this would ping the endpoint
             await asyncio.sleep(0.01)  # Simulate network latency
 
-            response_time = (time.time() - start_time) * 1000
+            response_time = (time.monotonic() - start_time) * 1000
             instance.healthy = True
-            instance.last_health_check = datetime.now()
+            previous_check = instance.last_health_check
+            instance.last_health_check = datetime.utcnow()
             instance.add_response_time(response_time)
+
+            elapsed = max(1e-6, (instance.last_health_check - previous_check).total_seconds())
 
             # Update health status
             self.health_status[instance.instance_id] = HealthStatus(
                 component_id=instance.instance_id,
                 layer_type=instance.layer_type,
                 healthy=True,
-                last_check=datetime.now(),
+                last_check=instance.last_health_check,
                 response_time_ms=response_time,
                 error_rate=instance.get_error_rate(),
-                throughput=instance.total_requests
-                / max(1, (datetime.now() - instance.last_health_check).total_seconds()),
+                throughput=instance.total_requests / elapsed,
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- health checker must survive any endpoint failure to maintain liveness monitoring
             instance.healthy = False
-            instance.last_health_check = datetime.now()
+            instance.last_health_check = datetime.utcnow()
             instance.failed_requests += 1
 
             logger.warning(f"Health check failed for {instance.instance_id}: {e}")
@@ -278,7 +267,7 @@ class HealthChecker:
                 component_id=instance.instance_id,
                 layer_type=instance.layer_type,
                 healthy=False,
-                last_check=datetime.now(),
+                last_check=datetime.utcnow(),
                 response_time_ms=0.0,
                 error_rate=1.0,
                 throughput=0.0,
@@ -298,6 +287,8 @@ class UnifiedQueryRouter:
         self.query_stats = defaultdict(lambda: {"total": 0, "success": 0, "failed": 0})
         self._routing_rules = []
         self._lock = asyncio.Lock()
+        self._health_task = None
+        self.layer_executors: dict[LayerType, Any] = {}
         self.contract_guard = FourLayerContractGuard(
             l4_rate_limit_per_minute=l4_rate_limit_per_minute,
         )
@@ -320,11 +311,24 @@ class UnifiedQueryRouter:
 
     async def start_health_monitoring(self):
         """Start health monitoring."""
-        asyncio.create_task(self.health_checker.start_monitoring(self.load_balancers))
+        if self._health_task and not self._health_task.done():
+            return
+        self._health_task = asyncio.create_task(
+            self.health_checker.start_monitoring(self.load_balancers),
+            name="unified-query-router-health",
+        )
 
     async def stop_health_monitoring(self):
         """Stop health monitoring."""
         await self.health_checker.stop_monitoring()
+        if self._health_task:
+            self._health_task.cancel()
+            await asyncio.gather(self._health_task, return_exceptions=True)
+            self._health_task = None
+
+    def register_layer_executor(self, layer_type: LayerType, executor) -> None:
+        """Register concrete executor for a layer."""
+        self.layer_executors[layer_type] = executor
 
     async def route_query(self, request: QueryRequest, target_layers: list[LayerType]) -> list[LayerResponse]:
         """Route query through specified layers."""
@@ -400,9 +404,19 @@ class UnifiedQueryRouter:
                 error_message=f"No healthy instances available for {layer_type}",
             )
 
+        executor = self.layer_executors.get(layer_type)
+        if executor is None:
+            return LayerResponse(
+                layer_type=layer_type,
+                status=QueryStatus.FAILED,
+                error_message=f"No executor configured for {layer_type.value}",
+            )
+
         # Execute with circuit breaker protection
         try:
-            return await circuit_breaker.call(self._simulate_layer_execution, request, layer_type, instance)
+            return await circuit_breaker.call(
+                self._invoke_layer_executor, executor, request, layer_type, instance
+            )
         except Exception as e:
             if "Circuit breaker OPEN" in str(e):
                 return LayerResponse(
@@ -413,54 +427,31 @@ class UnifiedQueryRouter:
             else:
                 return LayerResponse(layer_type=layer_type, status=QueryStatus.FAILED, error_message=str(e))
 
-    async def _simulate_layer_execution(
+    async def _invoke_layer_executor(
         self,
+        executor,
         request: QueryRequest,
         layer_type: LayerType,
         instance: LayerInstance,
     ) -> LayerResponse:
-        """Simulate layer execution (placeholder for actual implementation)."""
-        start_time = time.time()
+        """Invoke the registered executor with connection accounting and timeout enforcement."""
         instance.active_connections += 1
         instance.total_requests += 1
+        start_time = time.monotonic()
 
         try:
-            # Simulate processing time based on layer type
-            processing_times = {
-                LayerType.REDIS_EXACT_MATCH: random.uniform(1, 5),
-                LayerType.SEMANTIC_CACHE: random.uniform(10, 50),
-                LayerType.RAG_RETRIEVAL: random.uniform(100, 500),
-                LayerType.AGENTIC_ACTION: random.uniform(200, 1000),
-            }
-
-            processing_time = processing_times.get(layer_type, 100)
-            await asyncio.sleep(processing_time / 1000)  # Convert to seconds
-
-            # Simulate success/failure based on layer type
-            success_rates = {
-                LayerType.REDIS_EXACT_MATCH: 0.99,
-                LayerType.SEMANTIC_CACHE: 0.95,
-                LayerType.RAG_RETRIEVAL: 0.90,
-                LayerType.AGENTIC_ACTION: 0.85,
-            }
-
-            if random.random() < success_rates.get(layer_type, 0.9):
-                response_time = (time.time() - start_time) * 1000
-                instance.add_response_time(response_time)
-
-                return LayerResponse(
-                    layer_type=layer_type,
-                    status=QueryStatus.COMPLETED,
-                    data=f"Mock response from {layer_type.value}",
-                    processing_time_ms=response_time,
-                    cache_hit=random.random() < 0.3,
-                )
-            else:
-                instance.failed_requests += 1
-                raise Exception(f"Simulated failure in {layer_type}")
-
+            response = await asyncio.wait_for(
+                executor(request=request, layer_type=layer_type, instance=instance),
+                timeout=request.timeout_seconds,
+            )
+            response.processing_time_ms = (time.monotonic() - start_time) * 1000
+            instance.add_response_time(response.processing_time_ms)
+            return response
+        except asyncio.TimeoutError as exc:
+            instance.failed_requests += 1
+            raise TimeoutError(f"{layer_type.value} timed out after {request.timeout_seconds}s") from exc
         finally:
-            instance.active_connections -= 1
+            instance.active_connections = max(0, instance.active_connections - 1)
 
     def get_routing_stats(self) -> dict[str, Any]:
         """Get routing statistics."""

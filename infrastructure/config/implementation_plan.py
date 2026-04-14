@@ -11,6 +11,7 @@ This module defines the implementation strategy for the five infrastructure hard
 import logging
 import re
 import time
+from threading import Lock
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -110,6 +111,7 @@ class FourLayerContractGuard:
     def __init__(self, l4_rate_limit_per_minute: int = 30):
         self.l4_rate_limit_per_minute = max(1, l4_rate_limit_per_minute)
         self._l4_window: dict[str, list[float]] = {}
+        self._l4_lock = Lock()
 
     def validate_query_request(self, request: QueryRequest) -> None:
         """Validate request shape and fail closed on bad inputs."""
@@ -119,6 +121,8 @@ class FourLayerContractGuard:
             raise FourLayerContractError("query_id must be a non-empty string")
         if not request.user_query or not isinstance(request.user_query, str):
             raise FourLayerContractError("user_query must be a non-empty string")
+        if len(request.user_query.strip()) > 10000:
+            raise FourLayerContractError("user_query exceeds max length 10000")
         if request.priority not in self._ALLOWED_PRIORITY:
             raise FourLayerContractError("priority must be one of {1,2,3}")
         if not isinstance(request.timestamp, datetime):
@@ -150,12 +154,13 @@ class FourLayerContractGuard:
         """Enforce per-user Layer-4 action limit over a rolling minute."""
         if not user_id:
             raise FourLayerContractError("user_id required for Layer 4 rate limiting")
-        now = now_ts if now_ts is not None else time.time()
+        now = now_ts if now_ts is not None else time.monotonic()
         cutoff = now - 60.0
-        events = [t for t in self._l4_window.get(user_id, []) if t >= cutoff]
-        if len(events) >= self.l4_rate_limit_per_minute:
-            raise FourLayerContractError(
-                f"layer4 rate limit exceeded for user {user_id} ({self.l4_rate_limit_per_minute}/min)",
-            )
-        events.append(now)
-        self._l4_window[user_id] = events
+        with self._l4_lock:
+            events = [t for t in self._l4_window.get(user_id, []) if t >= cutoff]
+            if len(events) >= self.l4_rate_limit_per_minute:
+                raise FourLayerContractError(
+                    f"layer4 rate limit exceeded for user {user_id} ({self.l4_rate_limit_per_minute}/min)",
+                )
+            events.append(now)
+            self._l4_window[user_id] = events

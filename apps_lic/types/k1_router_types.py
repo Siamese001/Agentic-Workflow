@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("k1_router_types", "p4obs", "metric_1")
 _emit_emits_metric_event("k1_router_types", "p4obs", "metric_2")
@@ -340,7 +341,7 @@ class K1Router:
         """
         combined_text = f"{title} {about}".upper()
         matched_tokens = []
-        for token in self.cxo_precedence_tokens:
+        for token in tqdm(self.cxo_precedence_tokens, desc="Processing", unit="item"):
             if token.upper() in combined_text:
                 matched_tokens.append(token)
                 logger.info(f"CXO precedence triggered: {token}")

@@ -3,8 +3,8 @@ Stale Data Validator - Inspects document dates for staleness.
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Any, Dict, List
+from datetime import datetime, timezone
+from typing import Any, Callable, Dict, List, Mapping, Optional
 
 from ..types import UnderwritingRequest
 
@@ -42,9 +42,12 @@ class StaleDataValidator:
         "field_exam": 180,
     }
 
+    def __init__(self, now_provider: Optional[Callable[[], datetime]] = None):
+        self._now_provider = now_provider or (lambda: datetime.now(timezone.utc))
+
     def validate(
         self,
-        request: UnderwritingRequest,
+        request: UnderwritingRequest | Mapping[str, Any],
     ) -> StaleDataResult:
         """
         Validate document freshness.
@@ -57,31 +60,34 @@ class StaleDataValidator:
         """
         result = StaleDataResult()
 
-        # Check financial periods
-        if request.financials.periods:
-            latest = request.financials.periods[-1]
-            if latest.period_end:
+        if isinstance(request, Mapping):
+            self._validate_mapping_payload(result, request)
+        else:
+            # Check financial periods
+            if request.financials.periods:
+                latest = request.financials.periods[-1]
+                if latest.period_end:
+                    self._check_date_freshness(
+                        result,
+                        "financial_statement",
+                        latest.period_end,
+                    )
+
+            # Check collateral appraisal
+            if request.collateral.appraisal_date:
                 self._check_date_freshness(
                     result,
-                    "financial_statement",
-                    latest.period_end,
+                    "appraisal",
+                    request.collateral.appraisal_date,
                 )
 
-        # Check collateral appraisal
-        if request.collateral.appraisal_date:
-            self._check_date_freshness(
-                result,
-                "appraisal",
-                request.collateral.appraisal_date,
-            )
-
-        # Check field exam
-        if request.collateral.field_exam_date:
-            self._check_date_freshness(
-                result,
-                "field_exam",
-                request.collateral.field_exam_date,
-            )
+            # Check field exam
+            if request.collateral.field_exam_date:
+                self._check_date_freshness(
+                    result,
+                    "field_exam",
+                    request.collateral.field_exam_date,
+                )
 
         # Calculate overall staleness score
         if result.stale_items:
@@ -95,6 +101,33 @@ class StaleDataValidator:
 
         return result
 
+    def _validate_mapping_payload(
+        self,
+        result: StaleDataResult,
+        payload: Mapping[str, Any],
+    ) -> None:
+        """Support lightweight dict payloads used in smoke tests and adapters."""
+        timestamp = payload.get("timestamp")
+        if timestamp is not None:
+            doc_dt = self._parse_timestamp(timestamp)
+            if doc_dt is not None:
+                age_days = (self._now_provider() - doc_dt).days
+                if age_days > 1:
+                    result.stale_items.append(
+                        {
+                            "document_type": "timestamp",
+                            "date": doc_dt.isoformat(),
+                            "age_days": age_days,
+                            "max_age_days": 1,
+                            "severity": "critical" if age_days > 2 else "warning",
+                        }
+                    )
+
+        for field_name, doc_type in (("appraisal_date", "appraisal"), ("field_exam_date", "field_exam")):
+            date_value = payload.get(field_name)
+            if isinstance(date_value, str):
+                self._check_date_freshness(result, doc_type, date_value)
+
     def _check_date_freshness(
         self,
         result: StaleDataResult,
@@ -102,38 +135,53 @@ class StaleDataValidator:
         date_str: str,
     ) -> None:
         """Check if a date is stale."""
+        doc_date = self._parse_date(date_str)
+        if doc_date is None:
+            return
+
+        age_days = (self._now_provider() - doc_date).days
+        max_age = self.MAX_AGE_DAYS.get(doc_type, 365)
+
+        if age_days > max_age * 1.5:
+            severity = "critical"
+        elif age_days > max_age:
+            severity = "warning"
+        else:
+            return
+
+        result.stale_items.append(
+            {
+                "document_type": doc_type,
+                "date": date_str,
+                "age_days": age_days,
+                "max_age_days": max_age,
+                "severity": severity,
+            }
+        )
+
+    @staticmethod
+    def _parse_timestamp(timestamp_value: Any) -> Optional[datetime]:
+        """Parse unix timestamps or ISO strings into timezone-aware datetimes."""
+        if isinstance(timestamp_value, (int, float)):
+            return datetime.fromtimestamp(timestamp_value, tz=timezone.utc)
+        if isinstance(timestamp_value, str):
+            return StaleDataValidator._parse_date(timestamp_value)
+        return None
+
+    @staticmethod
+    def _parse_date(date_str: str) -> Optional[datetime]:
+        """Parse supported date formats into timezone-aware datetimes."""
+        candidate = (date_str or "").strip()
+        if not candidate:
+            return None
+        normalized = candidate.replace("Z", "+00:00")
         try:
-            # Parse date
-            for fmt in ["%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%SZ"]:
-                try:
-                    doc_date = datetime.strptime(date_str[:10], "%Y-%m-%d")
-                    break
-                except ValueError:
-                    continue
-            else:
-                return
-
-            # Calculate age
-            age_days = (datetime.now() - doc_date).days
-            max_age = self.MAX_AGE_DAYS.get(doc_type, 365)
-
-            # Determine severity
-            if age_days > max_age * 1.5:
-                severity = "critical"
-            elif age_days > max_age:
-                severity = "warning"
-            else:
-                return  # Fresh enough
-
-            result.stale_items.append(
-                {
-                    "document_type": doc_type,
-                    "date": date_str,
-                    "age_days": age_days,
-                    "max_age_days": max_age,
-                    "severity": severity,
-                }
-            )
-
-        except Exception:
-            pass  # Skip if date parsing fails
+            parsed = datetime.fromisoformat(normalized)
+        except ValueError:
+            try:
+                parsed = datetime.strptime(candidate[:10], "%Y-%m-%d")
+            except ValueError:
+                return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed

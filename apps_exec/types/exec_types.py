@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 AudiencePersona = Literal["recruiter", "cto", "svp_eng", "board", "head_of_ai"]
 
@@ -159,8 +159,8 @@ class RunSummary(BaseModel):
         """Export as dictionary."""
         return self.model_dump()
 
-    class Config:
-        json_schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "trace_id": "EXEC-2024-001",
                 "app": "apps_exec",
@@ -172,4 +172,5 @@ class RunSummary(BaseModel):
                 "capabilities_extracted": 12,
                 "quality_score": 0.85,
             },
-        }
+        },
+    )

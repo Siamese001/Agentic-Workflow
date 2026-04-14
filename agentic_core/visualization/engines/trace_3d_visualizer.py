@@ -31,6 +31,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("trace_3d_visualizer", "trace_3d_visualizer_digest")
 record_execution_trace("trace_3d_visualizer", "trace_3d_visualizer_trace")
@@ -195,8 +196,8 @@ class PhysicsEngine:
         """Apply repulsion forces between nodes."""
         nodes = list(graph.nodes.values())
 
-        for i, node1 in enumerate(nodes):
-            for node2 in nodes[i + 1 :]:
+        for i, node1 in tqdm(enumerate(nodes), desc="Processing", unit="item"):
+            for node2 in tqdm(nodes[i + 1 :], desc="Processing", unit="item"):
                 dx = node2.position[0] - node1.position[0]
                 dy = node2.position[1] - node1.position[1]
                 dz = node2.position[2] - node1.position[2]
@@ -230,7 +231,7 @@ class PhysicsEngine:
 
     def _apply_attraction_forces(self, graph: TraceGraph3D) -> None:
         """Apply attraction forces along edges."""
-        for edge in graph.edges.values():
+        for edge in tqdm(graph.edges.values(), desc="Processing", unit="item"):
             if edge.source_id in graph.nodes and edge.target_id in graph.nodes:
                 source = graph.nodes[edge.source_id]
                 target = graph.nodes[edge.target_id]
@@ -264,7 +265,7 @@ class PhysicsEngine:
 
     def _apply_center_gravity(self, graph: TraceGraph3D) -> None:
         """Apply center gravity to keep graph centered."""
-        for node in graph.nodes.values():
+        for node in tqdm(graph.nodes.values(), desc="Processing", unit="item"):
             dx = self.center[0] - node.position[0]
             dy = self.center[1] - node.position[1]
             dz = self.center[2] - node.position[2]
@@ -278,7 +279,7 @@ class PhysicsEngine:
 
     def _apply_boundary_forces(self, graph: TraceGraph3D) -> None:
         """Apply boundary forces to keep nodes within bounds."""
-        for node in graph.nodes.values():
+        for node in tqdm(graph.nodes.values(), desc="Processing", unit="item"):
             x, y, z = node.position
 
             # Check each axis
@@ -296,7 +297,7 @@ class PhysicsEngine:
 
     def update_positions(self, graph: TraceGraph3D) -> None:
         """Update node positions based on forces and velocities."""
-        for node in graph.nodes.values():
+        for node in tqdm(graph.nodes.values(), desc="Processing", unit="item"):
             # Update velocity (F = ma, a = F/m, v = v + a*dt)
             ax = node.force[0] / node.mass
             ay = node.force[1] / node.mass
@@ -431,7 +432,7 @@ class Trace3DVisualizer:
             graph = TraceGraph3D(trace_id=trace_id)
 
             # Add nodes
-            for node_data in nodes:
+            for node_data in tqdm(nodes, desc="Processing", unit="item"):
                 node_type = NodeType(node_data.get("type", "system"))
 
                 # Assign color based on type
@@ -461,7 +462,7 @@ class Trace3DVisualizer:
                 graph.add_node(node)
 
             # Add edges
-            for edge_data in edges:
+            for edge_data in tqdm(edges, desc="Processing", unit="item"):
                 edge_type = EdgeType(edge_data.get("type", "flows_to"))
 
                 # Assign color based on type

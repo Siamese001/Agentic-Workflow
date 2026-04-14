@@ -20,6 +20,7 @@ from apps_research.reasoning.enterprise_research_orchestrator import (
     EnterpriseResearchRequest,
     run_enterprise_research,
 )
+from tqdm import tqdm
 
 logging.basicConfig(
     level=logging.INFO,
@@ -228,7 +229,7 @@ async def test_with_source_retrieval():
     orchestrator = EnterpriseResearchOrchestrator()
 
     # Index some historical research first
-    for i in range(3):
+    for i in tqdm(range(3), desc="Processing", unit="item"):
         orchestrator.retrieval_engine.index_research(
             content=f"Historical research {i} on governance patterns...",
             topic=f"governance topic {i}",
@@ -280,8 +281,8 @@ async def test_full_enterprise_pipeline():
     orchestrator = EnterpriseResearchOrchestrator()
 
     # Index some past research for benchmarking
-    for mode in ["brief", "comparison", "trend"]:
-        for i in range(2):
+    for mode in tqdm(["brief", "comparison", "trend"], desc="Processing", unit="item"):
+        for i in tqdm(range(2), desc="Processing", unit="item"):
             orchestrator.retrieval_engine.index_research(
                 content=f"Past {mode} research {i}...",
                 topic=f"research topic {mode} {i}",
@@ -342,7 +343,7 @@ async def test_all_artifact_modes():
     modes = ["brief", "comparison", "trend", "position", "thought_leadership"]
     results = []
 
-    for mode in modes:
+    for mode in tqdm(modes, desc="Processing", unit="item"):
         print(f"\n   Testing mode: {mode}...")
         result = await run_enterprise_research(
             topic=f"test topic for {mode}",

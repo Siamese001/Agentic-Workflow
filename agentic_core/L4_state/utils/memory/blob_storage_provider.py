@@ -93,6 +93,7 @@ def _get_write_gateway():
 
 
 "\nStorage adapters for different backend types.\n\nProvides atomic storage operations with hot-swappable backends.\nSupports local disk (for development) and S3 (for production).\n"
+import hashlib
 import json
 import logging
 import uuid
@@ -106,6 +107,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 
 Logger: Any = logging.getLogger(__name__)
+LOGGER = Logger
 
 
 class IBlobStorageProviderProtocol(Protocol):
@@ -168,12 +170,16 @@ class LocalDiskAdapter:
         Returns:
             Safe path within base directory
         """
-        key = key.replace("\\", "/")
-        parts = [p for p in key.split("/") if p and p != ".."]
-        safe_key = Path(*parts)
-        full_path = self.base_path / safe_key
-        if not str(full_path).startswith(str(self.base_path)):
+        key = key.replace("\\", "/").strip()
+        if not key or key.startswith("/"):
+            raise ValueError("Storage key must be a non-empty relative path")
+        parts = key.split("/")
+        if any(part in {"", ".", ".."} for part in parts):
             raise ValueError(f"Invalid key: {key} (directory traversal attempt)")
+        base = self.base_path.resolve()
+        full_path = (base / Path(*parts)).resolve(strict=False)
+        if full_path == base or base not in full_path.parents:
+            raise ValueError(f"Invalid key: {key} (escaped base path)")
         return full_path
 
     async def write_blob(self: Any, key: str, data: bytes, metadata: dict[str, str] | None) -> str:
@@ -193,13 +199,15 @@ class LocalDiskAdapter:
         temp_path: Any = target_path.with_suffix(".tmp")
         _get_write_gateway().ensure_dir(target_path.parent)
         _get_write_gateway().open_write(temp_path, data)
-        if metadata:
-            meta_path: Any = target_path.with_suffix(".meta.json")
-            assert_no_persistent_write("L4", "json.dump")
-            _get_write_gateway().write_json(meta_path, metadata)
         assert_no_persistent_write("L4", "shutil.mutate")
         _get_write_gateway().move_path(str(temp_path), str(target_path))
-        checksum: Any = hashlib.md5(data).hexdigest()
+        if metadata:
+            meta_path: Any = target_path.with_suffix(".meta.json")
+            meta_temp_path: Any = meta_path.with_suffix(".json.tmp")
+            assert_no_persistent_write("L4", "json.dump")
+            _get_write_gateway().write_json(meta_temp_path, metadata)
+            _get_write_gateway().move_path(str(meta_temp_path), str(meta_path))
+        checksum: Any = hashlib.sha256(data).hexdigest()
         LOGGER.debug(f"Wrote blob: {key} (checksum={checksum})")
         return checksum
 
@@ -456,6 +464,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("blob_storage_provider", "p4obs", "metric_1")
 _emit_emits_metric_event("blob_storage_provider", "p4obs", "metric_2")
@@ -629,7 +638,7 @@ class SignalLedger:
             "failed_agents": [],
             "recommendations": [],
         }
-        for result in phase_results:
+        for result in tqdm(phase_results, desc="Processing", unit="item"):
             if "result" in result and isinstance(result["result"], dict):
                 signals: Any = result["result"].get("signals", [])
                 if signals:

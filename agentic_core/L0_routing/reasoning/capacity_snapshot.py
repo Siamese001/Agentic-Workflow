@@ -21,6 +21,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,  # noqa: E402
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 _CAPACITY_LOG = logging.getLogger("adg.capacity_snapshot_emitted")
@@ -240,7 +241,7 @@ class CapacitySnapshot:
             f"CapacitySnapshot.get_chosen_route_metrics:{self.chosen_route_hash[:8]}",
         )
         # Find the route with matching hash (simplified - in practice would store route name)
-        for route_name in self.queue_depth_by_candidate.keys():
+        for route_name in tqdm(self.queue_depth_by_candidate.keys(), desc="Processing", unit="item"):
             route_hash = hashlib.sha256(route_name.encode()).hexdigest()[:16]
             if route_hash == self.chosen_route_hash:
                 return RouteCapacityMetrics.create(

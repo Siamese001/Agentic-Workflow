@@ -8,6 +8,7 @@ Enriches bullet pool with canonical verbs and deduplication.
 from __future__ import annotations
 
 from typing import Any
+from tqdm import tqdm
 
 
 class DataEnricher:
@@ -35,8 +36,8 @@ class DataEnricher:
             orchestrator.dup_detector = self.duplicate_detector
         experience_sections: Any = extracted_data.get("experience_sections", [])
         all_bullets: Any = []
-        for section in experience_sections:
-            for bullet in section.get("bullets", []):
+        for section in tqdm(experience_sections, desc="Processing", unit="item"):
+            for bullet in tqdm(section.get("bullets", []), desc="Processing", unit="item"):
                 bullet_text: Any = bullet.get("bullet_text", "")
                 bullet["canonical_verbs"] = self.VerbCanonicalizer.canonicalize(bullet_text)
                 forbidden: Any = self.VerbCanonicalizer.check_for_forbidden_verbs(bullet_text)

@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 # guardian: allow-silent-degradation
 try:
@@ -516,12 +517,12 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         methods = []
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-        for py_file in get_python_files(self.root):
+        for py_file in tqdm(get_python_files(self.root), desc="Processing", unit="item"):
             if ARCHIVES_DIR in str(py_file):
                 continue
             try:  # guardian: Parsing and encoding errors need separate handling strategies
                 tree = ast.parse(py_file.read_text())
-                for node in ast.walk(tree):
+                for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                     if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                         doc = ast.get_docstring(node) or "No docstring provided."
                         source_lines = ast.get_source_segment(open(py_file).read(), node) or ""

@@ -17,6 +17,7 @@ import statistics
 
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from ..phase2.contextual_engine import ContextualIntelligenceEngine, AnalysisResult
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -238,7 +239,7 @@ class ArchitecturalHealthMonitor:
         cutoff_time = datetime.now() - timedelta(hours=time_window_hours)
 
         trends = {}
-        for metric_id, metric in self.health_metrics.items():
+        for metric_id, metric in tqdm(self.health_metrics.items(), desc="Processing", unit="item"):
             # Filter historical values by time window
             recent_values = [
                 (value, timestamp) for value, timestamp in metric.historical_values if timestamp > cutoff_time
@@ -298,7 +299,7 @@ class ArchitecturalHealthMonitor:
             },
         ]
 
-        for config in metrics_config:
+        for config in tqdm(metrics_config, desc="Processing", unit="item"):
             thresholds = self.health_thresholds[config["metric_type"]]
             metric = HealthMetric(
                 metric_id=config["metric_id"],
@@ -503,7 +504,7 @@ class ArchitecturalHealthMonitor:
         current_time = datetime.now()
         cooldown_period = timedelta(minutes=self.monitoring_config["alert_cooldown_minutes"])
 
-        for metric_id, metric in self.health_metrics.items():
+        for metric_id, metric in tqdm(self.health_metrics.items(), desc="Processing", unit="item"):
             # Check if alert should be generated
             if metric.status in [HealthStatus.WARNING, HealthStatus.CRITICAL]:
                 # Check cooldown period

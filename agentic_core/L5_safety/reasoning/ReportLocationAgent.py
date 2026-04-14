@@ -157,6 +157,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ReportLocationAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("ReportLocationAgent", "p4obs", "metric_2")
@@ -426,7 +427,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
 
         heal_result = ReportLocationHealResult(total_violations=len(violations))
 
-        for violation in violations:
+        for violation in tqdm(violations, desc="Processing", unit="item"):
             file_result = self.heal_file(violation)
 
             if file_result["status"] == "healed":

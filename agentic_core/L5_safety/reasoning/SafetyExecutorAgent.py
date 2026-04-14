@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("SafetyExecutorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SafetyExecutorAgent", "p4obs", "metric_2")
@@ -410,7 +411,7 @@ class SafetyExecutorAgent(SovereignBaseAgent):
 
     def _run_gates(self, context: dict[str, Any]) -> ExecutionResult:
         """Run integrity gates."""
-        for gate in self._gates:
+        for gate in tqdm(self._gates, desc="Processing", unit="item"):
             try:
                 passed = gate.check_fn(context)
                 if not passed:

@@ -11,6 +11,7 @@ n- Correct evidence strings: except:bare, except:broad, except:valid
 """
 
 import ast
+from tqdm import tqdm
 
 
 def classify_except_handler(node: ast.ExceptHandler) -> str | None:
@@ -74,7 +75,7 @@ def scan_file_for_exceptions(filepath: str) -> list[tuple[int, str, str]]:
     except SyntaxError:
         return violations
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ExceptHandler):
             classification = classify_except_handler(node)
             if classification:  # Only record violations
@@ -109,7 +110,7 @@ def run_regression_tests() -> bool:
     """
     all_passed = True
 
-    for code, expected in TEST_CASES:
+    for code, expected in tqdm(TEST_CASES, desc="Processing", unit="item"):
         try:
             # Wrap in try/except structure for AST parsing
             wrapped = f"try:\n    pass\n{code}\n    pass"

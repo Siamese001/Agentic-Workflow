@@ -89,6 +89,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("impact", "p4obs", "metric_1")
 _emit_emits_metric_event("impact", "p4obs", "metric_2")
@@ -269,7 +270,7 @@ def predict_impact(
     covers_map: dict[str, set[str]] = {}  # covered_module -> set of test_modules
     violation_sources: set[str] = set()
 
-    for e in edges:
+    for e in tqdm(edges, desc="Processing", unit="item"):
         fn = _normalise(e.from_name)
 
         if e.relation_type == "covers":
@@ -298,8 +299,8 @@ def predict_impact(
 
     # reverse_dep[M] = set of modules that import something from M
     reverse_dep: dict[str, set[str]] = {}
-    for from_mod, imported_syms in module_imports.items():
-        for sym in imported_syms:
+    for from_mod, imported_syms in tqdm(module_imports.items(), desc="Processing", unit="item"):
+        for sym in tqdm(imported_syms, desc="Processing", unit="item"):
             # sym is like "agentic_core.L2_execution.UniversalWriteGateway.ClassName"
             # Match against module dot forms (longest prefix first)
             sym_dot = sym.replace("/", ".")
@@ -322,7 +323,7 @@ def predict_impact(
     visited: set[str] = set(changed_norm)
     execution_paths: list[tuple[str, str, str]] = []
 
-    for _ in range(max_depth):
+    for _ in tqdm(range(max_depth), desc="Processing", unit="item"):
         next_frontier: set[str] = set()
         for node in frontier:
             for dependant in reverse_dep.get(node, set()):

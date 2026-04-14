@@ -247,6 +247,7 @@ _emit_validated_by_safety_plane("p1", "remediation_dispatcher", "safety_validati
 _emit_invokes_eval("p1", "remediation_dispatcher", "eval_call")
 _emit_proposal_commits_routing("p1", "remediation_dispatcher", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_dispatch_entry")
 emit_determinism_digest("trace_remediation_dispatcher", "remediation_dispatcher_dispatch_exit")
@@ -680,7 +681,7 @@ def build_healer_worklist(
     """
     seen: dict[str, dict[str, Any]] = {}
 
-    for check in aggregate_checks:
+    for check in tqdm(aggregate_checks, desc="Processing", unit="item"):
         if not isinstance(check, dict):
             continue
         rollup_id = check.get("check_id", "")
@@ -707,7 +708,7 @@ def load_approval_bundle(path: Path) -> ApprovalBundle:
     data = json.loads(path.read_text(encoding="utf-8"))
     records_raw = data.get("records", [])
     records: list[ApprovalRecord] = []
-    for r in records_raw:
+    for r in tqdm(records_raw, desc="Processing", unit="item"):
         records.append(
             ApprovalRecord(
                 phase_name=r["phase_name"],
@@ -996,7 +997,7 @@ def run_dispatcher(
     # 6. Iterate phases in PhaseSpec order
     heal_checks: list[HealCheckResult] = []
     emitted_ids: set[str] = set()
-    for phase in LEGACY_MIRROR_PLAN.phases:
+    for phase in tqdm(LEGACY_MIRROR_PLAN.phases, desc="Processing", unit="item"):
         # Select check_ids for this phase (from both roll-ups and sub-checks)
         prefixes = PHASE_CHECK_ID_PREFIXES.get(phase.name, ())
         phase_cids = sorted(
@@ -1017,7 +1018,7 @@ def run_dispatcher(
                     f"APPROVED record found in ApprovalBundle for phase_name='{phase.name}'",
                 )
 
-        for cid in phase_cids:
+        for cid in tqdm(phase_cids, desc="Processing", unit="item"):
             emitted_ids.add(cid)
             if cid in HEALER_REGISTRY:
                 check_dict = worklist_by_id.get(
@@ -1043,7 +1044,7 @@ def run_dispatcher(
             pass  # Planned: re-run specified guardians after healing to verify fixes
 
     # 7. Add unmapped check_ids (coverage preservation)
-    for cid in sorted(unmapped_ids):
+    for cid in tqdm(sorted(unmapped_ids), desc="Processing", unit="item"):
         if cid not in emitted_ids:
             heal_checks.append(
                 HealCheckResult(

@@ -18,8 +18,10 @@ from agentic_core.interfaces.IBlackboardLeaseVerifierProtocol import (
     PreservationViolationError,
     SandboxViolationError,
     create_directory,
+    delete_file,
     get_project_root,
     list_files,
+    move_file,
     read_file,
     require_healing_lease,
     validate_sandbox,
@@ -27,7 +29,9 @@ from agentic_core.interfaces.IBlackboardLeaseVerifierProtocol import (
 )
 from agentic_core.L2_execution.types.tool_args_types import (
     CreateDirectoryArgs,
+    DeleteFileArgs,
     ListFilesArgs,
+    MoveFileArgs,
     ReadFileArgs,
     WriteFileArgs,
 )
@@ -329,3 +333,43 @@ class TestCreateDirectory:
         (tmp_path / "existing").mkdir()
         create_directory(CreateDirectoryArgs(path="existing"))
         assert (tmp_path / "existing").is_dir()
+
+
+@pytest.mark.unit
+class TestMoveFile:
+    def test_raises_file_not_found_for_missing_source(self, tmp_path, monkeypatch):
+        """Failure (G1): move_file raises FileNotFoundError when source does not exist."""
+        monkeypatch.setattr(_mod, "get_project_root", lambda: tmp_path)
+        with pytest.raises(FileNotFoundError):
+            move_file(MoveFileArgs(source="no_src.txt", destination="dst.txt"))
+
+    def test_emits_deprecation_warning(self, tmp_path, monkeypatch):
+        """Failure (G1): move_file emits DeprecationWarning before raising FileNotFoundError."""
+        monkeypatch.setattr(_mod, "get_project_root", lambda: tmp_path)
+        with pytest.warns(DeprecationWarning, match="deprecated"):
+            with pytest.raises(FileNotFoundError):
+                move_file(MoveFileArgs(source="no_src.txt", destination="dst.txt"))
+
+    def test_raises_file_exists_error_when_dest_exists(self, tmp_path, monkeypatch):
+        """Edge (G1): move_file raises FileExistsError when destination already exists."""
+        monkeypatch.setattr(_mod, "get_project_root", lambda: tmp_path)
+        (tmp_path / "src.txt").write_text("content", encoding="utf-8")
+        (tmp_path / "dst.txt").write_text("content", encoding="utf-8")
+        with pytest.raises(FileExistsError):
+            move_file(MoveFileArgs(source="src.txt", destination="dst.txt"))
+
+
+@pytest.mark.unit
+class TestDeleteFile:
+    def test_raises_file_not_found_for_missing_file(self, tmp_path, monkeypatch):
+        """Failure (G2): delete_file raises FileNotFoundError when file does not exist."""
+        monkeypatch.setattr(_mod, "get_project_root", lambda: tmp_path)
+        with pytest.raises(FileNotFoundError):
+            delete_file(DeleteFileArgs(path="no_file.txt"))
+
+    def test_emits_deprecation_warning(self, tmp_path, monkeypatch):
+        """Failure (G2): delete_file emits DeprecationWarning before raising FileNotFoundError."""
+        monkeypatch.setattr(_mod, "get_project_root", lambda: tmp_path)
+        with pytest.warns(DeprecationWarning, match="deprecated"):
+            with pytest.raises(FileNotFoundError):
+                delete_file(DeleteFileArgs(path="no_file.txt"))

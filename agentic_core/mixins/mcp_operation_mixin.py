@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("mcp_operation_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("mcp_operation_mixin", "p4obs", "metric_2")
@@ -236,7 +237,7 @@ class MCPOperationMixin:
         audit_context_id = str(uuid.uuid4())
         last_exception: Exception | None = None
 
-        for attempt in range(retry_count):
+        for attempt in tqdm(range(retry_count), desc="Processing", unit="item"):
             start = time.monotonic()
             try:
                 result = await self.mcp_gateway.call_tool(
@@ -248,7 +249,7 @@ class MCPOperationMixin:
                 self._audit_mcp(tool_name, "SUCCESS", duration_ms, audit_context_id, attempt)
                 return result
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (RuntimeError, OSError, TimeoutError, AttributeError) as e:
                 duration_ms = (time.monotonic() - start) * 1000
                 last_exception = e
                 self._audit_mcp(tool_name, "RETRY", duration_ms, audit_context_id, attempt)

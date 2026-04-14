@@ -100,6 +100,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hardened_gemini_executor", "p4obs", "metric_1")
 _emit_emits_metric_event("hardened_gemini_executor", "p4obs", "metric_2")
@@ -211,7 +212,7 @@ class HardenedGeminiExecutor:
             prompt=prompt,
         )
         last_exc: Exception | None = None
-        for attempt in range(1, self.max_retries + 1):
+        for attempt in tqdm(range(1, self.max_retries + 1), desc="Processing", unit="item"):
             try:
                 loop = asyncio.new_event_loop()
                 try:

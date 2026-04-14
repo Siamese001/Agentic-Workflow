@@ -151,6 +151,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("prompt_injection_loader_config", "p4obs", "metric_1")
 _emit_emits_metric_event("prompt_injection_loader_config", "p4obs", "metric_2")
@@ -236,7 +237,7 @@ class PromptInjectionLoader:
             self._create_builtin_injections()
 
         # Load all JSON files
-        for file_path in injection_dir.glob("*.json"):
+        for file_path in tqdm(injection_dir.glob("*.json"), desc="Processing", unit="item"):
             try:
                 with open(file_path, encoding="utf-8") as f:
                     data = json.load(f)
@@ -279,8 +280,8 @@ class PromptInjectionLoader:
         yaml_loader = get_yaml_loader()
         all_patterns = yaml_loader.load_all_patterns()
 
-        for layer_name, patterns in all_patterns.items():
-            for pattern in patterns:
+        for layer_name, patterns in tqdm(all_patterns.items(), desc="Processing", unit="item"):
+            for pattern in tqdm(patterns, desc="Processing", unit="item"):
                 # Convert to our InjectionPattern format
                 injection_pattern = InjectionPattern(
                     id=f"yaml_{layer_name}_{pattern.id}",
@@ -323,7 +324,7 @@ class PromptInjectionLoader:
             },
         ]
 
-        for injection_data in builtin_injections:
+        for injection_data in tqdm(builtin_injections, desc="Processing", unit="item"):
             # Create simple injection pattern
             pattern = InjectionPattern(
                 id=injection_data["id"],
@@ -379,7 +380,7 @@ class PromptInjectionLoader:
 
         matches = []
 
-        for injection_id, injection in self.injections.items():
+        for injection_id, injection in tqdm(self.injections.items(), desc="Processing", unit="item"):
             if not injection.enabled:
                 continue
 

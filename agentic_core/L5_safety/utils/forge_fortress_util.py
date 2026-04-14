@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("forge_fortress_util", "p4obs", "metric_1")
 _emit_emits_metric_event("forge_fortress_util", "p4obs", "metric_2")
@@ -233,11 +234,11 @@ def forge_fortress() -> Any:
             _wg.ensure_dir(stage_path)
             if folder not in ["data", ARCHIVES_DIR]:
                 _wg.touch_file(stage_path / "__init__.py")
-    for old_name, destination in ANNEXATION_PLAN.items():
+    for old_name, destination in tqdm(ANNEXATION_PLAN.items(), desc="Processing", unit="item"):
         old_path: Any = ROOT / old_name
         if old_path.exists() and old_path.is_dir():
             logging.info(f"Annexing {old_name} territory into Sovereign Core...")
-            for item in old_path.iterdir():
+            for item in tqdm(old_path.iterdir(), desc="Processing", unit="item"):
                 if item.name in CORE_MAP.keys() or item.name == "__init__.py":
                     continue
                 target: Any = destination / item.name

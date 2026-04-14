@@ -118,6 +118,7 @@ from .base_detector_validator import (
     AntiPatternViolation,
     EnforcementLevel,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("silent_degradation_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("silent_degradation_validator", "p4obs", "metric_2")
@@ -346,7 +347,7 @@ class SilentDegradationDetector(AntiPatternDetector):
         except (ValueError, TypeError, RuntimeError) as e:
             source_lines = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.If):
                 v = self._check_availability_guard(node, file_path, source_lines)
                 if v:
@@ -535,7 +536,7 @@ class SilentDegradationDetector(AntiPatternDetector):
     @staticmethod
     def _find_mcp_phantom_import(body: list[ast.stmt]) -> str | None:
         """Return the mcp<N> module name if a phantom import is found, else None."""
-        for node in _shallow_walk(body):
+        for node in tqdm(_shallow_walk(body), desc="Processing", unit="item"):
             # importlib.import_module("mcp11")
             if (
                 isinstance(node, ast.Call)
@@ -685,7 +686,7 @@ class SilentDegradationDetector(AntiPatternDetector):
     @staticmethod
     def _has_mock_log_call(body: list[ast.stmt]) -> bool:
         """True when any logger call in *body* contains a mock/fallback keyword."""
-        for node in _shallow_walk(body):
+        for node in tqdm(_shallow_walk(body), desc="Processing", unit="item"):
             if (
                 isinstance(node, ast.Call)
                 and isinstance(node.func, ast.Attribute)

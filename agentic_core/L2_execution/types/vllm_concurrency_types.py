@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("vllm_concurrency_types", "p4obs", "metric_1")
 _emit_emits_metric_event("vllm_concurrency_types", "p4obs", "metric_2")
@@ -245,7 +246,7 @@ def run_stress_batch(
         List of VLLMStressResult, one per request.
     """
     results = []
-    for req in requests:
+    for req in tqdm(requests, desc="Processing", unit="item"):
         preflight = run_preflight_budget_check(
             prompt=req.prompt,
             task_class=req.task_class,

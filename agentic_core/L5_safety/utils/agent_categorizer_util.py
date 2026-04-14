@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_categorizer_util", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_categorizer_util", "p4obs", "metric_2")
@@ -270,7 +271,7 @@ class AgentCategorizer:
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         py_files = list(get_python_files(self.folder_path))
-        for py_file in py_files:
+        for py_file in tqdm(py_files, desc="Processing", unit="item"):
             if py_file.name.startswith("__"):
                 continue
             try:
@@ -301,7 +302,7 @@ class AgentCategorizer:
         name = class_node.name
         docstring = ast.get_docstring(class_node) or ""
         combined_text = f"{name} {docstring}".lower()
-        for category_def in self.CATEGORY_PATTERNS:
+        for category_def in tqdm(self.CATEGORY_PATTERNS, desc="Processing", unit="item"):
             excluded = False
             for exclude_pattern in category_def["exclude"]:
                 if re.search(exclude_pattern, combined_text, re.IGNORECASE):

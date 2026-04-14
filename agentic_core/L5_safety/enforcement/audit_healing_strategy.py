@@ -15,6 +15,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 
 def get_filesystem_client():
@@ -99,7 +100,7 @@ class AuditHealingStrategy:
             return []
         gaps = []
         cutoff = datetime.utcnow() - timedelta(hours=config.L6_AUDIT_RECONSTRUCTION_WINDOW_HOURS)
-        for line in log_content.splitlines():
+        for line in tqdm(log_content.splitlines(), desc="Processing", unit="item"):
             if not line.strip():
                 continue
             try:

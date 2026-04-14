@@ -98,6 +98,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ResumeGenerator", "p4obs", "metric_1")
 _emit_emits_metric_event("ResumeGenerator", "p4obs", "metric_2")
@@ -239,7 +240,7 @@ class ResumeGenerator:
         """Tailor experience section to highlight relevant achievements."""
         tailored_experience = []
         target_skills = analysis.get("hard_skills", []) + analysis.get("soft_skills", [])
-        for exp in experience_list:
+        for exp in tqdm(experience_list, desc="Processing", unit="item"):
             tailored_exp = exp.copy()
             if "responsibilities" in exp:
                 tailored_exp["responsibilities"] = self._tailor_bullets(

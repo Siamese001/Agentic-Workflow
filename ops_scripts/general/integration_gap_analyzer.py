@@ -20,6 +20,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CRITICAL_MIXINS = {
@@ -55,8 +56,8 @@ def analyze_file_with_ast(file_path: Path) -> dict:
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
-        for component, patterns in COMPONENT_PATTERNS.items():
-            for pattern in patterns:
+        for component, patterns in tqdm(COMPONENT_PATTERNS.items(), desc="Processing", unit="item"):
+            for pattern in tqdm(patterns, desc="Processing", unit="item"):
                 if re.search(pattern, content, re.IGNORECASE):
                     if "detection" in component.lower():
                         result["uses_detection_signal"] = True
@@ -69,7 +70,7 @@ def analyze_file_with_ast(file_path: Path) -> dict:
                     elif "audit" in pattern:
                         result["uses_audit_trail"] = True
         tree = ast.parse(content)
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 bases = []
                 for base in node.bases:
@@ -117,7 +118,7 @@ def analyze_all_agents():
         "agents_without_healing": [],
         "detailed_analysis": [],
     }
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         name = agent["class_name"]
         path = agent["path"].replace("\\", "/")
         layer = agent["layer"]

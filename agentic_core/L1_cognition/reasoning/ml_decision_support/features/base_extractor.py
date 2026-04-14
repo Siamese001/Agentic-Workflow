@@ -16,6 +16,7 @@ from typing import Any, Callable
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_trace
 
 from ..config.feature_schemas import FeatureDefinition, FeatureSchema, NullHandling
+from tqdm import tqdm
 
 
 @dataclass
@@ -99,7 +100,7 @@ class DeterministicFeatureExtractor(ABC):
 
         try:
             # Extract each feature
-            for feature_def in self.schema.features:
+            for feature_def in tqdm(self.schema.features, desc="Processing", unit="item"):
                 try:
                     feature_value, feature_provenance = self._extract_single_feature(
                         feature_def,

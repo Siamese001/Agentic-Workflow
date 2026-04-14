@@ -29,6 +29,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "restore_app_agents", "uwg_governed_write")
 _emit_writes_through("p1", "restore_app_agents", "uwg_governed_write_2")
@@ -134,7 +135,9 @@ def main():
     skipped = 0
     errors = 0
 
-    for archived_path, original_path in sorted(agents, key=lambda x: str(x[1])):
+    for archived_path, original_path in tqdm(
+        sorted(agents, key=lambda x: str(x[1])), desc="Processing", unit="item"
+    ):
         rel_original = original_path.relative_to(PROJECT_ROOT)
 
         # Check if destination already exists

@@ -89,6 +89,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("remove_duplicate_suffixes_util", "p4obs", "metric_1")
 _emit_emits_metric_event("remove_duplicate_suffixes_util", "p4obs", "metric_2")
@@ -215,7 +216,7 @@ def analyze_duplicates(duplicate_files: list[Path]) -> dict[str, list[tuple[Path
     Each entry is (dup_path, canonical_path, suffix, canonical_exists)
     """
     results = {"safe_to_delete": [], "needs_review": []}
-    for dup_path in duplicate_files:
+    for dup_path in tqdm(duplicate_files, desc="Processing", unit="item"):
         canonical_path, suffix = get_canonical_path(dup_path)
         if suffix is None:
             continue
@@ -230,7 +231,7 @@ def analyze_duplicates(duplicate_files: list[Path]) -> dict[str, list[tuple[Path
 def remove_duplicates(safe_to_delete: list[tuple[Path, Path, str, bool]], dry_run: bool = True) -> int:
     """Remove duplicate files that have canonical versions."""
     removed_count = 0
-    for dup_path, canonical_path, _suffix, _ in safe_to_delete:
+    for dup_path, canonical_path, _suffix, _ in tqdm(safe_to_delete, desc="Processing", unit="item"):
         dup_path.relative_to(project_root)
         canonical_path.relative_to(project_root)
         if dry_run:

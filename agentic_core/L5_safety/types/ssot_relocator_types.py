@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_relocator_types", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_relocator_types", "p4obs", "metric_2")
@@ -281,7 +282,7 @@ class SSOTRelocator:
         report = EnforcementReport()
         logger.info(f"{('[DRY-RUN] ' if self.dry_run else '')}Starting orphan relocation")
         logger.info(f"Target violations: {len(drift_violations)}")
-        for violation in drift_violations:
+        for violation in tqdm(drift_violations, desc="Processing", unit="item"):
             source = self.project_root / violation.folder_path
             timestamp = datetime.now().strftime("%Y%m%d")
             archive_path = self.archive_root / timestamp / violation.folder_path
@@ -312,7 +313,7 @@ class SSOTRelocator:
         report = EnforcementReport()
         logger.info(f"{('[DRY-RUN] ' if self.dry_run else '')}Starting hierarchy enforcement")
         logger.info(f"Target violations: {len(hierarchy_violations)}")
-        for violation in hierarchy_violations:
+        for violation in tqdm(hierarchy_violations, desc="Processing", unit="item"):
             source = self.project_root / violation.folder_path
             if not source.exists():
                 result = RelocationResult(
@@ -356,7 +357,7 @@ class SSOTRelocator:
         report = EnforcementReport()
         logger.info(f"{('[DRY-RUN] ' if self.dry_run else '')}Starting agent relocation")
         logger.info(f"Target violations: {len(gravity_violations)}")
-        for violation in gravity_violations:
+        for violation in tqdm(gravity_violations, desc="Processing", unit="item"):
             source = self.project_root / violation.file_path
             target_path = violation.file_path.replace(
                 f"/{violation.actual_layer}/",
@@ -519,7 +520,7 @@ class SSOTRelocator:
                 )
 
                 all_items = list(get_python_files(source)) + list(get_data_files(source))
-                for item in all_items:
+                for item in tqdm(all_items, desc="Processing", unit="item"):
                     if item.is_file():
                         rel_path = item.relative_to(source)
                         target_file = target / rel_path.name

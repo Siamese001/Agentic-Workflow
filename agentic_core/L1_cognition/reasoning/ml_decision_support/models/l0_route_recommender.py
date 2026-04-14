@@ -6,7 +6,6 @@ Logistic regression model for recommending optimal routing paths
 user context, and system state.
 """
 
-import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -18,7 +17,9 @@ from sklearn.preprocessing import StandardScaler
 
 from ..config.model_registry import DecisionMode
 from ..features.l0_features import L0FeatureExtractor
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class L0RouteRecommender(BaseMLModel):
@@ -81,8 +82,7 @@ class L0RouteRecommender(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.pipeline = model_data.get("pipeline")
             self.feature_names = model_data.get("feature_names", [])
@@ -112,8 +112,7 @@ class L0RouteRecommender(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -259,7 +258,9 @@ class L0RouteRecommender(BaseMLModel):
 
             # Create feature importance list
             feature_importance = []
-            for i, (name, score) in enumerate(zip(feature_names, importance_scores)):
+            for i, (name, score) in tqdm(
+                enumerate(zip(feature_names, importance_scores)), desc="Processing", unit="item"
+            ):
                 if i < len(score):  # Ensure index is valid
                     feature_importance.append(
                         {
@@ -292,7 +293,7 @@ class L0RouteRecommender(BaseMLModel):
 
         try:
             feature_vector = []
-            for feature_name in self.feature_names:
+            for feature_name in tqdm(self.feature_names, desc="Processing", unit="item"):
                 value = features.get(feature_name, 0.0)  # Default to 0 if missing
 
                 # Convert to numeric
@@ -315,7 +316,7 @@ class L0RouteRecommender(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for logistic regression
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:
@@ -348,7 +349,7 @@ class L0RouteRecommender(BaseMLModel):
         X = []
         y = []
 
-        for example in training_data:
+        for example in tqdm(training_data, desc="Processing", unit="item"):
             features = example["features"]
             label = example["label"]
 

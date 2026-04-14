@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("RGValidationExecutor", "p4obs", "metric_1")
 _emit_emits_metric_event("RGValidationExecutor", "p4obs", "metric_2")
@@ -214,7 +215,7 @@ def _fact_collect_issues(self, resume_data: dict, job_data: dict | None = None) 
     """Fact-check validation logic."""
     issues = []
     claims = resume_data.get("quantified_claims", [])
-    for claim in claims:
+    for claim in tqdm(claims, desc="Processing", unit="item"):
         if not claim.get("source"):
             issues.append(
                 {
@@ -247,7 +248,7 @@ def _section_collect_issues(self, resume_data: dict, job_data: dict | None = Non
     issues = []
     sections = resume_data.get("sections", {})
     total_len = sum(len(str(v)) for v in sections.values()) or 1
-    for name, content in sections.items():
+    for name, content in tqdm(sections.items(), desc="Processing", unit="item"):
         ratio = len(str(content)) / total_len
         if ratio > 0.6:
             issues.append(

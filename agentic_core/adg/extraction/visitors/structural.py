@@ -12,6 +12,7 @@ import ast
 from typing import TYPE_CHECKING
 
 from . import BaseStructuralVisitor, VisitorContext, register_visitor
+from tqdm import tqdm
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import Edge
@@ -23,7 +24,7 @@ class _InheritanceVisitor(BaseStructuralVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef) -> None:
         """Extract inheritance edges from class definitions."""
-        for base in node.bases:
+        for base in tqdm(node.bases, desc="Processing", unit="item"):
             base_name = self._get_base_name(base)
             if base_name:
                 edge = self._create_edge(
@@ -162,7 +163,7 @@ class _CompositionVisitor(BaseStructuralVisitor):
             self.generic_visit(node)
             return
 
-        for target in node.targets:
+        for target in tqdm(node.targets, desc="Processing", unit="item"):
             if isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name):
                 if target.value.id == "self":
                     # Check if RHS is a constructor call

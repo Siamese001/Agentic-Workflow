@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("gravity_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("gravity_validator", "p4obs", "metric_2")
@@ -434,14 +435,14 @@ class UnifiedSSOTValidator:
             return violations
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-        for py_file in get_python_files(agentic_core):
+        for py_file in tqdm(get_python_files(agentic_core), desc="Processing", unit="item"):
             source_layer = self._get_layer_from_path(py_file)
             if not source_layer or source_layer not in self.layer_hierarchy:
                 continue
             try:
                 content = py_file.read_text(encoding="utf-8")
                 tree = ast.parse(content)
-                for node in ast.walk(tree):
+                for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                     if isinstance(node, ast.Import | ast.ImportFrom):
                         import_line = self._get_import_line(node, content)
                         target_layer = self._extract_target_layer(node)
@@ -467,16 +468,16 @@ class UnifiedSSOTValidator:
     def _check_hierarchy_violations(self) -> list[HierarchyViolation]:
         """Check for folders exceeding maximum depth limits."""
         violations = []
-        for root_name in PROJECT_ROOT_WHITELIST:
+        for root_name in tqdm(PROJECT_ROOT_WHITELIST, desc="Processing", unit="item"):
             root_path = self.project_root / root_name
             if not root_path.exists():
                 continue
             max_depth = DEPTH_RULES.get(root_name, 3)
             import os
 
-            for root, dirs, _files in os.walk(root_path):
+            for root, dirs, _files in tqdm(os.walk(root_path), desc="Processing", unit="item"):
                 dirs[:] = [d for d in dirs if not d.startswith(".")]
-                for dir_name in dirs:
+                for dir_name in tqdm(dirs, desc="Processing", unit="item"):
                     folder = Path(root) / dir_name
                     if any(excluded in folder.parts for excluded in SOVEREIGN_EXCLUDED_FOLDERS):
                         continue
@@ -503,7 +504,7 @@ class UnifiedSSOTValidator:
         if not agentic_core.exists():
             return violations
         authorized_l1 = set(CORE_SUBFOLDER_MAP.keys())
-        for folder in agentic_core.iterdir():
+        for folder in tqdm(agentic_core.iterdir(), desc="Processing", unit="item"):
             if not folder.is_dir():
                 continue
             folder_name = folder.name
@@ -519,7 +520,7 @@ class UnifiedSSOTValidator:
                 )
             else:
                 authorized_l2 = set(CORE_SUBFOLDER_MAP.get(folder_name, []))
-                for subfolder in folder.iterdir():
+                for subfolder in tqdm(folder.iterdir(), desc="Processing", unit="item"):
                     if not subfolder.is_dir():
                         continue
                     subfolder_name = subfolder.name

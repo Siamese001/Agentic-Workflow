@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rename_unified_agents_util", "p4obs", "metric_1")
 _emit_emits_metric_event("rename_unified_agents_util", "p4obs", "metric_2")
@@ -199,7 +200,7 @@ def rename_files():
 
 def update_class_names_in_unified():
     """Update class names inside the unified directory files."""
-    for py_file in UNIFIED_DIR.glob("*.py"):
+    for py_file in tqdm(UNIFIED_DIR.glob("*.py"), desc="Processing", unit="item"):
         if py_file.name == "__pycache__":
             continue
         try:
@@ -226,16 +227,16 @@ def update_imports_codebase():
         PROJECT_ROOT / APPS_SHARED_DIR,
     ]
     files_updated = 0
-    for scan_dir in scan_dirs:
+    for scan_dir in tqdm(scan_dirs, desc="Processing", unit="item"):
         if not scan_dir.exists():
             continue
-        for py_file in scan_dir.rglob("*.py"):
+        for py_file in tqdm(scan_dir.rglob("*.py"), desc="Processing", unit="item"):
             if ARCHIVES_DIR in str(py_file) or "__pycache__" in str(py_file):
                 continue
             try:
                 content = py_file.read_text(encoding="utf-8")
                 original = content
-                for old_name, new_name in RENAMES.items():
+                for old_name, new_name in tqdm(RENAMES.items(), desc="Processing", unit="item"):
                     old_module = old_name.replace(".py", "")
                     new_module = new_name.replace(".py", "")
                     content = content.replace(

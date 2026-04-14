@@ -165,6 +165,7 @@ _emit_validated_by_safety_plane("p1", "_ssot_meta_learning", "safety_validation"
 _emit_invokes_eval("p1", "_ssot_meta_learning", "eval_call")
 _emit_proposal_commits_routing("p1", "_ssot_meta_learning", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace__ssot_meta_learning", "_ssot_meta_learning_dispatch_entry")
 emit_determinism_digest("trace__ssot_meta_learning", "_ssot_meta_learning_dispatch_exit")
@@ -237,7 +238,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             "routing_novelty": 0,
             "semantic_cache": 0,
         }
-        for action in healing_actions:
+        for action in tqdm(healing_actions, desc="Processing", unit="item"):
             failure_type_str: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
             healer_id: str = action.get("agent", "unknown")
             tier_str: str = action.get("tier") or action.get("routing_tier") or "L5"
@@ -413,7 +414,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
 
                 _corpus_path = REPO_ROOT / "data" / "corpus" / "healing_contexts_corpus.jsonl"
                 _new_lines = []
-                for _action in healing_actions:
+                for _action in tqdm(healing_actions, desc="Processing", unit="item"):
                     _new_lines.append(
                         _json_w2.dumps(
                             {
@@ -457,13 +458,13 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                 _idx4 = _json_w4.loads(_idx_path4.read_text(encoding="utf-8"))
                 _file_store4 = _FBVS4(_intake_dir4)
                 _prior_vids = sorted(_idx4.keys())[-50:]
-                for _vid in _prior_vids:
+                for _vid in tqdm(_prior_vids, desc="Processing", unit="item"):
                     _raw4 = _file_store4.get(_vid)
                     if not _raw4:
                         continue
                     try:
                         _rec4 = _json_w4.loads(_raw4.decode("utf-8"))
-                        for _s in _rec4.get("snapshot", []):
+                        for _s in tqdm(_rec4.get("snapshot", []), desc="Processing", unit="item"):
                             _hid4 = _s.get("healer_id", "unknown")
                             _tier4 = _s.get("tier", "L5")
                             _ftype4 = _s.get("failure_type", "UNKNOWN")
@@ -615,7 +616,7 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                 import json as _json_prop
 
                 with open(_prop_path, "a", encoding="utf-8") as _pf:
-                    for _p in _ml_proposals:
+                    for _p in tqdm(_ml_proposals, desc="Processing", unit="item"):
                         _pf.write(
                             _json_prop.dumps(
                                 {

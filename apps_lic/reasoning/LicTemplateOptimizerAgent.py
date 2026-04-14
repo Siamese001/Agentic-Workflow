@@ -73,6 +73,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("LicTemplateOptimizerAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("LicTemplateOptimizerAgent", "p4obs", "metric_2")
@@ -167,7 +168,7 @@ class LicTemplateOptimizerAgent(SovereignBaseAgent):
             self.record_result(True, "No templates to optimize")
             return
         optimizations = []
-        for i, message in enumerate(messages):
+        for i, message in tqdm(enumerate(messages), desc="Processing", unit="item"):
             content = message.get("content", "")
             subject = message.get("subject", "")
             if len(subject) > 60:

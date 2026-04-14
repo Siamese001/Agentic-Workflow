@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("config_environment_util", "p4obs", "metric_1")
 _emit_emits_metric_event("config_environment_util", "p4obs", "metric_2")
@@ -443,7 +444,7 @@ class ConfigPlanningOrchestrator:
 
         environment = env_mapping.get(environment_str.lower(), ConfigEnvironment.DEVELOPMENT)
 
-        for raw_config in raw_configs:
+        for raw_config in tqdm(raw_configs, desc="Processing", unit="item"):
             if isinstance(raw_config, dict):
                 config = ConfigDefinition(
                     name=raw_config.get("name", "unnamed"),
@@ -486,7 +487,7 @@ class ConfigPlanningOrchestrator:
         target_envs_str = deployment_config.get("target_environments", [request.get("environment")])
         target_envs = []
 
-        for env_str in target_envs_str:
+        for env_str in tqdm(target_envs_str, desc="Processing", unit="item"):
             env_mapping = {
                 "dev": ConfigEnvironment.DEVELOPMENT,
                 "development": ConfigEnvironment.DEVELOPMENT,
@@ -514,7 +515,7 @@ class ConfigPlanningOrchestrator:
         errors = []
         configs = request.get("configs", [])
 
-        for config in configs:
+        for config in tqdm(configs, desc="Processing", unit="item"):
             if not isinstance(config, dict):
                 errors.append("Invalid config format")
                 continue

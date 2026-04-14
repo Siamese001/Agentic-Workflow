@@ -25,6 +25,7 @@ from agentic_core.evaluation.judges.types import (
     VerdictOutcome,
 )
 from agentic_core.evaluation.judges.verdict_store import VerdictStore
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -74,7 +75,7 @@ class JudgeScorecard:
         fail_summary: list[dict[str, Any]] = []
         total_verdicts = 0
 
-        for report in reports:
+        for report in tqdm(reports, desc="Processing", unit="item"):
             mod_score = {
                 "target": report.target,
                 "overall_score": report.overall_score,
@@ -85,7 +86,7 @@ class JudgeScorecard:
             }
             module_scores.append(mod_score)
 
-            for verdict in report.verdicts:
+            for verdict in tqdm(report.verdicts, desc="Processing", unit="item"):
                 if verdict.outcome == VerdictOutcome.SKIP.value:
                     continue
                 total_verdicts += 1
@@ -106,7 +107,7 @@ class JudgeScorecard:
 
         # Compute dimension averages
         dimension_results: dict[str, dict[str, Any]] = {}
-        for dim, scores in sorted(dim_scores.items()):
+        for dim, scores in tqdm(sorted(dim_scores.items()), desc="Processing", unit="item"):
             avg = round(sum(scores) / len(scores), 4)
             outcomes = dim_outcomes.get(dim, [])
             fail_count = outcomes.count(VerdictOutcome.FAIL.value)
@@ -227,7 +228,7 @@ class RegressionAnalyzer:
         improvements: list[dict[str, Any]] = []
         stable = 0
 
-        for key, curr in current_map.items():
+        for key, curr in tqdm(current_map.items(), desc="Processing", unit="item"):
             prev = previous_map.get(key)
             if prev is None:
                 continue

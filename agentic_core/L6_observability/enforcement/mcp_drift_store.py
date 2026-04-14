@@ -13,6 +13,8 @@ Storage:
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -25,6 +27,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
 )
+from tqdm import tqdm
 
 
 # Lazy import to avoid L6->L_TOOLS gravity violation
@@ -116,6 +119,23 @@ class MCPL6ObservabilityStore:
         self._config.snapshots_dir.mkdir(parents=True, exist_ok=True)
         self._config.reports_dir.mkdir(parents=True, exist_ok=True)
 
+    def _atomic_write_text(self, path: Path, content: str) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False, dir=path.parent) as tmp:
+            tmp.write(content)
+            tmp.flush()
+            os.fsync(tmp.fileno())
+            tmp_path = Path(tmp.name)
+        os.replace(tmp_path, path)
+
+    def _atomic_write_json(self, path: Path, payload: dict[str, Any]) -> None:
+        self._atomic_write_text(path, json.dumps(payload, indent=2, default=str))
+
+    def _snapshot_dir_for(self, snapshot: MCPConfigSnapshot) -> Path:
+        timestamp_str = time.strftime("%Y%m%d_%H%M%S", time.localtime(snapshot.timestamp))
+        safe_snapshot_id = "".join(ch for ch in snapshot.snapshot_id if ch.isalnum() or ch in ("-", "_"))[:48]
+        return self._config.snapshots_dir / f"{timestamp_str}_{safe_snapshot_id}"
+
     def save_snapshot(self, snapshot: MCPConfigSnapshot) -> Path:
         """Save MCP configuration snapshot to L6 storage.
 
@@ -132,15 +152,13 @@ class MCPL6ObservabilityStore:
             _trace_id, LayerSegment.L6_OBSERVABILITY, "MCPL6ObservabilityStore.save_snapshot"
         )
 
-        # Create timestamp-based directory
-        timestamp_str = time.strftime("%Y%m%d_%H%M%S", time.localtime(snapshot.timestamp))
-        snapshot_dir = self._config.snapshots_dir / timestamp_str
+        # Use snapshot-specific directory to avoid same-second collisions
+        snapshot_dir = self._snapshot_dir_for(snapshot)
         snapshot_dir.mkdir(parents=True, exist_ok=True)
 
         # Save snapshot JSON
         snapshot_file = snapshot_dir / f"{snapshot.snapshot_id}.json"
-        with open(snapshot_file, "w", encoding="utf-8") as f:
-            f.write(snapshot.to_json())
+        self._atomic_write_text(snapshot_file, snapshot.to_json())
 
         # Save metadata index
         index_file = snapshot_dir / "index.json"
@@ -151,8 +169,7 @@ class MCPL6ObservabilityStore:
             "server_count": snapshot.server_count,
             "source_file": snapshot.source_file,
         }
-        with open(index_file, "w", encoding="utf-8") as f:
-            json.dump(index_data, f, indent=2)
+        self._atomic_write_json(index_file, index_data)
 
         # Cleanup old snapshots
         self._cleanup_old_snapshots()
@@ -184,8 +201,7 @@ class MCPL6ObservabilityStore:
             self._config.reports_dir / f"drift_report_{timestamp_str}_{report.current_snapshot_id}.json"
         )
 
-        with open(report_file, "w", encoding="utf-8") as f:
-            json.dump(report.to_dict(), f, indent=2, default=str)
+        self._atomic_write_json(report_file, report.to_dict())
 
         # Cleanup old reports
         self._cleanup_old_reports()
@@ -209,12 +225,22 @@ class MCPL6ObservabilityStore:
         """
         snapshots: list[dict[str, Any]] = []
 
-        for timestamp_dir in sorted(self._config.snapshots_dir.iterdir(), reverse=True):
-            if timestamp_dir.is_dir():
-                index_file = timestamp_dir / "index.json"
-                if index_file.exists():
-                    with open(index_file, encoding="utf-8") as f:
-                        snapshots.append(json.load(f))
+        for snapshot_dir in tqdm(self._config.snapshots_dir.iterdir(), desc="Processing", unit="item"):
+            if not snapshot_dir.is_dir():
+                continue
+            index_file = snapshot_dir / "index.json"
+            if not index_file.exists():
+                continue
+            try:
+                with open(index_file, encoding="utf-8") as f:
+                    snapshots.append(json.load(f))
+            except (OSError, json.JSONDecodeError):
+                continue
+
+        snapshots.sort(
+            key=lambda item: (item.get("timestamp", 0), item.get("snapshot_id", "")),
+            reverse=True,
+        )
 
         return snapshots
 
@@ -236,22 +262,7 @@ class MCPL6ObservabilityStore:
         if not snapshots:
             return None
 
-        latest = snapshots[0]
-        timestamp_str = time.strftime("%Y%m%d_%H%M%S", time.localtime(latest["timestamp"]))
-        snapshot_dir = self._config.snapshots_dir / timestamp_str
-        snapshot_file = snapshot_dir / f"{latest['snapshot_id']}.json"
-
-        if snapshot_file.exists():
-            with open(snapshot_file, encoding="utf-8") as f:
-                data = json.load(f)
-            return MCPConfigSnapshot(
-                snapshot_id=data["snapshot_id"],
-                timestamp=data["timestamp"],
-                source_file=data["source_file"],
-                servers={name: MCPServerState.from_dict(state) for name, state in data["servers"].items()},
-                metadata=data.get("metadata", {}),
-            )
-        return None
+        return self.load_snapshot(snapshots[0]["snapshot_id"])
 
     def load_snapshot(self, snapshot_id: str) -> MCPConfigSnapshot | None:
         """Load a specific snapshot by ID.
@@ -262,7 +273,7 @@ class MCPL6ObservabilityStore:
         Returns:
             The MCPConfigSnapshot or None if not found
         """
-        for timestamp_dir in self._config.snapshots_dir.iterdir():
+        for timestamp_dir in tqdm(self._config.snapshots_dir.iterdir(), desc="Processing", unit="item"):
             if timestamp_dir.is_dir():
                 snapshot_file = timestamp_dir / f"{snapshot_id}.json"
                 if snapshot_file.exists():
@@ -285,7 +296,7 @@ class MCPL6ObservabilityStore:
         Returns:
             Number of snapshots removed
         """
-        all_dirs = sorted(self._config.snapshots_dir.iterdir())
+        all_dirs = [p for p in sorted(self._config.snapshots_dir.iterdir()) if p.is_dir()]
         if len(all_dirs) <= self._config.max_snapshots:
             return 0
 
@@ -293,7 +304,8 @@ class MCPL6ObservabilityStore:
         for old_dir in all_dirs[: -self._config.max_snapshots]:
             if old_dir.is_dir():
                 for file in old_dir.iterdir():
-                    file.unlink()
+                    if file.is_file():
+                        file.unlink()
                 old_dir.rmdir()
                 removed += 1
 

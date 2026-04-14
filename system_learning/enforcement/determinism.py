@@ -30,6 +30,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("determinism", "determinism_digest")
 record_execution_trace("determinism", "determinism_trace")
@@ -70,7 +71,7 @@ def assert_no_nondeterminism(source_text: str, *, filepath: str = "<unknown>") -
 
     Intended to be called from guardian tests, not at runtime.
     """
-    for pattern in FORBIDDEN_PATTERNS:
+    for pattern in tqdm(FORBIDDEN_PATTERNS, desc="Processing", unit="item"):
         match = re.search(pattern, source_text)
         if match:
             logger.error(

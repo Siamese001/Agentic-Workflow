@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validation_orchestrator", "p4obs", "metric_1")
 _emit_emits_metric_event("validation_orchestrator", "p4obs", "metric_2")
@@ -418,7 +419,7 @@ class ValidationOrchestrator(SovereignBaseAgent):
             max_rounds = int(os.getenv("MAX_HEALING_ROUNDS", "5"))
             current_code = original_code
             previous_failure: str | None = None
-            for round_num in range(1, max_rounds + 1):
+            for round_num in tqdm(range(1, max_rounds + 1), desc="Processing", unit="item"):
                 print(
                     f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {Path(file_path).name}",
                     flush=True,
@@ -557,7 +558,9 @@ class ValidationOrchestrator(SovereignBaseAgent):
         skipped = 0
         try:
             self.logger.info(f"[{agent_name}] Running Canon validation checks...")
-            for canon_key, check_func in self.VERIFICATION_REGISTRY.items():
+            for canon_key, check_func in tqdm(
+                self.VERIFICATION_REGISTRY.items(), desc="Processing", unit="item"
+            ):
                 try:
                     self.logger.info(f"  Checking Canon key: {canon_key}")
                     context = self._get_check_context(canon_key)

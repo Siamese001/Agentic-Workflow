@@ -30,16 +30,48 @@ _log = logging.getLogger(__name__)
 class ConfigLoaderService:
     """Service for loading and validating configuration files."""
 
+    DEFAULT_MAX_CONFIG_BYTES = 1_048_576
+
     def __init__(self, config: dict[str, Any] | None = None) -> None:
         """Initialize the config loader service."""
         self.config = config or {}
-        self._cache: dict[str, Any] = {}
+        self._cache: dict[str, dict[str, Any]] = {}
+        self._allowed_roots = self._normalize_allowed_roots(self.config.get("allowed_config_roots"))
+        self._max_config_bytes = int(self.config.get("max_config_bytes", self.DEFAULT_MAX_CONFIG_BYTES))
 
         # Lifecycle trace emission
         emit_replay_key("config_loader", "init")
         emit_determinism_digest("config_loader", "init")
         _emit_applies_guardrail("p0", "config_loader", "service_init")
         _emit_snapshots_state("p0", "config_loader", "service_state")
+
+    @staticmethod
+    def _normalize_allowed_roots(raw_roots: Any) -> tuple[Path, ...]:
+        if not raw_roots:
+            return ()
+        if isinstance(raw_roots, (str, Path)):
+            raw_roots = [raw_roots]
+        return tuple(Path(root).expanduser().resolve() for root in raw_roots)
+
+    def _resolve_path(self, config_path: str) -> Path:
+        path = Path(config_path).expanduser().resolve()
+        if not path.is_file():
+            raise FileNotFoundError(f"Config file not found: {config_path}")
+        if self._allowed_roots and not any(
+            root == path or root in path.parents for root in self._allowed_roots
+        ):
+            raise PermissionError(f"Config path is outside allowed roots: {config_path}")
+        return path
+
+    def _read_and_parse(self, path: Path) -> dict[str, Any]:
+        size = path.stat().st_size
+        if size > self._max_config_bytes:
+            raise ValueError(f"Config file exceeds max size of {self._max_config_bytes} bytes: {path}")
+        with path.open(encoding="utf-8") as handle:
+            payload = json.load(handle)
+        if not isinstance(payload, dict):
+            raise ValueError(f"Config payload must be a JSON object: {path}")
+        return payload
 
     def load_json_config(self, config_path: str) -> dict[str, Any]:
         """Load JSON configuration from file."""
@@ -55,28 +87,34 @@ class ConfigLoaderService:
         _emit_validates_capability("p2", "config_loader", "file_read")
         _emit_records_telemetry_event("p4", "config_loader", "load_start")
 
-        path = Path(config_path)
-        if not path.exists():
-            raise FileNotFoundError(f"Config file not found: {config_path}")
+        path = self._resolve_path(config_path)
+        cache_key = str(path)
+        stat = path.stat()
+        fingerprint = (stat.st_mtime_ns, stat.st_size)
 
-        # Check cache
-        if config_path in self._cache:
+        cached = self._cache.get(cache_key)
+        if cached and cached["fingerprint"] == fingerprint:
             _emit_records_telemetry_event("p4", "config_loader", "cache_hit")
-            return self._cache[config_path]
+            return dict(cached["payload"])
 
         try:
-            with open(path, encoding="utf-8") as f:
-                config = json.load(f)
-
-            self._cache[config_path] = config
-            _log.info("Loaded config from %s", config_path)
-            _emit_records_telemetry_event("p4", "config_loader", "load_complete")
-
-            return config
+            payload = self._read_and_parse(path)
         except json.JSONDecodeError as exc:
-            _log.error("Failed to parse config %s: %s", config_path, exc)
+            _log.error("Failed to parse config %s: %s", path, exc)
             _emit_records_telemetry_event("p4", "config_loader", "parse_error")
             raise
+        except (OSError, PermissionError, ValueError) as exc:
+            _log.error("Failed to load config %s: %s", path, exc)
+            _emit_records_telemetry_event("p4", "config_loader", "load_error")
+            raise
+
+        self._cache[cache_key] = {
+            "fingerprint": fingerprint,
+            "payload": payload,
+        }
+        _log.info("Loaded config from %s", path)
+        _emit_records_telemetry_event("p4", "config_loader", "load_complete")
+        return dict(payload)
 
     def clear_cache(self) -> None:
         """Clear the configuration cache."""
@@ -85,4 +123,4 @@ class ConfigLoaderService:
 
     def get_cached_configs(self) -> list[str]:
         """Get list of cached config paths."""
-        return list(self._cache.keys())
+        return list(self._cache)

@@ -14,6 +14,7 @@ import logging
 from typing import Any
 
 from apps_rg.types import ResumeResult, ResumeRunSummary
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class ResumeRenderer:
 
         if result.sections:
             lines.extend(["## Resume Sections", ""])
-            for section in result.sections:
+            for section in tqdm(result.sections, desc="Processing", unit="item"):
                 if section.section_type == "summary":
                     lines.extend(["### Professional Summary", "", section.content, ""])
                 elif section.section_type == "experience":

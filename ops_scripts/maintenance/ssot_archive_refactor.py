@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_archive_refactor", "p4obs", "metric_2")
@@ -171,7 +172,7 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
         content = file_path.read_text(encoding="utf-8")
         lines = content.split("\n")
 
-        for i, line in enumerate(lines, 1):
+        for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
             # Skip comments and docstrings
             if line.strip().startswith("#"):
                 continue
@@ -308,7 +309,7 @@ def main():
 
     total_replacements = 0
 
-    for file_path, matches in files_to_fix:
+    for file_path, matches in tqdm(files_to_fix, desc="Processing", unit="item"):
         print(f"\n📝 {file_path}")
         print(f"   Found {len(matches)} hardcoded references")
 

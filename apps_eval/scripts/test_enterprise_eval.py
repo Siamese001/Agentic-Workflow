@@ -20,6 +20,7 @@ from apps_eval.reasoning.enterprise_eval_orchestrator import (
     EnterpriseEvalRequest,
     run_enterprise_evaluation,
 )
+from tqdm import tqdm
 
 logging.basicConfig(
     level=logging.INFO,
@@ -270,7 +271,7 @@ async def test_with_trend_analysis():
     orchestrator = EnterpriseEvalOrchestrator()
 
     # Index some historical evaluations first
-    for i in range(3):
+    for i in tqdm(range(3), desc="Processing", unit="item"):
         mock_result = {
             "overall_score": 0.75 + i * 0.05,
             "dimension_scores": {

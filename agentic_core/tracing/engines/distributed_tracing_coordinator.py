@@ -35,6 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("distributed_tracing_coordinator", "distributed_tracing_coordinator_digest")
 record_execution_trace("distributed_tracing_coordinator", "distributed_tracing_coordinator_trace")
@@ -477,7 +478,7 @@ class DistributedTracingCoordinator:
         """Get health status of all registered services."""
         health_status = {}
 
-        for service_id, node in self._registered_services.items():
+        for service_id, node in tqdm(self._registered_services.items(), desc="Processing", unit="item"):
             # Check if service is responsive (simplified)
             is_responsive = time.time() - node.last_heartbeat < 60  # 1 minute timeout
 

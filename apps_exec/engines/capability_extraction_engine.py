@@ -108,6 +108,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("capability_extraction_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("capability_extraction_engine", "p4obs", "metric_2")
@@ -238,7 +239,7 @@ class CapabilityExtractionEngine(BaseExecEngine):
         cfg_extraction = self.specs.extraction if self.specs else None
         max_per_section = cfg_extraction.max_capabilities_per_section if cfg_extraction else 10
 
-        for doc in input_data.documents:
+        for doc in tqdm(input_data.documents, desc="Processing", unit="item"):
             doc_caps = 0
             doc_anchors: list[str] = []
 
@@ -248,8 +249,8 @@ class CapabilityExtractionEngine(BaseExecEngine):
                     all_anchors.append(anchor)
                     doc_anchors.append(anchor)
 
-            for pattern, emphasis in _CAPABILITY_PATTERNS:
-                for match in re.finditer(pattern, doc.content):
+            for pattern, emphasis in tqdm(_CAPABILITY_PATTERNS, desc="Processing", unit="item"):
+                for match in tqdm(re.finditer(pattern, doc.content), desc="Processing", unit="item"):
                     label_raw = match.group(1).strip().lower()
                     label_key = re.sub(r"\s+", "_", label_raw)
 

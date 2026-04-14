@@ -13,6 +13,7 @@ from .multi_query_fusion import FusionResult, MultiQueryFusion
 from .query_router import QueryRouter, QueryType
 from .reranking_engine import RerankingEngine, RerankingResult
 from .semantic_retriever import RetrievalResult, SemanticRetriever
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -279,10 +280,10 @@ class AdvancedSemanticRetriever:
 
         benchmark_results = {}
 
-        for strategy in strategies:
+        for strategy in tqdm(strategies, desc="Processing", unit="item"):
             strategy_results = []
 
-            for query in queries:
+            for query in tqdm(queries, desc="Processing", unit="item"):
                 try:
                     request = AdvancedRetrievalRequest(
                         query=query,
@@ -351,7 +352,7 @@ async def main():
     print("Advanced Semantic Retriever Test:")
     print("=" * 60)
 
-    for i, query in enumerate(test_queries, 1):
+    for i, query in tqdm(enumerate(test_queries, 1), desc="Processing", unit="item"):
         print(f"\nTest {i}: {query}")
         print("-" * 40)
 

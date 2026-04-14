@@ -5,13 +5,14 @@ This scans all agent files and updates the mcp_hardened flag based on actual cod
 
 import json
 from pathlib import Path
+from tqdm import tqdm
 
 data = json.load(open("agent_discovery_full.json"))
 print("Updating MCP hardening metadata...")
 print()
 before_count = sum(1 for a in data if a.get("mcp_hardened"))
 updated = 0
-for agent in data:
+for agent in tqdm(data, desc="Processing", unit="item"):
     path = Path(agent["path"])
     if not path.exists():
         continue

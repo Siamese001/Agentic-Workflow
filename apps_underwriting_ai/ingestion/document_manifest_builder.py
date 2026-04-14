@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from ..types import DocumentPackage, DocumentRef
+from tqdm import tqdm
 
 
 @dataclass
@@ -84,7 +85,7 @@ class DocumentManifestBuilder:
         """Convert manifest to DocumentPackage."""
         package = DocumentPackage()
 
-        for entry in self.entries:
+        for entry in tqdm(self.entries, desc="Processing", unit="item"):
             doc_ref = DocumentRef(
                 doc_id=entry.doc_id,
                 doc_type=entry.doc_type,

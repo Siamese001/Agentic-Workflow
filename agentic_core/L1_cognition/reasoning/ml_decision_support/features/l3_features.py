@@ -11,6 +11,7 @@ from typing import Any
 
 from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
+from tqdm import tqdm
 
 
 class L3FeatureExtractor(DeterministicFeatureExtractor):
@@ -256,7 +257,7 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
         total_requirement = 0.0
         total_weight = 0.0
 
-        for resource, amount in required_resources.items():
+        for resource, amount in tqdm(required_resources.items(), desc="Processing", unit="item"):
             weight = resource_weights.get(resource, 0.1)
 
             # Normalize amount (assuming amounts are in standard units)
@@ -297,10 +298,10 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         # Resource conflicts
         required_resources = branch.get("required_resources", {})
-        for other_branch in other_branches:
+        for other_branch in tqdm(other_branches, desc="Processing", unit="item"):
             other_resources = other_branch.get("required_resources", {})
 
-            for resource, amount in required_resources.items():
+            for resource, amount in tqdm(required_resources.items(), desc="Processing", unit="item"):
                 if resource in other_resources:
                     # Check if resources overlap significantly
                     overlap_ratio = min(amount, other_resources[resource]) / max(
@@ -318,11 +319,11 @@ class L3FeatureExtractor(DeterministicFeatureExtractor):
 
         # Data dependency conflicts
         data_dependencies = branch.get("data_dependencies", [])
-        for other_branch in other_branches:
+        for other_branch in tqdm(other_branches, desc="Processing", unit="item"):
             other_data_deps = other_branch.get("data_dependencies", [])
 
-            for dep in data_dependencies:
-                for other_dep in other_data_deps:
+            for dep in tqdm(data_dependencies, desc="Processing", unit="item"):
+                for other_dep in tqdm(other_data_deps, desc="Processing", unit="item"):
                     if dep.get("data_id") == other_dep.get("data_id"):
                         # Check for conflicting access patterns
                         if (

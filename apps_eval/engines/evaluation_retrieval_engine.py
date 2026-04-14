@@ -14,7 +14,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from tqdm import tqdm
+
+from apps_eval._telemetry import (
     _emit_pulls_context,
     _emit_reads_through,
     _emit_records_execution_trace,
@@ -94,7 +96,7 @@ class InMemoryEvaluationStore:
 
         # Score all evaluations
         scored: list[tuple[str, float]] = []
-        for eval_id, emb in self._embeddings.items():
+        for eval_id, emb in tqdm(self._embeddings.items(), desc="Processing", unit="item"):
             score = self._cosine_similarity(query_emb, emb)
 
             # Apply filters
@@ -108,7 +110,7 @@ class InMemoryEvaluationStore:
         scored.sort(key=lambda x: x[1], reverse=True)
 
         results: list[RetrievedEvaluation] = []
-        for eval_id, score in scored[:n_results]:
+        for eval_id, score in tqdm(scored[:n_results], desc="Processing", unit="item"):
             ev = self._evaluations[eval_id]
             meta = ev["metadata"]
             data = ev["data"]
@@ -133,7 +135,7 @@ class InMemoryEvaluationStore:
         """Get evaluations that tested a specific suite."""
         results: list[RetrievedEvaluation] = []
 
-        for eval_id, ev in self._evaluations.items():
+        for eval_id, ev in tqdm(self._evaluations.items(), desc="Processing", unit="item"):
             meta = ev["metadata"]
             if suite_id in meta.get("suite_ids", []):
                 data = ev["data"]
@@ -238,7 +240,7 @@ class EvaluationRetrievalEngine:
         """Analyze score trends for a dimension."""
         # Get recent evaluations
         all_evals: list[RetrievedEvaluation] = []
-        for ev_data in self.store._evaluations.values():
+        for ev_data in tqdm(self.store._evaluations.values(), desc="Processing", unit="item"):
             if dimension_id in ev_data["data"].get("dimension_scores", {}):
                 meta = ev_data["metadata"]
                 data = ev_data["data"]
@@ -345,7 +347,7 @@ class EvaluationRetrievalEngine:
         # Compare dimension scores
         current_dims = current_result.get("dimension_scores", {})
 
-        for dim, current_score in current_dims.items():
+        for dim, current_score in tqdm(current_dims.items(), desc="Processing", unit="item"):
             past_scores = [e.dimension_scores.get(dim) for e in similar if dim in e.dimension_scores]
 
             if not past_scores:

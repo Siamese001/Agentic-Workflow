@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("effectiveness_scorer", "p4obs", "metric_1")
 _emit_emits_metric_event("effectiveness_scorer", "p4obs", "metric_2")
@@ -179,8 +180,8 @@ class EffectivenessScorer(BaseRGEngine):
         self._mcp_audit("effectiveness_scoring")
         score = 0.0
         metrics = {"quantified_achievements": 0, "leadership_indicators": 0, "technical_depth": 0}
-        for section in resume_data.get("experience_sections", []):
-            for bullet in section.get("bullets", []):
+        for section in tqdm(resume_data.get("experience_sections", []), desc="Processing", unit="item"):
+            for bullet in tqdm(section.get("bullets", []), desc="Processing", unit="item"):
                 text = bullet.get("bullet_text", "")
                 if bullet.get("quantified_metrics"):
                     metrics["quantified_achievements"] += 1

@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("generate_syntax_report_util", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_syntax_report_util", "p4obs", "metric_2")
@@ -169,7 +170,7 @@ def main():
         print("SUCCESS: All files are syntactically valid!")
         return 0
     by_layer = {}
-    for e in errors:
+    for e in tqdm(errors, desc="Processing", unit="item"):
         path_str = str(e.file_path)
         if "L0_" in path_str:
             layer = "L0"

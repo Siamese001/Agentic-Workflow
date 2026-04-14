@@ -107,6 +107,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("pattern_analysis_engine_adapter", "p4obs", "metric_1")
 _emit_emits_metric_event("pattern_analysis_engine_adapter", "p4obs", "metric_2")
@@ -195,7 +196,7 @@ class PatternAnalysisEngine(BaseEngine):
         embeddings = []
         metadata = []
 
-        for aggregate_data in healing_data.get("aggregates", []):
+        for aggregate_data in tqdm(healing_data.get("aggregates", []), desc="Processing", unit="item"):
             # Handle the actual structure from canonical_bytes()
             if "key" in aggregate_data and "aggregate" in aggregate_data:
                 key = aggregate_data["key"]
@@ -244,7 +245,7 @@ class PatternAnalysisEngine(BaseEngine):
         findings = []
 
         # Check for underperforming healers
-        for aggregate_data in healing_data.get("aggregates", []):
+        for aggregate_data in tqdm(healing_data.get("aggregates", []), desc="Processing", unit="item"):
             # Handle the actual structure from canonical_bytes()
             if "key" in aggregate_data and "aggregate" in aggregate_data:
                 key = aggregate_data["key"]

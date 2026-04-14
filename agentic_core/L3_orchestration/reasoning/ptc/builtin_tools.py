@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("builtin_tools", "p4obs", "metric_1")
 _emit_emits_metric_event("builtin_tools", "p4obs", "metric_2")
@@ -202,7 +203,7 @@ def repo_rg_handler(args: dict[str, Any]) -> str:
     except re.error as e:
         return f'{{"error": "Invalid regex: {e}"}}'
     results = []
-    for file_path in root.rglob("*"):
+    for file_path in tqdm(root.rglob("*"), desc="Processing", unit="item"):
         if file_path.is_dir():
             continue
         skip_extensions = {
@@ -232,7 +233,7 @@ def repo_rg_handler(args: dict[str, Any]) -> str:
         try:
             with open(file_path, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
-            for match in regex.finditer(content):
+            for match in tqdm(regex.finditer(content), desc="Processing", unit="item"):
                 line_num = content[: match.start()].count("\n") + 1
                 line_start = content.rfind("\n", 0, match.start()) + 1
                 line_end = content.find("\n", match.end())

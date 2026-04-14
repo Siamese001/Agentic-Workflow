@@ -97,6 +97,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("standardize_base_agent_names_util", "p4obs", "metric_1")
 _emit_emits_metric_event("standardize_base_agent_names_util", "p4obs", "metric_2")
@@ -245,7 +246,7 @@ def update_file_content(
 def rename_files(file_renames: dict[str, str], dry_run: bool = True) -> list[str]:
     """Rename files. Returns list of renamed files."""
     renamed = []
-    for old_path, new_path in file_renames.items():
+    for old_path, new_path in tqdm(file_renames.items(), desc="Processing", unit="item"):
         old_full = PROJECT_ROOT / old_path
         new_full = PROJECT_ROOT / new_path
 

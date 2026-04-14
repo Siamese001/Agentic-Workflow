@@ -121,6 +121,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("prompt_impact", "p4obs", "metric_1")
 _emit_emits_metric_event("prompt_impact", "p4obs", "metric_2")
@@ -280,7 +281,7 @@ def analyze_prompt_impact(
     # assembly: module_path -> [slot_type]
     assembly: dict[str, list[str]] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type == "generates_prompt":
             if not edge.from_name.startswith(_MODULE_PREFIX):
                 continue
@@ -345,7 +346,7 @@ def analyze_prompt_impact(
     impacted_entries: list[PromptImpactEntry] = []
     assembly_affected: set[str] = set()
 
-    for mod in directly_impacted:
+    for mod in tqdm(directly_impacted, desc="Processing", unit="item"):
         slots_for_mod = [s for s, _, _ in generators.get(mod, []) if s]
         risk = _risk_label(_slot_authority_score(slots_for_mod), len(directly_impacted))
         impacted_entries.append(
@@ -360,7 +361,7 @@ def analyze_prompt_impact(
         if mod in assembly:
             assembly_affected.add(mod)
 
-    for mod in impacted_consumer_modules - directly_impacted:
+    for mod in tqdm(impacted_consumer_modules - directly_impacted, desc="Processing", unit="item"):
         impacted_entries.append(
             PromptImpactEntry(
                 module_path=mod,

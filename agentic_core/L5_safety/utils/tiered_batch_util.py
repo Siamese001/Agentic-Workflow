@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tiered_batch_util", "p4obs", "metric_1")
 _emit_emits_metric_event("tiered_batch_util", "p4obs", "metric_2")
@@ -346,7 +347,7 @@ class TieredBatchProcessor:
         Logger.info(f"[TIERED] Heuristic Threshold: {self.heuristic_threshold:.0%}")
         Logger.info("")
         Logger.info("[TIERED] Phase 1: Triaging violations...")
-        for violation in violations:
+        for violation in tqdm(violations, desc="Processing", unit="item"):
             file_path = self._get_file_path(violation)
             if not file_path:
                 continue
@@ -365,7 +366,9 @@ class TieredBatchProcessor:
         Logger.info(f"[TIERED] Already Processed: {self.stats['skipped']}")
         Logger.info("")
         Logger.info("[TIERED] Phase 2: Executing Tier 1 (heuristics)...")
-        for i, (violation, file_path, v_type, decision) in enumerate(tier1_queue, 1):
+        for i, (violation, file_path, v_type, decision) in tqdm(
+            enumerate(tier1_queue, 1), desc="Processing", unit="item"
+        ):
             file_path_str = str(file_path)
             self.results[file_path_str] = {
                 "action": decision.action,
@@ -406,7 +409,9 @@ class TieredBatchProcessor:
         Args:
             tier2_queue: List of (violation, file_path, v_type, heuristic) tuples
         """
-        for i, (_violation, file_path, v_type, heuristic) in enumerate(tier2_queue, 1):
+        for i, (_violation, file_path, v_type, heuristic) in tqdm(
+            enumerate(tier2_queue, 1), desc="Processing", unit="item"
+        ):
             file_path_str = str(file_path)
             file_name = Path(file_path).name
             Logger.info(f"[TIERED] Tier 2 [{i}/{len(tier2_queue)}]: {file_name}")

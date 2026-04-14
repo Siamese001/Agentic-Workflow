@@ -182,7 +182,7 @@ def move_mislocated_tests():
 
     moved_count = 0
 
-    for module_info in mislocated_modules:
+    for module_info in tqdm(mislocated_modules, desc="Processing", unit="item"):
         module_path = pathlib.Path(module_info["module"])
         expected_test_path = pathlib.Path(module_info["expected_test"])
 
@@ -298,6 +298,7 @@ def test_{module_name}_has_content():
     """Test that the module has some content."""
     import {module_import_path}
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from tqdm import tqdm
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

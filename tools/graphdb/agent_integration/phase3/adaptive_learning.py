@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from ..phase2.contextual_engine import ContextualIntelligenceEngine, AnalysisResult
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -548,7 +549,7 @@ class AdaptiveLearningEngine:
         """Generate insights from discovered patterns."""
         insights = []
 
-        for pattern in patterns:
+        for pattern in tqdm(patterns, desc="Processing", unit="item"):
             if pattern.confidence > self.learning_config["pattern_confidence_threshold"]:
                 insight = LearningInsight(
                     insight_id=f"insight_{pattern.pattern_id}_{int(time.time())}",

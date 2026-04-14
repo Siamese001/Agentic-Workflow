@@ -10,6 +10,7 @@ import hashlib
 import json
 import logging
 import os
+import threading
 from typing import Any
 
 import redis
@@ -68,6 +69,35 @@ DB_WORKSPACE = 2  # Operational workspace (per-trace, team-sync, replay-assist, 
 _DEFAULT_TTL_SECONDS = 3600  # 1 hour default TTL
 
 
+def _parse_redis_port(value: str | None) -> int:
+    """Parse Redis port from config and fail closed to the default on bad input."""
+    if value in (None, ""):
+        return 6379
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        logger.warning("Invalid REDIS_PORT value %r; falling back to 6379", value)
+        return 6379
+    if parsed <= 0 or parsed > 65535:
+        logger.warning("Out-of-range REDIS_PORT value %r; falling back to 6379", value)
+        return 6379
+    return parsed
+
+
+def _require_positive_ttl(ttl_seconds: int) -> int:
+    """Validate TTL input before issuing Redis mutations."""
+    if ttl_seconds <= 0:
+        raise ValueError(f"ttl_seconds must be > 0, got {ttl_seconds}")
+    return ttl_seconds
+
+
+def _require_cache_key(key: str) -> str:
+    """Reject empty cache keys early."""
+    if not key:
+        raise ValueError("Cache key must not be empty")
+    return key
+
+
 def canonical_json_bytes(obj: Any) -> bytes:
     """Return canonical JSON bytes for cache value serialization.
 
@@ -110,59 +140,54 @@ class DeterministicRedisCache:
             health_check_interval: Health check interval in seconds
         """
         self.host = host or os.environ.get("REDIS_HOST", "localhost")
-        self.port = port or int(os.environ.get("REDIS_PORT", "6379"))
+        self.port = port if port is not None else _parse_redis_port(os.environ.get("REDIS_PORT"))
         self.db = db
         self.password = password or os.environ.get("REDIS_PASSWORD")
         self.socket_timeout = socket_timeout
         self.socket_connect_timeout = socket_connect_timeout
         self.health_check_interval = health_check_interval
 
-        self._client: redis.Redis | None = None
+        self._clients: dict[CacheDB, redis.Redis] = {}
         self._connected = False
+        self._client_lock = threading.RLock()
 
-    def _get_client(self) -> redis.Redis | None:
-        """Get or create Redis client with lazy connection."""
-        if self._client is None:
+    def _get_client(self, db: CacheDB | None = None) -> redis.Redis | None:
+        """Get or create a Redis client bound to the requested DB."""
+        target_db = self.db if db is None else db
+        with self._client_lock:
+            client = self._clients.get(target_db)
+            if client is not None:
+                return client
             try:
-                self._client = redis.Redis(
+                client = redis.Redis(
                     host=self.host,
                     port=self.port,
-                    db=self.db,
+                    db=target_db,
                     password=self.password,
                     socket_timeout=self.socket_timeout,
                     socket_connect_timeout=self.socket_connect_timeout,
                     health_check_interval=self.health_check_interval,
                     decode_responses=True,
                 )
-                # Test connection
-                self._client.ping()
+                client.ping()
+                self._clients[target_db] = client
                 self._connected = True
+                return client
             except redis.ConnectionError as e:
-                logger.warning(f"Redis connection failed: {e}")
+                logger.warning("Redis connection failed for db=%s: %s", target_db, e)
                 self._connected = False
                 return None
-        return self._client
 
     def get(self, key: str, db: CacheDB | None = None) -> str | None:
-        """Get raw string value from cache.
-
-        Args:
-            key: Cache key
-            db: Optional DB override (uses instance default if not specified)
-
-        Returns:
-            Cached value or None if not found
-        """
-        client = self._get_client()
+        """Get raw string value from cache."""
+        _require_cache_key(key)
+        client = self._get_client(db)
         if client is None:
             return None
         try:
-            if db is not None and db != self.db:
-                # Use different DB via execute_command
-                return client.execute_command("GET", key)
             return client.get(key)
         except redis.RedisError as e:
-            logger.warning(f"Redis get failed: {e}")
+            logger.warning("Redis get failed for db=%s key=%s: %s", self.db if db is None else db, key, e)
             return None
 
     def get_json(self, key: str, db: CacheDB | None = None) -> Any | None:
@@ -191,30 +216,16 @@ class DeterministicRedisCache:
         ttl_seconds: int = _DEFAULT_TTL_SECONDS,
         db: CacheDB | None = None,
     ) -> bool:
-        """Set raw string value in cache.
-
-        Args:
-            key: Cache key
-            value: String value to cache
-            ttl_seconds: TTL in seconds
-            db: Optional DB override
-
-        Returns:
-            True if set successfully, False otherwise
-        """
-        client = self._get_client()
+        """Set raw string value in cache."""
+        _require_cache_key(key)
+        ttl_seconds = _require_positive_ttl(ttl_seconds)
+        client = self._get_client(db)
         if client is None:
             return False
         try:
-            if db is not None and db != self.db:
-                # Use different DB via execute_command with SELECT
-                client.execute_command("SELECT", db)
-                result = client.execute_command("SETEX", key, ttl_seconds, value)
-                client.execute_command("SELECT", self.db)  # Restore original DB
-                return result is not None
             return client.setex(key, ttl_seconds, value) is not None
         except redis.RedisError as e:
-            logger.warning(f"Redis set failed: {e}")
+            logger.warning("Redis set failed for db=%s key=%s: %s", self.db if db is None else db, key, e)
             return False
 
     def set_json(
@@ -273,30 +284,16 @@ class DeterministicRedisCache:
         ttl_seconds: int = _DEFAULT_TTL_SECONDS,
         db: CacheDB | None = None,
     ) -> bool:
-        """Set value only if key does not exist (SET if Not eXists).
-
-        Args:
-            key: Cache key
-            value: String value to set
-            ttl_seconds: TTL in seconds
-            db: Optional DB override
-
-        Returns:
-            True if set (key didn't exist), False if key existed
-        """
-        client = self._get_client()
+        """Set value only if key does not exist (SET if Not eXists)."""
+        _require_cache_key(key)
+        ttl_seconds = _require_positive_ttl(ttl_seconds)
+        client = self._get_client(db)
         if client is None:
             return False
         try:
-            if db is not None and db != self.db:
-                client.execute_command("SELECT", db)
-                # SET key value NX EX ttl
-                result = client.execute_command("SET", key, value, "NX", "EX", ttl_seconds)
-                client.execute_command("SELECT", self.db)
-                return result is not None
             return client.set(key, value, nx=True, ex=ttl_seconds) is not None
         except redis.RedisError as e:
-            logger.warning(f"Redis set_nx failed: {e}")
+            logger.warning("Redis set_nx failed for db=%s key=%s: %s", self.db if db is None else db, key, e)
             return False
 
 
@@ -335,7 +332,7 @@ def check_redis_health() -> dict:
             return {"status": "unhealthy", "connected": False, "error": "No Redis client"}
         client.ping()
         return {"status": "healthy", "connected": True, "error": None}
-    except Exception as e:
+    except (redis.RedisError, OSError, ValueError) as e:
         return {"status": "unhealthy", "connected": False, "error": str(e)}
 
 

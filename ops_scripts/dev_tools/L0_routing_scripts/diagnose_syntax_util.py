@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("diagnose_syntax_util", "p4obs", "metric_1")
 _emit_emits_metric_event("diagnose_syntax_util", "p4obs", "metric_2")
@@ -193,7 +194,7 @@ def check_syntax(root: Path) -> int:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "check_syntax")
     errors = []
 
-    for f in root.rglob("*.py"):
+    for f in tqdm(root.rglob("*.py"), desc="Processing", unit="item"):
         # Skip common exclusions
         if any(x in f.parts for x in ["__pycache__", ".git", "node_modules", ".venv", "venv", ARCHIVES_DIR]):
             continue

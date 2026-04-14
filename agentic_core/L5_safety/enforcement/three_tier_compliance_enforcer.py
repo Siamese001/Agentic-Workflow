@@ -102,6 +102,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("three_tier_compliance_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("three_tier_compliance_enforcer", "p4obs", "metric_2")
@@ -311,7 +312,7 @@ class ThreeTierComplianceChecker:
         """Build mapping of agent names to their unit tests."""
         agent_map: dict[str, list[Path]] = {}
 
-        for test_path in self._unit_tests:
+        for test_path in tqdm(self._unit_tests, desc="Processing", unit="item"):
             test_name = test_path.stem.lower()
             # Extract agent name from test file name
             # e.g., test_location_agent.py -> locationagent
@@ -366,7 +367,7 @@ class ThreeTierComplianceChecker:
         # Check which guardian tests apply to this agent's layer
         applicable_tests = []
 
-        for test_path in self._guardian_tests:
+        for test_path in tqdm(self._guardian_tests, desc="Processing", unit="item"):
             test_name = test_path.stem
 
             # All agents get basic validation coverage
@@ -459,7 +460,7 @@ class ThreeTierComplianceChecker:
         result.total_agents = len(agents)
 
         # Check each agent
-        for agent in agents:
+        for agent in tqdm(agents, desc="Processing", unit="item"):
             compliance = AgentCompliance(agent=agent)
 
             # Check each tier

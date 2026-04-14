@@ -157,6 +157,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("forensic_discovery_prep", "p4obs", "metric_1")
 _emit_emits_metric_event("forensic_discovery_prep", "p4obs", "metric_2")
@@ -299,10 +300,10 @@ def build_class_bases_map(project_root: Path) -> dict[str, list[str]]:
         project_root / APPS_RG_DIR,
         project_root / APPS_SHARED_DIR,
     ]
-    for root in scan_roots:
+    for root in tqdm(scan_roots, desc="Processing", unit="item"):
         if not root.exists():
             continue
-        for py_file in sorted(root.rglob("*.py")):
+        for py_file in tqdm(sorted(root.rglob("*.py")), desc="Processing", unit="item"):
             try:
                 content = py_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(content)
@@ -486,7 +487,7 @@ def _to_v54_schema(legacy: dict, project_root: Path) -> dict:
         "ssot_validation": _compute_ssot_validation(project_root),
         "agents": [],
     }
-    for agent in legacy.get("environment_under_test", []):
+    for agent in tqdm(legacy.get("environment_under_test", []), desc="Processing", unit="item"):
         mro_chain = agent.get("mro_signature", [])
         v54["agents"].append(
             {
@@ -527,7 +528,7 @@ def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool 
         "ignored_artifacts": [],
         "counts": {},
     }
-    for candidate in raw_candidates:
+    for candidate in tqdm(raw_candidates, desc="Processing", unit="item"):
         rel_path = candidate.get("file", "") or candidate.get("path", "")
         name = candidate.get("class_name", "") or candidate.get("name", "Unknown")
         layer = candidate.get("layer", "Unknown")

@@ -26,6 +26,7 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -203,7 +204,7 @@ class CodeDetector:
 
             unused = defined - used
 
-            for name in unused:
+            for name in tqdm(unused, desc="Processing", unit="item"):
                 if name.startswith("_") or name in {"main", "run", "execute", "__init__", "setup"}:
                     continue
 
@@ -248,7 +249,7 @@ class CodeDetector:
                 locks.append((i, line))
 
         if len(locks) >= 2:
-            for j in range(len(locks) - 1):
+            for j in tqdm(range(len(locks) - 1), desc="Processing", unit="item"):
                 l1, txt1 = locks[j]
                 l2, txt2 = locks[j + 1]
 
@@ -279,8 +280,8 @@ class CodeDetector:
         detections: list[Detection] = []
         lines = content.splitlines()
 
-        for i, line in enumerate(lines, 1):
-            for pattern in self.MEMORY_LEAK_PATTERNS:
+        for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
+            for pattern in tqdm(self.MEMORY_LEAK_PATTERNS, desc="Processing", unit="item"):
                 if re.search(pattern, line):
                     detections.append(
                         Detection(

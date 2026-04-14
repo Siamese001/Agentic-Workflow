@@ -29,6 +29,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -499,7 +500,7 @@ class ADGDeadCodeZoneControlVerifier:
 
                 # Calculate all metrics
                 calculated_metrics = {}
-                for metric_name, query in executive_metrics.items():
+                for metric_name, query in tqdm(executive_metrics.items(), desc="Processing", unit="item"):
                     if query == "calculated":
                         # Special handling for inferred symbol ratio
                         cursor.execute("SELECT COUNT(*) FROM nodes WHERE identity_kind = 'inferred_symbol'")
@@ -514,7 +515,7 @@ class ADGDeadCodeZoneControlVerifier:
 
                 # Calculate first-party-only versions
                 first_party_metrics = {}
-                for metric_name, query in executive_metrics.items():
+                for metric_name, query in tqdm(executive_metrics.items(), desc="Processing", unit="item"):
                     if query == "calculated":
                         continue  # Skip calculated metrics for now
 

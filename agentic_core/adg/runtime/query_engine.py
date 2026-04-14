@@ -116,6 +116,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("query_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("query_engine", "p4obs", "metric_2")
@@ -221,7 +222,7 @@ class ADGRuntimeQueryEngine:
 
         _module_prefix = "ADG::Module::"
         _symbol_prefix = "ADG::Symbol::"
-        for edge in self._result.edges:
+        for edge in tqdm(self._result.edges, desc="Processing", unit="item"):
             from_mod = edge.from_name
             to_sym = edge.to_name
             if from_mod.startswith(_module_prefix):

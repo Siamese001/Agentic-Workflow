@@ -175,6 +175,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("test_quality_detector_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("test_quality_detector_validator", "p4obs", "metric_2")
@@ -406,7 +407,7 @@ def _has_write_call(fn: ast.FunctionDef | ast.AsyncFunctionDef) -> str | None:
 
 def _has_read_or_verify(fn: ast.FunctionDef | ast.AsyncFunctionDef) -> bool:
     """Return True when there is any read-back or direct assertion on write result."""
-    for node in ast.walk(fn):
+    for node in tqdm(ast.walk(fn), desc="Processing", unit="item"):
         if isinstance(node, ast.Call):
             name = _call_name(node)
             if any(name.startswith(p) for p in _READ_PREFIXES):
@@ -486,7 +487,7 @@ class TestQualityDetector(AntiPatternDetector):
 
         is_adg_stub = file_path.name.endswith("_adg.py")
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
             if not node.name.startswith("test_"):
@@ -526,7 +527,7 @@ class TestQualityDetector(AntiPatternDetector):
         source_lines: list[str],
     ) -> AntiPatternViolation | None:
         """Detect any ``assert True`` / always-true assertion in a test function."""
-        for node in ast.walk(fn):
+        for node in tqdm(ast.walk(fn), desc="Processing", unit="item"):
             if not isinstance(node, ast.Assert):
                 continue
             if not _is_vacuous_expr(node.test):

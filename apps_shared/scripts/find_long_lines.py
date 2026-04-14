@@ -71,6 +71,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from apps_shared.utils.ConfigurationService import ConfigurationService
+from tqdm import tqdm
 
 _emit_emits_metric_event("find_long_lines", "p4obs", "metric_1")
 _emit_emits_metric_event("find_long_lines", "p4obs", "metric_2")
@@ -156,9 +157,9 @@ Logger: Any = logging.getLogger(__name__)
 
 def find_long_lines() -> None:
     """Find all lines longer than 100 characters."""
-    for root, dirs, files in os.walk("."):
+    for root, dirs, files in tqdm(os.walk("."), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if file.endswith(".py"):
                 Path(root) / file
                 try:

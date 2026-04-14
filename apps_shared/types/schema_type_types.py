@@ -84,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("schema_type_types", "p4obs", "metric_1")
 _emit_emits_metric_event("schema_type_types", "p4obs", "metric_2")
@@ -563,7 +564,9 @@ class InternalSchemaConverter:
         """
         mappings = []
         external_fields = self._extract_schema_fields(external_schema)
-        for internal_field, internal_def in internal_schema.fields.items():
+        for internal_field, internal_def in tqdm(
+            internal_schema.fields.items(), desc="Processing", unit="item"
+        ):
             if internal_field in external_fields:
                 mappings.append(
                     FieldMapping(
@@ -618,7 +621,7 @@ class InternalSchemaConverter:
         """Extract value from nested data structure."""
         keys = path.split(".")
         current = data
-        for key in keys:
+        for key in tqdm(keys, desc="Processing", unit="item"):
             if isinstance(current, dict) and key in current:
                 current = current[key]
             elif isinstance(current, list) and key.isdigit():

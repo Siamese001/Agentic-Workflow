@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 # Emit lifecycle trace signals for this module
 emit_replay_key("p0", "ptc_orchestrator")
@@ -357,7 +358,7 @@ class PTCOrchestrator:
         lines = code.split("\n")
         assigned_vars: dict[str, str] = {}  # var_name -> tool_name
 
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             # Check for assignments (e.g., result = tool_name(...))
             match = re.match(r"\s*(\w+)\s*=\s*(\w+)\s*\(", line)
             if match:
@@ -431,7 +432,7 @@ class PTCOrchestrator:
         raw_results: dict[str, Any] = {}
 
         # Execute all tools
-        for tool_id in plan.tools:
+        for tool_id in tqdm(plan.tools, desc="Processing", unit="item"):
             if tool_id in handlers:
                 try:
                     # Execute tool
@@ -493,7 +494,7 @@ class PTCOrchestrator:
         """
         summary_parts = []
 
-        for tool_id, result in raw_results.items():
+        for tool_id, result in tqdm(raw_results.items(), desc="Processing", unit="item"):
             if result.get("success"):
                 res = result.get("result", {})
                 if isinstance(res, dict):
@@ -676,7 +677,7 @@ class PTCSandboxExecutor:
         """Generate summary from trapped raw results."""
         summaries = []
 
-        for tool_id, result in raw_results.items():
+        for tool_id, result in tqdm(raw_results.items(), desc="Processing", unit="item"):
             if isinstance(result, dict):
                 if "error" in result:
                     summaries.append(f"{tool_id}: error")

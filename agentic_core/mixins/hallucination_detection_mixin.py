@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hallucination_detection_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("hallucination_detection_mixin", "p4obs", "metric_2")
@@ -222,7 +223,7 @@ class HallucinationDetectionMixin:
 
     def _find_target_in_ast(self, tree: ast.AST, target_type: str, target_name: str) -> bool:
         """Find target in AST based on type."""
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if target_type == "function":
                 if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                     if node.name == target_name:

@@ -127,6 +127,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("add_test_coverage_util", "p4obs", "metric_1")
 _emit_emits_metric_event("add_test_coverage_util", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ def main():
     agents = json.load(open(AGENT_DISCOVERY_JSON))
     files_processed = set()
     added = 0
-    for a in agents:
+    for a in tqdm(agents, desc="Processing", unit="item"):
         p = Path(a["path"])
         if not p.exists():
             continue

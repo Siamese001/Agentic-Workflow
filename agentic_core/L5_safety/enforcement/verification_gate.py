@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verification_gate", "p4obs", "metric_1")
 _emit_emits_metric_event("verification_gate", "p4obs", "metric_2")
@@ -376,7 +377,7 @@ class VerificationGate(HallucinationDetectionMixin, SovereignBaseAgent):
             return False
 
         # Verify each violation's target exists
-        for violation in context.violations:
+        for violation in tqdm(context.violations, desc="Processing", unit="item"):
             action_type = self._map_violation_to_action(violation)
             target_node = self._extract_target_from_violation(violation)
 

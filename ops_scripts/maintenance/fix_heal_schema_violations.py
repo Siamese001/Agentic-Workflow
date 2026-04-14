@@ -15,6 +15,7 @@ import re
 from pathlib import Path
 
 import yaml
+from tqdm import tqdm
 
 
 def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
@@ -86,7 +87,7 @@ def main():
     total_files_modified = 0
     total_replacements = 0
 
-    for violation in violations:
+    for violation in tqdm(violations, desc="Processing", unit="item"):
         filepath = Path(violation["file"])
 
         if not filepath.exists():

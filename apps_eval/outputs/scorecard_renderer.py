@@ -15,6 +15,7 @@ import logging
 from typing import Any
 
 from apps_eval.types import ScorecardRow
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ class ScorecardRenderer:
         )
 
         # Rows
-        for row in rows:
+        for row in tqdm(rows, desc="Processing", unit="item"):
             writer.writerow(
                 [
                     row.dimension_id,

@@ -74,6 +74,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from agentic_core.utils.security_util import safe_execute
+from tqdm import tqdm
 
 _emit_emits_metric_event("generate_agent_table_simple_util", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_agent_table_simple_util", "p4obs", "metric_2")
@@ -214,11 +215,11 @@ def main():
             f.write(json_output)
         return 1
     results = []
-    for item in data:
+    for item in tqdm(data, desc="Processing", unit="item"):
         canonical = item["canonical_file"]
         if not is_agent_file(canonical):
             continue
-        for dup in item["duplicates"]:
+        for dup in tqdm(item["duplicates"], desc="Processing", unit="item"):
             dup_path = dup["path"]
             if not is_agent_file(dup_path):
                 continue

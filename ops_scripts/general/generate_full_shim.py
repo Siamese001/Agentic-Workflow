@@ -73,6 +73,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("generate_full_shim", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_full_shim", "p4obs", "metric_2")
@@ -159,13 +160,13 @@ TARGET = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint
 
 def collect_public_names() -> dict[str, list[str]]:
     by_module: dict[str, list[str]] = {}
-    for f in sorted(MOD_DIR.glob("*.py")):
+    for f in tqdm(sorted(MOD_DIR.glob("*.py")), desc="Processing", unit="item"):
         if f.name == "__init__.py":
             continue
         src = f.read_text(encoding="utf-8")
         tree = ast.parse(src)
         names: list[str] = []
-        for node in ast.iter_child_nodes(tree):
+        for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
             name = None
             if isinstance(node, ast.Assign):
                 for t in node.targets:

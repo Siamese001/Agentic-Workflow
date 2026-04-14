@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("full_agent_capability_audit_util", "p4obs", "metric_1")
 _emit_emits_metric_event("full_agent_capability_audit_util", "p4obs", "metric_2")
@@ -166,7 +167,7 @@ def analyze_all_agents():
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(Path(AGENTIC_CORE_DIR)):
+    for py_file in tqdm(get_python_files(Path(AGENTIC_CORE_DIR)), desc="Processing", unit="item"):
         try:
             content = py_file.read_text(encoding="utf-8", errors="ignore")
             size = len(content)
@@ -198,7 +199,7 @@ def analyze_all_agents():
 
     print("=== TOP AGENTS WITH DETECTION/VALIDATION METHODS ===")
     print()
-    for a in agents_with_methods[:50]:
+    for a in tqdm(agents_with_methods[:50], desc="Processing", unit="item"):
         name = a["name"]
         method_count = len(a["methods"])
         size = a["size"]
@@ -253,12 +254,12 @@ def find_violation_specific_agents():
     # Phase 6.7: Use ssot_discovery instead of rglob
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(Path(AGENTIC_CORE_DIR)):
+    for py_file in tqdm(get_python_files(Path(AGENTIC_CORE_DIR)), desc="Processing", unit="item"):
         try:
             content = py_file.read_text(encoding="utf-8", errors="ignore").lower()
             name = py_file.name
 
-            for vtype, data in violation_map.items():
+            for vtype, data in tqdm(violation_map.items(), desc="Processing", unit="item"):
                 if any(kw in content for kw in data["keywords"]):
                     # Check if it has detection methods
                     if any(

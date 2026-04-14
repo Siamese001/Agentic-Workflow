@@ -39,7 +39,7 @@ def is_waived(module_path: pathlib.Path, waivers: dict) -> bool:
     module_str = str(module_path)
     module_str_forward = module_str.replace("\\", "/")  # Normalize path separators
 
-    for waiver in waivers.get("waivers", []):
+    for waiver in tqdm(waivers.get("waivers", []), desc="Processing", unit="item"):
         waiver_pattern = waiver["module"].replace("\\", "/")
 
         # Handle glob patterns
@@ -73,6 +73,7 @@ Test for {module_path.name}
 
 import pytest
 import importlib
+from tqdm import tqdm
 
 def test_{module_path.stem}_can_import():
     """Test that the module can be imported successfully."""
@@ -146,7 +147,7 @@ def main():
     skipped_waived = 0
     failed_imports = 0
 
-    for module_info in missing_modules:
+    for module_info in tqdm(missing_modules, desc="Processing", unit="item"):
         module_path = pathlib.Path(module_info["module"])
         expected_test_path = pathlib.Path(module_info["expected_test"])
 

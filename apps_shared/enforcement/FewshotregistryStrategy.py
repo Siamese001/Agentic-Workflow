@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("FewshotregistryStrategy", "p4obs", "metric_1")
 _emit_emits_metric_event("FewshotregistryStrategy", "p4obs", "metric_2")
@@ -289,7 +290,7 @@ class FewShotRegistry(BaseModel):
         if not directory.exists():
             logger.warning(f"Example directory not found: {directory}")
             return
-        for file_path in directory.glob("*.json"):
+        for file_path in tqdm(directory.glob("*.json"), desc="Processing", unit="item"):
             try:
                 with open(file_path, encoding="utf-8") as f:
                     data = json.load(f)
@@ -316,10 +317,10 @@ class FewShotRegistry(BaseModel):
             directory: Directory to save examples to
         """
         directory.mkdir(parents=True, exist_ok=True)
-        for instruction_id, examples in self.examples.items():
+        for instruction_id, examples in tqdm(self.examples.items(), desc="Processing", unit="item"):
             file_path = directory / f"{instruction_id}_examples.json"
             data = []
-            for example in examples:
+            for example in tqdm(examples, desc="Processing", unit="item"):
                 data.append(
                     {
                         "instruction_id": example.instruction_id,

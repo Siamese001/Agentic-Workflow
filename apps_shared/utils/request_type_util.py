@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("request_type_util", "p4obs", "metric_1")
 _emit_emits_metric_event("request_type_util", "p4obs", "metric_2")
@@ -573,7 +574,7 @@ class ObservabilityLoadPlanner:
         """Parse metrics from request."""
         metrics = []
         raw_metrics = request.get("metrics", [])
-        for raw_metric in raw_metrics:
+        for raw_metric in tqdm(raw_metrics, desc="Processing", unit="item"):
             if isinstance(raw_metric, dict):
                 aggregation = None
                 if "aggregation" in raw_metric:
@@ -605,7 +606,7 @@ class ObservabilityLoadPlanner:
         """Parse log queries from request."""
         queries = []
         raw_queries = request.get("log_queries", [])
-        for raw_query in raw_queries:
+        for raw_query in tqdm(raw_queries, desc="Processing", unit="item"):
             if isinstance(raw_query, dict):
                 query = LogQuery(
                     index=raw_query.get("index", "logs-*"),
@@ -627,7 +628,7 @@ class ObservabilityLoadPlanner:
         """Parse trace queries from request."""
         queries = []
         raw_queries = request.get("trace_queries", [])
-        for raw_query in raw_queries:
+        for raw_query in tqdm(raw_queries, desc="Processing", unit="item"):
             if isinstance(raw_query, dict):
                 query = TraceQuery(
                     service=raw_query.get("service"),

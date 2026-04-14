@@ -1,32 +1,33 @@
-"""Test Sovereignbaseagent functionality."""
+"""Tests for phase-hardened SovereignBaseAgent behaviors."""
 
-import sys
 from pathlib import Path
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from agentic_core.base_agents.SovereignBaseAgent import (
+    ConfigurationError,
+    SovereignError,
+    SovereignBaseAgent,
+    sanitize_tool_output,
+)
 
 
 @pytest.mark.unit
-class TestSovereignbaseagent:
-    """Test Sovereignbaseagent functionality."""
+class TestSovereignBaseAgentHardening:
+    """Behavioral coverage for phase-hardened SovereignBaseAgent."""
 
-    def test_SovereignBaseAgent_imports(self):
-        """Test SovereignBaseAgent module imports."""
-        from agentic_core import SovereignBaseAgent
+    def test_module_symbols_defined_at_module_level(self):
+        """Happy: ConfigurationError, SovereignError, sanitize_tool_output are module-level names."""
+        assert ConfigurationError is not None
+        assert SovereignError is not None
+        assert callable(sanitize_tool_output)
 
-        assert SovereignBaseAgent is not None
+    def test_is_safe_path_accepts_child_of_project_root(self, tmp_path):
+        """Happy: path inside project_root resolves True."""
+        agent = SovereignBaseAgent(project_root=tmp_path)
+        assert agent._is_safe_path(tmp_path / "subdir" / "file.py") is True
 
-    def test_SovereignBaseAgent_class(self):
-        """Test Sovereignbaseagent class exists."""
-        from agentic_core import Sovereignbaseagent
-
-        assert Sovereignbaseagent is not None
-
-    def test_SovereignBaseAgent_callable(self):
-        """Test SovereignBaseAgent functions are callable."""
-        from agentic_core import validate_SovereignBaseAgent
-
-        assert callable(validate_SovereignBaseAgent)
+    def test_is_safe_path_rejects_path_outside_project_root(self, tmp_path):
+        """Failure: path that escapes project_root resolves False."""
+        agent = SovereignBaseAgent(project_root=tmp_path)
+        assert agent._is_safe_path(tmp_path.parent) is False

@@ -129,9 +129,7 @@ class GoldenDatasetEvaluator:
         for parent in current.parents:
             if (parent / "agentic_core/evaluation/datasets").exists():
                 return parent
-            if (parent / "evaluation/datasets").exists():
-                return parent
-        return current.parent.parent
+        return current.parent.parent.parent.parent
 
     def _resolve_dataset_path(self, candidates: tuple[Path, ...]) -> Path | None:
         """Resolve the first available dataset path from an ordered candidate list."""

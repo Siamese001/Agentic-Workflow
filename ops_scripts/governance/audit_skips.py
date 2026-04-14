@@ -13,10 +13,11 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
+from tqdm import tqdm
 
 root = Path("c:/Git/Agentic-Workflow/tests")
 out = []
-for path in sorted(root.rglob("test_*.py")):
+for path in tqdm(sorted(root.rglob("test_*.py")), desc="Processing", unit="item"):
     try:
         src = path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(src)
@@ -24,7 +25,7 @@ for path in sorted(root.rglob("test_*.py")):
     except SyntaxError:
         continue
     rel = str(path.relative_to(root))
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.Call):
             continue
         func = node.func

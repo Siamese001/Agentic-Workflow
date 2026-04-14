@@ -30,6 +30,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("analytics_dashboard", "analytics_dashboard_digest")
 record_execution_trace("analytics_dashboard", "analytics_dashboard_trace")
@@ -518,7 +519,7 @@ class AnalyticsDashboard:
             # Update widgets
             if "widgets" in config:
                 self._widgets.clear()
-                for widget_id, widget_data in config["widgets"].items():
+                for widget_id, widget_data in tqdm(config["widgets"].items(), desc="Processing", unit="item"):
                     widget = DashboardWidget(
                         widget_id=widget_id,
                         widget_type=widget_data["widget_type"],

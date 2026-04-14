@@ -22,6 +22,7 @@ from agentic_core.L0_routing.config.path_constants import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).parent.parent
 # guardian: allow-global-mutation
@@ -35,7 +36,7 @@ def find_suspicious_patterns(file_path: Path) -> list[str]:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(content)
 
-        for node in ast.iter_child_nodes(tree):
+        for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
             # Top-level assignments with calls
             if isinstance(node, ast.Assign):
                 if isinstance(node.value, ast.Call):
@@ -136,7 +137,7 @@ def main():
     errors = []
     slow = []
 
-    for i, file_path in enumerate(files):
+    for i, file_path in tqdm(enumerate(files), desc="Processing", unit="item"):
         rel = file_path.relative_to(PROJECT_ROOT)
         module_name = str(rel.with_suffix("")).replace(os.sep, ".")
 

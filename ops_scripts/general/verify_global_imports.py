@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 MOVED_AGENTS = [
     "executive_title_composer",
@@ -27,9 +28,9 @@ def scan_for_stale_imports():
     stale_count = 0
     print(f"{'STATUS':<10} | {'FILE':<60} | {'ISSUE'}")
     print("-" * 100)
-    for root, dirs, files in os.walk(ROOT_DIR):
+    for root, dirs, files in tqdm(os.walk(ROOT_DIR), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if not file.endswith(".py"):
                 continue
             file_path = Path(root) / file
@@ -37,8 +38,8 @@ def scan_for_stale_imports():
                 continue
             with open(file_path, encoding="utf-8", errors="ignore") as f:
                 lines = f.readlines()
-            for _i, line in enumerate(lines):
-                for agent in MOVED_AGENTS:
+            for _i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
+                for agent in tqdm(MOVED_AGENTS, desc="Processing", unit="item"):
                     if f"from {FORBIDDEN_PATH}" in line and agent in line:
                         print(
                             f"!! STALE   | {file_path.replace(ROOT_DIR, '')[:60]:<60} | Importing '{agent}' from old path"

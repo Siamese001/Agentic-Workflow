@@ -109,6 +109,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("drift_monitor", "p4obs", "metric_1")
 _emit_emits_metric_event("drift_monitor", "p4obs", "metric_2")
@@ -315,6 +316,8 @@ class RetrievalDriftMonitor:
         return alerts
 
     def _persist(self, snapshot: RetrievalDriftSnapshot) -> None:
+        if self.l4_store is None:
+            return
         try:
             from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
@@ -438,6 +441,8 @@ class EmbeddingDriftMonitor:
         return alerts
 
     def _persist(self, snapshot: EmbeddingHealthSnapshot) -> None:
+        if self.l4_store is None:
+            return
         try:
             from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
@@ -565,6 +570,8 @@ class AnswerQualityMonitor:
         return alerts
 
     def _persist(self, snapshot: AnswerQualitySnapshot) -> None:
+        if self.l4_store is None:
+            return
         try:
             from agentic_core.L4_state.utils.storage.persistent_store import create_artifact
 
@@ -610,7 +617,10 @@ def emit_alerts_to_registry(
         _logger.debug("emit_alerts_to_registry: drift_registry unavailable", exc_info=True)
         return
     registry = get_drift_registry()
-    for alert in alerts:
+    if registry is None:
+        _logger.debug("emit_alerts_to_registry: registry factory returned None")
+        return
+    for alert in tqdm(alerts, desc="Processing", unit="item"):
         threshold = (threshold_map or {}).get(alert.metric_name, alert.threshold_value)
         try:
             import hashlib

@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
     record_execution_trace,
 )
+from tqdm import tqdm
 
 record_execution_trace("determinism_contracts_types", "determinism_contracts_types_trace")
 
@@ -312,7 +313,7 @@ def ast_scan_wall_clock(source: str, file_path: str = "<string>") -> list[WallCl
     except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return violations
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.Attribute):
             if isinstance(node.value, ast.Name):
                 full_name = f"{node.value.id}.{node.attr}"

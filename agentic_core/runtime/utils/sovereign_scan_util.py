@@ -99,6 +99,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_scan_util", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_scan_util", "p4obs", "metric_2")
@@ -215,7 +216,7 @@ class SovereignScanner:
 
         cache = FileCache.get_instance(self.project_root)
         self._all_files = list(cache.get_python_files())
-        for root_name in SOVEREIGN_REGISTRY.keys():
+        for root_name in tqdm(SOVEREIGN_REGISTRY.keys(), desc="Processing", unit="item"):
             root_path = self.project_root / root_name
             if not root_path.exists():
                 self._root_map[root_name] = []

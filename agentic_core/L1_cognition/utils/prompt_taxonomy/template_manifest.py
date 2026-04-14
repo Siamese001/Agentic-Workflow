@@ -11,6 +11,7 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L2_execution.reasoning import TemplateManifest as BaseTemplateManifest
+from tqdm import tqdm
 
 
 @dataclass
@@ -142,7 +143,7 @@ class TemplateManifestRegistry:
     def validate_all(self) -> dict[str, list[str]]:
         """Validate all registered manifests."""
         errors = {}
-        for tid, manifest in self._manifests.items():
+        for tid, manifest in tqdm(self._manifests.items(), desc="Processing", unit="item"):
             manifest_errors = []
 
             if not manifest.template_id:

@@ -1,32 +1,34 @@
-"""Test L6observabilitybaseAdg functionality."""
+"""Tests for phase-hardened L6ObservabilityBase behaviors."""
 
-import sys
-from pathlib import Path
+import importlib
 
 import pytest
+from unittest.mock import patch
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from agentic_core.base_agents.L6ObservabilityBase import L6ObservabilityBase
 
 
 @pytest.mark.unit
-class TestL6observabilitybaseAdg:
-    """Test L6observabilitybaseAdg functionality."""
+class TestL6ObservabilityBaseHardening:
+    """Behavioral coverage for phase-hardened L6ObservabilityBase."""
 
-    def test_L6ObservabilityBase_adg_imports(self):
-        """Test L6ObservabilityBase_adg module imports."""
-        from agentic_core import L6ObservabilityBase_adg
+    def test_collect_metrics_returns_expected_structure(self):
+        """Happy: collect_metrics returns dict with metrics and timestamp keys."""
+        agent = L6ObservabilityBase()
+        result = agent.collect_metrics()
+        assert isinstance(result, dict)
+        assert "metrics" in result
+        assert "timestamp" in result
 
-        assert L6ObservabilityBase_adg is not None
+    def test_record_execution_trace_removed_from_module(self):
+        """Failure: record_execution_trace is no longer a module-level name (import-time side effect removed)."""
+        mod = importlib.import_module("agentic_core.base_agents.L6ObservabilityBase")
+        assert not hasattr(mod, "record_execution_trace")
 
-    def test_L6ObservabilityBase_adg_class(self):
-        """Test L6observabilitybaseAdg class exists."""
-        from agentic_core import L6observabilitybaseAdg
-
-        assert L6observabilitybaseAdg is not None
-
-    def test_L6ObservabilityBase_adg_callable(self):
-        """Test L6ObservabilityBase_adg functions are callable."""
-        from agentic_core import validate_L6ObservabilityBase_adg
-
-        assert callable(validate_L6ObservabilityBase_adg)
+    def test_collect_metrics_degrades_gracefully_when_adg_unavailable(self):
+        """Edge: collect_metrics returns valid dict when behavioral_index import fails."""
+        agent = L6ObservabilityBase()
+        with patch.dict("sys.modules", {"agentic_core.adg.runtime.behavioral_index": None}):
+            result = agent.collect_metrics()
+        assert isinstance(result, dict)
+        assert "metrics" in result

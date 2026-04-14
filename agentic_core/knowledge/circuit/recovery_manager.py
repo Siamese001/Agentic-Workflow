@@ -13,6 +13,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
 )
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -86,7 +87,7 @@ class RecoveryManager:
             "RecoveryManager.attempt_recovery",
         )
 
-        for action in self._recovery_actions:
+        for action in tqdm(self._recovery_actions, desc="Processing", unit="item"):
             try:
                 log.info(f"Attempting recovery action: {action.name}")
 

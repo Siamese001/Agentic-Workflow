@@ -110,6 +110,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("healing_outcome_aggregator", "p4obs", "metric_1")
 _emit_emits_metric_event("healing_outcome_aggregator", "p4obs", "metric_2")
@@ -225,7 +226,7 @@ class HealingOutcomeAggregator:
 
         # Build stats with stable sort
         stats: list[HealingOutcomeStats] = []
-        for key in sorted(counts):
+        for key in tqdm(sorted(counts), desc="Processing", unit="item"):
             healer_id, tier, failure_type = key
             sc, fc = counts[key]
             stats.append(

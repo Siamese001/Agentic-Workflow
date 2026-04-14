@@ -7,11 +7,14 @@ gradual rollout control, and automated rollback triggers.
 
 import hashlib
 import json
+import os
+from tempfile import NamedTemporaryFile
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # from agentic_core.L4_canonical.state.snapshot_manager import SnapshotManager
 # TODO: Replace with local snapshot management
@@ -51,7 +54,7 @@ class ThresholdDefinition:
     max_value: float | None = None
     rollout_percentage: float = 0.0  # 0-100% of traffic using this threshold
     is_active: bool = False
-    created_at: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(default_factory=datetime.utcnow)
     created_by: str = ""
     version: str = "1.0"
     validation_rules: dict[str, Any] = field(default_factory=dict)
@@ -69,7 +72,7 @@ class RollbackCondition:
 
 
 @dataclass
-class ThresholdConfig:
+class ThresholdProfile:
     """Complete threshold configuration for a model."""
 
     model_name: str
@@ -78,7 +81,7 @@ class ThresholdConfig:
     description: str
     thresholds: list[ThresholdDefinition]
     rollback_conditions: list[RollbackCondition]
-    created_at: datetime = field(default_factory=datetime.now)
+    created_at: datetime = field(default_factory=datetime.utcnow)
     created_by: str = ""
     config_digest: str = ""
 
@@ -156,8 +159,6 @@ class ThresholdConfig:
     def should_use_threshold(self, request_id: str) -> bool:
         """Determine if request should use new threshold based on rollout."""
         # Simple hash-based rollout for consistency
-        import hashlib
-
         hash_value = int(hashlib.md5(request_id.encode()).hexdigest(), 16)
         rollout_threshold = int(self.get_active_rollout_percentage() * 100)
 
@@ -196,10 +197,10 @@ class ThresholdConfig:
                 with open(self.configs_file, encoding="utf-8") as f:
                     data = json.load(f)
 
-                for config_key, config_data in data.items():
+                for config_key, config_data in tqdm(data.items(), desc="Processing", unit="item"):
                     # Reconstruct thresholds
                     thresholds = []
-                    for t_data in config_data["thresholds"]:
+                    for t_data in tqdm(config_data["thresholds"], desc="Processing", unit="item"):
                         threshold = ThresholdDefinition(
                             name=t_data["name"],
                             threshold_type=ThresholdType(t_data["type"]),
@@ -228,7 +229,7 @@ class ThresholdConfig:
                         rollback_conditions.append(condition)
 
                     # Reconstruct config
-                    config = ThresholdConfig(
+                    config = ThresholdProfile(
                         model_name=config_data["model_name"],
                         model_version=config_data["model_version"],
                         config_version=config_data["config_version"],
@@ -241,14 +242,14 @@ class ThresholdConfig:
 
                     self._configs[config_key] = config
 
-            except Exception as e:
+            except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
                 # Start fresh if config is corrupted
                 self._configs = {}
 
     def _save_configs(self) -> None:
         """Save threshold configurations to disk."""
         data = {}
-        for config_key, config in self._configs.items():
+        for config_key, config in tqdm(self._configs.items(), desc="Processing", unit="item"):
             data[config_key] = {
                 "model_name": config.model_name,
                 "model_version": config.model_version,
@@ -286,8 +287,15 @@ class ThresholdConfig:
                 "config_digest": config.config_digest,
             }
 
-        with open(self.configs_file, "w", encoding="utf-8") as f:
+        with NamedTemporaryFile("w", dir=self.config_path, delete=False, encoding="utf-8") as f:
+            tmp_path = Path(f.name)
             json.dump(data, f, indent=2)
+
+        try:
+            os.replace(tmp_path, self.configs_file)
+        except Exception:  # guardian: allow-broad-exception -- temp file cleanup before re-raise; all exception types must trigger unlink
+            tmp_path.unlink(missing_ok=True)
+            raise
 
     def _generate_config_key(self, model_name: str, model_version: str, config_version: str) -> str:
         """Generate unique config key."""
@@ -328,7 +336,7 @@ class ThresholdConfig:
             config_version = str(len(existing_configs) + 1)
             config_key = self._generate_config_key(model_name, model_version, config_version)
 
-        config = ThresholdConfig(
+        config = ThresholdProfile(
             model_name=model_name,
             model_version=model_version,
             config_version=config_version,
@@ -360,7 +368,7 @@ class ThresholdConfig:
         model_name: str,
         model_version: str,
         config_version: str = "latest",
-    ) -> ThresholdConfig | None:
+    ) -> ThresholdProfile | None:
         """Get threshold configuration."""
         if config_version == "latest":
             # Find latest version
@@ -433,7 +441,7 @@ class ThresholdConfig:
 
         triggered_triggers = []
 
-        for condition in config.rollback_conditions:
+        for condition in tqdm(config.rollback_conditions, desc="Processing", unit="item"):
             if not condition.is_active:
                 continue
 
@@ -480,7 +488,7 @@ class ThresholdConfig:
             event = {
                 "event_type": event_type,
                 "config_key": config_key,
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": datetime.utcnow().isoformat(),
                 "data": data,
             }
 
@@ -488,7 +496,7 @@ class ThresholdConfig:
             # self.snapshot_manager.store_event("ml_threshold_config", event)
             # TODO: Replace with local snapshot management
 
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             # Log failure but don't fail the operation
             print(f"Failed to log threshold event: {e}")
 

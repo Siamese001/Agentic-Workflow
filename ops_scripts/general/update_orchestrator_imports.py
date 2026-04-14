@@ -21,6 +21,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).parent.parent
 IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {
@@ -125,7 +126,9 @@ def update_imports_in_file(file_path: Path, dry_run: bool = False) -> list[str]:
     except Exception:
         return changes
     original_content = content
-    for legacy_name, (unified_module, unified_class) in IMPORT_REPLACEMENTS.items():
+    for legacy_name, (unified_module, unified_class) in tqdm(
+        IMPORT_REPLACEMENTS.items(), desc="Processing", unit="item"
+    ):
         pattern1 = f"from\\s+[\\w.]+\\s+import\\s+{legacy_name}\\b"
         if re.search(pattern1, content):
             new_import = f"from {unified_module} import {unified_class}"

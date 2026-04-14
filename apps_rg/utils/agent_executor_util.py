@@ -107,6 +107,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_executor_util", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_executor_util", "p4obs", "metric_2")
@@ -593,7 +594,7 @@ class AgentExecutor:
         response = client.messages.create(**params)
         content = ""
         tool_calls = []
-        for block in response.content:
+        for block in tqdm(response.content, desc="Processing", unit="item"):
             if hasattr(block, "text"):
                 content += block.text
             elif hasattr(block, "tool_use"):

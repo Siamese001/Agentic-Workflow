@@ -22,6 +22,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     TESTS_DIR,
 )
+from tqdm import tqdm
 
 
 @dataclass
@@ -105,7 +106,7 @@ def classify_file_simple(path: Path) -> str:
     ):  # guardian: Parsing and encoding errors need separate handling strategies
         return "UNKNOWN"
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             name = node.name
             bases = [
@@ -193,12 +194,12 @@ def scan_source_files(project_root: Path) -> list[SourceFile]:
     source_files = []
     source_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
-    for source_dir in source_dirs:
+    for source_dir in tqdm(source_dirs, desc="Processing", unit="item"):
         dir_path = project_root / source_dir
         if not dir_path.exists():
             continue
 
-        for py_file in dir_path.rglob("*.py"):
+        for py_file in tqdm(dir_path.rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or py_file.name == "__init__.py":
                 continue
 
@@ -251,15 +252,15 @@ def scan_test_files(project_root: Path, source_files: list[SourceFile]) -> list[
 
     # Build source lookup by expected test path
     source_lookup = {}
-    for sf in source_files:
+    for sf in tqdm(source_files, desc="Processing", unit="item"):
         if sf.expected_test_path:
             source_lookup[sf.expected_test_path] = sf
 
-    for test_dir in test_dirs:
+    for test_dir in tqdm(test_dirs, desc="Processing", unit="item"):
         if not test_dir.exists():
             continue
 
-        for test_file in test_dir.rglob("test_*.py"):
+        for test_file in tqdm(test_dir.rglob("test_*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(test_file):
                 continue
 

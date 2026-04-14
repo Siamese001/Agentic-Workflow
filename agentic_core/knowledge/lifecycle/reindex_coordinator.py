@@ -19,6 +19,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
 )
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -232,7 +233,7 @@ class ReindexCoordinator:
 
             # Collect results as they complete
             completed = 0
-            for future in as_completed(future_to_path):
+            for future in tqdm(as_completed(future_to_path), desc="Processing", unit="item"):
                 path = future_to_path[future]
                 try:
                     result = future.result()

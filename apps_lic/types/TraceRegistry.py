@@ -5,7 +5,8 @@ A structured audit log for tracking agent execution steps and decisions.
 """
 
 from __future__ import annotations
-
+import logging
+import os
 import json
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -120,6 +121,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("TraceRegistry", "TraceRegistry_trace")
 
@@ -193,31 +195,45 @@ class TraceRegistry(MCPHardenedMixin):
             else:
                 self._flush_to_disk()
 
-    def _load_from_disk(self):
-        """Load traces from JSONL file (one JSON object per line)."""
-        if self.persistence_path and self.persistence_path.exists():
-            try:
-                with self.persistence_path.open("r", encoding="utf-8") as f:
-                    for line in f:
-                        if line.strip():
-                            self._traces.append(
-                                json.loads(line)
-                            )  # guardian: File operations should check existence before access
-            except FileNotFoundError:
-                self._flush_to_disk()
+    def _load_from_disk(self) -> None:
+        """Load traces from JSONL file."""
+        if not self.persistence_path or not self.persistence_path.exists():
+            return
+        with open(self.persistence_path, encoding="utf-8") as f:
+            for line_no, line in tqdm(enumerate(f, start=1), desc="Processing", unit="item"):
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                    if not isinstance(data, dict):
+                        logging.warning("TraceRegistry: skipping non-dict JSONL line %d", line_no)
+                        continue
+                    entry = {"timestamp": data["timestamp"], "type": data["type"], "details": data["details"]}
+                    self._traces.append(entry)
+                except json.JSONDecodeError as exc:
+                    logging.warning("TraceRegistry: invalid JSON at line %d: %s", line_no, exc)
+                except (TypeError, KeyError) as exc:
+                    logging.warning("TraceRegistry: malformed entry at line %d: %s", line_no, exc)
 
-    def _flush_to_disk(self):
-        """Initialize/clear the trace file."""
-        if self.persistence_path:
-            self.persistence_path.parent.mkdir(parents=True, exist_ok=True)
-            with self.persistence_path.open("w", encoding="utf-8"):
-                pass
+    def _flush_to_disk(self) -> None:
+        """Flush all traces to JSONL file."""
+        if not self.persistence_path:
+            return
+        self.persistence_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.persistence_path, "w", encoding="utf-8") as f:
+            for entry in self._traces:
+                f.write(json.dumps(entry, sort_keys=True, default=str) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
 
     def _append_to_disk(self, trace: dict[str, Any]) -> None:
         """Append a single trace to JSONL file for crash resilience."""
         if self.persistence_path:
             with self.persistence_path.open("a", encoding="utf-8") as f:
-                f.write(json.dumps(trace) + "\n")
+                f.write(json.dumps(trace, sort_keys=True, default=str) + "\n")
+                f.flush()
+                os.fsync(f.fileno())
 
     def add_trace(self, event_type: str, details: dict[str, Any]) -> None:
         """
@@ -227,6 +243,11 @@ class TraceRegistry(MCPHardenedMixin):
             event_type: Category of the event (e.g., 'DECISION', 'ERROR').
             details: Contextual data for the event.
         """
+        if not isinstance(event_type, str) or not event_type.strip():
+            raise ValueError("event_type must be a non-empty string")
+        if not isinstance(details, dict):
+            raise TypeError("details must be a dict")
+
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())

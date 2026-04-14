@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("extract_unique_content_util", "p4obs", "metric_1")
 _emit_emits_metric_event("extract_unique_content_util", "p4obs", "metric_2")
@@ -180,8 +181,8 @@ def build_codebase_index(dirs: list[str]) -> tuple[set[str], set[str]]:
     classes = set()
     functions = set()
 
-    for dir_path in dirs:
-        for py_file in Path(dir_path).rglob("*.py"):
+    for dir_path in tqdm(dirs, desc="Processing", unit="item"):
+        for py_file in tqdm(Path(dir_path).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
             try:
@@ -211,7 +212,7 @@ def analyze_archive_file(file_path: Path, existing_classes: set[str], existing_f
     unique_functions = []
     existing_in_file = []
 
-    for node in ast.iter_child_nodes(tree):
+    for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             if node.name.lower() not in existing_classes:
                 # Get bases
@@ -336,7 +337,7 @@ def main():
     to_extract = []  # Files with some unique content to extract
     skip_files = []  # Files with no unique content
 
-    for archive_path, target_dir in high_priority_files:
+    for archive_path, target_dir in tqdm(high_priority_files, desc="Processing", unit="item"):
         file_path = Path(archive_path)
         if not file_path.exists():
             print(f"  [NOT FOUND] {archive_path}")
@@ -420,7 +421,7 @@ def main():
     import shutil
 
     restored_count = 0
-    for item in to_restore_full:
+    for item in tqdm(to_restore_full, desc="Processing", unit="item"):
         src = Path(item["source"])
         target_dir = Path(item["target"])
         target_dir.mkdir(parents=True, exist_ok=True)
@@ -441,7 +442,7 @@ def main():
             print(f"  - Skipped (exists): {dst}")
 
     # For extract files, copy the whole file (simpler than extracting individual classes)
-    for item in to_extract:
+    for item in tqdm(to_extract, desc="Processing", unit="item"):
         src = Path(item["source"])
         target_dir = Path(item["target"])
         target_dir.mkdir(parents=True, exist_ok=True)

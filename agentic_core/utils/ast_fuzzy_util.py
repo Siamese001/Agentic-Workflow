@@ -7,9 +7,37 @@ Provides deterministic primitives for structural hashing, similarity scoring, an
 import ast
 import difflib
 import hashlib
+import logging
 import os
 
-AST_FUZZY_THRESHOLD = float(os.environ.get("AST_FUZZY_THRESHOLD", "0.6"))
+logger = logging.getLogger(__name__)
+_DEFAULT_AST_FUZZY_THRESHOLD = 0.6
+
+
+def _read_threshold_from_env() -> float:
+    raw = os.environ.get("AST_FUZZY_THRESHOLD")
+    if raw is None:
+        return _DEFAULT_AST_FUZZY_THRESHOLD
+    try:
+        value = float(raw)
+    except ValueError:
+        logger.warning(
+            "Invalid AST_FUZZY_THRESHOLD %r; using default %.2f",
+            raw,
+            _DEFAULT_AST_FUZZY_THRESHOLD,
+        )
+        return _DEFAULT_AST_FUZZY_THRESHOLD
+    if not 0.0 <= value <= 1.0:
+        logger.warning(
+            "Out-of-range AST_FUZZY_THRESHOLD %r; expected 0.0..1.0; using default %.2f",
+            raw,
+            _DEFAULT_AST_FUZZY_THRESHOLD,
+        )
+        return _DEFAULT_AST_FUZZY_THRESHOLD
+    return value
+
+
+AST_FUZZY_THRESHOLD = _read_threshold_from_env()
 
 
 def parse_ast_safe(source: str) -> ast.AST | None:

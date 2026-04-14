@@ -295,7 +295,7 @@ class MagicConfigDetector(AntiPatternDetector):
         defaults = node.args.defaults
         args = node.args.args[-len(defaults) :] if defaults else []
 
-        for arg, default in zip(args, defaults, strict=False):
+        for arg, default in tqdm(zip(args, defaults, strict=False), desc="Processing", unit="item"):
             # Skip ALL_CAPS parameter names - these are legitimate SSOT constants
             if arg.arg == arg.arg.upper() and arg.arg.isidentifier():
                 continue
@@ -432,7 +432,7 @@ class MagicConfigDetector(AntiPatternDetector):
                 return []
 
         # Check keyword arguments
-        for keyword in node.keywords:
+        for keyword in tqdm(node.keywords, desc="Processing", unit="item"):
             if keyword.arg is None:
                 continue
 
@@ -513,6 +513,7 @@ import uuid
     # Or use AgentDefaults
     from agentic_core.config.agent_defaults import AgentDefaults
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from tqdm import tqdm
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

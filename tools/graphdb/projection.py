@@ -21,6 +21,7 @@ from .schema import (
     validate_edge_type,
     validate_node_type,
 )
+from tqdm import tqdm
 
 
 class GraphProjector:
@@ -98,7 +99,7 @@ class GraphProjector:
                 cursor = conn.cursor()
                 cursor.execute("SELECT id, type, name, properties FROM entities")
 
-                for row in cursor.fetchall():
+                for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     entity_id, entity_type, name, properties_json = row
 
                     # Validate and map entity type
@@ -144,7 +145,7 @@ class GraphProjector:
                 cursor = conn.cursor()
                 cursor.execute("SELECT id, from_id, to_id, type, properties FROM relations")
 
-                for row in cursor.fetchall():
+                for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     relation_id, from_id, to_id, relation_type, properties_json = row
 
                     # Skip if either endpoint doesn't exist in graph

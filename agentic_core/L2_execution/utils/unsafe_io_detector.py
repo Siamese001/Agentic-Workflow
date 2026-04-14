@@ -173,6 +173,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_1")
 _emit_emits_metric_event("unsafe_io_detector", "p4obs", "metric_2")
@@ -369,7 +370,7 @@ def scan_directory_for_unsafe_patterns(
     else:
         files = directory.glob(file_pattern)
 
-    for file_path in files:
+    for file_path in tqdm(files, desc="Processing", unit="item"):
         if file_path.is_file():
             try:
                 with open(file_path, encoding="utf-8") as f:

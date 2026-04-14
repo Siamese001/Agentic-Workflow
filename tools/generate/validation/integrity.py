@@ -6,6 +6,7 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
+from tqdm import tqdm
 
 
 def _check_artifact_validity(paths: object) -> None:
@@ -25,7 +26,7 @@ def _check_artifact_validity(paths: object) -> None:
     zero_byte = []
     invalid = []
 
-    for name, path in required.items():
+    for name, path in tqdm(required.items(), desc="Processing", unit="item"):
         if not path.exists():
             missing.append(name)
             continue

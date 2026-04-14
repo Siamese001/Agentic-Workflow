@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("TestGeneratorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("TestGeneratorAgent", "p4obs", "metric_2")
@@ -280,7 +281,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
     def _extract_classes(self, tree: ast.AST) -> list[dict[str, Any]]:
         """Extract class definitions and their methods from AST."""
         classes = []
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 class_info = {
                     "name": node.name,

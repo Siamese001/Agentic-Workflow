@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -125,7 +126,7 @@ class ParentChildExpander:
 
             next_confidence = current_confidence * self.confidence_decay
 
-            for neighbor in neighbors:
+            for neighbor in tqdm(neighbors, desc="Processing", unit="item"):
                 neighbor_id = neighbor.get("chunk_id")
                 relationship = neighbor.get("relationship", "related")
 
@@ -232,7 +233,7 @@ class ParentChildExpander:
         all_contexts = []
         seen_ids = set()
 
-        for seed in seed_results:
+        for seed in tqdm(seed_results, desc="Processing", unit="item"):
             chunk_id = seed.get("chunk_id") or seed.get("id")
             if not chunk_id or chunk_id in seen_ids:
                 continue
@@ -319,7 +320,7 @@ class L4ERetrievalIntegrator:
 
         # Convert back to result format
         expanded_results = []
-        for ctx in expanded:
+        for ctx in tqdm(expanded, desc="Processing", unit="item"):
             if ctx.depth == 0:
                 continue  # Skip seeds (already in initial_results)
 

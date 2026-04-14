@@ -29,6 +29,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_learning_event,
     _emit_updates_routing_strategy,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -461,7 +462,7 @@ class CompletenessRAGProposer:
         proposals = []
 
         # Evaluate each query
-        for query_data in query_batch:
+        for query_data in tqdm(query_batch, desc="Processing", unit="item"):
             self.evaluator.evaluate(
                 query=query_data["query"],
                 retrieved_chunks=query_data.get("retrieved_chunks", []),

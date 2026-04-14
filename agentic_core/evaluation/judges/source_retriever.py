@@ -17,6 +17,7 @@ import logging
 from pathlib import Path
 
 from agentic_core.evaluation.judges.types import SourceSnippet
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -128,7 +129,7 @@ class SourceRetriever:
             _log.warning("[SourceRetriever] Syntax error parsing %s", path)
             return None
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 if node.name == function_name:
                     start = node.lineno - 1
@@ -177,7 +178,7 @@ class SourceRetriever:
             _log.warning("[SourceRetriever] Syntax error parsing %s", path)
             return None
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef) and node.name == class_name:
                 start = node.lineno - 1
                 end = node.end_lineno or (start + 1)

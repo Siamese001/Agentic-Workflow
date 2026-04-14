@@ -136,6 +136,18 @@ class TestSectionRenderer(unittest.TestCase):
         self.assertIn("<h2>Professional Summary</h2>", html_output)
         self.assertIn("minimum requirements", html_output)
 
+    def test_render_html_escapes_special_chars(self):
+        """XSS guard: raw HTML in content must be escaped, not injected verbatim."""
+        section = ResumeSection(
+            section_id="sec-xss",
+            section_type="summary",
+            content="Managed projects and handled <script>alert('xss')</script> edge cases successfully.",
+            word_count=50,
+        )
+        html_output = self.renderer.render_html(section)
+        self.assertNotIn("<script>", html_output)
+        self.assertIn("&lt;script&gt;", html_output)
+
 
 if __name__ == "__main__":
     unittest.main()

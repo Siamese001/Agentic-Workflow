@@ -11,7 +11,52 @@ PineconeVectorStore, etc.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable
+
+
+@dataclass
+class StoredArtifactRef:
+    """Lightweight reference to a stored artifact (no payload)."""
+
+    kind: str
+    logical_id: str
+    version: int
+    path: str
+    size_bytes: int
+
+    def __post_init__(self) -> None:
+        if not self.kind:
+            raise ValueError("kind cannot be empty")
+        if not self.logical_id:
+            raise ValueError("logical_id cannot be empty")
+        if self.version < 0:
+            raise ValueError("version must be >= 0")
+        if self.size_bytes < 0:
+            raise ValueError("size_bytes must be >= 0")
+
+
+@dataclass
+class StoredArtifact:
+    """Full artifact with payload, provenance, and metadata."""
+
+    kind: str
+    logical_id: str
+    payload: dict
+    content_type: str
+    created_utc: str
+    hashes: dict
+    metadata: dict
+
+    def __post_init__(self) -> None:
+        if not self.kind:
+            raise ValueError("kind cannot be empty")
+        if not self.logical_id:
+            raise ValueError("logical_id cannot be empty")
+        if not self.content_type:
+            raise ValueError("content_type cannot be empty")
+        if not self.created_utc:
+            raise ValueError("created_utc cannot be empty")
 
 
 @runtime_checkable

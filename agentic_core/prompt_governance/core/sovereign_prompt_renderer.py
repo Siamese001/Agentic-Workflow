@@ -70,6 +70,7 @@ _emit_updates_meta_learning_state("p4", "sovereign_prompt_renderer", "meta_learn
 _emit_links_execution_to_snapshot("p4", "sovereign_prompt_renderer", "exec_snapshot_link")
 
 "Sovereign Prompt Renderer - Safe Jinja2 template rendering with validation.\n\nResponsibilities:\n- Load templates exclusively from prompt_governance/templates\n- Perform safe Jinja2 rendering with strict variable scoping\n- Enforce sovereignty: no inline prompt strings > 50 lines outside this layer\n- Validate template schemas and required variables\n"
+import logging
 import os
 import re
 from dataclasses import dataclass
@@ -172,6 +173,10 @@ class TemplateValidationError(Exception):
     pass
 
 
+Logger = logging.getLogger(__name__)
+_SAFE_TEMPLATE_NAME_RE = re.compile(r"^[A-Za-z0-9_./-]+$")
+
+
 class SovereignPromptRenderer:
     """
     Sovereign renderer for instructional prompt templates.
@@ -192,9 +197,11 @@ class SovereignPromptRenderer:
         """
         if template_root is None:
             template_root = Path(__file__).parent.parent / "templates"
-        self.template_root = template_root
+        self.template_root = template_root.resolve()
         if not self.template_root.exists():
-            os.makedirs(self.template_root, exist_ok=True)
+            raise FileNotFoundError(f"Template root does not exist: {self.template_root}")
+        if not self.template_root.is_dir():
+            raise NotADirectoryError(f"Template root is not a directory: {self.template_root}")
         self.env = Environment(
             loader=FileSystemLoader(str(self.template_root)),
             autoescape=select_autoescape(["html", "xml"]),
@@ -205,6 +212,24 @@ class SovereignPromptRenderer:
         )
         self._schema_cache: dict[str, TemplateSchema] = {}
 
+    def _validate_template_name(self, name: str) -> str:
+        """Validate template name to prevent directory traversal."""
+        if not name or not isinstance(name, str):
+            raise ValueError("template_name must be a non-empty string")
+        if not _SAFE_TEMPLATE_NAME_RE.fullmatch(name):
+            raise ValueError(f"template_name contains unsafe characters: {name!r}")
+        return name
+
+    def _resolve_template_path(self, name: str) -> Path:
+        """Resolve template path with traversal prevention."""
+        safe_name = self._validate_template_name(name)
+        resolved = (self.template_root / safe_name).resolve()
+        try:
+            resolved.relative_to(self.template_root)
+        except ValueError as exc:
+            raise ValueError(f"Template path escapes template root: {resolved}") from exc
+        return resolved
+
     def _parse_template_schema(self, template_name: str) -> TemplateSchema:
         """Parse template header for schema metadata.
 
@@ -214,7 +239,7 @@ class SovereignPromptRenderer:
         """
         if template_name in self._schema_cache:
             return self._schema_cache[template_name]
-        template_path = self.template_root / template_name
+        template_path = self._resolve_template_path(template_name)
         if not template_path.exists():
             raise TemplateNotFound(template_name)
         content = template_path.read_text(encoding="utf-8")
@@ -294,14 +319,9 @@ class SovereignPromptRenderer:
         """
         context = context or {}
         metadata = metadata or {}
+        self._validate_template_name(template_name)
         if validate:
-            try:
-                self.validate_context(template_name, context)
-            except (
-                TemplateValidationError
-            ) as e:  # guardian: TemplateValidationError should be handled with specific context
-                if "No description provided" not in str(e):
-                    raise
+            self.validate_context(template_name, context)
         full_context = {
             **context,
             "_sovereign_metadata": {
@@ -311,14 +331,9 @@ class SovereignPromptRenderer:
                 **metadata,
             },
         }
-        try:
-            template = self.env.get_template(template_name)
-            rendered = template.render(**full_context)
-            return rendered.strip() + "\n"
-        except TemplateNotFound:  # guardian: TemplateNotFound should be handled with specific context
-            raise TemplateNotFound(f"Template '{template_name}' not found in {self.template_root}")
-        except Exception as e:
-            raise RuntimeError(f"[PROMPT RENDERING FAILURE] Template '{template_name}': {e}")
+        template = self.env.get_template(template_name)
+        rendered = template.render(**full_context)
+        return rendered.strip() + "\n"
 
     def render_tagentic(
         self,
@@ -341,7 +356,10 @@ class SovereignPromptRenderer:
             Assembled prompt with XML tags
         """
         context = context or {}
-        meta_root = self.template_root.parent / "meta_prompts"
+        self._validate_template_name(base_template)
+        for frag in fragments:
+            self._validate_template_name(frag)
+        meta_root = (self.template_root.parent / "meta_prompts").resolve()
         meta_env = Environment(
             loader=FileSystemLoader(str(meta_root)),
             autoescape=select_autoescape(["html", "xml"]),
@@ -350,27 +368,15 @@ class SovereignPromptRenderer:
             keep_trailing_newline=True,
             undefined=StrictUndefined,
         )
-        try:
-            base = meta_env.get_template(base_template).render(**context)
-        except TemplateNotFound:  # guardian: TemplateNotFound should be handled with specific context
-            raise TemplateNotFound(f"Meta-prompt '{base_template}' not found in {meta_root}")
-        except Exception as e:
-            raise RuntimeError(f"[META-PROMPT FAILURE] {base_template}: {e}")
+        base = meta_env.get_template(base_template).render(**context)
         assembled = [base]
         for frag in fragments:
-            try:
-                if validate:
-                    self.validate_context(frag, context)
-                fragment_text = self.env.get_template(frag).render(**context)
-                assembled.append(
-                    f"\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>",
-                )
-            except TemplateNotFound:  # guardian: TemplateNotFound should be handled with specific context
-                continue
-            # guardian: allow-silent-swallow -- fragment render failures are non-critical; logged and skipped
-            except Exception as e:
-                print(f"[WARNING] Fragment '{frag}' failed to render: {e}")
-                continue
+            if validate:
+                self.validate_context(frag, context)
+            fragment_text = self.env.get_template(frag).render(**context)
+            assembled.append(
+                f"\n<INSTRUCTIONAL_FRAGMENT:{frag}>\n{fragment_text}\n</INSTRUCTIONAL_FRAGMENT>",
+            )
         return "\n".join(assembled)
 
     def list_available_templates(self) -> list[str]:

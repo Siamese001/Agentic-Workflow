@@ -14,7 +14,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -89,7 +89,7 @@ from apps_rfp.types.rfp_types import (
 _emit_applies_guardrail("p0", "proposal_assembly_engine", "p0_governance")
 _emit_reads_policy_state("p0", "proposal_assembly_engine", "policy_binding")
 _emit_snapshots_state("p0", "proposal_assembly_engine", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -113,6 +113,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("proposal_assembly_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("proposal_assembly_engine", "p4obs", "metric_2")
@@ -480,7 +481,9 @@ class ProposalAssemblyEngine:
     def _build_roadmap(self, request: RfpRequest) -> list[RoadmapPhase]:
         """Build phased roadmap from templates."""
         phases = []
-        for idx, (phase_name, tmpl) in enumerate(_ROADMAP_TEMPLATES.items()):
+        for idx, (phase_name, tmpl) in tqdm(
+            enumerate(_ROADMAP_TEMPLATES.items()), desc="Processing", unit="item"
+        ):
             phases.append(
                 RoadmapPhase(
                     phase_id=f"PHASE-{idx + 1:02d}",

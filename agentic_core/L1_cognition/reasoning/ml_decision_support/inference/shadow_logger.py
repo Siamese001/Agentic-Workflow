@@ -5,8 +5,10 @@ Logs all ML decisions in shadow mode for comparison with actual decisions,
 training data collection, and model improvement without affecting live traffic.
 """
 
+import hashlib
 import json
-import time
+import os
+from tempfile import NamedTemporaryFile
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
@@ -16,6 +18,7 @@ from typing import Any
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_trace
 
 from ..models.base_model import ModelInput, ModelPrediction
+from tqdm import tqdm
 
 
 class ShadowMode(Enum):
@@ -74,7 +77,7 @@ class ShadowLogger:
         self.shadow_log_file = self.log_path / "shadow_predictions.jsonl"
         self.comparison_log_file = self.log_path / "comparisons.jsonl"
         self.training_data_file = self.log_path / "training_data.jsonl"
-        self.session_id = self._generate_session_id()
+        self.session_id = self._generate_session_id(log_path)
 
         # Statistics
         self.stats = {
@@ -108,7 +111,7 @@ class ShadowLogger:
         """
         # Create log entry
         log_entry = ShadowLogEntry(
-            timestamp=datetime.now(),
+            timestamp=datetime.utcnow(),
             trace_id=model_prediction.trace_id,
             replay_key=model_prediction.replay_key,
             policy_hash=model_prediction.policy_hash,
@@ -274,7 +277,7 @@ class ShadowLogger:
 
         try:
             with open(self.shadow_log_file, encoding="utf-8") as f:
-                for line in f:
+                for line in tqdm(f, desc="Processing", unit="item"):
                     entry = json.loads(line.strip())
 
                     # Filter by confidence
@@ -356,7 +359,7 @@ class ShadowLogger:
         log_data["timestamp"] = log_entry.timestamp.isoformat()
 
         # Convert enums and datetime to strings for JSON serialization
-        for key, value in log_data.items():
+        for key, value in tqdm(log_data.items(), desc="Processing", unit="item"):
             if isinstance(value, Enum):
                 log_data[key] = value.value
             elif isinstance(value, datetime):
@@ -370,34 +373,29 @@ class ShadowLogger:
                         value[k] = v.isoformat()
 
         if logging_mode == ShadowMode.LOG_ONLY:
-            with open(self.shadow_log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(log_data) + "\n")
+            self._append_json_line(self.shadow_log_file, log_data)
 
         elif logging_mode == ShadowMode.COMPARE:
             # Write to both shadow and comparison logs
-            with open(self.shadow_log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(log_data) + "\n")
+            self._append_json_line(self.shadow_log_file, log_data)
 
             if log_entry.comparison_result:
                 comparison_data = {
                     **log_data,
                     "comparison_result": asdict(log_entry.comparison_result),
                 }
-                with open(self.comparison_log_file, "a", encoding="utf-8") as f:
-                    f.write(json.dumps(comparison_data) + "\n")
+                self._append_json_line(self.comparison_log_file, comparison_data)
 
         elif logging_mode == ShadowMode.TRAINING_DATA:
             # Write to all three logs
-            with open(self.shadow_log_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(log_data) + "\n")
+            self._append_json_line(self.shadow_log_file, log_data)
 
             if log_entry.comparison_result:
                 comparison_data = {
                     **log_data,
                     "comparison_result": asdict(log_entry.comparison_result),
                 }
-                with open(self.comparison_log_file, "a", encoding="utf-8") as f:
-                    f.write(json.dumps(comparison_data) + "\n")
+                self._append_json_line(self.comparison_log_file, comparison_data)
 
             # Training data format
             training_data = {
@@ -414,8 +412,7 @@ class ShadowLogger:
             if log_entry.actual_decision:
                 training_data["actual_decision"] = log_entry.actual_decision
 
-            with open(self.training_data_file, "a", encoding="utf-8") as f:
-                f.write(json.dumps(training_data) + "\n")
+            self._append_json_line(self.training_data_file, training_data)
 
     def _update_stats(self, comparison_result: ComparisonResult) -> None:
         """Update comparison statistics."""
@@ -454,14 +451,28 @@ class ShadowLogger:
                 operation="shadow_prediction_logged",
             )
 
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             # Log failure but don't fail the operation
             print(f"Failed to log shadow event: {e}")
 
-    def _generate_session_id(self) -> str:
-        """Generate unique session ID."""
-        timestamp = int(time.time() * 1000)
-        return f"shadow_session_{timestamp}"
+    def _append_json_line(self, path: Path, data: dict) -> None:
+        """Atomically append a JSON line to a JSONL file."""
+        line = json.dumps(data) + "\n"
+        with NamedTemporaryFile("w", dir=path.parent, delete=False, encoding="utf-8") as tmp:
+            tmp_path = Path(tmp.name)
+            if path.exists():
+                tmp.write(path.read_text(encoding="utf-8"))
+            tmp.write(line)
+        try:
+            os.replace(tmp_path, path)
+        except Exception:  # guardian: allow-broad-exception -- temp file cleanup before re-raise; all exception types must trigger unlink
+            tmp_path.unlink(missing_ok=True)
+            raise
+
+    def _generate_session_id(self, seed: Path) -> str:
+        """Generate stable session ID for the configured log root."""
+        digest = hashlib.sha256(str(Path(seed).resolve()).encode()).hexdigest()[:16]
+        return f"shadow_session_{digest}"
 
     def _find_prediction_by_trace_id(self, trace_id: str) -> dict[str, Any] | None:
         """Find shadow prediction by trace ID."""
@@ -481,7 +492,7 @@ class ShadowLogger:
         """Reconstruct ModelPrediction object from dictionary."""
         # This is a simplified reconstruction
         # In practice, you'd want to fully reconstruct the object
-        return type("ModelPrediction", (), prediction_dict)()
+        return ModelPrediction(**prediction_dict)
 
     def _update_log_entry_with_comparison(self, trace_id: str, comparison: ComparisonResult) -> None:
         """Update existing log entry with comparison result."""
@@ -490,11 +501,10 @@ class ShadowLogger:
         comparison_data = {
             "trace_id": trace_id,
             "comparison_result": asdict(comparison),
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
-        with open(self.comparison_log_file, "a", encoding="utf-8") as f:
-            f.write(json.dumps(comparison_data) + "\n")
+        self._append_json_line(self.comparison_log_file, comparison_data)
 
     def _get_session_start_time(self) -> str | None:
         """Get session start time from first log entry."""

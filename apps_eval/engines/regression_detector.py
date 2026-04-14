@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -86,7 +86,7 @@ from apps_eval.types.eval_types import RegressionRecord, RegressionVerdict, Scor
 _emit_applies_guardrail("p0", "regression_detector", "p0_governance")
 _emit_reads_policy_state("p0", "regression_detector", "policy_binding")
 _emit_snapshots_state("p0", "regression_detector", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -110,6 +110,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("regression_detector", "p4obs", "metric_1")
 _emit_emits_metric_event("regression_detector", "p4obs", "metric_2")
@@ -215,7 +216,7 @@ class RegressionDetector:
         baseline = self._load_baseline()
         result = RegressionResult(baseline_loaded=baseline is not None)
 
-        for row in scorecard_rows:
+        for row in tqdm(scorecard_rows, desc="Processing", unit="item"):
             if baseline is None:
                 result.records.append(
                     RegressionRecord(

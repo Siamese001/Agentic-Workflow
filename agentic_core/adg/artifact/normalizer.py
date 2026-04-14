@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("normalizer", "p4obs", "metric_1")
 _emit_emits_metric_event("normalizer", "p4obs", "metric_2")
@@ -311,7 +312,7 @@ class ArtifactNormalizer:
         nodes: dict[str, dict] = {}
 
         # Register all entity nodes first
-        for ent in sorted(artifact.entities, key=lambda e: e.adg_name):
+        for ent in tqdm(sorted(artifact.entities, key=lambda e: e.adg_name), desc="Processing", unit="item"):
             if ent.adg_name not in name_to_id:
                 nid = len(name_to_id)
                 name_to_id[ent.adg_name] = nid
@@ -334,7 +335,7 @@ class ArtifactNormalizer:
 
         # Step 2: compact edges
         edges: list[dict] = []
-        for rel in artifact.relations:
+        for rel in tqdm(artifact.relations, desc="Processing", unit="item"):
             e: dict = {
                 "s": name_to_id[rel.from_name],
                 "d": name_to_id[rel.to_name],
@@ -389,7 +390,7 @@ class ArtifactNormalizer:
         id_to_node: dict[int, dict] = {int(k): v for k, v in ng.nodes.items()}
 
         entities = []
-        for node in sorted(id_to_node.values(), key=lambda n: n["n"]):
+        for node in tqdm(sorted(id_to_node.values(), key=lambda n: n["n"]), desc="Processing", unit="item"):
             entities.append(
                 {
                     "adg_name": node["n"],
@@ -403,7 +404,7 @@ class ArtifactNormalizer:
             )
 
         relations = []
-        for e in ng.edges:
+        for e in tqdm(ng.edges, desc="Processing", unit="item"):
             src = id_to_node[e["s"]]
             dst = id_to_node[e["d"]]
             rel = {

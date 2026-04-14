@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("shadow_drift_analyzer", "p4obs", "metric_1")
 _emit_emits_metric_event("shadow_drift_analyzer", "p4obs", "metric_2")
@@ -240,7 +241,7 @@ class ShadowDriftAnalyzer:
                 deterministic_digest=self._compute_digest([], profile_id, now_utc),
             )
         cosine_values = []
-        for record in shadow_records:
+        for record in tqdm(shadow_records, desc="Processing", unit="item"):
             if "primary_shadow_cosine" in record:
                 cosine_values.append(float(record["primary_shadow_cosine"]))
         if not cosine_values:
@@ -401,7 +402,7 @@ class ShadowDriftAnalyzer:
 
         # Group violations by layer type
         layer_violations = {}
-        for violation in coherence_violations:
+        for violation in tqdm(coherence_violations, desc="Processing", unit="item"):
             layer = violation.get("layer_type", "unknown")
             if layer not in layer_violations:
                 layer_violations[layer] = []

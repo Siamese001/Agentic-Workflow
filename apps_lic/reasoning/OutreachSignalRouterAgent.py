@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("OutreachSignalRouterAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("OutreachSignalRouterAgent", "p4obs", "metric_2")
@@ -559,7 +560,7 @@ class OutreachHealingCycle:
         agents_executed: list[str] = []
         passed_agents: list[str] = []
         failed_agents: list[str] = []
-        for agent in agents:
+        for agent in tqdm(agents, desc="Processing", unit="item"):
             try:
                 await agent.execute()
                 agents_executed.append(agent.name)

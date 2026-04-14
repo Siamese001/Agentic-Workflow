@@ -37,6 +37,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 # Bootstrap ADG edge emission
 emit_replay_key("tracing_decorators", "L6")
@@ -71,7 +72,7 @@ def _extract_attributes(
     attributes: dict[str, Any] = {}
 
     # Add bound arguments (excluding self/cls)
-    for name, value in bound.arguments.items():
+    for name, value in tqdm(bound.arguments.items(), desc="Processing", unit="item"):
         if name in ("self", "cls"):
             continue
         # Convert to string representation for tracing
@@ -82,7 +83,7 @@ def _extract_attributes(
                 attributes[f"{name}_count"] = len(value)
             elif isinstance(value, dict):
                 attributes[f"{name}_keys"] = list(value.keys())[:10]  # Limit keys
-        except Exception as e:
+        except (TypeError, ValueError) as e:
             # Skip values that can't be serialized
             import logging
 
@@ -154,7 +155,7 @@ def trace_cognitive(
                     if isinstance(result, dict):
                         span.set_attribute("result_keys", list(result.keys()))
                     return result
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError) as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 # Fallback: run without tracing
                 return func(*args, **kwargs)
@@ -208,12 +209,12 @@ def trace_action(
 
             try:
                 with instance.start_span(operation_name, attributes) as span:
-                    start_time = time.time()
+                    start_time = time.monotonic()
                     result = func(*args, **kwargs)
-                    duration_ms = (time.time() - start_time) * 1000
+                    duration_ms = (time.monotonic() - start_time) * 1000
                     span.set_attribute("duration_ms", duration_ms)
                     return result
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError) as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
 
@@ -267,9 +268,9 @@ def trace_tool(
 
             try:
                 with instance.start_span(operation_name, attributes) as span:
-                    start_time = time.time()
+                    start_time = time.monotonic()
                     result = func(*args, **kwargs)
-                    duration_ms = (time.time() - start_time) * 1000
+                    duration_ms = (time.monotonic() - start_time) * 1000
 
                     # Record tool metrics
                     span.set_attribute("duration_ms", duration_ms)
@@ -279,7 +280,7 @@ def trace_tool(
                         span.set_attribute("result_keys", list(result.keys()))
 
                     return result
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError) as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
 
@@ -333,9 +334,9 @@ def trace_orchestrator(
 
             try:
                 with instance.start_span(operation_name, attributes) as span:
-                    start_time = time.time()
+                    start_time = time.monotonic()
                     result = func(*args, **kwargs)
-                    duration_ms = (time.time() - start_time) * 1000
+                    duration_ms = (time.monotonic() - start_time) * 1000
 
                     span.set_attribute("duration_ms", duration_ms)
                     if isinstance(result, dict):
@@ -345,7 +346,7 @@ def trace_orchestrator(
                             span.set_attribute("agent_count", result["agent_count"])
 
                     return result
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError) as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
 
@@ -402,7 +403,7 @@ def trace_router(
                     result = func(*args, **kwargs)
                     span.set_attribute("destination", str(result) if result else "unknown")
                     return result
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError) as e:
                 logger.debug("Tracing error in %s: %s", operation_name, e)
                 return func(*args, **kwargs)
 

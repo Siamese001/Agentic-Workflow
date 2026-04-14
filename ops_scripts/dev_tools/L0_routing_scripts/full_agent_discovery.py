@@ -257,6 +257,7 @@ from agentic_core.config.constants_config import (
     THRESHOLD,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_entry")
 emit_determinism_digest("trace_full_agent_discovery", "full_agent_discovery_dispatch_exit")
@@ -476,7 +477,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
 
         stem_clean = _re.sub(r"[^a-zA-Z0-9]", "", file_path.stem.lower())
         chosen = class_nodes[0]
-        for node in class_nodes:
+        for node in tqdm(class_nodes, desc="Processing", unit="item"):
             if _re.sub(r"[^a-zA-Z0-9]", "", node.name.lower()) == stem_clean:
                 chosen = node
                 break
@@ -541,7 +542,7 @@ def perform_deep_integrity_scan(
     verified_agents = []
     stats = {"verified": 0, "stubs": 0, "invalid": 0, "base_agents": 0, "ghosts": 0}
 
-    for agent_entry in agents:
+    for agent_entry in tqdm(agents, desc="Processing", unit="item"):
         # Normalize path
         rel_path = agent_entry.get("path", "") or agent_entry.get("file", "")
         if not rel_path:

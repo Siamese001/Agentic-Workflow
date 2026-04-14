@@ -141,6 +141,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("reflexion_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("reflexion_engine", "p4obs", "metric_2")
@@ -233,7 +234,7 @@ class ReflexionEngine:
         response: str | None = None
         final_critique: ReflexionCritique | None = None
 
-        for iteration in range(1, self.max_iterations + 1):
+        for iteration in tqdm(range(1, self.max_iterations + 1), desc="Processing", unit="item"):
             memory_summary = memory.summary()
             response = await self.generator_fn(task, response, memory_summary)
 

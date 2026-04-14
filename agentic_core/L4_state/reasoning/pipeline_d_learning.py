@@ -23,6 +23,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_updates_meta_learning_state,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -367,7 +368,7 @@ class CompletenessRAGProposer:
         # Priority order: Depth++ > Enrichment+ > HybridMode > LexicalBoost
         priority_order = ["Depth++", "Enrichment+", "HybridMode", "LexicalBoost"]
 
-        for action in priority_order:
+        for action in tqdm(priority_order, desc="Processing", unit="item"):
             matching = [s for s in triggered if s.trigger_action == action]
             if matching:
                 signal = matching[0]

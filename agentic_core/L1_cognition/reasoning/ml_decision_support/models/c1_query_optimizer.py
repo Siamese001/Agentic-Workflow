@@ -6,7 +6,6 @@ execution plan analysis, index recommendations, performance tuning,
 and query rewrite suggestions.
 """
 
-import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -24,7 +23,9 @@ except ImportError:
 
 from ..config.model_registry import DecisionMode
 from ..features.c1_features import C1FeatureExtractor
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class C1QueryOptimizer(BaseMLModel):
@@ -92,8 +93,7 @@ class C1QueryOptimizer(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.pipeline = model_data.get("pipeline")
             self.feature_names = model_data.get("feature_names", [])
@@ -123,8 +123,7 @@ class C1QueryOptimizer(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -432,7 +431,7 @@ class C1QueryOptimizer(BaseMLModel):
         recommendations = []
 
         # Analyze WHERE clauses for index candidates
-        for predicate in predicates:
+        for predicate in tqdm(predicates, desc="Processing", unit="item"):
             column = predicate.get("column")
             table = predicate.get("table")
             operator = predicate.get("operator")
@@ -473,7 +472,7 @@ class C1QueryOptimizer(BaseMLModel):
         # Analyze JOIN conditions
         join_conditions = query_context.get("join_conditions", [])
 
-        for join in join_conditions:
+        for join in tqdm(join_conditions, desc="Processing", unit="item"):
             left_table = join.get("left_table")
             left_column = join.get("left_column")
             right_table = join.get("right_table")
@@ -838,7 +837,9 @@ class C1QueryOptimizer(BaseMLModel):
 
             # Create feature importance list
             feature_importance = []
-            for i, (name, importance) in enumerate(zip(feature_names, importances)):
+            for i, (name, importance) in tqdm(
+                enumerate(zip(feature_names, importances)), desc="Processing", unit="item"
+            ):
                 feature_importance.append(
                     {
                         "feature_name": name,
@@ -886,7 +887,7 @@ class C1QueryOptimizer(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for Gradient Boosting
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:
@@ -919,7 +920,7 @@ class C1QueryOptimizer(BaseMLModel):
         X = []
         y = []
 
-        for example in training_data:
+        for example in tqdm(training_data, desc="Processing", unit="item"):
             features = example["features"]
             label = example["label"]
 

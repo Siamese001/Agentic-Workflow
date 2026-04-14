@@ -18,6 +18,8 @@ import ast
 import sys
 from pathlib import Path
 
+from tqdm import tqdm
+
 _ROOT = Path(__file__).resolve().parents[2]
 
 # Directories scanned when running in whole-repo mode
@@ -172,7 +174,7 @@ def check_file(path: Path) -> list[Violation]:
 def check_files(paths: list[Path], verbose: bool = False) -> list[Violation]:
     """Run checks across a list of paths."""
     all_violations: list[Violation] = []
-    for path in paths:
+    for path in tqdm(paths, desc="Processing", unit="item"):
         if not path.suffix == ".py":
             continue
         if _should_skip(path):

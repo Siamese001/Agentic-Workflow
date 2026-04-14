@@ -34,6 +34,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from system_learning.enforcement.determinism import stable_sha256_json
 from system_learning.types.evaluation_spine_types import MetricScore, TrajectoryEvaluationResult
+from tqdm import tqdm
 
 # ADG wiring for trajectory evaluation engine
 _emit_records_execution_trace("trajectory_evaluation_engine", "p0", "trajectory_eval_trace")
@@ -313,7 +314,7 @@ class TrajectoryEvaluationEngine:
 
         correct_count = 0
 
-        for call in tool_calls:
+        for call in tqdm(tool_calls, desc="Processing", unit="item"):
             args = call.get("arguments", {})
 
             # Check for non-empty arguments

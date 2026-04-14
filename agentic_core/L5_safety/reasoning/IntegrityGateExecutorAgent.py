@@ -415,6 +415,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("IntegrityGateExecutorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("IntegrityGateExecutorAgent", "p4obs", "metric_2")
@@ -543,7 +544,9 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
         research_output: DeepResearchOutput,
         result: IntegrityGateResult,
     ) -> None:
-        for Metric in research_output.StrategicLayer.financial_proof_points:
+        for Metric in tqdm(
+            research_output.StrategicLayer.financial_proof_points, desc="Processing", unit="item"
+        ):
             if not Metric.source_citation:
                 result.add_violation(
                     ValidationRejectionReason.UNBOUND_METRICS,
@@ -562,7 +565,7 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
         ]
         for tech in research_output.TechnicalLayer.key_technologies:
             text_to_check.append(tech.implementation_details)
-        for text in text_to_check:
+        for text in tqdm(text_to_check, desc="Processing", unit="item"):
             if not text:
                 continue
             WORDS = re.findall("\\b\\w+(?:-\\w+)*\\b", text.lower())
@@ -698,10 +701,10 @@ class IntegrityGateExecutorAgent(SovereignBaseAgent):
                 self.project_root / "data" / "golden_state",
                 self.project_root / "logs",
             ]
-            for research_dir in research_dirs:
+            for research_dir in tqdm(research_dirs, desc="Processing", unit="item"):
                 if not research_dir.exists():
                     continue
-                for json_file in research_dir.rglob("*.json"):
+                for json_file in tqdm(research_dir.rglob("*.json"), desc="Processing", unit="item"):
                     try:
                         if (
                             "research" not in json_file.name.lower()

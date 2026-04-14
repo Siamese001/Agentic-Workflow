@@ -152,6 +152,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_hygiene", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_hygiene", "p4obs", "metric_2")
@@ -232,11 +233,11 @@ def scan_temp_artifacts(
     # GLOBAL_EXCLUDED_DIRS for production-lens scans but is a valid scan root here).
     effective_ignore = IGNORE_PATTERNS - allowed_roots
 
-    for root_name in sorted(allowed_roots):
+    for root_name in tqdm(sorted(allowed_roots), desc="Processing", unit="item"):
         root_path = repo_root / root_name
         if not root_path.exists():
             continue
-        for item in root_path.rglob("*"):
+        for item in tqdm(root_path.rglob("*"), desc="Processing", unit="item"):
             if not item.is_file():
                 continue
 
@@ -263,12 +264,16 @@ def scan_temp_artifacts(
 def scan_empty_folders(repo_root: Path, allowed_roots: frozenset[str]) -> list[str]:
     """Return repo-relative POSIX paths of truly empty folders."""
     hits: list[str] = []
-    for root_name in sorted(allowed_roots):
+    for root_name in tqdm(sorted(allowed_roots), desc="Processing", unit="item"):
         root_path = repo_root / root_name
         if not root_path.exists():
             continue
-        for dirpath_str, _dirnames, _filenames in sorted(
-            __import__("os").walk(str(root_path), topdown=False),
+        for dirpath_str, _dirnames, _filenames in tqdm(
+            sorted(
+                __import__("os").walk(str(root_path), topdown=False),
+            ),
+            desc="Processing",
+            unit="item",
         ):
             current = Path(dirpath_str)
             if ".git" in current.parts:
@@ -288,12 +293,16 @@ def scan_empty_folders(repo_root: Path, allowed_roots: frozenset[str]) -> list[s
 def scan_init_only_folders(repo_root: Path, allowed_roots: frozenset[str]) -> list[str]:
     """Return repo-relative POSIX paths of folders containing only __init__.py."""
     hits: list[str] = []
-    for root_name in sorted(allowed_roots):
+    for root_name in tqdm(sorted(allowed_roots), desc="Processing", unit="item"):
         root_path = repo_root / root_name
         if not root_path.exists():
             continue
-        for dirpath_str, _dirnames, _filenames in sorted(
-            __import__("os").walk(str(root_path), topdown=False),
+        for dirpath_str, _dirnames, _filenames in tqdm(
+            sorted(
+                __import__("os").walk(str(root_path), topdown=False),
+            ),
+            desc="Processing",
+            unit="item",
         ):
             current = Path(dirpath_str)
             if ".git" in current.parts:

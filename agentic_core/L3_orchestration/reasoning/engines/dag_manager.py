@@ -157,6 +157,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("dag_manager", "p4obs", "metric_1")
 _emit_emits_metric_event("dag_manager", "p4obs", "metric_2")
@@ -411,7 +412,7 @@ class DAGManager(
         """
         nodes = []
         edges = []
-        for node_id in self.graph.nodes:
+        for node_id in tqdm(self.graph.nodes, desc="Processing", unit="item"):
             node_data = self.graph.nodes[node_id]
             hop = node_data.get("hop")
             nodes.append(

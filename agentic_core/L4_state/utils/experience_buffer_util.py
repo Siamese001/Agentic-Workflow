@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("experience_buffer_util", "p4obs", "metric_1")
 _emit_emits_metric_event("experience_buffer_util", "p4obs", "metric_2")
@@ -287,7 +288,7 @@ class ExperienceBuffer:
         """
         all_entries = self.load_all()
         matches = []
-        for entry in all_entries:
+        for entry in tqdm(all_entries, desc="Processing", unit="item"):
             if action and entry.get("action") != action:
                 continue
             if target and entry.get("target") != target:

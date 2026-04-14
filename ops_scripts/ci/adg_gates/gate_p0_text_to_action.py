@@ -17,6 +17,7 @@ from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
 from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
+from tqdm import tqdm
 
 
 class TextToActionGate(ADGGateBase):
@@ -66,7 +67,7 @@ class TextToActionGate(ADGGateBase):
                   AND n.file_path NOT LIKE '%validation%'
                 LIMIT 100
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 node_id, file_path, layer = row[0], row[1], row[2]
                 in_mod = self._is_in_modified_area(file_path)
                 if in_mod:
@@ -133,7 +134,7 @@ class TextToActionGate(ADGGateBase):
                 FROM mv_untrusted_text_to_action_risk
                 WHERE risk_level IN ('high', 'critical')
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 (
                     node_id,
                     file,
@@ -188,7 +189,7 @@ class TextToActionGate(ADGGateBase):
                 FROM mv_actionable_surface_without_schema
                 WHERE gap_type != 'ok'
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 (
                     node_id,
                     file,
@@ -240,7 +241,7 @@ class TextToActionGate(ADGGateBase):
                 FROM mv_structured_output_gaps
                 WHERE gap_type != 'ok'
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 (
                     node_id,
                     file,

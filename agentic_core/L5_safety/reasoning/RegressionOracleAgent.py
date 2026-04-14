@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("RegressionOracleAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("RegressionOracleAgent", "p4obs", "metric_2")
@@ -302,7 +303,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
             tree = _ast.parse(test_code)
         except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
             return [f"SyntaxError in generated code: {e}"]
-        for node in _ast.walk(tree):
+        for node in tqdm(_ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, _ast.Call):
                 func = node.func
                 name = ""
@@ -325,7 +326,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         if not changes:
             Logger.info(f"   No method changes detected in {file_path}")
             return
-        for change in changes:
+        for change in tqdm(changes, desc="Processing", unit="item"):
             test_code, test_file, edge_cases = await self.test_generator.generate_test_code_and_file(change)
             if test_code and test_file:
                 safety_violations = self._ast_safety_check(test_code)
@@ -466,7 +467,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
             List of action dicts with results and batch summary
         """
         actions = []
-        for i, violation in enumerate(violations):
+        for i, violation in tqdm(enumerate(violations), desc="Processing", unit="item"):
             if i >= max_actions:
                 Logger.warning(f"[RegressionOracleAgent] Cleanup budget exhausted ({max_actions})")
                 break
@@ -524,7 +525,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
             Dict with comprehensive execution and cleanup summaries
         """
         all_violations: list[RegressionViolation] = []
-        for test in self.generated_tests:
+        for test in tqdm(self.generated_tests, desc="Processing", unit="item"):
             if not test.passed:
                 all_violations.append(
                     RegressionViolation(

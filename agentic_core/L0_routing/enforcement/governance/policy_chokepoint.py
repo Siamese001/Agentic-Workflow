@@ -8,6 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Any
+from tqdm import tqdm
 
 
 class DecisionType(Enum):
@@ -62,7 +63,7 @@ class PolicyChokepoint:
             )
 
         # Check policy rules
-        for rule in self._policy_rules:
+        for rule in tqdm(self._policy_rules, desc="Processing", unit="item"):
             match = self._check_rule(request, context, rule)
             if match:
                 decision = rule.get("decision", "CERTIFY")
@@ -130,7 +131,7 @@ class PolicyChokepoint:
         """Check if request matches a policy rule."""
         conditions = rule.get("conditions", [])
 
-        for condition in conditions:
+        for condition in tqdm(conditions, desc="Processing", unit="item"):
             field = condition.get("field")
             op = condition.get("op", "eq")
             value = condition.get("value")

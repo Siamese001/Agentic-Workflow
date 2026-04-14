@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("generate_blueprint_metrics_util", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_blueprint_metrics_util", "p4obs", "metric_2")
@@ -242,7 +243,7 @@ def main():
 
         pairs_found = 0
 
-        for blueprint_file in sorted(blueprint_agents):
+        for blueprint_file in tqdm(sorted(blueprint_agents), desc="Processing", unit="item"):
             agent_name = blueprint_file.stem
             canonical_file = validators_dir / blueprint_file.name
 

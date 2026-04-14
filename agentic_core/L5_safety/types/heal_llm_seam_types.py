@@ -142,6 +142,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("heal_llm_seam_types", "p4obs", "metric_1")
 _emit_emits_metric_event("heal_llm_seam_types", "p4obs", "metric_2")
@@ -630,7 +631,7 @@ def build_repo_heal_plan(repo_root: str) -> RepoHealPlan:
     skipped_files = 0
 
     # Deterministic walk: sorted directories and files
-    for dirpath, dirnames, filenames in os.walk(root):
+    for dirpath, dirnames, filenames in tqdm(os.walk(root), desc="Processing", unit="item"):
         rel_dir = Path(dirpath).relative_to(root)
         path_parts = rel_dir.parts
 
@@ -643,7 +644,7 @@ def build_repo_heal_plan(repo_root: str) -> RepoHealPlan:
             continue
 
         # Process files in sorted order
-        for filename in sorted(filenames):
+        for filename in tqdm(sorted(filenames), desc="Processing", unit="item"):
             if not _is_extension_allowed(filename):
                 skipped_files += 1
                 continue
@@ -696,7 +697,7 @@ def apply_repo_heal_plan(
     skipped = 0
     changes_made = False
 
-    for op in plan.operations:
+    for op in tqdm(plan.operations, desc="Processing", unit="item"):
         attempted += 1
         file_path = root / op.path
 

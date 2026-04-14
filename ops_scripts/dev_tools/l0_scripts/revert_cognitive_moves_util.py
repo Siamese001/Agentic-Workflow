@@ -10,6 +10,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "revert_cognitive_moves_util", "uwg_governed_write")
 _emit_writes_through("p1", "revert_cognitive_moves_util", "uwg_governed_write_2")
@@ -29,7 +30,7 @@ def main():
     reverted = 0
     skipped = 0
     errors = 0
-    for original_path_str, decision in checkpoint.items():
+    for original_path_str, decision in tqdm(checkpoint.items(), desc="Processing", unit="item"):
         if decision.get("action") != "MOVE":
             continue
         target_path_rel = decision.get("target_path", "")

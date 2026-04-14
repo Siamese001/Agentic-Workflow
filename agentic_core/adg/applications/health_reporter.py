@@ -120,6 +120,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("health_reporter", "p4obs", "metric_1")
 _emit_emits_metric_event("health_reporter", "p4obs", "metric_2")
@@ -370,7 +371,7 @@ def build_health_report(
     _module_prefix = "ADG::Module::"
     orphan_module_set = set(sm.orphan_modules)
 
-    for entity in artifact.entities:
+    for entity in tqdm(artifact.entities, desc="Processing", unit="item"):
         kind = entity.identity_kind
         if kind == IdentityKind.REPO_MODULE.value:
             report.repo_local_entities += 1
@@ -432,7 +433,7 @@ def build_health_report(
             "null_layer_count": "Too many unmapped layer modules (LAYER_PREFIXES incomplete)",
             "parse_failure_count": "Too many parse failures (scanner reliability degraded)",
         }
-        for rule, threshold in _STRICT_THRESHOLDS.items():
+        for rule, threshold in tqdm(_STRICT_THRESHOLDS.items(), desc="Processing", unit="item"):
             actual = actual_values.get(rule, 0)
             if actual > threshold:
                 report.trust_violations.append(

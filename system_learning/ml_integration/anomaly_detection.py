@@ -35,6 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("ml_anomaly_detection", "ml_anomaly_detection_digest")
 record_execution_trace("ml_anomaly_detection", "ml_anomaly_detection_trace")
@@ -256,7 +257,7 @@ class MLAnomalyDetector:
         anomalies = []
         current_time = time.time()
 
-        for metric_name, value in metrics_data.items():
+        for metric_name, value in tqdm(metrics_data.items(), desc="Processing", unit="item"):
             # Add to training data
             self.add_training_data(metric_name, value, current_time)
 

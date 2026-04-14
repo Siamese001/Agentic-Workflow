@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("undo_core_moves_util", "p4obs", "metric_1")
 _emit_emits_metric_event("undo_core_moves_util", "p4obs", "metric_2")
@@ -171,7 +172,7 @@ def undo_core_moves() -> Any:
         "prompt_governance",
     ]
     moved_count: Any = 0
-    for dir_name in directories:
+    for dir_name in tqdm(directories, desc="Processing", unit="item"):
         core_path: Any = root / dir_name / "core"
         if not core_path.exists():
             continue

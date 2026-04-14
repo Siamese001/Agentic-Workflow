@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("SystemArchitectAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SystemArchitectAgent", "p4obs", "metric_2")
@@ -274,7 +275,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             "L5_POLICY",
         )
         violations = []
-        for file_path in self.ctx.python_files:
+        for file_path in tqdm(self.ctx.python_files, desc="Processing", unit="item"):
             try:  # guardian: File operations with encoding need error-specific handling
                 with open(file_path, encoding="utf-8") as f:
                     content = f.read(500)
@@ -315,13 +316,13 @@ class SystemArchitectAgent(SovereignBaseAgent):
             except ValueError:
                 rel_path: Any = path
             violations.append(f"{rel_path}: {reason}")
-        for root_folder, config in SOVEREIGN_REGISTRY.items():
+        for root_folder, config in tqdm(SOVEREIGN_REGISTRY.items(), desc="Processing", unit="item"):
             root_path: Any = project_root / root_folder
             if not root_path.exists():
                 continue
             if not (root_path / "__init__.py").exists():
                 violations.append(f"{root_folder}: Missing __init__.py (package marker)")
-            for l1_name in config.get("subfolders", []):
+            for l1_name in tqdm(config.get("subfolders", []), desc="Processing", unit="item"):
                 l1_path: Any = root_path / l1_name
                 if l1_path.exists():
                     if not (l1_path / "__init__.py").exists():
@@ -368,7 +369,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
 
             # For each module node, check for cycles in import graph
             circular_deps = []
-            for node in nodes:
+            for node in tqdm(nodes, desc="Processing", unit="item"):
                 if node.entity_type != "Module":
                     continue
 
@@ -445,7 +446,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             dependency_graph = {}
             for mod in module_map.values():
                 dependency_graph[mod] = set()
-            for p, mod in module_map.items():
+            for p, mod in tqdm(module_map.items(), desc="Processing", unit="item"):
                 try:
                     tree = ast.parse(p.read_text(encoding="utf-8"))
                     for node in ast.walk(
@@ -569,7 +570,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         violations: Any = []
         # guardian: allow-path-string
         project_root: Any = Path(self.ctx.project_root or os.getcwd()).resolve()
-        for file_path_str in self.ctx.python_files:
+        for file_path_str in tqdm(self.ctx.python_files, desc="Processing", unit="item"):
             file_path: Any = Path(file_path_str).resolve()
             try:
                 rel_path: Any = file_path.relative_to(project_root)
@@ -599,9 +600,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
 
         violations: Any = []
         max_lines: Any = int(os.getenv("MAX_FILE_LINES", "1000"))
-        for (
-            file_path
-        ) in self.ctx.python_files:  # guardian: File operations with encoding need error-specific handling
+        for file_path in tqdm(
+            self.ctx.python_files, desc="Processing", unit="item"
+        ):  # guardian: File operations with encoding need error-specific handling
             try:
                 resolved_path: Any = Path(file_path).resolve()
                 with open(resolved_path, encoding="utf-8") as f:
@@ -621,7 +622,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Handles both physical package initialization and logic mutation.
         """
         structural_fixes = [v for v in violations if "Missing __init__.py" in v]
-        for fix in structural_fixes:
+        for fix in tqdm(structural_fixes, desc="Processing", unit="item"):
             folder_rel = fix.split(":")[0].strip()
             # guardian: allow-path-string
             folder_path = Path(os.getcwd()) / folder_rel
@@ -683,7 +684,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         max_rounds = 5
         current_code = original_code
         previous_failure = None
-        for round_num in range(1, max_rounds + 1):
+        for round_num in tqdm(range(1, max_rounds + 1), desc="Processing", unit="item"):
             print(f"      [Round {round_num}/{max_rounds}] Healing {check_type} → {Path(file_path).name}")
             mutated_code = await self.resilient_mutation(
                 Task=Task,

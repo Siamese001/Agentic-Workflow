@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("retry_policy_config", "p4obs", "metric_1")
 _emit_emits_metric_event("retry_policy_config", "p4obs", "metric_2")
@@ -354,7 +355,7 @@ class RetryPolicy:
         total_delay = 0.0
         last_exception = None
 
-        for attempt in range(retry_config.max_attempts):
+        for attempt in tqdm(range(retry_config.max_attempts), desc="Processing", unit="item"):
             time.time()
 
             try:

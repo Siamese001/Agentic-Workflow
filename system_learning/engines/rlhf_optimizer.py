@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rlhf_optimizer", "p4obs", "metric_1")
 _emit_emits_metric_event("rlhf_optimizer", "p4obs", "metric_2")
@@ -275,7 +276,7 @@ class DefaultDeterministicRLHFOptimizer:
                 ),
                 reverse=True,
             )
-            for pair in sorted_pairs:
+            for pair in tqdm(sorted_pairs, desc="Processing", unit="item"):
                 human_decision = pair.get("human_decision", "")
                 pair_reasons = pair.get("reasons", [])
                 if human_decision == "APPROVE":

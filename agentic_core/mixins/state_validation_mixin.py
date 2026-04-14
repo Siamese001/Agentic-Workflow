@@ -209,7 +209,7 @@ class StateValidationMixin:
             }
             s = json.dumps(payload, sort_keys=True)
             return hashlib.sha256(s.encode()).hexdigest()
-        except Exception as e:
+        except (TypeError, ValueError, KeyError) as e:
             self._sv_logger.warning(f"Could not generate idempotency hash: {e}")
             return None
 
@@ -254,7 +254,7 @@ class StateValidationMixin:
                         )
                     except asyncio.TimeoutError:
                         raise StateValidationError(f"Pre-condition check timeout for {func.__name__}")
-                    except Exception as e:
+                    except (ValueError, RuntimeError, AttributeError) as e:
                         raise StateValidationError(f"Pre-condition failed: {e}")
                 result = await func(self, *args, **kwargs)
                 if post:
@@ -263,7 +263,7 @@ class StateValidationMixin:
                         for condition in post_conditions:
                             if not condition(self, result):
                                 raise StateValidationError(f"Post-condition failed for {func.__name__}")
-                    except Exception as e:
+                    except (ValueError, RuntimeError, AttributeError) as e:
                         raise StateValidationError(f"Post-condition error in {func.__name__}: {e}")
                 if idempotent and op_hash:
                     self._operation_ledger[op_hash] = result

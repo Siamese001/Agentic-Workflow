@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("StructuralEngineerAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("StructuralEngineerAgent", "p4obs", "metric_2")
@@ -240,14 +241,14 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
         violations: Any = []
         max_methods: Any = int(os.getenv("MAX_CLASS_METHODS", "20"))
         max_lines: Any = int(os.getenv("MAX_CLASS_LINES", "500"))
-        for file_path in self.ctx.python_files:
+        for file_path in tqdm(self.ctx.python_files, desc="Processing", unit="item"):
             try:
                 resolved_path: Any = Path(file_path).resolve()
                 with open(resolved_path, encoding="utf-8") as f:
                     content: Any = f.read()
                     tree: Any = ast.parse(content)
                     content.splitlines()
-                for node in ast.walk(tree):
+                for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                     if isinstance(node, ast.ClassDef):
                         method_count: Any = sum(
                             1 for n in node.body if isinstance(n, ast.FunctionDef | ast.AsyncFunctionDef)
@@ -284,7 +285,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
 
         violations: Any = []
         max_lines: Any = int(os.getenv("MAX_FUNCTION_LINES", "50"))
-        for file_path in self.ctx.python_files:
+        for file_path in tqdm(self.ctx.python_files, desc="Processing", unit="item"):
             try:
                 resolved_path: Any = Path(file_path).resolve()
                 with open(resolved_path, encoding="utf-8") as f:
@@ -318,7 +319,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
         """
         violations: Any = []
         max_complexity: Any = int(os.getenv("MAX_CYCLOMATIC_COMPLEXITY", "10"))
-        for file_path in self.ctx.python_files:
+        for file_path in tqdm(self.ctx.python_files, desc="Processing", unit="item"):
             try:
                 resolved_path: Any = Path(file_path).resolve()
                 with open(resolved_path, encoding="utf-8") as f:
@@ -396,7 +397,7 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
         max_rounds = 5
         current_code = original_code
         previous_failure = None
-        for round_num in range(1, max_rounds + 1):
+        for round_num in tqdm(range(1, max_rounds + 1), desc="Processing", unit="item"):
             print(
                 f"      [Round {round_num}/{max_rounds}] Healing Key {violation_key} → {Path(file_path).name}",
             )

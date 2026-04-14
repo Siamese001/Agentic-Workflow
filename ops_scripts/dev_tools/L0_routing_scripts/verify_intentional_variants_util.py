@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verify_intentional_variants_util", "p4obs", "metric_1")
 _emit_emits_metric_event("verify_intentional_variants_util", "p4obs", "metric_2")
@@ -342,7 +343,7 @@ def scan_for_duplicates():
     from agentic_core.utils.runners.ssot_discovery_validator import get_data_files, get_python_files
 
     all_files = list(get_python_files(project_root)) + list(get_data_files(project_root))
-    for file_path in all_files:
+    for file_path in tqdm(all_files, desc="Processing", unit="item"):
         if not file_path.is_file():
             continue
         if any(excluded in file_path.parts for excluded in exclude_dirs):
@@ -389,7 +390,7 @@ def main():
     intentional_variants = []
     needs_review = []
 
-    for filename, file_info in sorted(filename_groups.items()):
+    for filename, file_info in tqdm(sorted(filename_groups.items()), desc="Processing", unit="item"):
         # Check if all hashes are the same (identical content)
         hashes = {f["hash"] for f in file_info}
 
@@ -441,7 +442,9 @@ def main():
         print("=" * 120)
         print()
 
-        for idx, (filename, file_info, analysis) in enumerate(intentional_variants, 1):
+        for idx, (filename, file_info, analysis) in tqdm(
+            enumerate(intentional_variants, 1), desc="Processing", unit="item"
+        ):
             print(f"[{idx}] {filename}")
             print(f"    Copies: {len(file_info)}")
             print(f"    Variant Confidence: {analysis['confidence'].upper()}")

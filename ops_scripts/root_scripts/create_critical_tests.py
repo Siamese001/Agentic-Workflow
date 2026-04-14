@@ -11,6 +11,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "create_critical_tests", "uwg_governed_write")
 _emit_writes_through("p1", "create_critical_tests", "uwg_governed_write_2")
@@ -138,7 +139,7 @@ def main():
     critical_modules = get_critical_missing_modules()
     print(f"Creating {len(critical_modules)} critical test files...\n")
     created_count = 0
-    for module_path, test_path in critical_modules:
+    for module_path, test_path in tqdm(critical_modules, desc="Processing", unit="item"):
         if test_path.exists():
             print(f"Skipping existing: {test_path}")
             continue

@@ -13,6 +13,7 @@ from typing import Any
 
 from ..config.feature_schemas import FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
+from tqdm import tqdm
 
 
 class C0FeatureExtractor(DeterministicFeatureExtractor):
@@ -152,7 +153,7 @@ class C0FeatureExtractor(DeterministicFeatureExtractor):
         date_fields = ["updated_at", "created_at", "publication_date", "date"]
         doc_date = None
 
-        for field in date_fields:
+        for field in tqdm(date_fields, desc="Processing", unit="item"):
             if field in document:
                 date_value = document[field]
                 if isinstance(date_value, str):

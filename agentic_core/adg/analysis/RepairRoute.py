@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Literal
 if TYPE_CHECKING:
     from agentic_core.adg.analysis.GraphDiff import GraphDiff
     from agentic_core.adg.extraction.static_scanner import Edge
+from tqdm import tqdm
 
 RepairAgent = Literal[
     "ArchitectureGovernorAgent",
@@ -153,7 +154,7 @@ def route_violations(edges: list[Edge]) -> list[RepairRoute]:
     severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
     routes: list[RepairRoute] = []
 
-    for edge in edges:
+    for edge in tqdm(edges, desc="Processing", unit="item"):
         entry = _RELATION_TO_ROUTE.get(edge.relation_type)
         if entry is None:
             entry = _RELATION_TO_ROUTE.get(edge.edge_kind)
@@ -190,7 +191,7 @@ def route_diff_violations(diff: GraphDiff) -> list[RepairRoute]:
 
     routes: list[RepairRoute] = []
 
-    for from_name, relation, to_name in diff.new_violations:
+    for from_name, relation, to_name in tqdm(diff.new_violations, desc="Processing", unit="item"):
         routes.append(
             RepairRoute(
                 violation_type="violates",

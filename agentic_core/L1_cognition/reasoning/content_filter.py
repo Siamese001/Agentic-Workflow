@@ -23,6 +23,7 @@ from agentic_core.L1_cognition.types.guardrail_types import (
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_telemetry_event,  # noqa: E402
 )
+from tqdm import tqdm
 
 
 class ContentFilterEngine:
@@ -226,7 +227,7 @@ class ContentFilterEngine:
             checks = []
             modified_content = content
 
-            for filter in self.filters.values():
+            for filter in tqdm(self.filters.values(), desc="Processing", unit="item"):
                 if not filter.enabled:
                     continue
 

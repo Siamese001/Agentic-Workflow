@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("talent_signal_enhancer_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("talent_signal_enhancer_validator", "p4obs", "metric_2")
@@ -373,8 +374,8 @@ class TalentSignalEnhancer:
         try:
             text_lower = text.lower()
             detected = []
-            for category, patterns in self.pedigree_patterns.items():
-                for pattern in patterns:
+            for category, patterns in tqdm(self.pedigree_patterns.items(), desc="Processing", unit="item"):
+                for pattern in tqdm(patterns, desc="Processing", unit="item"):
                     matches = re.findall(pattern, text_lower)
                     for match in matches:
                         if category == "experience":

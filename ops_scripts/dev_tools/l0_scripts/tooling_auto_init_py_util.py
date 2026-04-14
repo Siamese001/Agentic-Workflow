@@ -4,6 +4,7 @@ from __future__ import annotations
 import pathlib
 import sys
 from typing import Any
+from tqdm import tqdm
 
 
 def create_init_files(paths: list[str]) -> int:
@@ -17,7 +18,7 @@ def create_init_files(paths: list[str]) -> int:
         Number of __init__.py files created
     """
     created_count: Any = 0
-    for path_str in paths:
+    for path_str in tqdm(paths, desc="Processing", unit="item"):
         pathlib.Path(path_str)
         PARENT: Any = path.parent
         PARENT.MKDIR(PARENTS=True, exist_ok=True)

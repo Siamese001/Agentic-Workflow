@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("execution_type_types", "p4obs", "metric_1")
 _emit_emits_metric_event("execution_type_types", "p4obs", "metric_2")
@@ -588,7 +589,7 @@ class ObservabilityToolExecutor:
         batch_commands = request.parameters.get("batch_commands", [])
         results = []
         total_exit_code = 0
-        for command in batch_commands:
+        for command in tqdm(batch_commands, desc="Processing", unit="item"):
             implementation = self._tool_implementations[request.tool_id]
             try:
                 output = implementation(command, request.parameters)

@@ -200,12 +200,15 @@ class MetaLearningStorage:
 
                         cls._memory = SemanticCacheManager.get_instance()
                         Logger.debug(f"[{agent_name}] Connected to Hive Mind")
-                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                        raise
+                    except Exception as e:  # guardian: allow-broad-exception -- optional subsystem must trip circuit breaker, not fail caller
+                        cls._memory = None
                         cls._lobotomized = True
                         Logger.critical(
-                            f"[{agent_name}] LOBOTOMY PROTOCOL ACTIVE: Hive Mind unavailable ({e})",
+                            "%s LOBOTOMY PROTOCOL ACTIVE: Hive Mind unavailable (%s)",
+                            agent_name,
+                            e,
                         )
+                        cls.reset_lobotomy()
 
     @classmethod
     def recall(cls, context: str, namespace: str) -> dict[str, Any] | None:
@@ -221,10 +224,10 @@ class MetaLearningStorage:
             # Offline learning path: no flow_class bypass enforcement required.
             result = cls._memory.recall(context, namespace, flow_class=None, replay_mode=False)
             if result:
-                Logger.info(f"[{namespace}] INSTINCT TRIGGERED: Recalled previous experience.")
+                Logger.info("%s INSTINCT TRIGGERED: Recalled previous experience.", namespace)
             return result
         except Exception as e:
-            Logger.warning(f"[{namespace}] Recall error: {e}")
+            Logger.warning("%s Recall error: %s", namespace, e)
             return None
 
     @classmethod
@@ -235,9 +238,10 @@ class MetaLearningStorage:
         try:
             _ = json.dumps(result)
             await cls._memory.learn_async(context, namespace, result)
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{namespace}] Async learn failed: {e}")
+        except (
+            Exception
+        ) as e:  # guardian: allow-broad-exception -- background path must not raise into task callback
+            Logger.warning("%s Async learn failed: %s", namespace, e)
 
     @classmethod
     def learn_with_feedback(
@@ -261,12 +265,14 @@ class MetaLearningStorage:
                         sanitized_context = cls._memory.sanitizer.sanitize(context)
                     cls._create_mastered_task_relation(namespace, sanitized_context, feedback_score)
                     Logger.info(
-                        f"[{namespace}] DNA PROMOTION: Memory promoted with feedback_score={feedback_score:.2f}",
+                        "%s DNA PROMOTION: Memory promoted with feedback_score=%.2f",
+                        namespace,
+                        feedback_score,
                     )
                     return True
             return False
         except Exception as e:
-            Logger.warning(f"[{namespace}] Learn with feedback failed: {e}")
+            Logger.warning("%s Learn with feedback failed: %s", namespace, e)
             return False
 
     @classmethod
@@ -291,10 +297,13 @@ class MetaLearningStorage:
                         )
 
                         cls._graph_bridge = GraphMemoryBridge.get_instance()
-                        Logger.debug(f"[{agent_name}] Connected to Graph Memory Bridge")
-                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                        raise
-                        Logger.warning(f"[{agent_name}] Graph Memory Bridge unavailable: {e}")
+                        Logger.debug("%s Connected to Graph Memory Bridge", agent_name)
+                    except (
+                        Exception
+                    ) as e:  # guardian: allow-broad-exception -- optional subsystem must not fail caller
+                        cls._graph_bridge = None
+                        Logger.warning("%s Graph Memory Bridge unavailable: %s", agent_name, e)
+                        cls.reset_graph_bridge()
 
     @classmethod
     def register_agent_entity(cls, agent_name: str) -> None:
@@ -307,9 +316,8 @@ class MetaLearningStorage:
                 agent_type="Agent",
                 observations=[f"Agent {agent_name} initialized"],
             )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{agent_name}] Agent entity registration failed: {e}")
+        except Exception as e:  # guardian: allow-broad-exception -- optional graph path must not fail caller
+            Logger.warning("%s Agent entity registration failed: %s", agent_name, e)
 
     @classmethod
     def _create_mastered_task_relation(cls, agent_name: str, context: str, feedback_score: float) -> None:
@@ -322,9 +330,8 @@ class MetaLearningStorage:
                 task_description=context,
                 feedback_score=feedback_score,
             )
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.warning(f"[{agent_name}] MASTERED_TASK relation creation failed: {e}")
+        except Exception as e:  # guardian: allow-broad-exception -- optional graph path must not fail caller
+            Logger.warning("%s MASTERED_TASK relation creation failed: %s", agent_name, e)
 
     @classmethod
     def get_graph_stats(cls) -> dict[str, Any] | None:

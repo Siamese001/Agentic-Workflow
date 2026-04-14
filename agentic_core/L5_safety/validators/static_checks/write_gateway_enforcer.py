@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("write_gateway_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("write_gateway_enforcer", "p4obs", "metric_2")
@@ -244,7 +245,7 @@ class WriteGatewayVisitor(ast.NodeVisitor):
         if self._check_allowlist():
             self.generic_visit(node)
             return
-        for item in node.items:
+        for item in tqdm(node.items, desc="Processing", unit="item"):
             if isinstance(item.context_expr, ast.Call):
                 if isinstance(item.context_expr.func, ast.Name) and item.context_expr.func.id == "open":
                     mode_arg = None
@@ -315,7 +316,7 @@ def scan_repository_for_writes(repo_root: Path) -> list[tuple[str, int, str, str
         List of (file_path, lineno, rule_id, snippet) tuples, sorted deterministically
     """
     all_violations = []
-    for scan_root in _WRITE_SCAN_ROOTS:
+    for scan_root in tqdm(_WRITE_SCAN_ROOTS, desc="Processing", unit="item"):
         scan_path = repo_root / scan_root
         if not scan_path.exists():
             continue

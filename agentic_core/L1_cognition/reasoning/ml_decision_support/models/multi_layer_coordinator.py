@@ -5,7 +5,6 @@ Ensemble model for coordinating decisions across multiple ML layers,
 providing unified recommendations and conflict resolution.
 """
 
-import pickle
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -15,7 +14,9 @@ import numpy as np
 
 from ..config.feature_schemas import FeatureSchema
 from ..config.model_registry import DecisionMode
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class MultiLayerCoordinator(BaseMLModel):
@@ -179,8 +180,7 @@ class MultiLayerCoordinator(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.model_weights = model_data.get("model_weights")
             self.feature_names = model_data.get("feature_names", [])
@@ -212,8 +212,7 @@ class MultiLayerCoordinator(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -425,7 +424,7 @@ class MultiLayerCoordinator(BaseMLModel):
         """
         resolution_strategies = []
 
-        for layer in conflicting_layers:
+        for layer in tqdm(conflicting_layers, desc="Processing", unit="item"):
             prediction = layer_predictions.get(layer, {})
 
             # Determine resolution strategy based on layer priority and confidence
@@ -562,7 +561,7 @@ class MultiLayerCoordinator(BaseMLModel):
 
         # Identify conflicts (layers with different actions)
         if len(action_groups) > 1:
-            for action, layers in action_groups.items():
+            for action, layers in tqdm(action_groups.items(), desc="Processing", unit="item"):
                 if len(layers) < len(layer_predictions):  # Minority action
                     conflicts.append(
                         {
@@ -749,7 +748,7 @@ class MultiLayerCoordinator(BaseMLModel):
         elif decision == "Optimize_First":
             # Prioritize optimization layers (L4, C1)
             optimization_layers = ["L4"]
-            for layer in optimization_layers:
+            for layer in tqdm(optimization_layers, desc="Processing", unit="item"):
                 if layer in layer_predictions:
                     prediction = layer_predictions[layer]
                     step = {
@@ -852,7 +851,7 @@ class MultiLayerCoordinator(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for ensemble
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:
@@ -885,7 +884,7 @@ class MultiLayerCoordinator(BaseMLModel):
         X = []
         y = []
 
-        for example in training_data:
+        for example in tqdm(training_data, desc="Processing", unit="item"):
             features = example["features"]
             label = example["label"]
 

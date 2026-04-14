@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
 _log = logging.getLogger("apps_rfp.tools.rfp_dry_run_tool")
@@ -26,7 +27,7 @@ def main() -> int:
     from apps_rfp.types.rfp_types import ArchitecturePosture, RfpRequest
 
     failures = 0
-    for industry in _INDUSTRIES:
+    for industry in tqdm(_INDUSTRIES, desc="Processing", unit="item"):
         try:
             req = RfpRequest(
                 problem_statement=_BRIEF,

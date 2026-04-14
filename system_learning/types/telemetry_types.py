@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("telemetry_types", "telemetry_types_digest")
 record_execution_trace("telemetry_types", "telemetry_types_trace")
@@ -153,7 +154,7 @@ def canonical_bytes(slice_obj: TelemetrySlice) -> bytes:
         key=lambda e: (e.ts_utc, e.kind, e.payload_hash, e.trace_id, e.span_id),
     )
     parts = [str(slice_obj.window_start_utc).encode("utf-8"), str(slice_obj.window_end_utc).encode("utf-8")]
-    for event in sorted_events:
+    for event in tqdm(sorted_events, desc="Processing", unit="item"):
         event_parts = [
             str(event.ts_utc).encode("utf-8"),
             event.kind.encode("utf-8"),

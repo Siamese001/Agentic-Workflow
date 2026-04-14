@@ -270,7 +270,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         except AssertionError as e:
             Logger.warning(f"[SELF-TEST FAILED] {self.__class__.__name__}: {e}")
             return False
-        except Exception as e:
+        except (AttributeError, RuntimeError, OSError) as e:
             Logger.error(f"[SELF-TEST ERROR] {self.__class__.__name__}: {e}")
             return False
 

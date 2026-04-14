@@ -9,6 +9,7 @@ import shutil
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
@@ -65,9 +66,9 @@ def execute_scour():
     print(f"Targets Identified: {[str(t) for t in targets]}")
     harvested_count = 0
     report = ["# FINAL LEGACY AUDIT", ""]
-    for folder in targets:
+    for folder in tqdm(targets, desc="Processing", unit="item"):
         print(f"Scanning: {folder}")
-        for f in folder.glob("*.py"):
+        for f in tqdm(folder.glob("*.py"), desc="Processing", unit="item"):
             content = attempt_repair(f)
             val = extract_value(content)
             if val["regex"] or val["prompts"]:

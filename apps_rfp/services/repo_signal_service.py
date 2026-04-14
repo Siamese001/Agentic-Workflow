@@ -8,8 +8,36 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from apps_shared.data_adapters import RepoSignalAdapter
-from apps_shared.data_adapters import RepoSignalSnapshot as SharedRepoSignalSnapshot
+try:
+    from apps_shared.data_adapters import RepoSignalAdapter
+    from apps_shared.data_adapters import RepoSignalSnapshot as SharedRepoSignalSnapshot
+except ImportError:
+
+    @dataclass
+    class SharedRepoSignalSnapshot:  # type: ignore[no-redef]
+        captured_at: str
+        adg: dict[str, Any] = field(default_factory=dict)
+        tests: dict[str, Any] = field(default_factory=dict)
+        ci: dict[str, Any] = field(default_factory=dict)
+        governance: dict[str, Any] = field(default_factory=dict)
+        provenance: dict[str, str] = field(default_factory=dict)
+        baseline: dict[str, Any] = field(default_factory=dict)
+
+    class RepoSignalAdapter:  # type: ignore[no-redef]
+        def __init__(self, repo_root: Path) -> None:
+            self.repo_root = Path(repo_root)
+
+        def collect(self) -> SharedRepoSignalSnapshot:
+            workflows = list((self.repo_root / ".github" / "workflows").glob("*.y*ml"))
+            return SharedRepoSignalSnapshot(
+                captured_at=datetime.utcnow().isoformat() + "Z",
+                adg={"available": False, "reason": "apps_shared_unavailable"},
+                tests={"inventory_available": False, "surface_available": False, "inventory_entries": 0},
+                ci={"workflow_count": len(workflows)},
+                governance={"denominator_baseline_available": False},
+                provenance={"fallback_mode": "standalone"},
+                baseline={},
+            )
 
 
 @dataclass

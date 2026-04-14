@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("system_invariant_scanner", "p4obs", "metric_1")
 _emit_emits_metric_event("system_invariant_scanner", "p4obs", "metric_2")
@@ -300,7 +301,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
         if self._is_allowlisted():
             self.generic_visit(node)
             return
-        for alias in node.names:
+        for alias in tqdm(node.names, desc="Processing", unit="item"):
             if alias.name in self.RESTRICTED_PROVIDERS:
                 self._add_violation(
                     node.lineno,
@@ -369,8 +370,8 @@ def scan_repository_for_bypasses(repo_root: Path) -> list[BypassViolation]:
     """Scan entire repository for sovereignty bypass violations."""
     violations: list[BypassViolation] = []
     patterns = ["**/*.py"]
-    for pattern in patterns:
-        for file_path in repo_root.glob(pattern):
+    for pattern in tqdm(patterns, desc="Processing", unit="item"):
+        for file_path in tqdm(repo_root.glob(pattern), desc="Processing", unit="item"):
             if any(
                 skip in str(file_path) for skip in ["__pycache__", ".git", ".pytest_cache", "node_modules"]
             ):

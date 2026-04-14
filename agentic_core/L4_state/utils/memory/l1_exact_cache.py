@@ -13,8 +13,8 @@ Provides O(1) hash-based exact matching for queries and responses.
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
-import pickle
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -71,6 +71,24 @@ class L1ExactCache:
         self._local_cache: dict[str, Any] = {}  # Fallback local cache
         self._use_local = redis_client is None
 
+    @staticmethod
+    def _deserialize_entry(raw: bytes | str | dict[str, Any]) -> dict[str, Any]:
+        if isinstance(raw, dict):
+            entry = raw
+        else:
+            text = raw.decode("utf-8") if isinstance(raw, (bytes, bytearray)) else raw
+            entry = json.loads(text)
+        if not isinstance(entry, dict):
+            raise ValueError("Cache entry must decode to a dict")
+        for required in ("response", "timestamp", "ttl"):
+            if required not in entry:
+                raise ValueError(f"Cache entry missing required field: {required}")
+        return entry
+
+    @staticmethod
+    def _serialize_entry(entry: dict[str, Any]) -> str:
+        return json.dumps(entry, separators=(",", ":"))
+
     def _generate_key(self, query: str) -> str:
         """Generate deterministic cache key from query.
 
@@ -104,7 +122,7 @@ class L1ExactCache:
             if self._use_local:
                 # Use local cache
                 if cache_key in self._local_cache:
-                    entry = self._local_cache[cache_key]
+                    entry = self._deserialize_entry(self._local_cache[cache_key])
                     self._hit_count += 1
                     return CacheHit(
                         cache_key=cache_key,
@@ -118,7 +136,7 @@ class L1ExactCache:
                 # Use Redis
                 data = self.redis.get(cache_key)
                 if data:
-                    entry = pickle.loads(data)
+                    entry = self._deserialize_entry(data)
                     self._hit_count += 1
                     # _emit_records_cache_hit(_trace_id, cache_key, "l1_exact")
                     return CacheHit(
@@ -175,7 +193,7 @@ class L1ExactCache:
             if self._use_local:
                 self._local_cache[cache_key] = entry
             else:
-                self.redis.setex(cache_key, ttl, pickle.dumps(entry))
+                self.redis.setex(cache_key, ttl, self._serialize_entry(entry))
 
             Logger.debug(f"Cached L1 entry: {cache_key[:32]}...")
             return True
@@ -273,7 +291,7 @@ class L1ExactCache:
                 for key in self.redis.scan_iter(match=f"{self.key_prefix}*"):
                     data = self.redis.get(key)
                     if data:
-                        entry = pickle.loads(data)
+                        entry = self._deserialize_entry(data)
                         if pattern_lower in entry.get("response", "").lower():
                             self.redis.delete(key)
                             count += 1

@@ -35,6 +35,7 @@ from agentic_core.L5_safety.config.structure_blueprint.derived import (
 from agentic_core.L5_safety.config.structure_blueprint.territories import (
     get_all_territories,
 )
+from tqdm import tqdm
 
 
 # ============================================================================
@@ -205,9 +206,9 @@ def validate_no_nested_lcd(path_parts: Sequence[str]) -> dict[str, Any] | None:
         - illegal_subfolder: the LCD subfolder it created
         - message: human-readable explanation
     """
-    for i, part in enumerate(path_parts):
+    for i, part in tqdm(enumerate(path_parts), desc="Processing", unit="item"):
         if part in LEAF_DOMAINS_NO_LCD:
-            for j in range(i + 1, len(path_parts)):
+            for j in tqdm(range(i + 1, len(path_parts)), desc="Processing", unit="item"):
                 child = path_parts[j]
                 if child in REQUIRED_LCD_SUBFOLDERS:
                     has_layer_root_ancestor = any(path_parts[k] in LAYER_ROOTS for k in range(i))
@@ -1297,7 +1298,7 @@ def validate_flat_directory(path_parts: Sequence[str]) -> dict[str, Any] | None:
         - illegal_child: the subdirectory found inside it
         - message: human-readable explanation
     """
-    for i, part in enumerate(path_parts):
+    for i, part in tqdm(enumerate(path_parts), desc="Processing", unit="item"):
         if part in FLAT_DIRECTORIES:
             # If there are 2+ parts after the flat directory before the filename,
             # that means there's a subdirectory inside it.

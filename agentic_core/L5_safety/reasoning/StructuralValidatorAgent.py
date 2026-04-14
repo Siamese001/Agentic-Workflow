@@ -145,6 +145,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("StructuralValidatorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("StructuralValidatorAgent", "p4obs", "metric_2")
@@ -333,7 +334,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
             tree = ast.parse(content)
         except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
-        for node in tree.body:
+        for node in tqdm(tree.body, desc="Processing", unit="item"):
             if isinstance(node, ast.ImportFrom) and node.module:
                 target_layer = self._extract_layer_from_module(node.module)
                 if target_layer and target_layer not in allowed_layers:
@@ -357,7 +358,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         try:
             tree = ast.parse(content)
             file_stem = file_path.stem
-            for node in tree.body:
+            for node in tqdm(tree.body, desc="Processing", unit="item"):
                 if isinstance(node, ast.ClassDef):
                     if (
                         "Agent" in file_path.name

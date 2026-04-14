@@ -9,6 +9,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from enum import Enum
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -72,9 +73,9 @@ class TestQualityAnalyzer:
         current_test_start = -1
         current_test_name = None
 
-        for i, line in enumerate(lines, 1):
+        for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
             # Check for weak assertions using proper context detection
-            for pattern in self.weak_assertion_patterns:
+            for pattern in tqdm(self.weak_assertion_patterns, desc="Processing", unit="item"):
                 if pattern in line and self._is_within_test_method(lines, i):
                     issues.append(
                         TestQualityIssue(

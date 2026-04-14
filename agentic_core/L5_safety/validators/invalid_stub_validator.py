@@ -142,6 +142,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("invalid_stub_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("invalid_stub_validator", "p4obs", "metric_2")
@@ -317,7 +318,7 @@ class InvalidStubDetector(AntiPatternDetector):
         return_count = 0
         has_conditional = False
 
-        for stmt in ast.walk(node):
+        for stmt in tqdm(ast.walk(node), desc="Processing", unit="item"):
             if isinstance(stmt, ast.If):
                 has_conditional = True
             elif isinstance(stmt, ast.Return):
@@ -384,7 +385,9 @@ class InvalidStubDetector(AntiPatternDetector):
         """Check if a return value indicates an error condition."""
         if isinstance(return_value, ast.Dict):
             # Check for error-related keys with error values
-            for key, value in zip(return_value.keys, return_value.values):
+            for key, value in tqdm(
+                zip(return_value.keys, return_value.values), desc="Processing", unit="item"
+            ):
                 if isinstance(key, ast.Constant):
                     if key.value in ("error", "status", "success"):
                         # Check if the value actually indicates error

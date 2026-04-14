@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from tqdm import tqdm
 
 
 class AuthorityBoundaryGate(ADGGateBase):
@@ -56,7 +57,7 @@ class AuthorityBoundaryGate(ADGGateBase):
                        relation_type, source_file, line_no, breach_class
                 FROM mv_authority_boundary_breaches
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 (
                     edge_id,
                     src_file,
@@ -110,7 +111,7 @@ class AuthorityBoundaryGate(ADGGateBase):
                 SELECT file, layer, live_write_count, snapshot_link_count, conflict_type
                 FROM mv_live_future_mutation_conflicts
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 file, layer, live_write_count, snapshot_link_count, conflict_type = row
 
                 summary["live_future_conflicts"] += 1
@@ -150,7 +151,7 @@ class AuthorityBoundaryGate(ADGGateBase):
                 FROM mv_hitl_reclearance_gaps
                 WHERE gap_type = 'write_without_guardrail'
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 node_id, file, layer, write_edge_count, guardrail_edge_count, gap_type = row
 
                 summary["hitl_reclearance_gaps"] += 1

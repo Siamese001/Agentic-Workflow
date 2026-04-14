@@ -5,7 +5,6 @@ LambdaMART model for ranking DAG branches based on execution priority,
 resource efficiency, and workflow optimization criteria.
 """
 
-import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -19,7 +18,9 @@ except ImportError:
 
 from ..config.model_registry import DecisionMode
 from ..features.l3_features import L3FeatureExtractor
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class L3BranchRanker(BaseMLModel):
@@ -74,8 +75,7 @@ class L3BranchRanker(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.model = model_data.get("model")
             self.feature_names = model_data.get("feature_names", [])
@@ -113,8 +113,7 @@ class L3BranchRanker(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -262,7 +261,7 @@ class L3BranchRanker(BaseMLModel):
         # Predict ranking scores for each branch
         branch_scores = []
 
-        for i, branch in enumerate(branches):
+        for i, branch in tqdm(enumerate(branches), desc="Processing", unit="item"):
             # Create context for this branch
             context = {
                 "branch": branch,
@@ -373,7 +372,7 @@ class L3BranchRanker(BaseMLModel):
             # Find branches with no unprocessed dependencies
             ready_branches = []
 
-            for branch_score in remaining_branches:
+            for branch_score in tqdm(remaining_branches, desc="Processing", unit="item"):
                 branch = branch_score["branch"]
                 dependencies = branch.get("dependencies", [])
 
@@ -412,7 +411,9 @@ class L3BranchRanker(BaseMLModel):
 
             # Create feature importance list
             feature_importance = []
-            for i, (name, importance) in enumerate(zip(feature_names, self.feature_importances)):
+            for i, (name, importance) in tqdm(
+                enumerate(zip(feature_names, self.feature_importances)), desc="Processing", unit="item"
+            ):
                 feature_importance.append(
                     {
                         "feature_name": name,
@@ -446,7 +447,7 @@ class L3BranchRanker(BaseMLModel):
 
         try:
             feature_vector = []
-            for feature_name in self.feature_names:
+            for feature_name in tqdm(self.feature_names, desc="Processing", unit="item"):
                 value = features.get(feature_name, 0.0)  # Default to 0 if missing
 
                 # Convert to numeric
@@ -496,7 +497,7 @@ class L3BranchRanker(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for LambdaMART
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:
@@ -533,7 +534,7 @@ class L3BranchRanker(BaseMLModel):
         group = []  # For LambdaMART ranking
 
         current_group = []
-        for example in training_data:
+        for example in tqdm(training_data, desc="Processing", unit="item"):
             features = example["features"]
             label = example["label"]  # Ranking score or relevance
             query_id = example.get("query_id", 0)

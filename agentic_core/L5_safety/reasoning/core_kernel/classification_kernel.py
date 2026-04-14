@@ -42,6 +42,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "classification_kernel", "uwg_governed_write")
 _emit_writes_through("p1", "classification_kernel", "uwg_governed_write_2")
@@ -422,7 +423,7 @@ def _classify_impl(path: Path) -> FileType:
     if any(k in path.stem.lower() for k in config_keywords):
         # Check if CONFIG file contains executable methods (violation)
         has_executable_methods = False
-        for node in class_nodes:
+        for node in tqdm(class_nodes, desc="Processing", unit="item"):
             for item in node.body:
                 if isinstance(item, ast.FunctionDef):
                     # Skip __init__, __post_init__, property getters, and dunder methods
@@ -559,7 +560,7 @@ def classify_execution_mode(path: Path) -> tuple[str, list[str]]:
     signals: list[str] = []
 
     # Signal 1: weighted_scoring — sum(expr * expr for ...) multi-axis accumulator
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.Call):
             func = node.func
             if isinstance(func, ast.Name) and func.id == "sum":
@@ -588,7 +589,7 @@ def classify_execution_mode(path: Path) -> tuple[str, list[str]]:
 
     # Signal 4: meta_learning — calls to recall_*/store_*/ml_enhanced* attribute/names
     if "meta_learning" not in signals:
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Call):
                 func = node.func
                 attr_name: str | None = None

@@ -11,6 +11,7 @@ import json
 import logging
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -31,7 +32,7 @@ def serialize_source_register(sources: list[Any]) -> list[dict[str, Any]]:
         List of dicts suitable for JSON serialization.
     """
     result = []
-    for s in sources:
+    for s in tqdm(sources, desc="Processing", unit="item"):
         result.append(
             {
                 "source_id": s.source_id,

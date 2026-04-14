@@ -71,6 +71,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("archive_duplicates_util", "p4obs", "metric_1")
 _emit_emits_metric_event("archive_duplicates_util", "p4obs", "metric_2")
@@ -186,7 +187,7 @@ def main():
             sys.exit(1)
     moved_count = 0
     missing_count = 0
-    for rel_path in TARGETS:
+    for rel_path in tqdm(TARGETS, desc="Processing", unit="item"):
         source_path = PROJECT_ROOT / rel_path
         filename = source_path.name
         dest_path = ARCHIVE_BASE / filename

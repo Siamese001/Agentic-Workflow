@@ -11,7 +11,7 @@ import hashlib
 import logging
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_dispatches_agent,
@@ -23,6 +23,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ class ScenarioGenerationAgent:
 
         scenarios: list[dict[str, Any]] = []
 
-        for i in range(scenario_count):
+        for i in tqdm(range(scenario_count), desc="Processing", unit="item"):
             scenario = {
                 "scenario_id": f"scen_{_trace_id[:8]}_{i}",
                 "description": f"Test scenario {i + 1} for requirements",

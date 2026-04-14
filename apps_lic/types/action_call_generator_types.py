@@ -23,6 +23,7 @@ Non-responsibilities:
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+from tqdm import tqdm
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -121,7 +122,7 @@ class ActionCallGenerator:
 
         self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results: Any = []
-        for attempt in range(1, self.config.max_attempts + 1):
+        for attempt in tqdm(range(1, self.config.max_attempts + 1), desc="Processing", unit="item"):
             cta: Any = self._generate_content(
                 RouteType=RouteType,
                 context=context,

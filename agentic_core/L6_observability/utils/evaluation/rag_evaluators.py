@@ -51,6 +51,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 # P0 governance self-bootstrap
 emit_replay_key("p0", "rag_evaluators")
@@ -154,7 +155,7 @@ class FaithfulnessEvaluator(BaseRAGEvaluator):
         context_text = " ".join(context).lower()
         claims_grounded = 0
 
-        for claim in claims:
+        for claim in tqdm(claims, desc="Processing", unit="item"):
             claim_lower = claim.lower()
             # Simple substring matching (can be enhanced with semantic similarity)
             if claim_lower in context_text:

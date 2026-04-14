@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.runtime.shared_runtime import log_event
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("BoundaryTestingAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("BoundaryTestingAgent", "p4obs", "metric_2")
@@ -236,7 +237,7 @@ class BoundaryTestingAgent(SovereignBaseAgent):
             "recommendations": [],
         }
         try:
-            for test in self.boundary_tests:
+            for test in tqdm(self.boundary_tests, desc="Processing", unit="item"):
                 test_result = await self._execute_boundary_test(test)
                 results["tests_executed"] += 1
                 if test_result.get("edge_case_found"):

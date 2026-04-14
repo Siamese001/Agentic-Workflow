@@ -7,38 +7,58 @@ Type-safe protocols ensure consistent behavior across all orchestrators.
 
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Mapping, Protocol, runtime_checkable
 
-from agentic_core.L0_routing.reasoning.assembly_stage import GovernedPayload
+if TYPE_CHECKING:
+    from agentic_core.L0_routing.reasoning.assembly_stage import GovernedPayload
+else:
+    GovernedPayload = Any
 
 
-@dataclass
+def _serialize_handshake_state(value: Any) -> Any:
+    if value is None:
+        return None
+    if hasattr(value, "value"):
+        return value.value
+    if isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, Mapping):
+        return {str(k): _serialize_handshake_state(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return [_serialize_handshake_state(v) for v in value]
+    return repr(value)
+
+
+@dataclass(frozen=True, slots=True)
 class OrchestrationResult:
     """Result from L3 orchestration processing."""
 
     success: bool
     route_mode: str
     plan_hash: str
-    execution_trace: dict[str, Any] | None = None
+    execution_trace: Mapping[str, Any] | None = None
     handshake_state: Any = None
     determinism_digest: str | None = None
-    human_decision_artifact: dict[str, Any] | None = None
-    metadata: dict[str, Any] | None = None
+    human_decision_artifact: Mapping[str, Any] | None = None
+    metadata: Mapping[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        """Convert to dictionary for serialization."""
+        """Convert to a serialization-safe dictionary."""
         return {
             "success": self.success,
             "route_mode": self.route_mode,
             "plan_hash": self.plan_hash,
-            "execution_trace": self.execution_trace,
-            "handshake_state": self.handshake_state.value
-            if hasattr(self.handshake_state, "value")
-            else str(self.handshake_state),
+            "execution_trace": deepcopy(dict(self.execution_trace))
+            if self.execution_trace is not None
+            else None,
+            "handshake_state": _serialize_handshake_state(self.handshake_state),
             "determinism_digest": self.determinism_digest,
-            "human_decision_artifact": self.human_decision_artifact,
-            "metadata": self.metadata or {},
+            "human_decision_artifact": deepcopy(dict(self.human_decision_artifact))
+            if self.human_decision_artifact is not None
+            else None,
+            "metadata": deepcopy(dict(self.metadata)) if self.metadata is not None else {},
         }
 
 

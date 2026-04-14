@@ -115,6 +115,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("brief_assembly_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("brief_assembly_engine", "p4obs", "metric_2")
@@ -292,7 +293,7 @@ class BriefAssemblyEngine(BaseExecEngine):
         sections: list[BriefSection] = []
         missing: list[str] = []
 
-        for sec_id in required_sections:
+        for sec_id in tqdm(required_sections, desc="Processing", unit="item"):
             schema = _SECTION_SCHEMAS.get(sec_id, {})
             heading = schema.get("heading", sec_id.replace("_", " ").title())
             why = schema.get("why", "")

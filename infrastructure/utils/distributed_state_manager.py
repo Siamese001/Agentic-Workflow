@@ -9,6 +9,7 @@ import json
 import logging
 import random
 import time
+import uuid
 from abc import ABC, abstractmethod
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
@@ -235,13 +236,20 @@ class MultiRegionReplicator:
 
     async def start_replication(self):
         """Start replication process."""
-        self._replication_task = asyncio.create_task(self._replication_worker())
+        if self._replication_task and not self._replication_task.done():
+            return
+        self._replication_task = asyncio.create_task(
+            self._replication_worker(),
+            name="distributed-state-replication",
+        )
         logger.info("Started multi-region replication")
 
     async def stop_replication(self):
         """Stop replication process."""
         if self._replication_task:
             self._replication_task.cancel()
+            await asyncio.gather(self._replication_task, return_exceptions=True)
+            self._replication_task = None
         logger.info("Stopped multi-region replication")
 
     async def store_state(self, snapshot: StateSnapshot) -> bool:
@@ -711,7 +719,7 @@ class DisasterRecoveryManager:
 
     async def create_backup(self, state_type: StateType, layer_type: LayerType, data: dict[str, Any]) -> str:
         """Create backup snapshot."""
-        snapshot_id = f"backup_{state_type.value}_{layer_type.value}_{int(time.time())}"
+        snapshot_id = f"backup_{state_type.value}_{layer_type.value}_{uuid.uuid4().hex}"
 
         snapshot = StateSnapshot(
             snapshot_id=snapshot_id,
@@ -798,10 +806,7 @@ class DistributedStateManager:
 
     async def start(self):
         """Start distributed state management."""
-        try:
-            asyncio.get_event_loop()
-        except RuntimeError:  # guardian: Runtime errors should be prevented with proper validation
-            asyncio.set_event_loop(asyncio.new_event_loop())
+        asyncio.get_running_loop()
         await self.replicator.start_replication()
         await self.health_checker.start_health_checks()
         await self.disaster_recovery.start_recovery_monitoring()
@@ -822,7 +827,7 @@ class DistributedStateManager:
 
     async def store_layer_state(self, layer_type: LayerType, state_data: dict[str, Any]) -> str:
         """Store layer state."""
-        snapshot_id = f"layer_state_{layer_type.value}_{int(time.time())}"
+        snapshot_id = f"layer_state_{layer_type.value}_{uuid.uuid4().hex}"
 
         snapshot = StateSnapshot(
             snapshot_id=snapshot_id,

@@ -127,6 +127,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("docs_structure_guard", "p4obs", "metric_1")
 _emit_emits_metric_event("docs_structure_guard", "p4obs", "metric_2")
@@ -212,7 +213,7 @@ def scan_docs_directory(docs_path: Path) -> dict[str, Any]:
     files_scanned = 0
     filenames_seen = set()
     all_files = sorted(docs_path.rglob("*"))
-    for file_path in all_files:
+    for file_path in tqdm(all_files, desc="Processing", unit="item"):
         if file_path.is_dir():
             continue
         if not is_valid_extension(file_path):

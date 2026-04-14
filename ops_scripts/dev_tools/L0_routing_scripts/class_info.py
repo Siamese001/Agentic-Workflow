@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("class_info", "p4obs", "metric_1")
 _emit_emits_metric_event("class_info", "p4obs", "metric_2")
@@ -303,7 +304,7 @@ def parse_python_file(file_path: Path) -> tuple[list[ClassInfo], list[str], list
         if tree.body and isinstance(tree.body[0], ast.Expr) and isinstance(tree.body[0].value, ast.Constant):
             module_docstring = tree.body[0].value.value
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Classes
             if isinstance(node, ast.ClassDef):
                 bases = []
@@ -678,11 +679,11 @@ def scan_archive_folder(archive_folder: str) -> list[FileAnalysis]:
         print(f"WARNING: Archive folder not found: {archive_path}")
         return analyses
 
-    for root, dirs, files in os.walk(archive_path):
+    for root, dirs, files in tqdm(os.walk(archive_path), desc="Processing", unit="item"):
         # Skip excluded directories
         dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
 
-        for file_name in files:
+        for file_name in tqdm(files, desc="Processing", unit="item"):
             file_path = Path(root) / file_name
 
             # Skip excluded extensions
@@ -764,7 +765,7 @@ def generate_markdown_report(all_analyses: list[FileAnalysis]) -> str:
     )
 
     # Detailed file table by archive
-    for archive in TARGET_ARCHIVES:
+    for archive in tqdm(TARGET_ARCHIVES, desc="Processing", unit="item"):
         archive_files = [a for a in all_analyses if a.relative_path.startswith(archive)]
         if not archive_files:
             continue
@@ -882,7 +883,7 @@ def main():
 
     # Also output JSON for programmatic use
     json_data = []
-    for a in all_analyses:
+    for a in tqdm(all_analyses, desc="Processing", unit="item"):
         json_data.append(
             {
                 "path": str(a.path),

@@ -95,6 +95,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validation_result_types", "p4obs", "metric_1")
 _emit_emits_metric_event("validation_result_types", "p4obs", "metric_2")
@@ -306,7 +307,7 @@ class SectionScopeIntegrator:
 
         self.recovery_loop.reset(self.config.TEMPERATURE)
         validation_results = []
-        for attempt in range(1, self.config.max_attempts + 1):
+        for attempt in tqdm(range(1, self.config.max_attempts + 1), desc="Processing", unit="item"):
             overview = self._generate_content(
                 bullets=bullets,
                 context=context,
@@ -383,7 +384,7 @@ class SectionScopeIntegrator:
         Validate overview does not begin with redundant role prefix.
         BLOCKS if forbidden prefix detected.
         """
-        for pattern in self.FORBIDDEN_PREFIXES:
+        for pattern in tqdm(self.FORBIDDEN_PREFIXES, desc="Processing", unit="item"):
             match = re.match(pattern, overview, re.IGNORECASE)
             if match:
                 return ValidationResult(

@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("titanium_rag_pipeline_util", "p4obs", "metric_1")
 _emit_emits_metric_event("titanium_rag_pipeline_util", "p4obs", "metric_2")
@@ -412,7 +413,7 @@ class TitaniumRAGPipeline:
 
         # 4. Retrieve documents for each query
         all_retrieved = []
-        for sub_query in queries_to_process:
+        for sub_query in tqdm(queries_to_process, desc="Processing", unit="item"):
             # Retrieve dense and sparse results
             dense_results, sparse_results = await retrieval_function(
                 sub_query,
@@ -471,7 +472,9 @@ class TitaniumRAGPipeline:
 
                     # Create documents from web results
                     web_docs = []
-                    for i, result in enumerate(web_results.get("results", [])):
+                    for i, result in tqdm(
+                        enumerate(web_results.get("results", [])), desc="Processing", unit="item"
+                    ):
                         web_doc = type(
                             "WebDocument",
                             (),
@@ -518,7 +521,7 @@ class TitaniumRAGPipeline:
                 async def vector_retriever_func(q: str, k: int) -> list[dict[str, Any]]:
                     # Use already retrieved documents
                     results = []
-                    for doc in retrieved_docs[:k]:
+                    for doc in tqdm(retrieved_docs[:k], desc="Processing", unit="item"):
                         text = ""
                         if hasattr(doc, "metadata") and "text" in doc.metadata:
                             text = doc.metadata["text"]
@@ -551,7 +554,9 @@ class TitaniumRAGPipeline:
                 fused_docs = []
 
                 # Add vector results
-                for i, result in enumerate(fusion_result.vector_results):
+                for i, result in tqdm(
+                    enumerate(fusion_result.vector_results), desc="Processing", unit="item"
+                ):
                     fused_doc = type(
                         "FusedDocument",
                         (),
@@ -610,7 +615,7 @@ class TitaniumRAGPipeline:
         if self.enable_reranking and len(retrieved_docs) > self.top_k_final:
             # Extract document texts from metadata
             doc_texts = []
-            for doc in retrieved_docs:
+            for doc in tqdm(retrieved_docs, desc="Processing", unit="item"):
                 # Try multiple fields for document text
                 if hasattr(doc, "metadata") and "text" in doc.metadata:
                     doc_texts.append(doc.metadata["text"])
@@ -631,7 +636,7 @@ class TitaniumRAGPipeline:
 
             # Map back to documents by text matching
             text_to_doc = {}
-            for doc in retrieved_docs:
+            for doc in tqdm(retrieved_docs, desc="Processing", unit="item"):
                 doc_text = None
                 if hasattr(doc, "metadata") and "text" in doc.metadata:
                     doc_text = doc.metadata["text"]

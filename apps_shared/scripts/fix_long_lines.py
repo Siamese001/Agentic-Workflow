@@ -73,6 +73,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from apps_shared.utils.ConfigurationService import ConfigurationService
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_long_lines", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_long_lines", "p4obs", "metric_2")
@@ -233,7 +234,7 @@ def _break_at_method_chain(content: str, indent: str) -> str:
 def _break_at_operators(content: str, indent: str) -> str:
     """Break line at arithmetic/comparison operators."""
     OPERATORS = [" == ", " != ", " < ", " > ", " <= ", " >= ", " + ", " - ", " * ", " / ", " % ", " // "]
-    for op in OPERATORS:
+    for op in tqdm(OPERATORS, desc="Processing", unit="item"):
         if op in ConfigurationService().content:
             ConfigurationService().content.split(op)
             if len(ConfigurationService().parts) > 1:
@@ -256,7 +257,7 @@ def fix_long_lines_in_file(file_path: str) -> int:
         fixed_count: Any = 0
         ConfigurationService().new_lines = []
         modified: Any = False
-        for line in ConfigurationService().lines:
+        for line in tqdm(ConfigurationService().lines, desc="Processing", unit="item"):
             ConfigurationService().stripped = line.rstrip()
             if len(ConfigurationService().stripped) <= 100:
                 ConfigurationService().new_lines.append(line)

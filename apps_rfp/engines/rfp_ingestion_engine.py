@@ -13,11 +13,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_captures_pattern,
     _emit_records_execution_trace,
     _emit_stores_embedding,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -187,8 +188,10 @@ class PlainTextParser:
             r"(?:mandatory|required)\s*[:\-\s]*([^\n]+\.?)",
         ]
 
-        for pattern in patterns:
-            for match in re.finditer(pattern, req_section, re.IGNORECASE):
+        for pattern in tqdm(patterns, desc="Processing", unit="item"):
+            for match in tqdm(
+                re.finditer(pattern, req_section, re.IGNORECASE), desc="Processing", unit="item"
+            ):
                 req_text = match.group(1).strip()
                 if len(req_text) > 10:  # Filter out noise
                     requirements.append(
@@ -249,7 +252,7 @@ class PlainTextParser:
 
         # Pattern: weighted criteria
         pattern = r"([A-Za-z\s]+)\s*[:\-\s]+(\d+)%?"
-        for match in re.finditer(pattern, eval_section):
+        for match in tqdm(re.finditer(pattern, eval_section), desc="Processing", unit="item"):
             cat = match.group(1).strip()
             weight = float(match.group(2))
             criteria.append(

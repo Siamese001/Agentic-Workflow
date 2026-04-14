@@ -8,6 +8,7 @@ import pathlib
 import shutil
 
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 
 def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathlib.Path]]:
@@ -16,7 +17,7 @@ def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathli
     test_root = pathlib.Path(TESTS_DIR)
     if not test_root.exists():
         return mislocated
-    for test_file in test_root.rglob("test_*.py"):
+    for test_file in tqdm(test_root.rglob("test_*.py"), desc="Processing", unit="item"):
         if "_contracts" in test_file.parts:
             continue
         relative_test_path = test_file.relative_to(test_root)

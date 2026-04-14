@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("operation_category_types", "p4obs", "metric_1")
 _emit_emits_metric_event("operation_category_types", "p4obs", "metric_2")
@@ -533,7 +534,7 @@ class ObservabilityOperationAdapter:
     ) -> OperationOutcome:
         """Execute operation with retry logic."""
         last_error = None
-        for attempt in range(self.config.retry_attempts + 1):
+        for attempt in tqdm(range(self.config.retry_attempts + 1), desc="Processing", unit="item"):
             try:
                 exec_data = {"context": context, "parameters": parameters, "attempt": attempt + 1}
                 result_data = handler(exec_data)

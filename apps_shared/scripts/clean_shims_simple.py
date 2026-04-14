@@ -23,6 +23,7 @@ Logger = logging.getLogger(__name__)
 
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 
 def clean_prompt_governance() -> Any:
@@ -72,7 +73,7 @@ def clean_prompt_governance() -> Any:
         "test_v6_impl_impl_impl.py",
         "test_v6_impl_impl_impl_impl.py",
     ]
-    for filename, import_from in UPDATES.items():
+    for filename, import_from in tqdm(UPDATES.items(), desc="Processing", unit="item"):
         FILEPATH: Any = pg_dir / filename
         if FILEPATH.exists():
             CONTENT: Any = FILEPATH.read_text(encoding="utf-8")
@@ -94,7 +95,7 @@ def clean_prompt_governance() -> Any:
 def clean_other_directories() -> Any:
     """Check and clean other directories for similar patterns."""
     BASE: Any = Path("c:/Git/Agentic-Workflow")
-    for item in BASE.iterdir():
+    for item in tqdm(BASE.iterdir(), desc="Processing", unit="item"):
         if item.is_dir() and item.name not in [
             ".git",
             "__pycache__",

@@ -14,12 +14,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Protocol
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_pulls_context,
     _emit_reads_through,
     _emit_records_execution_trace,
     _emit_stores_embedding,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -114,7 +115,7 @@ class InMemoryProposalStore:
 
         # Calculate mock similarity scores
         scored: list[tuple[str, float]] = []
-        for pid, emb in self._embeddings.items():
+        for pid, emb in tqdm(self._embeddings.items(), desc="Processing", unit="item"):
             score = self._cosine_similarity(query_embedding, emb)
 
             # Apply filters
@@ -129,7 +130,7 @@ class InMemoryProposalStore:
         scored.sort(key=lambda x: x[1], reverse=True)
 
         results: list[RetrievedProposal] = []
-        for pid, score in scored[:n_results]:
+        for pid, score in tqdm(scored[:n_results], desc="Processing", unit="item"):
             prop = self._proposals[pid]
             meta = prop["metadata"]
             content = prop["content"]
@@ -152,7 +153,7 @@ class InMemoryProposalStore:
         """Get proposals by industry."""
         results: list[RetrievedProposal] = []
 
-        for pid, prop in self._proposals.items():
+        for pid, prop in tqdm(self._proposals.items(), desc="Processing", unit="item"):
             meta = prop["metadata"]
             if meta.get("industry") == industry:
                 results.append(
@@ -259,7 +260,7 @@ class ProposalRetrievalEngine:
         proposals = self.store.get_by_industry(industry, limit=20)
 
         sections: list[dict[str, Any]] = []
-        for prop in proposals:
+        for prop in tqdm(proposals, desc="Processing", unit="item"):
             # Extract section if we have structured metadata
             meta = prop.metadata
             if "sections" in meta and section_type in meta["sections"]:

@@ -11,6 +11,7 @@ from typing import Any
 
 from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
+from tqdm import tqdm
 
 
 class L5FeatureExtractor(DeterministicFeatureExtractor):
@@ -406,7 +407,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
         }
 
         total_criticality = 0.0
-        for stakeholder in stakeholders:
+        for stakeholder in tqdm(stakeholders, desc="Processing", unit="item"):
             stakeholder_type = stakeholder.get("type", "employee")
             influence = stakeholder.get("influence", "medium")
 
@@ -485,7 +486,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
             return 0.3  # Low effectiveness if no mitigations
 
         total_effectiveness = 0.0
-        for mitigation in mitigations:
+        for mitigation in tqdm(mitigations, desc="Processing", unit="item"):
             effectiveness = mitigation.get("effectiveness", "medium")
             implementation = mitigation.get("implementation", "partial")
 
@@ -553,7 +554,7 @@ class L5FeatureExtractor(DeterministicFeatureExtractor):
 
         total_strength = 0.0
 
-        for precedent in precedents:
+        for precedent in tqdm(precedents, desc="Processing", unit="item"):
             # Precedent relevance
             relevance = precedent.get("relevance", "low")
             relevance_scores = {"low": 0.2, "medium": 0.5, "high": 0.8, "exact": 1.0}

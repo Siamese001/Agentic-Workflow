@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 import sys
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -58,7 +58,7 @@ _emit_records_execution_trace("p0", "evidence", "__main__")
 _emit_applies_guardrail("p0", "__main__", "p0_governance")
 _emit_reads_policy_state("p0", "__main__", "policy_binding")
 _emit_snapshots_state("p0", "__main__", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,

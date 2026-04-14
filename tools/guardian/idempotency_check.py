@@ -18,6 +18,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -49,7 +50,7 @@ def _check_justification_quality(line: str) -> str | None:
     Returns None if justification is acceptable.
     """
     matches = _GUARDIAN_RE.finditer(line)
-    for match in matches:
+    for match in tqdm(matches, desc="Processing", unit="item"):
         after = line[match.end() :]
         # Accept both ' -- ' (canonical) and ' - ' (legacy) as separators
         if "--" in after:
@@ -85,7 +86,7 @@ def scan_file(filepath: Path) -> list[dict]:
     except ValueError:
         rel_path = str(filepath).replace("\\", "/")
 
-    for i, line in enumerate(lines, 1):
+    for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
         guardian_count = _count_guardians_on_line(line)
         if guardian_count > 1:
             issues.append(
@@ -118,7 +119,7 @@ def scan_new_string(new_string: str, existing_content: str | None = None) -> lis
     Used by pre_write_gate for real-time checking.
     """
     violations = []
-    for line in new_string.splitlines():
+    for line in tqdm(new_string.splitlines(), desc="Processing", unit="item"):
         count = _count_guardians_on_line(line)
         if count > 1:
             violations.append(
@@ -153,7 +154,7 @@ def scan_paths(paths: list[Path], exclude_dirs: set[str] | None = None) -> list[
         exclude_dirs = {".git", "__pycache__", "node_modules", "_archive", "archives"}
 
     all_issues = []
-    for path in paths:
+    for path in tqdm(paths, desc="Processing", unit="item"):
         if path.is_file() and path.suffix == ".py":
             all_issues.extend(scan_file(path))
         elif path.is_dir():

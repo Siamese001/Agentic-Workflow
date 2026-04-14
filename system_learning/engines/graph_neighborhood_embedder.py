@@ -126,6 +126,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("graph_neighborhood_embedder", "p4obs", "metric_1")
 _emit_emits_metric_event("graph_neighborhood_embedder", "p4obs", "metric_2")
@@ -343,7 +344,7 @@ class GraphNeighborhoodEmbedder:
 
             raw_results = query_similarity(query_text, top_k=k, namespace=namespace)
             out: list[NeighborhoodRetrievalResult] = []
-            for r in raw_results:
+            for r in tqdm(raw_results, desc="Processing", unit="item"):
                 ch = r.content_hash
                 meta = self._meta.get(ch, {})
                 out.append(

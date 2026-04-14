@@ -68,6 +68,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("debug_target_mismatch_util", "p4obs", "metric_1")
 _emit_emits_metric_event("debug_target_mismatch_util", "p4obs", "metric_2")
@@ -159,7 +160,7 @@ try:
     non_total = [r for r in rows if r.get("Territory") != "TOTAL"]
     print("Checking all territories for target mismatches:\n")
     mismatches = []
-    for row in non_total:
+    for row in tqdm(non_total, desc="Processing", unit="item"):
         target_inv = row.get("Target Invocation")
         territory = row.get("Territory", "")
         expected = None

@@ -78,6 +78,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("bloat_analysis_util", "p4obs", "metric_1")
 _emit_emits_metric_event("bloat_analysis_util", "p4obs", "metric_2")
@@ -170,11 +171,11 @@ def get_file_stats():
     stats = defaultdict(lambda: {"count": 0, "size": 0})
     folder_stats = defaultdict(lambda: {"py": 0, "other": 0, "total_size": 0})
 
-    for folder in APPROVED:
+    for folder in tqdm(APPROVED, desc="Processing", unit="item"):
         folder_path = ROOT / folder
         if not folder_path.exists():
             continue
-        for f in folder_path.rglob("*"):
+        for f in tqdm(folder_path.rglob("*"), desc="Processing", unit="item"):
             if f.is_file() and "__pycache__" not in str(f):
                 ext = f.suffix.lower()
                 size = f.stat().st_size
@@ -193,11 +194,11 @@ def get_file_stats():
 def find_large_files(min_size_kb=50):
     """Find files larger than threshold."""
     large = []
-    for folder in APPROVED:
+    for folder in tqdm(APPROVED, desc="Processing", unit="item"):
         folder_path = ROOT / folder
         if not folder_path.exists():
             continue
-        for f in folder_path.rglob("*.py"):
+        for f in tqdm(folder_path.rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(f):
                 continue
             size = f.stat().st_size
@@ -229,11 +230,11 @@ def find_duplicate_filenames():
 def find_empty_or_stub_files():
     """Find empty or stub Python files."""
     stubs = []
-    for folder in APPROVED:
+    for folder in tqdm(APPROVED, desc="Processing", unit="item"):
         folder_path = ROOT / folder
         if not folder_path.exists():
             continue
-        for f in folder_path.rglob("*.py"):
+        for f in tqdm(folder_path.rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(f) or f.name == "__init__.py":
                 continue
             try:
@@ -266,11 +267,11 @@ def find_deprecated_markers():
     """Find files with deprecation markers."""
     deprecated = []
     markers = ["DEPRECATED", "TODO: Remove", "TODO: Delete", "LEGACY", "OBSOLETE", "TO BE REMOVED"]
-    for folder in APPROVED:
+    for folder in tqdm(APPROVED, desc="Processing", unit="item"):
         folder_path = ROOT / folder
         if not folder_path.exists():
             continue
-        for f in folder_path.rglob("*.py"):
+        for f in tqdm(folder_path.rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(f):
                 continue
             try:
@@ -288,7 +289,7 @@ def find_deprecated_markers():
 def find_test_files_outside_tests():
     """Find test files outside tests/ folder."""
     misplaced = []
-    for folder in APPROVED:
+    for folder in tqdm(APPROVED, desc="Processing", unit="item"):
         if folder == TESTS_DIR:
             continue
         folder_path = ROOT / folder
@@ -306,11 +307,11 @@ def find_test_files_outside_tests():
 def find_unused_imports():
     """Find files with potentially unused imports (simple heuristic)."""
     candidates = []
-    for folder in [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR]:
+    for folder in tqdm([AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR], desc="Processing", unit="item"):
         folder_path = ROOT / folder
         if not folder_path.exists():
             continue
-        for f in folder_path.rglob("*.py"):
+        for f in tqdm(folder_path.rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(f) or f.name == "__init__.py":
                 continue
             try:
@@ -355,7 +356,7 @@ def find_script_candidates():
     if not scripts_path.exists():
         return candidates
 
-    for f in scripts_path.glob("*.py"):
+    for f in tqdm(scripts_path.glob("*.py"), desc="Processing", unit="item"):
         if f.name.startswith("__"):
             continue
         try:

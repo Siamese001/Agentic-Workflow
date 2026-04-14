@@ -89,6 +89,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("health_check_types_util", "p4obs", "metric_1")
 _emit_emits_metric_event("health_check_types_util", "p4obs", "metric_2")
@@ -348,7 +349,7 @@ class HealthChecker:
         """Run all registered health checks."""
         results: list[CheckResult] = []
         overall_status = HealthStatus.HEALTHY
-        for name, (_check_fn, critical) in self._checks.items():
+        for name, (_check_fn, critical) in tqdm(self._checks.items(), desc="Processing", unit="item"):
             result = self.run_check(name)
             if result:
                 results.append(result)

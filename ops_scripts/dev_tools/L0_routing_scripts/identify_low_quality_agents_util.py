@@ -124,6 +124,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("identify_low_quality_agents_util", "p4obs", "metric_1")
 _emit_emits_metric_event("identify_low_quality_agents_util", "p4obs", "metric_2")
@@ -198,7 +199,7 @@ def main():
     with open(DISCOVERY_FILE, encoding="utf-8") as f:
         agents = json.load(f)
     agent_scores = []
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         score = calculate_quality_score(agent)
         agent_scores.append(
             {

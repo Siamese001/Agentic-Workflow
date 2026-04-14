@@ -98,7 +98,7 @@ class AutoSpanCollector:
         except ImportError:
             Logger.debug("[AUTO_COLLECTOR] Runtime ADG not available")
             self._runtime_adg_enabled = False
-        except Exception as e:
+        except (AttributeError, OSError) as e:
             Logger.error(f"[AUTO_COLLECTOR] Failed to initialize Runtime ADG: {e}")
             self._runtime_adg_enabled = False
 
@@ -155,7 +155,7 @@ class AutoSpanCollector:
             return
 
         self._collection_active = True
-        self._stats["collection_start_time"] = time.time()
+        self._stats["collection_start_time"] = time.monotonic()
 
         # Start collection thread
         self._collection_thread = threading.Thread(
@@ -189,7 +189,11 @@ class AutoSpanCollector:
                 self._collect_from_agents()
                 self._check_buffer_overflow()
                 time.sleep(1.0)  # Collect every second
-            except Exception as e:
+            except (
+                OSError,
+                RuntimeError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- background worker loop must not die; backs off and retries
                 self._stats["collection_errors"] += 1
                 Logger.error(f"[AUTO_COLLECTOR] Collection error: {e}")
                 time.sleep(5.0)  # Back off on error
@@ -248,7 +252,7 @@ class AutoSpanCollector:
                 # Force Runtime ADG persistence
                 result = self._otel_tracer.force_persist_current_spans("auto-collector-flush")
 
-                self._stats["last_flush_time"] = time.time()
+                self._stats["last_flush_time"] = time.monotonic()
                 Logger.info(f"[AUTO_COLLECTOR] Flushed {len(spans_to_flush)} spans to Runtime ADG")
 
                 return len(spans_to_flush)
@@ -256,7 +260,7 @@ class AutoSpanCollector:
                 Logger.warning("[AUTO_COLLECTOR] Runtime ADG not available, spans discarded")
                 return 0
 
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             self._stats["collection_errors"] += 1
             Logger.error(f"[AUTO_COLLECTOR] Failed to flush spans: {e}")
             return 0
@@ -302,7 +306,7 @@ class AutoSpanCollector:
             with span_context:
                 pass  # Span is created and automatically closed
 
-        except Exception as e:
+        except (AttributeError, RuntimeError) as e:
             Logger.debug(f"[AUTO_COLLECTOR] Failed to create Runtime ADG span: {e}")
 
     def flush_all_spans(self) -> int:
@@ -339,7 +343,7 @@ class AutoSpanCollector:
         Returns:
             Dictionary with collection statistics
         """
-        current_time = time.time()
+        current_time = time.monotonic()
         uptime = (
             current_time - self._stats["collection_start_time"] if self._stats["collection_start_time"] else 0
         )

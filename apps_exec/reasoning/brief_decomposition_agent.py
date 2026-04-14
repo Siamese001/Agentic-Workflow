@@ -19,6 +19,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -164,7 +165,9 @@ class BriefDecomposer:
 
         # Build components
         components: list[BriefComponent] = []
-        for idx, (section_type, priority, word_count) in enumerate(section_config, 1):
+        for idx, (section_type, priority, word_count) in tqdm(
+            enumerate(section_config, 1), desc="Processing", unit="item"
+        ):
             comp_id = f"{audience_persona[:3].upper()}-SEC{idx:02d}"
 
             # Map required evidence for this section
@@ -214,7 +217,7 @@ class BriefDecomposer:
         _emit_pulls_context("enterprise", "BriefDecomposer", "decompose_batch")
 
         results: list[BriefDecomposition] = []
-        for persona in personas:
+        for persona in tqdm(personas, desc="Processing", unit="item"):
             try:
                 decomp = self.decompose(persona, source_material)
                 results.append(decomp)

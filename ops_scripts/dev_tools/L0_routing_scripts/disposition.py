@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("disposition", "p4obs", "metric_1")
 _emit_emits_metric_event("disposition", "p4obs", "metric_2")
@@ -269,7 +270,7 @@ class CoreSynthesisAnalyzer:
         """Analyze Control Flow Graph complexity."""
         complexity = 0
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Count control flow structures
             if isinstance(node, ast.If | ast.While | ast.For | ast.Try):
                 complexity += 1
@@ -338,7 +339,7 @@ class CoreSynthesisAnalyzer:
         has_required_methods = False
         has_required_attrs = False
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 # Check methods
                 methods = [item.name for item in node.body if isinstance(item, ast.FunctionDef)]
@@ -359,7 +360,7 @@ class CoreSynthesisAnalyzer:
         """Analyze V2.5 Sovereign Requirements compliance."""
         requirements = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 # Check for autonomy
                 methods = [item.name for item in node.body if isinstance(item, ast.FunctionDef)]
@@ -481,7 +482,7 @@ class CoreSynthesisAnalyzer:
 
         python_files = list(self.base_path.rglob("*.py"))
 
-        for file_path in python_files:
+        for file_path in tqdm(python_files, desc="Processing", unit="item"):
             if file_path.name == "__init__.py":
                 continue
 
@@ -536,7 +537,7 @@ class CoreSynthesisAnalyzer:
         report.append("## 🔬 DETAILED ANALYSIS")
         report.append("")
 
-        for result in self.analysis_results:
+        for result in tqdm(self.analysis_results, desc="Processing", unit="item"):
             report.append(f"### 📄 {result.file_path}")
             report.append("")
             report.append(f"**Disposition:** {result.disposition.value}")
@@ -601,7 +602,7 @@ def main():
 
     # Save detailed results
     detailed_results = []
-    for result in results:
+    for result in tqdm(results, desc="Processing", unit="item"):
         detailed_results.append(
             {
                 "file_path": result.file_path,

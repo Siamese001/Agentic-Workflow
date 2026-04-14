@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("pipeline_stage_status_types", "p4obs", "metric_1")
 _emit_emits_metric_event("pipeline_stage_status_types", "p4obs", "metric_2")
@@ -431,7 +432,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
             output_hash: Hash of the stage output
             metadata: Optional metadata
         """
-        for i, result in enumerate(self.history):
+        for i, result in tqdm(enumerate(self.history), desc="Processing", unit="item"):
             if result.stage_name == stage_name:
                 self.history[i] = StageResult(
                     stage_name=stage_name,
@@ -477,7 +478,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
             LayerSegment.L3_ORCHESTRATION,
             f"PipelineExecution.mark_stage_failed:{stage_name}",
         )
-        for i, result in enumerate(self.history):
+        for i, result in tqdm(enumerate(self.history), desc="Processing", unit="item"):
             if result.stage_name == stage_name:
                 self.history[i] = StageResult(
                     stage_name=stage_name,
@@ -510,7 +511,7 @@ class SignalEnvelope(GenericModel, Generic[T]):
             stage_name: Name of the stage
             reason: Reason for skipping
         """
-        for i, result in enumerate(self.history):
+        for i, result in tqdm(enumerate(self.history), desc="Processing", unit="item"):
             if result.stage_name == stage_name:
                 self.history[i] = StageResult(
                     stage_name=stage_name,

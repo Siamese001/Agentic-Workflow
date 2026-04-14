@@ -72,6 +72,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
+from tqdm import tqdm
 
 APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 SKIP_FILES = {"__init__.py", "conftest.py"}
@@ -131,7 +132,7 @@ def get_node_source(node: ast.AST, source_lines: list[str]) -> str:
 def analyze_class(node: ast.ClassDef, file_path: str, source_lines: list[str]) -> ClassInfo:
     """Analyze a class definition."""
     bases = []
-    for base in node.bases:
+    for base in tqdm(node.bases, desc="Processing", unit="item"):
         if isinstance(base, ast.Name):
             bases.append(base.id)
         elif isinstance(base, ast.Attribute):
@@ -183,7 +184,7 @@ def analyze_file(file_path: Path) -> FileInfo | None:
         return None
     classes = []
     functions = []
-    for node in ast.iter_child_nodes(tree):
+    for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             classes.append(analyze_class(node, str(file_path), source_lines))
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
@@ -234,7 +235,7 @@ def find_exact_duplicate_files(all_files: list[FileInfo]) -> dict[str, list[File
 def select_best_version(duplicates: list[ClassInfo]) -> tuple[ClassInfo, list[ClassInfo]]:
     """Select the best version of a duplicate class."""
     scored = []
-    for cls in duplicates:
+    for cls in tqdm(duplicates, desc="Processing", unit="item"):
         score = 0
         score += cls.method_count * 5
         score += cls.loc * 0.5
@@ -283,12 +284,14 @@ def main():
     print("\n" + "=" * 80)
     print("DUPLICATE CLASSES")
     print("=" * 80)
-    for class_name, duplicates in sorted(dup_classes.items(), key=lambda x: -len(x[1])):
+    for class_name, duplicates in tqdm(
+        sorted(dup_classes.items(), key=lambda x: -len(x[1])), desc="Processing", unit="item"
+    ):
         hash_groups = defaultdict(list)
         for cls in duplicates:
             hash_groups[cls.content_hash].append(cls)
         print(f"\n  {class_name} ({len(duplicates)} copies)")
-        for content_hash, group in hash_groups.items():
+        for content_hash, group in tqdm(hash_groups.items(), desc="Processing", unit="item"):
             if len(group) > 1:
                 best, others = select_best_version(group)
                 print(f"    [EXACT] Keep: {Path(best.file_path).name}")

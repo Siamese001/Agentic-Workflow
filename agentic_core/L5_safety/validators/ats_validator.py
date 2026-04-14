@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ats_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("ats_validator", "p4obs", "metric_2")
@@ -281,7 +282,7 @@ class AtsValidator:
         Moved to Deterministic: Pure string validation logic
         """
         issues: list[str] = []
-        for section_name in resume.keys():
+        for section_name in tqdm(resume.keys(), desc="Processing", unit="item"):
             if section_name.startswith("_"):
                 continue
             normalized = section_name.lower().strip()

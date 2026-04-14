@@ -6,7 +6,6 @@ behavioral pattern analysis, reconstruction error detection,
 multivariate anomaly scoring, and sophisticated alerting.
 """
 
-import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -24,7 +23,9 @@ except ImportError:
 
 from ..config.model_registry import DecisionMode
 from ..features.advanced_l6_features import AdvancedL6FeatureExtractor
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class AdvancedL6Detector(BaseMLModel):
@@ -105,8 +106,7 @@ class AdvancedL6Detector(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.pipeline = model_data.get("pipeline")
             self.feature_names = model_data.get("feature_names", [])
@@ -138,8 +138,7 @@ class AdvancedL6Detector(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -817,7 +816,7 @@ class AdvancedL6Detector(BaseMLModel):
         deviation_score = 0.0
         deviation_factors = []
 
-        for metric, current_value in current_behavior.items():
+        for metric, current_value in tqdm(current_behavior.items(), desc="Processing", unit="item"):
             baseline_value = baseline_behavior.get(metric, current_value)
             if baseline_value > 0:
                 deviation = abs(current_value - baseline_value) / baseline_value
@@ -914,7 +913,7 @@ class AdvancedL6Detector(BaseMLModel):
         health_score = 0.0
         metric_count = 0
 
-        for metric, value in system_metrics.items():
+        for metric, value in tqdm(system_metrics.items(), desc="Processing", unit="item"):
             if "cpu" in metric.lower():
                 # CPU health: lower is better
                 health_score += max(0, 1.0 - value / 100)
@@ -1160,7 +1159,7 @@ class AdvancedL6Detector(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for Autoencoder-inspired model
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:
@@ -1193,7 +1192,7 @@ class AdvancedL6Detector(BaseMLModel):
         X = []
         y = []
 
-        for example in training_data:
+        for example in tqdm(training_data, desc="Processing", unit="item"):
             features = example["features"]
             label = example["label"]
 

@@ -7,6 +7,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 from tools.adg.shared_modules.path_resolver import latest_sqlite
+from tqdm import tqdm
 
 
 def open_db() -> sqlite3.Connection:
@@ -57,7 +58,7 @@ def main() -> None:
         print("=== CONCEPT ABSENCE CHECK (PROD nodes only) ===")
         absent = []
         present = []
-        for kw, label in absence_check.items():
+        for kw, label in tqdm(absence_check.items(), desc="Processing", unit="item"):
             kw_clean = kw.strip()
             pattern = f"%{kw_clean.lower()}%"
             cur.execute(
@@ -80,7 +81,9 @@ def main() -> None:
 
         # --- L1 cognition nodes with LLM ---
         print("\n=== L1 (COGNITION) ALL NODES ===")
-        cur.execute("SELECT adg_name, entity_type, resolved_path FROM nodes WHERE layer='L1' ORDER BY adg_name")
+        cur.execute(
+            "SELECT adg_name, entity_type, resolved_path FROM nodes WHERE layer='L1' ORDER BY adg_name"
+        )
         for n in cur.fetchall():
             print(f"  {n['adg_name']} | {n['entity_type']} | {n['resolved_path']}")
 

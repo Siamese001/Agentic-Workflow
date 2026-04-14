@@ -22,7 +22,11 @@ class SectionRenderer:
 
     def render_json(self, section: ProposalSection) -> str:
         """Render section as formatted JSON."""
-        return json.dumps(section.model_dump(), indent=2, default=str)
+        return json.dumps(
+            section.model_dump() if hasattr(section, "model_dump") else section.dict(),
+            indent=2,
+            default=str,
+        )
 
     def render_markdown(self, section: ProposalSection) -> str:
         """Render section as Markdown."""

@@ -6,12 +6,14 @@ No business logic, no wall-clock usage, pure path selection.
 """
 
 import hashlib
+import json
 import logging
 from enum import Enum
 
 from agentic_core.L0_routing.enforcement.routing_contract import (
     ProposalCommitter,
     RoutingContext,
+    RoutingContractError,
     create_and_commit_routing_contract,
 )
 from agentic_core.L0_routing.utils.routing_telemetry import (
@@ -31,6 +33,30 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from .assembly_stage import GovernedPayload
 
 _log = logging.getLogger(__name__)
+
+
+def _resolve_trace_id() -> str:
+    from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+    active = get_active_execution_trace()
+    if active and getattr(active, "trace_id", None):
+        return active.trace_id
+    return "no-trace:path-router"
+
+
+def _stable_payload_hash(payload: GovernedPayload) -> str:
+    serialized = json.dumps(
+        {
+            "input_text": getattr(payload, "input_text", None),
+            "check_ids": list(getattr(payload, "check_ids", ()) or ()),
+            "sanitized": bool(getattr(payload, "sanitized", False)),
+            "d0_injections": getattr(payload, "d0_injections", None),
+        },
+        sort_keys=True,
+        default=str,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(serialized.encode()).hexdigest()[:32]
 
 
 def _get_routing_gateway():
@@ -87,12 +113,10 @@ class PathRouter:
         Returns:
             Selected Path enum value
         """
-        import uuid as _uuid  # noqa: PLC0415
-
-        _trace_id = str(_uuid.uuid4())
+        _trace_id = _resolve_trace_id()
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "PathRouter.select_path")
-        emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
-        emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
+        emit_replay_key(_trace_id, f"rk:path:{_trace_id[:16]}")
+        emit_determinism_digest(_trace_id, f"dd:path:{_trace_id[:16]}")
 
         from agentic_core.L2_execution.utils.providers import get_clock as _get_clock  # noqa: PLC0415
 
@@ -112,8 +136,8 @@ class PathRouter:
         from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _active = get_active_execution_trace()
-        _rtid = _active.trace_id if _active else f"no-trace:path:{chosen.value}"
-        _payload_hash = hashlib.sha256(repr(payload).encode()).hexdigest()[:32]
+        _rtid = _active.trace_id if _active else f"{_trace_id}:{chosen.value}"
+        _payload_hash = _stable_payload_hash(payload)
         _candidate_routes = [p.value for p in Path]
         _rctx = RoutingContext(
             run_id=_rtid,
@@ -126,12 +150,13 @@ class PathRouter:
         )
         _routing_contract_id = "no-contract"
         try:
-            # ADG scanner: instantiate ProposalCommitter to trigger proposal_commits_routing edge
             _committer = ProposalCommitter()
             _contract = create_and_commit_routing_contract(_rctx)
             _routing_contract_id = _contract.routing_contract_id
-        except (ValueError, TypeError, RuntimeError) as _rce:  # guardian: allow-silent-swallow
-            _log.warning("path_router: routing contract creation failed: %s", _rce)
+        except (ValueError, TypeError, RuntimeError) as _rce:
+            raise RoutingContractError(
+                f"PathRouter refused to emit raw route without contract: chosen={chosen.value} error={_rce}",
+            ) from _rce
         # P2/L0: emit routing telemetry
         _path_end_tick = _get_clock().now_epoch()
         try:
@@ -149,6 +174,6 @@ class PathRouter:
                     routing_end_tick=_path_end_tick,
                 ),
             )
-        except (ValueError, TypeError, RuntimeError) as _te:  # guardian: allow-silent-swallow
-            _log.debug("path_router: telemetry emission failed: %s", _te)
+        except (ValueError, TypeError, RuntimeError) as _te:
+            _log.warning("path_router: telemetry emission failed: %s", _te)
         return chosen

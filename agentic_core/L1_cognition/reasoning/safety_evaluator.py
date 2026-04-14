@@ -55,6 +55,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 emit_replay_key("p0", "safety_evaluator")
 emit_determinism_digest("p0", "safety_evaluator")
@@ -275,7 +276,7 @@ class SafetyEvaluator:
             scores["categories"]["content_filter"] = 1.0  # No issues found
 
         # Category-specific scores from constitutional rules
-        for check in constitutional_report.checks:
+        for check in tqdm(constitutional_report.checks, desc="Processing", unit="item"):
             if not check.passed:
                 # Deduct points for failed checks
                 rule_category = check.metadata.get("rule_category", "general")

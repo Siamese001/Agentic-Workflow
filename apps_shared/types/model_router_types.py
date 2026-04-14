@@ -113,6 +113,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("model_router_types", "p4obs", "metric_1")
 _emit_emits_metric_event("model_router_types", "p4obs", "metric_2")
@@ -789,7 +790,7 @@ class SequentialThinkingClient:
             if goal:
                 initial += f"\nGoal: {goal}"
             thoughts = []
-            for idx in range(total):
+            for idx in tqdm(range(total), desc="Processing", unit="item"):
                 is_last = idx == total - 1
                 thought_text = (
                     initial

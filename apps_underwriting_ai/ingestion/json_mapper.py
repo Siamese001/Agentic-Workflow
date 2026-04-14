@@ -25,6 +25,7 @@ from ..types import (
     UnderwritingRequest,
 )
 from .structured_ingestion import StructuredIngestion
+from tqdm import tqdm
 
 
 @dataclass
@@ -112,7 +113,7 @@ class JSONMapper:
 
             result.request = request
 
-        except Exception as e:
+        except (TypeError, ValueError, AttributeError) as e:
             result.errors.append(f"Failed to build UnderwritingRequest: {str(e)}")
 
         return result
@@ -148,7 +149,7 @@ class JSONMapper:
     def _map_financials(self, data: Dict[str, Any]) -> FinancialPackage:
         """Map financial data."""
         periods = []
-        for period_data in data.get("periods", []):
+        for period_data in tqdm(data.get("periods", []), desc="Processing", unit="item"):
             periods.append(
                 FinancialPeriod(
                     period_end=period_data.get("period_end", ""),

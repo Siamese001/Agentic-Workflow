@@ -125,6 +125,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("convergence_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("convergence_engine", "p4obs", "metric_2")
@@ -220,7 +221,7 @@ class ConvergenceEngine:
                 key=lambda v: v.get("impact_score", 0),
                 reverse=True,
             )
-            for violation in prioritized_violations:
+            for violation in tqdm(prioritized_violations, desc="Processing", unit="item"):
                 if violation.get("audit_fail_count", 0) > 3:
                     print(
                         f"🧟 ZOMBIE DETECTED: {violation.get('path')} - Escalating to Sub-atomic Refactor...",

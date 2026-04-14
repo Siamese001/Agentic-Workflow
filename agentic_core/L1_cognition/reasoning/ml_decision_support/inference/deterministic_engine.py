@@ -15,6 +15,7 @@ from ..config.model_registry import DecisionMode
 from ..inference.replay_harness import ReplayHarness
 from ..inference.shadow_logger import ShadowLogger, ShadowMode
 from ..models.base_model import BaseMLModel, ModelPrediction
+from tqdm import tqdm
 
 
 @dataclass
@@ -194,7 +195,7 @@ class DeterministicInferenceEngine:
 
         # Convert test cases to replay format
         replay_cases = []
-        for i, case in enumerate(test_cases):
+        for i, case in tqdm(enumerate(test_cases), desc="Processing", unit="item"):
             # Create inference request for this case
             request = InferenceRequest(
                 model_name=model_name,

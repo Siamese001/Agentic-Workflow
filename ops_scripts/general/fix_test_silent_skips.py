@@ -141,6 +141,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_test_silent_skips", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_test_silent_skips", "p4obs", "metric_2")
@@ -281,7 +282,9 @@ def main() -> int:
     lines_changed = 0
     errors = 0
 
-    for file_path, violation_lines in sorted(violations_by_file.items()):
+    for file_path, violation_lines in tqdm(
+        sorted(violations_by_file.items()), desc="Processing", unit="item"
+    ):
         try:
             original = file_path.read_text(encoding="utf-8")
         except Exception as exc:
@@ -292,7 +295,7 @@ def main() -> int:
         lines = original.splitlines(keepends=True)
         changed_in_file = []
 
-        for lineno in violation_lines:
+        for lineno in tqdm(violation_lines, desc="Processing", unit="item"):
             idx = lineno - 1  # 0-indexed
             if idx < 0 or idx >= len(lines):
                 continue

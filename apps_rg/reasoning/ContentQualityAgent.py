@@ -115,6 +115,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ContentQualityAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("ContentQualityAgent", "p4obs", "metric_2")
@@ -239,7 +240,7 @@ class ContentQualityAgent(RGAgentBase):
             self.add_signal("QUALITY_FAILURE")
             return
         issues: list[str] = []
-        for section_name, content in resume.items():
+        for section_name, content in tqdm(resume.items(), desc="Processing", unit="item"):
             if section_name.startswith("_"):
                 continue
             content_str: str = self._to_string(content)

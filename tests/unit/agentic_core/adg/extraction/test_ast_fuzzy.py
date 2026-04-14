@@ -1,4 +1,4 @@
-"""Placeholder test for AstFuzzy."""
+"""Tests for agentic_core/utils/ast_fuzzy.py — _parse_threshold and get_threshold."""
 
 import pytest
 
@@ -14,16 +14,43 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 class TestAstFuzzy:
-    """Test AstFuzzy functionality."""
+    """Tests for _parse_threshold and get_threshold in ast_fuzzy."""
 
-    def test_placeholder_1(self):
-        """Placeholder test 1."""
-        assert True
+    def test_parse_threshold_none_returns_default(self):
+        """_parse_threshold(None) returns the default threshold."""
+        from agentic_core.utils.ast_fuzzy import _DEFAULT_THRESHOLD, _parse_threshold
 
-    def test_placeholder_2(self):
-        """Placeholder test 2."""
-        assert True
+        assert _parse_threshold(None) == _DEFAULT_THRESHOLD
 
-    def test_placeholder_3(self):
-        """Placeholder test 3."""
-        assert True
+    def test_parse_threshold_valid_value(self):
+        """_parse_threshold returns the parsed float for a valid string."""
+        from agentic_core.utils.ast_fuzzy import _parse_threshold
+
+        result = _parse_threshold("0.8")
+        assert abs(result - 0.8) < 1e-9
+
+    def test_parse_threshold_invalid_string_returns_default(self):
+        """_parse_threshold falls back to default for non-numeric input."""
+        from agentic_core.utils.ast_fuzzy import _DEFAULT_THRESHOLD, _parse_threshold
+
+        assert _parse_threshold("not_a_float") == _DEFAULT_THRESHOLD
+
+    def test_parse_threshold_out_of_range_returns_default(self):
+        """_parse_threshold falls back to default for value > 1.0."""
+        from agentic_core.utils.ast_fuzzy import _DEFAULT_THRESHOLD, _parse_threshold
+
+        assert _parse_threshold("1.5") == _DEFAULT_THRESHOLD
+
+    def test_get_threshold_with_valid_env(self, monkeypatch):
+        """get_threshold() returns value from AST_FUZZY_THRESHOLD env var."""
+        monkeypatch.setenv("AST_FUZZY_THRESHOLD", "0.75")
+        from agentic_core.utils.ast_fuzzy import get_threshold
+
+        assert abs(get_threshold() - 0.75) < 1e-9
+
+    def test_get_threshold_unset_returns_default(self, monkeypatch):
+        """get_threshold() returns default when AST_FUZZY_THRESHOLD is not set."""
+        monkeypatch.delenv("AST_FUZZY_THRESHOLD", raising=False)
+        from agentic_core.utils.ast_fuzzy import _DEFAULT_THRESHOLD, get_threshold
+
+        assert get_threshold() == _DEFAULT_THRESHOLD

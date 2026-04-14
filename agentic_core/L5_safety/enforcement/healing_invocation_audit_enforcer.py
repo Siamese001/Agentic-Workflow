@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.security_util import safe_execute
+from tqdm import tqdm
 
 _emit_emits_metric_event("healing_invocation_audit_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("healing_invocation_audit_enforcer", "p4obs", "metric_2")
@@ -217,7 +218,7 @@ class HealingInvocationAudit:
         try:
             result = safe_execute(grep_cmd, capture_output=True, text=True, check=False)
             matches = result.stdout.strip().split("\n") if result.stdout else []
-            for match in matches:
+            for match in tqdm(matches, desc="Processing", unit="item"):
                 if not match:
                     continue
                 file_path, line_content = match.split(":", 1)

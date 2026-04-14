@@ -26,6 +26,7 @@ from agentic_core.evaluation.judges.types import (
     JudgeVerdict,
     VerdictOutcome,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -142,7 +143,7 @@ class VerdictStore:
                 "DELETE FROM verdict_evidence WHERE verdict_id = ?",
                 (verdict.verdict_id,),
             )
-            for item in verdict.evidence_items:
+            for item in tqdm(verdict.evidence_items, desc="Processing", unit="item"):
                 conn.execute(
                     """INSERT INTO verdict_evidence
                        (verdict_id, evidence_type, key, value, file_path, line_no)
@@ -176,7 +177,7 @@ class VerdictStore:
         conn = self._connect()
         count = 0
         try:
-            for verdict in verdicts:
+            for verdict in tqdm(verdicts, desc="Processing", unit="item"):
                 conn.execute(
                     """INSERT OR REPLACE INTO verdicts
                        (verdict_id, target, dimension, rubric_id, outcome,

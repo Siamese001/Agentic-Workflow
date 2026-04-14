@@ -75,6 +75,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("phase3_behavioral_fixes", "p4obs", "metric_1")
 _emit_emits_metric_event("phase3_behavioral_fixes", "p4obs", "metric_2")
@@ -180,7 +181,7 @@ def fix_test_imports(test_path: pathlib.Path) -> bool:
         lines = content.split("\n")
         fixed_lines = []
 
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             if line.strip().startswith("import ") and "agentic_core.base_agents.L0RoutingBase" in line:
                 line = line.replace(
                     "import agentic_core.base_agents.L0RoutingBase",

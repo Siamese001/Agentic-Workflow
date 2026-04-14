@@ -12,6 +12,7 @@ from typing import Any
 
 from ..config.feature_schemas import FeatureSchema, FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
+from tqdm import tqdm
 
 
 class L2FeatureExtractor(DeterministicFeatureExtractor):
@@ -210,7 +211,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
         weighted_success = 0.0
         total_weight = 0.0
 
-        for healing in healing_history:
+        for healing in tqdm(healing_history, desc="Processing", unit="item"):
             healing_date = healing.get("timestamp")
             if healing_date:
                 if isinstance(healing_date, str):
@@ -414,7 +415,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
         similar_escalations = 0
         total_escalations = len(escalation_history)
 
-        for escalation in escalation_history:
+        for escalation in tqdm(escalation_history, desc="Processing", unit="item"):
             esc_error_type = escalation.get("error_type", "")
             esc_error_category = escalation.get("error_category", "")
 
@@ -436,7 +437,7 @@ class L2FeatureExtractor(DeterministicFeatureExtractor):
         now = datetime.now()
         recent_escalations = 0
 
-        for escalation in escalation_history:
+        for escalation in tqdm(escalation_history, desc="Processing", unit="item"):
             esc_date = escalation.get("timestamp")
             if esc_date:
                 if isinstance(esc_date, str):

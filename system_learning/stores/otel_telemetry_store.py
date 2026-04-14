@@ -15,6 +15,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     record_execution_trace,
 )
 from system_learning.types.telemetry_store_protocol import TelemetryStoreProtocol
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +114,7 @@ class OpenTelemetrySpanStore(TelemetryStoreProtocol):
         """
         events = []
 
-        for span in self._span_buffer:
+        for span in tqdm(self._span_buffer, desc="Processing", unit="item"):
             ts_utc = span.get("ts_utc", 0)
 
             # Filter by time window

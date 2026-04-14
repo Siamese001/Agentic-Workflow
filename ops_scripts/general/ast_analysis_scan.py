@@ -3,6 +3,7 @@
 import ast
 import json
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT = Path("c:/Git/Agentic-Workflow")
 SSOT_DIRS = [
@@ -53,7 +54,7 @@ def scan_pinecone(rel, src, tree, imports):
 
 def scan_semantic_cache(rel, src, tree, imports):
     hits = [i for i in imports if "cache" in i.lower() or "semantic" in i.lower()]
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             v = node.value.lower()
             if "semantic_cache" in v or "semanticcache" in v:
@@ -96,11 +97,11 @@ def classify_shim(rel, tree):
 pinecone_refs = []
 semantic_cache_refs = []
 shim_files = []
-for ssot_dir in SSOT_DIRS:
+for ssot_dir in tqdm(SSOT_DIRS, desc="Processing", unit="item"):
     scan_root = ROOT / ssot_dir
     if not scan_root.exists():
         continue
-    for py_file in sorted(scan_root.rglob("*.py")):
+    for py_file in tqdm(sorted(scan_root.rglob("*.py")), desc="Processing", unit="item"):
         if ".git" in py_file.parts:
             continue
         rel = py_file.relative_to(ROOT).as_posix()

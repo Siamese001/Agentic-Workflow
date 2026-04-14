@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("embedding_non_interference_guardrail", "p4obs", "metric_1")
 _emit_emits_metric_event("embedding_non_interference_guardrail", "p4obs", "metric_2")
@@ -331,7 +332,7 @@ def scan_file_for_c0_mutations(source_path: Any) -> list[str]:
     except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError at line {exc.lineno}: {exc.msg}"]
     violations: list[str] = []
-    for node in _ast.walk(tree):
+    for node in tqdm(_ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, _ast.Assign):
             for target in node.targets:
                 if isinstance(target, _ast.Attribute):

@@ -155,6 +155,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("case_library", "p4obs", "metric_1")
 _emit_emits_metric_event("case_library", "p4obs", "metric_2")
@@ -493,7 +494,7 @@ class CaseLibrary:
 
         adg_nodes = getattr(bundle, "adg_nodes", None)
         if adg_nodes:
-            for node_ref in adg_nodes:
+            for node_ref in tqdm(adg_nodes, desc="Processing", unit="item"):
                 self._bridge.create_agent_entity(
                     agent_name=node_ref.entity_name,
                     agent_type=f"ADGNode_{node_ref.layer}",

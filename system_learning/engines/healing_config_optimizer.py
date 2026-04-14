@@ -230,7 +230,7 @@ class HealingConfigOptimizer:
         aggregate_pairs = []
 
         if hasattr(intake_record, "snapshot"):
-            for stats in intake_record.snapshot:
+            for stats in tqdm(intake_record.snapshot, desc="Processing", unit="item"):
                 key = HealingOutcomeAggregateKey(
                     healer_name=stats.healer_id,
                     tier=stats.tier,

@@ -9,6 +9,7 @@ sys.path.append("C:/Git/Agentic-Workflow")
 from pathlib import Path
 
 from tools.enhance_import_only_tests import analyze_module_api, generate_enhanced_test
+from tqdm import tqdm
 
 # Files to fix
 files_to_fix = [
@@ -17,7 +18,7 @@ files_to_fix = [
     "tests/unit/agentic_core/adg/adapters/test___init___adg.py",
 ]
 
-for file_path in files_to_fix:
+for file_path in tqdm(files_to_fix, desc="Processing", unit="item"):
     fp = Path(file_path)
 
     # Extract module path from existing content

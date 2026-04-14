@@ -117,6 +117,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("pascal_sovereignty_fixer", "p4obs", "metric_1")
 _emit_emits_metric_event("pascal_sovereignty_fixer", "p4obs", "metric_2")
@@ -245,7 +246,7 @@ class PascalSovereigntyFixer:
             rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
 
-        for _i, path in enumerate(self.file_registry):
+        for _i, path in tqdm(enumerate(self.file_registry), desc="Processing", unit="item"):
             if path.name == new_name or not path.exists():
                 continue
             try:
@@ -280,7 +281,7 @@ class PascalSovereigntyFixer:
         self.stats["analyzed"] = len(self.file_registry)
 
         # Iterating over a copy to allow registry updates during renames
-        for idx, path in enumerate(list(self.file_registry)):
+        for idx, path in tqdm(enumerate(list(self.file_registry)), desc="Processing", unit="item"):
             if not path.exists():
                 continue
             ftype = self.classify_file(path)

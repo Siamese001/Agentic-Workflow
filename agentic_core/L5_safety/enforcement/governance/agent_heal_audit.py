@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_heal_audit", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_heal_audit", "p4obs", "metric_2")
@@ -265,7 +266,7 @@ class AgentHealAuditScanner:
             tree = ast.parse(content)
             agents = []
 
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
                     # Detect healing methods
                     has_heal = False
@@ -326,7 +327,7 @@ class AgentHealAuditScanner:
 
         all_agents = []
 
-        for scan_path in scan_paths:
+        for scan_path in tqdm(scan_paths, desc="Processing", unit="item"):
             if scan_path.exists():
                 for py_file in scan_path.rglob("*.py"):
                     # Skip __pycache__ and test files for cleaner results

@@ -12,6 +12,7 @@ from typing import Any
 
 from .query_router import QueryRouter, RoutingDecision
 from .semantic_retriever import RetrievalQuery, RetrievalResult, SemanticRetriever
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -157,7 +158,7 @@ class MultiQueryFusion:
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             # Process results
-            for result in results:
+            for result in tqdm(results, desc="Processing", unit="item"):
                 if isinstance(result, Exception):
                     logger.error(f"Search task failed: {result}")
                     continue
@@ -290,8 +291,8 @@ class MultiQueryFusion:
         # Collect all unique results
         all_results = {}
 
-        for collection, results in collection_results.items():
-            for rank, result in enumerate(results, 1):
+        for collection, results in tqdm(collection_results.items(), desc="Processing", unit="item"):
+            for rank, result in tqdm(enumerate(results, 1), desc="Processing", unit="item"):
                 # Create unique key
                 key = f"{result.collection}:{result.metadata.get('file_path', '')}"
 
@@ -333,7 +334,7 @@ class MultiQueryFusion:
         """Apply score-based fusion."""
         all_results = []
 
-        for collection, results in collection_results.items():
+        for collection, results in tqdm(collection_results.items(), desc="Processing", unit="item"):
             # Apply collection weight
             collection_weight = 1.0
             if collection in ["repo_symbols", "repo_adg_graph"]:
@@ -442,11 +443,15 @@ async def main():
     ]
 
     print("Multi-Query Fusion Test:")
-    for query in test_queries:
+    for query in tqdm(test_queries, desc="Processing", unit="item"):
         print(f"\nQuery: {query}")
 
         # Test different fusion strategies
-        for strategy in ["reciprocal_rank_fusion", "score_fusion", "collection_priority_fusion"]:
+        for strategy in tqdm(
+            ["reciprocal_rank_fusion", "score_fusion", "collection_priority_fusion"],
+            desc="Processing",
+            unit="item",
+        ):
             try:
                 result = await fusion_engine.execute_fusion_search(
                     query=query,

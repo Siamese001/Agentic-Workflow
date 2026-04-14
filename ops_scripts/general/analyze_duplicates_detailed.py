@@ -11,6 +11,7 @@ Uses CodeDeduplicationAgent and FilenameUniquenessGuardianAgent for analysis.
 
 import asyncio
 import sys
+from tqdm import tqdm
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
@@ -27,7 +28,7 @@ async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) 
     """
     results = []
 
-    for hash_key, paths in duplicate_sets.items():
+    for hash_key, paths in tqdm(duplicate_sets.items(), desc="Processing", unit="item"):
         if len(paths) < 2:
             continue
 
@@ -40,7 +41,7 @@ async def analyze_functional_differences(duplicate_sets: dict[str, list[Path]]) 
             by_filename[filename].append(path)
 
         # Analyze each filename group
-        for filename, file_paths in by_filename.items():
+        for filename, file_paths in tqdm(by_filename.items(), desc="Processing", unit="item"):
             if len(file_paths) < 2:
                 continue
 
@@ -134,7 +135,7 @@ async def main():
     print()
 
     # Print detailed table
-    for idx, result in enumerate(same_filename_results, 1):
+    for idx, result in tqdm(enumerate(same_filename_results, 1), desc="Processing", unit="item"):
         "REVIEW" if result["action"] == "REVIEW_RENAME" else "DELETE"
 
         print(f"[{idx}] {result['filename']}")
@@ -145,7 +146,7 @@ async def main():
         print(f"    Hash: {result['hash']}")
         print()
         print("    Locations:")
-        for path in result["paths"]:
+        for path in tqdm(result["paths"], desc="Processing", unit="item"):
             # Determine if canonical or stale
             if "config/blueprint_sovereign" in path or "config/validators" in path:
                 status = "[STALE - Blueprint]"

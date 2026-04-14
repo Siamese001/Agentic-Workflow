@@ -314,6 +314,22 @@ class CheckpointManager(SovereignBaseAgent):
         self._load_checkpoints()
         Logger.info(f"UnifiedCheckpointManager initialized in {self.mode} mode at {self.storage_path}")
 
+    def _track_mirror_task(self, task: asyncio.Task[bool]) -> None:
+        """Track background mirror work and surface failures."""
+        self._mirror_tasks.append(task)
+
+        def _done_callback(done_task: asyncio.Task[bool]) -> None:
+            try:
+                ok = done_task.result()
+                if not ok:
+                    Logger.error("[MIRROR] Background mirror task completed unsuccessfully")
+            except Exception as exc:  # guardian: allow-broad-exception -- done callbacks must survive all task failure types to prevent silent mirror loss
+                Logger.exception(f"[MIRROR] Background mirror task crashed: {exc}")
+            finally:
+                self._mirror_tasks = [t for t in self._mirror_tasks if t is not done_task]
+
+        task.add_done_callback(_done_callback)
+
     def create_checkpoint(
         self,
         state_data: dict[str, Any],
@@ -341,7 +357,8 @@ class CheckpointManager(SovereignBaseAgent):
         )
         checkpoint_id = self._generate_checkpoint_id(label)
         if self.mode == "SYNC":  # guardian: Runtime errors should be prevented with proper validation
-            return self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
+            self._save_sync(checkpoint_id, state_data, file_hashes, metadata)
+            return checkpoint_id
         else:
             try:
                 asyncio.get_running_loop()
@@ -374,7 +391,13 @@ class CheckpointManager(SovereignBaseAgent):
             loop = asyncio.get_event_loop()
             await loop.run_in_executor(
                 None,
-                lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
+                lambda: self._save_sync(
+                    checkpoint_id,
+                    state_data,
+                    file_hashes,
+                    metadata,
+                    mirror_immediately=True,
+                ),
             )
             return checkpoint_id
         else:
@@ -391,7 +414,8 @@ class CheckpointManager(SovereignBaseAgent):
         state_data: dict[str, Any],
         file_hashes: dict[str, str] | None = None,
         metadata: dict[str, Any] | None = None,
-    ) -> str:
+        mirror_immediately: bool = True,
+    ) -> Path:
         """
         Synchronous save logic (migrated from legacy CheckpointManagerAgent).
 
@@ -419,10 +443,10 @@ class CheckpointManager(SovereignBaseAgent):
             self.current_checkpoint_id = checkpoint_id
             self._save_index()
             self._cleanup_old_checkpoints()
-            if self.mode == "AUTONOMOUS":
+            if mirror_immediately and self.mode == "AUTONOMOUS":
                 self._mirror_checkpoint_sync(file_path)
             Logger.info(f"[SYNC] Checkpoint saved: {checkpoint_id}")
-            return checkpoint_id
+            return file_path
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             Logger.error(f"Failed to save checkpoint {checkpoint_id}: {e}")
@@ -450,11 +474,17 @@ class CheckpointManager(SovereignBaseAgent):
         loop = asyncio.get_event_loop()
         file_path = await loop.run_in_executor(
             None,
-            lambda: self._save_sync(checkpoint_id, state_data, file_hashes, metadata),
+            lambda: self._save_sync(
+                checkpoint_id,
+                state_data,
+                file_hashes,
+                metadata,
+                mirror_immediately=False,
+            ),
         )
         if self.mode == "AUTONOMOUS":
-            task = asyncio.create_task(self._mirror_checkpoint(Path(file_path)))
-            self._mirror_tasks.append(task)
+            task = asyncio.create_task(self._mirror_checkpoint(file_path))
+            self._track_mirror_task(task)
         Logger.info(f"[ASYNC] Checkpoint saved: {checkpoint_id}")
         return checkpoint_id
 
@@ -510,8 +540,8 @@ class CheckpointManager(SovereignBaseAgent):
             return self._attempt_recovery(checkpoint_id)
         if self.mode == "AUTONOMOUS" and mirror.exists():
             try:
-                p_hash = hashlib.md5(primary.read_bytes()).hexdigest()
-                m_hash = hashlib.md5(mirror.read_bytes()).hexdigest()
+                p_hash = hashlib.sha256(primary.read_bytes()).hexdigest()
+                m_hash = hashlib.sha256(mirror.read_bytes()).hexdigest()
                 if p_hash != m_hash:
                     Logger.warning(f"Hash mismatch for {checkpoint_id}: primary={p_hash}, mirror={m_hash}")
                     return False

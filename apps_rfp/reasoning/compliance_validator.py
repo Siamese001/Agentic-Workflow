@@ -15,12 +15,13 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_validates_agent_capability,
     _emit_verifies_policy,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -230,11 +231,11 @@ class ComplianceValidator:
         """Check for unsupported absolute claims."""
         violations: list[ComplianceViolation] = []
 
-        for section in sections:
+        for section in tqdm(sections, desc="Processing", unit="item"):
             body = section.get("body", "")
             section_id = section.get("section_id", "unknown")
 
-            for pattern, description in self.UNSUPPORTABLE_PATTERNS:
+            for pattern, description in tqdm(self.UNSUPPORTABLE_PATTERNS, desc="Processing", unit="item"):
                 if re.search(pattern, body, re.IGNORECASE):
                     violations.append(
                         ComplianceViolation(
@@ -258,7 +259,7 @@ class ComplianceValidator:
         """Check for claims without evidence."""
         violations: list[ComplianceViolation] = []
 
-        for section in sections:
+        for section in tqdm(sections, desc="Processing", unit="item"):
             body = section.get("body", "")
             section_id = section.get("section_id", "")
             evidence_cited = section.get("evidence_cited", [])
@@ -297,7 +298,7 @@ class ComplianceValidator:
         all_text = " ".join(s.get("body", "") for s in sections).lower()
 
         # Check for required regulatory mentions
-        for req in requirements:
+        for req in tqdm(requirements, desc="Processing", unit="item"):
             req_display = req.replace("_", " ").title()
             keywords = req.replace("_", " ").split()
 
@@ -335,7 +336,7 @@ class ComplianceValidator:
 
         present = {s.get("section_id", "").lower().replace("-", "_") for s in sections}
 
-        for req in required:
+        for req in tqdm(required, desc="Processing", unit="item"):
             if not any(req in p for p in present):
                 violations.append(
                     ComplianceViolation(
@@ -370,12 +371,12 @@ class ComplianceValidator:
             "iso27001",
         ]
 
-        for section in sections:
+        for section in tqdm(sections, desc="Processing", unit="item"):
             body = section.get("body", "")
             section_id = section.get("section_id", "")
 
             # Check for security claims without specifics
-            for keyword in security_keywords:
+            for keyword in tqdm(security_keywords, desc="Processing", unit="item"):
                 if keyword in body.lower():
                     # Check if there's specific backing
                     if not re.search(
@@ -403,7 +404,7 @@ class ComplianceValidator:
         # Pattern: sentences with numbers or strong verbs
         sentences = re.split(r"[.!?]+", body)
 
-        for idx, sent in enumerate(sentences):
+        for idx, sent in tqdm(enumerate(sentences), desc="Processing", unit="item"):
             sent = sent.strip()
             if len(sent) > 20:
                 # Check if it's a claim (has metrics, outcomes, or strong assertions)

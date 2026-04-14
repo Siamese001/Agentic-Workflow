@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("workflow_loader_types", "p4obs", "metric_1")
 _emit_emits_metric_event("workflow_loader_types", "p4obs", "metric_2")
@@ -446,7 +447,7 @@ class WorkflowLoader:
         if self._cached_knode_configs is None:
             CONFIGS: Any = {}
             HARDCODED: Any = self.get_reasoning_config().get("hardcoded_config", {})
-            for key, value in HARDCODED.items():
+            for key, value in tqdm(HARDCODED.items(), desc="Processing", unit="item"):
                 if key.startswith("K.") and isinstance(value, dict):
                     CONFIGS[key] = KNodeConfig(
                         description=value.get("description", ""),

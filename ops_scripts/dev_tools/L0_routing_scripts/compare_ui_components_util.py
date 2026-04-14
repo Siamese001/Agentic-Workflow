@@ -123,6 +123,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("compare_ui_components_util", "p4obs", "metric_1")
 _emit_emits_metric_event("compare_ui_components_util", "p4obs", "metric_2")
@@ -267,7 +268,7 @@ def compare_components():
         ("functions", "JavaScript Functions"),
     ]
     all_issues = []
-    for key, label in categories:
+    for key, label in tqdm(categories, desc="Processing", unit="item"):
         set(mono_components[key]) if isinstance(
             mono_components[key][0] if mono_components[key] else "",
             str,
@@ -327,7 +328,7 @@ def compare_components():
         ("Health Score:", "Health Score Formula"),
         ("drillModal", "Drill-down Modal Element"),
     ]
-    for feature, description in critical_features:
+    for feature, description in tqdm(critical_features, desc="Processing", unit="item"):
         mono_has = feature in mono_html
         mod_has = feature in mod_html
         if mono_has and mod_has:

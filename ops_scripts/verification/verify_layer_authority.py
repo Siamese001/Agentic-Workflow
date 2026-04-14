@@ -37,6 +37,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -179,7 +180,7 @@ class ADGLayerAuthorityVerifier:
                 print(f"   📊 Analyzing {len(cross_layer_edges)} cross-layer edges")
 
                 violations = []
-                for edge in cross_layer_edges:
+                for edge in tqdm(cross_layer_edges, desc="Processing", unit="item"):
                     (
                         edge_id,
                         src_id,
@@ -269,7 +270,7 @@ class ADGLayerAuthorityVerifier:
 
                 # Check UWG termination for each write module
                 uwg_violations = []
-                for module in write_modules:
+                for module in tqdm(write_modules, desc="Processing", unit="item"):
                     cursor.execute(
                         """
                         SELECT COUNT(*) FROM edges
@@ -319,7 +320,7 @@ class ADGLayerAuthorityVerifier:
                 """)
 
                 l4_modules = []
-                for row in cursor.fetchall():
+                for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     l4_modules.append(
                         {
                             "id": row[0],
@@ -335,7 +336,7 @@ class ADGLayerAuthorityVerifier:
 
                 # Check for identity issues
                 identity_issues = []
-                for module in l4_modules:
+                for module in tqdm(l4_modules, desc="Processing", unit="item"):
                     issues = []
 
                     if module["layer"] == "UNKNOWN":

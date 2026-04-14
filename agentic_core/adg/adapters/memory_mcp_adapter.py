@@ -89,6 +89,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("memory_mcp_adapter", "p4obs", "metric_1")
 _emit_emits_metric_event("memory_mcp_adapter", "p4obs", "metric_2")
@@ -295,7 +296,7 @@ class ADGMemoryAdapter:
                 fan_out_map[src] = fan_out_map.get(src, 0) + 1
 
         hotspots = sorted(fan_out_map.items(), key=lambda x: -x[1])[:_MAX_HOTSPOTS]
-        for module_path, fan_out in hotspots:
+        for module_path, fan_out in tqdm(hotspots, desc="Processing", unit="item"):
             safe_name = module_path.replace("/", "_").replace("\\", "_").replace(".", "_")[:60]
             entity_name = f"ADGHotspot_{safe_name}"
             self._bridge.create_agent_entity(
@@ -314,7 +315,7 @@ class ADGMemoryAdapter:
     # ------------------------------------------------------------------
 
     def _ingest_violations(self, violation_edges: list[Any], ts: str, snapshot_name: str) -> None:
-        for i, edge in enumerate(violation_edges[:_MAX_VIOLATIONS]):
+        for i, edge in tqdm(enumerate(violation_edges[:_MAX_VIOLATIONS]), desc="Processing", unit="item"):
             src = str(getattr(edge, "source_file", "") or "unknown")[:80]
             tgt = str(getattr(edge, "to_name", "") or "unknown")[:80]
             sym = str(getattr(edge, "symbol", "") or "")[:40]
@@ -339,7 +340,7 @@ class ADGMemoryAdapter:
 
     def _ingest_top_modules(self, result: Any, ts: str, snapshot_name: str) -> None:
         modules_list = sorted(result.modules)[:_MAX_MODULES]
-        for module_path in modules_list:
+        for module_path in tqdm(modules_list, desc="Processing", unit="item"):
             safe_name = str(module_path).replace("/", ".").replace("\\", ".")[:100]
             entity_name = f"ADGModule_{safe_name}"
             layer = _infer_layer(str(module_path))

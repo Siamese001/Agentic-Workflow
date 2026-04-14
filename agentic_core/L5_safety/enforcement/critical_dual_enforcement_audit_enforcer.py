@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("critical_dual_enforcement_audit_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("critical_dual_enforcement_audit_enforcer", "p4obs", "metric_2")
@@ -246,7 +247,7 @@ class CriticalDualEnforcementAuditor:
             content = self.requirements_path.read_text(encoding="utf-8")
             lines = content.split("\n")
             in_table = False
-            for i, line in enumerate(lines):
+            for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
                 if (
                     "| Req ID | Domain | Requirement | Enforcement | Severity | ENFORCEMENT_LAYERS | ENFORCEMENT_CLASS |"
                     in line
@@ -302,7 +303,7 @@ class CriticalDualEnforcementAuditor:
         requirements = self.parse_requirements_metadata()
         violations = []
         warnings = []
-        for req_id, metadata in requirements.items():
+        for req_id, metadata in tqdm(requirements.items(), desc="Processing", unit="item"):
             if metadata.severity != "CRITICAL":
                 continue
             layer_count = len(metadata.enforcement_layers)

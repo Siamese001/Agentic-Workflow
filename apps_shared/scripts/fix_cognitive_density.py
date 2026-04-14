@@ -11,6 +11,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "fix_cognitive_density", "uwg_governed_write")
 _emit_writes_through("p1", "fix_cognitive_density", "uwg_governed_write_2")
@@ -44,7 +45,7 @@ def split_file_by_type(filepath: Path) -> None:
     dataclasses: Any = []
     classes: Any = []
     functions: Any = []
-    for node in tree.body:
+    for node in tqdm(tree.body, desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             if any(base.id == "Enum" for base in node.bases if isinstance(base, ast.Name)):
                 enums.append(node)
@@ -89,7 +90,7 @@ def split_file_by_type(filepath: Path) -> None:
                 enums_file.write_text(enums_content, encoding="utf-8")
                 LOGGER.info(f"  Created {enums_file.name}")
             if dataclasses:
-                for i in range(0, len(dataclasses), 5):
+                for i in tqdm(range(0, len(dataclasses), 5), desc="Processing", unit="item"):
                     chunk: Any = dataclasses[i : i + 5]
                     suffix: Any = "" if i == 0 else f"_{i // 5 + 1}"
                     dc_content: Any = f'"""Dataclass models for {stem}."""\n\n'

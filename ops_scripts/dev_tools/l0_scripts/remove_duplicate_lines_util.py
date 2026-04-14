@@ -69,6 +69,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("remove_duplicate_lines_util", "p4obs", "metric_1")
 _emit_emits_metric_event("remove_duplicate_lines_util", "p4obs", "metric_2")
@@ -167,7 +168,7 @@ def remove_duplicates():
     # For each duplicate, find the end of the declaration (the closing };)
     ranges_to_remove = []
 
-    for start_line in lines_to_remove_start:
+    for start_line in tqdm(lines_to_remove_start, desc="Processing", unit="item"):
         # Find the comment line before it
         comment_line = start_line - 1
         if comment_line >= 0 and "Real per-agent data" in lines[comment_line]:

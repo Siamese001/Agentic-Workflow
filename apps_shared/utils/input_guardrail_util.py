@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("input_guardrail_util", "p4obs", "metric_1")
 _emit_emits_metric_event("input_guardrail_util", "p4obs", "metric_2")
@@ -426,7 +427,7 @@ class InputGuardrail:
             Redacted text
         """
         redacted = text
-        for pii_type in pii_types:
+        for pii_type in tqdm(pii_types, desc="Processing", unit="item"):
             if pii_type in self.pii_patterns:
                 pattern = self.pii_patterns[pii_type]
                 if pii_type == "email":
@@ -511,7 +512,7 @@ class InputGuardrail:
             Tuple of (found, details)
         """
         base64_matches = self.base64_pattern.findall(text)
-        for match in base64_matches:
+        for match in tqdm(base64_matches, desc="Processing", unit="item"):
             try:
                 decoded = base64.b64decode(match).decode("utf-8", errors="ignore")
                 decoded_lower = decoded.lower()

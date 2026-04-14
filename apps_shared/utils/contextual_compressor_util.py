@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("contextual_compressor_util", "p4obs", "metric_1")
 _emit_emits_metric_event("contextual_compressor_util", "p4obs", "metric_2")
@@ -270,7 +271,7 @@ class ContextualCompressor:
             sentences = self._split_into_sentences(chunk)
             all_sentences.extend(sentences)
         sentence_scores = []
-        for i, sentence in enumerate(all_sentences):
+        for i, sentence in tqdm(enumerate(all_sentences), desc="Processing", unit="item"):
             similarity = self._calculate_jaccard_similarity(sentence, query)
             sentence_entities = self._extract_entities(sentence)
             entity_match = bool(query_entities.intersection(sentence_entities))
@@ -285,7 +286,7 @@ class ContextualCompressor:
                     "keyword_match": keyword_match,
                 },
             )
-        for i, score in enumerate(sentence_scores):
+        for i, score in tqdm(enumerate(sentence_scores), desc="Processing", unit="item"):
             should_include = False
             if score["similarity"] >= self.similarity_threshold:
                 should_include = True

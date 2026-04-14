@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("vector_healing_strategy", "p4obs", "metric_1")
 _emit_emits_metric_event("vector_healing_strategy", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ class VectorHealingStrategy:
         if not config.PINECONE_VECTOR_HEALING_ENABLED:
             Logger.info("[L0 VECTOR HEALING] Vector healing disabled in config")
             return fixes
-        for issue in issues:
+        for issue in tqdm(issues, desc="Processing", unit="item"):
             desc: Any = issue.get("description", "").lower()
             message: Any = issue.get("message", "").lower()
             if any(keyword in desc or keyword in message for keyword in ["vector", "embedding", "pinecone"]):

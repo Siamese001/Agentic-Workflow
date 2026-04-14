@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ddd_alignment_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("ddd_alignment_validator", "p4obs", "metric_2")
@@ -227,14 +228,14 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
     }
     try:
         tree: Any = ast.parse(filepath.read_text(encoding="utf-8"))
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ImportFrom) and node.module:
                 module_root: Any = node.module.split(".")[0]
                 if module_root in stdlib_modules:
                     continue
                 if "apps_shared.base_agents" in node.module:
                     continue
-                for ctx, info in BOUNDED_CONTEXTS.items():
+                for ctx, info in tqdm(BOUNDED_CONTEXTS.items(), desc="Processing", unit="item"):
                     if ctx == current_context:
                         continue
                     if ctx == "SharedContracts":

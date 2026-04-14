@@ -1,32 +1,31 @@
-"""Test L4statebaseAdg functionality."""
-
-import sys
-from pathlib import Path
+"""Tests for phase-hardened L4StateBase behaviors."""
 
 import pytest
 
-REPO_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(REPO_ROOT))
+from agentic_core.base_agents.L4StateBase import L4StateBase
 
 
 @pytest.mark.unit
-class TestL4statebaseAdg:
-    """Test L4statebaseAdg functionality."""
+class TestL4StateBaseHardening:
+    """Behavioral coverage for phase-hardened L4StateBase."""
 
-    def test_L4StateBase_adg_imports(self):
-        """Test L4StateBase_adg module imports."""
-        from agentic_core import L4StateBase_adg
+    def test_validate_state_accepts_dict(self):
+        """Happy: validate_state with a dict returns valid=True and empty errors."""
+        agent = L4StateBase()
+        result = agent.validate_state({"key": "value", "count": 3})
+        assert result["valid"] is True
+        assert result["errors"] == []
 
-        assert L4StateBase_adg is not None
+    def test_validate_state_rejects_string(self):
+        """Failure: validate_state with a string returns valid=False with error message."""
+        agent = L4StateBase()
+        result = agent.validate_state("not a dict")
+        assert result["valid"] is False
+        assert len(result["errors"]) > 0
 
-    def test_L4StateBase_adg_class(self):
-        """Test L4statebaseAdg class exists."""
-        from agentic_core import L4statebaseAdg
-
-        assert L4statebaseAdg is not None
-
-    def test_L4StateBase_adg_callable(self):
-        """Test L4StateBase_adg functions are callable."""
-        from agentic_core import validate_L4StateBase_adg
-
-        assert callable(validate_L4StateBase_adg)
+    def test_validate_state_rejects_list(self):
+        """Edge: validate_state with a list (non-dict) returns valid=False with 'dictionary' in error."""
+        agent = L4StateBase()
+        result = agent.validate_state([1, 2, 3])
+        assert result["valid"] is False
+        assert "dictionary" in result["errors"][0]

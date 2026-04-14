@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("CognitiveDispositionAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("CognitiveDispositionAgent", "p4obs", "metric_2")
@@ -304,7 +305,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
         but was missing from CognitiveDispositionAgent.
         """
         decisions = []
-        for v in violations:
+        for v in tqdm(violations, desc="Processing", unit="item"):
             path_str = v.get("file", v.get("path", ""))
             vtype = v.get("type", "UNKNOWN")
             ctx = {"territory": territory, **{k: v[k] for k in v if k not in ("file", "path", "type")}}

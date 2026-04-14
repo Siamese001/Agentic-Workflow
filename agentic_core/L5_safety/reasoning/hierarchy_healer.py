@@ -222,6 +222,7 @@ _emit_validated_by_safety_plane("p1", "hierarchy_healer", "safety_validation")
 _emit_invokes_eval("p1", "hierarchy_healer", "eval_call")
 _emit_proposal_commits_routing("p1", "hierarchy_healer", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_hierarchy_healer", "hierarchy_healer_dispatch_entry")
 emit_determinism_digest("trace_hierarchy_healer", "hierarchy_healer_dispatch_exit")
@@ -464,7 +465,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         else:
             territories_to_process = sorted(ENFORCED_TERRITORIES)
 
-        for territory_name in territories_to_process:
+        for territory_name in tqdm(territories_to_process, desc="Processing", unit="item"):
             territory_config = ENFORCED_TERRITORIES.get(territory_name, {})
             if not territory_config:
                 continue
@@ -505,7 +506,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # agentic_core is L1; subfolders are L2 layers (L1_cognition, etc.)
         approved_layers_l2 = list(CORE_SUBFOLDER_MAP.keys())
 
-        for layer_l2_name in approved_layers_l2:
+        for layer_l2_name in tqdm(approved_layers_l2, desc="Processing", unit="item"):
             # [SCOPED] Skip unrelated layers
             if target_territory and target_territory != layer_l2_name:
                 # Check if target is L3 nested in this L2
@@ -537,7 +538,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             actual_l3 = {p.name for p in layer_l2_path.iterdir() if p.is_dir() and not p.name.startswith(".")}
             missing_l3 = expected_territories_l3 - actual_l3
 
-            for territory_l3_name in missing_l3:
+            for territory_l3_name in tqdm(missing_l3, desc="Processing", unit="item"):
                 results["violations_found"] += 1
                 l3_path = layer_l2_path / territory_l3_name
                 Logger.warning(
@@ -621,7 +622,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
         Logger.info(f"HierarchyAgent: Auditing {len(target_roots)} sovereign territories: {target_roots}")
 
-        for root_name in target_roots:
+        for root_name in tqdm(target_roots, desc="Processing", unit="item"):
             root_path = self.project_root / root_name
             results["roots_processed"].append(root_name)
 
@@ -695,7 +696,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # This will trigger _heal_depth_violation which handles flattening
         from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
-        for py_file in get_python_files(root_path):
+        for py_file in tqdm(get_python_files(root_path), desc="Processing", unit="item"):
             rel = py_file.relative_to(self.project_root)
             current_depth = len(rel.parts) - 1
 
@@ -734,7 +735,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # Get all .py files in tests directory
         py_files = list(root_path.rglob("*.py"))
 
-        for py_file in py_files:
+        for py_file in tqdm(py_files, desc="Processing", unit="item"):
             rel = py_file.relative_to(root_path)
             stem = py_file.stem
 
@@ -803,7 +804,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         # Phase 4.1: Use ssot_discovery instead of rglob
         from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
-        for py_file in get_python_files(bad_path):
+        for py_file in tqdm(get_python_files(bad_path), desc="Processing", unit="item"):
             if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                 continue
             results["violations_found"] += 1
@@ -937,13 +938,13 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         }
         non_approved_l3 = actual_territories_l3 - approved_territories_l3
 
-        for bad_territory_l3 in non_approved_l3:
+        for bad_territory_l3 in tqdm(non_approved_l3, desc="Processing", unit="item"):
             bad_path = layer_l2_path / bad_territory_l3
 
             # Phase 4.1: Use ssot_discovery instead of rglob
             from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
-            for py_file in get_python_files(bad_path):
+            for py_file in tqdm(get_python_files(bad_path), desc="Processing", unit="item"):
                 if py_file.name in ALLOWED_DUPLICATE_FILENAMES:
                     continue
                 results["violations_found"] += 1
@@ -1145,7 +1146,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         all_files = list(get_python_files(self.project_root)) + list(
             get_data_files(self.project_root, extensions=[".json", ".md", ".yaml", ".yml"]),
         )
-        for file_path in all_files:
+        for file_path in tqdm(all_files, desc="Processing", unit="item"):
             if file_path.is_dir():
                 continue
             rel = file_path.relative_to(self.project_root)
@@ -1288,7 +1289,9 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_data_files
 
         target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
-        for file_path in get_data_files(self.project_root, extensions=target_exts):
+        for file_path in tqdm(
+            get_data_files(self.project_root, extensions=target_exts), desc="Processing", unit="item"
+        ):
             if file_path.is_dir():
                 continue
 
@@ -1420,7 +1423,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
                 break
 
         seen = set()
-        for file_path in orphaned_files:
+        for file_path in tqdm(orphaned_files, desc="Processing", unit="item"):
             if file_path in seen or not file_path.is_file():
                 continue
             seen.add(file_path)
@@ -1799,7 +1802,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             Logger.info("HierarchyAgent: Scanning project root directory for SSOT violations...")
 
             # 1. Check for forbidden folders at root
-            for item in self.project_root.iterdir():
+            for item in tqdm(self.project_root.iterdir(), desc="Processing", unit="item"):
                 if item.is_dir() and item.name in self.FORBIDDEN_ROOT_FOLDERS:
                     results["violations_found"] += 1
                     results["forbidden_folders"].append(item.name)
@@ -1837,7 +1840,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             # Approved subfolders for prompt_governance per Blueprint
             # meta_prompts, templates, scripts, version_registry, agents, registry
 
-            for item in search_path.iterdir():
+            for item in tqdm(search_path.iterdir(), desc="Processing", unit="item"):
                 # Flag any file sitting at the root level of the territory
                 if item.is_file() and item.name not in {".gitkeep", "__init__.py"}:
                     violation = {
@@ -1911,7 +1914,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         if not dry_run:
             _wg.ensure_dir(archives_dir)
 
-        for filename in scan_results["archived_files_at_root"]:
+        for filename in tqdm(scan_results["archived_files_at_root"], desc="Processing", unit="item"):
             src = self.project_root / filename
             dst = archives_dir / filename
 
@@ -1962,7 +1965,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             if not dry_run:
                 _wg.ensure_dir(archives_dir)
 
-            for violation in territory_root_files:
+            for violation in tqdm(territory_root_files, desc="Processing", unit="item"):
                 filename = violation.get("file", "")
                 src = self.project_root / target_territory / filename
                 dst = archives_dir / filename
@@ -2052,7 +2055,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         all_files = list(get_python_files(root_folder)) + list(
             get_data_files(root_folder, extensions=[".json", ".md", ".yaml", ".yml", ".txt", ".log"]),
         )
-        for src_file in all_files:
+        for src_file in tqdm(all_files, desc="Processing", unit="item"):
             if src_file.is_dir():
                 continue
 
@@ -2194,7 +2197,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         }
 
         # Check all mirrored roots from SSOT config
-        for source_root in TEST_MIRROR_ROOTS:
+        for source_root in tqdm(TEST_MIRROR_ROOTS, desc="Processing", unit="item"):
             test_base = TEST_CANONICAL_LOCATION_MAP.get(source_root)
             if not test_base:
                 continue
@@ -2229,7 +2232,7 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
             if missing:
                 Logger.info(f"HierarchyAgent: {source_root} - {len(missing)} missing test folders")
-                for rel_dir in sorted(missing):
+                for rel_dir in tqdm(sorted(missing), desc="Processing", unit="item"):
                     target_dir = test_path / rel_dir
                     results["folders_missing"].append(str(target_dir.relative_to(self.project_root)))
                     action = {

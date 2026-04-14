@@ -17,6 +17,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,  # noqa: E402
 )
+from tqdm import tqdm
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -98,7 +99,7 @@ class CapabilityAnalyzer:
 
         gaps: list[CapabilityGap] = []
         failure_patterns: Any = self._identify_failure_patterns(failure_reports)
-        for pattern_type, pattern_failures in failure_patterns.items():
+        for pattern_type, pattern_failures in tqdm(failure_patterns.items(), desc="Processing", unit="item"):
             gap: Any = self._create_gap_from_pattern(
                 agent_id=agent_id,
                 pattern_type=pattern_type,
@@ -188,7 +189,7 @@ class CapabilityAnalyzer:
             Dict mapping pattern type to failures
         """
         patterns: dict[str, list[dict[str, Any]]] = {}
-        for report in failure_reports:
+        for report in tqdm(failure_reports, desc="Processing", unit="item"):
             error_type = report.get("error_type", "unknown")
             if "tool" in error_type.lower() or "not found" in error_type.lower():
                 pattern_type = "missing_tool"

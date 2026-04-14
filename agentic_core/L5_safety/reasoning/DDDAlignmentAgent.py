@@ -393,12 +393,12 @@ class DDDAlignmentAgent(SovereignBaseAgent):
         ) as e:  # guardian: Parsing and encoding errors need separate handling strategies
             Logger.debug(f"Could not parse {filepath}: {e}")
             return violations
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ImportFrom) and node.module:
                 module = node.module
                 if self._is_allowed_import(module, source_context):
                     continue
-                for ctx_name, ctx_info in BOUNDED_CONTEXTS.items():
+                for ctx_name, ctx_info in tqdm(BOUNDED_CONTEXTS.items(), desc="Processing", unit="item"):
                     if ctx_name == source_context:
                         continue
                     if ctx_name == "SharedContracts":
@@ -594,6 +594,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("DDDAlignmentAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("DDDAlignmentAgent", "p4obs", "metric_2")

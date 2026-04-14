@@ -27,6 +27,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "remediate_naming_audit", "uwg_governed_write")
 _emit_writes_through("p1", "remediate_naming_audit", "uwg_governed_write_2")
@@ -71,7 +72,7 @@ def get_files_from_log() -> list[Path]:
     with open(AUDIT_LOG) as f:
         lines = [line.strip() for line in f if line.strip()]
     files = []
-    for line in lines:
+    for line in tqdm(lines, desc="Processing", unit="item"):
         if "]" in line:
             line = line.split("]")[-1].strip()
         clean_path = line.strip()
@@ -92,9 +93,9 @@ def update_imports(renames: list[tuple[Path, str]]):
     print("\n[Phase 2] Updating Imports (Safe Regex)...")
     rename_map = {p.stem: Path(n).stem for p, n in renames}
     count = 0
-    for root, dirs, files in os.walk(ROOT_DIR):
+    for root, dirs, files in tqdm(os.walk(ROOT_DIR), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if not file.endswith(".py"):
                 continue
             file_path = Path(root) / file
@@ -121,7 +122,7 @@ def main():
     print(f"[*] Loaded {len(targets)} verified existing files.")
     rename_queue = []
     skipped = []
-    for file_path in targets:
+    for file_path in tqdm(targets, desc="Processing", unit="item"):
         name = file_path.name
         stem = file_path.stem
         if name.endswith(PROTECTED_SUFFIXES):
@@ -138,7 +139,7 @@ def main():
         sys.exit(0)
     print("\n[Phase 1] Executing Git Moves...")
     success_count = 0
-    for old_path, new_name in rename_queue:
+    for old_path, new_name in tqdm(rename_queue, desc="Processing", unit="item"):
         new_path = old_path.parent / new_name
         if new_path.exists():
             print(f"  [SKIP] Target exists: {new_name}")

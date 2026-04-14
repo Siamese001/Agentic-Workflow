@@ -16,6 +16,7 @@ from agentic_core.base_agents.territory_healer_protocol import (
     ScanResult,
     TerritoryHealerProtocol,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger("TerritoryHealingCoordinator")
 
@@ -125,7 +126,7 @@ class TerritoryHealingCoordinator:
 
         logger.info(f"Running {len(applicable_agents)} agents on territory '{territory}'")
 
-        for agent in applicable_agents:
+        for agent in tqdm(applicable_agents, desc="Processing", unit="item"):
             agent_key = f"{territory}:{agent.agent_name}"
 
             # Only prevent recursion within the same agent+territory combo

@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("bulk_mcp_harden_util", "p4obs", "metric_1")
 _emit_emits_metric_event("bulk_mcp_harden_util", "p4obs", "metric_2")
@@ -261,7 +262,7 @@ def main():
     hardened = 0
     skipped = 0
     errors = 0
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         class_name = agent["class_name"]
         rel_path = agent["path"]
         layer = agent["layer"]

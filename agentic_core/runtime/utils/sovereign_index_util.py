@@ -115,6 +115,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_index_util", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_index_util", "p4obs", "metric_2")
@@ -468,7 +469,7 @@ class SovereignIndex:
         """
         try:
             with os.scandir(directory) as entries:
-                for entry in entries:
+                for entry in tqdm(entries, desc="Processing", unit="item"):
                     try:
                         if entry.is_dir(follow_symlinks=False):
                             if entry.name in self._excluded_dirs:

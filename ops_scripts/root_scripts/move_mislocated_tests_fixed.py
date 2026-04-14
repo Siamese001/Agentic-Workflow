@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("move_mislocated_tests_fixed", "p4obs", "metric_1")
 _emit_emits_metric_event("move_mislocated_tests_fixed", "p4obs", "metric_2")
@@ -174,7 +175,7 @@ def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathli
     if not test_root.exists():
         return mislocated
 
-    for test_file in test_root.rglob("test_*.py"):
+    for test_file in tqdm(test_root.rglob("test_*.py"), desc="Processing", unit="item"):
         # Skip contract tests
         if "_contracts" in test_file.parts:
             continue
@@ -238,7 +239,7 @@ def update_imports_in_moved_test(test_file: pathlib.Path):
         lines = content.split("\n")
         updated_lines = []
 
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             # Skip non-import lines
             if not (line.strip().startswith("from ") or line.strip().startswith("import ")):
                 updated_lines.append(line)
@@ -284,7 +285,7 @@ def main():
 
     total_moved = 0
 
-    for package, tests in sorted(by_package.items()):
+    for package, tests in tqdm(sorted(by_package.items()), desc="Processing", unit="item"):
         print(f"### Moving {package} tests ({len(tests)} files)")
 
         for source, target, module_path in sorted(tests):

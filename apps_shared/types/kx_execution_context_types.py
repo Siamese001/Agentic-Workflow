@@ -104,6 +104,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("kx_execution_context_types", "p4obs", "metric_1")
 _emit_emits_metric_event("kx_execution_context_types", "p4obs", "metric_2")
@@ -337,7 +338,7 @@ class KXNodeExecutor:
             )
             sources = []
             if results and "documents" in results:
-                for i, doc in enumerate(results["documents"][0]):
+                for i, doc in tqdm(enumerate(results["documents"][0]), desc="Processing", unit="item"):
                     source_type = results.get("metadatas", [[{}]])[0][i].get("source_type", "generic")
                     weight = config.rag_config.source_weighting.get(source_type, 1.0)
                     sources.append(

@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("similarity_method_types", "p4obs", "metric_1")
 _emit_emits_metric_event("similarity_method_types", "p4obs", "metric_2")
@@ -666,7 +667,7 @@ class SchemaSimilarityRetriever:
         """Create detailed field match information."""
         matches = []
         intersection = source_fields.keys() & target_fields.keys()
-        for field_name in intersection:
+        for field_name in tqdm(intersection, desc="Processing", unit="item"):
             source_type = source_fields[field_name]
             target_type = target_fields[field_name]
             match = FieldMatch(

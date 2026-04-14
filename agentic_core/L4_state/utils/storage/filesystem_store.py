@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("filesystem_store", "p4obs", "metric_1")
 _emit_emits_metric_event("filesystem_store", "p4obs", "metric_2")
@@ -405,7 +406,7 @@ class FileSystemStore:
             return []
 
         # Walk through stored artifacts
-        for kind_dir in store_base.iterdir():
+        for kind_dir in tqdm(store_base.iterdir(), desc="Processing", unit="item"):
             if not kind_dir.is_dir():
                 continue
 
@@ -413,13 +414,13 @@ class FileSystemStore:
             if kind is not None and current_kind != kind:
                 continue
 
-            for id_dir in kind_dir.iterdir():
+            for id_dir in tqdm(kind_dir.iterdir(), desc="Processing", unit="item"):
                 if not id_dir.is_dir():
                     continue
 
                 current_logical_id = id_dir.name
 
-                for file_path in id_dir.iterdir():
+                for file_path in tqdm(id_dir.iterdir(), desc="Processing", unit="item"):
                     if (
                         not file_path.is_file()
                         or not file_path.name.startswith("v")

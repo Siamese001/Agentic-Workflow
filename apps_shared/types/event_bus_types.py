@@ -90,6 +90,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("event_bus_types", "p4obs", "metric_1")
 _emit_emits_metric_event("event_bus_types", "p4obs", "metric_2")
@@ -695,8 +696,8 @@ class RedisEventBus(EventBus):
                     count=10,
                     block=1000,
                 )
-                for _stream, msgs in messages:
-                    for msg_id, fields in msgs:
+                for _stream, msgs in tqdm(messages, desc="Processing", unit="item"):
+                    for msg_id, fields in tqdm(msgs, desc="Processing", unit="item"):
                         try:
                             event = SystemEvent.from_dict(fields)
                             if subscribers:

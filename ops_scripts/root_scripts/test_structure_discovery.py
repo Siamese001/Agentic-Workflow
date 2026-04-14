@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("test_structure_discovery", "p4obs", "metric_1")
 _emit_emits_metric_event("test_structure_discovery", "p4obs", "metric_2")
@@ -260,7 +261,7 @@ def generate_mapping_report() -> dict:
     modules_info = []
     status_counts = defaultdict(int)
 
-    for module_path in all_modules:
+    for module_path in tqdm(all_modules, desc="Processing", unit="item"):
         expected_test_path = compute_expected_test_path(module_path)
         status, actual_test_path = check_test_status(module_path, expected_test_path, existing_tests)
 

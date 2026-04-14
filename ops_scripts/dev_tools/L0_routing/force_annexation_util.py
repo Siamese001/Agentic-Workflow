@@ -177,6 +177,7 @@ _emit_proposal_commits_routing("p1", "force_annexation_util", "routing_commit")
 ROOT: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR  # noqa: E402
+from tqdm import tqdm
 
 excluded_zones: Any = ["data", ARCHIVES_DIR, TESTS_DIR, ".git", ".venv", "__pycache__"]
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
@@ -211,13 +212,13 @@ def force_annexation() -> Any:
     for target_dir in ANNEXATION_PLAN.values():
         target_dir.mkdir(parents=True, exist_ok=True)
         (target_dir / "__init__.py").touch()
-    for old_name, destination in ANNEXATION_PLAN.items():
+    for old_name, destination in tqdm(ANNEXATION_PLAN.items(), desc="Processing", unit="item"):
         old_path: Any = ROOT / old_name
         if not old_path.exists():
             logging.warning(f"  [?] {old_name} not found at root. Checking if already moved...")
             continue
         logging.info(f"  [>] Moving {old_name} contents to {destination.relative_to(ROOT)}...")
-        for item in list(old_path.iterdir()):
+        for item in tqdm(list(old_path.iterdir()), desc="Processing", unit="item"):
             if item.name == AGENTIC_CORE_DIR:
                 continue
             target_item: Any = destination / item.name

@@ -186,7 +186,7 @@ class CircuitBreaker:
         )
 
         self.failure_count += 1
-        self.last_failure_time = time.time()
+        self.last_failure_time = time.monotonic()
         if self.failure_count >= self.failure_threshold:
             self.state = "OPEN"
 
@@ -197,7 +197,7 @@ class CircuitBreaker:
     def can_execute(self) -> bool:
         if self.state == "CLOSED":
             return True
-        if time.time() - self.last_failure_time > self.timeout_seconds:
+        if time.monotonic() - self.last_failure_time > self.timeout_seconds:
             self.state = "HALF_OPEN"
             return True
         return False
@@ -242,7 +242,11 @@ class RedisCacheMixin:
                 self._redis_client = get_hot_cache()
                 log.info(f"[{self.__class__.__name__}] Connected to Hardened Redis Gateway")
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                RuntimeError,
+                ConnectionError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 if not GRACEFUL_DEGRADATION:
                     raise
                 log.warning(f"Redis client init failed ({e}) - using local cache fallback")
@@ -264,7 +268,7 @@ class RedisCacheMixin:
         Returns None on miss or error (never raises).
         """
         full_key = self._make_key(key)
-        start = time.time()
+        start = time.monotonic()
         metrics = get_cache_metrics()
         if not self._circuit_breaker.can_execute():
             log.debug("Circuit breaker OPEN - using local cache")
@@ -272,7 +276,7 @@ class RedisCacheMixin:
         if self.redis:
             try:
                 value = await self.redis.get(full_key)
-                latency = (time.time() - start) * 1000
+                latency = (time.monotonic() - start) * 1000
                 if CACHE_METRICS_ENABLED:
                     metrics.record("redis_get", hit=value is not None, latency_ms=latency)
                 if value is not None:
@@ -280,19 +284,19 @@ class RedisCacheMixin:
                     self._circuit_breaker.record_success()
                     return value
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, RuntimeError) as e:
                 self._circuit_breaker.record_failure()
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_get")
                 log.debug(f"Redis get failed ({e}) - checking local fallback")
         value = self._local_cache.get(full_key)
         if isinstance(value, dict) and "value" in value and ("expire_at" in value):
-            if time.time() >= value["expire_at"]:
+            if time.monotonic() >= value["expire_at"]:
                 self._local_cache.pop(full_key, None)
                 value = None
             else:
                 value = value["value"]
-        latency = (time.time() - start) * 1000
+        latency = (time.monotonic() - start) * 1000
         if CACHE_METRICS_ENABLED:
             metrics.record("local_get", hit=value is not None, latency_ms=latency)
         if value is not None:
@@ -307,32 +311,32 @@ class RedisCacheMixin:
         """
         full_key = self._make_key(key)
         ttl = ttl or self._default_ttl
-        start = time.time()
+        start = time.monotonic()
         metrics = get_cache_metrics()
         try:
             _ = json.dumps(value)
         except (TypeError, ValueError):
             log.warning(f"cache SET BLOCKED: Non-serializable value for {key}")
             return
-        self._local_cache[full_key] = {"value": value, "expire_at": time.time() + ttl}
+        self._local_cache[full_key] = {"value": value, "expire_at": time.monotonic() + ttl}
         if not self._circuit_breaker.can_execute():
             return
         if self.redis:
             try:
                 await self.redis.set(full_key, value, ex=ttl)
-                latency = (time.time() - start) * 1000
+                latency = (time.monotonic() - start) * 1000
                 if CACHE_METRICS_ENABLED:
                     metrics.record("redis_set", hit=True, latency_ms=latency)
                 log.debug(f"cache SET (Redis): {key[:50]}... TTL={ttl}s")
                 self._circuit_breaker.record_success()
                 return
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, RuntimeError) as e:
                 self._circuit_breaker.record_failure()
                 log.debug(f"Redis set suppressed error (local fallback used): {str(e)[:80]}")
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_set")
-        latency = (time.time() - start) * 1000
+        latency = (time.monotonic() - start) * 1000
         if CACHE_METRICS_ENABLED:
             metrics.record("local_set", hit=True, latency_ms=latency)
         log.debug(f"cache SET (local): {key[:50]}...")

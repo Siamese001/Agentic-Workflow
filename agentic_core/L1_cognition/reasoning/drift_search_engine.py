@@ -22,6 +22,7 @@ from agentic_core.L1_cognition.types.search_types import (
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_telemetry_event,  # noqa: E402
 )
+from tqdm import tqdm
 
 
 class DRIFTSearchEngine:
@@ -133,7 +134,7 @@ class DRIFTSearchEngine:
         )
 
         results = []
-        for entity in search_result:
+        for entity in tqdm(search_result, desc="Processing", unit="item"):
             # Calculate relevance score
             score = self._calculate_text_similarity(entity, query.text)
 
@@ -164,7 +165,7 @@ class DRIFTSearchEngine:
         results = []
 
         # For each seed, explore structural relationships
-        for entity in seed_search[:3]:  # Limit to top 3 seeds
+        for entity in tqdm(seed_search[:3], desc="Processing", unit="item"):  # Limit to top 3 seeds
             # Get traversal results (sync call)
             traversal = self.graph_store.traverse(
                 start_id=entity.id,
@@ -173,8 +174,8 @@ class DRIFTSearchEngine:
             )
 
             # Convert traversal results to search results
-            for path in traversal:
-                for path_entity in path.nodes:
+            for path in tqdm(traversal, desc="Processing", unit="item"):
+                for path_entity in tqdm(path.nodes, desc="Processing", unit="item"):
                     # Calculate structural relevance
                     struct_score = self._calculate_structural_relevance(
                         path_entity,
@@ -210,7 +211,7 @@ class DRIFTSearchEngine:
         keywords = query.text.lower().split()
 
         # For each keyword, find related entities through reasoning
-        for keyword in keywords[:3]:  # Limit keywords
+        for keyword in tqdm(keywords[:3], desc="Processing", unit="item"):  # Limit keywords
             # Find entities with keyword (sync call)
             keyword_search = self.graph_store.search_entities(
                 query=keyword,
@@ -218,7 +219,7 @@ class DRIFTSearchEngine:
             )
 
             # Apply reasoning depth
-            for entity in keyword_search:
+            for entity in tqdm(keyword_search, desc="Processing", unit="item"):
                 reasoning_score = self._apply_reasoning_depth(entity, keyword, query)
 
                 if reasoning_score >= self.config.reasoning_confidence_threshold:
@@ -305,7 +306,7 @@ class DRIFTSearchEngine:
 
         # Calculate fused scores
         fused_results = []
-        for entity_id, scores in entity_scores.items():
+        for entity_id, scores in tqdm(entity_scores.items(), desc="Processing", unit="item"):
             semantic_score = scores.get("semantic", 0.0)
             structural_score = scores.get("structural", 0.0)
             reasoning_score = scores.get("reasoning", 0.0)
@@ -366,7 +367,7 @@ class DRIFTSearchEngine:
 
         enhanced_results = []
 
-        for result in results[:20]:  # Limit traversal to top 20
+        for result in tqdm(results[:20], desc="Processing", unit="item"):  # Limit traversal to top 20
             # Get additional context through traversal (sync call)
             if result.item_type == "entity":
                 traversal = self.graph_store.traverse(

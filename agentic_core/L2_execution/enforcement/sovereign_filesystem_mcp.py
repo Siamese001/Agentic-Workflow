@@ -89,7 +89,8 @@ _emit_links_execution_to_snapshot("p4", "sovereign_filesystem_mcp", "exec_snapsh
 import json
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
+from pathlib import Path
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
 from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
@@ -134,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.seams.contracts.authority import get_mcp_authority
 from agentic_core.seams.contracts.mcp import MCPConnectionManager
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_filesystem_mcp", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_filesystem_mcp", "p4obs", "metric_2")
@@ -214,15 +216,32 @@ class SovereignFilesystemMcp:
         self.mission_id = mission_id
         self.roots_key = f"fs_roots:{mission_id}"
 
+    def _resolve_repo_relative_path(self, path: str) -> Path:
+        path_obj = Path(str(path).replace("\\", "/"))
+        if path_obj.is_absolute():
+            raise PermissionError(f"Sovereignty Breach: Absolute path not allowed: {path}")
+        resolved = path_obj.resolve(strict=False)
+        return resolved
+
+    def _is_allowed_root(self, resolved: Path) -> bool:
+        normalized = str(resolved).replace("\\", "/")
+        for prefix in allowed_root_prefixes:
+            root = Path(prefix).resolve(strict=False)
+            root_norm = str(root).replace("\\", "/")
+            if normalized == root_norm or normalized.startswith(root_norm + "/"):
+                return True
+        return False
+
     def _validate_path(self, path: str) -> str:
         """L5 path sovereignty check. Blocks traversals and absolute escapes."""
         _emit_applies_guardrail(str(uuid.uuid4()), "SovereignFilesystemMcp._validate_path", "L2_EXECUTION")
         path_str = str(path).replace("\\", "/")
         if any(p in path_str for p in forbidden_path_patterns):
             raise PermissionError(f"Sovereignty Breach: Forbidden path pattern in '{path}'")
-        if not any(path_str.startswith(prefix) for prefix in allowed_root_prefixes):
+        resolved = self._resolve_repo_relative_path(path_str)
+        if not self._is_allowed_root(resolved):
             raise PermissionError(f"Sovereignty Breach: Path '{path}' is outside sovereign roots.")
-        return path_str
+        return str(resolved).replace("\\", "/")
 
     async def read_text_file(self, path: str) -> str:
         import uuid as _uuid  # noqa: PLC0415
@@ -288,7 +307,7 @@ class SovereignFilesystemMcp:
         )
         try:
             results = []
-            for path, content in files.items():
+            for path, content in tqdm(files.items(), desc="Processing", unit="item"):
                 try:
                     import builtins
 
@@ -316,7 +335,7 @@ class SovereignFilesystemMcp:
                                 "op": "fission",
                                 "source": monolith_path,
                                 "targets": list(files.keys()),
-                                "ts": datetime.utcnow().isoformat(),
+                                "ts": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                             },
                         ),
                     )
@@ -336,9 +355,15 @@ class SovereignFilesystemMcp:
 
     async def set_roots(self, roots: list[str]) -> None:
         """Sets the physical boundaries for the MCP server session."""
-        validated = [r for r in roots if any(r.startswith(p) for p in allowed_root_prefixes)]
+        validated = []
+        for root in roots:
+            try:
+                safe_root = self._validate_path(root)
+            except PermissionError:
+                continue
+            validated.append(safe_root)
         if not validated:
-            raise ValueError("No valid sovereign roots provided.")
+            raise PermissionError("No valid sovereign roots provided.")
         try:
             await self.manager.call_tool("roots_update", {"roots": validated})
             try:

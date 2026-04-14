@@ -35,7 +35,7 @@ except ImportError:
     apps_qwen_telemetry = None  # type: ignore[assignment]
     _QWEN_AVAILABLE = False
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_research._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -79,39 +79,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
-_emit_authorize_and_execute("p2", "ResearchOrchestrator", "execution_auth")
-_emit_validates_capability("p2", "ResearchOrchestrator", "capability_check")
-_emit_routes_to_capability("p2", "ResearchOrchestrator", "capability_route")
-_emit_writes_via_uwg("p2", "ResearchOrchestrator", "uwg_write")
-_emit_blocks_direct_write("p2", "ResearchOrchestrator", "direct_write_block")
-_emit_records_tool_invocation("p2", "ResearchOrchestrator", "tool_invocation")
-_emit_captures_execution_output("p2", "ResearchOrchestrator", "exec_output")
-_emit_dispatches_agent("p3", "ResearchOrchestrator", "agent_dispatch")
-_emit_coordinates_agents("p3", "ResearchOrchestrator", "agent_coordination")
-_emit_records_workflow_lineage("p3", "ResearchOrchestrator", "workflow_lineage")
-_emit_records_healing_outcome("p3", "ResearchOrchestrator", "healing_outcome")
-_emit_escalates_failure("p3", "ResearchOrchestrator", "failure_escalation")
-_emit_orchestrates_workflow("p3", "ResearchOrchestrator", "workflow_orchestration")
-_emit_dispatches_healing_run("p3", "ResearchOrchestrator", "healing_dispatch")
-_emit_invokes_evaluation("p3", "ResearchOrchestrator", "evaluation_signal")
-_emit_records_telemetry_event("p4", "ResearchOrchestrator", "telemetry_event")
-_emit_captures_evaluation_metric("p4", "ResearchOrchestrator", "eval_metric")
-_emit_stores_embedding("p4", "ResearchOrchestrator", "embedding_store")
-_emit_updates_meta_learning_state("p4", "ResearchOrchestrator", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "ResearchOrchestrator", "exec_snapshot_link")
-from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
 from apps_research.types.research_types import (
     ResearchRequest,
     ResearchResult,
     ResearchRunSummary,
     ResearchStatus,
 )
-from apps_research.validators.research_gate_validator import ResearchGateValidator
-
-_emit_applies_guardrail("p0", "ResearchOrchestrator", "p0_governance")
-_emit_reads_policy_state("p0", "ResearchOrchestrator", "policy_binding")
-_emit_snapshots_state("p0", "ResearchOrchestrator", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_research._telemetry import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -135,60 +109,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
-
-_emit_emits_metric_event("ResearchOrchestrator", "p4obs", "metric_1")
-_emit_emits_metric_event("ResearchOrchestrator", "p4obs", "metric_2")
-_emit_emits_metric_event("ResearchOrchestrator", "p4obs", "metric_3")
-_emit_emits_metric_event("ResearchOrchestrator", "p4obs", "metric_4")
-_emit_emits_metric_event("ResearchOrchestrator", "p4obs", "metric_5")
-_emit_emits_metric_event("ResearchOrchestrator", "p4obs", "metric_6")
-_emit_records_incident_event("ResearchOrchestrator", "p4obs", "incident")
-_emit_captures_runtime_anomaly("ResearchOrchestrator", "p4obs", "anomaly")
-_emit_writes_observability_log("ResearchOrchestrator", "p4obs", "obs_log")
-_emit_updates_monitoring_state("ResearchOrchestrator", "p4obs", "mon_state")
-_emit_triggers_alert("ResearchOrchestrator", "p4obs", "alert")
-_emit_links_incident_trace("ResearchOrchestrator", "p4obs", "trace_link")
-_emit_captures_pattern("ResearchOrchestrator", "p3lm", "pattern")
-_emit_records_learning_event("ResearchOrchestrator", "p3lm", "learning_event")
-_emit_writes_learning_snapshot("ResearchOrchestrator", "p3lm", "snapshot")
-_emit_feeds_meta_learning("ResearchOrchestrator", "p3lm", "meta_feed")
-_emit_updates_routing_strategy("ResearchOrchestrator", "p3lm", "routing")
-_emit_improves_agent_policy("ResearchOrchestrator", "p3lm", "policy")
-_emit_stores_learning_state("ResearchOrchestrator", "p3lm", "state")
-_emit_records_execution_trace("ResearchOrchestrator", "L0_ROUTING", "p2_trace_1")
-_emit_records_execution_trace("ResearchOrchestrator", "L1_REASONING", "p2_trace_2")
-_emit_records_execution_trace("ResearchOrchestrator", "L2_EXECUTION", "p2_trace_3")
-_emit_records_execution_trace("ResearchOrchestrator", "L3_ORCHESTRATION", "p2_trace_4")
-_emit_records_execution_trace("ResearchOrchestrator", "L4_STATE", "p2_trace_5")
-_emit_reads_environ("ResearchOrchestrator", "env_read", "p2_env_1")
-_emit_reads_environ("ResearchOrchestrator", "env_read", "p2_env_2")
-_emit_reads_runtime_state("ResearchOrchestrator", "runtime_state", "p2_rt_1")
-_emit_reads_runtime_state("ResearchOrchestrator", "runtime_state", "p2_rt_2")
-_emit_pulls_context("p1", "ResearchOrchestrator", "context_pull")
-_emit_pulls_context("p1", "ResearchOrchestrator", "context_pull_2")
-_emit_execution_terminates_at_uwg("p1", "ResearchOrchestrator", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "ResearchOrchestrator", "uwg_term_2")
-_emit_writes_through("p1", "ResearchOrchestrator", "write_through")
-_emit_writes_through("p1", "ResearchOrchestrator", "write_through_2")
-_emit_validated_by_safety_plane("p1", "ResearchOrchestrator", "safety_validation")
-_emit_invokes_eval("p1", "ResearchOrchestrator", "eval_call")
-_emit_proposal_commits_routing("p1", "ResearchOrchestrator", "routing_commit")
-_emit_escalates_to_human("p1", "ResearchOrchestrator", "human_escalation")
-_emit_routes_through("p1", "ResearchOrchestrator", "route_through")
-_emit_checks_agent_registry("p1", "ResearchOrchestrator", "agent_registry")
-_emit_validates_agent_capability("p1", "ResearchOrchestrator", "capability")
-_emit_dispatches_execution_plan("p1", "ResearchOrchestrator", "exec_plan")
-_emit_agent_executes_agent("p1", "ResearchOrchestrator", "sub_agent")
-_emit_routes_to_agent("p1", "ResearchOrchestrator", "target_agent")
-_emit_verifies_policy("p1", "ResearchOrchestrator", "policy_check")
-_emit_observes_runtime_state("p1", "ResearchOrchestrator", "runtime_state")
-_emit_verifies_boundary("p1", "ResearchOrchestrator", "boundary_check")
-_emit_transcripts_response("p1", "ResearchOrchestrator", "transcript")
-_emit_hard_fails_untranscripted("p1", "ResearchOrchestrator")
-_emit_gated_by_confidence("p1", "ResearchOrchestrator", "confidence_gate")
-emit_replay_key("p0", "ResearchOrchestrator")
-emit_determinism_digest("p0", "ResearchOrchestrator")
-_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -204,8 +125,18 @@ class ResearchOrchestrator:
     qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
-        self._assembly = ResearchAssemblyEngine()
-        self._gate = ResearchGateValidator()
+        self._assembly = None
+        self._gate = None
+        self._bootstrap_error: str | None = None
+        try:
+            from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
+            from apps_research.validators.research_gate_validator import ResearchGateValidator
+
+            self._assembly = ResearchAssemblyEngine()
+            self._gate = ResearchGateValidator()
+        except ImportError as exc:
+            self._bootstrap_error = f"apps_research runtime dependency unavailable: {exc}"
+            _log.warning(self._bootstrap_error)
 
         # Initialize Qwen vLLM for research synthesis
         self._qwen_gateway = None
@@ -247,12 +178,12 @@ class ResearchOrchestrator:
 
     async def run(self, request: ResearchRequest) -> ResearchResult:
         """Execute full research generation pipeline."""
-        import uuid as _uuid  # noqa: PLC0415
-
-        _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchOrchestrator.run")
-
         trace_id = request.trace_id or self._make_trace_id(request)
+        _emit_records_execution_trace(trace_id, LayerSegment.L3_ORCHESTRATION, "ResearchOrchestrator.run")
+        if self._bootstrap_error is not None:
+            raise RuntimeError(self._bootstrap_error)
+        if self._assembly is None or self._gate is None:
+            raise RuntimeError("ResearchOrchestrator bootstrap incomplete")
         mode_str = request.mode.value if hasattr(request.mode, "value") else str(request.mode)
         _log.info("[ResearchOrchestrator] trace=%s topic=%s mode=%s", trace_id, request.topic, mode_str)
 
@@ -299,7 +230,7 @@ class ResearchOrchestrator:
             if self._qwen_init_error is not None:
                 _dsp = LocalFirstDisposition.for_fail_init(
                     orchestrator="ResearchOrchestrator",
-                    run_id=_trace_id,
+                    run_id=trace_id,
                     predicate_hash=routing_decision.predicate_evaluation_hash,
                     init_error=self._qwen_init_error,
                 )
@@ -318,7 +249,7 @@ class ResearchOrchestrator:
                 if _adapter_result.route_to_gemini:
                     _dsp = LocalFirstDisposition.for_escalate(
                         orchestrator="ResearchOrchestrator",
-                        run_id=_trace_id,
+                        run_id=trace_id,
                         predicate_hash=routing_decision.predicate_evaluation_hash,
                         telem=_telem,
                     )
@@ -344,7 +275,7 @@ class ResearchOrchestrator:
                         _adapter.record_local_failure(severity="medium")
                         _dsp = LocalFirstDisposition.for_fail_exec(
                             orchestrator="ResearchOrchestrator",
-                            run_id=_trace_id,
+                            run_id=trace_id,
                             predicate_hash=routing_decision.predicate_evaluation_hash,
                             telem=_telem,
                             exc=_exc,
@@ -354,21 +285,21 @@ class ResearchOrchestrator:
                     result.qwen_inference_result = qwen_result
                     _dsp = LocalFirstDisposition.for_allow(
                         orchestrator="ResearchOrchestrator",
-                        run_id=_trace_id,
+                        run_id=trace_id,
                         predicate_hash=routing_decision.predicate_evaluation_hash,
                         telem=_telem,
                         qwen_result_present=qwen_result is not None,
                     )
                     _log.info("LOCAL_FIRST_DISPOSITION %s", json.dumps(_dsp.as_dict()))
                     _emit_records_execution_trace(
-                        str(_uuid.uuid4()),
+                        trace_id,
                         LayerSegment.L3_ORCHESTRATION,
                         "ResearchOrchestrator.run.qwen_local",
                     )
             else:
                 _dsp = LocalFirstDisposition.for_skip(
                     orchestrator="ResearchOrchestrator",
-                    run_id=_trace_id,
+                    run_id=trace_id,
                     provider_value="LOCAL_VLLM",
                     predicate_hash=routing_decision.predicate_evaluation_hash,
                     reason_code="gateway_not_initialized",
@@ -377,7 +308,7 @@ class ResearchOrchestrator:
         else:
             _dsp = LocalFirstDisposition.for_skip(
                 orchestrator="ResearchOrchestrator",
-                run_id=_trace_id,
+                run_id=trace_id,
                 provider_value=routing_decision.provider.value,
                 predicate_hash=routing_decision.predicate_evaluation_hash,
                 reason_code="predicate_selected_opus",
@@ -450,13 +381,12 @@ class ResearchOrchestrator:
         return result
 
     def _emit_artifacts(self, result: ResearchResult, trace_id: str) -> list[str]:
-        out = Path(self.output_dir)
-        out.mkdir(parents=True, exist_ok=True)
+        out = self._resolve_output_dir()
         paths: list[str] = []
 
         brief_path = out / f"research_{result.mode}_{trace_id[:8]}.md"
         lines = [
-            f"# Research Artifact — {result.topic}",
+            f"# Research Artifact — {self._safe_markdown(result.topic)}",
             "",
             f"**Mode:** {result.mode}  ",
             f"**Trace ID:** `{trace_id}`  ",
@@ -467,7 +397,14 @@ class ResearchOrchestrator:
         ]
         for section in result.sections:
             claim_label = f" `[{section.claim_type.value}]`" if hasattr(section.claim_type, "value") else ""
-            lines += [f"## {section.heading}{claim_label}", "", section.body, "", "---", ""]
+            lines += [
+                f"## {self._safe_markdown(section.heading)}{claim_label}",
+                "",
+                self._safe_markdown(section.body),
+                "",
+                "---",
+                "",
+            ]
 
         if result.comparison_matrix:
             lines += ["## Comparison Matrix", ""]
@@ -497,17 +434,33 @@ class ResearchOrchestrator:
             }
             for s in result.source_register
         ]
-        src_reg_path.write_text(json.dumps(src_data, indent=2), encoding="utf-8")
+        src_reg_path.write_text(
+            json.dumps(src_data, indent=2, sort_keys=True, ensure_ascii=False),
+            encoding="utf-8",
+        )
         paths.append(str(src_reg_path))
 
         return paths
 
     def _emit_run_summary(self, summary: ResearchRunSummary, trace_id: str) -> str:
-        out = Path(self.output_dir)
-        out.mkdir(parents=True, exist_ok=True)
+        out = self._resolve_output_dir()
         p = out / f"run_summary_{trace_id[:8]}.json"
-        p.write_text(json.dumps(summary.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
+        p.write_text(
+            json.dumps(summary.to_dict(), indent=2, sort_keys=True, ensure_ascii=False),
+            encoding="utf-8",
+        )
         return str(p)
+
+    def _resolve_output_dir(self) -> Path:
+        out = Path(self.output_dir).expanduser().resolve()
+        if out.exists() and not out.is_dir():
+            raise ValueError(f"output_dir must be a directory, got file: {out}")
+        out.mkdir(parents=True, exist_ok=True)
+        return out
+
+    @staticmethod
+    def _safe_markdown(value: str) -> str:
+        return value.replace("\x00", "").replace("\r\n", "\n").replace("```", "``\u200b`").strip()
 
     def _record_hop(self, hop_id: str, success: bool) -> None:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
@@ -602,7 +555,7 @@ class ResearchOrchestrator:
                 "error_message": response.error_message,
             }
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Qwen inference raises heterogeneous network/runtime errors; failure logged and returned as error dict
             _emit_records_telemetry_event("apps_research", "ResearchOrchestrator", "research_synthesis_error")
             return {"success": False, "error": f"synthesis_failed: {str(e)}", "content": None}
 
@@ -624,7 +577,9 @@ class ResearchOrchestrator:
         """
         # Format sources for the prompt
         sources_text = ""
-        for i, source in enumerate(sources[:10], 1):  # Limit to 10 sources for token limits
+        for i, source in tqdm(
+            enumerate(sources[:10], 1), desc="Processing", unit="item"
+        ):  # Limit to 10 sources for token limits
             sources_text += f"\nSOURCE {i}:\n"
             sources_text += f"Title: {source.get('title', 'Untitled')}\n"
             sources_text += (

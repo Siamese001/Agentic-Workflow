@@ -60,6 +60,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 emit_replay_key("p0", "search_fusion_engine")
 emit_determinism_digest("p0", "search_fusion_engine")
@@ -326,7 +327,7 @@ class SearchFusionEngine:
         all_results = {}
 
         # Add local results
-        for result in local_response.results:
+        for result in tqdm(local_response.results, desc="Processing", unit="item"):
             result_id = result.item_id
             if result_id not in all_results:
                 all_results[result_id] = {
@@ -339,7 +340,7 @@ class SearchFusionEngine:
                 all_results[result_id]["local_score"] = result.relevance_score
 
         # Add global results
-        for result in global_response.results:
+        for result in tqdm(global_response.results, desc="Processing", unit="item"):
             result_id = result.item_id
             if result_id not in all_results:
                 all_results[result_id] = {
@@ -352,7 +353,7 @@ class SearchFusionEngine:
                 all_results[result_id]["global_score"] = result.relevance_score
 
         # Add drift results
-        for result in drift_response.results:
+        for result in tqdm(drift_response.results, desc="Processing", unit="item"):
             result_id = result.item_id
             if result_id not in all_results:
                 all_results[result_id] = {
@@ -366,7 +367,7 @@ class SearchFusionEngine:
 
         # Calculate weighted scores
         fused_results = []
-        for result_id, scores in all_results.items():
+        for result_id, scores in tqdm(all_results.items(), desc="Processing", unit="item"):
             weighted_score = (
                 scores["local_score"] * self.fusion_config.local_weight
                 + scores["global_score"] * self.fusion_config.global_weight
@@ -462,7 +463,7 @@ class SearchFusionEngine:
 
         # Calculate fused scores
         fused_results = []
-        for result_id, ranks in rankings.items():
+        for result_id, ranks in tqdm(rankings.items(), desc="Processing", unit="item"):
             # Get the best result to use as base
             base_result = None
             for response in [local_response, global_response, drift_response]:
@@ -563,7 +564,7 @@ class SearchFusionEngine:
         fused_results = []
         k = self.fusion_config.rank_fusion_k
 
-        for result_id, ranks in rankings.items():
+        for result_id, ranks in tqdm(rankings.items(), desc="Processing", unit="item"):
             # Get the best result to use as base
             base_result = None
             for response in [local_response, global_response, drift_response]:
@@ -649,11 +650,11 @@ class SearchFusionEngine:
         diversified = [results[0]]  # Always include the top result
         lambda_param = self.fusion_config.diversity_lambda
 
-        for i in range(1, len(results)):
+        for i in tqdm(range(1, len(results)), desc="Processing", unit="item"):
             best_result = None
             best_mmr = -1.0
 
-            for candidate in results:
+            for candidate in tqdm(results, desc="Processing", unit="item"):
                 if candidate in diversified:
                     continue
 
@@ -697,7 +698,7 @@ class SearchFusionEngine:
         """Get performance statistics for all search strategies."""
         stats = {}
 
-        for strategy, times in self._search_stats.items():
+        for strategy, times in tqdm(self._search_stats.items(), desc="Processing", unit="item"):
             if times:
                 stats[strategy] = {
                     "avg_time_ms": sum(times) / len(times),

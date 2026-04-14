@@ -38,6 +38,7 @@ def _trace_id(operation: str, payload: str) -> str:
 
 
 _DEFAULT_EMBED_DIM = 1024
+_FAITHFULNESS_THRESHOLD = 0.75
 
 
 def _cosine(a: list[float], b: list[float]) -> float:

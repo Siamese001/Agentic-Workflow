@@ -109,6 +109,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("complexity_metrics_config", "p4obs", "metric_1")
 _emit_emits_metric_event("complexity_metrics_config", "p4obs", "metric_2")
@@ -320,7 +321,7 @@ class FlatteningPattern:
         """
         candidates = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Pattern 1: Dictionary initialization
             if isinstance(node, ast.Assign) and isinstance(node.value, ast.Dict):
                 if len(node.value.keys) >= 5:  # Large dict initialization

@@ -6,7 +6,6 @@ demand prediction, resource allocation, scaling recommendations,
 and capacity optimization strategies.
 """
 
-import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -15,7 +14,9 @@ import numpy as np
 
 from ..config.model_registry import DecisionMode
 from ..features.l1_features import L1FeatureExtractor
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class L1CapacityPlanner(BaseMLModel):
@@ -85,8 +86,7 @@ class L1CapacityPlanner(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.model_weights = model_data.get("model_weights")
             self.feature_names = model_data.get("feature_names", [])
@@ -118,8 +118,7 @@ class L1CapacityPlanner(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -380,7 +379,7 @@ class L1CapacityPlanner(BaseMLModel):
         last_demand = demand_values[-1]
         forecast = []
 
-        for day in range(1, forecast_days + 1):
+        for day in tqdm(range(1, forecast_days + 1), desc="Processing", unit="item"):
             # Apply trend and some randomness
             forecast_demand = last_demand + (trend * day)
 
@@ -740,7 +739,7 @@ class L1CapacityPlanner(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for time series
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:
@@ -773,7 +772,7 @@ class L1CapacityPlanner(BaseMLModel):
         X = []
         y = []
 
-        for example in training_data:
+        for example in tqdm(training_data, desc="Processing", unit="item"):
             features = example["features"]
             label = example["label"]
 

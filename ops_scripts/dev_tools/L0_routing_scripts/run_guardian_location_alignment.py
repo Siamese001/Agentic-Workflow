@@ -155,6 +155,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_location_alignment", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_location_alignment", "p4obs", "metric_2")
@@ -242,7 +243,7 @@ def scan_missing_directories(
         required_roots = ROOT_WHITELIST
 
     missing: list[str] = []
-    for root_name in sorted(required_roots):
+    for root_name in tqdm(sorted(required_roots), desc="Processing", unit="item"):
         root_path = repo_root / root_name
         if not root_path.exists():
             missing.append(root_name)
@@ -268,13 +269,13 @@ def scan_misplaced_files(
         scan_roots = ROOT_WHITELIST
 
     hits: list[str] = []
-    for root_name in sorted(scan_roots):
+    for root_name in tqdm(sorted(scan_roots), desc="Processing", unit="item"):
         root_path = repo_root / root_name
         if not root_path.exists() or not root_path.is_dir():
             continue
 
         # Pass 1: Python files — check structural placement
-        for py_file in sorted(root_path.rglob("*.py")):
+        for py_file in tqdm(sorted(root_path.rglob("*.py")), desc="Processing", unit="item"):
             if any(skip in py_file.parts for skip in SKIP_PARTS):
                 continue
 

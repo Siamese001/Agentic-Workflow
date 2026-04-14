@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from tqdm import tqdm
 
 
 class DeterminismProvenanceGate(ADGGateBase):
@@ -58,7 +59,7 @@ class DeterminismProvenanceGate(ADGGateBase):
                 FROM mv_determinism_provenance_drift
                 WHERE severity IN ('high', 'critical')
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 drift_type, affected_nodes, affected_edges, severity, description = row
 
                 summary["determinism_drift"] += 1
@@ -98,7 +99,7 @@ class DeterminismProvenanceGate(ADGGateBase):
                 FROM mv_graph_vs_report_mismatches
                 WHERE ABS(delta) > 0
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 mismatch_type, graph_count, report_count, delta, affected_artifacts = row
 
                 summary["graph_report_mismatches"] += 1
@@ -137,7 +138,7 @@ class DeterminismProvenanceGate(ADGGateBase):
                 FROM mv_digest_reconciliation
                 WHERE match_status = 'mismatch'
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 artifact_scope, expected_digest, actual_digest, match_status, severity = row
 
                 summary["digest_reconciliation_failures"] += 1
@@ -176,7 +177,7 @@ class DeterminismProvenanceGate(ADGGateBase):
                 FROM mv_snapshot_integrity_anomalies
                 WHERE severity IN ('high', 'critical')
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 anomaly_type, node_id, edge_id, description, severity = row
 
                 summary["snapshot_integrity_anomalies"] += 1

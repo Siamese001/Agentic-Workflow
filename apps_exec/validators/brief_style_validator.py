@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_verifies_policy,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -187,9 +188,9 @@ class StyleValidator:
         """Check for unsupported absolute claims."""
         violations: list[StyleViolation] = []
 
-        for pattern in self.UNSUPPORTED_CLAIM_PATTERNS:
+        for pattern in tqdm(self.UNSUPPORTED_CLAIM_PATTERNS, desc="Processing", unit="item"):
             matches = pattern.findall(content)
-            for match in matches:
+            for match in tqdm(matches, desc="Processing", unit="item"):
                 self._violation_counter += 1
                 violations.append(
                     StyleViolation(
@@ -211,7 +212,7 @@ class StyleValidator:
         # Parse sections (assumes markdown ## headers)
         sections = re.split(r"\n##\s+", content)
 
-        for section in sections[1:]:  # Skip preamble
+        for section in tqdm(sections[1:], desc="Processing", unit="item"):  # Skip preamble
             lines = section.strip().split("\n")
             if len(lines) < 2 or not lines[1].strip():
                 self._violation_counter += 1

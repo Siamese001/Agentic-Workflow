@@ -12,7 +12,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_records_telemetry_event,

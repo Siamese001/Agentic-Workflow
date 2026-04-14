@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("StructureEnforcerAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("StructureEnforcerAgent", "p4obs", "metric_2")
@@ -335,7 +336,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             tree = ast.parse(content)
         except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ImportFrom) and node.module:
                 target_layer = self._extract_layer_from_module(node.module)
                 if target_layer and target_layer not in allowed_layers:
@@ -359,7 +360,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             tree = ast.parse(content)
         except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 if not node.name.endswith(self._agent_config.agent_suffix):
                     violations.append(
@@ -381,7 +382,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
             tree = ast.parse(content)
         except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
             return violations
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef | ast.FunctionDef):
                 docstring = ast.get_docstring(node)
                 if self._agent_config.required_docstring and (not docstring):
@@ -410,7 +411,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
         """Check ASCII compliance."""
         violations = []
         lines = content.split("\n")
-        for i, line in enumerate(lines, 1):
+        for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
             try:
                 line.encode("ascii")
             except UnicodeEncodeError:  # guardian: UnicodeEncodeError should be handled with specific context

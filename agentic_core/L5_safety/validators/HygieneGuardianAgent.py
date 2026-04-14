@@ -149,6 +149,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("HygieneGuardianAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("HygieneGuardianAgent", "p4obs", "metric_2")
@@ -362,7 +363,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             lines = content.split("\n")
             debug_lines = []
 
-            for i, line in enumerate(lines, 1):
+            for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
                 # Skip docstrings and comments
                 stripped = line.strip()
                 if stripped.startswith("#") or stripped.startswith('"""') or stripped.startswith("'''"):
@@ -467,7 +468,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             ".sovereign_healing_backup",
         }
 
-        for item in directory.rglob("*"):
+        for item in tqdm(directory.rglob("*"), desc="Processing", unit="item"):
             # Skip ignored directories
             if any(ignored in item.parts for ignored in ignore_dirs):
                 continue
@@ -599,7 +600,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             "copy_pattern",
         }
 
-        for violation in self.violations:
+        for violation in tqdm(self.violations, desc="Processing", unit="item"):
             if not violation.auto_fixable or self.dry_run:
                 continue
 

@@ -125,9 +125,9 @@ class GatewayResult:
     """Result of a contract-enforced execution."""
 
     success: bool
-    manifest: SurgicalManifest
+    manifest: SurgicalManifest | None
     semantic_clock_tick: int
-    pre_snapshot: BoundarySnapshotArtifact
+    pre_snapshot: BoundarySnapshotArtifact | None
     post_snapshot: BoundarySnapshotArtifact | None = None
     rollback_verified: bool = False
     healing_output: dict[str, Any] = field(default_factory=dict)
@@ -164,6 +164,7 @@ class V15ExecutionGateway:
         state_hash_fn: Callable[[], tuple[str, str, str]],
         trace_id: str = "gw-default",
         agent_id: str = "",
+        max_heal_attempts: int = 1,
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute a healing operation under full P2 contract enforcement.
@@ -183,18 +184,25 @@ class V15ExecutionGateway:
             LayerSegment.L0_ROUTING,
             f"execution_gateway.execute:{agent_id}",
         )
-        _gw = get_routing_gateway(trace_id)
         self._pipe_violations = []
         self._policy_violations = []
         self._enforce_agent_registered(agent_id)
         try:
-            return self._execute_with_envelope(execution_input, heal_fn, state_hash_fn, trace_id, **kwargs)
+            return self._execute_with_envelope(
+                execution_input,
+                heal_fn,
+                state_hash_fn,
+                trace_id,
+                attempt=0,
+                max_heal_attempts=max_heal_attempts,
+                **kwargs,
+            )
         # guardian: allow-silent-swallow - acceptable exception handling
         except V15SoftFailAbort as sfa:
             Logger.warning("[V15-GW] SOFT_FAIL abort: %s", sfa)
             return GatewayResult(
                 success=False,
-                manifest=execution_input,
+                manifest=execution_input if isinstance(execution_input, SurgicalManifest) else None,
                 semantic_clock_tick=self._clock.step_id,
                 pre_snapshot=None,
                 post_snapshot=None,
@@ -215,10 +223,12 @@ class V15ExecutionGateway:
             )
         try:
             profile = get_profile(agent_id)
-        except (KeyError, Exception):
+        except KeyError:
             raise UnregisteredAgentError(
                 f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py.",
             )
+        except RuntimeError as exc:
+            raise ExecutionGatewayError("Agent registry lookup failed", exc) from exc
         Logger.debug("[V15-GW] Agent '%s' registry check OK (mode=%s)", agent_id, profile.execution_mode)
 
     def _execute_with_envelope(
@@ -227,13 +237,15 @@ class V15ExecutionGateway:
         heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
         state_hash_fn: Callable[[], tuple[str, str, str]],
         trace_id: str = "gw-default",
+        attempt: int = 0,
+        max_heal_attempts: int = 1,
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute with explicit L2 envelope separation."""
         from agentic_core.L2_execution.utils.providers import get_clock  # noqa: PLC0415
 
         manifest = self._validate_manifest(execution_input, trace_id)
-        self._guardian_validate(manifest, trace_id, **kwargs)
+        self._guardian_validate(manifest, trace_id, state_hash_fn=state_hash_fn, **kwargs)
         _clk = get_clock()
         _clk.emit_replay_key(context=f"{trace_id}:{manifest.node_id}")
         _clk.emit_determinism_digest(
@@ -241,7 +253,17 @@ class V15ExecutionGateway:
         )
         result = self._commit_mutation(manifest, heal_fn, state_hash_fn, trace_id, **kwargs)
         if not result.success and result.error:
-            return self._heal_and_retry(manifest, heal_fn, state_hash_fn, trace_id, **kwargs)
+            if attempt >= max_heal_attempts:
+                return result
+            return self._heal_and_retry(
+                manifest,
+                heal_fn,
+                state_hash_fn,
+                trace_id,
+                attempt=attempt + 1,
+                max_heal_attempts=max_heal_attempts,
+                **kwargs,
+            )
         return result
 
     def _validate_manifest(self, execution_input: Any, trace_id: str) -> SurgicalManifest:
@@ -260,7 +282,14 @@ class V15ExecutionGateway:
             raise V15SoftFailAbort("Duplicate signal detected")
         return manifest
 
-    def _guardian_validate(self, manifest: SurgicalManifest, trace_id: str, **kwargs: Any) -> None:
+    def _guardian_validate(
+        self,
+        manifest: SurgicalManifest,
+        trace_id: str,
+        *,
+        state_hash_fn: Callable[[], tuple[str, str, str]],
+        **kwargs: Any,
+    ) -> None:
         """L2.1: Guardian validation (non-mutating)."""
         global CURRENT_PHASE
         CURRENT_PHASE = "L2.1"
@@ -275,7 +304,7 @@ class V15ExecutionGateway:
         policy_config = kwargs.get("policy_config", {})
         policy_guard = PolicyConfigGuard(policy_config=policy_config, wave_id=trace_id)
         guardrail = GuardrailGuard(trace_id=trace_id)
-        fs_hash, git_hash, mem_hash = kwargs.get("state_hash_fn", lambda: ("", "", ""))()
+        fs_hash, git_hash, mem_hash = state_hash_fn()
         self._clock.prepare_commit(manifest.target_layer)
         pre_snapshot = create_boundary_snapshot(
             trace_id=trace_id,
@@ -335,10 +364,10 @@ class V15ExecutionGateway:
             error = str(e)
             commit_valid = False
             Logger.error(f"[V15-GW] Healing failed with known error: {e}")
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- catch-all in mutation boundary; re-raises as ExecutionGatewayError after logging
             error = str(e)
             commit_valid = False
-            Logger.critical(f"[V15-GW] Unexpected healing error: {e}")
+            Logger.exception("[V15-GW] Unexpected healing error")
             raise ExecutionGatewayError(f"Critical healing operation failed: {e}") from e
         final_mutation_count = MUTATION_COUNTER
         if final_mutation_count <= initial_mutation_count and commit_valid:
@@ -355,8 +384,8 @@ class V15ExecutionGateway:
                 rollback_verified = False
                 if error is None:
                     error = str(e)
-            except Exception as e:
-                Logger.critical(f"[V15-GW] Critical rollback integrity error: {e}")
+            except Exception as e:  # guardian: allow-broad-exception -- rollback verification boundary; re-raises as ExecutionGatewayError after logging
+                Logger.exception("[V15-GW] Critical rollback integrity error")
                 rollback_verified = False
                 if error is None:
                     error = str(e)
@@ -394,14 +423,26 @@ class V15ExecutionGateway:
         heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
         state_hash_fn: Callable[[], tuple[str, str, str]],
         trace_id: str,
+        attempt: int = 1,
+        max_heal_attempts: int = 1,
         **kwargs: Any,
     ) -> GatewayResult:
         """L2.3: Healing loop - non-mutating, re-enters L2.0."""
         global CURRENT_PHASE
         CURRENT_PHASE = "L2.3"
-        Logger.info(f"[V15-GW] Entering healing loop for {trace_id}")
+        Logger.info(
+            "[V15-GW] Entering healing loop for %s attempt=%s/%s", trace_id, attempt, max_heal_attempts
+        )
         try:
-            return self._execute_with_envelope(manifest, heal_fn, state_hash_fn, trace_id, **kwargs)
+            return self._execute_with_envelope(
+                manifest,
+                heal_fn,
+                state_hash_fn,
+                trace_id,
+                attempt=attempt,
+                max_heal_attempts=max_heal_attempts,
+                **kwargs,
+            )
         except (ValueError, KeyError, AttributeError) as e:
             Logger.error(f"[V15-GW] Healing loop failed with known error: {e}")
             return GatewayResult(

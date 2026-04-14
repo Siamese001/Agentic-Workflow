@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("telepathy_interface_types", "p4obs", "metric_1")
 _emit_emits_metric_event("telepathy_interface_types", "p4obs", "metric_2")
@@ -278,7 +279,7 @@ class TelepathyInterface:
             "sherlock": "Sherlock",
             "reflection": "ReflectionAgent",
         }
-        for keyword, agent in agent_mapping.items():
+        for keyword, agent in tqdm(agent_mapping.items(), desc="Processing", unit="item"):
             if f"force {keyword}" in instructions_lower or f"run {keyword}" in instructions_lower:
                 commands["force_agents"].append(agent)
                 commands["custom_signals"].add(f"FORCE_{agent.upper()}")

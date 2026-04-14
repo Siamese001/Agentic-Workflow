@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("guard_ddd_alignment_util", "p4obs", "metric_1")
 _emit_emits_metric_event("guard_ddd_alignment_util", "p4obs", "metric_2")
@@ -204,7 +205,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
     python_files = list(get_python_files(root))
     if not python_files:
         return violations
-    for py_file in python_files:
+    for py_file in tqdm(python_files, desc="Processing", unit="item"):
         try:
             relative_path = py_file.relative_to(root)
         except ValueError:
@@ -239,7 +240,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
                 },
             )
             continue
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if not isinstance(node, ast.ClassDef):
                 continue
             methods = [

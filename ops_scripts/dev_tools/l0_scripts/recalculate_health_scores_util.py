@@ -115,6 +115,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("recalculate_health_scores_util", "p4obs", "metric_1")
 _emit_emits_metric_event("recalculate_health_scores_util", "p4obs", "metric_2")
@@ -184,7 +185,7 @@ def main():
     territories = json.loads(json_str)
     print(f"\nFound {len(territories)} territories")
     changes = []
-    for territory in territories:
+    for territory in tqdm(territories, desc="Processing", unit="item"):
         name = territory.get("Territory", "Unknown")
         heal_cap = territory.get("Heal Cap %", 0)
         invoc = territory.get("Heal Invocation %", 0)

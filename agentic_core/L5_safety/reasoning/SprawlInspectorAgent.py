@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SprawlInspectorAgent", "p4obs", "metric_2")
@@ -228,7 +229,7 @@ class SprawlInspectorAgent(SovereignBaseAgent):
         _seg_hash = _hashlib.sha256(f"{_trace_id}:SprawlInspectorAgent.inspect".encode()).hexdigest()[:24]
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
-        for root, dirs, files in os.walk(self.root):
+        for root, dirs, files in tqdm(os.walk(self.root), desc="Processing", unit="item"):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             p: Path = Path(root)
             py_files: list[str] = [f for f in files if f.endswith(".py")]

@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("specificity_prose_types", "p4obs", "metric_1")
 _emit_emits_metric_event("specificity_prose_types", "p4obs", "metric_2")
@@ -259,7 +260,7 @@ class SpecificityProseEngine:
         )
         self.recovery_loop.reset(self.config.temperature)
         validation_results: Any = []
-        for attempt in range(1, self.config.max_attempts + 1):
+        for attempt in tqdm(range(1, self.config.max_attempts + 1), desc="Processing", unit="item"):
             cover_letter: Any = self._generate_content(
                 company_research=company_research,
                 resume_highlights=resume_highlights,
@@ -422,8 +423,10 @@ class SpecificityProseEngine:
                         SOURCE="company_research",
                     ),
                 )
-        for category, keywords in self.COMPANY_SPECIFIC_CATEGORIES.items():
-            for keyword in keywords:
+        for category, keywords in tqdm(
+            self.COMPANY_SPECIFIC_CATEGORIES.items(), desc="Processing", unit="item"
+        ):
+            for keyword in tqdm(keywords, desc="Processing", unit="item"):
                 for key, value in company_research.items():
                     if isinstance(value, str) and keyword in value.lower():
                         if value in cover_letter:

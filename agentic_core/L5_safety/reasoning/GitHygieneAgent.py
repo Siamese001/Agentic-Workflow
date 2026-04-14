@@ -143,6 +143,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("GitHygieneAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("GitHygieneAgent", "p4obs", "metric_2")
@@ -251,7 +252,7 @@ class GitHygieneAgent(SovereignBaseAgent):
         cutoff_ts = int(cutoff.timestamp())
         branches_output = self._run_git(["branch", "--format=%(refname:short) %(committerdate:unix)"])
         stale = []
-        for line in branches_output.splitlines():
+        for line in tqdm(branches_output.splitlines(), desc="Processing", unit="item"):
             parts = line.split()
             if len(parts) < 2:
                 continue

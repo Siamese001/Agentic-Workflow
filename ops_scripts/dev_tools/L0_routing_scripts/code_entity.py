@@ -94,6 +94,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("code_entity", "p4obs", "metric_1")
 _emit_emits_metric_event("code_entity", "p4obs", "metric_2")
@@ -319,7 +320,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
     analysis = FileAnalysis(path=str(file_path), archive_folder=archive_folder, loc=len(content.splitlines()))
 
     # Extract imports
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 analysis.imports.append(alias.name)
@@ -340,7 +341,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
                 analysis.external_deps.append(module)
 
     # Extract entities
-    for node in ast.iter_child_nodes(tree):
+    for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             bases = []
             for base in node.bases:
@@ -402,8 +403,8 @@ def build_current_codebase_index(dirs: list[str]) -> dict[str, set[str]]:
         "methods": set(),
     }
 
-    for dir_path in dirs:
-        for py_file in Path(dir_path).rglob("*.py"):
+    for dir_path in tqdm(dirs, desc="Processing", unit="item"):
+        for py_file in tqdm(Path(dir_path).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
             try:
@@ -438,7 +439,7 @@ def calculate_uniqueness(
     unique_entities = []
     total_score = 0
 
-    for entity in analysis.entities:
+    for entity in tqdm(analysis.entities, desc="Processing", unit="item"):
         name_lower = entity.name.lower()
 
         # Check if entity exists in codebase
@@ -508,7 +509,7 @@ def main():
     all_analyses: list[FileAnalysis] = []
     archive_stats = defaultdict(lambda: {"files": 0, "agents": 0, "unique": 0})
 
-    for archive_name in priority_archives:
+    for archive_name in tqdm(priority_archives, desc="Processing", unit="item"):
         archive_path = archives_root / archive_name
         if not archive_path.exists():
             continue
@@ -516,7 +517,7 @@ def main():
         py_files = list(archive_path.rglob("*.py"))
         archive_stats[archive_name]["files"] = len(py_files)
 
-        for py_file in py_files:
+        for py_file in tqdm(py_files, desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or "__init__" in py_file.name:
                 continue
 
@@ -547,7 +548,7 @@ def main():
     skip_exists = []  # Already in codebase
     skip_low_quality = []  # Syntax errors or low quality
 
-    for analysis in all_analyses:
+    for analysis in tqdm(all_analyses, desc="Processing", unit="item"):
         if analysis.has_syntax_error:
             skip_low_quality.append(analysis)
             continue
@@ -596,7 +597,9 @@ def main():
     report.append("=" * 80)
     report.append(f"\nTotal: {len(restore_high)} files")
 
-    for analysis in sorted(restore_high, key=lambda x: -x.unique_score)[:20]:
+    for analysis in tqdm(
+        sorted(restore_high, key=lambda x: -x.unique_score)[:20], desc="Processing", unit="item"
+    ):
         agents = [e for e in analysis.entities if e.entity_type == "agent"]
         report.append(f"\n  [{analysis.unique_score:.0f}%] {Path(analysis.path).name}")
         report.append(f"    Archive: {analysis.archive_folder}")
@@ -620,7 +623,9 @@ def main():
     report.append("=" * 80)
     report.append(f"\nTotal: {len(restore_medium)} files")
 
-    for analysis in sorted(restore_medium, key=lambda x: -x.unique_score)[:15]:
+    for analysis in tqdm(
+        sorted(restore_medium, key=lambda x: -x.unique_score)[:15], desc="Processing", unit="item"
+    ):
         entities = [e.name for e in analysis.entities if e.entity_type != "function"][:5]
         report.append(f"\n  [{analysis.unique_score:.0f}%] {Path(analysis.path).name}")
         report.append(f"    Archive: {analysis.archive_folder}")
@@ -673,7 +678,7 @@ def main():
     report.append("=" * 80)
 
     top_restores = sorted(restore_high + restore_medium, key=lambda x: -x.unique_score)[:10]
-    for analysis in top_restores:
+    for analysis in tqdm(top_restores, desc="Processing", unit="item"):
         src = analysis.path
         if analysis.domain == "outreach":
             dst = "apps_lic/engines/"

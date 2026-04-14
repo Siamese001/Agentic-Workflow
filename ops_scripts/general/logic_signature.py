@@ -9,6 +9,7 @@ import json
 import logging
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -125,13 +126,13 @@ def main():
                     rg_signatures.add(sig.content_hash)
     logger.info(f"Indexed {len(rg_signatures)} unique logic blocks in apps_rg.")
     recovery_plan = []
-    for root_path in ARCHIVE_ROOTS:
+    for root_path in tqdm(ARCHIVE_ROOTS, desc="Processing", unit="item"):
         root = Path(root_path)
         if not root.exists():
             logger.warning(f"Archive path not found: {root}")
             continue
         logger.info(f"Scanning Archive: {root.name}...")
-        for py_file in root.rglob("*.py"):
+        for py_file in tqdm(root.rglob("*.py"), desc="Processing", unit="item"):
             audit = scan_file(py_file)
             if not audit:
                 continue

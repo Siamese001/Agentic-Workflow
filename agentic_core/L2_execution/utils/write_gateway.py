@@ -408,6 +408,25 @@ def _append_ledger_entry(
         f.write(json.dumps(entry, separators=(",", ":"), ensure_ascii=True) + "\n")
 
 
+def _atomic_write_bytes(path: Path, payload: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=str(path.parent), suffix=".tmp", prefix=f".{path.stem}_")
+    try:
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(payload)
+            fh.flush()
+            os.fsync(fh.fileno())
+        os.replace(tmp, path)
+    except BaseException:  # guardian: allow-broad-exception -- atomic write rollback must catch all exceptions to clean temp file
+        try:
+            os.unlink(tmp)
+        except (
+            OSError
+        ):  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
+            pass
+        raise
+
+
 def write_text(
     path: str | Path,
     content: str,
@@ -462,8 +481,7 @@ def write_text(
         raise
     _deny_writes_into_source_roots(p, "write")
     try:
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(content, encoding=encoding)
+        _atomic_write_bytes(p, content.encode(encoding))
         after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
         _append_ledger_entry(
             operation="write_text",
@@ -498,8 +516,7 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
         raise
     _deny_writes_into_source_roots(p, "write")
     try:
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_bytes(data)
+        _atomic_write_bytes(p, data)
         after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
         _append_ledger_entry(
             operation="write_bytes",
@@ -520,9 +537,8 @@ def write_json(path: str | Path, obj: Any, indent: int = 2) -> str:
     """Serialize obj as JSON and write to file."""
     p = Path(path)
     _deny_writes_into_source_roots(p, "write")
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", encoding="utf-8") as f:
-        json.dump(obj, f, indent=indent)
+    payload = json.dumps(obj, indent=indent, ensure_ascii=False).encode("utf-8")
+    _atomic_write_bytes(p, payload)
     Logger.debug(f"[WriteGateway] write_json: {p}")
     return str(p)
 
@@ -542,9 +558,7 @@ def open_write(path: str | Path, content: str, encoding: str = "utf-8") -> str:
     """Open file in write mode and write content."""
     p = Path(path)
     _deny_writes_into_source_roots(p, "write")
-    p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", encoding=encoding) as f:
-        f.write(content)
+    _atomic_write_bytes(p, content.encode(encoding))
     Logger.debug(f"[WriteGateway] open_write: {p}")
     return str(p)
 
@@ -646,22 +660,8 @@ def write_json_atomic(path: str | Path, obj: Any, indent: int = 2) -> str:
     """Serialize obj as JSON via temp file + atomic rename."""
     p = Path(path)
     _deny_writes_into_source_roots(p, "write")
-    p.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(dir=str(p.parent), suffix=".tmp", prefix=f".{p.stem}_")
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            json.dump(obj, f, indent=indent)
-        if os.name == "nt" and p.exists():
-            p.unlink()
-        Path(tmp).replace(p)
-    except BaseException:  # guardian: allow-broad-exception -- atomic write rollback must catch all exceptions to clean temp file
-        try:
-            os.unlink(tmp)
-        except (
-            OSError
-        ):  # guardian: allow-silent-swallow -- intentional: temp file cleanup failure is non-critical
-            pass
-        raise
+    payload = json.dumps(obj, indent=indent, ensure_ascii=False).encode("utf-8")
+    _atomic_write_bytes(p, payload)
     Logger.debug(f"[WriteGateway] write_json_atomic: {p}")
     return str(p)
 

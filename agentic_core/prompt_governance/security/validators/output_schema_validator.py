@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("output_schema_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("output_schema_validator", "p4obs", "metric_2")
@@ -164,6 +165,20 @@ _emit_updates_meta_learning_state("p4", "output_schema_validator", "meta_learnin
 _emit_links_execution_to_snapshot("p4", "output_schema_validator", "exec_snapshot_link")
 
 Logger = logging.getLogger(__name__)
+
+
+def _redact_error_detail(exc: Exception) -> str:
+    """Return a safe redacted error token — never leaks raw user data."""
+    return type(exc).__name__
+
+
+def _contains_mutation_authority(value: str) -> bool:
+    """Return True if value is or transitively embeds a mutation authority marker."""
+    if value in _MUTATION_AUTHORITY_MARKERS:
+        return True
+    return any(marker in value for marker in _MUTATION_AUTHORITY_MARKERS)
+
+
 _PRIMITIVE_TYPES = {
     "string": str,
     "integer": int,
@@ -212,7 +227,7 @@ def _validate_pydantic(obj: Any, model_cls: Any) -> tuple[bool, str | None, dict
         if isinstance(obj, str):
             obj = json.loads(obj)
     except (json.JSONDecodeError, TypeError) as e:
-        return (False, "JSON_PARSE_ERROR", {"error": str(e)})
+        return (False, "JSON_PARSE_ERROR", {"error": _redact_error_detail(e)})
     try:
         if hasattr(model_cls, "model_validate"):
             model_cls.model_validate(obj)
@@ -220,7 +235,7 @@ def _validate_pydantic(obj: Any, model_cls: Any) -> tuple[bool, str | None, dict
             model_cls.parse_obj(obj)
         return (True, None, {})
     except Exception as e:  # guardian: allow-silent-swallow
-        return (False, "PYDANTIC_VALIDATION_ERROR", {"error": str(e)})
+        return (False, "PYDANTIC_VALIDATION_ERROR", {"error": _redact_error_detail(e)})
 
 
 def _validate_dict_schema(obj: Any, schema: dict) -> tuple[bool, str | None, dict]:
@@ -230,7 +245,7 @@ def _validate_dict_schema(obj: Any, schema: dict) -> tuple[bool, str | None, dic
         try:
             obj = json.loads(obj)
         except (json.JSONDecodeError, TypeError) as e:
-            return (False, "JSON_PARSE_ERROR", {"error": str(e)})
+            return (False, "JSON_PARSE_ERROR", {"error": _redact_error_detail(e)})
     errors = _check_node(obj, schema, path="$")
     if errors:
         return (False, "DICT_SCHEMA_VALIDATION_ERROR", {"errors": errors})
@@ -265,7 +280,7 @@ def validate_healer_reentry(metadata: dict) -> tuple[bool, str | None]:
         if metadata.get("reentry_gate") is not True:
             return (False, HEALER_REENTRY_VIOLATION)
     for value in metadata.values():
-        if isinstance(value, str) and value in _MUTATION_AUTHORITY_MARKERS:
+        if isinstance(value, str) and _contains_mutation_authority(value):
             return (False, HEALER_REENTRY_VIOLATION)
     return (True, None)
 
@@ -316,11 +331,19 @@ def validate_context_contract(payload: dict) -> tuple[bool, str | None, dict]:
         citations = payload["citations"]
         if not isinstance(citations, list):
             return (False, MISSING_CITATION_FIELDS, {})
-        for item in citations:
+        for item in tqdm(citations, desc="Processing", unit="item"):
             if not isinstance(item, dict):
                 return (False, MISSING_CITATION_FIELDS, {})
             missing = [k for k in _REQUIRED_CITATION_KEYS if k not in item]
             if missing:
+                return (False, MISSING_CITATION_FIELDS, {})
+            if not isinstance(item["source_doc_id"], str) or not item["source_doc_id"]:
+                return (False, MISSING_CITATION_FIELDS, {})
+            if not isinstance(item["offset_start"], int) or not isinstance(item["offset_end"], int):
+                return (False, MISSING_CITATION_FIELDS, {})
+            if item["offset_start"] < 0 or item["offset_end"] < item["offset_start"]:
+                return (False, MISSING_CITATION_FIELDS, {})
+            if not isinstance(item["timestamp"], str) or not item["timestamp"]:
                 return (False, MISSING_CITATION_FIELDS, {})
         normalized["citations"] = [{k: item[k] for k in _REQUIRED_CITATION_KEYS} for item in citations]
     if "telemetry_envelope" in payload:
@@ -329,7 +352,11 @@ def validate_context_contract(payload: dict) -> tuple[bool, str | None, dict]:
             return (False, INVALID_TELEMETRY_ENVELOPE, {})
         if not isinstance(te.get("hit_rate"), (int, float)):
             return (False, INVALID_TELEMETRY_ENVELOPE, {})
+        if not 0 <= te["hit_rate"] <= 1:
+            return (False, INVALID_TELEMETRY_ENVELOPE, {})
         if not isinstance(te.get("recall_estimate"), (int, float)):
+            return (False, INVALID_TELEMETRY_ENVELOPE, {})
+        if not 0 <= te["recall_estimate"] <= 1:
             return (False, INVALID_TELEMETRY_ENVELOPE, {})
         if not isinstance(te.get("empty_result_signal"), bool):
             return (False, INVALID_TELEMETRY_ENVELOPE, {})

@@ -21,6 +21,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "fix_root_scripts_util", "uwg_governed_write")
 _emit_writes_through("p1", "fix_root_scripts_util", "uwg_governed_write_2")
@@ -71,7 +72,7 @@ def migrate_scripts():
     TARGET_DIR.mkdir(parents=True, exist_ok=True)
     moved_count = 0
     cleaned_count = 0
-    for python_file in SOURCE_DIR.glob("*.py"):
+    for python_file in tqdm(SOURCE_DIR.glob("*.py"), desc="Processing", unit="item"):
         if has_core_dependency(python_file):
             target_path = TARGET_DIR / python_file.name
             if target_path.exists():

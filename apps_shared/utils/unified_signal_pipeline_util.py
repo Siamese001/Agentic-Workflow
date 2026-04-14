@@ -121,6 +121,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("unified_signal_pipeline_util", "p4obs", "metric_1")
 _emit_emits_metric_event("unified_signal_pipeline_util", "p4obs", "metric_2")
@@ -1213,7 +1214,7 @@ class UnifiedSignalPipeline:
             )
         envelope.metadata["domain_config"] = json.dumps(domain_config.dict())
         checkpoint_manager = await self._get_checkpoint_manager()
-        for stage in self.stages:
+        for stage in tqdm(self.stages, desc="Processing", unit="item"):
             stage_name = stage.stage_name
             try:
                 if envelope.has_completed_stage(stage_name):

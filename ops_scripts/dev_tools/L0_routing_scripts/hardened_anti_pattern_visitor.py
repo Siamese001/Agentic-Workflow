@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hardened_anti_pattern_visitor", "p4obs", "metric_1")
 _emit_emits_metric_event("hardened_anti_pattern_visitor", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
 
-        for name in node.names:
+        for name in tqdm(node.names, desc="Processing", unit="item"):
             real_name = name.name
             alias = name.asname or name.name
             self.aliases[alias] = real_name
@@ -240,7 +241,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
     def visit_ImportFrom(self, node: ast.ImportFrom):
         """TODO: Add documentation for visit_ImportFrom."""
         if node.module:
-            for name in node.names:
+            for name in tqdm(node.names, desc="Processing", unit="item"):
                 real_name = f"{node.module}.{name.name}"
                 alias = name.asname or name.name
                 self.aliases[alias] = real_name
@@ -269,7 +270,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
             )
             if heal_method:
                 has_super = False
-                for child in ast.walk(heal_method):
+                for child in tqdm(ast.walk(heal_method), desc="Processing", unit="item"):
                     if (
                         isinstance(child, ast.Call)
                         and isinstance(child.func, ast.Attribute)
@@ -305,7 +306,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
 
     def visit_Assign(self, node: ast.Assign):
         """TODO: Add documentation for visit_Assign."""
-        for target in node.targets:
+        for target in tqdm(node.targets, desc="Processing", unit="item"):
             if isinstance(target, ast.Name) and any(
                 x in target.id.upper() for x in ["REGISTRY", "MAP", "CONFIG"]
             ):
@@ -348,11 +349,11 @@ def main():
     """TODO: Add documentation for main."""
     search_dirs = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, "scripts"]
     findings = []
-    for dir_name in search_dirs:
+    for dir_name in tqdm(search_dirs, desc="Processing", unit="item"):
         path = PROJECT_ROOT / dir_name
         if not path.exists():
             continue
-        for py_file in path.rglob("*.py"):
+        for py_file in tqdm(path.rglob("*.py"), desc="Processing", unit="item"):
             if ARCHIVES_DIR in str(py_file) or "__pycache__" in str(py_file):
                 continue
             try:

@@ -113,6 +113,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("research_assembly_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("research_assembly_engine", "p4obs", "metric_2")
@@ -319,7 +320,7 @@ class ResearchAssemblyEngine:
             ),
         ]
         if request.comparison_subjects:
-            for idx, subject in enumerate(request.comparison_subjects):
+            for idx, subject in tqdm(enumerate(request.comparison_subjects), desc="Processing", unit="item"):
                 sources.append(
                     SourceEntry(
                         source_id=f"SRC-C{idx + 1:02d}",

@@ -23,6 +23,7 @@ from datetime import datetime
 from enum import Enum, auto
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -150,7 +151,7 @@ class CodeValidator:
 
             lines = content.split("\n")
 
-            for i, line in enumerate(lines, 1):
+            for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
                 # Check for proper class naming
                 class_match = re.search(r"class\s+(\w+)", line)
                 if class_match:
@@ -199,7 +200,7 @@ class CodeValidator:
 
             lines = content.split("\n")
 
-            for i, line in enumerate(lines, 1):
+            for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
                 if "async def" in line:
                     # Look for the function body to check for await
                     func_lines = []
@@ -246,7 +247,7 @@ class CodeValidator:
 
             lines = content.split("\n")
 
-            for i, line in enumerate(lines, 1):
+            for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
                 if "print(" in line and not line.strip().startswith("#"):
                     severity = "HIGH" if self.ruleset.print_policy == "error" else "MEDIUM"
                     violations.append(

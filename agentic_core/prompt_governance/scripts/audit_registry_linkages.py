@@ -8,6 +8,7 @@ with proper Phase 4 schema headers.
 import json
 import sys
 from pathlib import Path
+from tqdm import tqdm
 
 
 def load_registry(registry_path: Path) -> dict:
@@ -26,7 +27,7 @@ def extract_schema_from_template(template_path: Path) -> dict[str, list[str]]:
     try:
         with open(template_path, encoding="utf-8") as f:
             content = f.read()
-        for line in content.split("\n")[:20]:
+        for line in tqdm(content.split("\n")[:20], desc="Processing", unit="item"):
             if "{# SCHEMA:" in line:
                 schema_match = line.replace("{# SCHEMA:", "").replace("#}", "").strip()
                 required_vars = []
@@ -56,8 +57,8 @@ def audit_registry_linkages(registry_path: Path, base_dir: Path) -> tuple[list[d
     passed = []
     failed = []
     prompts = registry.get("prompts", {})
-    for template_name, prompt_versions in prompts.items():
-        for prompt_data in prompt_versions:
+    for template_name, prompt_versions in tqdm(prompts.items(), desc="Processing", unit="item"):
+        for prompt_data in tqdm(prompt_versions, desc="Processing", unit="item"):
             if not prompt_data.get("active", False):
                 continue
             template_path = base_dir / "templates" / template_name

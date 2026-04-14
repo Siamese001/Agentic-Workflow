@@ -356,6 +356,28 @@ CONTRACT_VERSION = "1.0.0"
 _CONTRACT_EXPIRY_TICKS = 3600.0  # 1 hour in seconds
 
 
+def _make_contract_id(
+    routing_context: RoutingContext,
+    candidate_routes_hash: str,
+    chosen_route_hash: str,
+    determinism_digest: str,
+) -> str:
+    """Deterministic contract identifier derived from immutable routing inputs."""
+    payload = "|".join(
+        [
+            routing_context.run_id,
+            routing_context.router_id,
+            routing_context.request_hash,
+            candidate_routes_hash,
+            chosen_route_hash,
+            routing_context.policy_hash,
+            routing_context.policy_version,
+            determinism_digest,
+        ],
+    )
+    return f"rc-{hashlib.sha256(payload.encode()).hexdigest()[:24]}"
+
+
 # ---------------------------------------------------------------------------
 # create_and_commit_routing_contract() — mandatory entrypoint
 # ---------------------------------------------------------------------------
@@ -394,23 +416,25 @@ def create_and_commit_routing_contract(
     # Step 1 — validate context
     routing_context.validate()
 
+    clk = get_clock()
+    now_tick = clk.now_epoch()
+
     # P4/L0: Trigger routing optimization on contract creation
     try:
-        # Create routing history from context
         routing_events = [
             {
                 "route": routing_context.chosen_route,
                 "success": True,  # Assume success for now
                 "latency_ms": 100.0,  # Default latency
                 "cost": 1.0,  # Default cost
-                "timestamp": get_clock().now_epoch(),
+                "timestamp": now_tick,
             },
         ]
 
         routing_history = RoutingHistory.create(
             routing_events=routing_events,
-            window_start_tick=get_clock().now_epoch() - 3600,  # 1 hour window
-            window_end_tick=get_clock().now_epoch(),
+            window_start_tick=now_tick - 3600,  # 1 hour window
+            window_end_tick=now_tick,
         )
 
         optimization_window = OptimizationWindow.create(
@@ -446,7 +470,6 @@ def create_and_commit_routing_contract(
     policy_version = routing_context.policy_version
 
     # Step 5 — generate replay key via clock
-    clk = get_clock()
     clk.emit_replay_key(context=f"routing:{routing_context.router_id}:{chosen_route_hash[:12]}")
     replay_key = f"rk:routing:{chosen_route_hash[:16]}:{policy_hash[:8]}"
 
@@ -456,7 +479,7 @@ def create_and_commit_routing_contract(
         f"{candidate_routes_hash}|{chosen_route_hash}|{policy_hash}|{policy_version}"
     )
     determinism_digest = hashlib.sha256(digest_payload.encode()).hexdigest()[:32]
-    clk.emit_determinism_digest(context=f"routing:{routing_context.router_id}")
+    clk.emit_determinism_digest(inputs={"context": f"routing:{routing_context.router_id}"})
 
     # Step 7 — attach trace id
     from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
@@ -464,8 +487,13 @@ def create_and_commit_routing_contract(
     _active = get_active_execution_trace()
     trace_id = _active.trace_id if _active else f"no-trace:{routing_context.run_id}"
 
-    # Generate contract id
-    routing_contract_id = str(uuid.uuid4())
+    # Generate deterministic contract id
+    routing_contract_id = _make_contract_id(
+        routing_context,
+        candidate_routes_hash,
+        chosen_route_hash,
+        determinism_digest,
+    )
 
     # Step 8a — build contract (immutable)
     contract = RoutingContract(
@@ -481,8 +509,8 @@ def create_and_commit_routing_contract(
         replay_key=replay_key,
         determinism_digest=determinism_digest,
         contract_version=CONTRACT_VERSION,
-        created_at_tick=clk.now_epoch(),
-        expiry_tick=clk.now_epoch() + expiry_ticks,
+        created_at_tick=now_tick,
+        expiry_tick=now_tick + expiry_ticks,
     )
 
     # Step 8b — build and commit proposal (proposal_commits_routing ADG edge)

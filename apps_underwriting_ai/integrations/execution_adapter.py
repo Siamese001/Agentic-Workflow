@@ -3,10 +3,23 @@ Execution Adapter - Handles execution handoff to agentic_core.
 """
 
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 
 from ..engines.underwriting_engine import UnderwritingResult
 from ..types import UnderwritingRequest
+
+
+def _model_to_dict(model: Optional[Any]) -> Dict[str, Any]:
+    """Support both Pydantic v1 and v2 serialization APIs."""
+    if model is None:
+        return {}
+    if hasattr(model, "model_dump"):
+        return model.model_dump()
+    if hasattr(model, "dict"):
+        return model.dict()
+    return {}
+
 
 # L1 retrieval wiring (Turn 2, Wave 11): Import creates ADG edge to L1_cognition
 
@@ -65,10 +78,10 @@ class ExecutionAdapter:
                 "human_review_required": result.human_review_required,
                 "human_review_reason": result.human_review_reason,
             },
-            "decision_memo": result.decision_memo.dict() if result.decision_memo else {},
-            "decision_packet": result.decision_packet.dict() if result.decision_packet else {},
-            "audit_trace": result.audit_trace.dict() if result.audit_trace else {},
-            "risk_features": result.risk_features.dict() if result.risk_features else {},
+            "decision_memo": _model_to_dict(result.decision_memo),
+            "decision_packet": _model_to_dict(result.decision_packet),
+            "audit_trace": _model_to_dict(result.audit_trace),
+            "risk_features": _model_to_dict(result.risk_features),
         }
 
         # Set priority based on SLA
@@ -80,9 +93,9 @@ class ExecutionAdapter:
             exec_request.priority = "low"
 
         # Calculate SLA deadline
-        from datetime import datetime, timedelta
-
-        deadline = datetime.now() + timedelta(hours=request.decision_constraints.turnaround_sla_hours)
+        deadline = datetime.now(timezone.utc) + timedelta(
+            hours=request.decision_constraints.turnaround_sla_hours
+        )
         exec_request.sla_deadline = deadline.isoformat()
 
         return exec_request

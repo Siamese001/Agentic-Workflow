@@ -21,6 +21,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("runtime_adg_snapshot", "runtime_adg_snapshot_digest")
 record_execution_trace("runtime_adg_snapshot", "runtime_adg_snapshot_trace")
@@ -204,7 +205,7 @@ class RuntimeADGSnapshot:
             }
         )
 
-        for edge in self.edges:
+        for edge in tqdm(self.edges, desc="Processing", unit="item"):
             # Count edge types
             edge_type_counts[edge.relation] = edge_type_counts.get(edge.relation, 0) + 1
 

@@ -11,6 +11,7 @@ import ast
 from typing import TYPE_CHECKING
 
 from . import BaseStructuralVisitor, VisitorContext, register_visitor
+from tqdm import tqdm
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import Edge
@@ -274,7 +275,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
         """Detect blocking I/O calls inside async function bodies."""
-        for child in ast.walk(node):
+        for child in tqdm(ast.walk(node), desc="Processing", unit="item"):
             if isinstance(child, ast.Call):
                 sym = self._extract_symbol(child.func)
                 if sym and sym in self._blocking_io_calls:
@@ -295,9 +296,9 @@ class _AntipatternVisitor(BaseStructuralVisitor):
 
     def _check_global_state_mutation(self, node: ast.FunctionDef) -> None:
         """Check for assignment to module-level UPPER_CASE names, excluding lazy-init guards."""
-        for stmt in ast.walk(node):
+        for stmt in tqdm(ast.walk(node), desc="Processing", unit="item"):
             if isinstance(stmt, (ast.Assign, ast.AugAssign)):
-                for target in ast.walk(stmt):
+                for target in tqdm(ast.walk(stmt), desc="Processing", unit="item"):
                     if isinstance(target, ast.Name) and target.id.isupper():
                         # Skip if inside a lazy-init guard: if _X is None: X = ...
                         # TODO: implement parent tracking for guard detection
@@ -382,7 +383,7 @@ class _AntipatternVisitor(BaseStructuralVisitor):
         from agentic_core.adg.contracts.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
-        for line_no, category, symbol in self._antipatterns:
+        for line_no, category, symbol in tqdm(self._antipatterns, desc="Processing", unit="item"):
             self.edges.append(
                 _Edge(
                     from_name=self._module_adg_name,

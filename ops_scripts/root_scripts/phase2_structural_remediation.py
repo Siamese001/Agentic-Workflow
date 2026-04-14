@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("phase2_structural_remediation", "p4obs", "metric_1")
 _emit_emits_metric_event("phase2_structural_remediation", "p4obs", "metric_2")
@@ -168,7 +169,7 @@ def load_mislocated_tests() -> list[dict]:
         report = json.load(f)
 
     mislocated = []
-    for module in report["modules"]:
+    for module in tqdm(report["modules"], desc="Processing", unit="item"):
         if module["status"] == "MISLOCATED":
             # Find the actual test file
             test_root = _ROOT / TESTS_DIR
@@ -256,7 +257,7 @@ def move_all_mislocated_tests():
     moved_count = 0
     failed_count = 0
 
-    for item in mislocated:
+    for item in tqdm(mislocated, desc="Processing", unit="item"):
         source = pathlib.Path(item["actual_test"])
         target = pathlib.Path(item["expected_test"])
 

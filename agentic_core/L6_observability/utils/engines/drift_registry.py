@@ -10,6 +10,8 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -100,11 +102,13 @@ class DriftRegistry:
     def __init__(self, timeline_path: Path | None = None) -> None:
         self._timeline_path = timeline_path or _TIMELINE_PATH
         self._entries: list[DriftRegistryEntry] = []
+        self._lock = threading.RLock()
 
     def record(self, entry: DriftRegistryEntry) -> None:
         """Append a drift entry to the in-memory list and persist to JSONL."""
-        self._entries.append(entry)
-        self._persist(entry)
+        with self._lock:
+            self._entries.append(entry)
+            self._persist(entry)
         if entry.severity == "critical":
             _logger.warning(
                 "DriftRegistry: critical drift detected",
@@ -122,7 +126,8 @@ class DriftRegistry:
         source_filter: DriftSource | None = None,
     ) -> list[DriftRegistryEntry]:
         """Return entries matching the given filters, oldest first."""
-        results = list(self._entries)
+        with self._lock:
+            results = list(self._entries)
         if since_iso is not None:
             results = [e for e in results if e.timestamp_iso >= since_iso]
         if source_filter is not None:
@@ -131,16 +136,18 @@ class DriftRegistry:
 
     def all_entries(self) -> list[DriftRegistryEntry]:
         """Return all recorded entries, oldest first."""
-        return list(self._entries)
+        with self._lock:
+            return list(self._entries)
 
     def _persist(self, entry: DriftRegistryEntry) -> None:
         try:
             self._timeline_path.parent.mkdir(parents=True, exist_ok=True)
             with self._timeline_path.open("a", encoding="utf-8") as fh:
                 fh.write(json.dumps(entry.to_dict(), separators=(",", ":")) + "\n")
-        # guardian: allow-silent-swallow
-        except Exception:
-            _logger.debug("DriftRegistry: failed to persist entry", exc_info=True)
+                fh.flush()
+                os.fsync(fh.fileno())
+        except (OSError, TypeError, ValueError):
+            _logger.warning("DriftRegistry: failed to persist entry", exc_info=True)
 
 
 _registry: DriftRegistry | None = None

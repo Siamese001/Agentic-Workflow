@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+from tqdm import tqdm
 
 
 @dataclass
@@ -87,7 +88,7 @@ class EdgeBuilder:
             List of created Edge objects
         """
         created = []
-        for data in edge_data:
+        for data in tqdm(edge_data, desc="Processing", unit="item"):
             edge = self.add_edge(
                 src_id=data["src_id"],
                 dst_id=data["dst_id"],

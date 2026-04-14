@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 record_execution_trace("rag_telemetry_collector", "rag_telemetry_collector_trace")
 
@@ -178,7 +179,7 @@ class RagTelemetryCollector:
             return 0
 
         processed = 0
-        for span in spans:
+        for span in tqdm(spans, desc="Processing", unit="item"):
             # Check if this is a RAG-related span
             name = span.get("name", "")
             attributes = span.get("attributes", {})

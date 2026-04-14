@@ -102,6 +102,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("cleanup_duplicates_util", "p4obs", "metric_1")
 _emit_emits_metric_event("cleanup_duplicates_util", "p4obs", "metric_2")
@@ -175,7 +176,7 @@ def collapse_duplicates():
     print(f"[CLEANUP] Original entries: {original_count}")
     Logger.info(f"Original entry count: {original_count}")
     total_removed = 0
-    for template_name, entries in list(registry.registry.items()):
+    for template_name, entries in tqdm(list(registry.registry.items()), desc="Processing", unit="item"):
         seen_keys: set[tuple] = set()
         unique_entries: list[dict[str, Any]] = []
         for entry in reversed(entries):

@@ -14,6 +14,7 @@ import ast
 from typing import TYPE_CHECKING
 
 from . import BaseRuntimeVisitor, BaseStructuralVisitor, VisitorContext, register_visitor
+from tqdm import tqdm
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import Edge
@@ -74,7 +75,7 @@ class _PromptSlotVisitor(BaseStructuralVisitor):
         """Emit generates_prompt for each recognised slot kwarg."""
         from agentic_core.adg.contracts.schema_util import PROMPT_FIELD_TO_SLOT
 
-        for kw in node.keywords:
+        for kw in tqdm(node.keywords, desc="Processing", unit="item"):
             slot = PROMPT_FIELD_TO_SLOT.get(kw.arg or "")
             if slot:
                 to_name = canonical_name("PromptSlot", slot, self._source_file)
@@ -232,7 +233,7 @@ class _HealerValidatorVisitor(BaseRuntimeVisitor):
         )
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
-        for base in node.bases:
+        for base in tqdm(node.bases, desc="Processing", unit="item"):
             base_name = self._sym(base)
             base_tail = base_name.split(".")[-1] if base_name else ""
             if base_tail in HEALER_BASE_CLASSES:
@@ -487,7 +488,7 @@ class _HandoffExitVisitor(BaseStructuralVisitor):
         tail = sym.split(".")[-1]
         base = sym.split(".")[0]
 
-        for attr, relation_type, edge_kind in self._SYMBOL_SET_MAP:
+        for attr, relation_type, edge_kind in tqdm(self._SYMBOL_SET_MAP, desc="Processing", unit="item"):
             symbol_set: frozenset[str] = getattr(_su, attr, frozenset())
             if tail in symbol_set or base in symbol_set:
                 self._edges.append(

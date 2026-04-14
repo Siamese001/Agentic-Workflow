@@ -110,6 +110,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verify_classification_fixes", "p4obs", "metric_1")
 _emit_emits_metric_event("verify_classification_fixes", "p4obs", "metric_2")
@@ -191,7 +192,7 @@ def verify_classifications():
     print("=" * 70)
 
     results = []
-    for name, path, expected in test_files:
+    for name, path, expected in tqdm(test_files, desc="Processing", unit="item"):
         if not path.exists():
             print(f"\n❌ {name}: FILE NOT FOUND")
             results.append(False)

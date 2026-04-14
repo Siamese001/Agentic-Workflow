@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("constitutional_governance_types", "p4obs", "metric_1")
 _emit_emits_metric_event("constitutional_governance_types", "p4obs", "metric_2")
@@ -300,8 +301,8 @@ class ConstitutionalGovernanceGuardrail:
         """Check content against constitutional principles."""
         violations = []
         content_lower = content.lower()
-        for principle, config in self.principle_checks.items():
-            for pattern in config["negative_patterns"]:
+        for principle, config in tqdm(self.principle_checks.items(), desc="Processing", unit="item"):
+            for pattern in tqdm(config["negative_patterns"], desc="Processing", unit="item"):
                 if pattern in content_lower:
                     violations.append(
                         PrincipleViolation(

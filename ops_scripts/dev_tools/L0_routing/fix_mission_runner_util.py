@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_mission_runner_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_mission_runner_util", "p4obs", "metric_2")
@@ -194,7 +195,7 @@ def fix_mission_runner() -> Any:
         lines: Any = f.readlines()
     new_lines: Any = []
     skip_until_blank: Any = False
-    for _i, line in enumerate(lines):
+    for _i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
         if "from ops_scripts.CanonValidator" in line:
             if not skip_until_blank:
                 new_lines.append("    # GRAVITY FIX: Removed all ops_scripts.CanonValidator imports\n")

@@ -50,6 +50,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 # P0 governance self-bootstrap
 emit_replay_key("p0", "evaluation_provenance")
@@ -278,7 +279,7 @@ class EvaluationProvenanceStore:
             candidate_ids = list(self._records.keys())
 
         # Apply filters
-        for provenance_id in candidate_ids:
+        for provenance_id in tqdm(candidate_ids, desc="Processing", unit="item"):
             record = self._records[provenance_id]
 
             # Evaluation type filter

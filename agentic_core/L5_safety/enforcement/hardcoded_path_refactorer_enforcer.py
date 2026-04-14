@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hardcoded_path_refactorer_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("hardcoded_path_refactorer_enforcer", "p4obs", "metric_2")
@@ -308,7 +309,7 @@ def add_ssot_import(content: str) -> str:
         # No imports found, add at top after docstring/comments
         insert_idx = 0
         in_docstring = False
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             stripped = line.strip()
             if i == 0 and (stripped.startswith('"""') or stripped.startswith("'''")):
                 in_docstring = True
@@ -398,7 +399,7 @@ def refactor_repository(dry_run: bool = False) -> dict[str, int]:
     # Operation Zero: Use ssot_discovery instead of rglob
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(PROJECT_ROOT):
+    for py_file in tqdm(get_python_files(PROJECT_ROOT), desc="Processing", unit="item"):
         if should_exclude_path(py_file):
             continue
 

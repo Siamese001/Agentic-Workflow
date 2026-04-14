@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 
 @dataclass
@@ -238,7 +239,7 @@ class SectionAwareChunker(ChunkingStrategy):
         chunks = []
         max_chars = self.max_section_tokens * self.approx_chars_per_token
 
-        for i, (start_pos, heading) in enumerate(headings):
+        for i, (start_pos, heading) in tqdm(enumerate(headings), desc="Processing", unit="item"):
             # Section extends to next heading or end
             if i + 1 < len(headings):
                 end_pos = headings[i + 1][0]
@@ -250,7 +251,9 @@ class SectionAwareChunker(ChunkingStrategy):
             # If section too large, subdivide
             if len(section_text) > max_chars:
                 sub_chunks = self._subdivide_section(section_text, start_pos, max_chars)
-                for j, (sub_start, sub_end, sub_text) in enumerate(sub_chunks):
+                for j, (sub_start, sub_end, sub_text) in tqdm(
+                    enumerate(sub_chunks), desc="Processing", unit="item"
+                ):
                     chunks.append(
                         Chunk(
                             id=f"{doc_id}_section_{i}_{j}",
@@ -346,7 +349,7 @@ class SemanticObjectChunker(ChunkingStrategy):
         # Split into paragraphs first
         paragraphs = re.split(r"\n\n+", text)
 
-        for para in paragraphs:
+        for para in tqdm(paragraphs, desc="Processing", unit="item"):
             para = para.strip()
             if not para:
                 continue
@@ -391,7 +394,7 @@ class SemanticObjectChunker(ChunkingStrategy):
         target_chars = self.target_tokens * self.approx_chars_per_token
         max_chars = self.max_tokens * self.approx_chars_per_token
 
-        for start, end, unit_type, content in units:
+        for start, end, unit_type, content in tqdm(units, desc="Processing", unit="item"):
             unit_size = end - start
 
             # Check if adding this unit exceeds max

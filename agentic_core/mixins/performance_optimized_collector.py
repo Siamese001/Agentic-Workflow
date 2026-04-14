@@ -35,6 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("performance_optimized_collector", "performance_optimized_collector_digest")
 record_execution_trace("performance_optimized_collector", "performance_optimized_collector_trace")
@@ -100,7 +101,7 @@ class PerformanceOptimizedCollector:
         # Performance monitoring
         self._performance_metrics = PerformanceMetrics()
         self._processing_times: list[float] = []
-        self._last_performance_check = time.time()
+        self._last_performance_check = time.monotonic()
 
         # Collection state
         self._collection_active: bool = False
@@ -135,7 +136,7 @@ class PerformanceOptimizedCollector:
         except ImportError:
             Logger.debug("[PERF_COLLECTOR] Runtime ADG not available")
             self._runtime_adg_enabled = False
-        except Exception as e:
+        except (AttributeError, RuntimeError, OSError) as e:
             Logger.error(f"[PERF_COLLECTOR] Failed to initialize Runtime ADG: {e}")
             self._runtime_adg_enabled = False
 
@@ -250,7 +251,7 @@ class PerformanceOptimizedCollector:
         """Optimize spans for efficient processing."""
         optimized = []
 
-        for span in spans:
+        for span in tqdm(spans, desc="Processing", unit="item"):
             # Remove unnecessary fields
             optimized_span = {
                 "trace_id": span.get("trace_id"),
@@ -284,7 +285,7 @@ class PerformanceOptimizedCollector:
         """Main collection loop with adaptive scheduling."""
         while self._collection_active and not self._shutdown_requested:
             try:
-                start_time = time.time()
+                start_time = time.monotonic()
 
                 # Collect from registered agents
                 self._collect_from_registered_agents()
@@ -297,11 +298,15 @@ class PerformanceOptimizedCollector:
                     self._adaptive_scheduling()
 
                 # Sleep for adaptive interval
-                elapsed = time.time() - start_time
+                elapsed = time.monotonic() - start_time
                 sleep_time = max(0.1, self._adaptive_interval - elapsed)
                 time.sleep(sleep_time)
 
-            except Exception as e:
+            except (
+                OSError,
+                RuntimeError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- background worker loop must not die
                 Logger.error(f"[PERF_COLLECTOR] Collection loop error: {e}")
                 time.sleep(1.0)
 
@@ -313,7 +318,7 @@ class PerformanceOptimizedCollector:
                     spans = agent_instance.flush_traces()
                     if spans:
                         self.collect_spans_from_agent(agent_id, spans)
-            except Exception as e:
+            except (AttributeError, RuntimeError) as e:
                 Logger.error(f"[PERF_COLLECTOR] Failed to collect from {agent_id}: {e}")
 
     def _processing_loop(self) -> None:
@@ -332,13 +337,13 @@ class PerformanceOptimizedCollector:
                         break
 
                 if batch:
-                    start_time = time.time()
+                    start_time = time.monotonic()
 
                     # Process batch
                     self._process_batch(batch)
 
                     # Record processing time
-                    processing_time = (time.time() - start_time) * 1000
+                    processing_time = (time.monotonic() - start_time) * 1000
                     self._processing_times.append(processing_time)
 
                     # Keep only recent processing times
@@ -349,7 +354,11 @@ class PerformanceOptimizedCollector:
                 else:
                     time.sleep(0.1)
 
-            except Exception as e:
+            except (
+                OSError,
+                RuntimeError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- background worker loop must not die
                 Logger.error(f"[PERF_COLLECTOR] Processing loop error: {e}")
                 batch.clear()
                 time.sleep(1.0)
@@ -364,7 +373,7 @@ class PerformanceOptimizedCollector:
             if len(self._span_buffer) >= self._config.batch_size:
                 self._compress_buffer()
 
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             Logger.error(f"[PERF_COLLECTOR] Batch processing error: {e}")
 
     def _compress_buffer(self) -> None:
@@ -397,14 +406,14 @@ class PerformanceOptimizedCollector:
                     f"[PERF_COLLECTOR] Compressed {len(spans_to_compress)} spans, ratio: {compression_ratio:.2f}"
                 )
 
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             Logger.error(f"[PERF_COLLECTOR] Compression error: {e}")
 
     def _flush_loop(self) -> None:
         """Flush loop with adaptive scheduling."""
         while self._collection_active and not self._shutdown_requested:
             try:
-                start_time = time.time()
+                start_time = time.monotonic()
 
                 # Flush spans
                 self._flush_all_spans()
@@ -414,11 +423,15 @@ class PerformanceOptimizedCollector:
                     self._update_flush_interval()
 
                 # Sleep for adaptive interval
-                elapsed = time.time() - start_time
+                elapsed = time.monotonic() - start_time
                 sleep_time = max(1.0, self._adaptive_interval - elapsed)
                 time.sleep(sleep_time)
 
-            except Exception as e:
+            except (
+                OSError,
+                RuntimeError,
+                AttributeError,
+            ) as e:  # guardian: allow-broad-exception -- background worker loop must not die
                 Logger.error(f"[PERF_COLLECTOR] Flush loop error: {e}")
                 time.sleep(5.0)
 
@@ -459,7 +472,7 @@ class PerformanceOptimizedCollector:
             if spans_flushed > 0:
                 Logger.info(f"[PERF_COLLECTOR] Flushed {spans_flushed} spans to Runtime ADG")
 
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             Logger.error(f"[PERF_COLLECTOR] Flush error: {e}")
 
     def _create_runtime_adg_span(self, span: dict[str, Any]) -> None:
@@ -496,12 +509,12 @@ class PerformanceOptimizedCollector:
             with span_context:
                 pass  # Span is created and automatically closed
 
-        except Exception as e:
+        except (AttributeError, RuntimeError) as e:
             Logger.debug(f"[PERF_COLLECTOR] Failed to create Runtime ADG span: {e}")
 
     def _update_performance_metrics(self) -> None:
         """Update performance metrics."""
-        current_time = time.time()
+        current_time = time.monotonic()
 
         # Calculate spans per second
         if current_time - self._last_performance_check > 1.0:
@@ -521,7 +534,7 @@ class PerformanceOptimizedCollector:
             process = psutil.Process()
             self._performance_metrics.memory_usage_mb = process.memory_info().rss / 1024 / 1024
             self._performance_metrics.cpu_usage_percent = process.cpu_percent()
-        except Exception as e:
+        except (ImportError, AttributeError, RuntimeError) as e:
             import logging
 
             logging.getLogger(__name__).debug(
@@ -565,7 +578,7 @@ class PerformanceOptimizedCollector:
                 # Low load - increase collection frequency
                 self._adaptive_interval = max(5.0, self._adaptive_interval * 0.8)
 
-        except Exception as e:
+        except (OSError, RuntimeError, AttributeError) as e:
             Logger.debug(f"[PERF_COLLECTOR] Adaptive scheduling error: {e}")
 
     def _update_flush_interval(self) -> None:

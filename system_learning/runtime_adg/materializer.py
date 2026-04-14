@@ -33,6 +33,7 @@ from system_learning.runtime_adg.snapshot import (
     attributes_to_json,
     create_runtime_adg_snapshot,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("runtime_adg_materializer", "runtime_adg_materializer_digest")
 record_execution_trace("runtime_adg_materializer", "runtime_adg_materializer_trace")
@@ -99,7 +100,7 @@ def _extract_parent_child_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGE
     edges: list[RuntimeADGEdge] = []
     seen_span_ids: set[str] = set()
 
-    for span in spans:
+    for span in tqdm(spans, desc="Processing", unit="item"):
         span_id = str(span.get("span_id", ""))
         if not span_id:
             continue
@@ -195,7 +196,7 @@ def _extract_semantic_edges(spans: list[dict[str, Any]]) -> list[RuntimeADGEdge]
         if span_id:
             span_map[span_id] = span
 
-    for span in spans:
+    for span in tqdm(spans, desc="Processing", unit="item"):
         span_id = str(span.get("span_id", ""))
         if not span_id:
             continue

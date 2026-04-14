@@ -14,6 +14,7 @@ import logging
 from typing import Any
 
 from apps_rfp.types import RfpResult, RfpRunSummary
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -23,7 +24,11 @@ class ProposalRenderer:
 
     def render_json(self, result: RfpResult) -> str:
         """Render result as formatted JSON."""
-        return json.dumps(result.model_dump(), indent=2, default=str)
+        return json.dumps(
+            result.model_dump() if hasattr(result, "model_dump") else result.dict(),
+            indent=2,
+            default=str,
+        )
 
     def render_markdown(self, result: RfpResult) -> str:
         """Render result as Markdown proposal."""
@@ -40,7 +45,7 @@ class ProposalRenderer:
 
         if result.sections:
             lines.extend(["## Proposal Sections", ""])
-            for section in result.sections:
+            for section in tqdm(result.sections, desc="Processing", unit="item"):
                 lines.extend(
                     [
                         f"### {section.heading}",
@@ -54,7 +59,7 @@ class ProposalRenderer:
 
         if result.roadmap:
             lines.extend(["## Implementation Roadmap", ""])
-            for phase in result.roadmap:
+            for phase in tqdm(result.roadmap, desc="Processing", unit="item"):
                 lines.extend(
                     [
                         f"### Phase: {phase.name}",
@@ -71,7 +76,7 @@ class ProposalRenderer:
 
         if result.risks:
             lines.extend(["## Risk Assessment", ""])
-            for risk in result.risks:
+            for risk in tqdm(result.risks, desc="Processing", unit="item"):
                 lines.extend(
                     [
                         f"### {risk.risk_id} ({risk.severity})",

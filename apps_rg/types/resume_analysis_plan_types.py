@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("resume_analysis_plan_types", "p4obs", "metric_1")
 _emit_emits_metric_event("resume_analysis_plan_types", "p4obs", "metric_2")
@@ -539,7 +540,7 @@ class RGPlanner:
     ) -> list[ResumeSectionConfig]:
         """Configure processing for each resume section."""
         section_configs = []
-        for section_name in self.standard_sections:
+        for section_name in tqdm(self.standard_sections, desc="Processing", unit="item"):
             config = ResumeSectionConfig(
                 section_name=section_name,
                 required=section_name in ["contact_info", "summary", "experience"],

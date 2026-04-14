@@ -23,6 +23,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_routes_to_agent,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -253,7 +254,7 @@ class QwenInferenceGateway:
 
         # Convert back to QwenInferenceResponse
         results = []
-        for req, vllm_resp in zip(requests, vllm_responses):
+        for req, vllm_resp in tqdm(zip(requests, vllm_responses), desc="Processing", unit="item"):
             if isinstance(vllm_resp, Exception):
                 results.append(
                     QwenInferenceResponse(

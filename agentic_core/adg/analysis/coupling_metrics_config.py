@@ -31,6 +31,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
+from tqdm import tqdm
 
 _MODULE_PREFIX = "ADG::Module::"
 _SYMBOL_PREFIX = "ADG::Symbol::"
@@ -138,7 +139,7 @@ def compute_coupling_metrics(result: ScanResult) -> CouplingMetricsReport:
     abstract_count: dict[str, int] = {}
     total_class_count: dict[str, int] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if not edge.from_name.startswith(_MODULE_PREFIX):
             continue
 
@@ -162,7 +163,7 @@ def compute_coupling_metrics(result: ScanResult) -> CouplingMetricsReport:
     all_modules |= set(ca.keys()) | set(ce.keys())
 
     metrics: dict[str, ModuleMetrics] = {}
-    for mod in all_modules:
+    for mod in tqdm(all_modules, desc="Processing", unit="item"):
         ca_n = len(ca.get(mod, set()))
         ce_n = len(ce.get(mod, set()))
         total = ca_n + ce_n

@@ -8,6 +8,7 @@ in the active codebase (not in archives).
 import json
 import re
 from pathlib import Path
+from tqdm import tqdm
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 FLAGGED_AGENTS = [
@@ -33,8 +34,8 @@ FLAGGED_AGENTS = [
 def find_orphaned_agents():
     """Find agents that were flagged but still exist in active codebase."""
     orphaned = []
-    for agent_file in FLAGGED_AGENTS:
-        for path in PROJECT_ROOT.rglob(agent_file):
+    for agent_file in tqdm(FLAGGED_AGENTS, desc="Processing", unit="item"):
+        for path in tqdm(PROJECT_ROOT.rglob(agent_file), desc="Processing", unit="item"):
             if any(skip in str(path) for skip in [ARCHIVES_DIR, ".sovereign_healing_backup", "__pycache__"]):
                 continue
             is_used = check_if_used(path, agent_file)
@@ -55,7 +56,7 @@ def check_if_used(file_path, agent_file):
     agent_class = agent_file.replace(".py", "")
     import_pattern = f"from.*{agent_class} import|import.*{agent_class}"
     inheritance_pattern = f"class.*\\({agent_class}\\)"
-    for py_file in PROJECT_ROOT.rglob("*.py"):
+    for py_file in tqdm(PROJECT_ROOT.rglob("*.py"), desc="Processing", unit="item"):
         if any(skip in str(py_file) for skip in [ARCHIVES_DIR, ".sovereign_healing_backup", "__pycache__"]):
             continue
         if py_file == file_path:

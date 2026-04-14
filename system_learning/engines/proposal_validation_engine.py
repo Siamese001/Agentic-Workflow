@@ -126,6 +126,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("proposal_validation_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("proposal_validation_engine", "p4obs", "metric_2")
@@ -525,7 +526,7 @@ class ProposalValidationEngine:
                 ),
             ),
         ]
-        for gate_name, gate_fn in gates:
+        for gate_name, gate_fn in tqdm(gates, desc="Processing", unit="item"):
             try:
                 result = gate_fn()
             except Exception as exc:  # guardian: allow-silent-swallow

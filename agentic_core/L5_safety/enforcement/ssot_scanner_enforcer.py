@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_scanner_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_scanner_enforcer", "p4obs", "metric_2")
@@ -302,7 +303,7 @@ class SSOTScanner:
 
         agent_files = list(get_agent_files(self.project_root))
 
-        for agent_file in agent_files:
+        for agent_file in tqdm(agent_files, desc="Processing", unit="item"):
             # Skip vendor/cache directories
             if self._should_exclude(agent_file):
                 continue

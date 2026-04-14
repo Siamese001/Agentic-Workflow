@@ -14,6 +14,7 @@ from typing import Any
 
 from tools.utils.planning.preflight_hook import PlanningPreflightHook, TokenBudgetExceededError
 from tools.utils.planning.token_estimator import ContextWindowEstimator, TokenBudget
+from tqdm import tqdm
 
 # Import ADG-based templates and enforcement configuration
 try:
@@ -459,7 +460,6 @@ class SequentialThinkingEnhancedWorkflow:
         return complexity_mapping.get(step_type, SequentialThinkingTemplate.SWE_ARCHITECTURAL_REVIEW)
 
     def _get_fallback_template(self, step_type: str, step_config: dict[str, Any] = None) -> str:
-
         templates = {
             "analysis": """
 # Sequential Analysis for {step_name}
@@ -773,7 +773,7 @@ Please debug this systematically using sequential thinking.
     def _get_file_contents(self, file_paths: list[str]) -> list[dict[str, Any]]:
         """Get file contents for token estimation."""
         files = []
-        for file_path in file_paths:
+        for file_path in tqdm(file_paths, desc="Processing", unit="item"):
             path = Path(file_path)
             if path.exists():
                 with open(path, encoding="utf-8") as f:
@@ -798,7 +798,7 @@ Please debug this systematically using sequential thinking.
     def _get_diff_contents(self, diff_paths: list[str]) -> list[dict[str, Any]]:
         """Get diff contents for token estimation."""
         diffs = []
-        for diff_path in diff_paths:
+        for diff_path in tqdm(diff_paths, desc="Processing", unit="item"):
             # Simulate diff content
             diff_content = f"""diff --git a/{diff_path} b/{diff_path}
 --- a/{diff_path}
@@ -819,7 +819,7 @@ Please debug this systematically using sequential thinking.
     def _get_log_contents(self, log_sources: list[str]) -> list[dict[str, Any]]:
         """Get log contents for token estimation."""
         logs = []
-        for source in log_sources:
+        for source in tqdm(log_sources, desc="Processing", unit="item"):
             # Simulate log content
             log_content = f"""2023-01-01 12:00:00 INFO Starting {source}
 2023-01-01 12:00:01 DEBUG Loading configuration
@@ -840,7 +840,7 @@ FileNotFoundError: Config file not found
     def _get_retrieved_context(self, context_sources: list[str]) -> list[dict[str, Any]]:
         """Get retrieved context for token estimation."""
         context = []
-        for i, source in enumerate(context_sources):
+        for i, source in tqdm(enumerate(context_sources), desc="Processing", unit="item"):
             # Simulate retrieved context
             context_content = (
                 f"""Retrieved context chunk {i + 1} from {source}:

@@ -13,6 +13,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "generate_agent_duplicates_table_util", "uwg_governed_write")
 _emit_writes_through("p1", "generate_agent_duplicates_table_util", "uwg_governed_write_2")
@@ -64,14 +65,14 @@ def generate_table(json_file: Path, output_file: Path):
             content = content[json_start:]
         data = json.loads(content)
     agent_duplicates = []
-    for item in data:
+    for item in tqdm(data, desc="Processing", unit="item"):
         canonical = item["canonical_file"]
         if not is_actual_agent_file(canonical):
             continue
         agent_dups = [d for d in item["duplicates"] if is_actual_agent_file(d["path"])]
         if not agent_dups:
             continue
-        for dup in agent_dups:
+        for dup in tqdm(agent_dups, desc="Processing", unit="item"):
             agent_duplicates.append(
                 {
                     "agent_name": extract_basename(canonical),

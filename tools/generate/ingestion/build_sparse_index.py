@@ -25,6 +25,7 @@ import sys
 import time
 from collections import Counter
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CHROMA_PATH = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -90,7 +91,7 @@ def tokenize(text: str) -> list[str]:
             seen.add(t)
             tokens.append(t)
 
-    for tok in raw_tokens:
+    for tok in tqdm(raw_tokens, desc="Processing", unit="item"):
         if not tok or len(tok) < 2:
             continue
         lower = tok.lower()

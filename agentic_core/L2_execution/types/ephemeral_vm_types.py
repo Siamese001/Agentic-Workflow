@@ -422,83 +422,29 @@ class EphemeralVm:
         Returns:
             ExecutionResult
         """
-        if language == "python":
-            return await self._execute_python(code, timeout)
-        elif language == "javascript":
-            return await self._execute_javascript(code, timeout)
-        else:
-            return ExecutionResult(
-                success=False,
-                output="",
-                error=f"Unsupported language: {language}",
-                exit_code=1,
+        runner = getattr(VmInstance, "execute", None)
+        if runner is None:
+            runner = getattr(self.vm_manager, "execute_in_vm", None)
+        if runner is None:
+            raise RuntimeError(
+                "EphemeralVM host-side fallback is prohibited: no in-VM execute capability is available"
             )
+
+        result = await runner(
+            vm_instance=VmInstance,
+            code=code,
+            language=language,
+            timeout=timeout,
+        )
+        if not isinstance(result, ExecutionResult):
+            raise RuntimeError("VM execute returned an invalid result contract")
+        return result
 
     async def _execute_python(self, code: str, timeout: int) -> ExecutionResult:
-        """Execute Python code.
-
-        Args:
-            code: Python code
-            timeout: Timeout
-
-        Returns:
-            ExecutionResult
-        """
-        try:
-            result = await asyncio.wait_for(
-                asyncio.create_subprocess_exec(
-                    "python",
-                    "-c",
-                    code,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                ),
-                timeout=timeout,
-            )
-            stdout, stderr = await result.communicate()
-            return ExecutionResult(
-                success=result.returncode == 0,
-                output=stdout.decode() if stdout else "",
-                error=stderr.decode() if stderr else None,
-                exit_code=result.returncode,
-            )
-        except asyncio.TimeoutError:
-            raise
-        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
-            return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
+        raise RuntimeError("Host python execution path removed; use in-VM execution only")
 
     async def _execute_javascript(self, code: str, timeout: int) -> ExecutionResult:
-        """Execute JavaScript code.
-
-        Args:
-            code: JavaScript code
-            timeout: Timeout
-
-        Returns:
-            ExecutionResult
-        """
-        try:
-            result = await asyncio.wait_for(
-                asyncio.create_subprocess_exec(
-                    "node",
-                    "-e",
-                    code,
-                    stdout=asyncio.subprocess.PIPE,
-                    stderr=asyncio.subprocess.PIPE,
-                ),
-                timeout=timeout,
-            )
-            stdout, stderr = await result.communicate()
-            return ExecutionResult(
-                success=result.returncode == 0,
-                output=stdout.decode() if stdout else "",
-                error=stderr.decode() if stderr else None,
-                exit_code=result.returncode,
-            )
-        except asyncio.TimeoutError:
-            raise
-        except (RuntimeError, ValueError) as e:  # guardian: allow-silent-swallow
-            return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
+        raise RuntimeError("Host javascript execution path removed; use in-VM execution only")
 
 
 def create_ephemeral_vm(

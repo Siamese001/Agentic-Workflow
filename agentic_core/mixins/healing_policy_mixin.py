@@ -116,6 +116,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("healing_policy_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("healing_policy_mixin", "p4obs", "metric_2")
@@ -243,7 +244,7 @@ class HealingPolicyMixin:
             )
             return summary
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, RuntimeError, AttributeError) as e:
             raise HealerError(f"Critical failure in healing loop for {self.name}: {str(e)}") from e
         finally:
             self._healing_count -= 1
@@ -280,12 +281,12 @@ class HealingPolicyMixin:
                 _bp.behavioral_score,
             )
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, AttributeError, OSError) as e:
             import logging
 
             logging.getLogger(__name__).debug("healing_policy_mixin: Exception swallowed at L269: %s", e)
         try:
-            for file_path in self.python_files:
+            for file_path in tqdm(self.python_files, desc="Processing", unit="item"):
                 try:
                     file_violations = self._analyze_file_violations(file_path)
                     violations_found += len(file_violations)
@@ -293,12 +294,16 @@ class HealingPolicyMixin:
                         fixed = self._fix_file_violations(file_path, file_violations)
                         violations_fixed += fixed
                 # guardian: allow-silent-swallow
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (
+                    OSError,
+                    ValueError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     errors += 1
                     Logger.error(f"Error processing {file_path}: {e}")
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             errors += 1
             Logger.error(f"Healing chain error: {e}")
         return {
@@ -322,7 +327,7 @@ class HealingPolicyMixin:
         except SyntaxError as e:
             violations.append({"type": "syntax_error", "message": str(e)})
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, ValueError) as e:
             violations.append({"type": "analysis_error", "message": str(e)})
         return violations
 
@@ -333,7 +338,7 @@ class HealingPolicyMixin:
             try:
                 fixed += 1
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, RuntimeError, AttributeError) as e:
                 Logger.error(f"Failed to fix violation in {file_path}: {e}")
         return fixed
 
@@ -395,7 +400,7 @@ class HealingPolicyMixin:
         except re.error as e:
             raise HealerError(f"Regex error in recovery analysis: {str(e)}") from e
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ValueError, RuntimeError, AttributeError) as e:
             raise HealerError(f"Advanced recovery failed: {str(e)}") from e
 
     def _attempt_pattern_recovery(self, issue: str) -> bool:

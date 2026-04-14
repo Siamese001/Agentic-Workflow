@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import time
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -64,6 +63,7 @@ class EnvelopeBuilder:
         self._entropy_seed: int = 42  # Default seed
         self._stable_id_scope: str = "default"
         self._ml_model_hashes: dict[str, str] = {}
+        self._run_clock: float | None = None
 
     def with_replay_key(self, key: str) -> EnvelopeBuilder:
         """Set replay key."""
@@ -95,6 +95,13 @@ class EnvelopeBuilder:
         self._stable_id_scope = scope
         return self
 
+    def with_run_clock(self, run_clock: float) -> EnvelopeBuilder:
+        """Bind the deterministic run clock captured upstream at E1."""
+        if run_clock < 0:
+            raise ValueError("run_clock must be non-negative")
+        self._run_clock = float(run_clock)
+        return self
+
     def with_ml_model_hash(self, role: str, hash_value: str) -> EnvelopeBuilder:
         """Bind a model artifact hash by role (e.g. 'heal_classifier').
 
@@ -121,13 +128,15 @@ class EnvelopeBuilder:
         """Build the replay envelope."""
         if not all([self._replay_key, self._policy_hash, self._run_id]):
             raise ValueError("replay_key, policy_hash, and run_id are required")
+        if self._run_clock is None:
+            raise ValueError("run_clock is required; wall-clock capture inside build() is prohibited")
 
         return ReplayEnvelope(
             replay_key=self._replay_key,
             policy_hash=self._policy_hash,
             capability_token=self._capability_token,
             run_id=self._run_id,
-            run_clock=time.time(),  # Snapshot at build time
+            run_clock=self._run_clock,
             entropy_seed=self._entropy_seed,
             stable_id_scope=self._stable_id_scope,
             ml_model_hashes=dict(self._ml_model_hashes),

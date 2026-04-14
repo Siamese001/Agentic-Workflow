@@ -91,6 +91,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("k_node_scanner_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("k_node_scanner_validator", "p4obs", "metric_2")
@@ -209,8 +210,8 @@ class KNodeScanner:
 
         results = {"total_files": 0, "files_with_references": 0, "total_references": 0, "files": []}
 
-        for ext in extensions:
-            for file_path in self.root_path.rglob(f"*{ext}"):
+        for ext in tqdm(extensions, desc="Processing", unit="item"):
+            for file_path in tqdm(self.root_path.rglob(f"*{ext}"), desc="Processing", unit="item"):
                 # Skip certain directories
                 if any(skip in str(file_path) for skip in [".git", "__pycache__", ".venv"]):
                     continue
@@ -244,10 +245,10 @@ class KNodeScanner:
         references = []
         line_number = 1
 
-        for line in content.split("\n"):
-            for pattern in self.PATTERNS:
+        for line in tqdm(content.split("\n"), desc="Processing", unit="item"):
+            for pattern in tqdm(self.PATTERNS, desc="Processing", unit="item"):
                 matches = re.finditer(pattern, line, re.IGNORECASE)
-                for match in matches:
+                for match in tqdm(matches, desc="Processing", unit="item"):
                     # Check if it's actually a K-node reference
                     text = match.group()
                     if self._is_knode_reference(text):
@@ -394,7 +395,7 @@ class KNodeMigrator:
             def migrate_dict(d: dict, path: str = "") -> None:
                 nonlocal changes_made
 
-                for key, value in d.items():
+                for key, value in tqdm(d.items(), desc="Processing", unit="item"):
                     current_path = f"{path}.{key}" if path else key
 
                     if isinstance(value, str):

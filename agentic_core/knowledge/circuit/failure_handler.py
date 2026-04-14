@@ -15,6 +15,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
 )
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -85,7 +86,7 @@ class FailureHandler:
 
         last_exception = None
 
-        for attempt in range(self.config.max_retries + 1):
+        for attempt in tqdm(range(self.config.max_retries + 1), desc="Processing", unit="item"):
             try:
                 result = fn(*args, **kwargs)
 

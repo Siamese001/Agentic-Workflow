@@ -16,6 +16,7 @@ from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, Decisio
 from .contextual_engine import ContextualIntelligenceEngine, AnalysisResult, AnalysisDepth
 from .collaborative_intelligence import CollaborationResult
 from .predictive_analytics import PredictionResult, ImpactPrediction
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -420,7 +421,7 @@ class ExplanationGenerator:
             content_parts.append(f"Target modules affected: {', '.join(context.target_modules)}")
 
             # Module-specific implications
-            for module in context.target_modules:
+            for module in tqdm(context.target_modules, desc="Processing", unit="item"):
                 if "spine" in module.lower():
                     content_parts.append(
                         f"- {module}: Critical spine component - high impact on system stability"
@@ -709,7 +710,7 @@ class ExplanationGenerator:
 
         content_parts.append("Scenario Analysis:")
 
-        for scenario in prediction_result.scenarios:
+        for scenario in tqdm(prediction_result.scenarios, desc="Processing", unit="item"):
             content_parts.append(f"- {scenario.description}")
             content_parts.append(f"  Type: {scenario.scenario_type.value}")
             content_parts.append(f"  Probability: {scenario.probability:.2f}")
@@ -843,7 +844,7 @@ class ExplanationGenerator:
         lines.append(f"**Detail Level:** {explanation.detail_level.value}")
         lines.append("")
 
-        for component in explanation.components:
+        for component in tqdm(explanation.components, desc="Processing", unit="item"):
             lines.append(f"## {component.component_type.replace('_', ' ').title()}")
             lines.append("")
 

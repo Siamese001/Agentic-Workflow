@@ -15,6 +15,7 @@ from typing import Any
 
 # Import from YAML SSOT
 from agentic_core.config.token_budget_loader import DEFAULT_TOKEN_BUDGET
+from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -196,7 +197,7 @@ class ContextWindowEstimator:
             )
 
         # Add files
-        for file_info in files:
+        for file_info in tqdm(files, desc="Processing", unit="item"):
             content = file_info.get("content", "")
             file_type = self._detect_content_type(content, file_info.get("path", ""))
             sources.append(
@@ -214,7 +215,7 @@ class ContextWindowEstimator:
             )
 
         # Add diffs
-        for diff_info in diffs:
+        for diff_info in tqdm(diffs, desc="Processing", unit="item"):
             content = diff_info.get("content", "")
             sources.append(
                 ContextSource(
@@ -231,7 +232,7 @@ class ContextWindowEstimator:
             )
 
         # Add logs
-        for log_info in logs:
+        for log_info in tqdm(logs, desc="Processing", unit="item"):
             content = log_info.get("content", "")
             sources.append(
                 ContextSource(
@@ -247,7 +248,7 @@ class ContextWindowEstimator:
             )
 
         # Add retrieved context
-        for ctx_info in retrieved_context:
+        for ctx_info in tqdm(retrieved_context, desc="Processing", unit="item"):
             content = ctx_info.get("content", "")
             sources.append(
                 ContextSource(
@@ -453,7 +454,7 @@ class ContextWindowEstimator:
         compression_applied = []
 
         # Apply compression in order
-        for policy in self.compression_policies["compression_order"]:
+        for policy in tqdm(self.compression_policies["compression_order"], desc="Processing", unit="item"):
             if estimate.total_projected_tokens <= self.budget.WARNING_THRESHOLD:
                 break
 
@@ -518,7 +519,7 @@ class ContextWindowEstimator:
         seen_content = set()
         filtered_sources = []
 
-        for source in sources:
+        for source in tqdm(sources, desc="Processing", unit="item"):
             content_hash = source.content_fingerprint()
             identity = (
                 source.source_type,
@@ -551,7 +552,7 @@ class ContextWindowEstimator:
         summarized = False
         threshold = self.compression_policies["file_summary_threshold"]
 
-        for source in sources:
+        for source in tqdm(sources, desc="Processing", unit="item"):
             if source.source_type == "file" and source.metadata.get("lines", 0) > threshold:
                 # Create summary
                 lines = source.content.splitlines()
@@ -580,7 +581,7 @@ class ContextWindowEstimator:
         """Trim logs to show only errors"""
         trimmed = False
 
-        for source in sources:
+        for source in tqdm(sources, desc="Processing", unit="item"):
             if source.source_type == "log":
                 lines = source.content.splitlines()
 
@@ -674,7 +675,7 @@ class ContextWindowEstimator:
         filtered_sources = []
         dropped = False
 
-        for source in sources:
+        for source in tqdm(sources, desc="Processing", unit="item"):
             if source.source_type == "file":
                 path = source.metadata.get("path", "").lower()
                 is_low_relevance = any(pattern in path for pattern in low_relevance_patterns)

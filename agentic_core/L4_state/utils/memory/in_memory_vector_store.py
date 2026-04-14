@@ -122,6 +122,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("in_memory_vector_store", "p4obs", "metric_1")
 _emit_emits_metric_event("in_memory_vector_store", "p4obs", "metric_2")
@@ -253,7 +254,7 @@ class InMemoryVectorStore(BaseVectorStore):
             scores_arr, indices_arr = self._faiss_index.search(q_arr, k)
             active_ids = [uid for uid in self._ordered_ids if uid in self._storage]
             results: list[MemoryItem] = []
-            for score, idx in zip(scores_arr[0], indices_arr[0]):
+            for score, idx in tqdm(zip(scores_arr[0], indices_arr[0]), desc="Processing", unit="item"):
                 if idx < 0 or idx >= len(active_ids):
                     continue
                 uid = active_ids[idx]
@@ -271,7 +272,7 @@ class InMemoryVectorStore(BaseVectorStore):
             return results[: query.top_k]
         q_mag = math.sqrt(sum(x * x for x in q_vec))
         results = []
-        for uid in candidate_ids:
+        for uid in tqdm(candidate_ids, desc="Processing", unit="item"):
             item = self._storage.get(uid)
             if item is None:
                 continue

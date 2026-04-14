@@ -90,6 +90,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("_ssot_dry_run_isolated", "p4obs", "metric_1")
 _emit_emits_metric_event("_ssot_dry_run_isolated", "p4obs", "metric_2")
@@ -286,12 +287,12 @@ for name, (mod_path, cls_name, methods) in AGENT_REGISTRY.items():
 print("\n=== PHASE 2: Per-Territory Agent Execution ===", file=sys.stderr)
 territory_results = {}
 
-for territory in TERRITORIES:
+for territory in tqdm(TERRITORIES, desc="Processing", unit="item"):
     print(f"\n--- {territory} ---", file=sys.stderr)
     territory_results[territory] = {}
 
-    for agent_name, (cls, methods) in agent_classes.items():
-        for method in methods:
+    for agent_name, (cls, methods) in tqdm(agent_classes.items(), desc="Processing", unit="item"):
+        for method in tqdm(methods, desc="Processing", unit="item"):
             print(f"  Running {agent_name}.{method}({territory})...", file=sys.stderr)
             result = try_run_agent(cls, agent_name, method, territory)
             territory_results[territory][agent_name] = result

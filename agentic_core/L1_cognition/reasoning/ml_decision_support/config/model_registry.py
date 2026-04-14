@@ -7,11 +7,14 @@ and rollback capability with full audit logging.
 
 import hashlib
 import json
+import os
+from tempfile import NamedTemporaryFile
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # from agentic_core.L4_canonical.state.snapshot_manager import SnapshotManager
 # TODO: Replace with local snapshot management
@@ -99,24 +102,23 @@ class ModelRegistry:
                 with open(self.models_file, encoding="utf-8") as f:
                     data = json.load(f)
 
-                for model_id, record_data in data.items():
-                    metadata = ModelMetadata(**record_data["metadata"])
-                    # Convert string timestamps back to datetime
-                    metadata.created_at = datetime.fromisoformat(metadata.created_at)
-                    metadata.last_used = (
-                        datetime.fromisoformat(metadata.last_used) if metadata.last_used else None
-                    )
+                for model_id, record_data in tqdm(data.items(), desc="Processing", unit="item"):
+                    metadata_data = dict(record_data["metadata"])
+                    metadata_data["created_at"] = datetime.fromisoformat(metadata_data["created_at"])
+                    metadata = ModelMetadata(**metadata_data)
+                    last_used_raw = record_data.get("last_used")
+                    last_used = datetime.fromisoformat(last_used_raw) if last_used_raw else None
 
                     record = ModelRecord(
                         metadata=metadata,
                         file_path=Path(record_data["file_path"]),
                         is_active=record_data["is_active"],
-                        last_used=metadata.last_used,
+                        last_used=last_used,
                         usage_count=record_data["usage_count"],
                     )
                     self._models[model_id] = record
 
-            except Exception as e:
+            except (OSError, json.JSONDecodeError, KeyError, TypeError, ValueError):
                 # Start fresh if registry is corrupted
                 self._models = {}
 
@@ -128,11 +130,19 @@ class ModelRegistry:
                 "metadata": asdict(record.metadata),
                 "file_path": str(record.file_path),
                 "is_active": record.is_active,
+                "last_used": record.last_used.isoformat() if record.last_used else None,
                 "usage_count": record.usage_count,
             }
 
-        with open(self.models_file, "w", encoding="utf-8") as f:
+        with NamedTemporaryFile("w", dir=self.registry_path, delete=False, encoding="utf-8") as f:
+            tmp_path = Path(f.name)
             json.dump(data, f, indent=2, default=str)
+
+        try:
+            os.replace(tmp_path, self.models_file)
+        except Exception:  # guardian: allow-broad-exception -- temp file cleanup before re-raise; all exception types must trigger unlink
+            tmp_path.unlink(missing_ok=True)
+            raise
 
     def _compute_digest(self, file_path: Path) -> str:
         """Compute SHA-256 digest of model file."""
@@ -194,7 +204,7 @@ class ModelRegistry:
             model_type=model_type,
             status=ModelStatus.DEVELOPMENT,
             decision_mode=DecisionMode.SHADOW_ONLY,
-            created_at=datetime.now(),
+            created_at=datetime.utcnow(),
             created_by=created_by,
             training_data_digest=training_data_digest,
             feature_schema_digest=feature_schema_digest,
@@ -268,7 +278,7 @@ class ModelRegistry:
 
         # Add to promotion history
         promotion_event = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.utcnow().isoformat(),
             "from_status": old_status.value,
             "to_status": target_status.value,
             "from_mode": old_mode.value,
@@ -327,7 +337,7 @@ class ModelRegistry:
 
         # Add to rollback history
         rollback_event = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.utcnow().isoformat(),
             "from_status": old_status.value,
             "to_status": ModelStatus.ROLLED_BACK.value,
             "rollback_reason": rollback_reason,
@@ -415,7 +425,7 @@ class ModelRegistry:
             event = {
                 "event_type": event_type,
                 "model_id": model_id,
-                "timestamp": datetime.now().isoformat(),
+                "timestamp": datetime.utcnow().isoformat(),
                 "data": data,
             }
 
@@ -423,7 +433,7 @@ class ModelRegistry:
             # self.snapshot_manager.store_event("ml_model_registry", event)
             # TODO: Replace with local snapshot management
 
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             # Log failure but don't fail the operation
             print(f"Failed to log model event: {e}")
 

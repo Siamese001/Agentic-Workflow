@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("phase_acceptance_guardrail", "p4obs", "metric_1")
 _emit_emits_metric_event("phase_acceptance_guardrail", "p4obs", "metric_2")
@@ -239,7 +240,7 @@ class PhaseAcceptanceGuard:
         evidence_dir = self.repo_root / "docs" / REPORTS_DIR / "governance"
         if not evidence_dir.exists():
             return
-        for evidence_file in evidence_dir.glob("*evidence.md"):
+        for evidence_file in tqdm(evidence_dir.glob("*evidence.md"), desc="Processing", unit="item"):
             content = evidence_file.read_text(encoding="utf-8")
             test_blocks = re.findall("```bash\\npytest.*?\\n```", content, re.DOTALL)
             for block in test_blocks:
@@ -285,7 +286,7 @@ class PhaseAcceptanceGuard:
     def check_phase_evidence_completeness(self) -> None:
         """Rule 47: Phase evidence must distinguish pre-existing vs new issues."""
         evidence_dir = self.repo_root / "docs" / REPORTS_DIR / "governance"
-        for evidence_file in evidence_dir.glob("phase*evidence.md"):
+        for evidence_file in tqdm(evidence_dir.glob("phase*evidence.md"), desc="Processing", unit="item"):
             content = evidence_file.read_text(encoding="utf-8")
             if "failed" in content.lower() and "git --no-pager show" not in content:
                 self.warnings.append(

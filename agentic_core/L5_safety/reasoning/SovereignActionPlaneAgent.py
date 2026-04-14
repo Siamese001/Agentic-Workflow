@@ -187,6 +187,7 @@ _emit_validated_by_safety_plane("p1", "SovereignActionPlaneAgent", "safety_valid
 _emit_invokes_eval("p1", "SovereignActionPlaneAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "SovereignActionPlaneAgent", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_SovereignActionPlaneAgent", "SovereignActionPlaneAgent_dispatch_entry")
 emit_determinism_digest("trace_SovereignActionPlaneAgent", "SovereignActionPlaneAgent_dispatch_exit")
@@ -597,7 +598,7 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             if "invalid syntax" in error_message:
                 lines = tool_code.split("\n")
                 fixed_lines = []
-                for _i, line in enumerate(lines):
+                for _i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
                     if any(keyword in line for keyword in ["if ", "for ", "while ", "def ", "class "]) and (
                         not line.strip().endswith(":")
                     ):

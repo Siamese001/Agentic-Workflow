@@ -117,6 +117,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_healing_mission", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_healing_mission", "p4obs", "metric_2")
@@ -208,12 +209,12 @@ def run_mission():
     files_processed = 0
     violations_found = []
 
-    for zone in target_zones:
+    for zone in tqdm(target_zones, desc="Processing", unit="item"):
         if not zone.exists():
             logger.warning(f"Zone not found: {zone}")
             continue
 
-        for path in zone.rglob("*.py"):
+        for path in tqdm(zone.rglob("*.py"), desc="Processing", unit="item"):
             if APPS_SHARED_DIR in str(path):
                 continue
 

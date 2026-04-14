@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("toxic_dependency_auditor_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("toxic_dependency_auditor_enforcer", "p4obs", "metric_2")
@@ -219,7 +220,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
         self._build_fan_in_map()
 
         toxic_hubs = []
-        for module, dependents in self.dependency_map.items():
+        for module, dependents in tqdm(self.dependency_map.items(), desc="Processing", unit="item"):
             if len(dependents) >= self.threshold:
                 # Calculate base toxicity score (fan-in)
                 fan_in = len(dependents)
@@ -297,7 +298,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
 
         print(f"☢️  TOXIC HUB ALERT: {len(toxic_hubs)} modules identified as high-risk.")
         print("-" * 60)
-        for hub in toxic_hubs:
+        for hub in tqdm(toxic_hubs, desc="Processing", unit="item"):
             print(f"Module: {hub['module']}")
             print(f"Fan-in (Dependencies): {hub['fan_in']}")
 

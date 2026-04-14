@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("SafetyInspectorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SafetyInspectorAgent", "p4obs", "metric_2")
@@ -379,7 +380,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
             with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
                 lines: Any = content.split()
-            for pattern in self.secret_patterns:
+            for pattern in tqdm(self.secret_patterns, desc="Processing", unit="item"):
                 if re.search(pattern, content, re.IGNORECASE):
                     if self.enable_socratic_judge and file_path not in self._false_positive_cache:
                         verification: Any = await self._socratic_verify(
@@ -412,8 +413,8 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                     violations["bare_except"].append(f"Line {i}: {line.strip()}")
                 elif re.search("except\\s+pass\\s*:", line) or re.search("except\\s*\\n\\s*pass", content):
                     violations["empty_except"].append(f"Line {i}: {line.strip()}")
-            for i, line in enumerate(lines, 1):
-                for pattern in self.eval_patterns:
+            for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
+                for pattern in tqdm(self.eval_patterns, desc="Processing", unit="item"):
                     if re.search(pattern, line):
                         if self.enable_socratic_judge and file_path not in self._false_positive_cache:
                             verification: Any = await self._socratic_verify(
@@ -597,10 +598,10 @@ class SafetyInspectorAgent(SovereignBaseAgent):
                 Path(self.project_root) / APPS_SHARED_DIR,
             ]
             all_violations = []
-            for source_dir in source_dirs:
+            for source_dir in tqdm(source_dirs, desc="Processing", unit="item"):
                 if not source_dir.exists():
                     continue
-                for py_file in source_dir.rglob("*.py"):
+                for py_file in tqdm(source_dir.rglob("*.py"), desc="Processing", unit="item"):
                     if "__pycache__" in str(py_file):
                         skipped += 1
                         continue

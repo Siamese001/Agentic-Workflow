@@ -7,7 +7,6 @@ and automatic parameter tuning for the 4-layer retrieval pattern.
 import asyncio
 import logging
 import math
-import random
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -88,7 +87,7 @@ class OptimizationResult:
     new_parameters: OptimizationParameters
     expected_improvement: dict[str, float]
     confidence: float
-    timestamp: datetime = field(default_factory=datetime.now)
+    timestamp: datetime = field(default_factory=datetime.utcnow)
 
 
 class SimpleMLModel:
@@ -115,7 +114,9 @@ class SimpleMLModel:
         try:
             # Simple linear regression using gradient descent
             num_features = len(self.feature_history[0])
-            self.weights = [random.uniform(-0.1, 0.1) for _ in range(num_features)]
+            if any(len(features) != num_features for features in self.feature_history):
+                raise ValueError("inconsistent feature vector lengths")
+            self.weights = [0.0 for _ in range(num_features)]
             self.bias = 0.0
 
             learning_rate = 0.01
@@ -352,16 +353,24 @@ class AdaptiveOptimizer:
 
     async def start_optimization(self):
         """Start adaptive optimization."""
-        self._training_task = asyncio.create_task(self._periodic_training())
-        self._optimization_task = asyncio.create_task(self._periodic_optimization())
+        if self._training_task and not self._training_task.done():
+            return
+        self._training_task = asyncio.create_task(self._periodic_training(), name="adaptive-optimizer-train")
+        self._optimization_task = asyncio.create_task(
+            self._periodic_optimization(),
+            name="adaptive-optimizer-optimize",
+        )
         logger.info("Started adaptive optimization")
 
     async def stop_optimization(self):
         """Stop adaptive optimization."""
-        if self._training_task:
-            self._training_task.cancel()
-        if self._optimization_task:
-            self._optimization_task.cancel()
+        tasks = [t for t in [self._training_task, self._optimization_task] if t]
+        for t in tasks:
+            t.cancel()
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        self._training_task = None
+        self._optimization_task = None
         logger.info("Stopped adaptive optimization")
 
     async def _periodic_training(self):
@@ -390,7 +399,7 @@ class AdaptiveOptimizer:
         """Add performance data for optimization."""
         metrics = PerformanceMetrics(
             layer_type=layer_type,
-            timestamp=datetime.now(),
+            timestamp=datetime.utcnow(),
             latency_ms=response.processing_time_ms,
             cost_estimate=response.cost_estimate,
             success_rate=1.0 if response.status.value == "completed" else 0.0,

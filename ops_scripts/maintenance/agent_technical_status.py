@@ -122,6 +122,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_technical_status", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_technical_status", "p4obs", "metric_2")
@@ -455,7 +456,7 @@ class NuclearAuditor:
 
     def _check_heal_method_compliance(self, class_node: ast.ClassDef) -> str:
         """Check heal() method signature compliance."""
-        for node in class_node.body:
+        for node in tqdm(class_node.body, desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef) and node.name == "heal":
                 # Check parameters
                 args = [arg.arg for arg in node.args.args]
@@ -527,7 +528,7 @@ class NuclearAuditor:
         has_abstract = False
         has_pass_only = True
 
-        for node in class_node.body:
+        for node in tqdm(class_node.body, desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef):
                 has_pass_only = False
                 # Check for abstract decorators
@@ -672,7 +673,7 @@ class NuclearAuditor:
             "|-------|-------|------|-------------|--------|-----------|------|------------|--------|",
         )
 
-        for status in sorted_agents:
+        for status in tqdm(sorted_agents, desc="Processing", unit="item"):
             issues = len(status.violations)
             if issues > 0:
                 issues_str = f"ISSUES {issues}"

@@ -14,9 +14,14 @@ ADG edges emitted: triggers_learning, feeds_back_signal,
 
 from __future__ import annotations
 
+from collections import deque
 import hashlib
+import json
 import logging
+import math
+import os
 from dataclasses import dataclass, field
+from threading import RLock
 from typing import Any, Callable
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -195,21 +200,51 @@ class WorkflowOutcome:
         quality_score: float = 0.0,
         metadata: dict[str, Any] | None = None,
     ) -> WorkflowOutcome:
+        if not bundle_id.strip():
+            raise ValueError("bundle_id must be non-empty")
+        if not workflow_type.strip():
+            raise ValueError("workflow_type must be non-empty")
+        if elapsed_ms < 0:
+            raise ValueError("elapsed_ms must be >= 0")
+        if not agent_sequence:
+            raise ValueError("agent_sequence must be non-empty")
+        if not math.isfinite(quality_score):
+            raise ValueError("quality_score must be finite")
+
+        normalized_agents = tuple(agent.strip() for agent in agent_sequence if agent.strip())
+        if not normalized_agents:
+            raise ValueError("agent_sequence must contain at least one non-empty agent name")
+
+        normalized_metadata = dict(metadata or {})
         active = get_active_execution_trace()
         trace_id = active.trace_id if active else "no-active-trace"
-        payload = f"{bundle_id}:{workflow_type}:{success}:{elapsed_ms:.2f}"
-        outcome_hash = hashlib.sha256(payload.encode()).hexdigest()[:24]
+        payload = {
+            "bundle_id": bundle_id,
+            "trace_id": trace_id,
+            "workflow_type": workflow_type,
+            "success": success,
+            "elapsed_ms": round(elapsed_ms, 6),
+            "agent_sequence": normalized_agents,
+            "quality_score": round(quality_score, 6),
+            "metadata": normalized_metadata,
+        }
+        outcome_hash = hashlib.sha256(
+            json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+        ).hexdigest()[:24]
         return cls(
             bundle_id=bundle_id,
             trace_id=trace_id,
             workflow_type=workflow_type,
             success=success,
             elapsed_ms=elapsed_ms,
-            agent_sequence=tuple(agent_sequence),
+            agent_sequence=normalized_agents,
             quality_score=quality_score,
             outcome_hash=outcome_hash,
-            metadata=metadata or {},
+            metadata=normalized_metadata,
         )
+
+
+DEFAULT_LEDGER_LIMIT = int(os.getenv("SEAMS_WORKFLOW_LEDGER_LIMIT", "1000"))
 
 
 class WorkflowLearningBridge:
@@ -231,14 +266,30 @@ class WorkflowLearningBridge:
         bridge.contribute(outcome)
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, ledger_limit: int = DEFAULT_LEDGER_LIMIT) -> None:
+        if ledger_limit <= 0:
+            raise ValueError("ledger_limit must be > 0")
+        self._lock = RLock()
         self._learners: dict[str, Callable[[WorkflowOutcome], None]] = {}
-        self._ledger: list[WorkflowOutcome] = []
+        self._ledger: deque[WorkflowOutcome] = deque(maxlen=ledger_limit)
 
     def register_learner(self, name: str, callback: Callable[[WorkflowOutcome], None]) -> None:
         """Register a system_learning consumer."""
-        self._learners[name] = callback
+        if not name.strip():
+            raise ValueError("learner name must be non-empty")
+        if not callable(callback):
+            raise TypeError("callback must be callable")
+
+        with self._lock:
+            existing = self._learners.get(name)
+            if existing is not None and existing is not callback:
+                raise ValueError(f"learner {name!r} already registered with a different callback")
+            self._learners[name] = callback
         logger.debug("LEARNING_BRIDGE register_learner name=%s", name)
+
+    def has_learner(self, name: str) -> bool:
+        with self._lock:
+            return name in self._learners
 
     def contribute(self, outcome: WorkflowOutcome) -> None:
         """Push a workflow outcome to all registered learners.
@@ -246,7 +297,9 @@ class WorkflowLearningBridge:
         Emits ``triggers_learning`` + ``feeds_back_signal``
         + ``contributes_to_sl`` ADG edges.
         """
-        self._ledger.append(outcome)
+        with self._lock:
+            self._ledger.append(outcome)
+            learners = tuple(self._learners.items())
         logger.info(
             "LEARNING_BRIDGE triggers_learning contributes_to_sl "
             "bundle=%s type=%s success=%s quality=%.2f agents=%s",
@@ -256,7 +309,7 @@ class WorkflowLearningBridge:
             outcome.quality_score,
             list(outcome.agent_sequence),
         )
-        for name, learner in self._learners.items():
+        for name, learner in learners:
             try:
                 learner(outcome)
                 logger.debug(
@@ -264,59 +317,62 @@ class WorkflowLearningBridge:
                     name,
                     outcome.bundle_id,
                 )
-            # guardian: allow-silent-swallow
-            except (ValueError, TypeError) as exc:
-                logger.error("LEARNING_BRIDGE learner=%s error: %s", name, exc)
+            except Exception:  # guardian: allow-broad-exception -- third-party learner callbacks can raise any type; isolate failures to prevent one bad learner from dropping all others
+                logger.exception("LEARNING_BRIDGE learner=%s failed bundle=%s", name, outcome.bundle_id)
 
     def ledger(self) -> list[WorkflowOutcome]:
-        return list(self._ledger)
+        with self._lock:
+            return list(self._ledger)
 
     def success_rate(self) -> float:
-        if not self._ledger:
+        with self._lock:
+            ledger = list(self._ledger)
+        if not ledger:
             return 0.0
-        return sum(1 for o in self._ledger if o.success) / len(self._ledger)
+        return sum(1 for o in ledger if o.success) / len(ledger)
 
     def average_quality(self) -> float:
-        scored = [o.quality_score for o in self._ledger if o.quality_score > 0]
+        with self._lock:
+            scored = [o.quality_score for o in self._ledger if o.quality_score > 0]
         if not scored:
             return 0.0
         return sum(scored) / len(scored)
 
 
 _global_bridge: WorkflowLearningBridge | None = None
+_global_bridge_lock = RLock()
 
 
 def get_workflow_learning_bridge() -> WorkflowLearningBridge:
     global _global_bridge
-    if _global_bridge is None:
-        _global_bridge = WorkflowLearningBridge()
-    return _global_bridge
+    with _global_bridge_lock:
+        if _global_bridge is None:
+            _global_bridge = WorkflowLearningBridge()
+        return _global_bridge
 
 
 def reset_workflow_learning_bridge() -> None:
     global _global_bridge
-    _global_bridge = None
+    with _global_bridge_lock:
+        _global_bridge = None
 
 
 def ensure_sl_adapter_registered() -> None:
-    """Ensure the System Learning adapter is registered with the bridge.
-
-    This is a convenience function to auto-register the SL adapter
-    when the bridge is first used.
-    """
+    """Ensure the System Learning adapter is registered with the bridge."""
     bridge = get_workflow_learning_bridge()
-
-    # Check if already registered
-    if "system_learning" in bridge._learners:
+    if bridge.has_learner("system_learning"):
         return
 
     try:
         from system_learning.adapters.workflow_outcome_sl_adapter import register_with_workflow_bridge
+    except ImportError as exc:
+        logger.info("System learning adapter unavailable: %s", exc)
+        return
 
-        register_with_workflow_bridge()
-    except ImportError:
-        # System learning unavailable - continue without registration
-        pass  # guardian: allow-silent-swallow -- intentional: ImportError used for control flow
+    if not callable(register_with_workflow_bridge):
+        raise TypeError("register_with_workflow_bridge must be callable")
+
+    register_with_workflow_bridge()
 
 
 __all__ = [

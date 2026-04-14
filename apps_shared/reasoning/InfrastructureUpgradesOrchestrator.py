@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("InfrastructureUpgradesOrchestrator", "p4obs", "metric_1")
 _emit_emits_metric_event("InfrastructureUpgradesOrchestrator", "p4obs", "metric_2")
@@ -281,7 +282,7 @@ class InfrastructureUpgradesOrchestrator:
         sentences = re.split("[.!?]+", content)
         sentences = [s.strip() for s in sentences if s.strip()]
         violations = []
-        for sentence in sentences:
+        for sentence in tqdm(sentences, desc="Processing", unit="item"):
             result = self.fact_ledger.verify_claim(sentence)
             if result.status == "CONFLICT":
                 violations.append(result)

@@ -11,6 +11,7 @@ import logging
 import os
 import threading
 import uuid
+from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -318,9 +319,8 @@ class ArchivalGatekeeper:
                 self._l4_ledger_hook(result)
                 Logger.debug(f"[ArchivalGatekeeper] L4 Ledger notified: {result.operation.value}")
             # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                Logger.error(f"[ArchivalGatekeeper] L4 Ledger hook failed: {e}")
+            except Exception:  # guardian: allow-broad-exception -- L4 ledger notification is best-effort; intentional silent-swallow logged via Logger.exception
+                Logger.exception("[ArchivalGatekeeper] L4 Ledger hook failed for %s", result.operation.value)
 
     def set_input_function(self, func: Callable[[str], str]) -> None:
         """
@@ -423,7 +423,7 @@ class ArchivalGatekeeper:
                 approval_status=pending_result.approval_status,
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
+            Logger.exception("[ArchivalGatekeeper] MOVE failed: %s -> %s", source, destination)
             result = ArchivalResult(
                 success=False,
                 operation=ArchivalOperation.MOVE,
@@ -504,7 +504,7 @@ class ArchivalGatekeeper:
                 approval_status=pending_result.approval_status,
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
+            Logger.exception("[ArchivalGatekeeper] ARCHIVE failed: %s -> %s", source, archive_path)
             result = ArchivalResult(
                 success=False,
                 operation=ArchivalOperation.ARCHIVE,
@@ -580,7 +580,7 @@ class ArchivalGatekeeper:
                 approval_status=pending_result.approval_status,
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
+            Logger.exception("[ArchivalGatekeeper] DELETE failed: %s -> %s", source, archive_path)
             result = ArchivalResult(
                 success=False,
                 operation=ArchivalOperation.DELETE,
@@ -606,13 +606,18 @@ class ArchivalGatekeeper:
         Returns:
             List of audit log entries (most recent first)
         """
-        entries = []
+        entries: list[dict[str, Any]] = []
         if not self.audit_log_path.exists():
             return entries
         try:
+            recent_lines: deque[str] = deque(maxlen=limit)
             with open(self.audit_log_path, encoding="utf-8") as f:
-                lines = f.readlines()
-            for line in reversed(lines[-limit:]):
+                for line in f:
+                    if len(line) > 1024 * 1024:
+                        Logger.warning("[ArchivalGatekeeper] Skipping oversized audit line")
+                        continue
+                    recent_lines.append(line)
+            for line in reversed(recent_lines):
                 try:
                     entries.append(json.loads(line.strip()))
                 except json.JSONDecodeError:
@@ -684,7 +689,7 @@ class ArchivalGatekeeper:
                 reason=f"[RESTORE] {reason}",
             )
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
+            Logger.exception("[ArchivalGatekeeper] RESTORE failed: %s -> %s", archived_path, original_path)
             result = ArchivalResult(
                 success=False,
                 operation=ArchivalOperation.MOVE,

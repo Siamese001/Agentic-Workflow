@@ -379,6 +379,8 @@ def record_routing_telemetry(
         RoutingTelemetry (immutable, 15 fields), persisted to the store.
     """
     _emit_observes_runtime_state(str(uuid.uuid4()), "Module.record_routing_telemetry", "L0_ROUTING")
+    from agentic_core.L2_execution.utils.providers import get_clock  # noqa: PLC0415
+
     clk = get_clock()
     now = clk.now_epoch()
 

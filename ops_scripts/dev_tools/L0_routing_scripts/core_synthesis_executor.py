@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("core_synthesis_executor", "p4obs", "metric_1")
 _emit_emits_metric_event("core_synthesis_executor", "p4obs", "metric_2")
@@ -266,7 +267,7 @@ class CoreSynthesisExecutor:
         self.archives_path.mkdir(parents=True, exist_ok=True)
 
         archived_count = 0
-        for file_info in archive_files:
+        for file_info in tqdm(archive_files, desc="Processing", unit="item"):
             file_path = self.base_path / file_info["file_path"]
 
             if file_path.exists():
@@ -298,7 +299,7 @@ class CoreSynthesisExecutor:
         # Create utils directory if it doesn't exist
         self.utils_path.mkdir(exist_ok=True)
 
-        for file_info in synthesis_files:
+        for file_info in tqdm(synthesis_files, desc="Processing", unit="item"):
             file_path = self.base_path / file_info["file_path"]
 
             if file_path.exists():
@@ -348,7 +349,7 @@ class CoreSynthesisExecutor:
         in_method = False
         method_indent = 0
 
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             # Skip imports and comments
             if line.strip().startswith(("import", "from", "#")):
                 continue
@@ -402,7 +403,7 @@ class CoreSynthesisExecutor:
             target_class = target_parts[-1]
             target_parts[0] + ".py"
 
-            for i, line in enumerate(lines):
+            for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
                 if f"class {target_class}" in line:
                     # Find the end of this class
                     for j in range(i + 1, len(lines)):
@@ -451,7 +452,7 @@ class CoreSynthesisExecutor:
         self.utils_path.mkdir(exist_ok=True)
 
         evicted_count = 0
-        for file_path in utils_files:
+        for file_path in tqdm(utils_files, desc="Processing", unit="item"):
             try:
                 # Move to utils
                 dest = self.utils_path / file_path.name
@@ -473,7 +474,7 @@ class CoreSynthesisExecutor:
         """Verify no circular dependencies remain."""
         forbidden_zones = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
-        for file_path in self.base_path.rglob("*.py"):
+        for file_path in tqdm(self.base_path.rglob("*.py"), desc="Processing", unit="item"):
             if file_path.name == "__init__.py":
                 continue
 

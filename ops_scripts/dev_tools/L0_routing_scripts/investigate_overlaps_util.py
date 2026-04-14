@@ -70,6 +70,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("investigate_overlaps_util", "p4obs", "metric_1")
 _emit_emits_metric_event("investigate_overlaps_util", "p4obs", "metric_2")
@@ -171,7 +172,7 @@ def get_file_hash(path: Path):
 
 def investigate():
     """TODO: Add documentation for investigate."""
-    for _group_name, filenames in GROUPS.items():
+    for _group_name, filenames in tqdm(GROUPS.items(), desc="Processing", unit="item"):
         found_files = []
         for root, dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]

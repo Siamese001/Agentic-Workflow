@@ -94,6 +94,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("app_content_validator_agent_types", "p4obs", "metric_1")
 _emit_emits_metric_event("app_content_validator_agent_types", "p4obs", "metric_2")
@@ -428,7 +429,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
             return violations
         content_lower = content.lower()
         if self.config.check_placeholders:
-            for pattern in self.config.placeholder_patterns:
+            for pattern in tqdm(self.config.placeholder_patterns, desc="Processing", unit="item"):
                 matches = re.findall(pattern, content, re.IGNORECASE)
                 if matches:
                     violations.append(
@@ -443,7 +444,7 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
                     )
         if self.config.check_spam:
             spam_patterns = self.config.spam_patterns or DEFAULT_SPAM_PATTERNS
-            for pattern in spam_patterns:
+            for pattern in tqdm(spam_patterns, desc="Processing", unit="item"):
                 if re.search(pattern, content_lower):
                     violations.append(
                         ContentViolation(
@@ -498,8 +499,8 @@ class AppContentValidatorAgent(SubatomicTestingMixin):
         start_time = datetime.now()
         report.items_validated = len(messages)
         similar_pairs = []
-        for i in range(len(messages)):
-            for j in range(i + 1, len(messages)):
+        for i in tqdm(range(len(messages)), desc="Processing", unit="item"):
+            for j in tqdm(range(i + 1, len(messages)), desc="Processing", unit="item"):
                 similarity = self.calculate_similarity(messages[i], messages[j])
                 if similarity >= threshold:
                     similar_pairs.append((i, j, similarity))

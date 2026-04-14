@@ -48,6 +48,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_updates_routing_strategy,
     _emit_writes_learning_snapshot,
 )
+from tqdm import tqdm
 
 
 # Lazy import to avoid L6->L_SL gravity violation
@@ -289,7 +290,7 @@ class DeskDGovernedBoard:
         result = self._validate_and_decide(record)
 
         # Emit callbacks
-        for callback in self._processing_callbacks:
+        for callback in tqdm(self._processing_callbacks, desc="Processing", unit="item"):
             try:
                 callback(record, result)
             except Exception as e:
@@ -373,7 +374,7 @@ class DeskDGovernedBoard:
 
         # Build DPO batch
         pairs = []
-        for record in records:
+        for record in tqdm(records, desc="Processing", unit="item"):
             chosen_threshold = 0.8 if record.human_decision == "APPROVE" else 0.4
             rejected_threshold = 0.4 if record.human_decision == "APPROVE" else 0.8
 

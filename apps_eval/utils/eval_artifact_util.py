@@ -13,12 +13,13 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "eval_artifact_util", "uwg_governed_write")
 _emit_writes_through("p1", "eval_artifact_util", "uwg_governed_write_2")
@@ -50,7 +51,7 @@ def write_scorecard_csv(path: Path, scorecard_rows: list[Any]) -> str:
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["dimension_id", "display_name", "score", "weight", "weighted_score", "verdict"])
-        for row in scorecard_rows:
+        for row in tqdm(scorecard_rows, desc="Processing", unit="item"):
             writer.writerow(
                 [
                     row.dimension_id,

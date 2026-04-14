@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_import_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_import_enforcer", "p4obs", "metric_2")
@@ -236,7 +237,7 @@ def main():
         PROJECT_ROOT / APPS_RG_DIR,
         PROJECT_ROOT / APPS_LIC_DIR,
     ]
-    for territory in territories:
+    for territory in tqdm(territories, desc="Processing", unit="item"):
         if not territory.exists():
             continue
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files

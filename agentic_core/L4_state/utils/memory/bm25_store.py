@@ -156,6 +156,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("bm25_store", "p4obs", "metric_1")
 _emit_emits_metric_event("bm25_store", "p4obs", "metric_2")
@@ -242,7 +243,7 @@ class Bm25Store:
         scores: Any = self.bm25.get_scores(tokenized_query)
         ranked: Any = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)[:top_k]
         results: Any = []
-        for idx, score in ranked:
+        for idx, score in tqdm(ranked, desc="Processing", unit="item"):
             if score == 0:
                 continue
             doc: Any = self.documents[idx]
@@ -308,7 +309,7 @@ def _tokenize_sparse(text: str) -> list[str]:
             seen.add(t)
             tokens.append(t)
 
-    for tok in raw:
+    for tok in tqdm(raw, desc="Processing", unit="item"):
         if not tok or len(tok) < 2:
             continue
         lower = tok.lower()
@@ -389,7 +390,7 @@ class SparseIndex:
                     (fts_or, top_k * 2),
                 ).fetchall()
 
-            for rank, (doc_id, document, _snippet) in enumerate(rows):
+            for rank, (doc_id, document, _snippet) in tqdm(enumerate(rows), desc="Processing", unit="item"):
                 # BM25-like score: FTS5 rank is negative (lower = better), invert to positive
                 # We use position-based score for normalisation (rank 0 = best)
                 score = 1.0 / (1.0 + rank)

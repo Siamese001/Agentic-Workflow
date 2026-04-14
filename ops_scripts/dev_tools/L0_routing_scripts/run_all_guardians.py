@@ -154,6 +154,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_all_guardians", "p4obs", "metric_1")
 _emit_emits_metric_event("run_all_guardians", "p4obs", "metric_2")
@@ -270,7 +271,7 @@ def run_all_guardians(
     # Get guardians from SSOT registry (already sorted by guardian_id)
     guardian_specs = get_guardian_specs(enabled_only=not include_disabled)
 
-    for spec in guardian_specs:
+    for spec in tqdm(guardian_specs, desc="Processing", unit="item"):
         gid = spec.guardian_id
         try:
             result = _run_single_guardian(

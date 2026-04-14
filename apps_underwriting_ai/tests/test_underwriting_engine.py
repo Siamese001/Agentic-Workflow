@@ -142,6 +142,11 @@ class TestUnderwritingEngine(unittest.TestCase):
         self.assertIsNotNone(result.decision_packet)
         # Confidence should be present for successful runs
         self.assertIsNotNone(result.confidence_score)
+        # processing_metadata: phase-introduced fields
+        self.assertIn("duration_ms", result.processing_metadata)
+        self.assertGreaterEqual(result.processing_metadata["duration_ms"], 0)
+        self.assertIn("start_time", result.processing_metadata)
+        self.assertIn("end_time", result.processing_metadata)
 
     def test_pend_missing_documents(self):
         """Test PEND_FOR_INFORMATION when documents missing."""
@@ -183,6 +188,24 @@ class TestUnderwritingEngine(unittest.TestCase):
         self.assertTrue(result.success)
         # Engine may return DECLINE for restricted industry or PEND_FOR_INFO if validation incomplete
         self.assertIn(result.decision, ["DECLINE", "PEND_FOR_INFORMATION", "ESCALATE_TO_HUMAN"])
+
+    def test_run_failure_escalates_to_human(self):
+        """Test that a sub-engine error produces ESCALATE_TO_HUMAN with error metadata."""
+        request = self._create_base_request()
+
+        def _raise(*args, **kwargs):
+            raise RuntimeError("injected test error")
+
+        self.engine.feature_engine.derive_features = _raise
+        result = self.engine.run(request)
+        self.assertFalse(result.success)
+        self.assertEqual(result.decision, "ESCALATE_TO_HUMAN")
+        self.assertTrue(result.human_review_required)
+        self.assertEqual(result.human_review_reason, "workflow_execution_error")
+        self.assertIn("error_type", result.processing_metadata)
+        self.assertEqual(result.processing_metadata["error_type"], "RuntimeError")
+        self.assertIn("duration_ms", result.processing_metadata)
+        self.assertGreaterEqual(result.processing_metadata["duration_ms"], 0)
 
 
 class TestScenarios(unittest.TestCase):

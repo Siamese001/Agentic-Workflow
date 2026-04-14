@@ -19,6 +19,7 @@ from agentic_core.L4_state.types.graph_store_types import (
     GraphSubgraph,
     IGraphStore,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -224,7 +225,7 @@ class SQLiteGraphStore(IGraphStore):
             current_level = {entity_id}
             neighbors = []
 
-            for _ in range(max_hops):
+            for _ in tqdm(range(max_hops), desc="Processing", unit="item"):
                 next_level = set()
                 for eid in current_level:
                     rels = self.get_relationships(eid, direction="both")
@@ -289,7 +290,7 @@ class SQLiteGraphStore(IGraphStore):
             last_node = current_nodes[-1]
             rels = self.get_relationships(last_node.id, direction="outgoing")
 
-            for rel in rels:
+            for rel in tqdm(rels, desc="Processing", unit="item"):
                 # Filter by relation types if specified
                 if relation_types and rel.relation_type not in relation_types:
                     continue
@@ -455,7 +456,7 @@ class SQLiteGraphStore(IGraphStore):
             components = list(nx.connected_components(G))
             communities = []
 
-            for i, component in enumerate(components):
+            for i, component in tqdm(enumerate(components), desc="Processing", unit="item"):
                 entities = [str(nid) for nid in component]
                 communities.append(
                     GraphCommunity(

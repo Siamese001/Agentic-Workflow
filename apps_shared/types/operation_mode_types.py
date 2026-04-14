@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("operation_mode_types", "p4obs", "metric_1")
 _emit_emits_metric_event("operation_mode_types", "p4obs", "metric_2")
@@ -600,7 +601,7 @@ class ObservabilityOperationPerformer:
         total_metrics = {}
         all_traces = []
         all_artifacts = []
-        for item in batch_items:
+        for item in tqdm(batch_items, desc="Processing", unit="item"):
             handler = self._operation_handlers[context.operation_id]
             try:
                 item_output = handler(item)

@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 
 @dataclass
@@ -358,7 +359,7 @@ class ASTCodeQualityValidator:
         if error:
             return {"error": error, "violations": []}
         if tree:
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.FunctionDef):
                     if not node.returns and (not node.name.startswith("__")):
                         violations.append(

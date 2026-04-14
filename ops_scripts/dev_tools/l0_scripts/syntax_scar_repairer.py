@@ -75,6 +75,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 from agentic_core.runtime.exceptions.SovereignError import HealerError
+from tqdm import tqdm
 
 _emit_emits_metric_event("syntax_scar_repairer", "p4obs", "metric_1")
 _emit_emits_metric_event("syntax_scar_repairer", "p4obs", "metric_2")
@@ -212,7 +213,7 @@ class SyntaxScarRepairer:
         """
         lines = content.splitlines()
         fixed_lines = []
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             quote_count = line.count('"') - line.count('\\"')
             triple_quote_count = line.count('"""')
             if quote_count % 2 != 0 and triple_quote_count == 0:
@@ -232,7 +233,7 @@ class SyntaxScarRepairer:
         SALVAGED: Batch repair pattern from legacy fix_syntax_scars.py.
         """
         results = {"total_files": len(broken_files), "repaired": 0, "failed": 0, "skipped": 0, "details": []}
-        for file_rel_path in broken_files:
+        for file_rel_path in tqdm(broken_files, desc="Processing", unit="item"):
             file_path = self.project_root / file_rel_path.replace("/", "\\")
             if not file_path.exists():
                 results["skipped"] += 1

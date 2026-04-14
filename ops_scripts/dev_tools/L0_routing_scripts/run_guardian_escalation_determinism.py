@@ -154,6 +154,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("run_guardian_escalation_determinism", "run_guardian_escalation_determinism_trace")
 
@@ -264,7 +265,7 @@ def scan_escalation_patterns(
     alt_ctx_viols: list[dict] = []
     mutation_viols: list[dict] = []
 
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         rel = normalize_repo_path(fpath.relative_to(repo_root))
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
@@ -272,7 +273,7 @@ def scan_escalation_patterns(
         except SyntaxError:
             continue
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # failure_signal_built_from_raw_notes:
             # FailureSignal(...) or EscalationContext(...) call where any
             # positional arg is a JoinedStr (f-string) or BinOp(str concat)
@@ -337,10 +338,14 @@ def run_escalation_determinism_guardian(
     )
 
     viols = scan_escalation_patterns(repo_root)
-    for check_id in (
-        "failure_signal_built_from_raw_notes",
-        "alternate_escalation_context_construction",
-        "escalation_context_mutation",
+    for check_id in tqdm(
+        (
+            "failure_signal_built_from_raw_notes",
+            "alternate_escalation_context_construction",
+            "escalation_context_mutation",
+        ),
+        desc="Processing",
+        unit="item",
     ):
         v = viols[check_id]
         if v:

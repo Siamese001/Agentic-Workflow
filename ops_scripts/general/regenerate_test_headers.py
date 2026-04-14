@@ -3,13 +3,14 @@ Regenerate proper Python headers for all test files.
 """
 
 from pathlib import Path
+from tqdm import tqdm
 
 
 def regenerate_headers(project_root: Path):
     """Add proper Python headers to test files."""
     test_dir = project_root / TESTS_DIR / "unit"
     fixed_count = 0
-    for test_file in test_dir.rglob("*.py"):
+    for test_file in tqdm(test_dir.rglob("*.py"), desc="Processing", unit="item"):
         if test_file.name in ("__init__.py", "conftest.py"):
             continue
         try:
@@ -24,7 +25,7 @@ def regenerate_headers(project_root: Path):
                 header = f'"""\nTest file for {class_name}\n\nMECE Test Categories:\n- Initialization: Constructor and __post_init__ behavior\n- Core Methods: Primary business logic\n- Edge Cases: Boundary conditions and error handling\n- Type Boundaries: Input/output type validation\n\nValidation Points:\n- Acronym Protection: Using _to_smart_snake_case for all references\n- Suffix Hygiene: No stuttering patterns like AgentOrchestrator\n- Primary Class Focus: {class_name} only, secondaries mocked\n"""\n\n'
                 lines = content.split("\n")
                 cleaned_lines = []
-                for line in lines:
+                for line in tqdm(lines, desc="Processing", unit="item"):
                     if (
                         line.strip().startswith("import")
                         or line.strip().startswith("from")

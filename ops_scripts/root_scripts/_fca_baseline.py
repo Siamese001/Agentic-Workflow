@@ -111,6 +111,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("_fca_baseline", "p4obs", "metric_1")
 _emit_emits_metric_event("_fca_baseline", "p4obs", "metric_2")
@@ -204,28 +205,32 @@ for p in all_py:
 
 # Tag parse
 findings_by_tag = defaultdict(list)
-for line in col.lines:
-    for tag in [
-        "DETECT",
-        "TERRITORY",
-        "COMPOUND_SUFFIX",
-        "FORBIDDEN",
-        "PASSIVE_AGENT_NAMING",
-        "COGNITIVE_CONTAMINATION",
-        "FAKE_CONFIG",
-        "BASE_AGENTS_PURITY",
-        "UTILS_PURITY",
-        "DOMAIN_ROOT_PURITY",
-        "FOLDER_SUFFIX",
-        "FOLDER_PURITY",
-        "CROSS_DOMAIN",
-        "EPHEMERAL",
-        "CROSS_LAYER",
-        "DUAL-TAG",
-        "MISPLACED-TEST",
-        "LAYER_PURITY",
-        "DUPLICATE",
-    ]:
+for line in tqdm(col.lines, desc="Processing", unit="item"):
+    for tag in tqdm(
+        [
+            "DETECT",
+            "TERRITORY",
+            "COMPOUND_SUFFIX",
+            "FORBIDDEN",
+            "PASSIVE_AGENT_NAMING",
+            "COGNITIVE_CONTAMINATION",
+            "FAKE_CONFIG",
+            "BASE_AGENTS_PURITY",
+            "UTILS_PURITY",
+            "DOMAIN_ROOT_PURITY",
+            "FOLDER_SUFFIX",
+            "FOLDER_PURITY",
+            "CROSS_DOMAIN",
+            "EPHEMERAL",
+            "CROSS_LAYER",
+            "DUAL-TAG",
+            "MISPLACED-TEST",
+            "LAYER_PURITY",
+            "DUPLICATE",
+        ],
+        desc="Processing",
+        unit="item",
+    ):
         if f"[{tag}]" in line:
             findings_by_tag[tag].append(line.strip())
             break

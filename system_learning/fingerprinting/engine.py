@@ -98,6 +98,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("engine", "p4obs", "metric_1")
 _emit_emits_metric_event("engine", "p4obs", "metric_2")
@@ -253,7 +254,7 @@ class FailureFingerprinter:
             "phase",
         }
         normalized = {}
-        for key, value in metadata.items():
+        for key, value in tqdm(metadata.items(), desc="Processing", unit="item"):
             if key.lower() not in allowlist:
                 continue
             if value is None:

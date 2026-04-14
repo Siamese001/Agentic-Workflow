@@ -229,7 +229,7 @@ class ADGBehavioralMixin:
                 return None
 
             return idx.profile_for(resolved)
-        except Exception as exc:
+        except (ImportError, AttributeError, OSError) as exc:
             logger.debug("[ADGBehavioralMixin] Profile load failed: %s", exc)
             return None
 
@@ -327,7 +327,7 @@ class ADGBehavioralMixin:
             )
             row = cur.fetchone()
             return int(row[0]) if row else 0
-        except Exception as exc:
+        except (ImportError, AttributeError, OSError) as exc:
             logger.debug("[ADGBehavioralMixin] dead_import_count query failed: %s", exc)
             return 0
 

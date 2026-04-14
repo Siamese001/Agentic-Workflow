@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("template_render_visitor", "p4obs", "metric_1")
 _emit_emits_metric_event("template_render_visitor", "p4obs", "metric_2")
@@ -271,7 +272,7 @@ def audit_agent_compliance(base_dir: Path) -> list[dict]:
     """Audit agent compliance with template variable requirements."""
     violations = []
     python_files = find_python_files(base_dir)
-    for py_file in python_files:
+    for py_file in tqdm(python_files, desc="Processing", unit="item"):
         try:
             with open(py_file, encoding="utf-8") as f:
                 content = f.read()
@@ -297,7 +298,7 @@ def main():
     if violations:
         print(f"❌ FOUND {len(violations)} COMPLIANCE VIOLATIONS:")
         print()
-        for violation in violations:
+        for violation in tqdm(violations, desc="Processing", unit="item"):
             print(f"File: {violation['file']}")
             if violation["class"]:
                 print(f"  Class: {violation['class']}")

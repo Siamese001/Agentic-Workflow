@@ -78,6 +78,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("generate_monolith_shim", "p4obs", "metric_1")
 _emit_emits_metric_event("generate_monolith_shim", "p4obs", "metric_2")
@@ -165,7 +166,7 @@ MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprin
 def find_all_imported_names() -> set[str]:
     """Scan every .py file for names imported from structure_blueprint_config."""
     imported_names: set[str] = set()
-    for py_file in ROOT.rglob("*.py"):
+    for py_file in tqdm(ROOT.rglob("*.py"), desc="Processing", unit="item"):
         rel = py_file.relative_to(ROOT)
         rel_str = str(rel).replace("\\", "/")
         if "structure_blueprint_config.py" in rel_str and "test" not in rel_str:
@@ -199,12 +200,12 @@ def find_all_imported_names() -> set[str]:
 def find_modular_locations(names: set[str]) -> dict[str, str]:
     """Find which modular module each name lives in."""
     name_to_module: dict[str, str] = {}
-    for f in sorted(MOD_DIR.glob("*.py")):
+    for f in tqdm(sorted(MOD_DIR.glob("*.py")), desc="Processing", unit="item"):
         if f.name == "__init__.py":
             continue
         src = f.read_text(encoding="utf-8")
         tree = ast.parse(src)
-        for node in ast.iter_child_nodes(tree):
+        for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
             node_name = None
             if isinstance(node, ast.Assign):
                 for t in node.targets:

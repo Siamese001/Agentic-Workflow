@@ -149,6 +149,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_hierarchy_compliance", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_hierarchy_compliance", "p4obs", "metric_2")
@@ -244,7 +245,7 @@ def scan_missing_structure(repo_root: Path) -> list[dict]:
     # L2 layers under agentic_core (from CORE_SUBFOLDER_MAP)
     approved_l2 = list(CORE_SUBFOLDER_MAP.keys())
 
-    for layer_name in sorted(approved_l2):
+    for layer_name in tqdm(sorted(approved_l2), desc="Processing", unit="item"):
         layer_path = repo_root / AGENTIC_CORE_DIR / layer_name
         if not layer_path.exists():
             violations.append(
@@ -257,7 +258,7 @@ def scan_missing_structure(repo_root: Path) -> list[dict]:
 
         # L3 sub-territories: extracted from CORE_SUBFOLDER_MAP
         expected_l3 = CORE_SUBFOLDER_MAP.get(layer_name, [])
-        for sub_name in sorted(expected_l3):
+        for sub_name in tqdm(sorted(expected_l3), desc="Processing", unit="item"):
             sub_path = layer_path / sub_name
             if not sub_path.exists():
                 violations.append(
@@ -297,7 +298,7 @@ def scan_subfolder_compliance(repo_root: Path) -> list[dict]:
     if not agentic_core_path.exists():
         return violations
 
-    for layer_name in sorted(approved_l2):
+    for layer_name in tqdm(sorted(approved_l2), desc="Processing", unit="item"):
         layer_path = agentic_core_path / layer_name
         if not layer_path.exists():
             continue

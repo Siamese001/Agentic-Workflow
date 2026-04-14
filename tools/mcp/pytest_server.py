@@ -10,18 +10,20 @@ Subprocess calls use safe_run() to enforce stdin=DEVNULL / stdout=PIPE / stderr=
 
 from __future__ import annotations
 
+import ast
 import json
 import logging
 import re
 import subprocess
+import sys
 import time
 import uuid
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Any
 
 from tools.mcp.mcp_bootstrap import REPO_ROOT, create_mcp_server, run_server
 from tools.mcp.mcp_subprocess import safe_run
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +33,19 @@ PYTEST_CONFIG = REPO_ROOT / "pytest.ini"
 PYPROJECT_TOML = REPO_ROOT / "pyproject.toml"
 MAX_EXECUTION_TIME = 300  # 5 minutes for test runs
 MAX_OUTPUT_SIZE = 50000  # characters
+DISCOVER_TIMEOUT = 30
+CONFIG_TIMEOUT = 15
+COVERAGE_TIMEOUT = 120
+MAX_TEST_FILE_SIZE = 1_000_000  # 1 MB
+ALLOWED_COVERAGE_REPORTS = {
+    "term",
+    "term-missing",
+    "html",
+    "xml",
+    "json",
+    "lcov",
+    "annotate",
+}
 
 # Characters not permitted in -k / -m expressions (guard against injection)
 _SAFE_EXPR_RE = re.compile(r"^[\w\s\-.()/\[\],'\"=!<>]+$")
@@ -59,6 +74,68 @@ def _validate_expr(value: str, param_name: str) -> str:
     return value
 
 
+def _python_cmd(*args: str) -> list[str]:
+    """Run subprocesses with the same interpreter as the MCP server."""
+    return [sys.executable, *args]
+
+
+def _validate_timeout(value: int) -> int:
+    """Reject nonsensical timeouts and enforce the server-side max."""
+    if value <= 0:
+        raise ValueError("timeout must be a positive integer")
+    return min(value, MAX_EXECUTION_TIME)
+
+
+def _validate_coverage_report(value: str) -> str:
+    """Restrict coverage reports to known pytest-cov values."""
+    if value not in ALLOWED_COVERAGE_REPORTS:
+        allowed = ", ".join(sorted(ALLOWED_COVERAGE_REPORTS))
+        raise ValueError(f"Unsupported coverage format {value!r}. Allowed: {allowed}")
+    return value
+
+
+def _cleanup_file(path: Path) -> None:
+    """Best-effort file cleanup that never masks the real outcome."""
+    try:
+        path.unlink(missing_ok=True)
+    except TypeError:
+        if path.exists():
+            path.unlink()
+    except OSError as exc:
+        logger.warning("Failed to remove temporary file %s: %s", path, exc)
+
+
+def _parse_junit_summary(junit_xml: Path) -> str:
+    """Handle both <testsuite> and <testsuites> roots."""
+    try:
+        root = ET.parse(junit_xml).getroot()
+    except ET.ParseError as exc:
+        logger.warning("Failed to parse JUnit XML %s: %s", junit_xml, exc)
+        return ""
+
+    if root.tag == "testsuite":
+        suites = [root]
+    else:
+        suites = root.findall(".//testsuite")
+        if not suites and root.tag == "testsuites":
+            suites = list(root)
+
+    tests = sum(int(suite.get("tests", 0) or 0) for suite in suites)
+    failures = sum(int(suite.get("failures", 0) or 0) for suite in suites)
+    errors = sum(int(suite.get("errors", 0) or 0) for suite in suites)
+    skipped = sum(int(suite.get("skipped", 0) or 0) for suite in suites)
+    time_taken = sum(float(suite.get("time", 0) or 0.0) for suite in suites)
+
+    return (
+        "\nJUnit XML Results:\n"
+        f"Tests: {tests}\n"
+        f"Failures: {failures}\n"
+        f"Errors: {errors}\n"
+        f"Skipped: {skipped}\n"
+        f"Time: {time_taken:.2f}s\n"
+    )
+
+
 mcp = create_mcp_server(
     "pytest-mcp",
     "Test discovery, execution, coverage analysis, and pytest config inspection.",
@@ -82,10 +159,10 @@ def discover_tests(
     if not search_path.exists():
         raise ValueError(f"Test path {search_path} does not exist")
 
-    cmd = ["python", "-m", "pytest", "--collect-only", "-q", str(search_path)]
+    cmd = _python_cmd("-m", "pytest", "--collect-only", "-q", str(search_path))
 
     try:
-        result = safe_run(cmd, cwd=REPO_ROOT, timeout=30)
+        result = safe_run(cmd, cwd=REPO_ROOT, timeout=DISCOVER_TIMEOUT)
 
         # exit code 5 = no tests collected — not an error, return zero-test result
         if result.returncode not in (0, 5):
@@ -132,7 +209,10 @@ def run_tests(
     except ValueError as exc:
         raise ValueError(f"Invalid path: {exc}") from exc
 
-    timeout = min(timeout, MAX_EXECUTION_TIME)
+    if not resolved_test_path.exists():
+        raise ValueError(f"Test path {resolved_test_path} does not exist")
+
+    timeout = _validate_timeout(timeout)
 
     if keywords:
         keywords = _validate_expr(keywords, "keywords")
@@ -140,7 +220,7 @@ def run_tests(
         markers = _validate_expr(markers, "markers")
 
     # Build pytest command
-    cmd = ["python", "-m", "pytest"]
+    cmd = _python_cmd("-m", "pytest")
 
     if verbose:
         cmd.append("-v")
@@ -161,34 +241,12 @@ def run_tests(
     cmd.extend(["--junit-xml", str(junit_xml)])
 
     try:
-        start_time = time.time()
+        start_time = time.monotonic()
         result = safe_run(cmd, cwd=REPO_ROOT, timeout=timeout)
-        execution_time = time.time() - start_time
+        execution_time = time.monotonic() - start_time
 
         # Parse JUnit XML if available
-        junit_summary = ""
-        if junit_xml.exists():
-            try:
-                tree = ET.parse(junit_xml)
-                root = tree.getroot()
-
-                tests = int(root.get("tests", 0))
-                failures = int(root.get("failures", 0))
-                errors = int(root.get("errors", 0))
-                skipped = int(root.get("skipped", 0))
-                time_taken = float(root.get("time", 0))
-
-                junit_summary = "\nJUnit XML Results:\n"
-                junit_summary += f"Tests: {tests}\n"
-                junit_summary += f"Failures: {failures}\n"
-                junit_summary += f"Errors: {errors}\n"
-                junit_summary += f"Skipped: {skipped}\n"
-                junit_summary += f"Time: {time_taken:.2f}s\n"
-
-                # Clean up
-                junit_xml.unlink()
-            except ET.ParseError:
-                logger.warning("Failed to parse JUnit XML")
+        junit_summary = _parse_junit_summary(junit_xml) if junit_xml.exists() else ""
 
         # Prepare output
         output = f"Command: {' '.join(cmd)}\n"
@@ -215,15 +273,11 @@ def run_tests(
         return output
 
     except subprocess.TimeoutExpired:
-        # Best-effort cleanup of junit xml on timeout
-        try:
-            if junit_xml.exists():
-                junit_xml.unlink()
-        except OSError:
-            pass
         return f"Error: Tests timed out after {timeout} seconds"
     except (OSError, ValueError) as e:
         return f"Test execution error: {e}"
+    finally:
+        _cleanup_file(junit_xml)
 
 
 @mcp.tool()
@@ -241,15 +295,32 @@ def get_test_details(
         raise ValueError(f"Test file {resolved} does not exist")
 
     try:
+        if resolved.stat().st_size > MAX_TEST_FILE_SIZE:
+            return (
+                f"Error: Test file {resolved.relative_to(REPO_ROOT)} exceeds "
+                f"{MAX_TEST_FILE_SIZE} bytes; refusing to load fully"
+            )
+
         # Read the test file
-        with open(resolved, encoding="utf-8") as f:
-            content = f.read()
+        content = resolved.read_text(encoding="utf-8")
 
         # Basic analysis
-        lines = content.split("\n")
+        lines = content.splitlines()
         total_lines = len(lines)
-        import_lines = len([line for line in lines if line.strip().startswith("import")])
-        function_count = len([line for line in lines if line.strip().startswith("def test_")])
+        import_lines = len(
+            [line for line in lines if line.strip().startswith("import ") or line.strip().startswith("from ")]
+        )
+
+        tree = ast.parse(content, filename=str(resolved))
+        test_functions = sorted(
+            [
+                node
+                for node in ast.walk(tree)
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith("test_")
+            ],
+            key=lambda node: node.lineno,
+        )
+        function_count = len(test_functions)
 
         details = f"Test File: {resolved.relative_to(REPO_ROOT)}\n"
         details += f"Total lines: {total_lines}\n"
@@ -257,66 +328,35 @@ def get_test_details(
         details += f"Test functions: {function_count}\n\n"
 
         if test_name:
-            # Find specific test function
-            test_start = None
-            for i, line in enumerate(lines):
-                if f"def {test_name}(" in line:
-                    test_start = i
-                    break
-
-            if test_start is not None:
+            target = next((node for node in test_functions if node.name == test_name), None)
+            if target is not None:
                 details += f"Test function: {test_name}\n"
-                details += f"Line: {test_start + 1}\n"
-
-                # Extract function content (simple approach)
-                func_lines = []
-                indent_level = None
-
-                for line in lines[test_start:]:  # progress_bar: in-memory line scan, bounded
-                    if line.strip() == "":
-                        func_lines.append(line)
-                        continue
-
-                    current_indent = len(line) - len(line.lstrip())
-
-                    if indent_level is None:
-                        indent_level = current_indent
-                    elif current_indent <= indent_level and line.strip():
-                        break
-
-                    func_lines.append(line)
-
-                func_content = "".join(func_lines)
+                details += f"Line: {target.lineno}\n"
+                end_lineno = getattr(target, "end_lineno", target.lineno)
+                func_content = "\n".join(lines[target.lineno - 1 : end_lineno])
                 details += f"\nFunction content:\n{func_content}"
             else:
                 details += f"Test function '{test_name}' not found"
         else:
-            # List all test functions
-            test_functions = []
-            for line in lines:
-                if line.strip().startswith("def test_"):
-                    func_name = line.strip().split("(")[0].replace("def ", "")
-                    test_functions.append(func_name)
-
             details += "Test functions:\n"
-            for func in test_functions:
-                details += f"- {func}\n"
+            for node in test_functions:
+                details += f"- {node.name} (line {node.lineno})\n"
 
         return details
 
-    except (ValueError, RuntimeError, OSError) as e:
+    except (SyntaxError, ValueError, RuntimeError, OSError) as e:
         return f"Error reading test file: {e}"
 
 
 @mcp.tool()
 def analyze_test_coverage(
     path: str = "agentic_core",
-    format: str = "text",
+    format: str = "term-missing",
 ) -> str:
     """Analyze test coverage for the repository"""
     # Check if coverage is available
     try:
-        safe_run(["coverage", "--version"], timeout=10, check=True)
+        safe_run(_python_cmd("-m", "coverage", "--version"), timeout=10, check=True)
     except (subprocess.CalledProcessError, FileNotFoundError, subprocess.TimeoutExpired):
         return "Error: Coverage tool not found. Install with: pip install coverage"
 
@@ -327,18 +367,18 @@ def analyze_test_coverage(
     if not target_path.exists():
         raise ValueError(f"Path {target_path} does not exist")
 
-    cmd = [
-        "python",
-        "-m",
-        "pytest",
-        f"--cov={path}",
-        f"--cov-report={format}",
-        "--cov-report=term",
-        "tests",
-    ]
+    format = _validate_coverage_report(format)
+
+    cmd = _python_cmd("-m", "pytest", f"--cov={path}")
+    reports = [format]
+    if format not in {"term", "term-missing"}:
+        reports.append("term-missing")
+    for report in tqdm(reports, desc="Processing", unit="item"):
+        cmd.append(f"--cov-report={report}")
+    cmd.append("tests")
 
     try:
-        result = safe_run(cmd, cwd=REPO_ROOT, timeout=120)
+        result = safe_run(cmd, cwd=REPO_ROOT, timeout=COVERAGE_TIMEOUT)
 
         output = f"Coverage analysis for: {path}\n"
         output += f"Format: {format}\n"
@@ -384,11 +424,18 @@ def list_pytest_config() -> str:
 
             with open(PYPROJECT_TOML, "rb") as f:
                 data = tomllib.load(f)
-                if "tool" in data and "pytest" in data["tool"]:
+                tool_section = data.get("tool", {})
+                pytest_section = tool_section.get("pytest", {})
+                ini_options = pytest_section.get("ini_options")
+
+                if ini_options is not None:
+                    config_info += "[tool.pytest.ini_options]:\n"
+                    config_info += json.dumps(ini_options, indent=2)
+                elif pytest_section:
                     config_info += "[tool.pytest]:\n"
-                    config_info += json.dumps(data["tool"]["pytest"], indent=2)
+                    config_info += json.dumps(pytest_section, indent=2)
                 else:
-                    config_info += "No [tool.pytest] section found\n"
+                    config_info += "No [tool.pytest] or [tool.pytest.ini_options] section found\n"
         except ImportError:
             config_info += "tomllib not available, cannot parse pyproject.toml\n"
         except (OSError, ValueError, KeyError) as e:
@@ -398,7 +445,7 @@ def list_pytest_config() -> str:
 
     # Show pytest location and version
     try:
-        result = safe_run(["python", "-m", "pytest", "--version"], timeout=15)
+        result = safe_run(_python_cmd("-m", "pytest", "--version"), timeout=CONFIG_TIMEOUT)
         config_info += f"\nPytest version:\n{result.stdout}"
     except subprocess.TimeoutExpired:
         config_info += "\nError getting pytest version: timed out"

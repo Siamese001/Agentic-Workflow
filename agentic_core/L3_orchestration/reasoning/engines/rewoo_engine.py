@@ -145,6 +145,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rewoo_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("rewoo_engine", "p4obs", "metric_2")
@@ -214,7 +215,7 @@ class RewooPlanner:
 
         raw_tasks = await self._planner_fn(goal, context or {})
         task_list = RewooTaskList(goal=goal)
-        for raw in raw_tasks:
+        for raw in tqdm(raw_tasks, desc="Processing", unit="item"):
             task_list.tasks.append(
                 RewooTask(
                     task_id=raw.get("task_id", f"task_{uuid.uuid4().hex[:6]}"),

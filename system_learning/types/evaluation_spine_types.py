@@ -32,6 +32,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,
 )
 from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
+from tqdm import tqdm
 
 # ADG wiring for evaluation spine types
 _emit_records_execution_trace("evaluation_spine_types", "p0", "evaluation_spine_trace")
@@ -162,15 +163,19 @@ class OutcomeEvaluationResult:
             raise ValueError("result_id must not be empty")
         if not self.trace_id:
             raise ValueError("trace_id must not be empty")
-        for score in [
-            self.task_completion,
-            self.groundedness,
-            self.citation_support,
-            self.abstain_correctness,
-            self.escalation_correctness,
-            self.answer_relevance,
-            self.overall_score,
-        ]:
+        for score in tqdm(
+            [
+                self.task_completion,
+                self.groundedness,
+                self.citation_support,
+                self.abstain_correctness,
+                self.escalation_correctness,
+                self.answer_relevance,
+                self.overall_score,
+            ],
+            desc="Processing",
+            unit="item",
+        ):
             if not 0.0 <= score <= 1.0:
                 raise ValueError(f"All scores must be in [0.0, 1.0], got {score}")
 

@@ -117,6 +117,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("optimization_proposal_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("optimization_proposal_engine", "p4obs", "metric_2")
@@ -436,7 +437,7 @@ class OptimizationProposalEngine:
         agents = agents[: cfg.max_proposals_per_cluster]
 
         proposals: list[OptimizationProposal] = []
-        for agent in agents:
+        for agent in tqdm(agents, desc="Processing", unit="item"):
             proposal_id = _build_proposal_id(cluster.cluster_id, change_type, agent, timestamp_utc)
             change_spec = _build_change_spec(cluster, change_type)
             evidence_hashes = (cluster.stable_hash(),)
@@ -559,7 +560,9 @@ class RepairRouteOptimizationEngine:
             risk_class = "LOW"
 
         proposals: list[OptimizationProposal] = []
-        for component in cluster.affected_components[:3]:  # Cap at 3 components
+        for component in tqdm(
+            cluster.affected_components[:3], desc="Processing", unit="item"
+        ):  # Cap at 3 components
             proposal_id = _build_proposal_id(cluster.cluster_id, change_type, component, timestamp_utc)
             change_spec = _build_repair_change_spec(cluster, change_type)
             expected = f"Improve repair success rate from {cluster.success_rate:.2%} for {component}"

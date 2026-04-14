@@ -5,6 +5,7 @@ scripts/analyze_legacy_value.py
 import ast
 import re
 from pathlib import Path
+from tqdm import tqdm
 
 LEGACY_ROOT = Path("apps_shared/legacy")
 
@@ -38,7 +39,7 @@ def analyze_file(file_path: Path) -> dict:
 
 def generate_report():
     report = ["# LEGACY VALUE EXTRACTION REPORT", "", "## Organic Value Findings"]
-    for f in LEGACY_ROOT.glob("*.py"):
+    for f in tqdm(LEGACY_ROOT.glob("*.py"), desc="Processing", unit="item"):
         try:
             data = analyze_file(f)
             if data["prompts"] or data["regex_patterns"]:

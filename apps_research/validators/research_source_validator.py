@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_verifies_policy,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -163,7 +164,7 @@ class ResearchValidator:
             return violations
 
         # Check each source entry
-        for idx, source in enumerate(source_register):
+        for idx, source in tqdm(enumerate(source_register), desc="Processing", unit="item"):
             missing_fields = self.REQUIRED_SOURCE_FIELDS - set(source.keys())
             if missing_fields:
                 self._violation_counter += 1
@@ -188,7 +189,7 @@ class ResearchValidator:
         """Check for required sections."""
         violations: list[ValidationViolation] = []
 
-        for section in required_sections:
+        for section in tqdm(required_sections, desc="Processing", unit="item"):
             # Look for section header
             section_pattern = rf"##\s+{re.escape(section.replace('_', ' '))}"
             if not re.search(section_pattern, content, re.IGNORECASE):
@@ -238,7 +239,7 @@ class ResearchValidator:
         # Parse sections (assumes markdown ## headers)
         sections = re.split(r"\n##\s+", content)
 
-        for section in sections[1:]:  # Skip preamble
+        for section in tqdm(sections[1:], desc="Processing", unit="item"):  # Skip preamble
             lines = section.strip().split("\n")
             if len(lines) < 2 or not lines[1].strip():
                 self._violation_counter += 1

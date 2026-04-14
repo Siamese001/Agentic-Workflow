@@ -9,6 +9,7 @@ Speedup: 10x cache hit rate over blind TTL invalidation.
 from __future__ import annotations
 
 import logging
+import threading
 from typing import TYPE_CHECKING, Any
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -176,6 +177,7 @@ class GraphAwareCache:
         self._cache: dict[str, dict[str, Any]] = {}
         self._hits: int = 0
         self._misses: int = 0
+        self._lock = threading.RLock()
 
     def get(self, key: str) -> Any | None:
         """Return cached value or None if not present."""
@@ -184,12 +186,13 @@ class GraphAwareCache:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GraphAwareCache.get")
 
-        entry = self._cache.get(key)
-        if entry is not None:
-            self._hits += 1
-            return entry["value"]
-        self._misses += 1
-        return None
+        with self._lock:
+            entry = self._cache.get(key)
+            if entry is not None:
+                self._hits += 1
+                return entry["value"]
+            self._misses += 1
+            return None
 
     def set(self, key: str, value: Any, depends_on: list[str]) -> None:
         """Store a cache entry with explicit dependency tracking.
@@ -199,14 +202,18 @@ class GraphAwareCache:
             value: Value to cache.
             depends_on: List of module relative paths this value depends on.
         """
-        self._cache[key] = {"value": value, "depends_on": depends_on}
+        if not key:
+            raise ValueError("Cache key must not be empty")
+        with self._lock:
+            self._cache[key] = {"value": value, "depends_on": depends_on}
 
     def invalidate(self, key: str) -> bool:
         """Explicitly remove one cache entry. Returns True if it existed."""
-        if key in self._cache:
-            del self._cache[key]
-            return True
-        return False
+        with self._lock:
+            if key in self._cache:
+                del self._cache[key]
+                return True
+            return False
 
     def invalidate_for_change(self, changed_file: str) -> int:
         """Invalidate all cache entries transitively affected by changed_file.
@@ -214,14 +221,17 @@ class GraphAwareCache:
         Uses ADG reverse dependency graph to compute the exact invalidation set.
         Returns count of invalidated entries.
         """
+        if not changed_file:
+            raise ValueError("changed_file must not be empty")
         invalidation_set = self.query_engine.get_cache_invalidation_set(changed_file)
         count = 0
-        for key in list(self._cache.keys()):
-            entry = self._cache[key]
-            depends_on: list[str] = entry.get("depends_on", [])
-            if any(dep in invalidation_set for dep in depends_on):
-                del self._cache[key]
-                count += 1
+        with self._lock:
+            for key in list(self._cache.keys()):
+                entry = self._cache[key]
+                depends_on: list[str] = entry.get("depends_on", [])
+                if any(dep in invalidation_set for dep in depends_on):
+                    del self._cache[key]
+                    count += 1
         logger.debug(
             "Graph-aware invalidation: changed=%s affected=%d entries (invalidation_set_size=%d)",
             changed_file,
@@ -232,17 +242,20 @@ class GraphAwareCache:
 
     def invalidate_all(self) -> int:
         """Clear the entire cache. Returns number of evicted entries."""
-        count = len(self._cache)
-        self._cache.clear()
-        return count
+        with self._lock:
+            count = len(self._cache)
+            self._cache.clear()
+            return count
 
     def size(self) -> int:
         """Return number of cached entries."""
-        return len(self._cache)
+        with self._lock:
+            return len(self._cache)
 
     def stats(self) -> dict[str, int]:
         """Return cache statistics."""
-        return {"size": self.size(), "hits": self._hits, "misses": self._misses}
+        with self._lock:
+            return {"size": len(self._cache), "hits": self._hits, "misses": self._misses}
 
 
 __all__ = ["GraphAwareCache"]

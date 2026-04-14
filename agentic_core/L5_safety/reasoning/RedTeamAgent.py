@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("RedTeamAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("RedTeamAgent", "p4obs", "metric_2")
@@ -280,7 +281,7 @@ class RedTeamAgent(SovereignBaseAgent):
         except (RuntimeError, OSError) as e:
             print(f"   [!] Governance authorization failed: {e}")
             return
-        for fragment in self.ADVERSARIAL_FRAGMENTS:
+        for fragment in tqdm(self.ADVERSARIAL_FRAGMENTS, desc="Processing", unit="item"):
             try:
                 payload: Any = renderer.render(
                     template_name=fragment,

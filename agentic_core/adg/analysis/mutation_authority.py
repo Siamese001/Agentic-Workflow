@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("mutation_authority", "p4obs", "metric_1")
 _emit_emits_metric_event("mutation_authority", "p4obs", "metric_2")
@@ -339,7 +340,7 @@ def verify_mutation_paths(result: ScanResult) -> MutationPathReport:
     compliant: list[str] = []
     allowlisted: list[str] = []
 
-    for mod, targets in sorted(writes_to_map.items()):
+    for mod, targets in tqdm(sorted(writes_to_map.items()), desc="Processing", unit="item"):
         if _is_allowlisted(mod):
             allowlisted.append(mod)
             continue

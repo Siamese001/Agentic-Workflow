@@ -24,6 +24,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -347,7 +348,7 @@ class StateManager:
 
             # Check hashes
             hash_mismatches = []
-            for key, entry in self._manifest.items():
+            for key, entry in tqdm(self._manifest.items(), desc="Processing", unit="item"):
                 file_path = self.memory_root / entry.file_path
                 if file_path.exists():
                     try:
@@ -399,7 +400,7 @@ class StateManager:
             repaired = {"ghosts_mapped": 0, "orphans_removed": 0, "hashes_updated": 0}
 
             # Map ghost files
-            for ghost in report.ghost_files:
+            for ghost in tqdm(report.ghost_files, desc="Processing", unit="item"):
                 key = Path(ghost).stem
                 file_path = self.memory_root / ghost
 
@@ -460,7 +461,7 @@ class StateManager:
 
             keys_to_remove = [key for key, entry in self._manifest.items() if entry.updated_at < cutoff]
 
-            for key in keys_to_remove:
+            for key in tqdm(keys_to_remove, desc="Processing", unit="item"):
                 entry = self._manifest[key]
                 file_path = self.memory_root / entry.file_path
 

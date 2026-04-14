@@ -162,6 +162,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("PascalSovereigntyAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("PascalSovereigntyAgent", "p4obs", "metric_2")
@@ -308,7 +309,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         self.stats["analyzed"] = len(self.file_registry)
 
         # Iterating over a copy to allow registry updates during renames
-        for idx, path in enumerate(list(self.file_registry)):
+        for idx, path in tqdm(enumerate(list(self.file_registry)), desc="Processing", unit="item"):
             if not path.exists():
                 continue
             ftype = self.classify_file(path)
@@ -417,7 +418,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
         is_structural_agent = "agents" in path.parts or "validators" in path.parts
         is_engine = "engines" in path.parts
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 has_class = True
                 name = node.name
@@ -472,7 +473,7 @@ class PascalSovereigntyAgent(SovereignBaseAgent):
             rf"(?P<prefix>import\s+){re.escape(old_mod)}(?P<suffix>(\s+as\s+\w+)?(\s*,|\s|$))",
         )
 
-        for i, path in enumerate(self.file_registry):
+        for i, path in tqdm(enumerate(self.file_registry), desc="Processing", unit="item"):
             if path.name == new_name or not path.exists():
                 continue
             try:

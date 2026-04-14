@@ -18,6 +18,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "batch_restore_tests", "uwg_governed_write")
 _emit_writes_through("p1", "batch_restore_tests", "uwg_governed_write_2")
@@ -35,7 +36,7 @@ def get_files_to_restore() -> list[tuple[str, str]]:
     commits = ["2ba9da4df", "8f28b89bd", "2da359262", "f2f260821"]
     deleted = []
 
-    for commit in commits:
+    for commit in tqdm(commits, desc="Processing", unit="item"):
         result = subprocess.run(
             ["git", "diff", "--name-only", "--diff-filter=D", f"{commit}~1", commit],
             capture_output=True,
@@ -135,7 +136,7 @@ def fix_imports(content: str) -> str:
 
     fixed_content = content
 
-    for pascal, snake in replacements.items():
+    for pascal, snake in tqdm(replacements.items(), desc="Processing", unit="item"):
         # Fix import paths
         fixed_content = re.sub(
             rf"from (agentic_core\.[^\s]*){pascal}(\s+import)",
@@ -212,7 +213,7 @@ def main():
     skipped_obsolete = []
     failed = []
 
-    for i, (file_path, commit) in enumerate(files_to_restore):
+    for i, (file_path, commit) in tqdm(enumerate(files_to_restore), desc="Processing", unit="item"):
         if (i + 1) % 50 == 0:
             print(f"Processing {i + 1}/{len(files_to_restore)}...")
 

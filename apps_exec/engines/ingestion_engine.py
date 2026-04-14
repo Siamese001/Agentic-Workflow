@@ -108,6 +108,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ingestion_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("ingestion_engine", "p4obs", "metric_2")
@@ -227,7 +228,7 @@ class IngestionEngine(BaseExecEngine):
 
         result = IngestionResult()
 
-        for src in source_dirs:
+        for src in tqdm(source_dirs, desc="Processing", unit="item"):
             src_path = Path(src)
             if not src_path.exists():
                 _log.warning("[IngestionEngine] Source dir not found: %s — skipping", src)
@@ -235,7 +236,7 @@ class IngestionEngine(BaseExecEngine):
                 continue
 
             glob_pattern = "**/*" if recursive else "*"
-            for file_path in src_path.glob(glob_pattern):
+            for file_path in tqdm(src_path.glob(glob_pattern), desc="Processing", unit="item"):
                 if not file_path.is_file():
                     continue
                 if file_path.suffix not in extensions:

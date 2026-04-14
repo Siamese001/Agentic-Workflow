@@ -12,6 +12,8 @@ OpenTelemetry Integration:
 from __future__ import annotations
 
 import logging
+import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -201,16 +203,15 @@ class PolicyDecision:
 
 
 _PII_PATTERNS = (
-    "ssn",
-    "social security",
-    "credit card",
-    "passport",
-    "date of birth",
-    "phone number",
-    "email address",
-    "@gmail",
-    "@yahoo",
-    "@hotmail",
+    re.compile(r"\bssn\b", re.IGNORECASE),
+    re.compile(r"\bsocial security\b", re.IGNORECASE),
+    re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
+    re.compile(r"\b(?:\d[ -]*?){13,19}\b"),
+    re.compile(r"\bpassport\b", re.IGNORECASE),
+    re.compile(r"\bdate of birth\b", re.IGNORECASE),
+    re.compile(r"\bphone number\b", re.IGNORECASE),
+    re.compile(r"\bemail address\b", re.IGNORECASE),
+    re.compile(r"\b[A-Z0-9._%+-]+@(gmail|yahoo|hotmail)\.com\b", re.IGNORECASE),
 )
 
 
@@ -258,6 +259,8 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         OpenTelemetry:
             Emits 'ControlPlane.evaluate_input' span with PII detection metadata.
         """
+        if not isinstance(content, str):
+            raise TypeError("content must be a string")
         if APPS_TRACING_AVAILABLE:
             with self.start_validation_span(
                 "input",
@@ -273,6 +276,8 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         OpenTelemetry:
             Emits 'ControlPlane.evaluate_output' span with PII detection metadata.
         """
+        if not isinstance(content, str):
+            raise TypeError("content must be a string")
         if APPS_TRACING_AVAILABLE:
             with self.start_validation_span(
                 "output",
@@ -282,13 +287,16 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
         else:
             return self._evaluate(content, context, is_input=False)
 
-    def _evaluate(self, content: str, context: dict[str, Any] | None, is_input: bool) -> PolicyDecision:
+    def _evaluate(self, content: str, context: Mapping[str, Any] | None, is_input: bool) -> PolicyDecision:
         """Core evaluation: delegates to GovernanceShieldAgent, then PII check."""
+        if not isinstance(content, str):
+            raise TypeError("content must be a string")
+
         self._decision_count += 1
         warnings: list[str] = []
         errors: list[str] = []
-        content_lower = content.lower()
-        detected_pii = [p for p in _PII_PATTERNS if p in content_lower]
+        safe_context = dict(context) if context else {}
+        detected_pii = [pattern.pattern for pattern in _PII_PATTERNS if pattern.search(content)]
         if detected_pii:
             errors.append(f"PII detected: {detected_pii}")
             self._block_count += 1
@@ -306,11 +314,13 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
                     "is_input": is_input,
                     "decision_id": self._decision_count,
                     "pii": detected_pii,
-                    "context_keys": list(context.keys()) if context else [],
+                    "context_keys": sorted(safe_context.keys()),
                 },
             )
         if self._shield is not None:
             try:
+                if not hasattr(self._shield, "evaluate"):
+                    raise TypeError("GovernanceShieldAgent must expose evaluate(content)")
                 shield_result = self._shield.evaluate(content)
                 if isinstance(shield_result, dict):
                     if shield_result.get("blocked"):
@@ -325,13 +335,12 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
                                 "is_input": is_input,
                                 "decision_id": self._decision_count,
                                 "shield": shield_result,
-                                "context_keys": list(context.keys()) if context else [],
+                                "context_keys": sorted(safe_context.keys()),
                             },
                         )
                     if shield_result.get("warnings"):
-                        warnings.extend(shield_result["warnings"])
-            # guardian: allow-silent-swallow
-            except Exception as exc:
+                        warnings.extend(str(item) for item in shield_result["warnings"] if item)
+            except Exception as exc:  # guardian: allow-broad-exception -- GovernanceShieldAgent may raise any type; must not propagate
                 logger.warning("ControlPlane: GovernanceShieldAgent.evaluate failed: %s", exc)
         action = PolicyAction.WARN if warnings else PolicyAction.ALLOW
         return PolicyDecision(
@@ -342,7 +351,7 @@ class ControlPlane(AppsTracingMixin if APPS_TRACING_AVAILABLE else object):
             metadata={
                 "is_input": is_input,
                 "decision_id": self._decision_count,
-                "context_keys": list(context.keys()) if context else [],
+                "context_keys": sorted(safe_context.keys()),
             },
         )
 

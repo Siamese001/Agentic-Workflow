@@ -77,6 +77,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("recalculate_code_quality_scores_util", "p4obs", "metric_1")
 _emit_emits_metric_event("recalculate_code_quality_scores_util", "p4obs", "metric_2")
@@ -232,7 +233,7 @@ def main():
     print(f"\nFound {len(territories)} territories to update")
     updated_territories = []
     changes = []
-    for i, territory in enumerate(territories):
+    for i, territory in tqdm(enumerate(territories), desc="Processing", unit="item"):
         name_match = re.search('"Territory":\\s*"([^"]+)"', territory)
         territory_name = name_match.group(1) if name_match else f"Territory {i + 1}"
         old_score_match = re.search('"Code Quality Score":\\s*([\\d.]+)', territory)

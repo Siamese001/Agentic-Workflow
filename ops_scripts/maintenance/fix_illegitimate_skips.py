@@ -92,6 +92,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_illegitimate_skips", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_illegitimate_skips", "p4obs", "metric_2")
@@ -206,7 +207,7 @@ def fix_file(path: Path) -> tuple[bool, int]:
     except SyntaxError:
         return (False, 0)
     illegit_lines: dict[int, tuple[str, str]] = {}
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.Call):
             continue
         func = node.func
@@ -230,7 +231,7 @@ def fix_file(path: Path) -> tuple[bool, int]:
     changed = False
     fixes = 0
     new_lines = list(lines)
-    for lineno, (kind, reason) in sorted(illegit_lines.items()):
+    for lineno, (kind, reason) in tqdm(sorted(illegit_lines.items()), desc="Processing", unit="item"):
         idx = lineno - 1
         line = new_lines[idx]
         if kind == "importorskip":

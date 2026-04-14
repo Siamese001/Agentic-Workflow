@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ast_relocator", "p4obs", "metric_1")
 _emit_emits_metric_event("ast_relocator", "p4obs", "metric_2")
@@ -221,8 +222,8 @@ class AstRelocator(ast.NodeVisitor):
         name_lower = name.lower()
         docstring = ast.get_docstring(node) or ""
         doc_lower = docstring.lower()
-        for l1, l2_dict in SEMANTIC_L2_REGISTRY.items():
-            for l2, meta in l2_dict.items():
+        for l1, l2_dict in tqdm(SEMANTIC_L2_REGISTRY.items(), desc="Processing", unit="item"):
+            for l2, meta in tqdm(l2_dict.items(), desc="Processing", unit="item"):
                 score = 0.0
                 for kw in meta.get("keywords", []):
                     if kw in name_lower:

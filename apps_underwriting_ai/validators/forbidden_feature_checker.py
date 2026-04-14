@@ -6,6 +6,16 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Set
 
 from ..types import RiskFeatures, UnderwritingRequest
+from tqdm import tqdm
+
+
+def _model_to_dict(model: Any) -> Dict[str, Any]:
+    """Support both Pydantic v1 and v2 style model serialization."""
+    if hasattr(model, "model_dump"):
+        return model.model_dump()
+    if hasattr(model, "dict"):
+        return model.dict()
+    return {}
 
 
 @dataclass
@@ -97,9 +107,9 @@ class ForbiddenFeatureChecker:
         borrower = request.borrower
 
         # Convert to dict for checking
-        borrower_dict = borrower.dict() if hasattr(borrower, "dict") else {}
+        borrower_dict = _model_to_dict(borrower)
 
-        for forbidden in self.FORBIDDEN_FIELDS:
+        for forbidden in tqdm(self.FORBIDDEN_FIELDS, desc="Processing", unit="item"):
             if forbidden in borrower_dict and borrower_dict[forbidden] is not None:
                 result.violations.append(
                     {
@@ -118,9 +128,9 @@ class ForbiddenFeatureChecker:
     ) -> None:
         """Check for proxy indicators in text fields."""
         # Check industry description
-        industry_desc = request.borrower.industry_description.lower()
+        industry_desc = (request.borrower.industry_description or "").lower()
 
-        for proxy in self.PROXY_INDICATORS:
+        for proxy in tqdm(self.PROXY_INDICATORS, desc="Processing", unit="item"):
             if proxy.lower() in industry_desc:
                 # This is a warning, not a blocking violation
                 result.violations.append(

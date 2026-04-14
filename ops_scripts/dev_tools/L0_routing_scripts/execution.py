@@ -77,6 +77,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 
 class ExecutionStatus(Enum):
@@ -183,7 +184,7 @@ class DAGStrategy(ExecutionStrategy):
             for step in ready:
                 task = asyncio.create_task(self._execute_step(step, context, results))
                 tasks.append((step.step_id, task))
-            for step_id, task in tasks:
+            for step_id, task in tqdm(tasks, desc="Processing", unit="item"):
                 try:
                     result = await task
                     results[step_id] = result
@@ -403,7 +404,7 @@ class ReactiveStrategy(ExecutionStrategy):
         results = {}
         steps_executed = 0
         current_value = context.input_data
-        for step in steps:
+        for step in tqdm(steps, desc="Processing", unit="item"):
             try:
                 result = await self._execute_step(step, context, current_value)
                 results[step.step_id] = result

@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ptc_invariants", "p4obs", "metric_1")
 _emit_emits_metric_event("ptc_invariants", "p4obs", "metric_2")
@@ -214,7 +215,7 @@ class PTCInvariantVisitor(ast.NodeVisitor):
         """Check for shell=True usage in PTC tools."""
         # Check for subprocess calls with shell=True
         if isinstance(node.func, ast.Name) and node.func.id == "subprocess":
-            for keyword in node.keywords:
+            for keyword in tqdm(node.keywords, desc="Processing", unit="item"):
                 if keyword.arg == "shell" and isinstance(keyword.value, ast.Constant):
                     if keyword.value.value is True:
                         if not self._check_allowlist():
@@ -231,7 +232,7 @@ class PTCInvariantVisitor(ast.NodeVisitor):
             if isinstance(node.func, ast.Attribute):
                 # Check for run commands that might contain PowerShell
                 if node.func.attr == "run":
-                    for arg in node.args:
+                    for arg in tqdm(node.args, desc="Processing", unit="item"):
                         if isinstance(arg, ast.Str) or isinstance(arg, ast.Constant):
                             value = arg.value if hasattr(arg, "value") else arg.s
                             if isinstance(value, str):
@@ -251,13 +252,13 @@ class PTCInvariantVisitor(ast.NodeVisitor):
         """Check ToolSpec args are sorted."""
         if "ptc" in str(self.file_path).lower():
             # Look for ToolSpec definitions
-            for item in node.body:
+            for item in tqdm(node.body, desc="Processing", unit="item"):
                 if isinstance(item, ast.Assign):
-                    for target in item.targets:
+                    for target in tqdm(item.targets, desc="Processing", unit="item"):
                         if isinstance(target, ast.Name) and "spec" in target.id.lower():
                             # Check if this is a ToolSpec with args
                             if isinstance(item.value, ast.Call):
-                                for keyword in item.value.keywords:
+                                for keyword in tqdm(item.value.keywords, desc="Processing", unit="item"):
                                     if keyword.arg == "args" and isinstance(keyword.value, ast.Tuple):
                                         arg_names = []
                                         for elt in keyword.value.elts:
@@ -333,7 +334,7 @@ def scan_repository_for_ptc_invariants(repo_root: Path) -> list[tuple[str, int, 
     # Scan PTC directory
     ptc_dir = repo_root / AGENTIC_CORE_DIR / "L3_orchestration" / "ptc"
     if ptc_dir.exists():
-        for file_path in ptc_dir.rglob("*.py"):
+        for file_path in tqdm(ptc_dir.rglob("*.py"), desc="Processing", unit="item"):
             file_violations = scan_file_for_ptc_invariants(file_path)
             for line, rule_id, description in file_violations:
                 violations.append((str(file_path.relative_to(repo_root)), line, rule_id, description))

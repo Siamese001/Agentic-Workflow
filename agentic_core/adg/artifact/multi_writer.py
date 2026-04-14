@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (  # noqa: E
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("multi_writer", "p4obs", "metric_1")
 _emit_emits_metric_event("multi_writer", "p4obs", "metric_2")
@@ -555,7 +556,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
 
         # Insert nodes in bulk
         node_rows = []
-        for nid_str, node in ng_full.nodes.items():
+        for nid_str, node in tqdm(ng_full.nodes.items(), desc="Processing", unit="item"):
             node_rows.append(
                 (
                     int(nid_str),
@@ -590,7 +591,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
 
         # Insert edges in bulk
         edge_rows = []
-        for e in ng_full.edges:
+        for e in tqdm(ng_full.edges, desc="Processing", unit="item"):
             edge_rows.append(
                 (
                     e["s"],
@@ -693,7 +694,7 @@ def _create_latest_symlinks(
         "adg_LATEST_governance_graph.json": governance_graph_path,
     }
 
-    for link_name, target_path in symlink_map.items():
+    for link_name, target_path in tqdm(symlink_map.items(), desc="Processing", unit="item"):
         if not target_path.exists():
             continue
 
@@ -742,12 +743,16 @@ class ArtifactPaths:
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactPaths.size_report")
 
         result = {}
-        for name, path in (
-            ("snapshot", self.snapshot),
-            ("sqlite", self.sqlite),
-            ("file_graph", self.file_graph),
-            ("symbol_graph", self.symbol_graph),
-            ("governance_graph", self.governance_graph),
+        for name, path in tqdm(
+            (
+                ("snapshot", self.snapshot),
+                ("sqlite", self.sqlite),
+                ("file_graph", self.file_graph),
+                ("symbol_graph", self.symbol_graph),
+                ("governance_graph", self.governance_graph),
+            ),
+            desc="Processing",
+            unit="item",
         ):
             if path.exists():
                 sz = path.stat().st_size

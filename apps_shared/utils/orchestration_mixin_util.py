@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("orchestration_mixin_util", "p4obs", "metric_1")
 _emit_emits_metric_event("orchestration_mixin_util", "p4obs", "metric_2")
@@ -214,7 +215,7 @@ class OrchestrationMixin:
 
         results = {"steps": [], "status": "completed", "errors": []}
         completed_steps = []
-        for step in steps:
+        for step in tqdm(steps, desc="Processing", unit="item"):
             step.status = WorkflowStatus.IN_PROGRESS
             try:
                 step.result = step.func(*step.args, **step.kwargs)
@@ -297,7 +298,7 @@ class OrchestrationMixin:
         errors = []
         while len(completed) < len(agent_tasks):
             progress_made = False
-            for agent_name, task_func in agent_tasks.items():
+            for agent_name, task_func in tqdm(agent_tasks.items(), desc="Processing", unit="item"):
                 if agent_name in completed:
                     continue
                 deps = dependencies.get(agent_name, [])

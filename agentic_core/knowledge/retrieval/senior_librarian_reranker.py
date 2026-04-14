@@ -12,6 +12,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
 )
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ class SeniorLibrarianReranker:
 
         reranked = []
 
-        for candidate in candidates:
+        for candidate in tqdm(candidates, desc="Processing", unit="item"):
             # Calculate component scores
             relevance = self._score_relevance(query, candidate)
             coverage = self._score_coverage(query, candidate)

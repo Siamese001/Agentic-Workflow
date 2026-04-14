@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# guardian: allow-silent_swallower -- Facade pattern delegates to UnifiedAgent, legacy compatibility preserved
+# guardian: allow-silent-swallower -- Facade pattern delegates to UnifiedAgent, legacy compatibility preserved
 """
 LocationHealerAgent - Facade Shell for Zero-Loss Consolidation.
 
@@ -212,6 +212,7 @@ _emit_validated_by_safety_plane("p1", "LocationHealerAgent", "safety_validation"
 _emit_invokes_eval("p1", "LocationHealerAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "LocationHealerAgent", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_LocationHealerAgent", "LocationHealerAgent_dispatch_entry")
 emit_determinism_digest("trace_LocationHealerAgent", "LocationHealerAgent_dispatch_exit")
@@ -507,7 +508,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         )
 
         violation_list = []
-        for v in violations:
+        for v in tqdm(violations, desc="Processing", unit="item"):
             if isinstance(v, tuple) and len(v) >= 2:
                 violation_list.append((v[0], v[1]))
             elif isinstance(v, dict):
@@ -566,7 +567,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         try:
             cleanup_results = self.cleanup_violations(violation_list, dry_run=not auto_approve)
 
-            for i, result in enumerate(cleanup_results):
+            for i, result in tqdm(enumerate(cleanup_results), desc="Processing", unit="item"):
                 if result.get("applied", False):
                     healed_count += 1
                     details.append(
@@ -700,7 +701,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             counts = {"healed": 0, "blocked": 0, "errors": 0, "skipped": 0}
 
-            for v in violations:
+            for v in tqdm(violations, desc="Processing", unit="item"):
                 file_path = Path(v["file"]) if isinstance(v, dict) else v[0]
                 reason = v.get("reason", "") if isinstance(v, dict) else v[1]
                 try:
@@ -1013,7 +1014,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             python_files = [Path(f) for f in get_agent_files(str(self.project_root))]
 
-            for py_file in python_files:
+            for py_file in tqdm(python_files, desc="Processing", unit="item"):
                 if py_file == new_path or py_file == old_path:
                     continue  # Skip self    # guardian: File operations with encoding need error-specific handling
                 if any(part in {".git", "__pycache__", ARCHIVES_DIR} for part in py_file.parts):
@@ -1057,7 +1058,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             remaining_count = 0
 
             validation_pattern = re.compile(rf"{re.escape(old_module)}")
-            for py_file in python_files:
+            for py_file in tqdm(python_files, desc="Processing", unit="item"):
                 if any(part in {".git", "__pycache__", ARCHIVES_DIR} for part in py_file.parts):
                     continue
 
@@ -1122,7 +1123,7 @@ class LocationHealerAgent(SovereignBaseAgent):
     ) -> dict[str, Any]:
         """Apply appropriate healing strategy based on violation message."""
         # Check dispatch table for matching strategy
-        for pattern, method_name in HEALING_STRATEGY_MAP.items():
+        for pattern, method_name in tqdm(HEALING_STRATEGY_MAP.items(), desc="Processing", unit="item"):
             if pattern in msg:
                 # Wave 2: Use AgentDispatchRegistry instead of raw getattr
                 registry = get_agent_dispatch_registry()
@@ -1908,7 +1909,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         best_match = None
         best_score = 0.0
 
-        for subfolder in existing:
+        for subfolder in tqdm(existing, desc="Processing", unit="item"):
             # [AST-PRIMARY] Block agent files from non-source subfolders entirely
             if is_agent_type and subfolder in _NON_SOURCE_SUBFOLDERS:
                 continue
@@ -2119,7 +2120,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         heal_actions = []
         semantic_issues = []
 
-        for path in py_files:
+        for path in tqdm(py_files, desc="Processing", unit="item"):
             try:
                 rel = str(path.relative_to(self.project_root))
                 filename = path.name
@@ -2195,7 +2196,7 @@ class LocationHealerAgent(SovereignBaseAgent):
     def _apply_naming_heals(self, heal_actions: list, affected_paths: list[Path]) -> int:
         """Phase 2: Apply healing actions."""
         healed_count = 0
-        for action in heal_actions:
+        for action in tqdm(heal_actions, desc="Processing", unit="item"):
             try:
                 path = action.get("path")
                 if not path or not path.exists():
@@ -2404,8 +2405,8 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         try:
             duplicates = naming_report.get("naming_duplicate_violations", {})
-            for _dup_name, paths in duplicates.items():
-                for path_str in paths[1:]:
+            for _dup_name, paths in tqdm(duplicates.items(), desc="Processing", unit="item"):
+                for path_str in tqdm(paths[1:], desc="Processing", unit="item"):
                     path = self.project_root / path_str
                     if path.exists():
                         resolve_result = self.naming_agent.resolve_duplicate_filename(path, dry_run=False)
@@ -2418,7 +2419,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                         )
 
             prefix_violations = naming_report.get("naming_prefix_violations", [])
-            for viol in prefix_violations:
+            for viol in tqdm(prefix_violations, desc="Processing", unit="item"):
                 path_str = viol["file"]
                 path = self.project_root / path_str
                 if path.exists():
@@ -2581,7 +2582,9 @@ class LocationHealerAgent(SovereignBaseAgent):
             return conventions_report
 
         convention_violations = []
-        for path in [p for p in affected_paths if p.suffix == ".py" and p.exists()]:
+        for path in tqdm(
+            [p for p in affected_paths if p.suffix == ".py" and p.exists()], desc="Processing", unit="item"
+        ):
             filename = path.name
             issues = []
 
@@ -2613,7 +2616,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             return conventions_report
 
         heal_actions = []
-        for viol in convention_violations:
+        for viol in tqdm(convention_violations, desc="Processing", unit="item"):
             path = viol["path"]
             filename = path.name
 
@@ -2703,7 +2706,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             gravity_actions = []
             additional_moves = []
 
-            for path, msgs in import_violations:
+            for path, msgs in tqdm(import_violations, desc="Processing", unit="item"):
                 try:
                     content = path.read_text(encoding="utf-8")
                     tree = ast.parse(content)
@@ -2728,7 +2731,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                             },
                         )
 
-                    for msg in msgs if isinstance(msgs, list) else [msgs]:
+                    for msg in tqdm(
+                        msgs if isinstance(msgs, list) else [msgs], desc="Processing", unit="item"
+                    ):
                         if "GRAVITY VIOLATION" in str(msg):
                             gravity_actions.append(
                                 {
@@ -3063,7 +3068,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             try:
                 duplicates = self.naming_agent.scan_repository_duplicates()
                 duplicate_actions = []
-                for _dup_name, paths in duplicates.items():
+                for _dup_name, paths in tqdm(duplicates.items(), desc="Processing", unit="item"):
                     if len(paths) <= 1:
                         continue
 
@@ -3073,7 +3078,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                         return int(match.group(1)) if match else 0
 
                     sorted_paths = sorted(paths, key=sort_key)
-                    for secondary in sorted_paths[1:]:
+                    for secondary in tqdm(sorted_paths[1:], desc="Processing", unit="item"):
                         secondary_path = (
                             self.project_root / secondary if isinstance(secondary, str) else secondary
                         )

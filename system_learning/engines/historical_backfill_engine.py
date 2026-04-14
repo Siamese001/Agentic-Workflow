@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -169,7 +170,7 @@ def _existing_hashes(corpus_path: Path) -> set[str]:
     hashes: set[str] = set()
     if not corpus_path.exists():
         return hashes
-    for line in corpus_path.read_text(encoding="utf-8").splitlines():
+    for line in tqdm(corpus_path.read_text(encoding="utf-8").splitlines(), desc="Processing", unit="item"):
         line = line.strip()
         if not line:
             continue
@@ -186,7 +187,9 @@ def _existing_hashes(corpus_path: Path) -> set[str]:
 
 def _load_jsonl_lenient(path: Path) -> list[dict[str, Any]]:
     records = []
-    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+    for line in tqdm(
+        path.read_text(encoding="utf-8", errors="replace").splitlines(), desc="Processing", unit="item"
+    ):
         line = line.strip()
         if not line:
             continue
@@ -234,7 +237,7 @@ def backfill_protected_root_blocks(
     records = _load_jsonl_lenient(src)
 
     new_lines: list[str] = []
-    for rec in records:
+    for rec in tqdm(records, desc="Processing", unit="item"):
         caller = rec.get("caller", "unknown")
         territory = rec.get("matched_root", "unknown")
         ts_utc = rec.get("ts_utc", "")
@@ -327,7 +330,9 @@ def backfill_compliance_success_rates(
 
     seeded: dict[str, float] = {}
 
-    for report_path in sorted(reports_dir.glob("compliance_report_*.json")):
+    for report_path in tqdm(
+        sorted(reports_dir.glob("compliance_report_*.json")), desc="Processing", unit="item"
+    ):
         if "AGGREGATE" in report_path.name:
             continue
         obj = _load_json_lenient(report_path)

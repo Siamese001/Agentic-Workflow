@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ast_enforcement_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("ast_enforcement_mixin", "p4obs", "metric_2")
@@ -254,7 +255,7 @@ class ASTEnforcementMixin:
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         all_files = get_python_files(repo_root)
-        for path in all_files:
+        for path in tqdm(all_files, desc="Processing", unit="item"):
             if not any(prefix in str(path) for prefix in target_prefixes):
                 continue
             try:

@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("achv_bullet_synthesizer_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("achv_bullet_synthesizer_validator", "p4obs", "metric_2")
@@ -291,7 +292,7 @@ class AchvBulletSynthesizer:
 
         self.recovery_loop.reset(self.config.temperature)
         validation_results: Any = []
-        for attempt in range(1, self.config.max_attempts + 1):
+        for attempt in tqdm(range(1, self.config.max_attempts + 1), desc="Processing", unit="item"):
             self._generate_bullet_set(
                 experience_data=experience_data,
                 CONTEXT=context,
@@ -317,7 +318,7 @@ class AchvBulletSynthesizer:
                 continue
             provenance_logs: Any = []
             all_bullets_valid: Any = True
-            for i, bullet in enumerate(bullets, 1):
+            for i, bullet in tqdm(enumerate(bullets, 1), desc="Processing", unit="item"):
                 hygiene_result: Any = self.gate_executor.execute_hygiene_scan(bullet)
                 validation_results.append(hygiene_result)
                 if not hygiene_result.passed:

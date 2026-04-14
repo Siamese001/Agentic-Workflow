@@ -34,6 +34,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("enhanced_observability", "enhanced_observability_digest")
 record_execution_trace("enhanced_observability", "enhanced_observability_trace")
@@ -120,6 +121,9 @@ class EnhancedObservability:
 
     def __init__(self) -> None:
         """Initialize enhanced observability system."""
+        self._lock = threading.RLock()
+        self._interval_seconds: float = 10.0
+        self._stop_event = threading.Event()
         # Metrics storage
         self._metrics_history: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
         self._current_metrics: dict[str, SystemMetric] = {}
@@ -200,6 +204,8 @@ class EnhancedObservability:
 
         self._monitoring_active = True
         self._shutdown_requested = False
+        self._interval_seconds = max(1.0, interval_seconds)
+        self._stop_event.clear()
 
         self._monitoring_thread = threading.Thread(
             target=self._monitoring_loop,
@@ -208,7 +214,7 @@ class EnhancedObservability:
         )
         self._monitoring_thread.start()
 
-        Logger.info(f"[OBSERVABILITY] Started enhanced monitoring with {interval_seconds}s interval")
+        Logger.info(f"[OBSERVABILITY] Started enhanced monitoring with {self._interval_seconds}s interval")
 
     def stop_monitoring(self) -> None:
         """Stop enhanced monitoring."""
@@ -217,6 +223,7 @@ class EnhancedObservability:
 
         self._shutdown_requested = True
         self._monitoring_active = False
+        self._stop_event.set()
 
         if self._monitoring_thread and self._monitoring_thread.is_alive():
             self._monitoring_thread.join(timeout=5.0)
@@ -246,12 +253,14 @@ class EnhancedObservability:
 
                 # Sleep until next iteration
                 elapsed = time.time() - start_time
-                sleep_time = max(1.0, 10.0 - elapsed)
-                time.sleep(sleep_time)
+                sleep_time = max(0.1, self._interval_seconds - elapsed)
+                if self._stop_event.wait(timeout=sleep_time):
+                    break
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-broad-exception -- monitoring loop must not die on transient collection errors; all errors are logged
                 Logger.error(f"[OBSERVABILITY] Monitoring loop error: {e}")
-                time.sleep(5.0)
+                if self._stop_event.wait(timeout=min(5.0, self._interval_seconds)):
+                    break
 
     def _collect_system_metrics(self) -> None:
         """Collect comprehensive system metrics."""
@@ -288,11 +297,10 @@ class EnhancedObservability:
             }
 
             # Update current metrics
-            self._current_metrics.update(metrics)
-
-            # Store in history
-            for name, metric in metrics.items():
-                self._metrics_history[name].append(metric)
+            with self._lock:
+                self._current_metrics.update(metrics)
+                for name, metric in metrics.items():
+                    self._metrics_history[name].append(metric)
 
             # Collect tracing-specific metrics
             self._collect_tracing_metrics(timestamp)
@@ -330,12 +338,12 @@ class EnhancedObservability:
                 ),
             }
 
-            self._current_metrics.update(tracing_metrics)
+            with self._lock:
+                self._current_metrics.update(tracing_metrics)
+                for name, metric in tracing_metrics.items():
+                    self._metrics_history[name].append(metric)
 
-            for name, metric in tracing_metrics.items():
-                self._metrics_history[name].append(metric)
-
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- tracing metrics collection is best-effort; import and attribute errors are expected
             Logger.debug(f"[OBSERVABILITY] Failed to collect tracing metrics: {e}")
 
         try:
@@ -380,19 +388,19 @@ class EnhancedObservability:
                 ),
             }
 
-            self._current_metrics.update(optimized_metrics)
+            with self._lock:
+                self._current_metrics.update(optimized_metrics)
+                for name, metric in optimized_metrics.items():
+                    self._metrics_history[name].append(metric)
 
-            for name, metric in optimized_metrics.items():
-                self._metrics_history[name].append(metric)
-
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- performance collector metrics are best-effort; import and attribute errors are expected
             Logger.debug(f"[OBSERVABILITY] Failed to collect optimized collector metrics: {e}")
 
     def _run_health_checks(self) -> None:
         """Run all health checks."""
         health_results = []
 
-        for check_name, check_func in self._health_checks.items():
+        for check_name, check_func in tqdm(self._health_checks.items(), desc="Processing", unit="item"):
             try:
                 start_time = time.time()
                 result = check_func()
@@ -423,16 +431,16 @@ class EnhancedObservability:
         overall_status = self._calculate_overall_health(health_results)
         health_score = self._calculate_health_score(health_results)
 
-        system_health = SystemHealth(
-            status=overall_status,
-            score=health_score,
-            checks=health_results,
-            metrics=self._current_metrics.copy(),
-            alerts=list(self._active_alerts.values()),
-            timestamp=time.time(),
-        )
-
-        self._health_history.append(system_health)
+        with self._lock:
+            system_health = SystemHealth(
+                status=overall_status,
+                score=health_score,
+                checks=health_results,
+                metrics=self._current_metrics.copy(),
+                alerts=list(self._active_alerts.values()),
+                timestamp=time.time(),
+            )
+            self._health_history.append(system_health)
 
     def _check_memory_usage(self) -> dict[str, Any]:
         """Check memory usage health."""
@@ -804,12 +812,11 @@ class EnhancedObservability:
 
     def _update_performance_trends(self) -> None:
         """Update performance trend data."""
-        for metric_name, metric in self._current_metrics.items():
-            self._performance_trends[metric_name].append(metric.value)
-
-            # Keep only recent data
-            if len(self._performance_trends[metric_name]) > 100:
-                self._performance_trends[metric_name] = self._performance_trends[metric_name][-100:]
+        with self._lock:
+            for metric_name, metric in self._current_metrics.items():
+                self._performance_trends[metric_name].append(metric.value)
+                if len(self._performance_trends[metric_name]) > 100:
+                    self._performance_trends[metric_name] = self._performance_trends[metric_name][-100:]
 
     def _cleanup_old_data(self) -> None:
         """Clean up old monitoring data."""
@@ -820,29 +827,33 @@ class EnhancedObservability:
 
     def get_system_health(self) -> SystemHealth | None:
         """Get current system health."""
-        if self._health_history:
-            return self._health_history[-1]
-        return None
+        with self._lock:
+            if self._health_history:
+                return self._health_history[-1]
+            return None
 
     def get_active_alerts(self) -> list[Alert]:
         """Get active alerts."""
-        return list(self._active_alerts.values())
+        with self._lock:
+            return list(self._active_alerts.values())
 
     def get_alert_history(self, limit: int = 100) -> list[Alert]:
         """Get alert history."""
-        return list(self._alert_history)[-limit:]
+        with self._lock:
+            return list(self._alert_history)[-limit:]
 
     def get_metrics_history(self, metric_name: str, limit: int = 100) -> list[SystemMetric]:
         """Get metrics history for a specific metric."""
-        if metric_name in self._metrics_history:
-            return list(self._metrics_history[metric_name])[-limit:]
-        return []
+        with self._lock:
+            if metric_name in self._metrics_history:
+                return list(self._metrics_history[metric_name])[-limit:]
+            return []
 
     def get_performance_trends(self) -> dict[str, dict[str, Any]]:
         """Get performance trend analysis."""
         trends = {}
 
-        for metric_name, values in self._performance_trends.items():
+        for metric_name, values in tqdm(self._performance_trends.items(), desc="Processing", unit="item"):
             if len(values) >= 2:
                 # Calculate trend
                 recent_avg = sum(values[-10:]) / min(10, len(values))

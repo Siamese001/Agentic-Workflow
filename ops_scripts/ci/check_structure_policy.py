@@ -18,6 +18,7 @@ import fnmatch
 import sys
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 _ROOT = Path(__file__).resolve().parents[2]
 
@@ -42,7 +43,7 @@ def _check_root_dirs(policy: dict[str, Any], verbose: bool = False) -> list[str]
     forbidden = set(policy.get("forbidden_root_directories", []))
     violations: list[str] = []
 
-    for item in sorted(_ROOT.iterdir()):
+    for item in tqdm(sorted(_ROOT.iterdir()), desc="Processing", unit="item"):
         if not item.is_dir():
             continue
         name = item.name
@@ -82,7 +83,7 @@ def _check_flat_dirs(policy: dict[str, Any], verbose: bool = False) -> list[str]
     excluded = set(policy.get("excluded_directories", []))
     violations: list[str] = []
 
-    for flat_dir in sorted(_ROOT.rglob("*")):
+    for flat_dir in tqdm(sorted(_ROOT.rglob("*")), desc="Processing", unit="item"):
         if not flat_dir.is_dir():
             continue
         if flat_dir.name not in flat_names:

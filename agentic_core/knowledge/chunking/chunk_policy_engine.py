@@ -254,7 +254,7 @@ class ChunkPolicyEngine:
         """Enrich chunk metadata based on corpus type."""
         enriched = []
 
-        for i, chunk in enumerate(chunks):
+        for i, chunk in tqdm(enumerate(chunks), desc="Processing", unit="item"):
             # Add corpus-specific metadata
             if corpus_type == CorpusType.POLICY:
                 chunk.metadata["heading_context"] = self._extract_headings(chunk.content)
@@ -348,3 +348,4 @@ def get_chunk_policy_engine() -> ChunkPolicyEngine:
 
 
 import time
+from tqdm import tqdm

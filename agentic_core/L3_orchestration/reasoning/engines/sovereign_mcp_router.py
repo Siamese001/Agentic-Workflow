@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.seams.contracts.authority import get_mcp_authority
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_mcp_router", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_mcp_router", "p4obs", "metric_2")
@@ -214,7 +215,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
             await self.manager.connect(self.role)
             self.initialized = True
             Logger.info(f"[L3 MCP] Sovereign router ARMED for role '{self.role}'")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (RuntimeError, ValueError, FileNotFoundError, OSError) as e:
             Logger.critical(f"[L3 MCP BREACH] Initialization failed: {e}")
             get_mcp_authority().record_breach(str(e))
             raise
@@ -252,9 +253,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "findings": redteam_result.get("vulnerabilities", []),
                         "insight": "L5 shield tested against adversarial simulation",
                     }
-                except Exception as red_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (RuntimeError, ValueError, TypeError) as red_e:
                     Logger.error(f"[L5 MCP] RedTeam simulation failed: {red_e}")
-                    raise
+                    return {"status": "l5_redteam_unavailable", "reason": str(red_e)}
             elif key_id in {21, 13}:
                 try:
                     memory_result: Any = await self.manager.call_tool(
@@ -267,9 +268,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "recall": memory_result,
                         "insight": "Pattern matched against eternal knowledge graph.",
                     }
-                except Exception as mem_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (RuntimeError, ValueError, TypeError) as mem_e:
                     Logger.warning(f"[L4 MCP] Memory search failed: {mem_e}")
-                    raise
+                    return {"status": "l4_memory_unavailable", "reason": str(mem_e)}
             elif key_id == 18:
                 redis_result: Any = await self.manager.call_tool(
                     "redis_recover",
@@ -296,9 +297,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                     "guidance": answer.get("response", ""),
                                     "insight": "Applied internal repository guidance to healing round.",
                                 }
-                            except Exception as wiki_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                            except (RuntimeError, ValueError, TypeError) as wiki_e:
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
-                                raise
+                                return {"status": "l2_deepwiki_unavailable", "reason": str(wiki_e)}
                 except (ImportError, AttributeError) as e:
                     Logger.debug(f"DeepWiki MCP unavailable: {e}")
             elif key_id in {42, 49} and "ui" in violation_desc.lower():
@@ -315,9 +316,9 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                     "guidance": "Enforce these audited design tokens in the heal.",
                                     "tokens": tokens,
                                 }
-                            except Exception as figma_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                            except (RuntimeError, ValueError, TypeError) as figma_e:
                                 Logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
-                                raise
+                                return {"status": "l2_figma_unavailable", "reason": str(figma_e)}
                 except (ImportError, AttributeError) as e:
                     Logger.debug(f"Figma MCP unavailable: {e}")
             if key_id in {40, 41, 42, 49}:
@@ -342,7 +343,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         ]
                     )
                     steps_out: list[str] = []
-                    for idx, thought_text in enumerate(thoughts):
+                    for idx, thought_text in tqdm(enumerate(thoughts), desc="Processing", unit="item"):
                         is_last = idx == len(thoughts) - 1
                         step_result: Any = await self.manager.call_tool(
                             "sequential_thinking",
@@ -379,14 +380,17 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "solution": solution,
                         "cached": cached_template is not None,
                     }
-                except Exception as reasoning_e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (RuntimeError, ValueError, TypeError) as reasoning_e:
                     Logger.warning(f"[L1 MCP] Sequential thinking failed: {reasoning_e}")
-                    raise
-                    PolicyResult: Any = await self.manager.call_tool(
+                    policy_result: Any = await self.manager.call_tool(
                         "gemini_policy_enforcer",
-                        {"key_id": key_id, "Violation": violation_desc, "file_context": file_path},
+                        {"key_id": key_id, "violation": violation_desc, "file_context": file_path},
                     )
-                    return {"status": "l1_policy", "tool": "gemini_policy_enforcer", "guidance": PolicyResult}
+                    return {
+                        "status": "l1_policy_fallback",
+                        "tool": "gemini_policy_enforcer",
+                        "guidance": policy_result,
+                    }
             elif key_id in {20, 21}:
                 try:
                     cleanup_result: Any = await self.manager.call_tool(
@@ -410,7 +414,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                 try:
                     structure: Any = await self.manager.call_tool(
                         "read_wiki_structure",
-                        {"repo": "xai/grok-canon"},
+                        {"repoName": "xai/grok-canon"},
                     )
                     relevant_topic: Any = next(
                         (t for t in structure.get("topics", []) if str(key_id) in t or "canon" in t.lower()),
@@ -419,7 +423,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     if relevant_topic:
                         content: Any = await self.manager.call_tool(
                             "read_wiki_contents",
-                            {"repo": "xai/grok-canon", "topic": relevant_topic},
+                            {"repoName": "xai/grok-canon", "topic": relevant_topic},
                         )
                         return {
                             "status": "l2_deepwiki_structure",
@@ -429,7 +433,7 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     answer: Any = await self.manager.call_tool(
                         "ask_question",
                         {
-                            "repo": "xai/grok-canon",
+                            "repoName": "xai/grok-canon",
                             "question": f"How should Key {key_id} be resolved per the sovereign canon?",
                         },
                     )

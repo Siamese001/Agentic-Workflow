@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("deep_brain_harvester_util", "p4obs", "metric_1")
 _emit_emits_metric_event("deep_brain_harvester_util", "p4obs", "metric_2")
@@ -324,7 +325,7 @@ class DeepBrainHarvester:
         q = np.array(query_embedding, dtype=np.float32)
         q_norm = q / (np.linalg.norm(q) + 1e-12)
         scored: list[tuple[float, str, dict]] = []
-        for vec_id, item in entries.items():
+        for vec_id, item in tqdm(entries.items(), desc="Processing", unit="item"):
             v = np.array(item["values"], dtype=np.float32)
             v_norm = v / (np.linalg.norm(v) + 1e-12)
             score = float(np.dot(q_norm, v_norm))

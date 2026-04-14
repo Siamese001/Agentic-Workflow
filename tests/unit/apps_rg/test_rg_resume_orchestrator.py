@@ -192,7 +192,7 @@ class TestRgResumeOrchestratorLocalFirstRouting:
             _adapter_patch(route_to_gemini=False),
             patch.object(orch, "generate_resume_with_qwen", new=AsyncMock(return_value=mock_qwen_result)),
         ):
-            result = asyncio.run(orch.run("Python engineer role"))
+            result = orch.run("Python engineer role")
 
         assert "qwen_resume_content" in result, "qwen_resume_content must be present when LOCAL_VLLM selected"
         assert result["qwen_resume_content"] == mock_qwen_result
@@ -208,7 +208,7 @@ class TestRgResumeOrchestratorLocalFirstRouting:
             _adapter_patch(),
             patch.object(orch, "generate_resume_with_qwen", new=AsyncMock()) as mock_infer,
         ):
-            result = asyncio.run(orch.run("Python engineer role"))
+            result = orch.run("Python engineer role")
             mock_infer.assert_not_called()
 
         assert "qwen_resume_content" not in result
@@ -239,7 +239,7 @@ class TestRgResumeOrchestratorLocalFirstRouting:
             _adapter_patch(),
             patch.object(orch, "generate_resume_with_qwen", new=AsyncMock()) as mock_infer,
         ):
-            result = asyncio.run(orch.run("Python engineer role"))
+            result = orch.run("Python engineer role")
             mock_infer.assert_not_called()
 
         assert "qwen_resume_content" not in result
@@ -276,7 +276,7 @@ class TestRgResumeOrchestratorLocalFirstRouting:
             _adapter_patch(route_to_gemini=False),
             patch.object(orch, "generate_resume_with_qwen", new=AsyncMock(return_value={"success": True})),
         ):
-            asyncio.run(orch.run("Python engineer role"))
+            orch.run("Python engineer role")
 
         assert captured_ctx["requires_policy_read"] is False
         assert captured_ctx["iteration_count"] == 0
@@ -298,7 +298,7 @@ class TestRgResumeOrchestratorAdapterDisposition:
             _adapter_patch(route_to_gemini=False) as mock_adapter,
             patch.object(orch, "generate_resume_with_qwen", new=AsyncMock(return_value=mock_qwen_result)),
         ):
-            result = asyncio.run(orch.run("Python engineer role"))
+            result = orch.run("Python engineer role")
 
         assert result.get("qwen_resume_content") == mock_qwen_result
         mock_adapter.evaluate.assert_called_once()
@@ -320,7 +320,7 @@ class TestRgResumeOrchestratorAdapterDisposition:
             _adapter_patch(route_to_gemini=True) as mock_adapter,
             patch.object(orch, "generate_resume_with_qwen", new=AsyncMock()) as mock_infer,
         ):
-            result = asyncio.run(orch.run("Python engineer role"))
+            result = orch.run("Python engineer role")
             mock_infer.assert_not_called()
 
         assert "qwen_resume_content" not in result
@@ -341,7 +341,7 @@ class TestRgResumeOrchestratorAdapterDisposition:
             _adapter_patch(route_to_gemini=False) as mock_adapter,
             patch.object(orch, "generate_resume_with_qwen", new=AsyncMock(return_value={})),
         ):
-            asyncio.run(orch.run("Python engineer role"))
+            orch.run("Python engineer role")
 
         call_kwargs = mock_adapter.evaluate.call_args
         assert call_kwargs.kwargs["task_class"] == "resume_generation"

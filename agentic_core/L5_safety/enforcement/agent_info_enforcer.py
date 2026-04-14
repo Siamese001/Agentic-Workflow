@@ -21,6 +21,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 
 @dataclass
@@ -200,10 +201,10 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
         search_paths.append(apps_lic)
     if apps_shared.exists():
         search_paths.append(apps_shared)
-    for search_base in search_paths:
+    for search_base in tqdm(search_paths, desc="Processing", unit="item"):
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-        for py_file in get_python_files(search_base):
+        for py_file in tqdm(get_python_files(search_base), desc="Processing", unit="item"):
             if ".venv" in str(py_file):
                 continue
             try:
@@ -211,7 +212,7 @@ def find_agent_classes(base_path: str) -> list[AgentInfo]:
                 if not_agent_pattern.search(content):
                     continue
                 matches = agent_pattern.finditer(content)
-                for match in matches:
+                for match in tqdm(matches, desc="Processing", unit="item"):
                     class_name = match.group(1)
                     line_number = content[: match.start()].count("\n") + 1
                     try:
@@ -310,7 +311,7 @@ def analyze_redundancy(base_path: str) -> dict:
     print(f"  Found {len(agents)} PascalCase Agent classes")
     print()
     print("PHASE 2: Generating AST Fingerprints...")
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         fingerprint, normalized = generate_fingerprint(agent.file_path, agent.name)
         agent.fingerprint = fingerprint
         agent.normalized_ast = normalized
@@ -363,7 +364,7 @@ def print_report(results: dict):
     print("EXACT STRUCTURAL DUPLICATES")
     print("=" * 80)
     if results["exact_duplicates"]:
-        for fingerprint, agents in results["exact_duplicates"].items():
+        for fingerprint, agents in tqdm(results["exact_duplicates"].items(), desc="Processing", unit="item"):
             print(f"\n[DUPLICATE GROUP] Fingerprint: {fingerprint}")
             print("-" * 60)
             for agent in agents:

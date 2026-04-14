@@ -235,6 +235,7 @@ class Test{class_name}:
         try:
             from {import_path} import {class_name}
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from tqdm import tqdm
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,
@@ -292,7 +293,7 @@ if __name__ == "__main__":
 created_count = 0
 skipped_count = 0
 
-for agent in agents_without_tests:
+for agent in tqdm(agents_without_tests, desc="Processing", unit="item"):
     class_name = agent["class_name"]
     agent_path = agent["path"]
 

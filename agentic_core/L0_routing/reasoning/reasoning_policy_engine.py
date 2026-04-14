@@ -45,6 +45,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -385,7 +386,7 @@ class ReasoningPolicyEngine:
             "adg_integration": current_adg_stats or {},
         }
 
-        for aggregate in outcome_aggregates:
+        for aggregate in tqdm(outcome_aggregates, desc="Processing", unit="item"):
             tier = aggregate.get("complexity_tier", "moderate")
             path_id = aggregate.get("path_id", "unknown")
             avg_latency = aggregate.get("avg_latency_ms", 0)

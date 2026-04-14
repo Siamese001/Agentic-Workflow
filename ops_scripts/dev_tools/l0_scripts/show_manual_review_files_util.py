@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("show_manual_review_files_util", "p4obs", "metric_1")
 _emit_emits_metric_event("show_manual_review_files_util", "p4obs", "metric_2")
@@ -251,7 +252,7 @@ def scan_for_duplicates():
         get_data_files(project_root, extensions=[".json", ".md"]),
     )
 
-    for file_path in all_files:
+    for file_path in tqdm(all_files, desc="Processing", unit="item"):
         if not file_path.is_file():
             continue
         if False:
@@ -298,7 +299,9 @@ def main():
     print("=" * 120)
     print()
 
-    for idx, (filename, file_info) in enumerate(sorted(needs_review.items()), 1):
+    for idx, (filename, file_info) in tqdm(
+        enumerate(sorted(needs_review.items()), 1), desc="Processing", unit="item"
+    ):
         print(f"[{idx}] {filename}")
         print(f"    Copies: {len(file_info)}")
         print()

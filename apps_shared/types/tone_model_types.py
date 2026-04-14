@@ -84,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tone_model_types", "p4obs", "metric_1")
 _emit_emits_metric_event("tone_model_types", "p4obs", "metric_2")
@@ -569,7 +570,7 @@ class ToneAdapter:
         try:
             sentences = re.split("[.!?]+", text)
             shortened = []
-            for sentence in sentences:
+            for sentence in tqdm(sentences, desc="Processing", unit="item"):
                 sentence = sentence.strip()
                 if not sentence:
                     continue

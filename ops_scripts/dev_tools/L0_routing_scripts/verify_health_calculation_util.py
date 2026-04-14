@@ -123,6 +123,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verify_health_calculation_util", "p4obs", "metric_1")
 _emit_emits_metric_event("verify_health_calculation_util", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ def main():
     print("=" * 80 + "\n")
     print("Sample Territory Health Scores:")
     print("-" * 80)
-    for row in data[:5]:
+    for row in tqdm(data[:5], desc="Processing", unit="item"):
         if row.get("Territory") == "TOTAL":
             continue
         territory = row.get("Territory", "Unknown")

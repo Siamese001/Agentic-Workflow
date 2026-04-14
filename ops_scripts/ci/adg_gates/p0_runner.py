@@ -29,6 +29,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CI_ARTIFACTS_DIR = REPO_ROOT / "artifacts" / "ci_gates"
@@ -141,7 +142,7 @@ def run_preflight(
     results: list[GateResult] = []
     any_blocked = False
 
-    for cls_name in PREFLIGHT_GATE_CLASSES:
+    for cls_name in tqdm(PREFLIGHT_GATE_CLASSES, desc="Processing", unit="item"):
         gate = _build_gate(cls_name, sqlite_path, modified_files or [], preflight_mode=True)
         if gate is None:
             print(f"[p0_runner] WARNING: could not build gate {cls_name}", file=sys.stderr)
@@ -189,7 +190,7 @@ def run_full(
     results: list[GateResult] = []
     any_blocked = False
 
-    for cls_name in FULL_GATE_CLASSES:
+    for cls_name in tqdm(FULL_GATE_CLASSES, desc="Processing", unit="item"):
         gate = _build_gate(cls_name, sqlite_path, modified_files or [], preflight_mode=False)
         if gate is None:
             print(f"[p0_runner] WARNING: could not build gate {cls_name}", file=sys.stderr)

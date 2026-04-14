@@ -120,6 +120,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_1")
 _emit_emits_metric_event("rag_sovereignty", "p4obs", "metric_2")
@@ -277,7 +278,7 @@ def check_rag_sovereignty(
             ),
         )
     if extra_edges:
-        for ee in extra_edges:
+        for ee in tqdm(extra_edges, desc="Processing", unit="item"):
             from_adg = ee.get("from", "")
             relation = ee.get("relation", "")
             to_adg = ee.get("to", "")

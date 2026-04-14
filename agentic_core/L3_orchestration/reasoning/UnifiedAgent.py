@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("UnifiedAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("UnifiedAgent", "p4obs", "metric_2")
@@ -434,7 +435,7 @@ class OrchestrationStrategy(BaseStrategy):
         signals: list[str] = []
         artifacts: list[dict[str, Any]] = []
         errors: list[str] = []
-        for step in self.workflow_steps:
+        for step in tqdm(self.workflow_steps, desc="Processing", unit="item"):
             step_name = step.get("name", "unknown")
             try:
                 step_result = await self._execute_workflow_step(agent, step, **kwargs)
@@ -513,7 +514,7 @@ class HealingStrategy(BaseStrategy):
         violations = self._scan_violations(agent)
         violations_found = len(violations)
         if not dry_run:
-            for violation in violations:
+            for violation in tqdm(violations, desc="Processing", unit="item"):
                 try:
                     fix_result = self._attempt_fix(agent, violation)
                     if fix_result.get("fixed", False):
@@ -535,7 +536,7 @@ class HealingStrategy(BaseStrategy):
     def _scan_violations(self, agent: UnifiedAgent) -> list[dict[str, Any]]:
         """Scan for violations in the repository."""
         violations: list[dict[str, Any]] = []
-        for rule_name, rule_config in self.healing_rules.items():
+        for rule_name, rule_config in tqdm(self.healing_rules.items(), desc="Processing", unit="item"):
             rule_type = rule_config.get("type", "pattern_match")
             if rule_type == "pattern_match":
                 pattern = rule_config.get("pattern", "")

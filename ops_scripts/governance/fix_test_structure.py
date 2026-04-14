@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_test_structure", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_test_structure", "p4obs", "metric_2")
@@ -177,7 +178,7 @@ def analyze_test_imports(file_path: Path) -> str | None:
         content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     if alias.name.startswith(AGENTIC_CORE_DIR):
@@ -213,14 +214,14 @@ def fix_test_structure():
     error_count = 0
 
     # Process both unit and integration tests
-    for test_type in ["unit", "integration"]:
+    for test_type in tqdm(["unit", "integration"], desc="Processing", unit="item"):
         test_dir = TESTS_ROOT / test_type
         if not test_dir.exists():
             continue
 
         print(f"\n--- Processing {test_type} tests ---")
 
-        for item in test_dir.iterdir():
+        for item in tqdm(test_dir.iterdir(), desc="Processing", unit="item"):
             if item.is_file() and item.name.startswith("test_") and item.name.endswith(".py"):
                 # Skip allowed files
                 if item.name in {"__init__.py", "conftest.py"}:

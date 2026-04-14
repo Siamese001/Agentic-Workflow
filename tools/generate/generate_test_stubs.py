@@ -2,6 +2,7 @@
 
 import ast
 import pathlib
+from tqdm import tqdm
 
 
 class TestStubGenerator:
@@ -43,7 +44,7 @@ class TestStubGenerator:
 
             analysis = {"functions": [], "classes": [], "module_name": self._get_module_name(source_path)}
 
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.FunctionDef):
                     # Skip private functions
                     if not node.name.startswith("_"):
@@ -95,7 +96,7 @@ class TestStubGenerator:
             )
 
         # Add class tests (limit to 2 most important)
-        for class_info in analysis["classes"][:2]:
+        for class_info in tqdm(analysis["classes"][:2], desc="Processing", unit="item"):
             # Test class initialization
             test_methods.append(
                 self.templates["class"].format(class_name=class_info["name"], module=analysis["module_name"]),

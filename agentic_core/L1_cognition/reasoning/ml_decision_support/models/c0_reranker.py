@@ -5,7 +5,6 @@ LightGBM model for reranking retrieved documents based on relevance,
 quality, and usage patterns to improve retrieval precision.
 """
 
-import pickle
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -19,7 +18,9 @@ except ImportError:
 
 from ..config.model_registry import DecisionMode
 from ..features.c0_features import C0FeatureExtractor
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class C0RetrievalReranker(BaseMLModel):
@@ -74,8 +75,7 @@ class C0RetrievalReranker(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.model = model_data.get("model")
             self.feature_names = model_data.get("feature_names", [])
@@ -113,8 +113,7 @@ class C0RetrievalReranker(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -262,7 +261,7 @@ class C0RetrievalReranker(BaseMLModel):
         # Predict relevance for each document
         document_scores = []
 
-        for i, document in enumerate(documents):
+        for i, document in tqdm(enumerate(documents), desc="Processing", unit="item"):
             # Create context for this document
             context = {
                 "query": query,
@@ -340,7 +339,9 @@ class C0RetrievalReranker(BaseMLModel):
 
             # Create feature importance list
             feature_importance = []
-            for i, (name, importance) in enumerate(zip(feature_names, self.feature_importances)):
+            for i, (name, importance) in tqdm(
+                enumerate(zip(feature_names, self.feature_importances)), desc="Processing", unit="item"
+            ):
                 feature_importance.append(
                     {
                         "feature_name": name,
@@ -374,7 +375,7 @@ class C0RetrievalReranker(BaseMLModel):
 
         try:
             feature_vector = []
-            for feature_name in self.feature_names:
+            for feature_name in tqdm(self.feature_names, desc="Processing", unit="item"):
                 value = features.get(feature_name, 0.0)  # Default to 0 if missing
 
                 # Convert to numeric
@@ -420,7 +421,7 @@ class C0RetrievalReranker(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for LightGBM
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric
             if isinstance(value, str):
                 try:
@@ -455,7 +456,7 @@ class C0RetrievalReranker(BaseMLModel):
         X = []
         y = []
 
-        for example in training_data:
+        for example in tqdm(training_data, desc="Processing", unit="item"):
             features = example["features"]
             label = example["label"]  # Relevance score (0-1)
 

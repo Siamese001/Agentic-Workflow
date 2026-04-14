@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("feedback_loop_types", "p4obs", "metric_1")
 _emit_emits_metric_event("feedback_loop_types", "p4obs", "metric_2")
@@ -404,7 +405,7 @@ class FeedbackLoop:
             return self._trends_cache
         with self._lock:
             trends = {}
-            for metric, values in self.quality_history.items():
+            for metric, values in tqdm(self.quality_history.items(), desc="Processing", unit="item"):
                 if len(values) < 10:
                     continue
                 trend = self._calculate_trend(metric, list(values))

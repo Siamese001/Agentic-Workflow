@@ -109,6 +109,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("seed_embedding_pack_builder", "p4obs", "metric_1")
 _emit_emits_metric_event("seed_embedding_pack_builder", "p4obs", "metric_2")
@@ -211,7 +212,7 @@ class DeterministicHashEmbedder:
         )
 
         vectors = []
-        for text in texts:
+        for text in tqdm(texts, desc="Processing", unit="item"):
             # Use SHA-256 of text to generate deterministic float32 values
             hash_bytes = hashlib.sha256(text.encode()).digest()
             # Convert bytes to float32 values
@@ -250,7 +251,7 @@ def _write_row_index_jsonl(rows: list[dict[str, Any]], output_path: Path) -> str
         SHA-256 hash of the written file.
     """
     lines = []
-    for row in rows:
+    for row in tqdm(rows, desc="Processing", unit="item"):
         # Canonical JSON with strict field order
         line_data = {
             "row_id": row["row_id"],

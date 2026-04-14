@@ -113,6 +113,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("gateway_topology", "p4obs", "metric_1")
 _emit_emits_metric_event("gateway_topology", "p4obs", "metric_2")
@@ -242,7 +243,7 @@ def check_gateway_topology(
             gateway_routes.append(edge)
 
     violations: list[GatewayViolation] = []
-    for edge in provider_invocations:
+    for edge in tqdm(provider_invocations, desc="Processing", unit="item"):
         from_rel = _module_rel(edge.from_name)
         norm = from_rel.replace("\\", "/")
         if any(norm == allowed or norm.endswith(allowed) for allowed in _ALLOWED_DIRECT_PROVIDER_MODULES):

@@ -114,6 +114,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("signal_quality_config", "p4obs", "metric_1")
 _emit_emits_metric_event("signal_quality_config", "p4obs", "metric_2")
@@ -486,7 +487,7 @@ class signal_enhancer:
         ]
 
         authority_score = 0.0
-        for source in sources:
+        for source in tqdm(sources, desc="Processing", unit="item"):
             # Check domain authority
             domain_score = 0.3 if any(domain in source.lower() for domain in high_authority_domains) else 0.1
 
@@ -864,9 +865,9 @@ class signal_enhancer:
         ]
 
         claims = []
-        for pattern in claim_patterns:
+        for pattern in tqdm(claim_patterns, desc="Processing", unit="item"):
             matches = re.findall(pattern, content, re.IGNORECASE)
-            for match in matches:
+            for match in tqdm(matches, desc="Processing", unit="item"):
                 # Simplified analysis using environment thresholds
                 default_confidence = float(os.getenv("SIGNAL_MIN_CLAIM_CONFIDENCE", "0.7"))
                 confidence = default_confidence if "according to" in match.lower() else 0.5

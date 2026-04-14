@@ -2,6 +2,7 @@
 
 import ast
 import os
+from tqdm import tqdm
 
 ROOT = r"C:\Git\Agentic-Workflow"
 FILES = [
@@ -17,7 +18,7 @@ FILES = [
 ]
 
 fixed = 0
-for f in FILES:
+for f in tqdm(FILES, desc="Processing", unit="item"):
     fp = os.path.join(ROOT, f)
     src = open(fp, encoding="utf-8").read()
     lines = src.split("\n")
@@ -26,7 +27,7 @@ for f in FILES:
     header = []
     rest = []
     phase = "header"
-    for line in lines:
+    for line in tqdm(lines, desc="Processing", unit="item"):
         s = line.strip()
         if phase == "header":
             if (
@@ -66,7 +67,7 @@ for f in FILES:
     new_lines.append("")
     new_lines.append("_AVAILABLE = False")
     new_lines.append("try:")
-    for line in import_section:
+    for line in tqdm(import_section, desc="Processing", unit="item"):
         s = line.strip()
         # Skip old guards
         if s.startswith("_AVAILABLE"):

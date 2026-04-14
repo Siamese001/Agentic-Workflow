@@ -16,7 +16,7 @@ files_to_fix = [
     "apps_lic/engines/OutreachValidationExecutorAgent.py",
     "apps_lic/engines/k1_routing_agent.py",
 ]
-for file_path in files_to_fix:
+for file_path in tqdm(files_to_fix, desc="Processing", unit="item"):
     path = Path(file_path)
     if path.exists():
         content = path.read_text(encoding="utf-8")
@@ -33,6 +33,7 @@ for file_path in files_to_fix:
 print("Regenerating certificate...")
 import subprocess
 import sys
+from tqdm import tqdm
 
 result = subprocess.run([sys.executable, "scripts/generate_certificate.py"], capture_output=True, text=True)
 print(result.stdout)

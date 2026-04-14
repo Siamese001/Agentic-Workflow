@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.security_util import safe_execute
+from tqdm import tqdm
 
 _emit_emits_metric_event("execute_command_executor", "p4obs", "metric_1")
 _emit_emits_metric_event("execute_command_executor", "p4obs", "metric_2")
@@ -413,7 +414,7 @@ def check_tool_installed(tool_name: str) -> bool:
     """
     if tool_name not in ALLOWED_COMMANDS:
         return False
-    for command in ALLOWED_COMMANDS[tool_name]:
+    for command in tqdm(ALLOWED_COMMANDS[tool_name], desc="Processing", unit="item"):
         try:
             result: Any = safe_execute(
                 [command, "--version"],

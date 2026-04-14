@@ -35,11 +35,15 @@ import logging
 import uuid
 from typing import Any
 
+import agentic_core.cache.redis_coordination_fabric as _top
 from agentic_core.cache.redis_cache_client import (
-    CacheDB,
     DeterministicRedisCache,
     canonical_json_bytes,
-    content_hash,
+    get_workspace_cache,
+)
+from agentic_core.cache.redis_coordination_fabric import (
+    RedisCoordinationFabric,
+    get_coordination_fabric as _get_fabric,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -175,89 +179,37 @@ _emit_hard_fails_untranscripted("p1", "redis_coordination_fabric")
 _emit_gated_by_confidence("p1", "redis_coordination_fabric", "confidence_gate")
 _emit_writes_through("p1", "redis_coordination_fabric", "uwg_governed_write")
 _emit_writes_through("p1", "redis_coordination_fabric", "uwg_governed_write_2")
-_emit_pulls_context("p1", "redis_coordination_fabric", "context_retrieval")
-_emit_pulls_context("p1", "redis_coordination_fabric", "context_retrieval_2")
-emit_determinism_digest("trace_redis_coordination_fabric", "redis_coordination_fabric_dispatch")
-emit_determinism_digest("trace_redis_coordination_fabric", "redis_coordination_fabric_complete")
-_emit_validated_by_safety_plane("p1", "redis_coordination_fabric", "safety_validation")
 
 logger = logging.getLogger(__name__)
 
-# DB-2 is the new coordination fabric namespace.
-# DB-0 = hot caches (L0/L1/L3/L5)
-# DB-1 = coordination leases (L2)
-# DB-2 = operational workspace (per-trace, team-sync, replay-assist, novelty)
-_DB_WORKSPACE = 2  # type: ignore[assignment]
-
-# TTL caps (seconds) per namespace — fail-closed if caller exceeds these
-_TTL_TRACE_WS: int = 900  # 15 min: active request lifetime
-_TTL_TEAM_LOCK: int = 120  # 2 min: duplicate-work prevention window
-_TTL_ROUTE_CTX: int = 3600  # 1 hr: hot routing feature cache
-_TTL_REPLAY_FRAG: int = 600  # 10 min: in-flight replay assist blobs
-_TTL_NOVELTY: int = 1800  # 30 min: live novelty cluster centroids
+_TTL_TRACE_WS: int = 900
+_TTL_TEAM_LOCK: int = 120
+_TTL_ROUTE_CTX: int = 3600
+_TTL_REPLAY_FRAG: int = 600
+_TTL_NOVELTY: int = 1800
 
 
-def _make_db2_cache(redis_url: str | None = None) -> DeterministicRedisCache:
-    """Construct a DeterministicRedisCache pointed at DB-2 (workspace).
-
-    ``DeterministicRedisCache.__init__`` stores ``db`` as an int via the
-    ``CacheDB`` IntEnum; passing ``_DB_WORKSPACE`` (int 2) works because
-    IntEnum inherits from int and the value is used directly in the Redis
-    connection parameters.
-    """
-    cache = DeterministicRedisCache.__new__(DeterministicRedisCache)
-    DeterministicRedisCache.__init__(cache, db=CacheDB.HOT, redis_url=redis_url)
-    # Re-target to DB-2 immediately after construction (before first connect).
-    cache._db = _DB_WORKSPACE  # type: ignore[assignment]
-    return cache
+def _trace_ws_key(h: str) -> str:
+    return f"trace_ws:{h}"
 
 
-# ---------------------------------------------------------------------------
-# Key builders (namespace-prefixed, hash-only)
-# ---------------------------------------------------------------------------
+def _team_lock_key(h: str) -> str:
+    return f"team_lock:{h}"
 
 
-def _trace_ws_key(trace_id_hash: str) -> str:
-    """``trace_ws:{trace_id_hash}``"""
-    if not trace_id_hash:
-        raise ValueError("trace_id_hash must not be empty")
-    return f"trace_ws:{trace_id_hash}"
+def _route_ctx_key(h: str) -> str:
+    return f"route_ctx:{h}"
 
 
-def _team_lock_key(resource_hash: str) -> str:
-    """``team_lock:{resource_hash}``"""
-    if not resource_hash:
-        raise ValueError("resource_hash must not be empty")
-    return f"team_lock:{resource_hash}"
+def _replay_frag_key(h: str) -> str:
+    return f"replay_frag:{h}"
 
 
-def _route_ctx_key(intent_hash: str) -> str:
-    """``route_ctx:{intent_hash}``"""
-    if not intent_hash:
-        raise ValueError("intent_hash must not be empty")
-    return f"route_ctx:{intent_hash}"
+def _novelty_key(h: str) -> str:
+    return f"novelty:{h}"
 
 
-def _replay_frag_key(replay_key_hash: str) -> str:
-    """``replay_frag:{replay_key_hash}``"""
-    if not replay_key_hash:
-        raise ValueError("replay_key_hash must not be empty")
-    return f"replay_frag:{replay_key_hash}"
-
-
-def _novelty_key(cluster_hash: str) -> str:
-    """``novelty:{cluster_hash}``"""
-    if not cluster_hash:
-        raise ValueError("cluster_hash must not be empty")
-    return f"novelty:{cluster_hash}"
-
-
-# ---------------------------------------------------------------------------
-# RedisCoordinationFabric
-# ---------------------------------------------------------------------------
-
-
-class RedisCoordinationFabric:
+class RedisCoordinationFabric(_top.RedisCoordinationFabric):
     """Ephemeral operational workspace in Redis DB-2.
 
     Provides five specialised namespaces for in-flight coordination:
@@ -291,8 +243,8 @@ class RedisCoordinationFabric:
         )
     """
 
-    def __init__(self, redis_url: str | None = None) -> None:
-        self._cache = _make_db2_cache(redis_url=redis_url)
+    def __init__(self, redis_url: str | None = None) -> None:  # noqa: ARG002
+        self._cache = get_workspace_cache()
 
     # ------------------------------------------------------------------
     # 1. Per-trace working set
@@ -593,21 +545,15 @@ class RedisCoordinationFabric:
 # Process-global singleton
 # ---------------------------------------------------------------------------
 
-_workspace: RedisCoordinationFabric | None = None
 
-
-def get_coordination_fabric(redis_url: str | None = None) -> RedisCoordinationFabric:
+def get_coordination_fabric(redis_url: str | None = None) -> RedisCoordinationFabric:  # noqa: ARG001
     """Return the process-global DB-2 coordination fabric instance."""
-    global _workspace
-    if _workspace is None:
-        _workspace = RedisCoordinationFabric(redis_url=redis_url)
-    return _workspace
+    return _get_fabric()
 
 
 def reset_coordination_fabric() -> None:
     """[TESTING ONLY] Reset the process-global singleton."""
-    global _workspace
-    _workspace = None
+    _top.coordination_fabric = _top.RedisCoordinationFabric()
 
 
 __all__ = [

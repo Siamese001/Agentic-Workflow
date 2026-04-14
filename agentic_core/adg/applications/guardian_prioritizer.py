@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("guardian_prioritizer", "p4obs", "metric_1")
 _emit_emits_metric_event("guardian_prioritizer", "p4obs", "metric_2")
@@ -302,7 +303,7 @@ class GuardianPrioritizer:
         fan_in: dict[str, int] = {}
         config_reads: dict[str, int] = {}
 
-        for edge in self._result.edges:
+        for edge in tqdm(self._result.edges, desc="Processing", unit="item"):
             from_mod = edge.from_name
             to_sym = edge.to_name
 
@@ -427,7 +428,7 @@ class GuardianPrioritizer:
                 ids_to_score = list(ids_to_score) + [gid]
 
         scores: list[GuardianPriorityScore] = []
-        for gid in sorted(set(ids_to_score)):
+        for gid in tqdm(sorted(set(ids_to_score)), desc="Processing", unit="item"):
             relevant_signals = _GUARDIAN_ADG_SIGNALS.get(gid, [])
             total_score = 0
             active_signals: list[str] = []

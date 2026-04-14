@@ -145,6 +145,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("find_corrupted_files_util", "p4obs", "metric_1")
 _emit_emits_metric_event("find_corrupted_files_util", "p4obs", "metric_2")
@@ -217,7 +218,7 @@ def main():
     corrupted_files = []
     fixed_files = []
 
-    for root_dir in scan_dirs:
+    for root_dir in tqdm(scan_dirs, desc="Processing", unit="item"):
         root_path = Path(root_dir)
         if not root_path.exists():
             continue
@@ -227,7 +228,7 @@ def main():
 
         py_files = list(get_python_files(root_path))
 
-        for py_file in py_files:
+        for py_file in tqdm(py_files, desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
 

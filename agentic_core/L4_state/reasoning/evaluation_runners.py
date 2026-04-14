@@ -22,6 +22,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_captures_evaluation_metric,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -208,7 +209,7 @@ class ReplayEvaluationRunner(EvaluationRunner):
         historical = self._get_historical_queries(query_ids, since)
 
         runs = []
-        for entry in historical:
+        for entry in tqdm(historical, desc="Processing", unit="item"):
             run = await self.evaluate(
                 query=entry["query"],
                 retrieved=entry.get("retrieved_chunks", []),

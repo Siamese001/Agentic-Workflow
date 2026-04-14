@@ -23,6 +23,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_stores_learning_state,
     _emit_writes_learning_snapshot,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -437,7 +438,7 @@ class ContinualLearner(BaseMetaLearner):
         all_examples = task.support_examples + replay_examples
 
         # Update parameters with EWC regularization
-        for example in all_examples:
+        for example in tqdm(all_examples, desc="Processing", unit="item"):
             gradient = self._compute_gradient(example)
 
             # Apply EWC penalty
@@ -654,7 +655,7 @@ class MetaLearningFramework:
         """Process adaptation request using all meta-learners"""
         results = []
 
-        for learner_name, learner in self.meta_learners.items():
+        for learner_name, learner in tqdm(self.meta_learners.items(), desc="Processing", unit="item"):
             try:
                 result = learner.adapt(task)
                 results.append(result)

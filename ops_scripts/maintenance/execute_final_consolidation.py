@@ -77,6 +77,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_1")
 _emit_emits_metric_event("execute_final_consolidation", "p4obs", "metric_2")
@@ -172,10 +173,10 @@ def fix_imports():
     print("--- STARTING FINAL IMPORT REWIRING ---")
     fixed_count = 0
 
-    for root, _dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
+    for root, _dirs, files in tqdm(os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR), desc="Processing", unit="item"):
         _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if not file.endswith(".py"):
                 continue
 

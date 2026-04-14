@@ -14,11 +14,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_captures_pattern,
     _emit_pulls_context,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -230,7 +231,9 @@ class CriteriaDecomposer:
         _emit_pulls_context("enterprise", "CriteriaDecomposer", "decompose_batch")
 
         results: list[CriteriaDecomposition] = []
-        for criteria_id, criteria_text, dimension, weight in criteria_items:
+        for criteria_id, criteria_text, dimension, weight in tqdm(
+            criteria_items, desc="Processing", unit="item"
+        ):
             try:
                 decomp = self.decompose(criteria_id, criteria_text, dimension, weight)
                 results.append(decomp)
@@ -263,7 +266,7 @@ class CriteriaDecomposer:
         type_dist: dict[str, int] = {}
         dim_coverage: dict[str, list[float]] = {}
 
-        for decomp in decompositions:
+        for decomp in tqdm(decompositions, desc="Processing", unit="item"):
             summary.total_components += len(decomp.components)
             summary.total_estimated_time_ms += decomp.estimated_execution_time_ms
 
@@ -320,7 +323,7 @@ class CriteriaDecomposer:
         # Parse compound criteria
         sub_criteria = self._split_compound_criteria(criteria_text)
 
-        for idx, sub_crit in enumerate(sub_criteria, 1):
+        for idx, sub_crit in tqdm(enumerate(sub_criteria, 1), desc="Processing", unit="item"):
             comp_id = f"{criteria_id}-TC{idx:02d}"
 
             # Determine complexity and test method

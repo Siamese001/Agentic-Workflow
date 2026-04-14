@@ -107,6 +107,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("meta_learning_embedding_service", "p4obs", "metric_1")
 _emit_emits_metric_event("meta_learning_embedding_service", "p4obs", "metric_2")
@@ -369,7 +370,7 @@ class MetaLearningEmbeddingService:
         matrix_unit = np.where(norms > 0, matrix / np.maximum(norms, 1e-12), 0.0)
         scores = matrix_unit @ q_unit
         candidates = []
-        for i, row in enumerate(row_data):
+        for i, row in tqdm(enumerate(row_data), desc="Processing", unit="item"):
             if not valid_mask[i]:
                 continue
             candidates.append(

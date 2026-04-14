@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validate_drilldown_util", "p4obs", "metric_1")
 _emit_emits_metric_event("validate_drilldown_util", "p4obs", "metric_2")
@@ -245,7 +246,7 @@ def main():
     print("-" * 90)
     total_agents = 0
     territories_with_data = 0
-    for row in sorted(data, key=lambda r: r.get("Territory", "")):
+    for row in tqdm(sorted(data, key=lambda r: r.get("Territory", "")), desc="Processing", unit="item"):
         territory = row.get("Territory", "Unknown")
         agents = row.get("Total", 0)
         health = row.get("Health", 0)

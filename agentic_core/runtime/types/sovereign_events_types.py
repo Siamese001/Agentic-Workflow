@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_events_types", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_events_types", "p4obs", "metric_2")
@@ -251,7 +252,7 @@ class event_emission_mixin:
             base_delay = 0.8
             event_data = event.model_dump()
             stream_payload = {"event": json.dumps(event_data)}
-            for attempt in range(1, MAX_RETRIES + 1):
+            for attempt in tqdm(range(1, MAX_RETRIES + 1), desc="Processing", unit="item"):
                 try:
                     result = self.redis_client.xadd("sovereign_event_stream", stream_payload, maxlen=10000)
                     if inspect.isawaitable(result):

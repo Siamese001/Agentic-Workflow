@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,
 )
 from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+from tqdm import tqdm
 
 _emit_emits_metric_event("NervousSystemAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("NervousSystemAgent", "p4obs", "metric_2")
@@ -350,7 +351,7 @@ class NervousSystemAgent(SovereignBaseAgent):
         expired = [l for l, info in self.coverage_bias_state.items() if info["remaining_cycles"] <= 0]
         for l in expired:
             del self.coverage_bias_state[l]
-        for layer, info in list(self.coverage_bias_state.items()):
+        for layer, info in tqdm(list(self.coverage_bias_state.items()), desc="Processing", unit="item"):
             info["remaining_cycles"] = max(0, info["remaining_cycles"] - 1)
             try:
                 coverage_agent = self._get_CoverageAgent()()
@@ -890,7 +891,7 @@ class NervousSystemAgent(SovereignBaseAgent):
         """
         all_violations: list[PhaseViolation] = []
         affected_paths = [Path(f) for f in files or list(self._modified_files)]
-        for phase_name in self.phases.keys():
+        for phase_name in tqdm(self.phases.keys(), desc="Processing", unit="item"):
             validation_report = self.post_phase_validation(phase_name, affected_paths, dry_run=dry_run)
             for loc_viol in validation_report.get("location_validation", {}).get("violations", []):
                 all_violations.append(

@@ -7,7 +7,7 @@ Keyed by policy ID for fast O(1) lookups.
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Callable
 
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -159,6 +159,19 @@ logger = logging.getLogger(__name__)
 _DEFAULT_POLICY_TTL = 3600 * 24 * 30
 
 
+def _require_positive_ttl(ttl_seconds: int) -> int:
+    if ttl_seconds <= 0:
+        raise ValueError(f"ttl_seconds must be > 0, got {ttl_seconds}")
+    return ttl_seconds
+
+
+def _normalize_policy_id(policy_id: str) -> str:
+    normalized = policy_id.strip() if policy_id else ""
+    if not normalized:
+        raise ValueError("Policy ID must not be empty")
+    return normalized
+
+
 class PolicyRegistryCache:
     """Cache for sovereign policy registry lookups.
 
@@ -168,9 +181,11 @@ class PolicyRegistryCache:
 
     def __init__(self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_POLICY_TTL):
         self._cache = cache or get_hot_cache()
-        self._ttl = ttl_seconds
+        self._ttl = _require_positive_ttl(ttl_seconds)
 
-    def get_or_fetch(self, policy_id: str, fetch_policy: Any, *, replay_mode: bool = False) -> dict[str, Any]:
+    def get_or_fetch(
+        self, policy_id: str, fetch_policy: Callable[[], dict[str, Any]], *, replay_mode: bool = False
+    ) -> dict[str, Any]:
         """Read-through helper: return cached policy or call *fetch_policy*.
 
         *fetch_policy* is a zero-argument callable that fetches the policy
@@ -191,37 +206,38 @@ class PolicyRegistryCache:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "PolicyRegistryCache.get_or_fetch"
         )
 
-        if not policy_id or not policy_id.strip():
-            raise ValueError("Policy ID must not be empty")
+        normalized_id = _normalize_policy_id(policy_id)
+        if not callable(fetch_policy):
+            raise TypeError("fetch_policy must be callable")
         if not replay_mode:
             try:
-                cache_key = f"policy:{policy_id}"
+                cache_key = f"policy:{normalized_id}"
                 cached = self._cache.get_json(cache_key)
                 if cached is not None:
-                    logger.debug(f"[Policy cache] HIT for {policy_id}")
+                    logger.debug(f"[Policy cache] HIT for {normalized_id}")
                     return cached
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ConnectionError, ValueError) as e:
                 logger.warning(f"[Policy cache] Cache read failed: {e}")
-        logger.debug(f"[Policy cache] MISS for {policy_id} — fetching from registry")
+        logger.debug(f"[Policy cache] MISS for {normalized_id} — fetching from registry")
         result = fetch_policy()
+        if not isinstance(result, dict):
+            raise TypeError(f"fetch_policy must return a dict, got {type(result).__name__}")
         if not replay_mode:
             try:
-                cache_key = f"policy:{policy_id}"
+                cache_key = f"policy:{normalized_id}"
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ConnectionError, ValueError, TypeError) as e:
                 logger.warning(f"[Policy cache] Cache write failed: {e}")
         return result
 
     def invalidate(self, policy_id: str) -> None:
         """Invalidate cached policy for specific ID."""
         try:
-            cache_key = f"policy:{policy_id}"
+            normalized_id = _normalize_policy_id(policy_id)
+            cache_key = f"policy:{normalized_id}"
             self._cache.delete(cache_key)
-            logger.debug(f"[Policy cache] Invalidated {policy_id}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+            logger.debug(f"[Policy cache] Invalidated {normalized_id}")
+        except (ConnectionError, ValueError) as e:
             logger.warning(f"[Policy cache] Invalidation failed: {e}")
 
 

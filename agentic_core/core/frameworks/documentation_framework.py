@@ -235,7 +235,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
         methods = [node for node in cls.body if isinstance(node, ast.FunctionDef)]
         if methods:
             content += "### Methods\n\n"
-            for method in methods:
+            for method in tqdm(methods, desc="Processing", unit="item"):
                 content += f"#### {method.name}\n"
 
                 # Add parameters
@@ -303,7 +303,7 @@ class APIDocumentationGenerator(DocumentationGenerator):
         # Class examples
         if classes:
             examples += "### Class Usage\n\n"
-            for cls in classes[:3]:  # Limit to first 3 classes
+            for cls in tqdm(classes[:3], desc="Processing", unit="item"):  # Limit to first 3 classes
                 examples += f"```python\n# Using {cls.name}\n"
                 examples += f"{cls.name.lower()} = {cls.name}()\n"
 
@@ -452,7 +452,7 @@ The Agentic Workflow system is a multi-layered architecture designed for autonom
         """Generate documentation for each architectural layer."""
         sections = []
 
-        for layer_code, layer_desc in self.layer_mapping.items():
+        for layer_code, layer_desc in tqdm(self.layer_mapping.items(), desc="Processing", unit="item"):
             content = f"## {layer_code}: {layer_desc}\n\n"
 
             if layer_code == "L0":
@@ -1858,6 +1858,7 @@ import ipdb; ipdb.set_trace()
 ```python
 # Inspect runtime state
 from agentic_core.L4_state.state_manager import StateManager
+from tqdm import tqdm
 state = StateManager.get_current_state()
 print(json.dumps(state, indent=2))
 ```

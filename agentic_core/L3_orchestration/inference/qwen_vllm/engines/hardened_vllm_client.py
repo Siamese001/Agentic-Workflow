@@ -23,6 +23,7 @@ from agentic_core.L3_orchestration.inference.qwen_vllm.engines.optimized_vllm_cl
     VLLMRequest,
     VLLMResponse,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -224,7 +225,7 @@ class HardenedVLLMClient:
         """Execute inference with retry logic."""
         last_error: Exception | None = None
 
-        for attempt in range(self.retry_config.max_retries + 1):
+        for attempt in tqdm(range(self.retry_config.max_retries + 1), desc="Processing", unit="item"):
             try:
                 response = await self.base_client.infer(request)
 

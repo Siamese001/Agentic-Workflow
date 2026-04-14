@@ -159,6 +159,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("AutonomyGuardianAgent", "p4obs", "metric_2")
@@ -327,7 +328,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
         actual_execute = execute and (not dry_run)
         violations = self.run()
         counts = {"scripts_purged": 0, "autonomy_violations": 0, "errors": 0}
-        for file_path, reason in violations:
+        for file_path, reason in tqdm(violations, desc="Processing", unit="item"):
             if "FORBIDDEN_RUNNER_SCRIPT" in reason:
                 if actual_execute:
                     try:
@@ -444,7 +445,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                 from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
 
                 agent_paths = list(get_agent_files(agentic_core_dir))
-            for agent_path in agent_paths:
+            for agent_path in tqdm(agent_paths, desc="Processing", unit="item"):
                 if any(pattern in str(agent_path) for pattern in self.exclude_patterns):
                     continue
                 try:
@@ -481,7 +482,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
                             lines = content.split("\n")
                             class_indent = None
                             insert_line = None
-                            for i, line in enumerate(lines):
+                            for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
                                 if "class " in line and "Agent" in line:
                                     class_indent = len(line) - len(line.lstrip())
                                     for j in range(i + 1, len(lines)):

@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("trim_remaining_airlocks_util", "p4obs", "metric_1")
 _emit_emits_metric_event("trim_remaining_airlocks_util", "p4obs", "metric_2")
@@ -208,7 +209,7 @@ def aggressive_trim(init_file: Any) -> Any:
     if len(new_lines) > 50:
         condensed: Any = []
         in_all: Any = False
-        for line in new_lines:
+        for line in tqdm(new_lines, desc="Processing", unit="item"):
             if "__all__" in line and "[" in line:
                 condensed.append(line)
             elif "__all__" in line:

@@ -34,6 +34,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_replay_key,
 )
 from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
+from tqdm import tqdm
 
 # ADG wiring for rule drafting engine
 _emit_records_execution_trace("rule_drafting_engine", "p0", "rule_drafting_trace")
@@ -344,7 +345,7 @@ class RuleDraftingEngine:
         # Analyze root cause for structural issues
         structural_keywords = ["schema", "structure", "architecture", "design"]
         if any(kw in root_cause.lower() for kw in structural_keywords):
-            for component in affected_components:
+            for component in tqdm(affected_components, desc="Processing", unit="item"):
                 if component in self.MUTABLE_COMPONENTS:
                     proposal = RuleProposal(
                         proposal_id=stable_sha256_json(
@@ -381,7 +382,7 @@ class RuleDraftingEngine:
         proposals: list[RuleProposal] = []
 
         # Generate fix proposals for affected components
-        for component in affected_components:
+        for component in tqdm(affected_components, desc="Processing", unit="item"):
             if component in self.MUTABLE_COMPONENTS:
                 # Determine fix type from root cause
                 fix_action = self._determine_fix_action(root_cause)
@@ -426,7 +427,7 @@ class RuleDraftingEngine:
         # Check if revert is warranted
         revert_keywords = ["regression", "breakage", "failure", "error"]
         if any(kw in root_cause.lower() for kw in revert_keywords):
-            for component in affected_components:
+            for component in tqdm(affected_components, desc="Processing", unit="item"):
                 if component in self.MUTABLE_COMPONENTS:
                     proposal = RuleProposal(
                         proposal_id=stable_sha256_json(

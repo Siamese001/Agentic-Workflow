@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tool_registry", "p4obs", "metric_1")
 _emit_emits_metric_event("tool_registry", "p4obs", "metric_2")
@@ -343,7 +344,7 @@ class tool_registry:
         task_embedding: Any = await self.embedder.embed_query(task_description)
         task_vec: Any = np.array(task_embedding)
         matches: Any = []
-        for i, tool_name in enumerate(self._tool_names):
+        for i, tool_name in tqdm(enumerate(self._tool_names), desc="Processing", unit="item"):
             tool: Any = self.tools[tool_name]
             if categories and tool.category not in categories:
                 continue

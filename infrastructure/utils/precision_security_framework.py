@@ -10,7 +10,7 @@ import json
 import logging
 import re
 import secrets
-import time
+import uuid
 from collections import deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -665,11 +665,11 @@ class PrecisionAuditLogger:
         details: dict[str, Any] = None,
     ) -> str:
         """Log security event with cryptographic chain."""
-        log_id = f"audit_{int(time.time())}_{secrets.token_hex(8)}"
+        log_id = f"audit_{uuid.uuid4().hex}"
 
         audit_log = PrecisionAuditLog(
             log_id=log_id,
-            timestamp=datetime.now(),
+            timestamp=datetime.utcnow(),
             event_type=event_type,
             user_id=user_id,
             session_id=session_id,
@@ -738,7 +738,7 @@ class PrecisionAuditLogger:
     def get_audit_metrics(self) -> dict[str, Any]:
         """Get audit logging metrics."""
         # Calculate logs per hour
-        now = datetime.now()
+        now = datetime.utcnow()
         one_hour_ago = now - timedelta(hours=1)
         recent_logs = [log for log in self.log_chain if log.timestamp >= one_hour_ago]
         self.audit_metrics["logs_per_hour"] = len(recent_logs)

@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("omni_context_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("omni_context_engine", "p4obs", "metric_2")
@@ -206,7 +207,7 @@ class OmniContext(SubAtomicAgent):
     def _build_context_buffer(self):
         """Build a concatenated buffer of all Python code."""
         sections = []
-        for file_path in self.ctx.python_files:
+        for file_path in tqdm(self.ctx.python_files, desc="Processing", unit="item"):
             if file_path in self.ctx.skip_files:
                 continue
             try:

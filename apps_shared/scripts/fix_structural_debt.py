@@ -17,6 +17,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "fix_structural_debt", "uwg_governed_write")
 _emit_writes_through("p1", "fix_structural_debt", "uwg_governed_write_2")
@@ -53,7 +54,7 @@ def fix_globals(tree: Any, source_lines: Any) -> Any:
     """Key 25: Add comments to global variables for manual review."""
     lines: Any = source_lines.copy()
     fixed: Any = False
-    for node in tree.body:
+    for node in tqdm(tree.body, desc="Processing", unit="item"):
         if isinstance(node, ast.Assign):
             for target in node.targets:
                 if isinstance(target, ast.Name):

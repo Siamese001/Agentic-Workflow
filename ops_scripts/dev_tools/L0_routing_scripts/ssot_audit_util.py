@@ -141,6 +141,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_audit_util", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_audit_util", "p4obs", "metric_2")
@@ -214,14 +215,14 @@ def find_gravity_violations():
     # Phase 4.1: Use ssot_discovery instead of rglob
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(ROOT / AGENTIC_CORE_DIR):
+    for py_file in tqdm(get_python_files(ROOT / AGENTIC_CORE_DIR), desc="Processing", unit="item"):
         file_layer = get_canonical_layer(py_file)
         if not file_layer or file_layer == "Unknown":
             continue
         try:
             content = py_file.read_text(encoding="utf-8")
             tree = ast.parse(content)
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.ImportFrom) and node.module:
                     import_path = node.module.replace(".", "/")
                     import_layer = get_canonical_layer(import_path)
@@ -249,7 +250,7 @@ def find_syntax_errors():
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     errors = []
-    for folder in APPROVED_FOLDERS:
+    for folder in tqdm(APPROVED_FOLDERS, desc="Processing", unit="item"):
         folder_path = ROOT / folder
         if folder_path.exists():
             for py_file in get_python_files(folder_path):
@@ -271,7 +272,7 @@ def find_naming_violations():
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
     violations = []
-    for folder in APPROVED_FOLDERS:
+    for folder in tqdm(APPROVED_FOLDERS, desc="Processing", unit="item"):
         folder_path = ROOT / folder
         if folder_path.exists():
             for py_file in get_python_files(folder_path):

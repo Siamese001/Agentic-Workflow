@@ -38,6 +38,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from system_learning.enforcement.determinism import deterministic_json, stable_sha256_json
 from system_learning.engines.rule_drafting_engine import RuleProposal
+from tqdm import tqdm
 
 # ADG wiring for approval gauntlet engine
 _emit_records_execution_trace("approval_gauntlet_engine", "p0", "approval_gauntlet_trace")
@@ -252,7 +253,7 @@ class ApprovalGauntletEngine:
         rejected: list[str] = []
         loop: list[str] = []
 
-        for proposal in proposals:
+        for proposal in tqdm(proposals, desc="Processing", unit="item"):
             # Run gauntlet gates
             gate_results = self._run_gauntlet_gates(proposal, shadow_validation_results)
 

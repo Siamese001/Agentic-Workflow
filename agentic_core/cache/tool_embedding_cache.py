@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from typing import Any
+from typing import Any, Callable
 
 from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
@@ -163,6 +163,25 @@ _emit_links_execution_to_snapshot("p4", "tool_embedding_cache", "exec_snapshot_l
 
 logger = logging.getLogger(__name__)
 _DEFAULT_EMBEDDING_TTL = 3600 * 24 * 7  # 7 days - tool sets change rarely
+_MAX_EMBEDDING_ROWS = 2048
+_MAX_EMBEDDING_DIM = 8192
+
+
+def _require_positive_ttl(ttl_seconds: int) -> int:
+    if ttl_seconds <= 0:
+        raise ValueError(f"ttl_seconds must be > 0, got {ttl_seconds}")
+    return ttl_seconds
+
+
+def _validate_embedding_payload(embeddings: Any, tool_names: Any) -> None:
+    if not isinstance(embeddings, list) or not isinstance(tool_names, list):
+        raise TypeError("fetch_embeddings must return (list[list[float]], list[str])")
+    if len(embeddings) != len(tool_names):
+        raise ValueError("embeddings and tool_names length mismatch")
+    if len(embeddings) > _MAX_EMBEDDING_ROWS:
+        raise ValueError(f"Embedding matrix exceeds max rows {_MAX_EMBEDDING_ROWS}: got {len(embeddings)}")
+    if embeddings and isinstance(embeddings[0], list) and len(embeddings[0]) > _MAX_EMBEDDING_DIM:
+        raise ValueError(f"Embedding dimension exceeds max {_MAX_EMBEDDING_DIM}: got {len(embeddings[0])}")
 
 
 class ToolEmbeddingCache:
@@ -178,12 +197,12 @@ class ToolEmbeddingCache:
         ttl_seconds: int = _DEFAULT_EMBEDDING_TTL,
     ):
         self._cache = cache or get_hot_cache()
-        self._ttl = ttl_seconds
+        self._ttl = _require_positive_ttl(ttl_seconds)
 
     def get_or_fetch(
         self,
         tool_definitions: list[dict[str, Any]],
-        fetch_embeddings: Any,
+        fetch_embeddings: Callable[[], tuple[list[list[float]], list[str]]],
         *,
         replay_mode: bool = False,
     ) -> tuple[list[list[float]], list[str]]:
@@ -212,6 +231,8 @@ class ToolEmbeddingCache:
 
         if not tool_definitions:
             raise ValueError("Tool definitions list must not be empty")
+        if not callable(fetch_embeddings):
+            raise TypeError("fetch_embeddings must be callable")
         if not replay_mode:
             try:
                 fingerprint = self._compute_tool_fingerprint(tool_definitions)
@@ -223,10 +244,11 @@ class ToolEmbeddingCache:
             except ValueError as e:
                 logger.warning(f"Invalid input: {e}")
                 raise
-            except Exception as e:
+            except (ConnectionError, OSError) as e:
                 logger.warning(f"[Tool embedding cache] Cache read failed: {e}")
         logger.debug("[Tool embedding cache] MISS — computing embeddings")
         embeddings, tool_names = fetch_embeddings()
+        _validate_embedding_payload(embeddings, tool_names)
         if not replay_mode:
             try:
                 fingerprint = self._compute_tool_fingerprint(tool_definitions)
@@ -236,10 +258,7 @@ class ToolEmbeddingCache:
                     {"embeddings": embeddings, "tool_names": tool_names},
                     ttl_seconds=self._ttl,
                 )
-            except ValueError:
-                pass
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ValueError, ConnectionError, OSError) as e:
                 logger.warning(f"[Tool embedding cache] Cache write failed: {e}")
         return (embeddings, tool_names)
 

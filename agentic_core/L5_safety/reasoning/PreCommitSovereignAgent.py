@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("PreCommitSovereignAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("PreCommitSovereignAgent", "p4obs", "metric_2")
@@ -313,9 +314,9 @@ class PreCommitSovereignAgent(SovereignBaseAgent, L0RoutingBase):
     def _filter_staged_violations(self, report: Any, staged_files: list[str]) -> list[ViolationReport]:
         """Filter violations to only those in staged files."""
         staged_violations = []
-        for violation in report.import_violations:
+        for violation in tqdm(report.import_violations, desc="Processing", unit="item"):
             violation_path = str(violation.file_path)
-            for staged_file in staged_files:
+            for staged_file in tqdm(staged_files, desc="Processing", unit="item"):
                 if self._paths_match(violation_path, staged_file):
                     staged_violations.append(
                         ViolationReport(

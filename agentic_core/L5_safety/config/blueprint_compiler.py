@@ -40,6 +40,7 @@ from agentic_core.L0_routing.config.path_constants import (
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_records_execution_trace("p0", "evidence", "blueprint_compiler")
 # Standard LCD subfolders for L0-L6 layers
@@ -164,7 +165,7 @@ def _identify_l4_folders(
     # Known L4 folders from territory definitions
     l4_indicators = ("l4_specializations", "l4_depth", "depth_4")
 
-    for territory_name, territory_def in territories.items():
+    for territory_name, territory_def in tqdm(territories.items(), desc="Processing", unit="item"):
         if not isinstance(territory_def, dict):
             continue
 
@@ -172,7 +173,7 @@ def _identify_l4_folders(
         if not isinstance(subfolders, dict):
             continue
 
-        for sf_name, sf_def in subfolders.items():
+        for sf_name, sf_def in tqdm(subfolders.items(), desc="Processing", unit="item"):
             if not isinstance(sf_def, dict):
                 continue
 
@@ -249,7 +250,7 @@ def compile_blueprint(territories: Mapping[str, Any]) -> CompiledBlueprint:
     apps_lic_map: dict[str, list[str]] = {}
     apps_shared_map: dict[str, list[str]] = {}
 
-    for territory_name, territory_def in territories.items():
+    for territory_name, territory_def in tqdm(territories.items(), desc="Processing", unit="item"):
         if not isinstance(territory_def, dict):
             continue
 
@@ -258,7 +259,7 @@ def compile_blueprint(territories: Mapping[str, Any]) -> CompiledBlueprint:
         # Build core_subfolder_map for agentic_core territories
         if territory_name == AGENTIC_CORE_DIR:
             # Process agentic_core's nested structure
-            for domain_name, domain_def in subfolders.items():
+            for domain_name, domain_def in tqdm(subfolders.items(), desc="Processing", unit="item"):
                 if isinstance(domain_def, dict):
                     nested_sfs = domain_def.get("subfolders", {})
                     core_subfolder_map[domain_name] = _extract_subfolder_names(nested_sfs)

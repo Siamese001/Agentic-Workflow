@@ -98,6 +98,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ssot_discovery_util", "p4obs", "metric_1")
 _emit_emits_metric_event("ssot_discovery_util", "p4obs", "metric_2")
@@ -290,7 +291,7 @@ def get_agent_paths(
     agents = load_agent_discovery(project_root)
     paths = []
 
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         path_str = agent.get("path", "") or agent.get("file", "")
         if not path_str:
             continue
@@ -499,7 +500,7 @@ def get_all_files(
     all_files = {}
 
     # Get all files recursively
-    for file_path in project_root.rglob("*"):
+    for file_path in tqdm(project_root.rglob("*"), desc="Processing", unit="item"):
         if file_path.is_file():
             # Apply exclusions
             if any(pattern in str(file_path) for pattern in exclude_patterns):

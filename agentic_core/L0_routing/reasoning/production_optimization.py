@@ -26,6 +26,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_learning_event,
     _emit_stores_learning_state,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -527,7 +528,7 @@ class PerformanceOptimizer:
         """Optimize model using all available compressors"""
         optimization_results = {}
 
-        for compressor in self.compressors:
+        for compressor in tqdm(self.compressors, desc="Processing", unit="item"):
             try:
                 compressed_model, metrics = compressor.compress(model)
                 compressor_name = type(compressor).__name__
@@ -585,7 +586,7 @@ class PerformanceOptimizer:
         best_key = None
         best_score = -float("inf")
 
-        for key in candidate_keys:
+        for key in tqdm(candidate_keys, desc="Processing", unit="item"):
             _, metrics = self.compressed_models[key]
 
             # Calculate score based on optimization target
@@ -656,7 +657,7 @@ class PerformanceOptimizer:
             for compressor_name, metrics in result["results"].items():
                 compressor_stats[compressor_name].append(metrics)
 
-        for compressor_name, metrics_list in compressor_stats.items():
+        for compressor_name, metrics_list in tqdm(compressor_stats.items(), desc="Processing", unit="item"):
             if metrics_list:
                 avg_compression = np.mean([m.compression_ratio for m in metrics_list])
                 avg_latency_improvement = np.mean([m.latency_improvement for m in metrics_list])

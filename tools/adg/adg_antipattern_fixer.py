@@ -36,6 +36,8 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from tqdm import tqdm
+
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -260,7 +262,7 @@ class GuardianCommentFixer:
         changes: list[FixChange] = []
         warnings: list[str] = []
 
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             fixed, warn = _fix_line(line.rstrip("\n").rstrip("\r"))
             if warn:
                 warnings.append(f"Line {i + 1}: {warn}")
@@ -396,7 +398,7 @@ def _cli() -> None:
 
     total_fixed = 0
     total_warnings = 0
-    for f in file_list:
+    for f in tqdm(file_list, desc="Processing", unit="item"):
         p = Path(f)
         if not p.exists():
             print(f"SKIP (not found): {f}")

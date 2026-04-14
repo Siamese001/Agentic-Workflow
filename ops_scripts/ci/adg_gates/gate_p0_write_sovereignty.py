@@ -17,6 +17,7 @@ from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
 from ops_scripts.ci.adg_gates.gate_policy import ExecutionPolicy
+from tqdm import tqdm
 
 
 class WriteSovereigntyGate(ADGGateBase):
@@ -71,7 +72,7 @@ class WriteSovereigntyGate(ADGGateBase):
                   AND src.file_path NOT LIKE '%write_gateway%'
                 LIMIT 100
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 src_node_id, src_file, layer, dst_file = row[0], row[1], row[2], row[3]
                 in_mod = self._is_in_modified_area(src_file)
                 if in_mod:
@@ -138,7 +139,7 @@ class WriteSovereigntyGate(ADGGateBase):
                 FROM mv_write_sovereignty_paths
                 WHERE is_uwg_routed = 0
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 (
                     edge_id,
                     writer_file,
@@ -196,7 +197,7 @@ class WriteSovereigntyGate(ADGGateBase):
                 FROM mv_new_write_bypass_paths
                 WHERE is_new = 1
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 edge_id, src_file, src_layer, bypass_type, source_file, line_no, _ = row
 
                 summary["new_bypass_paths"] += 1

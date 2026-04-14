@@ -13,6 +13,7 @@ from agentic_core.L0_routing.config.path_constants import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from tqdm import tqdm
 
 
 def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
@@ -27,7 +28,7 @@ def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
         GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES,
     )
 
-    for py_file in project_root.rglob("*.py"):
+    for py_file in tqdm(project_root.rglob("*.py"), desc="Processing", unit="item"):
         # Skip excluded directories
         if any(pattern in str(py_file) for pattern in exclude_patterns):
             continue
@@ -60,7 +61,7 @@ def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]
     suspicious = []
     exclude_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
-    for py_file in project_root.rglob("*.py"):
+    for py_file in tqdm(project_root.rglob("*.py"), desc="Processing", unit="item"):
         if any(pattern in str(py_file) for pattern in exclude_patterns):
             continue
 

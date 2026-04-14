@@ -10,6 +10,7 @@ This script identifies entries that may be misclassified as Sovereign Agents:
 
 import json
 from pathlib import Path
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"
@@ -30,7 +31,7 @@ def analyze_suspects():
         "clients": [],
         "data_classes": [],
     }
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         path = agent.get("path", "").replace("\\", "/").lower()
         name = agent.get("class_name", "")
         has_healing = agent.get("has_healing", False)
@@ -47,7 +48,7 @@ def analyze_suspects():
             suspects["clients"].append(agent)
         if not has_healing and (not name.endswith("Agent")):
             suspects["data_classes"].append(agent)
-    for category, items in suspects.items():
+    for category, items in tqdm(suspects.items(), desc="Processing", unit="item"):
         if items:
             print(f"\n{category.upper()} ({len(items)} entries):")
             print("-" * 60)

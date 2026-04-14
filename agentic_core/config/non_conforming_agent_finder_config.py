@@ -147,6 +147,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("non_conforming_agent_finder_config", "p4obs", "metric_1")
 _emit_emits_metric_event("non_conforming_agent_finder_config", "p4obs", "metric_2")
@@ -250,7 +251,9 @@ class NonConformingAgentFinder(ast.NodeVisitor):
 
         # Check for NOT_AN_AGENT exclusion comment on preceding lines (up to 3 lines back for decorators)
         line_idx = node.lineno - 1  # 0-indexed
-        for offset in range(1, 4):  # Check up to 3 lines before class definition
+        for offset in tqdm(
+            range(1, 4), desc="Processing", unit="item"
+        ):  # Check up to 3 lines before class definition
             check_idx = line_idx - offset
             if check_idx >= 0:
                 prev_line = self.source_lines[check_idx].strip()
@@ -294,7 +297,7 @@ def main():
     # Phase 6.9: Use ssot_discovery instead of rglob
 
     py_files = list(get_python_files(AGENTIC_CORE))
-    for py_file in py_files:
+    for py_file in tqdm(py_files, desc="Processing", unit="item"):
         if any(ex in str(py_file) for ex in EXCLUDED_DIRS):
             continue
 

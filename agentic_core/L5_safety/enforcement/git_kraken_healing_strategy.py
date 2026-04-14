@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("git_kraken_healing_strategy", "p4obs", "metric_1")
 _emit_emits_metric_event("git_kraken_healing_strategy", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ class GitKrakenHealingStrategy:
         for issue in issues:
             if "file" in issue:
                 file_groups.setdefault(issue["file"], []).append(issue)
-        for file_path, file_issues in file_groups.items():
+        for file_path, file_issues in tqdm(file_groups.items(), desc="Processing", unit="item"):
             fixes.append(
                 {
                     "action": "git_healing_commit",

@@ -119,6 +119,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verify_territory_counts_util", "p4obs", "metric_1")
 _emit_emits_metric_event("verify_territory_counts_util", "p4obs", "metric_2")
@@ -179,7 +180,7 @@ def main():
     in_data = False
     brace_count = 0
     with open("agentic_core/L6_observability/dashboards/autonomy_dashboard.html", encoding="utf-8") as f:
-        for line in f:
+        for line in tqdm(f, desc="Processing", unit="item"):
             if "const dashboardData = [" in line:
                 in_data = True
                 lines.append("[")

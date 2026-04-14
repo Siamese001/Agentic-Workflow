@@ -105,6 +105,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("cost_governor_types", "p4obs", "metric_1")
 _emit_emits_metric_event("cost_governor_types", "p4obs", "metric_2")
@@ -257,7 +258,7 @@ class CostGovernor:
             if not self.usage_history:
                 return {"total_requests": 0}
             model_usage: Any = {}
-            for record in self.usage_history:
+            for record in tqdm(self.usage_history, desc="Processing", unit="item"):
                 if record.model not in model_usage:
                     model_usage[record.model] = {
                         "requests": 0,
@@ -315,7 +316,7 @@ class CostGovernor:
             writer.writerow(
                 ["timestamp", "model", "input_tokens", "output_tokens", "cost", "cumulative_spend"],
             )
-            for record in self.usage_history:
+            for record in tqdm(self.usage_history, desc="Processing", unit="item"):
                 writer.writerow(
                     [
                         record.timestamp,

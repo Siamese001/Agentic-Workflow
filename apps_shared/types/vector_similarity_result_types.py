@@ -85,7 +85,7 @@ class EnhancedSemanticCache:
         if not query_embedding:
             query_embedding = self._get_embedding(query)
         results = []
-        for key, entry in self.entries.items():
+        for key, entry in tqdm(self.entries.items(), desc="Processing", unit="item"):
             if entry.is_expired():
                 continue
             similarity = self._cosine_similarity(query_embedding, entry.embedding)
@@ -298,3 +298,4 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm

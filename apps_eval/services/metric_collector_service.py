@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_captures_evaluation_metric,
     _emit_records_telemetry_event,
 )

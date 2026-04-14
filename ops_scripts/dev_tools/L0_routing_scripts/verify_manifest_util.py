@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verify_manifest_util", "p4obs", "metric_1")
 _emit_emits_metric_event("verify_manifest_util", "p4obs", "metric_2")
@@ -204,7 +205,7 @@ def analyze_impact(report: dict[str, Any]) -> bool:
     violations = phase1.get("violations_found", [])
     total_violations = len(violations)
     by_type = {}
-    for v in violations:
+    for v in tqdm(violations, desc="Processing", unit="item"):
         d_type = v.get("type", "UNKNOWN")
         by_type[d_type] = by_type.get(d_type, 0) + 1
     logging.info(f"--- IMPACT ANALYSIS: {meta.get('territory', 'Unknown')} ---")

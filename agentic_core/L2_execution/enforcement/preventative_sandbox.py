@@ -144,6 +144,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("preventative_sandbox", "p4obs", "metric_1")
 _emit_emits_metric_event("preventative_sandbox", "p4obs", "metric_2")
@@ -207,8 +208,13 @@ _WRITE_VECTORS: list[_PatchTarget] = [
     _PatchTarget("builtins", "open", "filesystem"),
     _PatchTarget("os", "remove", "filesystem"),
     _PatchTarget("os", "rename", "filesystem"),
+    _PatchTarget("os", "replace", "filesystem"),
     _PatchTarget("os", "unlink", "filesystem"),
     _PatchTarget("os", "makedirs", "filesystem"),
+    _PatchTarget("pathlib", "Path", "filesystem"),
+    _PatchTarget("shutil", "rmtree", "filesystem"),
+    _PatchTarget("shutil", "copy2", "filesystem"),
+    _PatchTarget("shutil", "move", "filesystem"),
     _PatchTarget("subprocess", "run", "process"),
     _PatchTarget("subprocess", "Popen", "process"),
     _PatchTarget("subprocess", "call", "process"),
@@ -217,6 +223,12 @@ _WRITE_VECTORS: list[_PatchTarget] = [
     _PatchTarget("os", "system", "process"),
     _PatchTarget("os", "popen", "process"),
     _PatchTarget("socket", "socket", "network"),
+    _PatchTarget("socket", "create_connection", "network"),
+    _PatchTarget("urllib.request", "urlopen", "network"),
+    _PatchTarget("importlib", "import_module", "dynamic"),
+    _PatchTarget("builtins", "eval", "dynamic"),
+    _PatchTarget("builtins", "exec", "dynamic"),
+    _PatchTarget("builtins", "compile", "dynamic"),
 ]
 
 
@@ -272,7 +284,7 @@ class PreventativeSandbox:
 
     def _patch_all(self) -> None:
         """Replace all write vectors with guards."""
-        for target in self._all_targets():
+        for target in tqdm(self._all_targets(), desc="Processing", unit="item"):
             key = f"{target.module_path}.{target.attr_name}"
             try:
                 mod = _resolve_module(target.module_path)
@@ -287,8 +299,8 @@ class PreventativeSandbox:
                 setattr(mod, target.attr_name, self._make_guard(target))
                 Logger.debug(f"[sandbox] patched {key}")
             except ImportError as e:
-                raise ImportError(f"Required dependency missing: {e}")  # guardian: allow-silent-swallow
-                Logger.debug(f"[sandbox] skip {key}: module not available")
+                Logger.debug(f"[sandbox] skip {key}: optional module unavailable: {e}")
+                continue
 
     def _restore_all(self) -> None:
         """Restore all original functions."""

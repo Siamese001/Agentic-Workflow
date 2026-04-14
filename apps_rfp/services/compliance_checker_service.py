@@ -10,7 +10,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_records_execution_trace,
@@ -19,6 +19,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_snapshots_state,
     _emit_validates_capability,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -62,7 +63,7 @@ class ComplianceCheckerService:
 
         results: list[dict[str, Any]] = []
 
-        for req in requirements:
+        for req in tqdm(requirements, desc="Processing", unit="item"):
             req_id = req.get("req_id", "unknown")
             req_text = req.get("text", "")
             req_priority = req.get("priority", "preferred")

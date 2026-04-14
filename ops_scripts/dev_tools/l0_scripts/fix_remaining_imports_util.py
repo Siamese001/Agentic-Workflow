@@ -9,8 +9,9 @@ files = [
     "apps_lic/engines/k1_routing_agent.py",
 ]
 from pathlib import Path
+from tqdm import tqdm
 
-for file_path in files:
+for file_path in tqdm(files, desc="Processing", unit="item"):
     path = Path(file_path)
     if path.exists():
         content = path.read_text(encoding="utf-8")

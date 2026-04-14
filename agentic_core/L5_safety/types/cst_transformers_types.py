@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("cst_transformers_types", "p4obs", "metric_1")
 _emit_emits_metric_event("cst_transformers_types", "p4obs", "metric_2")
@@ -604,7 +605,7 @@ class SurgicalBlankLineNormalizer(cst.CSTTransformer):
 
         new_body = []
         consecutive_empty = 0
-        for stmt in updated_node.body:
+        for stmt in tqdm(updated_node.body, desc="Processing", unit="item"):
             if hasattr(stmt, "leading_lines") and stmt.leading_lines:
                 new_leading = []
                 for line in stmt.leading_lines:
@@ -713,7 +714,7 @@ def create_type_hint_inserter(violations) -> SurgicalTypeHintInserter | None:
         SurgicalTypeHintInserter instance or None if no type hint violations
     """
     type_hint_targets = []
-    for violation in violations:
+    for violation in tqdm(violations, desc="Processing", unit="item"):
         if violation.constraint_type == "missing_type_hint" and violation.fix_type == "insert":
             if violation.target_coordinate:
                 name = None
@@ -786,7 +787,7 @@ def create_import_remover(violations) -> SurgicalImportRemover | None:
         SurgicalImportRemover instance or None if no import violations
     """
     import_targets = []
-    for violation in violations:
+    for violation in tqdm(violations, desc="Processing", unit="item"):
         if violation.constraint_type == "unused_import" and violation.fix_type == "delete":
             if violation.target_coordinate:
                 module_name = None
@@ -814,7 +815,7 @@ def create_docstring_inserter(violations) -> SurgicalDocstringInserter | None:
         SurgicalDocstringInserter instance or None if no docstring violations
     """
     docstring_targets = []
-    for violation in violations:
+    for violation in tqdm(violations, desc="Processing", unit="item"):
         if violation.constraint_type == "missing_docstring" and violation.fix_type == "insert":
             if violation.target_coordinate:
                 name = None

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Any
+from tqdm import tqdm
 
 
 class AgentRole(Enum):
@@ -277,7 +278,7 @@ Remember: Your resumes open doors to opportunities. Every word must serve the ca
                 formatted.append(f"Protocol Rules: {context['protocol_rules']}")
 
         # Add any additional context
-        for key, value in context.items():
+        for key, value in tqdm(context.items(), desc="Processing", unit="item"):
             if key not in [
                 "query",
                 "sources",

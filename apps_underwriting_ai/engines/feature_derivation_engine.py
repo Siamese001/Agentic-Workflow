@@ -2,6 +2,7 @@
 Feature Derivation Engine - Computes all RiskFeatures deterministically.
 """
 
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from ..engines.document_reconciliation_engine import ReconciliationResult
@@ -223,15 +224,11 @@ class FeatureDerivationEngine:
 
         # Adjust by appraisal recency
         if collateral.appraisal_date:
-            from datetime import datetime
-
-            try:
-                appraisal_dt = datetime.fromisoformat(collateral.appraisal_date.replace("Z", "+00:00"))
-                days_old = (datetime.now() - appraisal_dt).days
+            appraisal_dt = self._parse_iso_datetime(collateral.appraisal_date)
+            if appraisal_dt is not None:
+                days_old = (datetime.now(timezone.utc) - appraisal_dt).days
                 if days_old > 365:
                     quality_score -= 0.1
-            except Exception:
-                pass
 
         features.collateral_quality_score = max(0.0, min(1.0, quality_score))
 
@@ -549,3 +546,17 @@ class FeatureDerivationEngine:
                 return 0.3
         except statistics.StatisticsError:
             return 0.5
+
+    @staticmethod
+    def _parse_iso_datetime(value: str):
+        """Parse ISO-like datetimes into timezone-aware datetime objects."""
+        normalized = (value or "").strip().replace("Z", "+00:00")
+        if not normalized:
+            return None
+        try:
+            parsed = datetime.fromisoformat(normalized)
+        except ValueError:
+            return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed

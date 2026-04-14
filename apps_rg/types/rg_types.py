@@ -9,7 +9,26 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
+
+try:
+    from pydantic import field_validator
+except ImportError:
+    from pydantic import validator as _validator
+
+    def field_validator(*fields, **kwargs):
+        kwargs.pop("mode", None)
+        return _validator(*fields, **kwargs)
+
+
+class RGBaseModel(BaseModel):
+    """Pydantic v1/v2 compatibility base model."""
+
+    def model_dump(self, *args, **kwargs):
+        if hasattr(super(), "model_dump"):
+            return super().model_dump(*args, **kwargs)
+        return self.dict(*args, **kwargs)
+
 
 ResumeStatus = Literal["pending", "analyzing", "generating", "reviewing", "complete", "failed"]
 
@@ -20,7 +39,7 @@ TargetIndustry = Literal["tech", "finance", "healthcare", "consulting", "general
 ExperienceLevel = Literal["entry", "mid", "senior", "executive"]
 
 
-class SkillMatch(BaseModel):
+class SkillMatch(RGBaseModel):
     """A skill match between resume and job requirements."""
 
     skill_name: str = Field(..., min_length=1, description="Skill name")
@@ -29,7 +48,7 @@ class SkillMatch(BaseModel):
     priority: str = Field("medium", description="Skill priority level")
 
 
-class ExperienceEntry(BaseModel):
+class ExperienceEntry(RGBaseModel):
     """A single work experience entry."""
 
     company: str = Field(..., min_length=1, description="Company name")
@@ -39,7 +58,7 @@ class ExperienceEntry(BaseModel):
     technologies: list[str] = Field(default_factory=list, description="Technologies used")
 
 
-class ResumeSection(BaseModel):
+class ResumeSection(RGBaseModel):
     """One section of a resume."""
 
     section_id: str = Field(..., min_length=1, description="Unique section ID")
@@ -55,7 +74,7 @@ class ResumeSection(BaseModel):
         return v.strip()
 
 
-class ResumeConfig(BaseModel):
+class ResumeConfig(RGBaseModel):
     """Resume generation configuration."""
 
     target_format: ResumeFormat = Field("standard", description="Target resume format")
@@ -65,7 +84,7 @@ class ResumeConfig(BaseModel):
     min_skill_matches: int = Field(5, ge=0, description="Minimum skill matches to include")
 
 
-class ResumeRequest(BaseModel):
+class ResumeRequest(RGBaseModel):
     """Input contract for a single resume generation run."""
 
     candidate_name: str = Field(..., min_length=1, description="Candidate full name")
@@ -86,7 +105,7 @@ class ResumeRequest(BaseModel):
         return v.strip()
 
 
-class ResumeResult(BaseModel):
+class ResumeResult(RGBaseModel):
     """Output contract for a single resume generation run."""
 
     trace_id: str = Field("", description="Trace identifier")
@@ -115,7 +134,7 @@ class ResumeResult(BaseModel):
         return v
 
 
-class ResumeRunSummary(BaseModel):
+class ResumeRunSummary(RGBaseModel):
     """Top-level run summary artifact."""
 
     trace_id: str = Field("", description="Trace identifier")

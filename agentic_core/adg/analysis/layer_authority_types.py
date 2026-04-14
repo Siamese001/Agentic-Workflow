@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("layer_authority", "p4obs", "metric_1")
 _emit_emits_metric_event("layer_authority", "p4obs", "metric_2")
@@ -329,7 +330,7 @@ def detect_layer_authority_violations(result: ScanResult) -> LayerAuthorityRepor
     allowlisted_count = 0
     checked_layers: set[str] = set(LAYER_AUTHORITY_FORBIDDEN.keys())
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         from_name = edge.from_name
         if not from_name.startswith(_MODULE_PREFIX):
             continue

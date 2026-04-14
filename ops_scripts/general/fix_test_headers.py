@@ -4,6 +4,7 @@ The generated test files have problematic headers with Windows paths.
 """
 
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -12,7 +13,7 @@ def fix_test_headers(project_root: Path):
     """Remove problematic headers from generated test files."""
     test_dir = project_root / TESTS_DIR / "unit"
     fixed_count = 0
-    for test_file in test_dir.rglob("*.py"):
+    for test_file in tqdm(test_dir.rglob("*.py"), desc="Processing", unit="item"):
         if test_file.name in ("__init__.py", "conftest.py"):
             continue
         try:

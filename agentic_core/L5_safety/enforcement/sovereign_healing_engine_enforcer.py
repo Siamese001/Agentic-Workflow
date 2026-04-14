@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_healing_engine_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_healing_engine_enforcer", "p4obs", "metric_2")
@@ -250,7 +251,7 @@ class SovereignHealingEngine:
         affected_files: Any = []
         try:
             Logger.info("[L0 HEALING] Starting transaction with backups")
-            for issue in target_issues:
+            for issue in tqdm(target_issues, desc="Processing", unit="item"):
                 action: Any = issue.get("action")
                 if action == "replace_import":
                     fix_successful: Any = await self._exec_replace_import(issue)
@@ -487,8 +488,8 @@ class SovereignHealingEngine:
             await self.git_client.add_and_commit(files=affected_files, message=commit_message)
             Logger.info(f"[L0 HEALING] Created healing commit for {len(affected_files)} files")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.error(f"[L0 HEALING] Failed to create commit: {e}")
+            Logger.exception("[L0 HEALING] Failed to create commit")
+            raise RuntimeError("Failed to create healing commit") from e
 
     async def _create_healing_pr(self):
         """Create a pull request for healed changes."""
@@ -502,8 +503,8 @@ class SovereignHealingEngine:
             )
             Logger.info("[L0 HEALING] Created healing PR for review")
         except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.error(f"[L0 HEALING] Failed to create PR: {e}")
+            Logger.exception("[L0 HEALING] Failed to create PR")
+            raise RuntimeError("Failed to create healing PR") from e
 
 
 async def run_autonomous_healing(issues: list[dict[str, Any]]) -> dict[str, Any]:

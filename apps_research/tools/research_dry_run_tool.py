@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
 _log = logging.getLogger("apps_research.tools.research_dry_run_tool")
@@ -27,7 +28,7 @@ def main() -> int:
     modes = [m.value for m in ArtifactMode]
     failures = 0
 
-    for mode in modes:
+    for mode in tqdm(modes, desc="Processing", unit="item"):
         try:
             req = ResearchRequest(
                 topic=_TOPIC,

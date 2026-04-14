@@ -23,6 +23,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_tool_invocation,
     _emit_validates_capability,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -311,7 +312,7 @@ class ToolRegistry:
         try:
             module = importlib.import_module(module_path)
 
-            for name, obj in inspect.getmembers(module):
+            for name, obj in tqdm(inspect.getmembers(module), desc="Processing", unit="item"):
                 # Check for @tool decorator (has _tool_schema attribute)
                 if inspect.isfunction(obj) and hasattr(obj, "_tool_schema"):
                     schema = obj._tool_schema
@@ -338,7 +339,7 @@ class ToolRegistry:
                     parameters = {}
                     required = []
 
-                    for param_name, param in sig.parameters.items():
+                    for param_name, param in tqdm(sig.parameters.items(), desc="Processing", unit="item"):
                         param_type = "string"  # Default
                         if param.annotation != inspect.Parameter.empty:
                             if param.annotation == str:
@@ -429,7 +430,7 @@ def tool_decorator(
             auto_params = {}
             auto_required = []
 
-            for param_name, param in sig.parameters.items():
+            for param_name, param in tqdm(sig.parameters.items(), desc="Processing", unit="item"):
                 param_type = "string"
                 if param.annotation != inspect.Parameter.empty:
                     if param.annotation == str:

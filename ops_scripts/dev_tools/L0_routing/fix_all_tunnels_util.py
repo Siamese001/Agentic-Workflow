@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_all_tunnels_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_all_tunnels_util", "p4obs", "metric_2")
@@ -198,7 +199,7 @@ def fix_tunnel_violations() -> Any:
     print(f"[*] FIXING ALL TUNNEL VIOLATIONS (target depth: {REQUIRED_DEPTH})...")
     fixed: Any = 0
     all_py = get_python_files(ROOT)
-    for py_file in [f for f in all_py if str(f).startswith(str(CORE))]:
+    for py_file in tqdm([f for f in all_py if str(f).startswith(str(CORE))], desc="Processing", unit="item"):
         if py_file.name == "__init__.py":
             continue
         parts: Any = py_file.relative_to(CORE).parts
@@ -223,7 +224,7 @@ def fix_tunnel_violations() -> Any:
     print(f"\n[OK] TUNNEL FIX COMPLETE. {fixed} files moved to proper depth.")
     print("\n[*] CLEANING UP EMPTY DIRECTORIES...")
     cleaned: Any = 0
-    for root, dirs, _files in os.walk(CORE, topdown=False):
+    for root, dirs, _files in tqdm(os.walk(CORE, topdown=False), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for name in dirs:
             dir_path: Any = Path(root) / name

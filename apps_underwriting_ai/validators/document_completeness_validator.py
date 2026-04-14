@@ -3,9 +3,11 @@ Document Completeness Validator - Verifies required documents are present.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from datetime import datetime, timezone
+from typing import Any, Callable, Dict, List, Optional
 
 from ..types import DocumentPackage, UnderwritingRequest
+from tqdm import tqdm
 
 
 @dataclass
@@ -79,6 +81,9 @@ class DocumentCompletenessValidator:
         "appraisals": 365,
     }
 
+    def __init__(self, now_provider: Optional[Callable[[], datetime]] = None):
+        self._now_provider = now_provider or (lambda: datetime.now(timezone.utc))
+
     def validate(
         self,
         request: UnderwritingRequest,
@@ -101,7 +106,7 @@ class DocumentCompletenessValidator:
         required = self._get_required_documents(product, decision_type)
 
         # Check each required document
-        for doc_type in required:
+        for doc_type in tqdm(required, desc="Processing", unit="item"):
             present, count = self._check_document_present(docs, doc_type)
 
             if not present:
@@ -182,33 +187,40 @@ class DocumentCompletenessValidator:
     ) -> List[str]:
         """Check for stale documents."""
         stale = []
-        from datetime import datetime
 
         # Check collateral appraisal date
         if request.collateral.appraisal_date:
-            try:
-                appraisal_dt = datetime.fromisoformat(
-                    request.collateral.appraisal_date.replace("Z", "+00:00"),
-                )
-                days_old = (datetime.now() - appraisal_dt).days
+            appraisal_dt = self._parse_date(request.collateral.appraisal_date)
+            if appraisal_dt is not None:
+                days_old = (self._now_provider() - appraisal_dt).days
                 threshold = self.FRESHNESS_THRESHOLDS.get("appraisals", 365)
-
                 if days_old > threshold:
                     stale.append(f"appraisal ({days_old} days old)")
-            except Exception:
-                pass
 
         # Check field exam date
         if request.collateral.field_exam_date:
-            try:
-                exam_dt = datetime.fromisoformat(
-                    request.collateral.field_exam_date.replace("Z", "+00:00"),
-                )
-                days_old = (datetime.now() - exam_dt).days
-
+            exam_dt = self._parse_date(request.collateral.field_exam_date)
+            if exam_dt is not None:
+                days_old = (self._now_provider() - exam_dt).days
                 if days_old > 180:
                     stale.append(f"field_exam ({days_old} days old)")
-            except Exception:
-                pass
 
         return stale
+
+    @staticmethod
+    def _parse_date(date_str: str) -> Optional[datetime]:
+        """Parse ISO date or YYYY-MM-DD into timezone-aware datetime."""
+        candidate = (date_str or "").strip()
+        if not candidate:
+            return None
+        normalized = candidate.replace("Z", "+00:00")
+        try:
+            parsed = datetime.fromisoformat(normalized)
+        except ValueError:
+            try:
+                parsed = datetime.strptime(candidate[:10], "%Y-%m-%d")
+            except ValueError:
+                return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed

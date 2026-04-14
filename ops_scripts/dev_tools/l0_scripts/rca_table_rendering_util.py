@@ -72,6 +72,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rca_table_rendering_util", "p4obs", "metric_1")
 _emit_emits_metric_event("rca_table_rendering_util", "p4obs", "metric_2")
@@ -237,7 +238,7 @@ def rca_table_rendering():
         print("   - Territory names in dashboardData MUST match realAgentData keys")
         print("   - Regenerate dashboard to ensure name consistency")
         print("\n   Example mismatches:")
-        for name in sorted(in_dash_not_real)[:5]:
+        for name in tqdm(sorted(in_dash_not_real)[:5], desc="Processing", unit="item"):
             closest = None
             for real_name in real_territories:
                 if name.lower() in real_name.lower() or real_name.lower() in name.lower():

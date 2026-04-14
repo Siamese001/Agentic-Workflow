@@ -16,6 +16,7 @@ import statistics
 
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from .contextual_engine import ContextualIntelligenceEngine, AnalysisResult
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -184,7 +185,7 @@ class PredictiveAnalytics:
         outcomes = {}
         risk_assessments = {}
 
-        for scenario in scenarios:
+        for scenario in tqdm(scenarios, desc="Processing", unit="item"):
             scenario_context = self._apply_scenario_parameters(context, scenario)
             scenario_result = self.contextual_engine.analyze_with_context(scenario_context)
 
@@ -279,7 +280,7 @@ class PredictiveAnalytics:
         outcomes = {}
         risk_assessments = {}
 
-        for scenario in optimization_scenarios:
+        for scenario in tqdm(optimization_scenarios, desc="Processing", unit="item"):
             scenario_context = self._apply_scenario_parameters(context, scenario)
             scenario_result = self.contextual_engine.analyze_with_context(scenario_context)
 
@@ -338,7 +339,7 @@ class PredictiveAnalytics:
         """Calculate downstream impact scores for affected modules."""
         impact_scores = {}
 
-        for module in affected_modules:
+        for module in tqdm(affected_modules, desc="Processing", unit="item"):
             # Base impact score
             base_score = 0.5
 

@@ -23,6 +23,7 @@ import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from tqdm import tqdm
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -217,8 +218,8 @@ def create_runtime_adg() -> None:
     node_id_map = {}
 
     # Extract unique nodes from edges
-    for edge in collector.runtime_edges:
-        for node_name in [edge.from_name, edge.to_name]:
+    for edge in tqdm(collector.runtime_edges, desc="Processing", unit="item"):
+        for node_name in tqdm([edge.from_name, edge.to_name], desc="Processing", unit="item"):
             if node_name not in node_id_map:
                 # Determine entity type from name
                 if "::" in node_name:
@@ -246,7 +247,7 @@ def create_runtime_adg() -> None:
                 node_id_map[node_name] = cursor.fetchone()[0]
 
     # Insert runtime edges
-    for edge in collector.runtime_edges:
+    for edge in tqdm(collector.runtime_edges, desc="Processing", unit="item"):
         src_id = node_id_map[edge.from_name]
         dst_id = node_id_map[edge.to_name]
         cursor.execute(

@@ -58,6 +58,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 emit_replay_key("p0", "rag_pipeline")
 emit_determinism_digest("p0", "rag_pipeline")
@@ -317,7 +318,7 @@ class RAGPipeline:
 
         # Handle exceptions
         processed_responses = []
-        for i, response in enumerate(responses):
+        for i, response in tqdm(enumerate(responses), desc="Processing", unit="item"):
             if isinstance(response, Exception):
                 # Create error response
                 error_response = RAGResponse(
@@ -419,7 +420,7 @@ class RAGPipeline:
         """Get pipeline performance statistics."""
         stats = {}
 
-        for metric, values in self._pipeline_stats.items():
+        for metric, values in tqdm(self._pipeline_stats.items(), desc="Processing", unit="item"):
             if values:
                 stats[metric] = {
                     "avg": sum(values) / len(values),

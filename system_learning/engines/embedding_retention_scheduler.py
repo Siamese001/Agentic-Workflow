@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("embedding_retention_scheduler", "p4obs", "metric_1")
 _emit_emits_metric_event("embedding_retention_scheduler", "p4obs", "metric_2")
@@ -192,7 +193,7 @@ class EmbeddingRetentionScheduler:
         )
 
         results = {}
-        for index_id, store in stores.items():
+        for index_id, store in tqdm(stores.items(), desc="Processing", unit="item"):
             if index_id not in policies:
                 continue
             policy = policies[index_id]

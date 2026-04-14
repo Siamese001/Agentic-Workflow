@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("test_gap", "p4obs", "metric_1")
 _emit_emits_metric_event("test_gap", "p4obs", "metric_2")
@@ -274,7 +275,7 @@ def detect_test_gaps(
 
     # Step 1: modules that are covered
     covered: set[str] = set()
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type == "covers":
             to_name = edge.to_name
             if to_name.startswith(_MODULE_PREFIX):
@@ -300,7 +301,7 @@ def detect_test_gaps(
     uncovered: list[TestGapEntry] = []
     covered_list: list[str] = []
 
-    for mod in production:
+    for mod in tqdm(production, desc="Processing", unit="item"):
         layer = module_path_to_layer(mod)
         if include_layers and layer not in include_layers:
             continue

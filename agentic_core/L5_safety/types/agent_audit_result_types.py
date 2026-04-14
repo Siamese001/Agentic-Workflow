@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_audit_result_types", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_audit_result_types", "p4obs", "metric_2")
@@ -219,11 +220,11 @@ def audit_agent_file(py_file: Path, agentic_core: Path) -> list[AgentAuditResult
     # guardian: allow-silent-swallow (pre-existing, moved from L0)
     except (ValueError, TypeError):
         return results
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.ClassDef):
             continue
         result = AgentAuditResult(class_name=node.name, file_path=str(py_file.relative_to(agentic_core)))
-        for item in ast.walk(node):
+        for item in tqdm(ast.walk(node), desc="Processing", unit="item"):
             if isinstance(item, ast.FunctionDef):
                 if item.name == "heal_repository":
                     result.has_heal_repository = True

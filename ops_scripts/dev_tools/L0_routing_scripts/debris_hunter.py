@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("debris_hunter", "p4obs", "metric_1")
 _emit_emits_metric_event("debris_hunter", "p4obs", "metric_2")
@@ -199,7 +200,7 @@ class DebrisHunter:
         print(f"Scanning for collision debris in {self.root}...")
 
         # Walk manually to group by directory
-        for dirpath, dirs, filenames in os.walk(self.root):
+        for dirpath, dirs, filenames in tqdm(os.walk(self.root), desc="Processing", unit="item"):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
             py_files = [f for f in filenames if f.endswith(".py")]
@@ -207,7 +208,7 @@ class DebrisHunter:
             # Map lowercase -> actual_name
             lowermap = {f.lower(): f for f in py_files}
 
-            for f in py_files:
+            for f in tqdm(py_files, desc="Processing", unit="item"):
                 # If current file is snake_case (has underscores, starts lower)
                 if "_" in f and f[0].islower():
                     # Check if a "clean" PascalCase version exists

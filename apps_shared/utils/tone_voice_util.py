@@ -84,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tone_voice_util", "p4obs", "metric_1")
 _emit_emits_metric_event("tone_voice_util", "p4obs", "metric_2")
@@ -438,7 +439,7 @@ class ToneEnforcer:
         violations = []
         sentences = re.split("[.!?]+", text)
         sentences = [s.strip() for s in sentences if s.strip()]
-        for sentence in sentences:
+        for sentence in tqdm(sentences, desc="Processing", unit="item"):
             word_count = len(sentence.split())
             if word_count > settings.max_sentence_length:
                 violations.append(
@@ -474,7 +475,7 @@ class ToneEnforcer:
         """
         violations = []
         text_lower = text.lower()
-        for word in settings.banned_words:
+        for word in tqdm(settings.banned_words, desc="Processing", unit="item"):
             if word.lower() in text_lower:
                 pattern = re.compile(f"\\b{re.escape(word)}\\b", re.IGNORECASE)
                 match = pattern.search(text)

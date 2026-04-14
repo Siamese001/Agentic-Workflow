@@ -75,18 +75,22 @@ class DeterminismSurface:
 
     # Frozen values for deterministic execution
     frozen_timestamp: float | None = None
+    run_clock: float | None = None
     entropy_seed: int = 42
     id_counter: int = 0
     snapshot_id: str = ""
 
     def get_timestamp(self) -> float:
         """Get deterministic timestamp."""
-        if self.clock_mode == ClockMode.FROZEN and self.frozen_timestamp:
+        if self.clock_mode == ClockMode.FROZEN and self.frozen_timestamp is not None:
             return self.frozen_timestamp
-        elif self.clock_mode == ClockMode.RUN_CLOCK:
-            return self.frozen_timestamp or time.time()
-        else:
-            raise RuntimeError("Wall clock access prohibited in determinism surface")
+        if self.clock_mode == ClockMode.RUN_CLOCK:
+            if self.run_clock is None:
+                raise RuntimeError(
+                    "RUN_CLOCK mode requires surface.run_clock to be injected from the replay envelope"
+                )
+            return self.run_clock
+        raise RuntimeError("Wall clock access prohibited in determinism surface")
 
     def get_random(self) -> random.Random:
         """Get deterministic random generator."""
@@ -133,11 +137,19 @@ class DeterminismEnforcer:
         self._original_random = random.random
         self._original_uuid = uuid.uuid4
 
-        # Override with deterministic versions
-        # Note: In production, this would use more sophisticated patching
+        time.time = self.surface.get_timestamp
+        _rng = self.surface.get_random()
+        random.random = _rng.random
+        uuid.uuid4 = lambda: uuid.UUID(
+            hex=(self.surface.generate_id("u").replace("u", "").ljust(32, "0"))[:32]
+        )
         return self.surface
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore
         """Exit determinism context."""
-        # Restore originals
-        pass  # Restoration handled by context manager
+        if self._original_time is not None:
+            time.time = self._original_time
+        if self._original_random is not None:
+            random.random = self._original_random
+        if self._original_uuid is not None:
+            uuid.uuid4 = self._original_uuid

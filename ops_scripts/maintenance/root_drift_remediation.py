@@ -93,6 +93,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("root_drift_remediation", "p4obs", "metric_1")
 _emit_emits_metric_event("root_drift_remediation", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ def migrate_and_audit_scripts():
     # Snapshot file list to avoid modification issues during iteration
     files = list(source_dir.glob("*.py"))
 
-    for file_path in files:
+    for file_path in tqdm(files, desc="Processing", unit="item"):
         if file_path.name == "root_drift_remediation.py":
             continue
 
@@ -284,7 +285,7 @@ def audit_logs():
     )
 
     moved_count = 0
-    for file_path in logs_dir.iterdir():
+    for file_path in tqdm(logs_dir.iterdir(), desc="Processing", unit="item"):
         if file_path.is_dir():
             continue
 

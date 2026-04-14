@@ -110,7 +110,7 @@ def process_file(pyfile: Path) -> bool:
     ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
         return False
     needs_fix: Any = []
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
             if node.name.startswith("_"):
                 continue
@@ -164,6 +164,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
+from tqdm import tqdm
 
 _emit_emits_metric_event("tooling_add_docstrings_util", "p4obs", "metric_1")
 _emit_emits_metric_event("tooling_add_docstrings_util", "p4obs", "metric_2")

@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hunt_ghosts", "p4obs", "metric_1")
 _emit_emits_metric_event("hunt_ghosts", "p4obs", "metric_2")
@@ -188,10 +189,10 @@ def hunt_and_archive():
     if not ARCHIVE_ROOT.exists():
         ARCHIVE_ROOT.mkdir(parents=True)
 
-    for root, _dirs, files in os.walk(scan_dir):
+    for root, _dirs, files in tqdm(os.walk(scan_dir), desc="Processing", unit="item"):
         _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if file in WANTED_LIST:
                 full_path = Path(root) / file
                 print(f"[FOUND] {full_path}")

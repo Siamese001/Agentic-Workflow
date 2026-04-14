@@ -11,6 +11,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "generate_missing_tests", "uwg_governed_write")
 _emit_writes_through("p1", "generate_missing_tests", "uwg_governed_write_2")
@@ -43,7 +44,7 @@ def main():
     missing_modules = [m for m in snapshot["modules"] if m["status"] == "MISSING"]
     print(f"Generating tests for {len(missing_modules)} missing modules...")
     generated_count = 0
-    for module_info in missing_modules[:100]:
+    for module_info in tqdm(missing_modules[:100], desc="Processing", unit="item"):
         module_path = pathlib.Path(module_info["module"])
         expected_test_path = pathlib.Path(module_info["expected_test"])
         try:

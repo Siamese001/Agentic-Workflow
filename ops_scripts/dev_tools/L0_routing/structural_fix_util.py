@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("structural_fix_util", "p4obs", "metric_1")
 _emit_emits_metric_event("structural_fix_util", "p4obs", "metric_2")
@@ -218,7 +219,7 @@ def fix_structural_violations() -> Any:
         with open(mission_runner, encoding="utf-8") as f:
             lines: Any = f.readlines()
         new_lines: Any = []
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             if "from scripts" in line and "import" in line:
                 match: Any = re.search("from scripts\\.[\\w.]+ import ([\\w, ]+)", line)
                 if match:

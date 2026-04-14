@@ -174,13 +174,13 @@ class CacheEntry:
     """Represents a cached value with metadata."""
 
     value: Any
-    created_at: float = field(default_factory=time.time)
+    created_at: float = field(default_factory=time.monotonic)
     ttl_seconds: float = 300.0
     hits: int = 0
 
     def is_expired(self) -> bool:
         """Check if cache entry has expired."""
-        return time.time() - self.created_at > self.ttl_seconds
+        return time.monotonic() - self.created_at > self.ttl_seconds
 
 
 @dataclass

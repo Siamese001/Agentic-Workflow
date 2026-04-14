@@ -15,6 +15,7 @@ import sqlite3
 from pathlib import Path
 
 import pytest
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 ADG_DIR = ROOT / "artifacts" / "adg"
@@ -109,16 +110,20 @@ class TestLiveSCQueries:
             _query_sc8_trace_coverage,
         )
 
-        for fn in [
-            _query_sc1_gravity,
-            _query_sc2_lifecycle,
-            _query_sc3_uwg_write,
-            _query_sc4_choke_point,
-            _query_sc5_spine,
-            _query_sc6_role_purity,
-            _query_sc7_grounding,
-            _query_sc8_trace_coverage,
-        ]:
+        for fn in tqdm(
+            [
+                _query_sc1_gravity,
+                _query_sc2_lifecycle,
+                _query_sc3_uwg_write,
+                _query_sc4_choke_point,
+                _query_sc5_spine,
+                _query_sc6_role_purity,
+                _query_sc7_grounding,
+                _query_sc8_trace_coverage,
+            ],
+            desc="Processing",
+            unit="item",
+        ):
             result = fn(live_conn)
             assert isinstance(result, list), f"{fn.__name__} must return list"
 
@@ -148,25 +153,29 @@ class TestLiveAPQueries:
             _query_ap17_semantic_precision,
         )
 
-        for fn in [
-            _query_ap1_text_to_action,
-            _query_ap2_phase_bypass,
-            _query_ap3_provider_bypass,
-            _query_ap4_direct_write,
-            _query_ap5_tool_overlap,
-            _query_ap6_manager_sprawl,
-            _query_ap7_dup_specialization,
-            _query_ap8_missing_trace,
-            _query_ap9_infra_spread,
-            _query_ap10_mutation_confusion,
-            _query_ap11_work_contracts,
-            _query_ap12_prompt_scatter,
-            _query_ap13_retry_no_exit,
-            _query_ap14_retrieval_no_evidence,
-            _query_ap15_agent_tool_ratio,
-            _query_ap16_dormant_infra,
-            _query_ap17_semantic_precision,
-        ]:
+        for fn in tqdm(
+            [
+                _query_ap1_text_to_action,
+                _query_ap2_phase_bypass,
+                _query_ap3_provider_bypass,
+                _query_ap4_direct_write,
+                _query_ap5_tool_overlap,
+                _query_ap6_manager_sprawl,
+                _query_ap7_dup_specialization,
+                _query_ap8_missing_trace,
+                _query_ap9_infra_spread,
+                _query_ap10_mutation_confusion,
+                _query_ap11_work_contracts,
+                _query_ap12_prompt_scatter,
+                _query_ap13_retry_no_exit,
+                _query_ap14_retrieval_no_evidence,
+                _query_ap15_agent_tool_ratio,
+                _query_ap16_dormant_infra,
+                _query_ap17_semantic_precision,
+            ],
+            desc="Processing",
+            unit="item",
+        ):
             result = fn(live_conn)
             assert isinstance(result, list), f"{fn.__name__} must return list"
 

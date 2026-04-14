@@ -95,6 +95,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("embedding_service_factory", "p4obs", "metric_1")
 _emit_emits_metric_event("embedding_service_factory", "p4obs", "metric_2")
@@ -511,7 +512,7 @@ class EmbeddingServiceFactory:
         sorted_indices = sorted(indices, key=lambda i: (-scores_rounded[i], self._row_hashes[i]))
         top_indices = sorted_indices[:k]
         results = []
-        for idx in top_indices:
+        for idx in tqdm(top_indices, desc="Processing", unit="item"):
             score = float(scores_rounded[idx])
             content_hash = self._row_hashes[idx]
             artifact_material = f"{self._manifest['seed_index_version_hash']}{idx}{score:.6f}"

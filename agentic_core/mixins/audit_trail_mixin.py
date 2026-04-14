@@ -74,6 +74,7 @@ import hashlib
 import json
 import logging
 import secrets
+import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -243,17 +244,18 @@ class AuditTrailMixin:
     _audit_genesis_time: float = 0.0
     _audit_action_count: int = 0
     _audit_enabled: bool = True
-    _session_id: str = field(default_factory=lambda: datetime.now().strftime("%Y%m%d-%H%M%S"))
+    _session_id: str = field(default_factory=lambda: datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S"))
 
     def __init__(self, *args, **kwargs):
         """Initialize audit chain with unique session salt."""
         super().__init__(*args, **kwargs)
         self._audit_session_salt = secrets.token_hex(16)
         self._audit_last_hash = self.GENESIS_HASH
-        self._audit_genesis_time = time.time()
+        self._audit_lock = threading.RLock()
+        self._audit_genesis_time = time.monotonic()
         self._audit_action_count = 0
         self._audit_enabled = True
-        self._session_id = datetime.now().strftime("%Y%m%d-%H%M%S")
+        self._session_id = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
         Logger.debug(
             f"[{self.__class__.__name__}] Audit chain initialized: chain_id={self._audit_session_salt[:8]}...",
         )
@@ -377,7 +379,7 @@ class AuditTrailMixin:
         Returns:
             AuditProof with hash chain link
         """
-        timestamp = time.time()
+        timestamp = time.monotonic()
         payload_str = self._canonicalize_payload(payload)
         raw_data = (
             f"{self._audit_last_hash}|{self._audit_session_salt}|{action_type}|{payload_str}|{timestamp}"
@@ -480,7 +482,7 @@ class AuditTrailMixin:
         return AuditChainStats(
             chain_id=self._audit_session_salt,
             genesis_time=self._audit_genesis_time,
-            last_action_time=time.time(),
+            last_action_time=time.monotonic(),
             total_actions=self._audit_action_count,
             last_hash=self._audit_last_hash,
         )

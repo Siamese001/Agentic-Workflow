@@ -91,6 +91,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("shadow_replay_validator", "shadow_replay_validator_trace")
 
@@ -254,7 +255,7 @@ class ShadowReplayValidator:
         max_threshold = 0.0
         any_safety_degraded = False
         digests_stable = True
-        for result in replay_results:
+        for result in tqdm(replay_results, desc="Processing", unit="item"):
             if result.digest_changed:
                 digests_stable = False
                 if result.performance_delta <= 0.0:

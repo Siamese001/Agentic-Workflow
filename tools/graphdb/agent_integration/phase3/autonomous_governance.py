@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 from ..decision_engine import AgentDecisionEngine, ArchitecturalContext, DecisionResult, RiskLevel
 from ..phase2.contextual_engine import ContextualIntelligenceEngine, AnalysisResult
 from .health_monitoring import ArchitecturalHealthMonitor, HealthStatus
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -333,7 +334,7 @@ class AutonomousGovernanceEngine:
             },
         ]
 
-        for config in rules_config:
+        for config in tqdm(rules_config, desc="Processing", unit="item"):
             rule = GovernanceRule(
                 rule_id=config["rule_id"],
                 name=config["name"],
@@ -351,7 +352,7 @@ class AutonomousGovernanceEngine:
         """Check context against governance rules."""
         violations = []
 
-        for rule_id, rule in self.governance_rules.items():
+        for rule_id, rule in tqdm(self.governance_rules.items(), desc="Processing", unit="item"):
             if self._evaluate_rule_conditions(rule.conditions, context):
                 violation = GovernanceViolation(
                     violation_id=f"violation_{rule_id}_{int(time.time())}",

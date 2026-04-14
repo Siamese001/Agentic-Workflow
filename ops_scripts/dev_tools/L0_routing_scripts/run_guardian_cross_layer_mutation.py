@@ -156,6 +156,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_cross_layer_mutation", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_cross_layer_mutation", "p4obs", "metric_2")
@@ -275,7 +276,7 @@ def scan_cross_layer_mutations(
     l4_l2_viols: list[dict] = []
     c0_cp_viols: list[dict] = []
 
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         rel = normalize_repo_path(fpath.relative_to(repo_root))
         src_layer = _layer_from_path(fpath)
         if src_layer not in LAYER_ORDER:
@@ -288,7 +289,7 @@ def scan_cross_layer_mutations(
         except SyntaxError:
             continue
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # upward_layer_mutation / L6_mutates_L4 / L4_invokes_L2:
             # from <higher_layer_module> import ...  then assign to a name
             if isinstance(node, ast.ImportFrom) and node.module:
@@ -316,7 +317,7 @@ def scan_cross_layer_mutations(
                     for n in ast.walk(node.value)
                 )
                 if rhs_has_embedding:
-                    for target in node.targets:
+                    for target in tqdm(node.targets, desc="Processing", unit="item"):
                         tname = None
                         if isinstance(target, ast.Name):
                             tname = target.id
@@ -354,7 +355,11 @@ def run_cross_layer_mutation_guardian(
     )
 
     viols = scan_cross_layer_mutations(repo_root)
-    for check_id in ("upward_layer_mutation", "L6_mutates_L4", "L4_invokes_L2", "C0_mutates_control_plane"):
+    for check_id in tqdm(
+        ("upward_layer_mutation", "L6_mutates_L4", "L4_invokes_L2", "C0_mutates_control_plane"),
+        desc="Processing",
+        unit="item",
+    ):
         v = viols[check_id]
         if v:
             result.add_check(

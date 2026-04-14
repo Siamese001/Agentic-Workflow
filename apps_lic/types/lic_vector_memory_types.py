@@ -81,6 +81,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("lic_vector_memory_types", "p4obs", "metric_1")
 _emit_emits_metric_event("lic_vector_memory_types", "p4obs", "metric_2")
@@ -373,7 +374,7 @@ class LICVectorMemory:
                 where=filter_metadata if filter_metadata else None,
             )
             if results["ids"] and results["ids"][0]:
-                for i in range(len(results["ids"][0])):
+                for i in tqdm(range(len(results["ids"][0])), desc="Processing", unit="item"):
                     doc = VectorDocument(
                         id=results["ids"][0][i],
                         text=results["documents"][0][i],
@@ -501,7 +502,7 @@ class MockVectorMemory(LICVectorMemory):
         start_time = time.time()
         results: list[VectorDocument] = []
         query_lower = query_text.lower()
-        for doc in self._documents.values():
+        for doc in tqdm(self._documents.values(), desc="Processing", unit="item"):
             if query_lower in doc.text.lower():
                 if filter_metadata:
                     match = all((doc.metadata.get(k) == v for k, v in filter_metadata.items()))

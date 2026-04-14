@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
+from tqdm import tqdm
 
 
 class FeatureType(Enum):
@@ -126,7 +127,7 @@ class FeatureSchema:
                 errors.append(f"Required feature '{feature_def.name}' is missing")
 
         # Validate feature types and values
-        for name, value in features.items():
+        for name, value in tqdm(features.items(), desc="Processing", unit="item"):
             feature_def = self.get_feature(name)
             if not feature_def:
                 errors.append(f"Unknown feature '{name}'")
@@ -506,7 +507,7 @@ class FeatureSchemas:
         """Process null values according to schema rules."""
         processed = {}
 
-        for feature_def in schema.features:
+        for feature_def in tqdm(schema.features, desc="Processing", unit="item"):
             value = features.get(feature_def.name)
 
             if value is None:

@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("migration_executor", "p4obs", "metric_1")
 _emit_emits_metric_event("migration_executor", "p4obs", "metric_2")
@@ -248,7 +249,7 @@ class MigrationExecutor:
 
         broken = self.manifest.get("actions", {}).get("fix_syntax_errors", [])
         logger.info(f"Processing {len(broken)} broken files...")
-        for f in broken:
+        for f in tqdm(broken, desc="Processing", unit="item"):
             self._move_file(f, DIRS["quarantine"])
 
     def process_legacy(self):
@@ -310,9 +311,9 @@ class MigrationExecutor:
     def _apply_regex_patch(self, pattern: str, replacement: str):
         """Apply regex sub to all .py files in apps_rg."""
         regex = re.compile(pattern)
-        for root, dirs, files in os.walk(APPS_RG_DIR):
+        for root, dirs, files in tqdm(os.walk(APPS_RG_DIR), desc="Processing", unit="item"):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-            for file in files:
+            for file in tqdm(files, desc="Processing", unit="item"):
                 if file.endswith(".py"):
                     path = Path(root) / file
                     try:
@@ -326,9 +327,9 @@ class MigrationExecutor:
                         logger.error(f"Failed to patch {path.name}: {e}")
 
     def _apply_string_replace(self, old: str, new: str):
-        for root, dirs, files in os.walk(APPS_RG_DIR):
+        for root, dirs, files in tqdm(os.walk(APPS_RG_DIR), desc="Processing", unit="item"):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-            for file in files:
+            for file in tqdm(files, desc="Processing", unit="item"):
                 if file.endswith(".py"):
                     path = Path(root) / file
                     try:

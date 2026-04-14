@@ -122,6 +122,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("memory_collision_detector", "p4obs", "metric_1")
 _emit_emits_metric_event("memory_collision_detector", "p4obs", "metric_2")
@@ -234,7 +235,7 @@ class MemoryCollisionDetector:
             return LockAcquisitionResult(success=False, locks_acquired=[], violation=violation)
         acquired_locks: list[str] = []
         start_time = time.monotonic()
-        for lock_name in sorted_locks:
+        for lock_name in tqdm(sorted_locks, desc="Processing", unit="item"):
             lock = self._locks[lock_name]
             timeout = self.policy.timeout_seconds - (time.monotonic() - start_time)
             if timeout <= 0:

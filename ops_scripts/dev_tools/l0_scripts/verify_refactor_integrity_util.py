@@ -12,6 +12,7 @@ Strict Mode: ON
 import re
 import sys
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 RENAMES = {
@@ -37,11 +38,11 @@ def main():
     print("\n[Phase 2] Scanning for Legacy Import References...")
     import_patterns = {stem: re.compile(f"(from|import).*\\b{stem}\\b") for stem in RENAMES.keys()}
     scanned_count = 0
-    for folder in SEARCH_PATHS:
+    for folder in tqdm(SEARCH_PATHS, desc="Processing", unit="item"):
         search_root = ROOT_DIR / folder
         if not search_root.exists():
             continue
-        for path in search_root.rglob("*.py"):
+        for path in tqdm(search_root.rglob("*.py"), desc="Processing", unit="item"):
             if path.name in [f"{n}.py" for n in RENAMES.values()]:
                 continue
             if path.name in ["test_naming_convention_audit.py", "verify_refactor_integrity_util.py"]:
@@ -64,9 +65,9 @@ def main():
     print(f"  Scanned {scanned_count} files.")
     print("\n[Phase 3] Cataloging PascalCase Violations (Information Only)...")
     pascal_violations = []
-    for folder in SEARCH_PATHS:
+    for folder in tqdm(SEARCH_PATHS, desc="Processing", unit="item"):
         root_path = ROOT_DIR / folder
-        for path in root_path.rglob("*.py"):
+        for path in tqdm(root_path.rglob("*.py"), desc="Processing", unit="item"):
             stem = path.stem
             if (
                 stem[0].isupper()

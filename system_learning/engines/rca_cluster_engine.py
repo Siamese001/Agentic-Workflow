@@ -123,6 +123,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rca_cluster_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("rca_cluster_engine", "p4obs", "metric_2")
@@ -479,7 +480,7 @@ class RCAClusterEngine:
         """
         seed_clusters: list[RCACluster] = []
         seen: set[str] = set()
-        for seed in seeds:
+        for seed in tqdm(seeds, desc="Processing", unit="item"):
             key = f"{seed.source_type}::{seed.signature}"
             if key in seen:
                 continue

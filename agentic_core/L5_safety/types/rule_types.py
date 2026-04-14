@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rule_types", "p4obs", "metric_1")
 _emit_emits_metric_event("rule_types", "p4obs", "metric_2")
@@ -382,7 +383,7 @@ class ConstitutionalAISystem:
         violations = []
         try:
             matches = re.finditer(rule.pattern, content, re.IGNORECASE)
-            for match in matches:
+            for match in tqdm(matches, desc="Processing", unit="item"):
                 Violation = ViolationReport(
                     rule_id=rule.rule_id,
                     ViolationType=ViolationType.CONTENT,

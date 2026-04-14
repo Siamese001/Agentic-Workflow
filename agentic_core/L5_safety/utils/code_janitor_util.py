@@ -20,6 +20,7 @@ import logging
 import re
 from dataclasses import dataclass
 from typing import Any
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -79,7 +80,7 @@ class CodeJanitor:
         violations: list[str] = []
         files_to_check = [file_path] if file_path else self.python_files
 
-        for fp in files_to_check:
+        for fp in tqdm(files_to_check, desc="Processing", unit="item"):
             if not fp:
                 continue
             try:
@@ -106,7 +107,7 @@ class CodeJanitor:
         violations: list[str] = []
         files_to_check = [file_path] if file_path else self.python_files
 
-        for fp in files_to_check:
+        for fp in tqdm(files_to_check, desc="Processing", unit="item"):
             if not fp:
                 continue
             try:
@@ -151,7 +152,7 @@ class CodeJanitor:
         violations: list[str] = []
         files_to_check = [file_path] if file_path else self.python_files
 
-        for fp in files_to_check:
+        for fp in tqdm(files_to_check, desc="Processing", unit="item"):
             if not fp:
                 continue
             try:
@@ -228,9 +229,9 @@ class CodeJanitor:
             (14, self.validate_naming_conventions),
         ]
 
-        for key_id, check_fn in checks:
+        for key_id, check_fn in tqdm(checks, desc="Processing", unit="item"):
             passed, violations = check_fn(file_path)
-            for v in violations:
+            for v in tqdm(violations, desc="Processing", unit="item"):
                 parts = v.split(":")
                 file_p = parts[0] if len(parts) > 0 else None
                 line_num = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else None

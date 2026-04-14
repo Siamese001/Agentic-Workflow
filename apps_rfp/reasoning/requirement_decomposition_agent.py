@@ -14,11 +14,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_captures_pattern,
     _emit_pulls_context,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -242,7 +243,7 @@ class RequirementDecomposer:
         _emit_pulls_context("enterprise", "RequirementDecomposer", "decompose_batch")
 
         results: list[RequirementDecomposition] = []
-        for req_id, req_text, category, priority in requirements:
+        for req_id, req_text, category, priority in tqdm(requirements, desc="Processing", unit="item"):
             try:
                 decomp = self.decompose(req_id, req_text, category, priority)
                 results.append(decomp)
@@ -275,7 +276,7 @@ class RequirementDecomposer:
         type_dist: dict[str, int] = {}
         all_critical: list[str] = []
 
-        for decomp in decompositions:
+        for decomp in tqdm(decompositions, desc="Processing", unit="item"):
             summary.total_components += len(decomp.components)
             summary.total_estimated_hours += decomp.total_estimated_hours
 
@@ -323,7 +324,7 @@ class RequirementDecomposer:
         # Parse compound requirements (those with "and", "as well as", etc.)
         sub_requirements = self._split_compound_requirements(req_text)
 
-        for idx, sub_req in enumerate(sub_requirements, 1):
+        for idx, sub_req in tqdm(enumerate(sub_requirements, 1), desc="Processing", unit="item"):
             comp_id = f"{req_id}-C{idx:02d}"
 
             # Determine complexity and hours

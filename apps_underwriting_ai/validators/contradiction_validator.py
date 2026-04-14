@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from ..engines.document_reconciliation_engine import ContradictionSeverity, ReconciliationResult
+from tqdm import tqdm
 
 
 @dataclass
@@ -48,7 +49,7 @@ class ContradictionValidator:
         result = ContradictionValidationResult()
 
         # Count by severity
-        for contradiction in reconciliation.contradictions:
+        for contradiction in tqdm(reconciliation.contradictions, desc="Processing", unit="item"):
             if contradiction.severity == ContradictionSeverity.CRITICAL:
                 result.critical_count += 1
             elif contradiction.severity == ContradictionSeverity.MAJOR:

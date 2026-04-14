@@ -313,9 +313,9 @@ def _normalize_heal_result(
             normalized["error_message"] = result["message"]
 
         if normalized["status"] == "UNKNOWN":
-            if normalized.get("error_message") or normalized.get("errors", 0) > 0:
+            if normalized.get("error_message") or bool(normalized.get("errors")):
                 normalized["status"] = "ERROR"
-            elif normalized.get("skipped", 0) > 0 and normalized.get("violations_found", 0) == 0:
+            elif bool(normalized.get("skipped")) and normalized.get("violations_found", 0) == 0:
                 normalized["status"] = "SKIPPED"
             elif normalized.get("violations_found", 0) == 0:
                 normalized["status"] = "PASS"

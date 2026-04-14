@@ -94,6 +94,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("placement_advisor", "p4obs", "metric_1")
 _emit_emits_metric_event("placement_advisor", "p4obs", "metric_2")
@@ -357,7 +358,7 @@ class PlacementAdvisor:
         rev: dict[str, set[str]] = {}
         fwd: dict[str, set[str]] = {}
         cfg: dict[str, list[str]] = {}
-        for edge in self._result.edges:
+        for edge in tqdm(self._result.edges, desc="Processing", unit="item"):
             if edge.relation_type == "imports":
                 if edge.to_name not in rev:
                     rev[edge.to_name] = set()

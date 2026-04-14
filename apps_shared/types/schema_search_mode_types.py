@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("schema_search_mode_types", "p4obs", "metric_1")
 _emit_emits_metric_event("schema_search_mode_types", "p4obs", "metric_2")
@@ -683,14 +684,18 @@ class SchemaVectorSearcher:
         query_field_vectors = {field: self._text_to_vector(field) for field in query_fields}
         scored_entries = []
         field_matches_list = []
-        for entry in entries:
+        for entry in tqdm(entries, desc="Processing", unit="item"):
             if entry.schema_id not in self._field_index:
                 continue
             field_matches = []
             total_similarity = 0
             match_count = 0
-            for query_field, query_vector in query_field_vectors.items():
-                for entry_field, entry_vector in self._field_index[entry.schema_id].items():
+            for query_field, query_vector in tqdm(
+                query_field_vectors.items(), desc="Processing", unit="item"
+            ):
+                for entry_field, entry_vector in tqdm(
+                    self._field_index[entry.schema_id].items(), desc="Processing", unit="item"
+                ):
                     similarity = np.dot(query_vector, entry_vector) / (
                         np.linalg.norm(query_vector) * np.linalg.norm(entry_vector)
                     )

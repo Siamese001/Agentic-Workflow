@@ -146,6 +146,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_semantic_cache", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_semantic_cache", "p4obs", "metric_2")
@@ -357,7 +358,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             return []
 
         results: list[dict] = []
-        for key, entry in store.items():
+        for key, entry in tqdm(store.items(), desc="Processing", unit="item"):
             # entry is either a MemoryItem or a plain dict (test/legacy)
             if hasattr(entry, "embedding"):
                 # InMemoryVectorStore MemoryItem path

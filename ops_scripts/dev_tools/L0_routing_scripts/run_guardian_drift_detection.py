@@ -150,6 +150,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_drift_detection", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_drift_detection", "p4obs", "metric_2")
@@ -233,7 +234,7 @@ def scan_forbidden_root_folders(repo_root: Path) -> list[str]:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "scan_forbidden_root_folders")
     hits: list[str] = []
     try:
-        for item in repo_root.iterdir():
+        for item in tqdm(repo_root.iterdir(), desc="Processing", unit="item"):
             if item.is_dir() and item.name in FORBIDDEN_ROOT_FOLDERS:
                 hits.append(item.name)
     # guardian: allow-silent-swallow - acceptable exception handling
@@ -246,7 +247,7 @@ def scan_archived_files_at_root(repo_root: Path) -> list[str]:
     """Return sorted repo-relative POSIX paths of archived files at root."""
     hits: list[str] = []
     try:
-        for item in repo_root.iterdir():
+        for item in tqdm(repo_root.iterdir(), desc="Processing", unit="item"):
             if item.is_file():
                 for pattern in ARCHIVE_PATTERNS:
                     if pattern in item.name:
@@ -265,7 +266,7 @@ def scan_duplicate_ssot_folders(repo_root: Path) -> list[dict[str, str]]:
     Only reported when BOTH root and SSOT paths exist simultaneously.
     """
     hits: list[dict[str, str]] = []
-    for folder_name, ssot_rel in sorted(SSOT_DUPLICATE_MAP.items()):
+    for folder_name, ssot_rel in tqdm(sorted(SSOT_DUPLICATE_MAP.items()), desc="Processing", unit="item"):
         root_path = repo_root / folder_name
         ssot_path = repo_root / ssot_rel
         if root_path.exists() and ssot_path.exists():

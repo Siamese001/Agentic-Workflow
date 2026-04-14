@@ -90,6 +90,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("self_healing_formatter_types", "p4obs", "metric_1")
 _emit_emits_metric_event("self_healing_formatter_types", "p4obs", "metric_2")
@@ -329,7 +330,7 @@ class JSONRepairStrategy(FormatRepair):
         except json.JSONDecodeError as e:
             original_error = str(e)
         repaired = broken_content
-        for pattern, replacement in self.error_patterns:
+        for pattern, replacement in tqdm(self.error_patterns, desc="Processing", unit="item"):
             attempts += 1
             try:
                 repaired = re.sub(pattern, replacement, repaired)
@@ -471,10 +472,10 @@ class RegexExtractStrategy(FormatRepair):
         Returns:
             Repair result
         """
-        for pattern_name in ["json_object", "json_array"]:
+        for pattern_name in tqdm(["json_object", "json_array"], desc="Processing", unit="item"):
             pattern = self.patterns[pattern_name]
             matches = re.findall(pattern, broken_content, re.DOTALL)
-            for match in matches:
+            for match in tqdm(matches, desc="Processing", unit="item"):
                 try:
                     data = json.loads(match)
                     return RepairResult(
@@ -580,7 +581,7 @@ class SchemaFillStrategy(FormatRepair):
             Filled data
         """
         filled = data.copy()
-        for field_name, field_info in schema.__fields__.items():
+        for field_name, field_info in tqdm(schema.__fields__.items(), desc="Processing", unit="item"):
             if field_name not in filled:
                 if field_info.default is not None:
                     filled[field_name] = field_info.default

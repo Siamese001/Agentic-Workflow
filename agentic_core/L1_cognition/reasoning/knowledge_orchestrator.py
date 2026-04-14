@@ -95,6 +95,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("knowledge_orchestrator", "p4obs", "metric_1")
 _emit_emits_metric_event("knowledge_orchestrator", "p4obs", "metric_2")
@@ -630,7 +631,11 @@ def get_pattern_recommendations(
     validated_patterns = [p for p in all_patterns if p.is_validated()]
 
     recommendations = []
-    for pattern in sorted(validated_patterns, key=lambda p: p.outcome_quality_score, reverse=True):
+    for pattern in tqdm(
+        sorted(validated_patterns, key=lambda p: p.outcome_quality_score, reverse=True),
+        desc="Processing",
+        unit="item",
+    ):
         recommendations.append(
             {
                 "pattern_id": pattern.reasoning_pattern_id,

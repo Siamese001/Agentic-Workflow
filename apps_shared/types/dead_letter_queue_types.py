@@ -111,6 +111,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("dead_letter_queue_types", "p4obs", "metric_1")
 _emit_emits_metric_event("dead_letter_queue_types", "p4obs", "metric_2")
@@ -485,7 +486,7 @@ class FileDeadLetterStorage(DeadLetterStorage):
         Returns:
             Dead letter item if found
         """
-        for status_dir in ["pending", "investigation", "resolved"]:
+        for status_dir in tqdm(["pending", "investigation", "resolved"], desc="Processing", unit="item"):
             path = self.storage_path / status_dir / f"{item_id}.json"
             if path.exists():
                 try:
@@ -520,11 +521,11 @@ class FileDeadLetterStorage(DeadLetterStorage):
             }.get(status, ["pending", "investigation", "resolved"])
         else:
             status_dirs = ["pending", "investigation", "resolved"]
-        for status_dir in status_dirs:
+        for status_dir in tqdm(status_dirs, desc="Processing", unit="item"):
             dir_path = self.storage_path / status_dir
             if not dir_path.exists():
                 continue
-            for file_path in dir_path.glob("*.json"):
+            for file_path in tqdm(dir_path.glob("*.json"), desc="Processing", unit="item"):
                 if len(items) >= limit:
                     break
                 try:

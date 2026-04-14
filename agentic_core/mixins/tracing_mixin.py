@@ -302,7 +302,11 @@ class TracingMixin:
                 self._initialize_tracing_safe()
                 self._tracing_initialized = True
                 TracingMixin._circuit_breaker_failures = 0
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                ImportError,
+                AttributeError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 TracingMixin._circuit_breaker_failures += 1
                 if TracingMixin._circuit_breaker_failures >= TracingMixin._circuit_breaker_threshold:
@@ -390,7 +394,12 @@ class TracingMixin:
         try:
             yield span
             span.status = "OK"
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            RuntimeError,
+            AttributeError,
+            TypeError,
+            ValueError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             span.status = "ERROR"
             span.attributes["error"] = str(e)
             span.attributes["error_type"] = type(e).__name__
@@ -482,7 +491,7 @@ class TracingMixin:
         # guardian: allow-silent-degradation - Optional OpenTelemetry bridging
         except ImportError:
             Logger.debug("[TRACING] OpenTelemetry not available for bridging")
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError) as e:
             Logger.error(f"[TRACING] Failed to bridge to OpenTelemetry: {e}")
 
     def _create_otel_span_from_trace(self, trace: dict[str, Any], tracer: Any) -> None:
@@ -516,7 +525,7 @@ class TracingMixin:
             with span_context:
                 pass  # Span is created and automatically closed
 
-        except Exception as e:
+        except (AttributeError, RuntimeError) as e:
             Logger.debug(f"[TRACING] Failed to create OpenTelemetry span: {e}")
 
     def get_tracing_status(self) -> dict[str, Any]:

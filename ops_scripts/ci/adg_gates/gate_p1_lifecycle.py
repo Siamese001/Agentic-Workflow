@@ -17,6 +17,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from tqdm import tqdm
 
 
 class LifecycleCoverageGate(ADGGateBase):
@@ -62,7 +63,7 @@ class LifecycleCoverageGate(ADGGateBase):
                 FROM mv_l2_phase_coverage
                 WHERE gap_flag = 1
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 phase_label, node_count, has_entry_edge, has_exit_edge, covered_by_test, _ = row
 
                 summary["phase_coverage_gaps"] += 1
@@ -109,7 +110,7 @@ class LifecycleCoverageGate(ADGGateBase):
                 FROM mv_exit_disposition_coverage
                 WHERE gap_flag = 1
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 (
                     exit_type,
                     module_count,
@@ -158,7 +159,7 @@ class LifecycleCoverageGate(ADGGateBase):
                 SELECT gap_type, affected_modules, heal_count, retry_count, exit_count
                 FROM mv_heal_retry_exit_gaps
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 gap_type, affected_modules, heal_count, retry_count, exit_count = row
 
                 summary["heal_retry_gaps"] += affected_modules

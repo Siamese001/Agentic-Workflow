@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("import_violation_visitor", "p4obs", "metric_1")
 _emit_emits_metric_event("import_violation_visitor", "p4obs", "metric_2")
@@ -195,7 +196,7 @@ class ImportViolationVisitor(ast.NodeVisitor):
 
     def _check_import(self, import_path: str, line: int):
         """Check if import path violates layer boundaries."""
-        for forbidden in FORBIDDEN_IMPORTS:
+        for forbidden in tqdm(FORBIDDEN_IMPORTS, desc="Processing", unit="item"):
             if import_path.startswith(forbidden):
                 self.violations.append(
                     {

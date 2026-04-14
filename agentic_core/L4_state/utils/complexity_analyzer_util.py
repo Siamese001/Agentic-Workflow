@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("complexity_analyzer_util", "p4obs", "metric_1")
 _emit_emits_metric_event("complexity_analyzer_util", "p4obs", "metric_2")
@@ -259,7 +260,7 @@ def analyze_file_complexity(file_path: str, max_complexity: int = 10) -> list[di
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
         tree = ast.parse(content)
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 complexity = calculate_mccabe_complexity(node)
                 if complexity > max_complexity:

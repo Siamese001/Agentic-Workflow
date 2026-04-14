@@ -143,6 +143,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("utility_silent_swallower_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("utility_silent_swallower_validator", "p4obs", "metric_2")
@@ -356,7 +357,7 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
     ) -> AntiPatternViolation | None:
         """Check a try-except node for silent swallower violations."""
 
-        for handler in node.handlers:
+        for handler in tqdm(node.handlers, desc="Processing", unit="item"):
             # Check if this catches Exception broadly
             if self._is_broad_exception(handler):
                 # Check for guardian annotation
@@ -446,7 +447,7 @@ class UtilitySilentSwallowerDetector(AntiPatternDetector):
 
     def _has_failure_signal(self, handler: ast.ExceptHandler) -> bool:
         """Check if handler emits a failure signal."""
-        for node in ast.walk(handler):
+        for node in tqdm(ast.walk(handler), desc="Processing", unit="item"):
             if isinstance(node, ast.Call):
                 # Check for logging calls
                 if isinstance(node.func, ast.Attribute):

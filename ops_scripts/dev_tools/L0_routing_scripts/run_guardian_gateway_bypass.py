@@ -155,6 +155,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_gateway_bypass", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_gateway_bypass", "p4obs", "metric_2")
@@ -269,7 +270,7 @@ def scan_provider_sdk_imports(
     if files is None:
         files = _collect_files(repo_root)
     violations: list[dict] = []
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         rel = normalize_repo_path(fpath.relative_to(repo_root))
         if rel in ALLOWED_SDK_FILES:
             continue
@@ -278,7 +279,7 @@ def scan_provider_sdk_imports(
         # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError:
             continue
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     if any(alias.name == m or alias.name.startswith(m + ".") for m in FORBIDDEN_SDK_MODULES):
@@ -312,7 +313,7 @@ def scan_direct_model_calls(
     if files is None:
         files = _collect_files(repo_root)
     violations: list[dict] = []
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         rel = normalize_repo_path(fpath.relative_to(repo_root))
         if rel in ALLOWED_SDK_FILES:
             continue
@@ -321,7 +322,7 @@ def scan_direct_model_calls(
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
         except SyntaxError:
             continue
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Call):
                 func = node.func
                 name = None

@@ -31,6 +31,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
 )
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).parent.parent
 VOID_DIR = PROJECT_ROOT / ARCHIVES_DIR / "void_violations"
@@ -123,7 +124,7 @@ def main():
 
     print(f"Restoring {len(RESTORE_MAP)} agents...\n")
 
-    for filename, target_dir in sorted(RESTORE_MAP.items()):
+    for filename, target_dir in tqdm(sorted(RESTORE_MAP.items()), desc="Processing", unit="item"):
         success, message = restore_agent(filename, target_dir, args.dry_run)
 
         if success:

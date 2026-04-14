@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_naming_law_check_util", "p4obs", "metric_1")
 _emit_emits_metric_event("run_naming_law_check_util", "p4obs", "metric_2")
@@ -193,7 +194,7 @@ def main():
     scan_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
     violations = []
     compliant = 0
-    for dir_name in scan_dirs:
+    for dir_name in tqdm(scan_dirs, desc="Processing", unit="item"):
         dir_path = PROJECT_ROOT / dir_name
         if not dir_path.exists():
             continue

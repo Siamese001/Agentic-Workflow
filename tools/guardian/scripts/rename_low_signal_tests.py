@@ -167,6 +167,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rename_low_signal_tests", "p4obs", "metric_1")
 _emit_emits_metric_event("rename_low_signal_tests", "p4obs", "metric_2")
@@ -449,7 +450,7 @@ def build_proposals(
     rows = _query_low_signal_files(conn, tests_subdir)
     proposals: list[RenameProposal] = []
 
-    for node_id, adg_name, rpath in rows:
+    for node_id, adg_name, rpath in tqdm(rows, desc="Processing", unit="item"):
         orig = repo_root / rpath
 
         # --- Collect covered production paths via ADG edges ---
@@ -510,7 +511,7 @@ def execute_renames(
 ) -> tuple[int, int]:
     """Apply renames via ``git mv``.  Returns (applied, skipped)."""
     applied = skipped = 0
-    for p in proposals:
+    for p in tqdm(proposals, desc="Processing", unit="item"):
         src = repo_root / p.original_path
         dst = repo_root / p.proposed_path
         if not src.exists():

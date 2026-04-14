@@ -14,6 +14,7 @@ import json
 import os
 import tempfile
 import time
+from tqdm import tqdm
 
 
 @dataclass
@@ -95,7 +96,7 @@ class EmbeddingPipeline:
         self._index_path.parent.mkdir(parents=True, exist_ok=True)
 
         records_data = []
-        for r in self._records:
+        for r in tqdm(self._records, desc="Processing", unit="item"):
             records_data.append(
                 {
                     "id": r.id,

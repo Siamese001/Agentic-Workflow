@@ -9,6 +9,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 
 class SQLiteAnalyzer:
@@ -214,7 +215,7 @@ class SQLiteAnalyzer:
         )
 
         violations = []
-        for row in cursor.fetchall():
+        for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
             violations.append(
                 {
                     "edge_id": row[0],
@@ -286,7 +287,7 @@ class SQLiteAnalyzer:
         deficiencies = []
 
         # Add governance edge deficiencies
-        for module in self.get_modules_missing_governance_edges():
+        for module in tqdm(self.get_modules_missing_governance_edges(), desc="Processing", unit="item"):
             deficiencies.append(
                 {
                     "id": f"sqlite_gov_{module['id']}",
@@ -301,7 +302,7 @@ class SQLiteAnalyzer:
             )
 
         # Add layer violations
-        for violation in self.get_layer_violations():
+        for violation in tqdm(self.get_layer_violations(), desc="Processing", unit="item"):
             deficiencies.append(
                 {
                     "id": f"sqlite_layer_{violation['edge_id']}",
@@ -316,7 +317,7 @@ class SQLiteAnalyzer:
             )
 
         # Add P2 antipatterns (classify only, no auto-fix)
-        for antipattern in self.get_p2_antipatterns():
+        for antipattern in tqdm(self.get_p2_antipatterns(), desc="Processing", unit="item"):
             deficiencies.append(
                 {
                     "id": f"sqlite_p2_{antipattern['edge_id']}",

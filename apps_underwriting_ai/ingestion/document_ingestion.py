@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..types import DocumentPackage, DocumentRef
+from tqdm import tqdm
 
 
 @dataclass
@@ -98,7 +99,7 @@ class DocumentIngestion:
         """
         manifest = DocumentManifest()
 
-        for path in doc_paths:
+        for path in tqdm(doc_paths, desc="Processing", unit="item"):
             try:
                 # Determine doc type
                 doc_type = self._infer_doc_type(path, doc_type_map)
@@ -123,7 +124,7 @@ class DocumentIngestion:
         """Build DocumentPackage from manifest."""
         package = DocumentPackage()
 
-        for doc in manifest.documents:
+        for doc in tqdm(manifest.documents, desc="Processing", unit="item"):
             # Categorize by doc_type
             if doc.doc_type in ["financial_statement", "financials"]:
                 package.financial_statements.append(doc)

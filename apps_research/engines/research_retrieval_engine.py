@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_stores_embedding,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -93,7 +94,7 @@ class InMemoryResearchStore:
 
         # Score all research
         scored: list[tuple[str, float]] = []
-        for research_id, emb in self._embeddings.items():
+        for research_id, emb in tqdm(self._embeddings.items(), desc="Processing", unit="item"):
             score = self._cosine_similarity(query_emb, emb)
 
             # Apply filters
@@ -107,7 +108,7 @@ class InMemoryResearchStore:
         scored.sort(key=lambda x: x[1], reverse=True)
 
         results: list[RetrievedResearch] = []
-        for research_id, score in scored[:n_results]:
+        for research_id, score in tqdm(scored[:n_results], desc="Processing", unit="item"):
             rs = self._research[research_id]
             meta = rs["metadata"]
             data = rs["data"]
@@ -133,7 +134,7 @@ class InMemoryResearchStore:
         """Get research artifacts by mode."""
         results: list[RetrievedResearch] = []
 
-        for research_id, rs in self._research.items():
+        for research_id, rs in tqdm(self._research.items(), desc="Processing", unit="item"):
             meta = rs["metadata"]
             if meta.get("artifact_mode") == mode:
                 data = rs["data"]
@@ -259,7 +260,7 @@ class ResearchRetrievalEngine:
         # Aggregate claim types
         claim_type_stats: dict[str, dict[str, Any]] = {}
 
-        for art in artifacts:
+        for art in tqdm(artifacts, desc="Processing", unit="item"):
             for claim_type, count in art.claim_types.items():
                 if claim_type not in claim_type_stats:
                     claim_type_stats[claim_type] = {
@@ -270,7 +271,7 @@ class ResearchRetrievalEngine:
                 claim_type_stats[claim_type]["total"] += count
 
         trends: dict[str, SourceTrend] = {}
-        for claim_type, stats in claim_type_stats.items():
+        for claim_type, stats in tqdm(claim_type_stats.items(), desc="Processing", unit="item"):
             counts = stats["counts"]
             if len(counts) >= 2:
                 trend = "stable"

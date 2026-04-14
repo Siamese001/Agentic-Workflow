@@ -21,6 +21,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).parent
 
@@ -99,7 +100,7 @@ def analyze_deleted_files():
     correctly_deleted = []
     unclear = []
     print(f"Analyzing {len(deleted_files)} deleted test files...")
-    for file_path, commit in deleted_files:
+    for file_path, commit in tqdm(deleted_files, desc="Processing", unit="item"):
         content = get_file_content(commit, file_path)
         if not content:
             continue

@@ -260,7 +260,7 @@ class CostGuardrailMixin:
         super().__init__(**kwargs)
         self._budget_config: BudgetConfig = BudgetConfig()
         self._session_token_usage: list[TokenUsage] = []
-        self._session_start_time: float = time.time()
+        self._session_start_time: float = time.monotonic()
         self._total_session_tokens: int = 0
         self._total_session_cost: float = 0.0
         self._call_stack: list[str] = []
@@ -514,12 +514,12 @@ class CostGuardrailMixin:
                 "total_tokens": self._total_session_tokens,
                 "total_cost_usd": self._total_session_cost,
                 "operations_count": len(self._session_token_usage),
-                "duration_seconds": time.time() - self._session_start_time,
+                "duration_seconds": time.monotonic() - self._session_start_time,
             }
             self._session_token_usage = []
             self._total_session_tokens = 0
             self._total_session_cost = 0.0
-            self._session_start_time = time.time()
+            self._session_start_time = time.monotonic()
             self._call_stack = []
             self._loop_counters = {}
             self._budget_alerts_sent = set()

@@ -9,6 +9,7 @@ import logging
 from typing import Any
 
 from .titanium_rag_pipeline import TitaniumRAGPipeline, create_titanium_pipeline
+from tqdm import tqdm
 
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -160,7 +161,7 @@ async def get_titanium_search_tool(
         formatted_results = []
         docs = results["documents"][:max_results]
 
-        for i, doc in enumerate(docs, 1):
+        for i, doc in tqdm(enumerate(docs, 1), desc="Processing", unit="item"):
             # Extract text content
             text_content = ""
             if hasattr(doc, "metadata") and "text" in doc.metadata:
@@ -259,7 +260,7 @@ async def get_titanium_search_with_sources(
 
         # Extract sources
         sources = []
-        for doc in results.get("documents", []):
+        for doc in tqdm(results.get("documents", []), desc="Processing", unit="item"):
             source_info = {"content": "", "metadata": {}}
 
             if hasattr(doc, "metadata"):

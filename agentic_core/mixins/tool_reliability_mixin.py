@@ -99,6 +99,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tool_reliability_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("tool_reliability_mixin", "p4obs", "metric_2")
@@ -441,7 +442,7 @@ class ToolReliabilityMixin:
 
         if health.circuit_state == CircuitState.OPEN:
             opened_at = self._circuit_opened_at.get(tool_name, 0)
-            elapsed = time.time() - opened_at
+            elapsed = time.monotonic() - opened_at
 
             if elapsed >= config.timeout_seconds:
                 # Transition to half-open
@@ -463,7 +464,7 @@ class ToolReliabilityMixin:
             health = self._ensure_tool_health(tool_name)
             health.total_calls += 1
             health.successful_calls += 1
-            health.last_success_time = time.time()
+            health.last_success_time = time.monotonic()
             health.consecutive_failures = 0
             health.consecutive_successes += 1
 
@@ -480,7 +481,7 @@ class ToolReliabilityMixin:
             health = self._ensure_tool_health(tool_name)
             health.total_calls += 1
             health.failed_calls += 1
-            health.last_failure_time = time.time()
+            health.last_failure_time = time.monotonic()
             health.last_error = str(error)
             health.consecutive_successes = 0
             health.consecutive_failures += 1
@@ -490,13 +491,13 @@ class ToolReliabilityMixin:
                 if health.circuit_state == CircuitState.HALF_OPEN:
                     # Failed in half-open, reopen circuit
                     health.circuit_state = CircuitState.OPEN
-                    self._circuit_opened_at[tool_name] = time.time()
+                    self._circuit_opened_at[tool_name] = time.monotonic()
                     Logger.warning(
                         f"[RELIABILITY] Circuit for '{tool_name}' reopened after half-open failure",
                     )
                 elif health.consecutive_failures >= config.failure_threshold:
                     health.circuit_state = CircuitState.OPEN
-                    self._circuit_opened_at[tool_name] = time.time()
+                    self._circuit_opened_at[tool_name] = time.monotonic()
                     Logger.warning(
                         f"[RELIABILITY] Circuit for '{tool_name}' OPENED after "
                         f"{health.consecutive_failures} consecutive failures",
@@ -568,7 +569,11 @@ class ToolReliabilityMixin:
                 agent_id="tool_reliability_mixin",
             )
         # guardian: allow-silent-swallow
-        except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+        except (
+            AttributeError,
+            RuntimeError,
+            OSError,
+        ) as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             Logger.warning("[V15] Retry gateway audit failed (LOG_ONLY): %s", exc)
@@ -608,7 +613,7 @@ class ToolReliabilityMixin:
         policy = self._retry_policies.get(tool_name, RetryPolicy())
         last_error: Exception | None = None
 
-        for attempt in range(policy.max_retries + 1):
+        for attempt in tqdm(range(policy.max_retries + 1), desc="Processing", unit="item"):
             try:
                 # Execute operation
                 result = operation()
@@ -679,7 +684,7 @@ class ToolReliabilityMixin:
         policy = self._retry_policies.get(tool_name, RetryPolicy())
         last_error: Exception | None = None
 
-        for attempt in range(policy.max_retries + 1):
+        for attempt in tqdm(range(policy.max_retries + 1), desc="Processing", unit="item"):
             try:
                 result = operation()
                 self._record_success(tool_name)

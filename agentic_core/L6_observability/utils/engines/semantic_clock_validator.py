@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("semantic_clock_validator", "semantic_clock_validator_trace")
 
@@ -274,7 +275,7 @@ def scan_module_for_wallclock(module_path: Path) -> list[str]:
     except SyntaxError as exc:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"SyntaxError at line {exc.lineno}: {exc.msg}"]
     violations: list[str] = []
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.Call):
             continue
         func = node.func

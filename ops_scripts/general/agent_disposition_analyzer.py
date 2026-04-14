@@ -7,6 +7,7 @@ Categorizes files into: CORE FOUNDATION, ACTIVE SPECIALISTS, STATELESS TOOLS, LE
 
 import ast
 from pathlib import Path
+from tqdm import tqdm
 
 
 class AgentDispositionAnalyzer:
@@ -44,7 +45,7 @@ class AgentDispositionAnalyzer:
     def _extract_classes(self, tree: ast.AST) -> list[dict]:
         """Extract class information from AST."""
         classes = []
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 bases = [base.id if isinstance(base, ast.Name) else str(base) for base in node.bases]
                 is_agent = node.name.endswith("Agent")
@@ -151,7 +152,7 @@ class AgentDispositionAnalyzer:
             "analysis_details": {},
             "summary": {},
         }
-        for file_path in python_files:
+        for file_path in tqdm(python_files, desc="Processing", unit="item"):
             if file_path.name == "__init__.py":
                 continue
             classification, details = self.analyze_file(file_path)

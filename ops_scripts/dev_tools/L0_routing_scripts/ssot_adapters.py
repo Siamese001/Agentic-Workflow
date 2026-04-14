@@ -89,6 +89,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 
 def _to_result(raw: Any, *, fixed: list[dict] | None = None) -> SubphaseResult:
@@ -457,7 +458,7 @@ def build_adapters(agents: dict[str, Any], project_root: Path) -> dict[str, Any]
         Dict mapping roster key -> adapter instance implementing L2AgentProtocol.
     """
     adapters: dict[str, Any] = {}
-    for key, adapter_cls in ADAPTER_REGISTRY.items():
+    for key, adapter_cls in tqdm(ADAPTER_REGISTRY.items(), desc="Processing", unit="item"):
         agent_cls = agents.get(key) or agents.get(
             "conversational_repair" if key == "observability_probe" else key,
         )

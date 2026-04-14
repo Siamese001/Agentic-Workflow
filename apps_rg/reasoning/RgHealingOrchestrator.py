@@ -112,6 +112,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("RgHealingOrchestrator", "p4obs", "metric_1")
 _emit_emits_metric_event("RgHealingOrchestrator", "p4obs", "metric_2")
@@ -229,7 +230,7 @@ class RgHealingOrchestrator(BaseHealingOrchestrator):
         print("🧬 SELF-HEALING ORCHESTRATOR STARTED")
         print("=" * 60)
         convergence_cycle: int | None = None
-        for cycle_num in range(1, self.max_cycles + 1):
+        for cycle_num in tqdm(range(1, self.max_cycles + 1), desc="Processing", unit="item"):
             self.ctx.signal_healing_cycle(cycle_num)
             print(f"\n{'=' * 40}")
             print(f"🔄 HEALING CYCLE {cycle_num}/{self.max_cycles}")

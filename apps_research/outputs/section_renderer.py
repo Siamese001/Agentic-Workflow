@@ -8,6 +8,7 @@ SVP Standards:
 
 from __future__ import annotations
 
+import html
 import json
 import logging
 from typing import Any
@@ -20,16 +21,20 @@ _log = logging.getLogger(__name__)
 class SectionRenderer:
     """Renderer for individual research sections."""
 
+    @staticmethod
+    def _safe_markdown(value: str) -> str:
+        return value.replace("\x00", "").replace("\r\n", "\n").replace("```", "``\u200b`").strip()
+
     def render_json(self, section: ResearchSection) -> str:
         """Render section as formatted JSON."""
-        return json.dumps(section.model_dump(), indent=2, default=str)
+        return json.dumps(section.model_dump(), indent=2, sort_keys=True, ensure_ascii=False, default=str)
 
     def render_markdown(self, section: ResearchSection) -> str:
         """Render section as Markdown."""
         lines = [
-            f"# {section.heading}",
+            f"# {html.escape(section.heading)}",
             "",
-            section.body,
+            self._safe_markdown(section.body),
             "",
         ]
 
@@ -62,16 +67,16 @@ class SectionRenderer:
     def render_html(self, section: ResearchSection) -> str:
         """Render section as HTML."""
         lines = [
-            f"<h1>{section.heading}</h1>",
+            f"<h1>{html.escape(section.heading)}</h1>",
             "",
-            f"<p>{section.body.replace(chr(10), '</p><p>')}</p>",
+            f"<p>{html.escape(self._safe_markdown(section.body)).replace(chr(10), '</p><p>')}</p>",
             "",
         ]
 
         if section.sources:
             lines.extend(["<h2>Sources</h2>", "<ul>"])
             for source in section.sources:
-                lines.append(f"<li>{source}</li>")
+                lines.append(f"<li>{html.escape(str(source))}</li>")
             lines.extend(["</ul>", ""])
 
         lines.append(

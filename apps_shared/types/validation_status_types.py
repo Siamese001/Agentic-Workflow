@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validation_status_types", "p4obs", "metric_1")
 _emit_emits_metric_event("validation_status_types", "p4obs", "metric_2")
@@ -373,7 +374,7 @@ class ValidationGateExecutor:
                 f"Gate {gate_id} execution point mismatch: expected {gate.execution_point}, got {execution_point}",
             )
         failures = []
-        for check in gate.checks:
+        for check in tqdm(gate.checks, desc="Processing", unit="item"):
             failure = self._execute_check(check, content, k_node_id, context)
             if failure:
                 failures.append(failure)

@@ -30,7 +30,13 @@ from agentic_core.L2_execution.determinism.replay_envelope import EnvelopeBuilde
 
 
 def _valid_builder() -> EnvelopeBuilder:
-    return EnvelopeBuilder().with_replay_key("rk-test").with_policy_hash("ph-test").with_run_id("run-test")
+    return (
+        EnvelopeBuilder()
+        .with_replay_key("rk-test")
+        .with_policy_hash("ph-test")
+        .with_run_id("run-test")
+        .with_run_clock(1000.0)
+    )
 
 
 def test_with_coverage_scorer_binds_role() -> None:

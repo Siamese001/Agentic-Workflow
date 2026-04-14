@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("system_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("system_enforcer", "p4obs", "metric_2")
@@ -370,7 +371,7 @@ class SystemValidator:
             Logger.info("")
         Logger.info("BY LAYER:")
         layer_stats = {}
-        for result in r.results:
+        for result in tqdm(r.results, desc="Processing", unit="item"):
             layer = result.layer
             if layer not in layer_stats:
                 layer_stats[layer] = {"total": 0, "testing": 0, "healing": 0, "mcp": 0}

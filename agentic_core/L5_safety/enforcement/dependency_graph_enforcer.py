@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("dependency_graph_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("dependency_graph_enforcer", "p4obs", "metric_2")
@@ -196,7 +197,7 @@ class DependencyGraph:
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         print("🕸️ Building Holistic Code Graph...")
-        for file_path in files:
+        for file_path in tqdm(files, desc="Processing", unit="item"):
             self.graph[file_path] = {"imports": [], "classes": []}
             try:
                 with open(file_path, encoding="utf-8") as f:

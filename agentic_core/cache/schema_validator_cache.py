@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from typing import Any
+from typing import Any, Callable
 
 from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
@@ -164,6 +164,20 @@ logger = logging.getLogger(__name__)
 _DEFAULT_SCHEMA_TTL = 3600 * 24
 
 
+def _require_positive_ttl(ttl_seconds: int) -> int:
+    if ttl_seconds <= 0:
+        raise ValueError(f"ttl_seconds must be > 0, got {ttl_seconds}")
+    return ttl_seconds
+
+
+def _is_json_serializable(obj: Any) -> bool:
+    try:
+        json.dumps(obj)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
 class SchemaValidatorCache:
     """Cache for compiled JSON schema validators.
 
@@ -173,9 +187,11 @@ class SchemaValidatorCache:
 
     def __init__(self, cache: DeterministicRedisCache | None = None, ttl_seconds: int = _DEFAULT_SCHEMA_TTL):
         self._cache = cache or get_hot_cache()
-        self._ttl = ttl_seconds
+        self._ttl = _require_positive_ttl(ttl_seconds)
 
-    def get_or_fetch(self, schema: dict[str, Any], fetch_validator: Any, *, replay_mode: bool = False) -> Any:
+    def get_or_fetch(
+        self, schema: dict[str, Any], fetch_validator: Callable[[], Any], *, replay_mode: bool = False
+    ) -> Any:
         """Read-through helper: return cached validator result or call *fetch_validator*.
 
         *fetch_validator* is a zero-argument callable that compiles and returns
@@ -201,6 +217,8 @@ class SchemaValidatorCache:
 
         if not schema:
             raise ValueError("Schema dict must not be empty")
+        if not callable(fetch_validator):
+            raise TypeError("fetch_validator must be callable")
         if not replay_mode:
             try:
                 schema_hash = self._compute_schema_hash(schema)
@@ -210,23 +228,22 @@ class SchemaValidatorCache:
                     logger.debug("[Schema validator cache] HIT")
                     return cached
             except ValueError as e:
-                # TODO: Add proper input validation
                 logger.warning(f"Invalid input: {e}")
                 raise
-            except Exception as e:
+            except (ConnectionError, OSError) as e:
                 logger.warning(f"[Schema validator cache] Cache read failed: {e}")
         logger.debug("[Schema validator cache] MISS — compiling validator")
         result = fetch_validator()
         if not replay_mode:
-            try:
-                schema_hash = self._compute_schema_hash(schema)
-                cache_key = f"schema_validator:{schema_hash}"
-                self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
-            except ValueError:
-                pass
-            # guardian: allow-silent-swallow
-            except Exception as e:
-                logger.warning(f"[Schema validator cache] Cache write failed: {e}")
+            if not _is_json_serializable(result):
+                logger.debug("[Schema validator cache] Result not JSON-serializable — skipping write")
+            else:
+                try:
+                    schema_hash = self._compute_schema_hash(schema)
+                    cache_key = f"schema_validator:{schema_hash}"
+                    self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
+                except (ValueError, ConnectionError, OSError) as e:
+                    logger.warning(f"[Schema validator cache] Cache write failed: {e}")
         return result
 
     def _compute_schema_hash(self, schema: dict[str, Any]) -> str:

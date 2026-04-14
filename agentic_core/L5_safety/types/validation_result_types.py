@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("validation_result_types", "p4obs", "metric_1")
 _emit_emits_metric_event("validation_result_types", "p4obs", "metric_2")
@@ -360,7 +361,7 @@ class executive_title_composer:
 
         self.recovery_loop.reset(self.CONFIG.TEMPERATURE)
         validation_results = []
-        for attempt in range(1, self.CONFIG.max_attempts + 1):
+        for attempt in tqdm(range(1, self.CONFIG.max_attempts + 1), desc="Processing", unit="item"):
             headline = self._generate_content(
                 context=context,
                 temperature=self.recovery_loop.current_temperature,

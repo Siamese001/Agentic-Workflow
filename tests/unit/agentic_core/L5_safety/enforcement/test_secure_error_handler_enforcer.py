@@ -30,3 +30,30 @@ class TestSecureErrorHandlerEnforcer:
         from agentic_core import validate_secure_error_handler_enforcer
 
         assert callable(validate_secure_error_handler_enforcer)
+
+    def test_build_sanitized_context_no_sanitize_returns_empty(self):
+        """sanitize_args=False must return {} without inspecting arguments."""
+        from agentic_core.L5_safety.enforcement.secure_error_handler_enforcer import _build_sanitized_context
+
+        def fn(name: str) -> None:
+            pass
+
+        result = _build_sanitized_context(fn, ("Alice",), {}, sanitize_args=False)
+        assert result == {}
+
+    def test_build_sanitized_context_with_sanitize_produces_keys(self):
+        """sanitize_args=True must produce arg_<name> keys for string params."""
+        from agentic_core.L5_safety.enforcement.secure_error_handler_enforcer import _build_sanitized_context
+
+        def fn(username: str) -> None:
+            pass
+
+        result = _build_sanitized_context(fn, ("bob",), {}, sanitize_args=True)
+        assert "arg_username" in result
+
+    def test_build_sanitized_context_bind_failure_returns_fallback(self):
+        """When inspect.signature fails (e.g. None), fallback key must be returned."""
+        from agentic_core.L5_safety.enforcement.secure_error_handler_enforcer import _build_sanitized_context
+
+        result = _build_sanitized_context(None, (), {}, sanitize_args=True)
+        assert result == {"arg_binding": "<sanitized>"}

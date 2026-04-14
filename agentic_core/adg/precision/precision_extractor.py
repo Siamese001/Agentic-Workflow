@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .precision_schema import NodeSpan, PrecisionConfig, PrecisionGraph, PrecisionMetrics, SemanticEdgeType
+from tqdm import tqdm
 
 
 class PrecisionExtractor(ast.NodeVisitor):
@@ -168,7 +169,7 @@ class PrecisionHardeningEngine:
         total_calls = 0
         resolved_calls = 0
 
-        for graph in self.precision_graphs.values():
+        for graph in tqdm(self.precision_graphs.values(), desc="Processing", unit="item"):
             graph_modeled_side_effects = len(graph.side_effects_modeled)
             modeled_side_effects += graph_modeled_side_effects
             total_side_effects += max(graph_modeled_side_effects, 1)  # Avoid division by zero

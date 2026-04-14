@@ -125,6 +125,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rename_safety", "p4obs", "metric_1")
 _emit_emits_metric_event("rename_safety", "p4obs", "metric_2")
@@ -332,7 +333,7 @@ def analyze_rename(
     direct_importers: set[str] = set()
     new_violations: set[str] = set()
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         # Check if this edge references the old module
         refs_old = (
             edge.to_name == old_adg
@@ -418,7 +419,7 @@ def analyze_rename(
 
     # Steps for each unique importer file
     importer_files = sorted({i.file_path for i in unique_impacted})
-    for fpath in importer_files:
+    for fpath in tqdm(importer_files, desc="Processing", unit="item"):
         file_impacts = [i for i in unique_impacted if i.file_path == fpath]
         old_refs = sorted({i.old_reference for i in file_impacts})
         new_refs = sorted({i.suggested_new_reference for i in file_impacts})

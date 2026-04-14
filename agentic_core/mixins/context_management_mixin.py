@@ -190,7 +190,7 @@ class ContextItem:
     content: str
     priority: ContextPriority
     token_count: int
-    timestamp: float = field(default_factory=time.time)
+    timestamp: float = field(default_factory=time.monotonic)
     item_id: str = ""
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -431,7 +431,7 @@ class ContextManagementMixin:
 
     def _trigger_summarization(self) -> None:
         """Trigger summarization of older context."""
-        cutoff_time = time.time() - 300
+        cutoff_time = time.monotonic() - 300
         items_to_summarize = [
             item
             for item in self._context_items
@@ -453,7 +453,7 @@ class ContextManagementMixin:
         self._context_items.append(summary_item)
         self._total_context_tokens += summary_item.token_count
         self._summaries.append(summary_item)
-        self._last_summarization_time = time.time()
+        self._last_summarization_time = time.monotonic()
         Logger.info(
             f"[CONTEXT] Summarized {len(items_to_summarize)} items into {summary_item.token_count} tokens",
         )

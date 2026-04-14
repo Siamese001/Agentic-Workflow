@@ -8,6 +8,7 @@ from typing import Any
 from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
     HybridSearchEngine,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -121,7 +122,7 @@ class RetrievalBenchmark:
         reciprocal_ranks = []
         dcg_scores = []
 
-        for benchmark_query in queries:
+        for benchmark_query in tqdm(queries, desc="Processing", unit="item"):
             results = self.engine.search(benchmark_query.query)
             retrieved_ids = [r.chunk_id for r in results[:k]]
             expected_ids = set(benchmark_query.expected_chunk_ids)

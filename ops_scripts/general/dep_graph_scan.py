@@ -4,6 +4,7 @@ import ast
 import json
 from collections import defaultdict
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT = Path("c:/Git/Agentic-Workflow")
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
@@ -24,11 +25,11 @@ def get_imports(tree):
 import_graph = defaultdict(set)
 module_to_file = {}
 syntax_errors = []
-for d in SSOT_DIRS:
+for d in tqdm(SSOT_DIRS, desc="Processing", unit="item"):
     scan_root = ROOT / d
     if not scan_root.exists():
         continue
-    for py in sorted(scan_root.rglob("*.py")):
+    for py in tqdm(sorted(scan_root.rglob("*.py")), desc="Processing", unit="item"):
         if ".git" in py.parts:
             continue
         rel = py.relative_to(ROOT).as_posix()
@@ -138,7 +139,7 @@ print(f"TOTAL_UNIQUE_MODULES: {len(module_to_file)}")
 print(f"TOTAL_ORPHANS (no imports/importers): {len(orphans)}")
 print(f"SYNTAX_ERRORS: {len(syntax_errors)}")
 existing_tools = []
-for py in ROOT.rglob("*.py"):
+for py in tqdm(ROOT.rglob("*.py"), desc="Processing", unit="item"):
     if ".git" in py.parts:
         continue
     try:

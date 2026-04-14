@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("cst_healer_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("cst_healer_mixin", "p4obs", "metric_2")
@@ -365,7 +366,7 @@ class SurgicalCSTHealerMixin:
         try:
             # Verification Gate pre-check to prevent Epistemic Cascade
             if hasattr(self, "gate"):
-                for violation in context.violations:
+                for violation in tqdm(context.violations, desc="Processing", unit="item"):
                     # Map violation types to verification actions
                     action_type = self._map_violation_to_action_type(violation.constraint_type)
                     target_node = self._extract_target_node(violation)
@@ -486,7 +487,7 @@ class SurgicalCSTHealerMixin:
                     "artifacts": [],
                 }
 
-        except Exception as e:
+        except (AttributeError, RuntimeError, OSError, ValueError) as e:
             return {
                 "status": "error",
                 "violations_found": len(context.violations),

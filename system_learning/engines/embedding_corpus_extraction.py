@@ -10,6 +10,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from tqdm import tqdm
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,7 +80,7 @@ def extract_healing_context_records(source: list[dict]) -> list[CorpusRecord]:
         ValueError: If required fields are missing.
     """
     records = []
-    for i, item in enumerate(source):
+    for i, item in tqdm(enumerate(source), desc="Processing", unit="item"):
         if "violation_signature" not in item:
             raise ValueError(f"Item {i}: missing 'violation_signature' field")
         if "strategy" not in item:
@@ -115,7 +116,7 @@ def extract_telemetry_event_records(source: list[dict]) -> list[CorpusRecord]:
         ValueError: If required fields are missing.
     """
     records = []
-    for i, item in enumerate(source):
+    for i, item in tqdm(enumerate(source), desc="Processing", unit="item"):
         if "event_type" not in item:
             raise ValueError(f"Item {i}: missing 'event_type' field")
         if "payload" not in item:
@@ -151,7 +152,7 @@ def extract_dpo_pair_records(source: list[dict]) -> list[CorpusRecord]:
         ValueError: If required fields are missing.
     """
     records = []
-    for i, item in enumerate(source):
+    for i, item in tqdm(enumerate(source), desc="Processing", unit="item"):
         if "prompt" not in item:
             raise ValueError(f"Item {i}: missing 'prompt' field")
         if "chosen" not in item:

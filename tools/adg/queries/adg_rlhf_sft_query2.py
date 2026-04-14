@@ -5,6 +5,7 @@ Focused: RLHF optimizer + SFT node details from Redis hot cache.
 import os
 
 import redis
+from tqdm import tqdm
 
 
 def get_redis() -> redis.Redis:
@@ -50,10 +51,10 @@ def main() -> None:
     r = get_redis()
 
     print("=== RLHF OPTIMIZER + REWARD MODEL NODE DETAILS ===")
-    for fp in RLHF_FILES:
+    for fp in tqdm(RLHF_FILES, desc="Processing", unit="item"):
         nodes = get_nodes_for_file(r, fp)
         print(f"\n[{fp}]  ({len(nodes)} nodes)")
-        for n in nodes:
+        for n in tqdm(nodes, desc="Processing", unit="item"):
             nid = n.get("id", "?")
             layer = n.get("layer", "?")
             etype = n.get("entity_type", "?")
@@ -65,7 +66,7 @@ def main() -> None:
             # importers
             importers_raw = r.smembers(f"adg:edge:in:{nid}:imports")
             importer_layers = []
-            for imp in importers_raw:
+            for imp in tqdm(importers_raw, desc="Processing", unit="item"):
                 d = r.hgetall(f"adg:node:{imp.decode()}")
                 if d:
                     lyr = d.get(b"layer", b"?").decode()
@@ -84,7 +85,11 @@ def main() -> None:
 
     # Check meta_learning_pipeline.py — is RLHFOptimizer wired there?
     print("\n=== meta_learning_pipeline.py details ===")
-    for n in get_nodes_for_file(r, "system_learning/pipelines/meta_learning_pipeline.py"):
+    for n in tqdm(
+        get_nodes_for_file(r, "system_learning/pipelines/meta_learning_pipeline.py"),
+        desc="Processing",
+        unit="item",
+    ):
         nid = n.get("id", "?")
         layer = n.get("layer", "?")
         etype = n.get("entity_type", "?")
@@ -95,11 +100,16 @@ def main() -> None:
         # What does it import?
         imports_out = r.smembers(f"adg:edge:{nid}:imports")
         import_names = []
-        for imp in imports_out:
+        for imp in tqdm(imports_out, desc="Processing", unit="item"):
             d = r.hgetall(f"adg:node:{imp.decode()}")
             if d:
                 lyr = d.get(b"layer", b"?").decode()
-                nm = d.get(b"adg_name", b"?").decode().replace("ADG::Module::", "").replace("ADG::Symbol::", "")
+                nm = (
+                    d.get(b"adg_name", b"?")
+                    .decode()
+                    .replace("ADG::Module::", "")
+                    .replace("ADG::Symbol::", "")
+                )
                 if "UNKNOWN" not in lyr:
                     import_names.append(f"[{lyr}] {nm}")
         print(f"  [{layer}] {name} | {etype} | covered={covered}")
@@ -110,7 +120,9 @@ def main() -> None:
 
     # Check meta_learning_bus.py — uses GovernanceRewardModel
     print("\n=== meta_learning_bus.py details ===")
-    for n in get_nodes_for_file(r, "system_learning/engines/meta_learning_bus.py"):
+    for n in tqdm(
+        get_nodes_for_file(r, "system_learning/engines/meta_learning_bus.py"), desc="Processing", unit="item"
+    ):
         nid = n.get("id", "?")
         layer = n.get("layer", "?")
         etype = n.get("entity_type", "?")
@@ -120,11 +132,16 @@ def main() -> None:
         rels = sorted({k.decode().split(":")[-1] for k in edge_keys})
         imports_out = r.smembers(f"adg:edge:{nid}:imports")
         import_names = []
-        for imp in imports_out:
+        for imp in tqdm(imports_out, desc="Processing", unit="item"):
             d = r.hgetall(f"adg:node:{imp.decode()}")
             if d:
                 lyr = d.get(b"layer", b"?").decode()
-                nm = d.get(b"adg_name", b"?").decode().replace("ADG::Module::", "").replace("ADG::Symbol::", "")
+                nm = (
+                    d.get(b"adg_name", b"?")
+                    .decode()
+                    .replace("ADG::Module::", "")
+                    .replace("ADG::Symbol::", "")
+                )
                 if "UNKNOWN" not in lyr:
                     import_names.append(f"[{lyr}] {nm}")
         print(f"  [{layer}] {name} | {etype} | covered={covered}")
@@ -135,16 +152,20 @@ def main() -> None:
 
     # What is SFT-absent? Scan for any sft/finetune/train* files
     print("\n=== SFT / fine-tune / trainer scan (Redis file index) ===")
-    for pattern in [
-        "*sft*",
-        "*fine_tun*",
-        "*finetune*",
-        "*trainer*",
-        "*training*",
-        "*feedback_collect*",
-        "*human_feedback*",
-        "*annotation*",
-    ]:
+    for pattern in tqdm(
+        [
+            "*sft*",
+            "*fine_tun*",
+            "*finetune*",
+            "*trainer*",
+            "*training*",
+            "*feedback_collect*",
+            "*human_feedback*",
+            "*annotation*",
+        ],
+        desc="Processing",
+        unit="item",
+    ):
         keys = iter_keys(r, f"adg:nodes:by_file:{pattern}")
         if keys:
             for k in keys:

@@ -9,7 +9,10 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+try:
+    from pydantic import BaseModel, Field, field_validator
+except ImportError:  # Pydantic v1 compatibility
+    from pydantic import BaseModel, Field, validator as field_validator  # type: ignore[no-redef]
 
 ProposalStatus = Literal["pending", "generating", "gate_checking", "complete", "failed", "dry_run"]
 
@@ -187,7 +190,7 @@ class RfpRunSummary(BaseModel):
 
     def to_dict(self) -> dict:
         """Export as dictionary."""
-        return self.model_dump()
+        return self.dict() if hasattr(self, "dict") and not hasattr(self, "model_dump") else self.model_dump()
 
     class Config:
         json_schema_extra = {

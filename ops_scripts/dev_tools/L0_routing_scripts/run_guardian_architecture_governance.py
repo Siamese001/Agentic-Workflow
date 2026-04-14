@@ -159,6 +159,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_architecture_governance", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_architecture_governance", "p4obs", "metric_2")
@@ -292,7 +293,7 @@ def scan_import_compliance(
         files = _collect_python_files(repo_root)
 
     violations: list[dict] = []
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         source_layer = _get_layer_from_path(fpath)
         if source_layer is None or source_layer not in LAYER_HIERARCHY:
             continue
@@ -304,7 +305,7 @@ def scan_import_compliance(
         except (SyntaxError, UnicodeDecodeError):
             continue
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if not isinstance(node, (ast.Import, ast.ImportFrom)):
                 continue
 
@@ -364,7 +365,7 @@ def scan_layer_gravity(
         return []
 
     violations: list[dict] = []
-    for agent in gravity_agents:
+    for agent in tqdm(gravity_agents, desc="Processing", unit="item"):
         violations.append(
             {
                 "path": normalize_repo_path(agent.relative_path),

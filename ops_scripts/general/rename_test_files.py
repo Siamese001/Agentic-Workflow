@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -341,7 +342,7 @@ def main() -> None:
     skipped_missing = 0
     collisions: list[str] = []
 
-    for src_rel, dst_rel in RENAMES:
+    for src_rel, dst_rel in tqdm(RENAMES, desc="Processing", unit="item"):
         src = ROOT / src_rel
         dst = ROOT / dst_rel
 

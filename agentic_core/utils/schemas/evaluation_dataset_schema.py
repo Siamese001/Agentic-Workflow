@@ -5,6 +5,7 @@ Defines the structure for evaluation examples and datasets.
 """
 
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -156,6 +157,14 @@ _emit_updates_meta_learning_state("p4", "evaluation_dataset_schema", "meta_learn
 _emit_links_execution_to_snapshot("p4", "evaluation_dataset_schema", "exec_snapshot_link")
 
 
+def _normalize_json_path(file_path: Path, *, must_exist: bool) -> Path:
+    resolved = file_path.expanduser().resolve(strict=must_exist)
+    if resolved.suffix.lower() != ".json":
+        msg = f"Expected a .json dataset path, got: {resolved}"
+        raise ValueError(msg)
+    return resolved
+
+
 @dataclass
 class EvaluationExample:
     """Single evaluation example with query, ground truth, and expected answer."""
@@ -215,8 +224,19 @@ class EvaluationDataset:
 
     def save_to_file(self, file_path: Path) -> None:
         """Save dataset to JSON file."""
-        with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(self.to_dict(), f, indent=2, ensure_ascii=False)
+        target_path = _normalize_json_path(file_path, must_exist=False)
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        tmp_path = target_path.with_suffix(f"{target_path.suffix}.tmp")
+
+        try:
+            with tmp_path.open("w", encoding="utf-8", newline="\n") as f:
+                json.dump(self.to_dict(), f, indent=2, ensure_ascii=False)
+                f.flush()
+                os.fsync(f.fileno())
+            tmp_path.replace(target_path)
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink(missing_ok=True)
 
     @classmethod
     def load_from_file(cls, file_path: Path) -> "EvaluationDataset":
@@ -228,8 +248,12 @@ class EvaluationDataset:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluationDataset.load_from_file"
         )
 
-        with open(file_path, encoding="utf-8") as f:
+        source_path = _normalize_json_path(file_path, must_exist=True)
+        with source_path.open(encoding="utf-8") as f:
             data = json.load(f)
+        if not isinstance(data, dict):
+            msg = f"Expected top-level JSON object in {source_path}"
+            raise ValueError(msg)
         return cls.from_dict(data)
 
     def __len__(self) -> int:

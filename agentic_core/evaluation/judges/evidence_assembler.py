@@ -26,6 +26,7 @@ from agentic_core.evaluation.judges.types import (
     EvidenceBundle,
     SourceSnippet,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -134,7 +135,7 @@ class EvidenceAssembler:
                    WHERE e.src_id = ? AND e.relation_type = ?""",
                 (node_id, relation),
             ).fetchall()
-            for r in rows:
+            for r in tqdm(rows, desc="Processing", unit="item"):
                 results.append(
                     {
                         "direction": "outgoing",
@@ -158,7 +159,7 @@ class EvidenceAssembler:
                    WHERE e.dst_id = ? AND e.relation_type = ?""",
                 (node_id, relation),
             ).fetchall()
-            for r in rows:
+            for r in tqdm(rows, desc="Processing", unit="item"):
                 results.append(
                     {
                         "direction": "incoming",
@@ -184,8 +185,8 @@ class EvidenceAssembler:
         seen: set[tuple[str, int]] = set()
         snippets: list[SourceSnippet] = []
 
-        for _rel, edge_list in edges.items():
-            for edge in edge_list:
+        for _rel, edge_list in tqdm(edges.items(), desc="Processing", unit="item"):
+            for edge in tqdm(edge_list, desc="Processing", unit="item"):
                 file_path = edge.get("source_file", "") or module_path
                 line_no = edge.get("line_no", 0)
                 if not file_path or line_no <= 0:

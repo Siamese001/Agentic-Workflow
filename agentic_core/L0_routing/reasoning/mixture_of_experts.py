@@ -25,6 +25,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_learning_event,
     _emit_stores_learning_state,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -393,7 +394,7 @@ class LoadBalancer:
         """Get load balancing weights for experts"""
         weights = {}
 
-        for expert_id in expert_ids:
+        for expert_id in tqdm(expert_ids, desc="Processing", unit="item"):
             if expert_id not in self.expert_loads:
                 weights[expert_id] = 1.0
                 continue
@@ -617,7 +618,7 @@ class MixtureOfExperts:
         }
 
         # Collect results
-        for future in as_completed(future_to_expert):
+        for future in tqdm(as_completed(future_to_expert), desc="Processing", unit="item"):
             expert_id = future_to_expert[future]
             try:
                 prediction = future.result(timeout=5.0)  # 5 second timeout

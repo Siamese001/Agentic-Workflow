@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("graph_rag_fusion_util", "p4obs", "metric_1")
 _emit_emits_metric_event("graph_rag_fusion_util", "p4obs", "metric_2")
@@ -329,7 +330,7 @@ class CypherQueryGenerator:
             str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "GraphRAGQueryGenerator.generate_query"
         )
         natural_lower = natural_query.lower()
-        for pattern_name, pattern in self.patterns.items():
+        for pattern_name, pattern in tqdm(self.patterns.items(), desc="Processing", unit="item"):
             match = re.search(pattern, natural_lower)
             if match:
                 template = self.templates[pattern_name]

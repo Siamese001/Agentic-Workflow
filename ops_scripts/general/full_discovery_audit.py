@@ -11,6 +11,7 @@ Checks for:
 import json
 from collections import defaultdict
 from pathlib import Path
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DISCOVERY_JSON = PROJECT_ROOT / "agent_discovery_full.json"
@@ -36,7 +37,7 @@ def audit_discovery():
     print(f"Total agents discovered: {len(agents)}")
     print("=" * 100)
     categories = defaultdict(list)
-    for agent in agents:
+    for agent in tqdm(agents, desc="Processing", unit="item"):
         path = agent.get("path", "").replace("\\", "/")
         name = agent.get("class_name", "")
         has_healing = agent.get("has_healing", False)

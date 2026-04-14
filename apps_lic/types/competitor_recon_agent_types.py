@@ -84,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("competitor_recon_agent_types", "p4obs", "metric_1")
 _emit_emits_metric_event("competitor_recon_agent_types", "p4obs", "metric_2")
@@ -445,9 +446,9 @@ class CompetitorReconAgent:
         """
         try:
             matches = []
-            for move in moves:
+            for move in tqdm(moves, desc="Processing", unit="item"):
                 move_text = move.recent_launch.lower()
-                for skill in skills:
+                for skill in tqdm(skills, desc="Processing", unit="item"):
                     skill_lower = skill.lower()
                     if skill_lower in move_text:
                         matches.append(

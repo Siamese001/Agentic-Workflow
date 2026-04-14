@@ -150,6 +150,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fca_safety_gates_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fca_safety_gates_util", "p4obs", "metric_2")
@@ -269,7 +270,7 @@ def check_rename_collisions(
                 },
             )
     existing_norm = {_norm(f): f for f in existing_files}
-    for src, dst in rename_map.items():
+    for src, dst in tqdm(rename_map.items(), desc="Processing", unit="item"):
         dst_n = _norm(dst)
         src_n = _norm(src)
         if dst_n in existing_norm and dst_n != src_n:
@@ -282,7 +283,7 @@ def check_rename_collisions(
                 },
             )
     if not case_sensitive:
-        for src, dst in rename_map.items():
+        for src, dst in tqdm(rename_map.items(), desc="Processing", unit="item"):
             src_n = _norm(src)
             dst_n = _norm(dst)
             if dst_n in existing_norm:
@@ -308,7 +309,7 @@ def build_import_graph(python_files: list[Path], project_root: Path) -> dict[str
     """
     import_counts: dict[str, int] = {}
     module_to_relpath: dict[str, str] = {}
-    for p in python_files:
+    for p in tqdm(python_files, desc="Processing", unit="item"):
         try:
             rel = p.relative_to(project_root)
         except ValueError:
@@ -319,7 +320,7 @@ def build_import_graph(python_files: list[Path], project_root: Path) -> dict[str
             mod_name = mod_name.removesuffix(".__init__")
         module_to_relpath[mod_name] = rel_str
         import_counts[rel_str] = 0
-    for p in python_files:
+    for p in tqdm(python_files, desc="Processing", unit="item"):
         try:
             content = p.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
@@ -398,7 +399,7 @@ def check_import_impact(
         List of blocked items with impact details.
     """
     blocked: list[dict[str, Any]] = []
-    for src, dst in rename_map.items():
+    for src, dst in tqdm(rename_map.items(), desc="Processing", unit="item"):
         base_impact = import_counts.get(src, 0)
         src_path = project_root / src.replace("/", os.sep)
         init_bonus = check_init_reexports(src_path) if src_path.exists() else 0
@@ -484,7 +485,7 @@ def detect_agent_lineage(path: Path) -> str:
         OSError,
     ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
         return "NOT_AGENT"
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.ClassDef):
             continue
         class_name = node.name
@@ -551,7 +552,7 @@ def check_observability_violation(path: Path, parts: tuple[str, ...] | None = No
     ):  # guardian: Multiple exceptions (SyntaxError, OSError) need specific handling
         return None
     obs_imports_found = []
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         mod = None
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -733,7 +734,7 @@ def run_all_safety_gates(
         for s in c["src"]:
             collision_srcs.add(s)
     high_impact_srcs = {h["src"] for h in high_impact}
-    for src, dst in sorted(rename_map.items()):
+    for src, dst in tqdm(sorted(rename_map.items()), desc="Processing", unit="item"):
         blocked = None
         if src in collision_srcs:
             blocked = "BLOCKED_RENAME_COLLISION"

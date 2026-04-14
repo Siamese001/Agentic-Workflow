@@ -159,6 +159,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_classification_compliance", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_classification_compliance", "p4obs", "metric_2")
@@ -289,9 +290,11 @@ def scan_naming_compliance(
         files = _collect_python_files(repo_root)
 
     violations: list[dict] = []
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         stem = fpath.stem
-        for pattern, tag_a, tag_b, _example in COMPOUND_SUFFIX_CONFLICTS:
+        for pattern, tag_a, tag_b, _example in tqdm(
+            COMPOUND_SUFFIX_CONFLICTS, desc="Processing", unit="item"
+        ):
             if re.search(pattern, stem):
                 rel = normalize_repo_path(fpath.relative_to(repo_root))
                 violations.append(
@@ -334,7 +337,7 @@ def scan_territory_compliance(
         files = _collect_python_files(repo_root)
 
     violations: list[dict] = []
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         parts = fpath.parts
 
         # Only check files inside agentic_core/ layers in LCD folders

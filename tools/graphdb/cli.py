@@ -21,6 +21,7 @@ from .queries.blast_radius import BlastRadiusQueries
 from .queries.historical import HistoricalQueries
 from .queries.structural import StructuralQueries
 from .snapshot import SnapshotManager
+from tqdm import tqdm
 
 
 def cmd_project(args: argparse.Namespace) -> int:
@@ -138,7 +139,7 @@ def cmd_query(args: argparse.Namespace) -> int:
             print(json.dumps(results, indent=2))
         else:
             # Pretty print results
-            for query_name, result in results.items():
+            for query_name, result in tqdm(results.items(), desc="Processing", unit="item"):
                 print(f"\n=== {query_name} ===")
                 if isinstance(result, list):
                     print(f"Found {len(result)} items")
@@ -200,7 +201,7 @@ def cmd_diff(args: argparse.Namespace) -> int:
             print(json.dumps(results, indent=2))
         else:
             # Pretty print results
-            for query_name, result in results.items():
+            for query_name, result in tqdm(results.items(), desc="Processing", unit="item"):
                 print(f"\n=== {query_name} ===")
                 if isinstance(result, list):
                     print(f"Found {len(result)} items")

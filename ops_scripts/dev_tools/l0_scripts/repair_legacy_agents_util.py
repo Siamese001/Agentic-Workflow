@@ -5,6 +5,7 @@ scripts/repair_legacy_agents_util.py
 import ast
 import re
 from pathlib import Path
+from tqdm import tqdm
 
 LEGACY_ROOT = Path("apps_shared/legacy")
 STUB_IMPORTS = "\nfrom typing import Any, List, Dict, Optional, Union, Tuple\nfrom dataclasses import dataclass, field\nfrom enum import Enum\ntry:\n    from pydantic import BaseModel, Field\nexcept ImportError:\n    class BaseModel: pass\n    def Field(*args, **kwargs): return None\n"
@@ -14,7 +15,7 @@ def repair_file(file_path: Path):
     content = file_path.read_text(encoding="utf-8")
     lines = content.splitlines()
     fixed_lines = []
-    for i, line in enumerate(lines):
+    for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
         fixed_lines.append(line)
         if line.strip() == "try:":
             if i + 1 < len(lines) and (

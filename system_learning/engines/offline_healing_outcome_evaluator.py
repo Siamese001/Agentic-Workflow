@@ -106,6 +106,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("offline_healing_outcome_evaluator", "p4obs", "metric_1")
 _emit_emits_metric_event("offline_healing_outcome_evaluator", "p4obs", "metric_2")
@@ -224,7 +225,7 @@ class OfflineHealingOutcomeEvaluator:
         recommendations = []
         rejected_reasons = []
 
-        for i, candidate in enumerate(candidates):
+        for i, candidate in tqdm(enumerate(candidates), desc="Processing", unit="item"):
             proposer_id = f"proposer_{i}"  # Generic proposer ID since proposals don't carry it
             target_surface = "healing_outcome_policy"  # Generic target surface
 

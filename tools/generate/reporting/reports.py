@@ -6,6 +6,7 @@ import json
 import sqlite3
 from collections import Counter
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -26,7 +27,7 @@ def _print_defect_table(
                 _violation_rows = _conn.execute(
                     "SELECT source_file, line_no FROM edges WHERE relation_type='violates'",
                 ).fetchall()
-            for _src_file, _line_no in _violation_rows:
+            for _src_file, _line_no in tqdm(_violation_rows, desc="Processing", unit="item"):
                 try:
                     _src_path = ROOT / _src_file
                     if _src_path.exists() and _line_no and _line_no > 0:
@@ -143,7 +144,7 @@ def _print_defect_table(
                     "SELECT COUNT(*) FROM edges WHERE relation_type='dynamic_exec'",
                 ).fetchone()[0]
 
-                for _sev in ("HIGH", "MEDIUM", "LOW"):
+                for _sev in tqdm(("HIGH", "MEDIUM", "LOW"), desc="Processing", unit="item"):
                     _cat_data[_sev] = _cc.execute(
                         f"""
                         SELECT e.edge_kind, COUNT(*) cnt,
@@ -201,7 +202,7 @@ def _print_defect_table(
                     WHERE e.relation_type='antipattern'
                       AND e.id NOT IN (SELECT edge_id FROM violations WHERE category='antipattern')
                 """).fetchall()
-                for _ek, _sf in _exempt_rows:
+                for _ek, _sf in tqdm(_exempt_rows, desc="Processing", unit="item"):
                     if _ek in _high_kinds and any(_sf.startswith(p) for p in _prod_prefixes):
                         _s = "HIGH"
                     elif _ek in _high_kinds:
@@ -243,7 +244,7 @@ def _print_defect_table(
                 """).fetchall():
                     _fan_in_map[_fip] = _fic
 
-                for _sk in ("HIGH", "MEDIUM", "LOW"):
+                for _sk in tqdm(("HIGH", "MEDIUM", "LOW"), desc="Processing", unit="item"):
                     _hs_rows = _cc.execute(
                         """
                         SELECT e_ap.source_file,
@@ -357,7 +358,7 @@ def _print_defect_table(
         ),
         ("P3", "style / warnings", p3_count, "LOW", None, 0),
     ]
-    for _band, _label, _count, _sev, _ceil, _delta in _bands:
+    for _band, _label, _count, _sev, _ceil, _delta in tqdm(_bands, desc="Processing", unit="item"):
         _exempt = _guardian_by_sev.get(_sev, 0)
         _gross = _count + _exempt
         _status = ("*" if _delta > 0 else "^") if _ceil is not None else "~"
@@ -489,7 +490,7 @@ def _print_defect_table(
         """Build per-kind breakdown rows matching the terminal defect table columns."""
         rows = []
         kinds_by_guardian = _guardian_by_kind.get(sev_key, {})
-        for _kind, _net, _prod in _cat_data.get(sev_key, []):
+        for _kind, _net, _prod in tqdm(_cat_data.get(sev_key, []), desc="Processing", unit="item"):
             _gk = kinds_by_guardian.get(_kind, 0)
             _gross_k = _net + _gk
             rows.append(
@@ -618,7 +619,7 @@ def _generate_standardized_reports(
     }
     layer_counts: Counter[str] = Counter()
     unknown_modules = []
-    for entity in artifact.entities:
+    for entity in tqdm(artifact.entities, desc="Processing", unit="item"):
         if entity.entity_type == "module":
             layer_counts[entity.layer] += 1
             if entity.layer == "L_UNKNOWN":

@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("config_type_types", "p4obs", "metric_1")
 _emit_emits_metric_event("config_type_types", "p4obs", "metric_2")
@@ -510,7 +511,7 @@ class ConfigLoadPlanner:
         sources = []
         raw_sources = request.get("sources", [])
 
-        for raw_source in raw_sources:
+        for raw_source in tqdm(raw_sources, desc="Processing", unit="item"):
             if isinstance(raw_source, dict):
                 # Map strings to enums
                 config_type_mapping = {
@@ -584,7 +585,7 @@ class ConfigLoadPlanner:
         transformations = []
         raw_transforms = request.get("transformations", [])
 
-        for raw_transform in raw_transforms:
+        for raw_transform in tqdm(raw_transforms, desc="Processing", unit="item"):
             if isinstance(raw_transform, dict):
                 transform = ConfigTransformation(
                     id=raw_transform.get("id", f"transform_{len(transformations)}"),

@@ -41,6 +41,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 # Gravity-specific constants - define locally if not in location_constants
@@ -205,7 +206,7 @@ class GravityLeakDetector:
     def _heal_gravity_violations(self, gravity_issues: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Helper method to heal gravity violations by removing offending imports."""
         gravity_heal_actions = []
-        for grav in gravity_issues:
+        for grav in tqdm(gravity_issues, desc="Processing", unit="item"):
             path = Path(grav["path"]) if isinstance(grav["path"], str) else grav["path"]
             msg = grav["issue"]
 

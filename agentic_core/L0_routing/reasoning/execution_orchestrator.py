@@ -7,13 +7,14 @@ Remains deterministic, side-effect minimal, uses injected seams only.
 """
 
 import hashlib
+import json
 import logging
-import uuid
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.routing_contract import (
     ProposalCommitter,
     RoutingContext,
+    RoutingContractError,
     create_and_commit_routing_contract,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -25,6 +26,23 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 
 Logger = logging.getLogger(__name__)
+
+
+def _get_active_trace():
+    from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
+
+    return get_active_execution_trace()
+
+
+def _stable_request_hash(value: dict[str, Any]) -> str:
+    payload = json.dumps(value, sort_keys=True, default=str, separators=(",", ":"))
+    return hashlib.sha256(payload.encode()).hexdigest()[:32]
+
+
+def _semantic_cache_enabled() -> bool:
+    import os as _os  # noqa: PLC0415
+
+    return _os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0").strip().lower() in {"1", "true", "yes"}
 
 
 def _get_routing_gateway():
@@ -153,10 +171,14 @@ class ExecutionOrchestrator:
         Returns:
             Structured result dict with path, risk, cycle, and state
         """
-        _emit_signs_execution_trace(str(uuid.uuid4()), "seg_hash", "seg_sig", 0)
-        import uuid as _uuid  # noqa: PLC0415
-
-        _trace_id = str(_uuid.uuid4())
+        _active = _get_active_trace()
+        _trace_id = (
+            _active.trace_id
+            if _active and getattr(_active, "trace_id", None)
+            else "no-trace:ExecutionOrchestrator.execute"
+        )
+        _trace_sig = hashlib.sha256(_trace_id.encode()).hexdigest()[:12]
+        _emit_signs_execution_trace(_trace_id, _trace_sig, "seg_sig", 0)
         _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "ExecutionOrchestrator.execute")
         emit_replay_key(_trace_id, f"rk:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:{_trace_id[:16]}")
@@ -164,25 +186,26 @@ class ExecutionOrchestrator:
         payload = self.assembler.assemble(intent_input)
         path = self.path_router.select_path(payload)
         _get_routing_gateway().stamp_decision(path.value)
-        from agentic_core.runtime.types.execution_trace import get_active_execution_trace  # noqa: PLC0415
-
-        _active = get_active_execution_trace()
         _rtid = _active.trace_id if _active else f"no-trace:orchestrate:{path.value}"
         _rctx = RoutingContext(
             run_id=_rtid,
             router_id="ExecutionOrchestrator",
-            request_hash=hashlib.sha256(repr(intent_input).encode()).hexdigest()[:32],
+            request_hash=_stable_request_hash(intent_input),
             candidate_routes=["A", "B", "C", "D"],
             chosen_route=path.value,
             policy_hash=getattr(_active, "policy_hash", "") or "no-policy",
             policy_version="1.0",
         )
         try:
-            # ADG scanner: instantiate ProposalCommitter to trigger proposal_commits_routing edge
             _committer = ProposalCommitter()
             create_and_commit_routing_contract(_rctx)
         except RoutingContractError as _rce:  # routing contract creation failure non-blocking
-            Logger.warning("execution_orchestrator: routing contract failed: %s", _rce)
+            Logger.error("execution_orchestrator: routing contract failed: %s", _rce)
+            return {
+                "path": path,
+                "state": "routing_contract_error",
+                "error": str(_rce),
+            }
         d0_injections = self.d0_engine.render_d0(payload.d0_injections)
         risk = self.risk_gate.evaluate(payload_like=payload, d0_injections=d0_injections)
         cycle = self.cid_registry.new_cycle(f"execute_{path.value}")
@@ -194,9 +217,7 @@ class ExecutionOrchestrator:
                 return {"path": path, "risk": risk, "cycle": cycle, "state": "blocked"}
         # D2 semantic cache gate — at Path D only, before D3 retrieval starts.
         # Gated by SEMANTIC_CACHE_D2_ENABLED=1 (default off — fail-closed in production).
-        import os as _os  # noqa: PLC0415
-
-        if path.value == "D" and _os.environ.get("SEMANTIC_CACHE_D2_ENABLED", "0") == "1":
+        if path.value == "D" and _semantic_cache_enabled():
             _tenant_id = intent_input.get("tenant_id", "")
             _flow_class = intent_input.get("flow_class", None)
             _replay_mode = bool(intent_input.get("replay_mode", False))

@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("state_persistence_error_util", "p4obs", "metric_1")
 _emit_emits_metric_event("state_persistence_error_util", "p4obs", "metric_2")
@@ -367,7 +368,7 @@ class AtomicStateManager:
         """
         checkpoints = {}
         if self.backend == BackendType.FILE:
-            for file_path in self.storage_path.glob("*.json"):
+            for file_path in tqdm(self.storage_path.glob("*.json"), desc="Processing", unit="item"):
                 if file_path.stem.endswith("_shadow"):
                     continue
                 workflow_id = file_path.stem

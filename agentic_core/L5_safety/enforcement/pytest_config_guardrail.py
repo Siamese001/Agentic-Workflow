@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("enforcementtest_config_guardrail", "p4obs", "metric_1")
 _emit_emits_metric_event("enforcementtest_config_guardrail", "p4obs", "metric_2")
@@ -233,7 +234,7 @@ class PytestEnforcementGuard:
         """Extract marker names from pytest.ini."""
         markers = set()
         in_markers = False
-        for line in content.split("\n"):
+        for line in tqdm(content.split("\n"), desc="Processing", unit="item"):
             line = line.strip()
             if line.startswith("markers"):
                 in_markers = True
@@ -340,7 +341,7 @@ class PytestEnforcementGuard:
             "tryfirst",
             "trylast",
         }
-        for test_file in self.repo_root.rglob("test_*.py"):
+        for test_file in tqdm(self.repo_root.rglob("test_*.py"), desc="Processing", unit="item"):
             if ".venv" in str(test_file) or "__pycache__" in str(test_file):
                 continue
             try:  # guardian: File operations with encoding need error-specific handling

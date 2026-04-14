@@ -145,6 +145,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("location_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("location_validator", "p4obs", "metric_2")
@@ -365,7 +366,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
             forbidden_prefixes = SCRIPTS_PLACEMENT_RULES.get("root_scripts", {}).get("forbidden_imports", [])
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         for prefix in forbidden_prefixes:
@@ -653,7 +654,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         app_rg_score = 0.0
         app_lic_score = 0.0
         territory_scores: dict[str, float] = dict.fromkeys(CORE_TERRITORY_KEYWORDS, 0.0)
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef | ast.FunctionDef):
                 name = node.name.lower()
                 if any(t in name for t in APP_RG_AST_TERMS):
@@ -846,12 +847,12 @@ class LocationValidatorAgent(SovereignBaseAgent):
             )
         else:
             target_roots = sorted(PROJECT_ROOT_WHITELIST)
-        for root_name in target_roots:
+        for root_name in tqdm(target_roots, desc="Processing", unit="item"):
             root_path = self.project_root / root_name
             if not root_path.exists():
                 continue
             roots_scanned.append(root_name)
-            for py_file in root_path.rglob("*.py"):
+            for py_file in tqdm(root_path.rglob("*.py"), desc="Processing", unit="item"):
                 if any(
                     skip in py_file.parts
                     for skip in [

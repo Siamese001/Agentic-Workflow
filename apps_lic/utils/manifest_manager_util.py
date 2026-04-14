@@ -7,9 +7,14 @@ Handles persistence of workflow state to disk/storage.
 from __future__ import annotations
 
 import json
+import logging
+import os
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -83,21 +88,21 @@ _emit_links_execution_to_snapshot("p4", "manifest_manager_util", "exec_snapshot_
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
 
-    class MCPHardenedMixin(mcp_hardened_mixin):
+    class MCPHardenedMixin(mcp_hardened_mixin):  # type: ignore[misc]
         pass
-except ImportError as e:
-    raise ImportError(f"Required dependency missing: {e}")
+except ImportError:
+    logger.debug("mcp_hardened_mixin unavailable; using no-op fallback")
 
-    class MCPHardenedMixin:
+    class MCPHardenedMixin:  # type: ignore[no-redef]
         pass
 
 
 try:
     from agentic_core.interfaces.mixins import HealerMixin
-except ImportError as e:
-    raise ImportError(f"Required dependency missing: {e}")
+except ImportError:
+    logger.debug("HealerMixin unavailable; using no-op fallback")
 
-    class HealerMixin:
+    class HealerMixin:  # type: ignore[no-redef]
         pass
 
 
@@ -190,7 +195,7 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
 
     def __post_init__(self) -> None:
         super().__init__()
-        self.base_path = Path(self.base_path)
+        self.base_path = Path(self.base_path).expanduser().resolve()
         if not self.base_path.exists():
             self.base_path.mkdir(parents=True, exist_ok=True)
 
@@ -205,13 +210,24 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
         Returns:
             Path object of the saved file.
         """
+        target_file = self._manifest_path(manifest_id)
         try:
-            target_file = self.base_path / f"{manifest_id}.json"
-            with open(target_file, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=2)
-            return target_file
-        except (OSError, TypeError) as e:
-            raise
+            with tempfile.NamedTemporaryFile(
+                "w",
+                encoding="utf-8",
+                dir=self.base_path,
+                prefix=f"{target_file.stem}.",
+                suffix=".staging",
+                delete=False,
+            ) as f:
+                json.dump(data, f, indent=2, default=str)
+                f.flush()
+                os.fsync(f.fileno())
+                staging_path = Path(f.name)
+            staging_path.replace(target_file)
+        except (OSError, TypeError, ValueError) as e:
+            raise RuntimeError(f"Failed to save manifest {manifest_id!r}: {e}") from e
+        return target_file
 
     def load_manifest(self, manifest_id: str) -> dict[str, Any]:
         """
@@ -233,8 +249,26 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
             _trace_id, LayerSegment.L3_ORCHESTRATION, "ManifestManager.load_manifest"
         )
 
-        target_file = self.base_path / f"{manifest_id}.json"
+        target_file = self._manifest_path(manifest_id)
         if not target_file.exists():
             raise FileNotFoundError(f"Manifest not found: {target_file}")
         with open(target_file, encoding="utf-8") as f:
             return json.load(f)
+
+    @staticmethod
+    def _sanitize_manifest_id(manifest_id: str) -> str:
+        if not isinstance(manifest_id, str) or not manifest_id.strip():
+            raise ValueError("manifest_id must be a non-empty string")
+        sanitized = manifest_id.strip().replace(" ", "_")
+        sanitized = "".join(c for c in sanitized if c.isalnum() or c in "_-.")
+        sanitized = sanitized.strip("._-")
+        if not sanitized or ".." in sanitized:
+            raise ValueError(f"unsafe manifest_id: {manifest_id!r}")
+        return sanitized
+
+    def _manifest_path(self, manifest_id: str) -> Path:
+        name = self._sanitize_manifest_id(manifest_id)
+        filepath = (self.base_path / f"{name}.json").resolve()
+        if self.base_path not in filepath.parents:
+            raise ValueError("refusing to access manifest path outside base directory")
+        return filepath

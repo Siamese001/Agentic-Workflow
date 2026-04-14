@@ -3,7 +3,7 @@ Observability Adapter - Emits app-specific telemetry fields.
 """
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 from ..types import DecisionMemo, UnderwritingRequest
@@ -69,7 +69,7 @@ class ObservabilityAdapter:
         telemetry.recommended_decision = memo.recommended_decision
         telemetry.confidence_score = memo.confidence_score
         telemetry.review_required = memo.human_review_reason is not None
-        telemetry.timestamp = datetime.now().isoformat()
+        telemetry.timestamp = datetime.now(timezone.utc).isoformat()
 
         if metadata:
             telemetry.contradiction_count = metadata.get("contradiction_count", 0)

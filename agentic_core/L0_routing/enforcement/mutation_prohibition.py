@@ -17,14 +17,17 @@ import os
 import shutil
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import timezone
 from pathlib import Path
 from typing import Any, Generator
+
+from tqdm import tqdm
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
+from agentic_core.L0_routing.utils.clock_provider import ClockProvider
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402
 )
@@ -110,7 +113,7 @@ def _emit_block_event(
         if ts_utc_override is not None:
             ts = ts_utc_override
         else:
-            ts = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+            ts = ClockProvider.now(timezone.utc).isoformat(timespec="seconds")
 
         event = ProtectedRootBlockEvent(
             ts_utc=ts,
@@ -120,15 +123,14 @@ def _emit_block_event(
         )
 
         # Write to JSONL log (deterministic: sorted keys, newline-terminated)
-        log_file = Path(log_path)
+        log_file = _get_repo_root() / log_path
         log_file.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(log_file, "a", encoding="utf-8") as f:
+        with log_file.open("a", encoding="utf-8") as f:
             json.dump(asdict(event), f, sort_keys=True)
             f.write("\n")
     except (OSError, TypeError) as e:
-        # Swallow logging failures to avoid masking the block exception
-        print(f"Failed to log mutation event: {e}")
+        logger.warning("Failed to log mutation event for %s: %s", target, e)
 
 
 def _get_repo_root() -> Path:
@@ -183,7 +185,7 @@ def enforce_protected_root(
         resolved = target_path
 
     # Check if path is under any immutable root
-    for immutable_root in immutable_roots:
+    for immutable_root in tqdm(immutable_roots, desc="Processing", unit="item"):
         try:
             if resolved.is_relative_to(immutable_root):
                 _emit_block_event(resolved, immutable_root.name, policy.log_path)

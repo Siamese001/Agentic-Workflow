@@ -105,6 +105,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("deterministic_replay_engine", "deterministic_replay_engine_trace")
 
@@ -296,7 +297,7 @@ class DeterministicReplayEngine:
         """
         outputs = {}
         sorted_cases = sorted(enumerate(self._synthetic_cases), key=lambda x: x[1]["query"])
-        for original_index, case in sorted_cases:
+        for original_index, case in tqdm(sorted_cases, desc="Processing", unit="item"):
             query_hash = hashlib.md5(case["query"].encode("utf-8")).hexdigest()[:8]
             case_id = f"case_{query_hash}"
             query_hash_int = int(query_hash, 16)

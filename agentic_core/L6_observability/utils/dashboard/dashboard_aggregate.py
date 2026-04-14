@@ -21,6 +21,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_snapshots_state,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 record_execution_trace("dashboard_aggregate", "dashboard_aggregate_trace")
 
@@ -296,7 +297,7 @@ class DashboardAggregateRegistry:
             start_key = int(start_tick // 60) * 60
             end_key = int(end_tick // 60) * 60
 
-            for tick_key in range(start_key, end_key + 60, 60):
+            for tick_key in tqdm(range(start_key, end_key + 60, 60), desc="Processing", unit="item"):
                 if tick_key in self._time_index:
                     for snapshot_id in self._time_index[tick_key]:
                         snapshot = self._snapshots.get(snapshot_id)

@@ -142,6 +142,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("derived", "p4obs", "metric_1")
 _emit_emits_metric_event("derived", "p4obs", "metric_2")
@@ -257,7 +258,7 @@ def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
     if not isinstance(subfolders, Mapping):
         return result
 
-    for sf_name, sf_def in subfolders.items():
+    for sf_name, sf_def in tqdm(subfolders.items(), desc="Processing", unit="item"):
         if isinstance(sf_def, Mapping):
             nested = sf_def.get("subfolders", {})
             if isinstance(nested, Mapping):
@@ -467,7 +468,7 @@ def _derive_tests_subfolder_map() -> dict[str, list[str]]:
     result: dict[str, list[str]] = {}
     if not hasattr(raw, "keys"):
         return result
-    for key, val in raw.items():
+    for key, val in tqdm(raw.items(), desc="Processing", unit="item"):
         if hasattr(val, "keys"):
             nested = val.get("subfolders", {})
             if hasattr(nested, "keys"):
@@ -499,15 +500,19 @@ def verify_derived_registries() -> list[str]:
     discrepancies: list[str] = []
 
     standard_lcd = {"config", "types", "reasoning", "enforcement", "validators", "utils"}
-    for layer in [
-        "L0_routing",
-        "L1_cognition",
-        "L2_execution",
-        "L3_orchestration",
-        "L4_state",
-        "L5_safety",
-        "L6_observability",
-    ]:
+    for layer in tqdm(
+        [
+            "L0_routing",
+            "L1_cognition",
+            "L2_execution",
+            "L3_orchestration",
+            "L4_state",
+            "L5_safety",
+            "L6_observability",
+        ],
+        desc="Processing",
+        unit="item",
+    ):
         derived = set(CORE_SUBFOLDER_MAP.get(layer, []))
         if not standard_lcd.issubset(derived):
             missing = standard_lcd - derived

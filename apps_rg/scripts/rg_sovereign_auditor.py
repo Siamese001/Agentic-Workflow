@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rg_sovereign_auditor", "p4obs", "metric_1")
 _emit_emits_metric_event("rg_sovereign_auditor", "p4obs", "metric_2")
@@ -205,7 +206,7 @@ class RGSovereignAuditor:
     def _extract_classes(self, tree: ast.AST) -> list[dict]:
         """Extract class information from AST."""
         classes = []
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 bases = []
                 for base in node.bases:
@@ -441,7 +442,7 @@ class RGSovereignAuditor:
                 "UNKNOWN": [],
             },
         }
-        for file_path in python_files:
+        for file_path in tqdm(python_files, desc="Processing", unit="item"):
             if file_path.name == "__init__.py":
                 continue
             relative_path = file_path.relative_to(self.base_path)
@@ -464,7 +465,7 @@ class RGSovereignAuditor:
         """Generate ledger of files in engines/ not inheriting from Base Agent."""
         engines_files = results["by_directory"].get("engines", {}).get("files", {})
         unknown_ledger = []
-        for file_path, analysis in engines_files.items():
+        for file_path, analysis in tqdm(engines_files.items(), desc="Processing", unit="item"):
             if "error" not in analysis:
                 classification = analysis["classification"]
                 classes = analysis.get("classes", [])
@@ -489,7 +490,9 @@ class RGSovereignAuditor:
     def _generate_nomenclature_fixes(self, results: dict):
         """Generate list of imposter agents needing rename."""
         nomenclature_fixes = []
-        for _subdir_name, subdir_data in results["by_directory"].items():
+        for _subdir_name, subdir_data in tqdm(
+            results["by_directory"].items(), desc="Processing", unit="item"
+        ):
             for file_path, analysis in subdir_data.get("files", {}).items():
                 if "error" not in analysis and analysis["classification"] == "IMPOSTER_AGENT":
                     nomenclature_fixes.append(

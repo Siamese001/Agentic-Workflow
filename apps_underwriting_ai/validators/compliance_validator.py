@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from ..types import RiskFeatures, UnderwritingRequest
+from tqdm import tqdm
 
 
 @dataclass
@@ -87,7 +88,7 @@ class ComplianceValidator:
         if not policy.restricted_industries:
             return
 
-        for restricted in policy.restricted_industries:
+        for restricted in tqdm(policy.restricted_industries, desc="Processing", unit="item"):
             if industry_code.startswith(restricted):
                 result.violations.append(
                     {
@@ -115,7 +116,7 @@ class ComplianceValidator:
         if not policy.prohibited_jurisdictions:
             return
 
-        for state in operating_states:
+        for state in tqdm(operating_states, desc="Processing", unit="item"):
             if state in policy.prohibited_jurisdictions:
                 result.violations.append(
                     {

@@ -28,6 +28,7 @@ from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
     ARCHIVES_DIR,
 )
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVES = PROJECT_ROOT / ARCHIVES_DIR
@@ -152,7 +153,7 @@ def main():
         APPS_RG_DIR,
     ]
 
-    for folder in folders_to_process:
+    for folder in tqdm(folders_to_process, desc="Processing", unit="item"):
         if folder not in manifest["by_folder"]:
             continue
 
@@ -162,7 +163,7 @@ def main():
 
         print(f"\n## {folder}/ ({data['count']} agents)")
 
-        for agent in data["agents"]:
+        for agent in tqdm(data["agents"], desc="Processing", unit="item"):
             name = agent["name"]
             source_path = agent["path"]
             source = ARCHIVES / source_path

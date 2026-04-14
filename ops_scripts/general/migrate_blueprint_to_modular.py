@@ -79,6 +79,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("migrate_blueprint_to_modular", "p4obs", "metric_1")
 _emit_emits_metric_event("migrate_blueprint_to_modular", "p4obs", "metric_2")
@@ -248,7 +249,7 @@ def find_top_level_nodes(source: str) -> dict[str, tuple[int, int]]:
     """AST-parse source and return {name: (start_line, end_line)} for all top-level definitions."""
     tree = ast.parse(source)
     result: dict[str, tuple[int, int]] = {}
-    for node in ast.iter_child_nodes(tree):
+    for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
         name = None
         if isinstance(node, ast.Assign):
             for t in node.targets:

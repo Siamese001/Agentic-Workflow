@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("import_surgeon_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("import_surgeon_enforcer", "p4obs", "metric_2")
@@ -228,7 +229,7 @@ class SovereignImportSurgeon:
         try:
             with open(file_path, encoding="utf-8") as f:
                 lines: Any = f.readlines()
-            for line_num, line in enumerate(lines, start=1):
+            for line_num, line in tqdm(enumerate(lines, start=1), desc="Processing", unit="item"):
                 if not line.strip():
                     continue
                 for pattern, replacement, vtype in self.import_patterns:
@@ -283,7 +284,7 @@ class SovereignImportSurgeon:
         """Scan all Python files in the project."""
         print(f"🔍 Scanning {self.root_path} for import violations...\n")
         py_files: Any = []
-        for root, dirs, files in os.walk(self.root_path):
+        for root, dirs, files in tqdm(os.walk(self.root_path), desc="Processing", unit="item"):
             dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
             for file in files:
                 if file.endswith(".py") and file not in EXCLUDE_FILES:
@@ -320,7 +321,7 @@ class SovereignImportSurgeon:
         report.append("DETAILED VIOLATIONS")
         report.append("=" * 80)
         report.append("")
-        for vtype in sorted(by_type.keys()):
+        for vtype in tqdm(sorted(by_type.keys()), desc="Processing", unit="item"):
             report.append(f"\n{'=' * 80}")
             report.append(f"VIOLATION TYPE: {vtype}")
             report.append(f"{'=' * 80}\n")
@@ -352,7 +353,7 @@ class SovereignImportSurgeon:
         """Apply all identified fixes (ONLY after user confirmation)."""
         print("🔧 APPLYING FIXES...\n")
         fixed_count: Any = 0
-        for file_path, violations in self.violations.items():
+        for file_path, violations in tqdm(self.violations.items(), desc="Processing", unit="item"):
             try:
                 with open(file_path, encoding="utf-8") as f:
                     lines: Any = f.readlines()

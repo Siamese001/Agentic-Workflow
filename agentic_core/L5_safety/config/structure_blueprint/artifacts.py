@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("artifacts", "p4obs", "metric_1")
 _emit_emits_metric_event("artifacts", "p4obs", "metric_2")
@@ -509,7 +510,7 @@ def validate_artifact_routing(
         (True, "docs/reports", None)
     """
     file_ext = Path(filename).suffix.lower()
-    for dest, rules in ARTIFACT_ROUTING_MAP.items():
+    for dest, rules in tqdm(ARTIFACT_ROUTING_MAP.items(), desc="Processing", unit="item"):
         allowed_exts = rules.get("file_extensions", [])
         matches_positive = False
         if allowed_exts and file_ext in allowed_exts:

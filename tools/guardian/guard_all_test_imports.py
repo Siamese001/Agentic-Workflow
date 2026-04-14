@@ -10,6 +10,7 @@ import os
 import re
 import subprocess
 import sys
+from tqdm import tqdm
 
 ROOT = r"C:\Git\Agentic-Workflow"
 IGNORE = "tests/unit/agentic_core/L0_routing/scripts/test_extract_agent_duplicates_util_adg.py"
@@ -19,7 +20,7 @@ def get_erroring_test_files():
     """Return list of test file paths that have collection errors."""
     ac = os.path.join(ROOT, "tests", "unit", "agentic_core")
     err_files = []
-    for sd in sorted(os.listdir(ac)):
+    for sd in tqdm(sorted(os.listdir(ac)), desc="Processing", unit="item"):
         p = os.path.join(ac, sd)
         if not os.path.isdir(p) or sd.startswith("_"):
             continue
@@ -121,7 +122,7 @@ def rewrite_test_file(fp):
     import_names = set()
     original_import_lines = []
 
-    for line in ac_imports:
+    for line in tqdm(ac_imports, desc="Processing", unit="item"):
         stripped = line.strip()
         # Skip blank, try/except, _AVAILABLE, pass, comments, class stubs
         if not stripped or stripped in (
@@ -164,7 +165,7 @@ def rewrite_test_file(fp):
     # Add the guarded import block
     new_lines.append("_AVAILABLE = False")
     new_lines.append("try:")
-    for line in ac_imports:
+    for line in tqdm(ac_imports, desc="Processing", unit="item"):
         stripped = line.strip()
         # Skip old _AVAILABLE, try/except, pass, stub classes
         if stripped.startswith("_AVAILABLE"):

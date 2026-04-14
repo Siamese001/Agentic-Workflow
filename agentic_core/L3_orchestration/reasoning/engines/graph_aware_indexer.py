@@ -33,6 +33,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_stores_embedding,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 # ChunkManifestRegistry, EnrichedChunkManifest, SemanticEnricher imported lazily to avoid L3->L4 violation
 
@@ -184,7 +185,7 @@ class GraphAwareIndexer:
 
         parent_chunk_id: str | None = None
 
-        for idx, chunk_data in enumerate(chunks):
+        for idx, chunk_data in tqdm(enumerate(chunks), desc="Processing", unit="item"):
             chunk_id = chunk_data.get("chunk_id") or f"{doc_id}_chunk_{idx}"
             content = chunk_data.get("content", "")
             metadata = chunk_data.get("metadata", {})
@@ -377,8 +378,8 @@ class GraphAwareIndexer:
             parent_to_children[parent_id].append(child_id)
 
         # Update links with neighbor windows
-        for parent_id, children in parent_to_children.items():
-            for child_id in children:
+        for parent_id, children in tqdm(parent_to_children.items(), desc="Processing", unit="item"):
+            for child_id in tqdm(children, desc="Processing", unit="item"):
                 link = self.l4e_registry.get_link(child_id)
                 if link:
                     # Get siblings (all children of same parent except self)
@@ -440,7 +441,7 @@ class ADGEdgeExtractor:
         writes_to = []
         pulls_context = []
 
-        for node in nodes:
+        for node in tqdm(nodes, desc="Processing", unit="item"):
             # Get outgoing edges (what this file/module depends on)
             edges = self.adg_client.get_edges_for_node(node.node_id, direction="out")
 
@@ -493,7 +494,7 @@ class ADGEdgeExtractor:
         writes_to = []
         pulls_context = []
 
-        for entity in entities[:10]:  # Check top 10 entities
+        for entity in tqdm(entities[:10], desc="Processing", unit="item"):  # Check top 10 entities
             node = self.adg_client.get_node_by_symbol(entity)
             if node:
                 pulls_context.append(entity)

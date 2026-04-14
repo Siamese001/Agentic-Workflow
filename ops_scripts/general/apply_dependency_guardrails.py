@@ -8,6 +8,7 @@ All imports are moved to function scope with try/except ImportError guards.
 
 import re
 from pathlib import Path
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 MODIFICATIONS = [
@@ -76,7 +77,7 @@ MODIFICATIONS = [
 
 def apply_modifications():
     """Apply all modifications."""
-    for rel_path, old_pattern, new_pattern in MODIFICATIONS:
+    for rel_path, old_pattern, new_pattern in tqdm(MODIFICATIONS, desc="Processing", unit="item"):
         file_path = PROJECT_ROOT / rel_path
         if not file_path.exists():
             print(f"SKIP (not found): {rel_path}")

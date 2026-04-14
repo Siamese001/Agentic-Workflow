@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("file_intent", "p4obs", "metric_1")
 _emit_emits_metric_event("file_intent", "p4obs", "metric_2")
@@ -222,7 +223,7 @@ class HardenedNamingAuditor:
             functions = []
             imports = []
             constants = []
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.ClassDef):
                     class_info = {
                         "name": node.name,
@@ -411,7 +412,7 @@ class HardenedNamingAuditor:
         total_files = len(python_files)
         print(f"Found {total_files} Python files to analyze...")
         print()
-        for i, file_path in enumerate(python_files, 1):
+        for i, file_path in tqdm(enumerate(python_files, 1), desc="Processing", unit="item"):
             print(f"Analyzing [{i:3d}/{total_files}]: {file_path.name}")
             violation = self.validate_naming_compliance(file_path)
             if violation:

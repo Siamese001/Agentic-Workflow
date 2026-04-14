@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -125,19 +126,19 @@ class CompiledPromptArtifact:
 
     def _canonical_content(self) -> str:
         """Produce canonical string for signature verification."""
-        return str(
+        return json.dumps(
             {
                 "trace_id": self.trace_id,
                 "final_system_string": self.final_system_string,
                 "final_user_string": self.final_user_string,
-                "allowed_tools_schema": tuple(
-                    sorted(
-                        self.allowed_tools_schema,
-                        key=lambda x: str(x),
-                    )
+                "allowed_tools_schema": sorted(
+                    (json.dumps(t, sort_keys=True, ensure_ascii=False) for t in self.allowed_tools_schema),
                 ),
                 "token_estimate": self.token_estimate,
-            }
+            },
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
         )
 
     def verify_signature(self, secret_key: bytes) -> bool:

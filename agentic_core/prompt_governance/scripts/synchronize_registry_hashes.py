@@ -7,6 +7,7 @@ This resolves the "healthy" drift detected after Phase 4 header injection.
 
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -102,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("synchronize_registry_hashes", "p4obs", "metric_1")
 _emit_emits_metric_event("synchronize_registry_hashes", "p4obs", "metric_2")
@@ -181,12 +183,12 @@ def save_registry(registry_path: Path, registry: dict):
         sys.exit(1)
 
 
-def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> dict:
+def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> tuple[dict, dict]:
     """
     Synchronize registry content hashes with actual template files.
 
     Returns:
-        Dict with synchronization statistics
+        Tuple of (updated_registry, synchronization_stats)
     """
     from agentic_core.utils.fs_util import calculate_file_hash
 
@@ -197,8 +199,8 @@ def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> dict:
     error_count = 0
     print("Synchronizing content hashes...")
     print()
-    for template_name, prompt_versions in prompts.items():
-        for prompt_data in prompt_versions:
+    for template_name, prompt_versions in tqdm(prompts.items(), desc="Processing", unit="item"):
+        for prompt_data in tqdm(prompt_versions, desc="Processing", unit="item"):
             if not prompt_data.get("active", False):
                 skipped_count += 1
                 print(f"⏭️  Skipping inactive: {template_name}")
@@ -219,12 +221,15 @@ def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> dict:
             else:
                 print(f"✅ Current: {template_name}")
             print()
-    return {
-        "updated": updated_count,
-        "skipped": skipped_count,
-        "errors": error_count,
-        "total": updated_count + skipped_count + error_count,
-    }
+    return (
+        registry,
+        {
+            "updated": updated_count,
+            "skipped": skipped_count,
+            "errors": error_count,
+            "total": updated_count + skipped_count + error_count,
+        },
+    )
 
 
 def main():
@@ -250,9 +255,8 @@ def main():
     except Exception as e:
         print(f"WARNING: Could not create backup: {e}")
         print()
-    stats = synchronize_registry_hashes(registry_path, base_dir)
-    registry = load_registry(registry_path)
-    registry["last_sync_date"] = str(Path(__file__).stat().st_mtime)
+    registry, stats = synchronize_registry_hashes(registry_path, base_dir)
+    registry["last_sync_date"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     save_registry(registry_path, registry)
     print("SYNCHRONIZATION COMPLETE:")
     print(f"  Templates processed: {stats['total']}")

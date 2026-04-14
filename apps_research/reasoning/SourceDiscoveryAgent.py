@@ -11,7 +11,7 @@ import hashlib
 import logging
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_research._telemetry import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_dispatches_agent,
@@ -48,9 +48,12 @@ class SourceDiscoveryAgent:
         max_sources: int = 20,
     ) -> dict[str, Any]:
         """Discover sources for a research topic."""
-        import uuid as _uuid  # noqa: PLC0415
+        research_topic = research_topic.strip()
+        if not research_topic:
+            raise ValueError("research_topic must not be blank")
+        max_sources = min(max(1, max_sources), 50)
 
-        _trace_id = str(_uuid.uuid4())
+        _trace_id = self._make_trace_id(research_topic)
         _emit_records_execution_trace(
             _trace_id,
             LayerSegment.L3_ORCHESTRATION,
@@ -60,11 +63,11 @@ class SourceDiscoveryAgent:
         _emit_dispatches_agent("p3", "source_discovery_agent", "discovery_dispatch")
         _emit_records_telemetry_event("p4", "source_discovery_agent", "discovery_start")
 
-        sources = self._discovery_service.discover_from_query(
-            research_topic,
-            source_types,
-            max_sources,
+        result = self._discovery_service.discover_sources(
+            query=research_topic,
+            max_sources=max_sources,
         )
+        sources = result.get("sources", [])
 
         _log.info("Discovered %d sources for topic: %s", len(sources), research_topic[:50])
         _emit_records_telemetry_event(

@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("artifacts_guard", "p4obs", "metric_1")
 _emit_emits_metric_event("artifacts_guard", "p4obs", "metric_2")
@@ -205,7 +206,7 @@ def scan_sensitive_content(file_path: Path) -> list[str]:
             return violations
         with open(file_path, encoding="utf-8", errors="ignore") as f:
             content = f.read()
-        for pattern in sensitive_patterns:
+        for pattern in tqdm(sensitive_patterns, desc="Processing", unit="item"):
             if re.search(pattern, content):
                 violations.append(f"Sensitive pattern detected: {pattern}")
     except (
@@ -225,7 +226,7 @@ def scan_artifacts_directory(artifacts_path: Path) -> dict[str, Any]:
     inventory = []
     files_scanned = 0
     all_files = sorted(artifacts_path.rglob("*"))
-    for file_path in all_files:
+    for file_path in tqdm(all_files, desc="Processing", unit="item"):
         if file_path.is_dir():
             continue
         files_scanned += 1

@@ -7,6 +7,7 @@ that control meta-learning activation based on prerequisite completion.
 import hashlib
 import json
 import logging
+import os
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -26,13 +27,13 @@ Logger = logging.getLogger(__name__)
 class ActivationFlags:
     """L4-persisted, signed, replay-bound activation flags for Wave 16."""
 
-    execution_hardened: bool = True
-    mutation_surface_zero: bool = True
-    guardian_coverage: float = 1.0
-    freeze_authority_active: bool = True
-    meta_learning_prepared: bool = True
-    blast_radius_containment_active: bool = True
-    meta_learning_enabled: bool = True
+    execution_hardened: bool = False
+    mutation_surface_zero: bool = False
+    guardian_coverage: float = 0.0
+    freeze_authority_active: bool = False
+    meta_learning_prepared: bool = False
+    blast_radius_containment_active: bool = False
+    meta_learning_enabled: bool = False
     semantic_clock_tick: int = 0
     replay_digest_hash: str = ""
     signature: str = ""
@@ -72,6 +73,15 @@ class ActivationFlagsStore:
         self._current_proof: ActivationProof | None = None
         self._load_flags()
 
+    @staticmethod
+    def _atomic_write_json(path: Path, payload: dict) -> None:
+        temp_path = path.with_suffix(f"{path.suffix}.tmp")
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, path)
+
     def _load_flags(self) -> None:
         """Load activation flags from L4 storage."""
         if not self.flags_file.exists():
@@ -79,32 +89,30 @@ class ActivationFlagsStore:
             self._current_flags = ActivationFlags()
             return
         try:
-            with open(self.flags_file) as f:
+            with open(self.flags_file, encoding="utf-8") as f:
                 data = json.load(f)
             self._current_flags = ActivationFlags(**data)
             if self.proof_file.exists():
-                with open(self.proof_file) as f:
+                with open(self.proof_file, encoding="utf-8") as f:
                     proof_data = json.load(f)
                 self._current_proof = ActivationProof(**proof_data)
             Logger.info("Activation flags loaded from L4")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.error(f"Failed to load activation flags: {e}")
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
+            Logger.error(f"Failed to load activation flags, failing closed: {e}")
             self._current_flags = ActivationFlags()
+            self._current_proof = None
 
     def _save_flags(self) -> None:
         """Save activation flags to L4 storage."""
         try:
             self.storage_path.mkdir(parents=True, exist_ok=True)
-            with open(self.flags_file, "w") as f:
-                json.dump(asdict(self._current_flags), f, indent=2)
+            self._atomic_write_json(self.flags_file, asdict(self._current_flags))
             if self._current_proof:
-                with open(self.proof_file, "w") as f:
-                    json.dump(asdict(self._current_proof), f, indent=2)
+                self._atomic_write_json(self.proof_file, asdict(self._current_proof))
             Logger.debug("Activation flags saved to L4")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
+        except OSError as e:
             Logger.error(f"Failed to save activation flags: {e}")
+            raise
 
     def _compute_flags_hash(self, flags: ActivationFlags) -> str:
         """Compute cryptographic hash of activation flags.
@@ -141,6 +149,12 @@ class ActivationFlagsStore:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L4_STATE, "ActivationFlagsStore.update_flags")
+
+        if not guardian_signature:
+            raise RuntimeError("Guardian signature required for activation flag updates")
+
+        if flags.meta_learning_enabled and not flags.replay_digest_hash:
+            raise RuntimeError("Replay digest required before enabling meta-learning")
 
         previous_hash = ""
         if self._current_proof:
@@ -197,14 +211,19 @@ class ActivationFlagsStore:
         """
         if not self._current_proof:
             return True
+        if not self._current_flags:
+            Logger.error("No activation flags loaded")
+            return False
         current_hash = self._compute_flags_hash(self._current_flags)
         if current_hash != self._current_proof.flags_hash:
             Logger.error("Flags hash mismatch with proof")
             return False
-        if self._current_proof.previous_flags_hash:
-            if not self._current_proof.previous_flags_hash:
-                Logger.error("Invalid previous hash in proof")
-                return False
+        if self._current_flags.signature != self._current_proof.guardian_signature:
+            Logger.error("Guardian signature mismatch between flags and proof")
+            return False
+        if self._current_flags.meta_learning_enabled and not self._current_flags.replay_digest_hash:
+            Logger.error("Meta-learning enabled without replay digest binding")
+            return False
         return True
 
     def verify_replay_binding(self, expected_digest: str) -> bool:

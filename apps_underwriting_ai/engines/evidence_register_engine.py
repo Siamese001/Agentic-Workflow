@@ -3,7 +3,7 @@ Evidence Register Engine - Collects and manages evidence for underwriting claims
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from ..types import EvidenceEntry, UnderwritingRequest
@@ -36,7 +36,7 @@ class EvidenceRegister:
             claim_text=claim_text,
             evidence_source=evidence_source,
             evidence_type=evidence_type,
-            extraction_timestamp=datetime.now().isoformat(),
+            extraction_timestamp=datetime.now(timezone.utc).isoformat(),
             confidence=confidence,
             supporting_excerpt=excerpt,
             contradicting_evidence=[],

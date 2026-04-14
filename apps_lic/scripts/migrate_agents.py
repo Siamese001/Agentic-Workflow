@@ -8,6 +8,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "migrate_agents", "uwg_governed_write")
 _emit_writes_through("p1", "migrate_agents", "uwg_governed_write_2")
@@ -33,7 +34,7 @@ def migrate_rescued_agents() -> None:
         with open(init_path, "w", encoding="utf-8") as handle:
             handle.write('"""SSOT Agents Package generated during migration."""\n')
     files_to_move = ["CompetitorReconAgent.py", "StackModernizationAgent.py"]
-    for filename in files_to_move:
+    for filename in tqdm(files_to_move, desc="Processing", unit="item"):
         src = Path(source_dir) / filename
         dst = Path(target_dir) / filename
         # guardian: allow-path-string

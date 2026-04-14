@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("dep_inversion", "p4obs", "metric_1")
 _emit_emits_metric_event("dep_inversion", "p4obs", "metric_2")
@@ -275,7 +276,7 @@ def detect_dip_violations(result: ScanResult) -> DIPReport:
     abstract_bases: dict[str, str] = {}
     concrete_to_abstracts: dict[str, list[str]] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type != "implements":
             continue
         sym = edge.symbol or ""
@@ -305,7 +306,7 @@ def detect_dip_violations(result: ScanResult) -> DIPReport:
     # Pass 2: find DIP violations
     violations: list[DIPViolation] = []
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type not in ("imports", "instantiates"):
             continue
         if not edge.from_name.startswith(_MODULE_PREFIX):
@@ -328,7 +329,7 @@ def detect_dip_violations(result: ScanResult) -> DIPReport:
         concrete_module = _sym_to_module(sym)
         concrete_layer = module_path_to_layer(concrete_module)
 
-        for abstract_cls in abstracts_for_concrete:
+        for abstract_cls in tqdm(abstracts_for_concrete, desc="Processing", unit="item"):
             abstract_module = abstract_bases.get(abstract_cls, "")
             abstract_layer = module_path_to_layer(abstract_module) if abstract_module else concrete_layer
 

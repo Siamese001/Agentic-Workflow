@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("risk_level_types", "p4obs", "metric_1")
 _emit_emits_metric_event("risk_level_types", "p4obs", "metric_2")
@@ -284,7 +285,7 @@ class DepthScorer:
             if recent_posts and isinstance(recent_posts, list):
                 datetime.now() - timedelta(days=90)
                 recent_count = 0
-                for post in recent_posts:
+                for post in tqdm(recent_posts, desc="Processing", unit="item"):
                     if isinstance(post, dict):
                         post_date_str = post.get("date", "")
                         if post_date_str:
@@ -372,7 +373,7 @@ class MicroHookGenerator:
                     hooks.append(hook)
             if education and isinstance(education, list) and self.my_education:
                 my_school = self.my_education.get("school", "").lower()
-                for edu in education:
+                for edu in tqdm(education, desc="Processing", unit="item"):
                     if isinstance(edu, dict):
                         their_school = edu.get("school", "").lower()
                     elif isinstance(edu, str):

@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_interface_util", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_interface_util", "p4obs", "metric_2")
@@ -456,7 +457,7 @@ class BaseAgent(IAgent[InputT, OutputT]):
             raise
             self._logger.warning(f"Pre-execute hook failed: {e}")
         last_error: Exception | None = None
-        for attempt in range(context.max_retries + 1):
+        for attempt in tqdm(range(context.max_retries + 1), desc="Processing", unit="item"):
             try:
                 context.retry_count = attempt
                 result = self._do_execute(input_data, context)

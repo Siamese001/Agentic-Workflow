@@ -20,6 +20,7 @@ from tools.adg.prompt_assembly.contracts import (
     EvidenceBundle,
     EvidenceItem,
 )
+from tqdm import tqdm
 
 
 # ---------------------------------------------------------------------------
@@ -103,7 +104,7 @@ def _reconcile_counts(items: list[EvidenceItem]) -> list[ContradictionFlag]:
             )
 
     # Check provenance reconciliation fields
-    for item in items:
+    for item in tqdm(items, desc="Processing", unit="item"):
         if item.source_type == "json_report":
             reconciliation = item.data.get("reconciliation", {})
             if reconciliation:
@@ -147,7 +148,7 @@ def _compute_coverage(items: list[EvidenceItem], must_use_sources: list[str]) ->
         return 1.0
 
     present_sources: set[str] = set()
-    for item in items:
+    for item in tqdm(items, desc="Processing", unit="item"):
         if item.data.get("error"):
             continue
         # Match by source_type or by known artifact name patterns
@@ -179,7 +180,7 @@ def _compute_coverage(items: list[EvidenceItem], must_use_sources: list[str]) ->
 def _identify_gaps(items: list[EvidenceItem], must_use_sources: list[str]) -> list[str]:
     """Identify missing must-use sources."""
     present_sources: set[str] = set()
-    for item in items:
+    for item in tqdm(items, desc="Processing", unit="item"):
         if not item.data.get("error"):
             present_sources.add(item.source_type)
             artifact = item.source_artifact.lower()

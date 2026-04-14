@@ -14,6 +14,7 @@ from typing import Any
 
 from ..config.feature_schemas import FeatureSchemas
 from .base_extractor import DeterministicFeatureExtractor
+from tqdm import tqdm
 
 
 class L6FeatureExtractor(DeterministicFeatureExtractor):
@@ -175,7 +176,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
 
         now = datetime.now()
 
-        for i, change in enumerate(policy_history):
+        for i, change in tqdm(enumerate(policy_history), desc="Processing", unit="item"):
             if i == 0:
                 continue  # Skip first entry (no previous to compare)
 
@@ -229,7 +230,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
         now = datetime.now()
         recent_escalations = 0
 
-        for event in escalation_events:
+        for event in tqdm(escalation_events, desc="Processing", unit="item"):
             event_time = event.get("timestamp")
             if event_time:
                 try:
@@ -280,7 +281,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
         # Calculate average cosine similarity
         similarities = []
 
-        for current_emb in current_embeddings:
+        for current_emb in tqdm(current_embeddings, desc="Processing", unit="item"):
             best_similarity = 0.0
 
             for baseline_emb in baseline_embeddings:
@@ -328,7 +329,7 @@ class L6FeatureExtractor(DeterministicFeatureExtractor):
         """
         batch_features = []
 
-        for i, context in enumerate(contexts):
+        for i, context in tqdm(enumerate(contexts), desc="Processing", unit="item"):
             # Generate unique trace ID for this context
             context_trace_id = f"{trace_id}_batch_{i}"
 

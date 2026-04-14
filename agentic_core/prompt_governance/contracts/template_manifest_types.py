@@ -6,6 +6,7 @@ Defines the immutable template manifest for S0/I0 versioning.
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -133,7 +134,7 @@ class TemplateManifest:
 
     def stable_hash(self) -> str:
         """Compute content-addressed SHA-256 hash."""
-        canonical = str(self.to_dict())
+        canonical = json.dumps(self.to_dict(), sort_keys=True, ensure_ascii=False, separators=(",", ":"))
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 

@@ -26,6 +26,7 @@ from apps_shared.config.operational_config import (
     is_allowed_duplicate,
     is_excluded_path,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -44,20 +45,23 @@ class OperationalScannerService:
         _emit_applies_guardrail("p0", "op_scanner", "service_init")
         _emit_snapshots_state("p0", "op_scanner", "service_state")
 
+    @staticmethod
+    def _normalize_extensions(file_extensions: list[str] | None) -> set[str] | None:
+        if not file_extensions:
+            return None
+        normalized = set()
+        for ext in file_extensions:
+            cleaned = str(ext).strip().lower()
+            if cleaned:
+                normalized.add(cleaned if cleaned.startswith(".") else f".{cleaned}")
+        return normalized or None
+
     def scan_directory(
         self,
         directory: str,
         file_extensions: list[str] | None = None,
     ) -> list[dict[str, Any]]:
-        """Scan a directory for operational analysis.
-
-        Args:
-            directory: Path to scan
-            file_extensions: Optional file extensions to filter
-
-        Returns:
-            List of scanned file metadata
-        """
+        """Scan a directory for operational analysis."""
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
@@ -70,45 +74,55 @@ class OperationalScannerService:
         _emit_validates_capability("p2", "op_scanner", "read_permissions")
         _emit_records_telemetry_event("p4", "op_scanner", "scan_start")
 
-        dir_path = Path(directory)
-        if not dir_path.exists():
+        dir_path = Path(directory).expanduser().resolve()
+        if not dir_path.is_dir():
             raise FileNotFoundError(f"Directory not found: {directory}")
 
+        allowed_extensions = self._normalize_extensions(file_extensions)
+        max_files = int(self.config.get("max_files", 50_000))
         scanned: list[dict[str, Any]] = []
+        skipped = 0
 
-        for file_path in dir_path.rglob("*"):
-            if not file_path.is_file():
+        for file_path in tqdm(sorted(dir_path.rglob("*")), desc="Processing", unit="item"):
+            if len(scanned) >= max_files:
+                _emit_applies_guardrail("p0", "op_scanner", "max_files_reached")
+                break
+            if not file_path.is_file() or file_path.is_symlink():
+                continue
+            if allowed_extensions and file_path.suffix.lower() not in allowed_extensions:
                 continue
 
-            # Check exclusion
             if is_excluded_path(str(file_path)):
                 continue
 
-            # Check duplicate allowance
-            if is_allowed_duplicate(file_path.name):
-                # Still track but mark as allowed duplicate
-                is_dup = True
-            else:
-                is_dup = False
+            try:
+                stat = file_path.stat()
+            except OSError:
+                skipped += 1
+                continue
 
             file_info = {
                 "path": str(file_path),
                 "name": file_path.name,
-                "size": file_path.stat().st_size,
-                "is_allowed_duplicate": is_dup,
+                "size": stat.st_size,
+                "is_allowed_duplicate": is_allowed_duplicate(file_path.name),
             }
             scanned.append(file_info)
 
         self._scan_results.extend(scanned)
-        _log.info("Scanned %d files in %s", len(scanned), directory)
-        _emit_records_telemetry_event("p4", "op_scanner", f"scan_complete:{len(scanned)}")
+        _log.info("Scanned %d files in %s (%d skipped)", len(scanned), dir_path, skipped)
+        _emit_records_telemetry_event(
+            "p4",
+            "op_scanner",
+            f"scan_complete:{len(scanned)}:skipped={skipped}",
+        )
 
         return scanned
 
     def get_scan_summary(self) -> dict[str, Any]:
         """Get summary of scan results."""
         if not self._scan_results:
-            return {"total_files": 0, "allowed_duplicates": 0}
+            return {"total_files": 0, "allowed_duplicates": 0, "unique_files": 0}
 
         total = len(self._scan_results)
         duplicates = sum(1 for r in self._scan_results if r.get("is_allowed_duplicate"))

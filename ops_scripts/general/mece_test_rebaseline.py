@@ -112,6 +112,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("mece_test_rebaseline", "p4obs", "metric_1")
 _emit_emits_metric_event("mece_test_rebaseline", "p4obs", "metric_2")
@@ -303,15 +304,15 @@ def classify_all_files(project_root: Path) -> list[FileClassification]:
     app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
     exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
-    for app_dir in app_dirs:
+    for app_dir in tqdm(app_dirs, desc="Processing", unit="item"):
         app_path = project_root / app_dir
         if not app_path.exists():
             continue
 
-        for dirpath, dirnames, filenames in os.walk(app_path):
+        for dirpath, dirnames, filenames in tqdm(os.walk(app_path), desc="Processing", unit="item"):
             dirnames[:] = [d for d in dirnames if d not in exclude_dirs]
 
-            for filename in filenames:
+            for filename in tqdm(filenames, desc="Processing", unit="item"):
                 if not filename.endswith(".py"):
                     continue
 
@@ -388,11 +389,11 @@ def find_obsolete_tests(project_root: Path, classifications: list[FileClassifica
         "_swarm_compliance",
     ]
 
-    for test_dir in test_dirs:
+    for test_dir in tqdm(test_dirs, desc="Processing", unit="item"):
         if not test_dir.exists():
             continue
 
-        for dirpath, _, filenames in os.walk(test_dir):
+        for dirpath, _, filenames in tqdm(os.walk(test_dir), desc="Processing", unit="item"):
             for filename in filenames:
                 if not filename.endswith(".py"):
                     continue
@@ -600,7 +601,7 @@ def run_rebaseline(project_root: Path, dry_run: bool = True) -> dict[str, Any]:
 
     # Step 5: Generate MECE tests
     print("\n[5/5] Generating MECE test files...")
-    for c in classifications:
+    for c in tqdm(classifications, desc="Processing", unit="item"):
         if not c.needs_test:
             report["tests_skipped"].append(
                 {"file": str(c.path), "reason": f"Type {c.file_type} excluded from testing"},

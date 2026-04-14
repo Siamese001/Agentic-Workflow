@@ -7,6 +7,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 from tools.adg.shared_modules.path_resolver import latest_sqlite
+from tqdm import tqdm
 
 
 def open_db() -> sqlite3.Connection:
@@ -55,7 +56,7 @@ def main() -> None:
 
         absent_list = []
         present_list = []
-        for kw, label in absence_check:
+        for kw, label in tqdm(absence_check, desc="Processing", unit="item"):
             cur.execute(
                 "SELECT COUNT(*) FROM nodes WHERE layer NOT IN ('L_TEST','L_UNKNOWN','')"
                 " AND (LOWER(adg_name) LIKE ? OR LOWER(resolved_path) LIKE ?)",

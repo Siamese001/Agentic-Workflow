@@ -180,7 +180,7 @@ class HealerAgentMixin:
         try:
             result = self._heal_impl(violation)
             return self._normalize_result(result)
-        except Exception as e:
+        except (AttributeError, RuntimeError, OSError, ValueError) as e:
             logging.error(f"Heal operation failed in {self.__class__.__name__}: {e}")
             return {"status": "failed", "errors": [str(e)]}
 

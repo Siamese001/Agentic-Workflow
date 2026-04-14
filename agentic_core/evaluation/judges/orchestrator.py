@@ -41,6 +41,7 @@ from agentic_core.evaluation.judges.types import (
     VerdictOutcome,
 )
 from agentic_core.evaluation.judges.verdict_store import VerdictStore
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -156,7 +157,7 @@ class JudgeOrchestrator:
         # Run judges
         verdicts: list[JudgeVerdict] = []
 
-        for rubric in rubrics:
+        for rubric in tqdm(rubrics, desc="Processing", unit="item"):
             rid = rubric.rubric_id
             verdict: JudgeVerdict | None = None
 
@@ -254,7 +255,7 @@ class JudgeOrchestrator:
             dim_data.setdefault(v.dimension, []).append(v)
 
         rows: list[JudgeReportRow] = []
-        for dim, dim_verdicts in sorted(dim_data.items()):
+        for dim, dim_verdicts in tqdm(sorted(dim_data.items()), desc="Processing", unit="item"):
             scored = [v for v in dim_verdicts if v.outcome != VerdictOutcome.SKIP.value]
             if not scored:
                 continue

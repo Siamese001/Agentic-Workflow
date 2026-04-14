@@ -17,6 +17,7 @@ References:
 """
 
 import logging
+import os
 import shutil
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -94,6 +95,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("atomic_execution_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("atomic_execution_mixin", "p4obs", "metric_2")
@@ -256,7 +258,7 @@ class AtomicExecutionMixin:
             content = file_path.read_bytes()
             return hashlib.sha256(content).hexdigest()[:16]
         # guardian: allow-silent-swallow
-        except Exception:
+        except (OSError, ValueError):
             logger.warning(f"Failed to compute hash for {file_path}", exc_info=True)
             return None
 
@@ -282,7 +284,7 @@ class AtomicExecutionMixin:
             logger.debug(f"Backed up {file_path} to {backup_path}")
             return backup
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, RuntimeError) as e:
             logger.error(f"Failed to backup {file_path}: {e}")
             raise AtomicExecutionError(f"Backup failed for {file_path}: {e}", txn.transaction_id)
 
@@ -290,20 +292,26 @@ class AtomicExecutionMixin:
         """Rollback all changes in a transaction."""
         logger.warning(f"Rolling back transaction {txn.transaction_id}")
         errors = []
-        for backup in reversed(txn.backups):
+        for backup in tqdm(reversed(txn.backups), desc="Processing", unit="item"):
             try:
                 if backup.backup_path.exists():
                     shutil.copy2(backup.backup_path, backup.original_path)
                     logger.debug(f"Restored {backup.original_path} from backup")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 errors.append(f"Failed to restore {backup.original_path}: {e}")
-        for created_path in txn.created_files:
+        for created_path in tqdm(txn.created_files, desc="Processing", unit="item"):
             try:
                 if created_path.exists() and created_path not in [b.original_path for b in txn.backups]:
                     created_path.unlink()
                     logger.debug(f"Removed created file {created_path}")
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                OSError,
+                RuntimeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 errors.append(f"Failed to remove {created_path}: {e}")
         txn.rolled_back = True
@@ -320,7 +328,10 @@ class AtomicExecutionMixin:
                 shutil.rmtree(backup_dir)
                 logger.debug(f"Cleaned up backup directory {backup_dir}")
         # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
+        except (
+            OSError,
+            RuntimeError,
+        ) as e:  # guardian: allow-log-and-swallow -- teardown/cleanup context -- swallow is conventional in resource-release paths
             logger.warning(f"Failed to cleanup transaction {txn.transaction_id}: {e}")
         if txn.transaction_id in self._active_transactions:
             del self._active_transactions[txn.transaction_id]
@@ -365,7 +376,7 @@ class AtomicExecutionMixin:
             if cleanup_on_success:
                 self._cleanup_transaction(txn)
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, RuntimeError, ValueError, AttributeError) as e:
             txn.error = str(e)
             logger.error(f"Transaction {txn_id} failed: {e}")
             self._rollback_transaction(txn)
@@ -402,11 +413,17 @@ class AtomicExecutionMixin:
             txn.modified_files.add(file_path)
         else:
             txn.created_files.add(file_path)
+        if file_path.is_symlink():
+            raise AtomicExecutionError(f"Refusing to write through symlink: {file_path}", txn.transaction_id)
         try:
             file_path.parent.mkdir(parents=True, exist_ok=True)
-            file_path.write_text(content, encoding=encoding)
+            tmp_path = file_path.with_suffix(file_path.suffix + ".tmp")
+            tmp_path.write_text(content, encoding=encoding)
+            with tmp_path.open("rb") as fh:
+                os.fsync(fh.fileno())
+            os.replace(str(tmp_path), str(file_path))
             logger.debug(f"Atomic write to {file_path}")
-        except Exception as e:
+        except (OSError, ValueError) as e:
             raise AtomicExecutionError(f"Write failed for {file_path}: {e}", txn.transaction_id) from e
 
     def atomic_delete(self, txn: AtomicTransaction, file_path: Path) -> None:
@@ -429,7 +446,7 @@ class AtomicExecutionMixin:
         try:
             file_path.unlink()
             logger.debug(f"Atomic delete of {file_path}")
-        except Exception as e:
+        except (OSError, ValueError) as e:
             raise AtomicExecutionError(f"Delete failed for {file_path}: {e}", txn.transaction_id) from e
 
     def atomic_rename(self, txn: AtomicTransaction, src_path: Path, dst_path: Path) -> None:
@@ -457,9 +474,9 @@ class AtomicExecutionMixin:
             txn.created_files.add(dst_path)
         try:
             dst_path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.move(str(src_path), str(dst_path))
+            os.replace(str(src_path), str(dst_path))
             logger.debug(f"Atomic rename {src_path} -> {dst_path}")
-        except Exception as e:
+        except (OSError, shutil.Error) as e:
             raise AtomicExecutionError(
                 f"Rename failed {src_path} -> {dst_path}: {e}",
                 txn.transaction_id,

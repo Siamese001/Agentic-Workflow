@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hygiene_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("hygiene_mixin", "p4obs", "metric_2")
@@ -188,7 +189,7 @@ class HygieneMixin:
                 "errors": 0,
                 "skipped": 0,
             }
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             raise HygieneError(f"Hygiene healing failed: {e}") from e
 
     def _analyze_hygiene_violations(self) -> dict[str, list[dict[str, Any]]]:
@@ -199,7 +200,7 @@ class HygieneMixin:
         results = {"empty_files": [], "duplicate_files": [], "large_files": [], "syntax_errors": []}
         try:
             file_hashes = {}
-            for py_file in self.project_root.rglob("*.py"):
+            for py_file in tqdm(self.project_root.rglob("*.py"), desc="Processing", unit="item"):
                 if py_file.name.startswith(".") or "__pycache__" in str(py_file):
                     continue
                 rel_path = py_file.relative_to(self.project_root)
@@ -234,7 +235,7 @@ class HygieneMixin:
                 except (OSError, UnicodeDecodeError) as e:
                     self.logger.debug(f"Failed to scan {rel_path}: {e}")
                     continue
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             raise HygieneError(f"Hygiene analysis failed: {str(e)}") from e
         return results
 
@@ -273,7 +274,7 @@ class HygieneMixin:
         """
         try:
             return hashlib.sha256(file_path.read_bytes()).hexdigest()
-        except Exception as e:
+        except OSError as e:
             raise HygieneError(f"Failed to calculate hash for {file_path}: {str(e)}") from e
 
     def get_hygiene_report(self) -> dict[str, Any]:
@@ -300,7 +301,7 @@ class HygieneMixin:
                 "recommendations": self._generate_recommendations(violations),
             }
             return report
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             raise HygieneError(f"Failed to generate hygiene report: {str(e)}") from e
 
     def _generate_recommendations(self, violations: dict[str, list[dict[str, Any]]]) -> list[str]:
@@ -357,5 +358,5 @@ class HygieneMixin:
                 "violations": violations,
                 "size_bytes": file_path.stat().st_size,
             }
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             raise HygieneError(f"File hygiene validation failed for {file_path}: {str(e)}") from e

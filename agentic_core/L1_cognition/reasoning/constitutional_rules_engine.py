@@ -22,6 +22,7 @@ from agentic_core.L1_cognition.types.guardrail_types import (
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_telemetry_event,  # noqa: E402
 )
+from tqdm import tqdm
 
 
 class ConstitutionalRulesEngine:
@@ -211,7 +212,7 @@ class ConstitutionalRulesEngine:
 
             # Evaluate each rule
             checks = []
-            for rule in applicable_rules:
+            for rule in tqdm(applicable_rules, desc="Processing", unit="item"):
                 if not rule.enabled:
                     continue
 
@@ -272,7 +273,7 @@ class ConstitutionalRulesEngine:
         """Get rules applicable to the content type and context."""
         applicable = []
 
-        for rule in self.rules.values():
+        for rule in tqdm(self.rules.values(), desc="Processing", unit="item"):
             if not rule.enabled:
                 continue
 

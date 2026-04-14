@@ -95,6 +95,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ProvenancetrackerStrategy", "p4obs", "metric_1")
 _emit_emits_metric_event("ProvenancetrackerStrategy", "p4obs", "metric_2")
@@ -526,7 +527,7 @@ class ProvenanceTracker:
         results = []
         try:
             lines = await asyncio.to_thread(self._read_lineage_file)
-            for line in lines:
+            for line in tqdm(lines, desc="Processing", unit="item"):
                 data = json.loads(line)
                 if trace_id and data.get("trace_id") != trace_id:
                     continue

@@ -93,6 +93,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("check_test_structure", "p4obs", "metric_1")
 _emit_emits_metric_event("check_test_structure", "p4obs", "metric_2")
@@ -193,7 +194,7 @@ def check_structure():
     if not TESTS_ROOT.exists():
         print("CRITICAL: tests/ directory missing!")
         sys.exit(1)
-    for item in TESTS_ROOT.iterdir():
+    for item in tqdm(TESTS_ROOT.iterdir(), desc="Processing", unit="item"):
         if item.is_file():
             if item.name not in ALLOWED_ROOT_FILES:
                 violations.append(f"[ROOT VIOLATION] File found in tests root: {item.name}")

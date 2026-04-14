@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from tqdm import tqdm
 
 _emit_emits_metric_event("DocstringComplianceAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("DocstringComplianceAgent", "p4obs", "metric_2")
@@ -273,7 +274,7 @@ class DocstringComplianceAgent(PromptRenderingMixin, SovereignBaseAgent):
             new_lines: List[str] = lines.copy()
             added_count: Any = 0
             needs_docstring.sort(key=lambda x: x[1] if x[0] != "module" else 0, reverse=True)
-            for node_type, lineno in needs_docstring:
+            for node_type, lineno in tqdm(needs_docstring, desc="Processing", unit="item"):
                 if node_type == "module":
                     insert_idx: Any = 0
                     for i, line in enumerate(lines):

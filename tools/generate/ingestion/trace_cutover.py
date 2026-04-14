@@ -13,6 +13,7 @@ sys.path.insert(0, str(REPO_ROOT / "agentic_core" / "L4_state" / "utils"))
 import chromadb
 from agentic_core.L1_cognition.reasoning.query_router import QueryRouter
 from agentic_core.embeddings.bge_runtime import bge_embed_query
+from tqdm import tqdm
 
 STORE = str(REPO_ROOT / "data" / "cache" / "chromadb")
 client = chromadb.PersistentClient(path=STORE)
@@ -42,7 +43,7 @@ async def trace_retrieval(label: str, query: str, collections: list[str]) -> Non
     else:
         print(f"  [OK] embedding_dim=1024 (BGE-M3)")
 
-    for cname in collections:
+    for cname in tqdm(collections, desc="Processing", unit="item"):
         if cname not in live:
             print(f"  [SKIP] {cname!r} not in live store")
             continue

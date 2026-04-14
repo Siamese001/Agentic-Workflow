@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rlhf_optimizer_impl", "p4obs", "metric_1")
 _emit_emits_metric_event("rlhf_optimizer_impl", "p4obs", "metric_2")
@@ -256,7 +257,7 @@ class DefaultRLHFOptimizer:
         if len(pairs) < _MIN_PAIRS:
             return None
         surface_votes: dict[str, list[str]] = {}
-        for pair in pairs:
+        for pair in tqdm(pairs, desc="Processing", unit="item"):
             surface = pair.get("surface", "unknown")
             chosen = pair.get("chosen", {})
             rejected = pair.get("rejected", {})
@@ -274,7 +275,7 @@ class DefaultRLHFOptimizer:
         best_surface = None
         best_strength = 0.0
         best_direction = "increase"
-        for surface, votes in surface_votes.items():
+        for surface, votes in tqdm(surface_votes.items(), desc="Processing", unit="item"):
             if not votes:
                 continue
             increase_count = sum(1 for v in votes if v == "increase")

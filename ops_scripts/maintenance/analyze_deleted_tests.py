@@ -27,6 +27,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).parent
 
@@ -72,7 +73,7 @@ def analyze_file_with_ast(content: str, file_path: str) -> dict[str, Any]:
         tree = ast.parse(content)
 
         # Extract imports
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     result["imports"].append(("import", alias.name, node.lineno))
@@ -139,7 +140,7 @@ def fuzzy_match_module(broken_module: str) -> list[tuple[str, float]]:
     parts = broken_module.split(".")
     target_name = parts[-1] if parts else broken_module
 
-    for search_dir in search_dirs:
+    for search_dir in tqdm(search_dirs, desc="Processing", unit="item"):
         search_path = PROJECT_ROOT / search_dir
         if not search_path.exists():
             continue
@@ -215,7 +216,7 @@ def main():
     needs_review = []
     phase_files_deleted = []
 
-    for file_path, commit in all_deleted_files:
+    for file_path, commit in tqdm(all_deleted_files, desc="Processing", unit="item"):
         content = get_file_content_from_commit(commit, file_path)
         if not content:
             continue

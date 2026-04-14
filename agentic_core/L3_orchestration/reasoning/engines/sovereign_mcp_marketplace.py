@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.seams.contracts.authority import get_mcp_authority
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_mcp_marketplace", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_mcp_marketplace", "p4obs", "metric_2")
@@ -222,7 +223,7 @@ class SovereignMcpMarketplace:
 
         installed = marketplace_data.get("installed", [])
         available = marketplace_data.get("available", [])
-        for mcp in installed + available:
+        for mcp in tqdm(installed + available, desc="Processing", unit="item"):
             name = mcp.get("name", "")
             Provider = mcp.get("Provider", "")
             if any(forbidden in Provider for forbidden in forbidden_providers):

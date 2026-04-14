@@ -91,7 +91,7 @@ def _detect_test_patterns(tree: ast.AST, path: Path) -> dict[str, bool]:
     test_methods = 0
     fixtures = 0
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         # Check imports
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -156,7 +156,7 @@ def _detect_script_patterns(tree: ast.AST, path: Path) -> dict[str, bool]:
     has_click = False
     script_functions = 0
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         # Check imports
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -216,11 +216,11 @@ def _detect_type_patterns(tree: ast.AST, path: Path) -> dict[str, bool]:
     dataclass_count = 0
     model_count = 0
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         # Check classes
         if isinstance(node, ast.ClassDef):
             # Check enum inheritance
-            for base in node.bases:
+            for base in tqdm(node.bases, desc="Processing", unit="item"):
                 if isinstance(base, ast.Name):
                     if base.id == "Enum":
                         enum_count += 1
@@ -282,7 +282,7 @@ def _detect_config_patterns(
     constant_assignments = 0
     config_methods = 0
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         # Check classes
         if isinstance(node, ast.ClassDef):
             # Check naming
@@ -338,7 +338,7 @@ def _detect_validator_patterns(
     check_functions = 0
     assert_usage = 0
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         # Check classes
         if isinstance(node, ast.ClassDef):
             if any(pattern in node.name for pattern in patterns):
@@ -521,7 +521,7 @@ def _detect_enforcer_control_signal(tree: ast.AST, content: str) -> bool:
     - raise *Error inside validate_* or assert_*_allowed
     - OR function returning (False, "...") pattern
     """
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if node.name.startswith(("validate_", "assert_")) or node.name.startswith("verify_"):
                 for child in ast.walk(node):
@@ -595,7 +595,7 @@ def _compute_content_scores(path: Path) -> dict[str, int]:
     except (SyntaxError, UnicodeDecodeError, OSError):
         return scores
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             # Agent indicators
             if node.name.endswith("Agent"):
@@ -615,7 +615,7 @@ def _compute_content_scores(path: Path) -> dict[str, int]:
                         scores["TYPES"] += 10
 
             # Type indicators: BaseModel, Enum, Protocol inheritance
-            for base in node.bases:
+            for base in tqdm(node.bases, desc="Processing", unit="item"):
                 if isinstance(base, ast.Name):
                     if base.id == "BaseModel":
                         scores["TYPES"] += 10
@@ -687,7 +687,7 @@ def _compute_layer_affinity(path: Path) -> dict[str, float]:
     if module_doc:
         text_signals.append(module_doc.lower())
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             text_signals.append(node.name.lower())
             class_doc = ast.get_docstring(node)
@@ -749,7 +749,7 @@ def _fuzzy_match_name_or_content(
         tree = ast.parse(content)
         content_lower = content.lower()
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef | ast.ClassDef):
                 if any(pattern.lower() in node.name.lower() for pattern in patterns):
                     return True
@@ -1050,20 +1050,21 @@ def _is_repository_class(node: ast.ClassDef) -> bool:
 def classify_file_pure(path: Path) -> str:
     """Pure function to classify a file using extracted helper functions.
 
-    This is a simplified orchestrator that uses the extracted pure functions
-    from classification_core.py. It demonstrates how the modular functions
-    can be composed together without stateful dependencies.
+        This is a simplified orchestrator that uses the extracted pure functions
+        from classification_core.py. It demonstrates how the modular functions
+    from tqdm import tqdm
+        can be composed together without stateful dependencies.
 
-    Args:
-        path: File path to classify
+        Args:
+            path: File path to classify
 
-    Returns:
-        File type string (e.g., "CONFIG", "TYPES", "VALIDATOR", "UTILITY")
+        Returns:
+            File type string (e.g., "CONFIG", "TYPES", "VALIDATOR", "UTILITY")
 
-    Note:
-        This is a simplified version. The full classify_file method in
-        FileClassificationAgent has additional logic for special cases,
-        logging, and stateful behavior that cannot be represented as a pure function.
+        Note:
+            This is a simplified version. The full classify_file method in
+            FileClassificationAgent has additional logic for special cases,
+            logging, and stateful behavior that cannot be represented as a pure function.
     """
     # Read file content
     try:

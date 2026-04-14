@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sovereign_alignment_v2_util", "p4obs", "metric_1")
 _emit_emits_metric_event("sovereign_alignment_v2_util", "p4obs", "metric_2")
@@ -200,7 +201,7 @@ def flush_and_align() -> Any:
     _trace_id = str(_uuid.uuid4())
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "flush_and_align")
     print("[*] STARTING SOVEREIGN ALIGNMENT V2 & CIRCULAR FLUSH...")
-    for source, target in MIGRATION_MAP.items():
+    for source, target in tqdm(MIGRATION_MAP.items(), desc="Processing", unit="item"):
         src_path: Any = ROOT / source
         dest_path: Any = ROOT / target
         if src_path.exists():
@@ -238,7 +239,7 @@ def flush_and_align() -> Any:
     count: Any = 0
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(ROOT):
+    for py_file in tqdm(get_python_files(ROOT), desc="Processing", unit="item"):
         if "legacy_code" in str(py_file) or "data" in str(py_file):
             continue
         try:

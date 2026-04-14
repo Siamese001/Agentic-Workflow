@@ -6,6 +6,7 @@ Constraint: Keep validation and healing logic within the same agent.
 import ast
 import json
 from pathlib import Path
+from tqdm import tqdm
 
 
 def analyze_method_complexity(file_path: Path) -> list[tuple[str, int]]:
@@ -14,7 +15,7 @@ def analyze_method_complexity(file_path: Path) -> list[tuple[str, int]]:
         content = file_path.read_text(encoding="utf-8")
         tree = ast.parse(content)
         method_complexities = []
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 for item in node.body:
                     if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
@@ -30,7 +31,7 @@ def analyze_method_complexity(file_path: Path) -> list[tuple[str, int]]:
 def calculate_method_cc(node: ast.FunctionDef) -> int:
     """Calculate cyclomatic complexity for a single method."""
     cc = 1
-    for child in ast.walk(node):
+    for child in tqdm(ast.walk(node), desc="Processing", unit="item"):
         if isinstance(child, ast.If | ast.While | ast.For | ast.AsyncFor):
             cc += 1
         elif isinstance(child, ast.ExceptHandler):
@@ -54,7 +55,7 @@ def main():
     print("=" * 80)
     print("TOP 5 AGENTS BY COMPLEXITY - METHOD BREAKDOWN")
     print("=" * 80)
-    for i, agent in enumerate(agents_sorted[:5], 1):
+    for i, agent in tqdm(enumerate(agents_sorted[:5], 1), desc="Processing", unit="item"):
         name = agent.get("class_name", "Unknown")
         cc = agent.get("cyclomatic_complexity", 0)
         rel_path = agent.get("file_path", "")

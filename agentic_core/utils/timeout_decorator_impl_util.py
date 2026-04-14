@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import signal
 from functools import wraps
+from threading import current_thread, main_thread, Thread
 from typing import Any, Callable
 
 
@@ -36,21 +37,26 @@ def timeout(seconds: int) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            try:
+            if seconds <= 0:
+                msg = "seconds must be greater than zero"
+                raise ValueError(msg)
 
-                def _handle_timeout(signum: int, frame: Any) -> None:
-                    raise TimeoutError(f"Function {func.__name__} timed out after {seconds} seconds")
-
-                old_handler = signal.signal(signal.SIGALRM, _handle_timeout)
-                signal.alarm(seconds)
-                try:
-                    result = func(*args, **kwargs)
-                    return result
-                finally:
-                    signal.alarm(0)
-                    signal.signal(signal.SIGALRM, old_handler)
-            except (AttributeError, ValueError):
+            if not hasattr(signal, "SIGALRM") or current_thread() is not main_thread():
                 return func(*args, **kwargs)
+
+            def _handle_timeout(signum: int, frame: Any) -> None:
+                raise TimeoutError(f"Function {func.__name__} timed out after {seconds} seconds")
+
+            old_handler = signal.getsignal(signal.SIGALRM)
+            if old_handler == signal.SIG_IGN:
+                return func(*args, **kwargs)
+            signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(seconds)
+            try:
+                return func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+                signal.signal(signal.SIGALRM, old_handler)
 
         return wrapper
 

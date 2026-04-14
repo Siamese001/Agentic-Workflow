@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("l1_meta_adapter", "p4obs", "metric_1")
 _emit_emits_metric_event("l1_meta_adapter", "p4obs", "metric_2")
@@ -223,7 +224,7 @@ class L1MetaAdapter:
         )
 
         events: list[L1TelemetryEvent] = []
-        for outcome in l1_state.get("recall_outcomes", []):
+        for outcome in tqdm(l1_state.get("recall_outcomes", []), desc="Processing", unit="item"):
             if not isinstance(outcome, dict):
                 continue
             ts = outcome.get("timestamp_utc", now_utc)
@@ -235,7 +236,7 @@ class L1MetaAdapter:
             events.append(
                 L1TelemetryEvent(timestamp_utc=ts, event_type="l1_recall_outcome", payload_bytes=payload),
             )
-        for outcome in l1_state.get("learn_outcomes", []):
+        for outcome in tqdm(l1_state.get("learn_outcomes", []), desc="Processing", unit="item"):
             if not isinstance(outcome, dict):
                 continue
             ts = outcome.get("timestamp_utc", now_utc)

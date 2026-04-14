@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, Optional
+from tqdm import tqdm
 
 
 class IngestionMode(Enum):
@@ -131,7 +132,7 @@ class StructuredIngestion:
         bool_falses = {"no", "false", "0", "n", "f", "off", "none", "null", ""}
 
         normalized = {}
-        for key, value in data.items():
+        for key, value in tqdm(data.items(), desc="Processing", unit="item"):
             if isinstance(value, str):
                 lower_val = value.lower().strip()
                 if lower_val in bool_trues:
@@ -158,7 +159,7 @@ class StructuredIngestion:
         """Standardize period labels and validate dates."""
         standardized = []
 
-        for period in periods:
+        for period in tqdm(periods, desc="Processing", unit="item"):
             std_period = dict(period)
 
             # Standardize date format
@@ -210,7 +211,7 @@ class StructuredIngestion:
         null_values = {"null", "none", "n/a", "na", "undefined", "", "NULL", "None"}
 
         normalized = {}
-        for key, value in data.items():
+        for key, value in tqdm(data.items(), desc="Processing", unit="item"):
             if isinstance(value, str) and value.strip().lower() in null_values:
                 normalized[key] = None
             elif isinstance(value, dict):

@@ -108,6 +108,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("clean_duplicates_enhanced", "p4obs", "metric_1")
 _emit_emits_metric_event("clean_duplicates_enhanced", "p4obs", "metric_2")
@@ -167,7 +168,7 @@ Logger = logging.getLogger(__name__)
 def aggressive_cleanup():
     """More aggressive cleanup targeting additional patterns"""
     purged_count = 0
-    for item in os.listdir("."):
+    for item in tqdm(os.listdir("."), desc="Processing", unit="item"):
         # guardian: allow-path-string
         if os.path.isdir(item) and item.startswith("test_repo"):
             try:
@@ -224,8 +225,8 @@ def organize_structure():
         "validator": "CanonValidatorAgent",
     }
     moved_count = 0
-    for root, _dirs, files in os.walk("/app"):
-        for file in files:
+    for root, _dirs, files in tqdm(os.walk("/app"), desc="Processing", unit="item"):
+        for file in tqdm(files, desc="Processing", unit="item"):
             if file.endswith(".py"):
                 file_path = Path(root) / file
                 file_lower = file.lower()
@@ -265,7 +266,7 @@ def extract_functions(filepath):
             content = f.read()
         tree = ast.parse(content)
         functions = []
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef):
                 start_line = node.lineno - 1
                 end_line = node.end_lineno if hasattr(node, "end_lineno") else start_line + 1
@@ -373,7 +374,7 @@ def purge_everything(
     """
     _adg_startup_warning()
     purged_count = 0
-    for item in os.listdir("."):
+    for item in tqdm(os.listdir("."), desc="Processing", unit="item"):
         # guardian: allow-path-string
         if os.path.isdir(item) and item.startswith("test_repo_1765"):
             try:
@@ -384,8 +385,8 @@ def purge_everything(
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 raise
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
-    for root, _dirs, files in os.walk("."):
-        for file in files:
+    for root, _dirs, files in tqdm(os.walk("."), desc="Processing", unit="item"):
+        for file in tqdm(files, desc="Processing", unit="item"):
             file_path = Path(root) / file
             if "_clean.py" in file or file == "test_report.html":
                 try:

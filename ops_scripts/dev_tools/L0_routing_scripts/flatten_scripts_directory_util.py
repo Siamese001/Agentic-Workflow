@@ -142,6 +142,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("flatten_scripts_directory_util", "p4obs", "metric_1")
 _emit_emits_metric_event("flatten_scripts_directory_util", "p4obs", "metric_2")
@@ -212,7 +213,7 @@ def flatten_scripts() -> Any:
     # Phase 6.9: Use ssot_discovery instead of rglob
     from ops_scripts.dev_tools.L0_routing.ssot_discovery_util import get_python_files
 
-    for py_file in get_python_files(SCRIPTS_DIR):
+    for py_file in tqdm(get_python_files(SCRIPTS_DIR), desc="Processing", unit="item"):
         rel_path: Any = py_file.relative_to(CORE)
         parts: Any = rel_path.parts
         if len(parts) > REQUIRED_DEPTH - 1:
@@ -240,7 +241,7 @@ def flatten_scripts() -> Any:
             except (ValueError, TypeError) as e:
                 print(f"  [X] Failed: {py_file.name} - {e}")
     print("\n[*] Cleaning empty directories...")
-    for root, dirs, _files in os.walk(SCRIPTS_DIR, topdown=False):
+    for root, dirs, _files in tqdm(os.walk(SCRIPTS_DIR, topdown=False), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for dir_name in dirs:
             dir_path: Any = Path(root) / dir_name

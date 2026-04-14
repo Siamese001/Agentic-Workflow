@@ -23,6 +23,7 @@ from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import
     _detect_query_signal,
     _compute_weights,
 )
+from tqdm import tqdm
 
 PASS = "\033[92m[PASS]\033[0m"
 FAIL = "\033[91m[FAIL]\033[0m"
@@ -49,7 +50,7 @@ _PER_COLLECTION_QUERIES: dict[str, str] = {
 def smoke_sparse_hits() -> int:
     failures = 0
     print("\n=== Smoke 1: SparseIndex.search() hits per collection ===")
-    for col, query in _PER_COLLECTION_QUERIES.items():
+    for col, query in tqdm(_PER_COLLECTION_QUERIES.items(), desc="Processing", unit="item"):
         idx = get_sparse_index(col)
         if idx is None:
             print(f"  {FAIL}  {col!r:25}  get_sparse_index returned None (not in _SPARSE_COLLECTIONS)")
@@ -86,7 +87,7 @@ def smoke_lexical_search_live() -> int:
     failures = 0
     print("\n=== Smoke 2: _lexical_search() live (no dense, sparse only) ===")
 
-    for col, query in _PER_COLLECTION_QUERIES.items():
+    for col, query in tqdm(_PER_COLLECTION_QUERIES.items(), desc="Processing", unit="item"):
         sparse = get_sparse_index(col)
         engine = HybridSearchEngine(
             chroma_client=None,  # no dense client — proves sparse path is independent
@@ -127,7 +128,7 @@ _WEIGHT_CASES: list[tuple[str, str, tuple[float, float]]] = [
 def smoke_dynamic_weights() -> int:
     failures = 0
     print("\n=== Smoke 3: dynamic weight selection (_detect_query_signal) ===")
-    for query, expected_signal, expected_weights in _WEIGHT_CASES:
+    for query, expected_signal, expected_weights in tqdm(_WEIGHT_CASES, desc="Processing", unit="item"):
         signal = _detect_query_signal(query)
         vw, lw = _compute_weights(query, 0.7, 0.3)
         ok_signal = signal == expected_signal

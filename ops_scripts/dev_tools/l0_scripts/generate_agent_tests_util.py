@@ -12,6 +12,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "generate_agent_tests_util", "uwg_governed_write")
 _emit_writes_through("p1", "generate_agent_tests_util", "uwg_governed_write_2")
@@ -47,7 +48,7 @@ def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10
     print(f"Generating tests for {layer} layer ({len(layer_agents)} agents)")
     print(f"{'=' * 70}")
     generated = 0
-    for agent in layer_agents[:max_count]:
+    for agent in tqdm(layer_agents[:max_count], desc="Processing", unit="item"):
         class_name = agent["class_name"]
         test_file = project_root / TESTS_DIR / layer.lower() / f"test_{class_name}.py"
         if test_file.exists():

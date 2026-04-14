@@ -127,6 +127,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("dpo_types", "dpo_types_trace")
 
@@ -284,7 +285,7 @@ class DPOBatch:
         _emit_records_execution_trace(_trace_id, LayerSegment.L6_OBSERVABILITY, "DPOBatch.canonical_bytes")
 
         pairs_data = []
-        for pair in self.pairs:
+        for pair in tqdm(self.pairs, desc="Processing", unit="item"):
             pairs_data.append(
                 {
                     "example_id": {

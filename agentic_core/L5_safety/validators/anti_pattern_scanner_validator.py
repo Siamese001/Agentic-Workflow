@@ -182,6 +182,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("anti_pattern_scanner_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("anti_pattern_scanner_validator", "p4obs", "metric_2")
@@ -459,7 +460,7 @@ class AntiPatternScanner:
             rel_path = path.relative_to(self.project_root).as_posix()
             return any(fnmatch(rel_path, pattern) for pattern in effective_excludes)
 
-        for scan_dir in self.scan_dirs:
+        for scan_dir in tqdm(self.scan_dirs, desc="Processing", unit="item"):
             target_dir = self.project_root / scan_dir
 
             if not target_dir.exists():
@@ -478,13 +479,13 @@ class AntiPatternScanner:
                     exclude_patterns=effective_excludes,
                 )
 
-                for category, category_results in results.items():
+                for category, category_results in tqdm(results.items(), desc="Processing", unit="item"):
                     category_name = category.value
 
                     if category_name not in report.violations_by_category:
                         report.violations_by_category[category_name] = 0
 
-                    for result in category_results:
+                    for result in tqdm(category_results, desc="Processing", unit="item"):
                         all_files.add(result.file_path)
 
                         if result.error:
@@ -531,7 +532,7 @@ class AntiPatternScanner:
 
         results = self.composite.scan_file(file_path)
 
-        for result in results:
+        for result in tqdm(results, desc="Processing", unit="item"):
             for violation in result.violations:
                 if not violation.whitelisted:
                     violations.append(violation)
@@ -555,10 +556,10 @@ class AntiPatternScanner:
         report = ScanReport(project_root=self.project_root)
         files_with_violations = set()
 
-        for category in AntiPatternCategory:
+        for category in tqdm(AntiPatternCategory, desc="Processing", unit="item"):
             report.violations_by_category[category.value] = 0
 
-        for file_path in file_paths:
+        for file_path in tqdm(file_paths, desc="Processing", unit="item"):
             if not file_path.exists() or not file_path.suffix == ".py":
                 continue
 

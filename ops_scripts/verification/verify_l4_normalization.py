@@ -16,6 +16,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -75,7 +76,7 @@ class ADGL4NormalizationVerifier:
                 """)
 
                 l4_nodes = []
-                for row in cursor.fetchall():
+                for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     l4_nodes.append(
                         {
                             "id": row[0],
@@ -137,7 +138,7 @@ class ADGL4NormalizationVerifier:
                 """)
 
                 l4_modules = []
-                for row in cursor.fetchall():
+                for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     l4_modules.append(
                         {
                             "id": row[0],
@@ -153,7 +154,7 @@ class ADGL4NormalizationVerifier:
 
                 # Check identity resolution
                 identity_issues = []
-                for module in l4_modules:
+                for module in tqdm(l4_modules, desc="Processing", unit="item"):
                     issues = []
 
                     if module["identity_kind"] == "unresolved_import":
@@ -210,7 +211,7 @@ class ADGL4NormalizationVerifier:
                 """)
 
                 l4_nodes = []
-                for row in cursor.fetchall():
+                for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     l4_nodes.append(
                         {
                             "id": row[0],
@@ -280,7 +281,7 @@ class ADGL4NormalizationVerifier:
 
                 # Check path normalization
                 path_issues = []
-                for node in persistence_nodes:
+                for node in tqdm(persistence_nodes, desc="Processing", unit="item"):
                     if not node["resolved_path"] or node["resolved_path"].strip() == "":
                         path_issues.append(
                             {
@@ -343,7 +344,7 @@ class ADGL4NormalizationVerifier:
                 ]
 
                 layer_distribution = {}
-                for entity_type, description in artifact_types:
+                for entity_type, description in tqdm(artifact_types, desc="Processing", unit="item"):
                     cursor.execute(
                         """
                         SELECT layer, COUNT(*) FROM nodes
@@ -364,7 +365,7 @@ class ADGL4NormalizationVerifier:
 
                 # Check for artifacts outside L4 that should be in L4
                 misplaced_artifacts = []
-                for entity_type, info in layer_distribution.items():
+                for entity_type, info in tqdm(layer_distribution.items(), desc="Processing", unit="item"):
                     l4_count = info["l4_count"]
                     total_count = info["total_count"]
 

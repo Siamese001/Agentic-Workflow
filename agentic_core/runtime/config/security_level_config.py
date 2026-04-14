@@ -126,6 +126,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("security_level_config", "p4obs", "metric_1")
 _emit_emits_metric_event("security_level_config", "p4obs", "metric_2")
@@ -361,9 +362,9 @@ class SecurityHardener:
 
         lines = content.split("\nimport logging\n\nLogger = logging.getLogger(__name__)\n")
 
-        for category, patterns in self.SECURITY_PATTERNS.items():
-            for pattern in patterns:
-                for i, line in enumerate(lines, 1):
+        for category, patterns in tqdm(self.SECURITY_PATTERNS.items(), desc="Processing", unit="item"):
+            for pattern in tqdm(patterns, desc="Processing", unit="item"):
+                for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
                     if re.search(pattern, line, re.IGNORECASE):
                         issue = SecurityIssue(
                             issue_id=hashlib.sha256(f"{file_path}:{i}:{category}".encode()).hexdigest()[:12],
@@ -402,7 +403,7 @@ class SecurityHardener:
 
         resume_str = json.dumps(resume)
 
-        for PiiType, pattern in pii_patterns.items():
+        for PiiType, pattern in tqdm(pii_patterns.items(), desc="Processing", unit="item"):
             matches = re.findall(pattern, resume_str)
             if matches:
                 issue = SecurityIssue(
@@ -542,7 +543,7 @@ class SemanticAnalyzer:
 
         # Weak word detection
         weak_found = []
-        for word in self.WEAK_WORDS:
+        for word in tqdm(self.WEAK_WORDS, desc="Processing", unit="item"):
             if word.lower() in content.lower():
                 weak_found.append(word)
 
@@ -619,7 +620,7 @@ class SemanticAnalyzer:
         # Analyze experience
         if "experience" in resume:
             exp_scores = []
-            for i, exp in enumerate(resume["experience"]):
+            for i, exp in tqdm(enumerate(resume["experience"]), desc="Processing", unit="item"):
                 desc = exp.get("description", "")
                 if desc:
                     exp_analysis = self.analyze_content(desc)
@@ -700,7 +701,7 @@ class StrategicAdvisor:
 
         # Check experience descriptions
         experience = resume.get("experience", [])
-        for i, exp in enumerate(experience):
+        for i, exp in tqdm(enumerate(experience), desc="Processing", unit="item"):
             desc = exp.get("description", "")
 
             # Check for bullet points
@@ -830,7 +831,7 @@ class OmniContext:
         sections = []
 
         # Index each section
-        for section_name, content in resume.items():
+        for section_name, content in tqdm(resume.items(), desc="Processing", unit="item"):
             if isinstance(content, str):
                 section_text = f"# {section_name.upper()}\n{content}"
             elif isinstance(content, list):
@@ -877,7 +878,7 @@ class OmniContext:
         query_lower = query.lower()
         query_words = set(query_lower.split())
 
-        for section_name, info in self._index.items():
+        for section_name, info in tqdm(self._index.items(), desc="Processing", unit="item"):
             content_lower = info["content"].lower()
 
             # Calculate simple relevance score
@@ -978,7 +979,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
         """
         mission_start = time.time()
 
-        for cycle in range(max_cycles):
+        for cycle in tqdm(range(max_cycles), desc="Processing", unit="item"):
             self._cycles = cycle + 1
 
             # Phase 1: Security
@@ -1050,7 +1051,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
         agents_executed = []
         errors = []
 
-        for agent_name, agent_func in agents:
+        for agent_name, agent_func in tqdm(agents, desc="Processing", unit="item"):
             try:
                 if asyncio.iscoroutinefunction(agent_func):
                     await agent_func()

@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("lazy_seam_scanner", "p4obs", "metric_1")
 _emit_emits_metric_event("lazy_seam_scanner", "p4obs", "metric_2")
@@ -221,7 +222,7 @@ def extract_import_targets(node: ast.AST) -> list[tuple[str, int]]:
 
 def _is_inside_function_or_guarded(tree: ast.AST, target_lineno: int) -> bool:
     """Check if a line is inside a function, method, or try/except block."""
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
             if hasattr(node, "lineno") and hasattr(node, "end_lineno"):
                 if node.end_lineno is not None:
@@ -271,7 +272,7 @@ def collect_lazy_upward_imports(agentic_root: Path) -> list[LazyUpwardImport]:
     """Collect all upward imports excluded ONLY because they are inside a
     function/try guard (the 'lazy seam')."""
     results: list[LazyUpwardImport] = []
-    for layer in range(7):
+    for layer in tqdm(range(7), desc="Processing", unit="item"):
         layer_dir = None
         for item in agentic_root.iterdir():
             if item.is_dir() and item.name.startswith(f"L{layer}_"):
@@ -279,7 +280,7 @@ def collect_lazy_upward_imports(agentic_root: Path) -> list[LazyUpwardImport]:
                 break
         if layer_dir is None:
             continue
-        for py_file in layer_dir.rglob("*.py"):
+        for py_file in tqdm(layer_dir.rglob("*.py"), desc="Processing", unit="item"):
             try:
                 rel = py_file.relative_to(agentic_root)
             except ValueError:
@@ -299,11 +300,11 @@ def collect_lazy_upward_imports(agentic_root: Path) -> list[LazyUpwardImport]:
                 UnicodeDecodeError,
             ):  # guardian: Parsing and encoding errors need separate handling strategies
                 continue
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if not isinstance(node, (ast.Import, ast.ImportFrom)):
                     continue
                 targets = extract_import_targets(node)
-                for import_str, line_no in targets:
+                for import_str, line_no in tqdm(targets, desc="Processing", unit="item"):
                     match = IMPORT_LAYER_PATTERN.search(import_str)
                     if not match:
                         continue
@@ -366,7 +367,7 @@ class LazySeamScanner:
         agentic_core_path = self.root_path / AGENTIC_CORE_DIR
         metric = lazy_upward_import_metric(agentic_core_path)
         self.seams = []
-        for item in metric["items"]:
+        for item in tqdm(metric["items"], desc="Processing", unit="item"):
             seam_entry = {
                 "file_path": str(item.source_file.relative_to(self.root_path)),
                 "function_name": item.context,

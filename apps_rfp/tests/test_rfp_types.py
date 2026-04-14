@@ -195,11 +195,17 @@ class TestRfpRunSummary(unittest.TestCase):
         self.assertEqual(summary.app, "apps_rfp")
 
     def test_to_dict(self):
-        """Test to_dict method."""
+        """Test to_dict method returns a dict with all required keys."""
         summary = RfpRunSummary(trace_id="trace-001", quality_score=0.85)
         d = summary.to_dict()
+        self.assertIsInstance(d, dict)
         self.assertEqual(d["trace_id"], "trace-001")
         self.assertEqual(d["quality_score"], 0.85)
+        self.assertEqual(d["app"], "apps_rfp")
+        self.assertEqual(d["version"], "1.0.0")
+        self.assertEqual(d["status"], "pending")
+        self.assertIn("dry_run", d)
+        self.assertIn("gate_violations", d)
 
 
 if __name__ == "__main__":

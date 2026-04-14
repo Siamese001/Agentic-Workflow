@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("feedback_category_util", "p4obs", "metric_1")
 _emit_emits_metric_event("feedback_category_util", "p4obs", "metric_2")
@@ -553,7 +554,7 @@ class UnifiedFeedbackSystem:
         Args:
             feedback: Feedback to share
         """
-        for engine_type, loop in self.engine_loops.items():
+        for engine_type, loop in tqdm(self.engine_loops.items(), desc="Processing", unit="item"):
             if engine_type != feedback.source_engine:
                 adapted_feedback = QualityFeedback(
                     assessment_id=f"cross_{feedback.content_hash}",
@@ -651,7 +652,7 @@ class UnifiedFeedbackSystem:
         for fb in other_engine_feedback:
             if fb.transfer_score > 0.7:
                 transferable_by_category[fb.category.value].append(fb)
-        for category, feedback_list in transferable_by_category.items():
+        for category, feedback_list in tqdm(transferable_by_category.items(), desc="Processing", unit="item"):
             if len(feedback_list) >= 2:
                 plan["cross_engine_opportunities"].append(
                     {

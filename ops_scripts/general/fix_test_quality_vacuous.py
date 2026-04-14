@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_test_quality_vacuous", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_test_quality_vacuous", "p4obs", "metric_2")
@@ -264,7 +265,7 @@ def _function_body_is_empty_after_removal(
     fn_start/fn_end are 1-indexed line numbers.
     """
     body_content = []
-    for i in range(fn_start, fn_end + 1):
+    for i in tqdm(range(fn_start, fn_end + 1), desc="Processing", unit="item"):
         if i in removed_lines:
             continue
         line = source_lines[i - 1].rstrip()
@@ -351,7 +352,7 @@ def fix_file(file_path: Path, dry_run: bool = False) -> tuple[int, list[str]]:
     new_lines = list(source_lines)
     changes: list[str] = []
 
-    for lineno in sorted(lines_to_remove, reverse=True):
+    for lineno in tqdm(sorted(lines_to_remove, reverse=True), desc="Processing", unit="item"):
         idx = lineno - 1
         original_line = new_lines[idx].rstrip("\n")
         indent = len(original_line) - len(original_line.lstrip())
@@ -399,7 +400,7 @@ def main() -> int:
     total_files = 0
     errors = 0
 
-    for f in test_files:
+    for f in tqdm(test_files, desc="Processing", unit="item"):
         count, changes = fix_file(f, dry_run=args.dry_run)
         if changes and any(c.startswith("  ERROR") for c in changes):
             errors += 1

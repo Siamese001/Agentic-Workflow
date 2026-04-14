@@ -84,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tool_category_types", "p4obs", "metric_1")
 _emit_emits_metric_event("tool_category_types", "p4obs", "metric_2")
@@ -527,7 +528,7 @@ class ObservabilityToolInvoker:
         """Execute tool invocation with retry logic."""
         last_error = None
         max_retries = context.retry_policy.get("max_retries", self.config.max_retries)
-        for attempt in range(max_retries + 1):
+        for attempt in tqdm(range(max_retries + 1), desc="Processing", unit="item"):
             try:
                 client = self._tool_clients.get(context.tool_id)
                 if client:

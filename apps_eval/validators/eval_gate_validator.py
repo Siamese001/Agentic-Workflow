@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -84,7 +84,7 @@ from apps_eval.types.eval_types import RegressionRecord, RegressionVerdict, Scor
 _emit_applies_guardrail("p0", "eval_gate_validator", "p0_governance")
 _emit_reads_policy_state("p0", "eval_gate_validator", "policy_binding")
 _emit_snapshots_state("p0", "eval_gate_validator", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -255,10 +255,7 @@ class EvalGateValidator:
                 )
 
         timeout_count = sum(
-            1
-            for suite in suite_results
-            for scenario in suite.scenarios
-            if scenario.outcome.value == "TIMEOUT"
+            1 for suite in suite_results for scenario in suite.scenarios if scenario.outcome == "TIMEOUT"
         )
         if timeout_count > self._max_timeout_violations:
             violations.append(

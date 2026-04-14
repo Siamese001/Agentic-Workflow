@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("verify_agent_status_util", "p4obs", "metric_1")
 _emit_emits_metric_event("verify_agent_status_util", "p4obs", "metric_2")
@@ -269,7 +270,7 @@ def analyze_file(file_path: Path) -> dict[str, Any]:
         result["verdict"] = "NOT_AGENT"
         result["reason"] = "Script file - no class definitions"
         return result
-    for cls in classes:
+    for cls in tqdm(classes, desc="Processing", unit="item"):
         bases = extract_bases(cls)
         class_info = {
             "name": cls.name,
@@ -331,7 +332,7 @@ def print_report(results: list[dict]) -> None:
     print("-" * 100)
     print("DETAILED ANALYSIS:")
     print("-" * 100)
-    for r in results:
+    for r in tqdm(results, desc="Processing", unit="item"):
         print()
         print(f"FILE: {r['file']}")
         print(f"  Verdict: {r['verdict']}")

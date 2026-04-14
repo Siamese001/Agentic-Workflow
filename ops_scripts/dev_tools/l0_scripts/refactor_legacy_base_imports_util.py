@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("refactor_legacy_base_imports_util", "p4obs", "metric_1")
 _emit_emits_metric_event("refactor_legacy_base_imports_util", "p4obs", "metric_2")
@@ -201,7 +202,7 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
             content = f.read()
 
         # Replace import statements
-        for legacy_name, legacy_path in LEGACY_IMPORTS.items():
+        for legacy_name, legacy_path in tqdm(LEGACY_IMPORTS.items(), desc="Processing", unit="item"):
             # Pattern: from legacy_path import legacy_name
             import_pattern = f"from {legacy_path} import {legacy_name}"
             if import_pattern in content:
@@ -227,7 +228,7 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
                 modified = True
 
         # Replace class inheritance
-        for legacy_name in LEGACY_IMPORTS.keys():
+        for legacy_name in tqdm(LEGACY_IMPORTS.keys(), desc="Processing", unit="item"):
             # Pattern: class SomeAgent(LegacyBaseAgent):
             inheritance_pattern = re.compile(rf"class\s+(\w+)\s*\(\s*{legacy_name}\s*\):")
             matches = inheritance_pattern.findall(content)
@@ -243,7 +244,7 @@ def refactor_file(file_path: Path) -> tuple[bool, list[str]]:
             if legacy_name in content:
                 # Replace in comments and docstrings but not in strings
                 lines = content.splitlines()
-                for i, line in enumerate(lines):
+                for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
                     if legacy_name in line:
                         # Check if it's a comment or docstring
                         stripped = line.strip()

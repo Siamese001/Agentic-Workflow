@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("suffix_cleanup_executor", "p4obs", "metric_1")
 _emit_emits_metric_event("suffix_cleanup_executor", "p4obs", "metric_2")
@@ -335,7 +336,7 @@ def execute_suffix_cleanup(project_root: Path, dry_run: bool = False) -> dict[st
     print(f"SUFFIX CLEANUP EXECUTOR - {report['mode']}")
     print("=" * 60)
 
-    for source_rel, new_filename in targets:
+    for source_rel, new_filename in tqdm(targets, desc="Processing", unit="item"):
         source_path = project_root / source_rel
         print(f"\n[{len(report['results']) + 1}/{len(targets)}] Processing: {source_rel}")
 

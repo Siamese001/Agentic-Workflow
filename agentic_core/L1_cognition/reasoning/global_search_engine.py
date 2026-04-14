@@ -55,6 +55,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 emit_replay_key("p0", "global_search_engine")
 emit_determinism_digest("p0", "global_search_engine")
@@ -187,7 +188,7 @@ class GlobalSearchEngine:
         # For now, we'll simulate finding communities
 
         # Create mock community results
-        for i in range(min(self.config.max_communities, 5)):
+        for i in tqdm(range(min(self.config.max_communities, 5)), desc="Processing", unit="item"):
             community_id = f"community_{i}"
 
             # Calculate summary match score
@@ -225,7 +226,7 @@ class GlobalSearchEngine:
         # Get entities from top communities
         top_communities = community_results[: self.config.max_communities]
 
-        for community_result in top_communities:
+        for community_result in tqdm(top_communities, desc="Processing", unit="item"):
             community_id = community_result.item_id
 
             # Get community details (sync call)
@@ -254,7 +255,7 @@ class GlobalSearchEngine:
         # Limit entities per community
         entity_ids = list(community.entities)[: self.config.max_entities_per_community]
 
-        for entity_id in entity_ids:
+        for entity_id in tqdm(entity_ids, desc="Processing", unit="item"):
             # Get entity (sync call)
             entity = self.graph_store.get_entity(entity_id)
 
@@ -371,7 +372,7 @@ class GlobalSearchEngine:
         """Apply final filters to results."""
         filtered = []
 
-        for result in results:
+        for result in tqdm(results, desc="Processing", unit="item"):
             # Minimum relevance score
             if result.relevance_score < query.min_relevance_score:
                 continue

@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("tool_use_ground_truth_evaluator", "tool_use_ground_truth_evaluator_trace")
 
@@ -235,7 +236,7 @@ def evaluate_tool_use_ground_truth(data_root: str = None, limit: int = None) -> 
     tool_dist = {}
     complex_queries = []
     total_tools = 0
-    for sample in samples:
+    for sample in tqdm(samples, desc="Processing", unit="item"):
         expected_calls = sample.get("expected_tool_calls", [])
         scenario = sample.get("scenario", "unknown")
         success_criteria = sample.get("success_criteria", [])

@@ -143,6 +143,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("scorched_earth_merge_util", "p4obs", "metric_1")
 _emit_emits_metric_event("scorched_earth_merge_util", "p4obs", "metric_2")
@@ -248,7 +249,7 @@ def scorched_earth_merge() -> Any:
     ]:
         layer_path.mkdir(parents=True, exist_ok=True)
         (layer_path / "__init__.py").touch()
-    for item in ROOT.iterdir():
+    for item in tqdm(ROOT.iterdir(), desc="Processing", unit="item"):
         if item.name in APPROVED_ROOT_FOLDERS or item.name in APPROVED_ROOT_FILES:
             continue
         target_dest: Any = (

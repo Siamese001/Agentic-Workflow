@@ -16,6 +16,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -69,7 +70,11 @@ def mine_workflows():
             report.write("## 2. 🔄 Workflow Topology (DAG)\n\n")
             steps = None
             workflow_key = None
-            for key in ["workflow", "steps", "nodes", "pipeline", "stages", "k_nodes"]:
+            for key in tqdm(
+                ["workflow", "steps", "nodes", "pipeline", "stages", "k_nodes"],
+                desc="Processing",
+                unit="item",
+            ):
                 if key in data:
                     candidate = data[key]
                     if isinstance(candidate, dict) and "steps" in candidate:
@@ -87,7 +92,7 @@ def mine_workflows():
                 report.write(f"*Found workflow in: `{workflow_key}` ({len(steps)} steps)*\n\n")
                 report.write("| Step ID | Agent/Tool | Description | Next Step |\n")
                 report.write("| :--- | :--- | :--- | :--- |\n")
-                for step in steps:
+                for step in tqdm(steps, desc="Processing", unit="item"):
                     if isinstance(step, dict):
                         sid = step.get("id", step.get("step_id", step.get("name", "Unknown")))
                         agent = step.get(

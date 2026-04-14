@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("approval_contract_types", "p4obs", "metric_1")
 _emit_emits_metric_event("approval_contract_types", "p4obs", "metric_2")
@@ -354,7 +355,7 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
         if isinstance(type_spec, list):
             if value is None and "null" in type_spec:
                 return
-            for t in type_spec:
+            for t in tqdm(type_spec, desc="Processing", unit="item"):
                 if t == "null":
                     continue
                 if t == "string" and isinstance(value, str):
@@ -394,7 +395,7 @@ def validate_against_json_schema(result_dict: dict[str, Any]) -> list[str]:
             extra = set(obj.keys()) - set(props.keys())
             for e in sorted(extra):
                 errors.append(f"{path}: unexpected field '{e}'")
-        for key, val in obj.items():
+        for key, val in tqdm(obj.items(), desc="Processing", unit="item"):
             if key in props:
                 prop_schema = props[key]
                 field_path = f"{path}.{key}"

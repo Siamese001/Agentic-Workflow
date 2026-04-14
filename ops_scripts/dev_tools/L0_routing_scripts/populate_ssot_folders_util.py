@@ -135,6 +135,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("populate_ssot_folders_util", "p4obs", "metric_1")
 _emit_emits_metric_event("populate_ssot_folders_util", "p4obs", "metric_2")
@@ -249,12 +250,12 @@ def main():
         print(f"[!] Error: {core_root} not found.")
         return
     l1_folders = list(CORE_SUBFOLDER_MAP.keys())
-    for l1 in l1_folders:
+    for l1 in tqdm(l1_folders, desc="Processing", unit="item"):
         l1_path = core_root / l1
         if not l1_path.exists():
             continue
         l2_folders = CORE_SUBFOLDER_MAP.get(l1, [])
-        for l2 in l2_folders:
+        for l2 in tqdm(l2_folders, desc="Processing", unit="item"):
             l2_path = l1_path / l2
             if not l2_path.exists():
                 continue

@@ -141,6 +141,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("HygieneGuardianAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("HygieneGuardianAgent", "p4obs", "metric_2")
@@ -418,7 +419,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
     def _scan_directory(self, directory: Path) -> None:
         """Recursively scan directory for hygiene violations."""
         ignore_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
-        for item in directory.rglob("*"):
+        for item in tqdm(directory.rglob("*"), desc="Processing", unit="item"):
             if any(ignored in item.parts for ignored in ignore_dirs):
                 continue
             if not item.is_file():
@@ -528,7 +529,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
             "repeated_filename",
             "copy_pattern",
         }
-        for violation in self.violations:
+        for violation in tqdm(self.violations, desc="Processing", unit="item"):
             if not violation.auto_fixable or self.dry_run:
                 continue
             try:

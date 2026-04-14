@@ -180,6 +180,53 @@ __all__ = [
 ]
 
 
+def _run_json_command(
+    cmd: list[str],
+    *,
+    timeout: int,
+    cwd: Path | None = None,
+) -> dict[str, Any]:
+    """Run a subprocess deterministically and return a normalized dict payload."""
+    try:
+        result = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=str(cwd) if cwd else None,
+            shell=False,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        return {"success": False, "error": f"Subprocess timed out after {timeout} seconds"}
+    except OSError as e:
+        return {"success": False, "error": f"Subprocess launch failed: {e}"}
+
+    stdout = (result.stdout or "").strip()
+    stderr = (result.stderr or "").strip()
+
+    if result.returncode != 0:
+        return {
+            "success": False,
+            "error": stderr or stdout or f"Runner exited with code {result.returncode}",
+            "returncode": result.returncode,
+        }
+
+    if not stdout:
+        return {"success": True}
+
+    try:
+        payload = json.loads(stdout)
+    except json.JSONDecodeError as e:
+        return {
+            "success": False,
+            "error": f"Failed to parse runner output: {e}",
+            "stdout": stdout,
+        }
+
+    return payload if isinstance(payload, dict) else {"success": True, "payload": payload}
+
+
 def invoke_arch_governor(
     action: str,
     project_root: Path | None = None,
@@ -220,17 +267,7 @@ def invoke_arch_governor(
         cmd.append(f"--targets={','.join(targets)}")
     if auto_approve:
         cmd.append("--auto-approve")
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
-        if result.stdout.strip():
-            return json.loads(result.stdout.strip())
-        return {"success": result.returncode == 0, "error": result.stderr if result.returncode != 0 else None}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
-    except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except (ValueError, TypeError) as e:
-        return {"success": False, "error": str(e)}
+    return _run_json_command(cmd, timeout=DEFAULT_TIMEOUT, cwd=project_root)
 
 
 def invoke_orchestrator_mission(
@@ -262,17 +299,7 @@ def invoke_orchestrator_mission(
         cmd.append(f"--project-root={project_root}")
     if execute:
         cmd.append("--execute")
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
-        if result.stdout.strip():
-            return json.loads(result.stdout.strip())
-        return {"success": result.returncode == 0, "error": result.stderr if result.returncode != 0 else None}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 600 seconds"}
-    except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except (ValueError, TypeError) as e:
-        return {"success": False, "error": str(e)}
+    return _run_json_command(cmd, timeout=DEFAULT_TIMEOUT, cwd=project_root)
 
 
 def invoke_agent_roster_validation() -> dict[str, Any]:
@@ -283,17 +310,7 @@ def invoke_agent_roster_validation() -> dict[str, Any]:
         Dict with 'success', 'agents_validated', and 'integrity_errors' keys
     """
     cmd = [sys.executable, "-m", "agentic_core.L5_safety.runners.agent_roster_runner", "--action=validate"]
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
-        if result.stdout.strip():
-            return json.loads(result.stdout.strip())
-        return {"success": result.returncode == 0, "error": result.stderr if result.returncode != 0 else None}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 120 seconds"}
-    except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except (ValueError, TypeError) as e:
-        return {"success": False, "error": str(e)}
+    return _run_json_command(cmd, timeout=DEFAULT_TIMEOUT)
 
 
 def invoke_hierarchy_agent(action: str, project_root: Path | None = None) -> dict[str, Any]:
@@ -310,17 +327,7 @@ def invoke_hierarchy_agent(action: str, project_root: Path | None = None) -> dic
     cmd = [sys.executable, "-m", "agentic_core.L5_safety.runners.hierarchy_runner", f"--action={action}"]
     if project_root:
         cmd.append(f"--project-root={project_root}")
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
-        if result.stdout.strip():
-            return json.loads(result.stdout.strip())
-        return {"success": result.returncode == 0, "error": result.stderr if result.returncode != 0 else None}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
-    except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except (ValueError, TypeError) as e:
-        return {"success": False, "error": str(e)}
+    return _run_json_command(cmd, timeout=DEFAULT_TIMEOUT, cwd=project_root)
 
 
 def invoke_code_validator(
@@ -344,14 +351,4 @@ def invoke_code_validator(
         cmd.append(f"--directory={directory}")
     if project_root:
         cmd.append(f"--project-root={project_root}")
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
-        if result.stdout.strip():
-            return json.loads(result.stdout.strip())
-        return {"success": result.returncode == 0, "error": result.stderr if result.returncode != 0 else None}
-    except subprocess.TimeoutExpired:
-        return {"success": False, "error": "Subprocess timed out after 300 seconds"}
-    except json.JSONDecodeError as e:
-        return {"success": False, "error": f"Failed to parse runner output: {e}"}
-    except (ValueError, TypeError) as e:
-        return {"success": False, "error": str(e)}
+    return _run_json_command(cmd, timeout=DEFAULT_TIMEOUT, cwd=project_root)

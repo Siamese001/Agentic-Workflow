@@ -148,6 +148,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("report_location_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("report_location_validator", "p4obs", "metric_2")
@@ -447,7 +448,7 @@ class ReportLocationValidator:
         all_reports = self.find_all_reports()
         inventory.total_reports = len(all_reports)
 
-        for report_path in all_reports:
+        for report_path in tqdm(all_reports, desc="Processing", unit="item"):
             result = self.validate_file(report_path)
 
             # Categorize by parent directory

@@ -124,6 +124,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("identify_agents_without_tests_util", "p4obs", "metric_1")
 _emit_emits_metric_event("identify_agents_without_tests_util", "p4obs", "metric_2")
@@ -234,7 +235,7 @@ high_layer = [
 base_agents.sort(key=lambda a: a.get("cyclomatic_complexity", 0))
 high_layer.sort(key=lambda a: a.get("cyclomatic_complexity", 0))
 batch1 = (base_agents + high_layer)[:8]
-for i, agent in enumerate(batch1, 1):
+for i, agent in tqdm(enumerate(batch1, 1), desc="Processing", unit="item"):
     name = agent.get("class_name", "Unknown")
     path = agent.get("path", "Unknown")
     territory = agent.get("territory", "Unknown")

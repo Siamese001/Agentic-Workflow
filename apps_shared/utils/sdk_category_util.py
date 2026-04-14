@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sdk_category_util", "p4obs", "metric_1")
 _emit_emits_metric_event("sdk_category_util", "p4obs", "metric_2")
@@ -397,7 +398,7 @@ def validate_all_sdks() -> dict[str, Any]:
         Validation report with status for each SDK
     """
     report = {"total": len(SDK_REGISTRY), "available": 0, "missing": 0, "missing_keys": 0, "details": {}}
-    for sdk_name, entry in SDK_REGISTRY.items():
+    for sdk_name, entry in tqdm(SDK_REGISTRY.items(), desc="Processing", unit="item"):
         success, error = validate_sdk(sdk_name)
         status = {
             "available": success,

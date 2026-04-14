@@ -28,6 +28,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "migrate_unified_to_high_signal_util", "uwg_governed_write")
 _emit_writes_through("p1", "migrate_unified_to_high_signal_util", "uwg_governed_write_2")
@@ -56,13 +57,13 @@ def migrate_unified():
     files_renamed = 0
     files_refactored = 0
     print("--- STEP 1: Physical Move & Semantic Renaming ---")
-    for old_rel, new_rel in PATH_MAPPING.items():
+    for old_rel, new_rel in tqdm(PATH_MAPPING.items(), desc="Processing", unit="item"):
         old_path = project_root / old_rel
         new_path = project_root / new_rel
         if old_path.exists():
             print(f"[MIGRATION] Processing {old_rel} -> {new_rel}")
             new_path.mkdir(parents=True, exist_ok=True)
-            for item in old_path.iterdir():
+            for item in tqdm(old_path.iterdir(), desc="Processing", unit="item"):
                 if item.is_file() and item.suffix == ".py":
                     new_filename = item.name
                     if new_filename.startswith("Unified"):
@@ -119,7 +120,7 @@ def migrate_unified():
         ),
         (re.compile("\\bUnified([A-Z][a-zA-Z]+Agent)\\b"), "\\1"),
     ]
-    for py_file in project_root.rglob("*.py"):
+    for py_file in tqdm(project_root.rglob("*.py"), desc="Processing", unit="item"):
         if ARCHIVES_DIR in str(py_file) or ".venv" in str(py_file) or "__pycache__" in str(py_file):
             continue
         if py_file.name == Path(__file__).name:

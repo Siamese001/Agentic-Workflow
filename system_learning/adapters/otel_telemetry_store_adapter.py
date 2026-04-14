@@ -12,6 +12,7 @@ import time
 from typing import Any
 
 from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -51,7 +52,9 @@ class OTelTelemetryStoreAdapter:
         try:
             # Store each span as a separate telemetry event
             stored_count = 0
-            for span in span_data[:50]:  # Limit to prevent storage overload
+            for span in tqdm(
+                span_data[:50], desc="Processing", unit="item"
+            ):  # Limit to prevent storage overload
                 span_json = json.dumps(span, sort_keys=True, separators=(",", ":"))
 
                 success = self._bridge.persist_otel_span(

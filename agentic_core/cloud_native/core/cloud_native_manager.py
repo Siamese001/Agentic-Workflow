@@ -35,6 +35,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("cloud_native_manager", "cloud_native_manager_digest")
 record_execution_trace("cloud_native_manager", "cloud_native_manager_trace")
@@ -398,7 +399,7 @@ class CloudNativeManager:
             # Collect deployment metrics
             deployments = self._k8s_client["apps_v1"].list_namespaced_deployment(self._current_namespace)
 
-            for deployment in deployments.items:
+            for deployment in tqdm(deployments.items, desc="Processing", unit="item"):
                 metrics = ResourceMetrics(
                     name=deployment.metadata.name,
                     namespace=deployment.metadata.namespace,
@@ -415,7 +416,7 @@ class CloudNativeManager:
             # Collect pod metrics
             pods = self._k8s_client["core_v1"].list_namespaced_pod(self._current_namespace)
 
-            for pod in pods.items:
+            for pod in tqdm(pods.items, desc="Processing", unit="item"):
                 if pod.metadata.owner_references:
                     # Skip pods owned by deployments (already covered)
                     continue
@@ -576,7 +577,7 @@ class CloudNativeManager:
 
     def _check_auto_scaling(self) -> None:
         """Check if auto-scaling is needed."""
-        for resource_name, config in self._auto_scaling_configs.items():
+        for resource_name, config in tqdm(self._auto_scaling_configs.items(), desc="Processing", unit="item"):
             try:
                 metrics = self._resources.get(resource_name)
                 if not metrics:
@@ -697,7 +698,7 @@ class CloudNativeManager:
         try:
             health_scores = []
 
-            for status in self._health_checks.values():
+            for status in tqdm(self._health_checks.values(), desc="Processing", unit="item"):
                 if status == HealthStatus.HEALTHY:
                     health_scores.append(100)
                 elif status == HealthStatus.WARNING:

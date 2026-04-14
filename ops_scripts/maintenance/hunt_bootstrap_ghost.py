@@ -74,6 +74,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hunt_bootstrap_ghost", "p4obs", "metric_1")
 _emit_emits_metric_event("hunt_bootstrap_ghost", "p4obs", "metric_2")
@@ -164,7 +165,7 @@ def hunt_bootstrap():
 
     found_any = False
 
-    for root, _dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
+    for root, _dirs, files in tqdm(os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR), desc="Processing", unit="item"):
         _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
         if TARGET_FILE in files:

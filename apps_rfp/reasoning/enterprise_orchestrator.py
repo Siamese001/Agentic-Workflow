@@ -23,7 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_applies_guardrail,
     _emit_captures_pattern,
     _emit_coordinates_agents,
@@ -51,6 +51,7 @@ from apps_rfp.reasoning.section_orchestrator import (
     MultiAgentProposalOrchestrator,
 )
 from apps_rfp.services.repo_signal_service import RepoSignalService
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -450,7 +451,7 @@ class EnterpriseRfpOrchestrator:
         lines.append("")
 
         # Proposal sections
-        for section in result.proposal.get("sections", []):
+        for section in tqdm(result.proposal.get("sections", []), desc="Processing", unit="item"):
             lines.append(f"## {section.get('heading', 'Section')}")
             lines.append("")
             lines.append(section.get("body", ""))

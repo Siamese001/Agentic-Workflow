@@ -79,6 +79,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("model_visitor_util", "p4obs", "metric_1")
 _emit_emits_metric_event("model_visitor_util", "p4obs", "metric_2")
@@ -187,7 +188,7 @@ class ModelVisitor(ast.NodeVisitor):
 
 def main():
     """Brief description of functionality and purpose."""
-    for arg in sys.argv[1:]:
+    for arg in tqdm(sys.argv[1:], desc="Processing", unit="item"):
         if arg in EXEMPT or "tests/" in arg:
             Logger.info(f"Skipping Exempt: {arg}")
             continue

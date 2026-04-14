@@ -155,6 +155,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("registry_verification_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("registry_verification_enforcer", "p4obs", "metric_2")
@@ -310,7 +311,7 @@ class RegistryVerifier:
         ):  # guardian: Parsing and encoding errors need separate handling strategies
             return None
         relative_path = str(file_path.relative_to(self.project_root))
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef) and node.name.endswith("Agent"):
                 bases = []
                 for base in node.bases:
@@ -339,7 +340,7 @@ class RegistryVerifier:
             "RegistryVerifier.scan_filesystem",
         )
         agents: list[AgentInfo] = []
-        for agent_file in self.project_root.rglob("*Agent.py"):
+        for agent_file in tqdm(self.project_root.rglob("*Agent.py"), desc="Processing", unit="item"):
             if self._is_excluded(agent_file):
                 continue
             if self._is_test_file(agent_file):
@@ -369,7 +370,7 @@ class RegistryVerifier:
         fs_by_class = {a.class_name: a for a in filesystem_agents}
         fs_by_path = {a.relative_path.replace("\\", "/"): a for a in filesystem_agents}
         registry_by_class = {a.get("class_name", ""): a for a in registry_agents}
-        for reg_agent in registry_agents:
+        for reg_agent in tqdm(registry_agents, desc="Processing", unit="item"):
             class_name = reg_agent.get("class_name", "")
             reg_path = reg_agent.get("path", "").replace("\\", "/")
             if class_name not in fs_by_class:

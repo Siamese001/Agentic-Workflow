@@ -87,6 +87,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("reflection_config", "p4obs", "metric_1")
 _emit_emits_metric_event("reflection_config", "p4obs", "metric_2")
@@ -437,7 +438,7 @@ class ReflectionEngine:
         total_weight = 0
         weighted_score = 0
 
-        for criterion in criteria:
+        for criterion in tqdm(criteria, desc="Processing", unit="item"):
             try:
                 if isinstance(criterion.validator, str):
                     # Regex validation

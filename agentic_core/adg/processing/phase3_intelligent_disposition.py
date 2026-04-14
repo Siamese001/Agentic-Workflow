@@ -20,6 +20,7 @@ from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass
 from enum import Enum
 from pathlib import Path
+from tqdm import tqdm
 
 
 class DispositionType(Enum):
@@ -541,7 +542,7 @@ class DispositionClassifier:
         # Simple scoring system based on feature weights
         scores = {}
 
-        for disposition, weights in self.feature_weights.items():
+        for disposition, weights in tqdm(self.feature_weights.items(), desc="Processing", unit="item"):
             score = 0.0
             total_weight = 0.0
 
@@ -684,7 +685,7 @@ class IntelligentDispositionSystem:
 
         # Generate recommendations
         recommendations = []
-        for violation in violations:
+        for violation in tqdm(violations, desc="Processing", unit="item"):
             features = self.feature_extractor.extract_features(violation)
             recommendation = self.classifier.classify_violation(features)
             recommendations.append(
@@ -730,7 +731,7 @@ class IntelligentDispositionSystem:
             """)
 
             historical_data = []
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 file_path, line_no, evidence, severity, disposition, source = row
 
                 # Extract features for this historical violation

@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("proactive_fission_scanner", "p4obs", "metric_1")
 _emit_emits_metric_event("proactive_fission_scanner", "p4obs", "metric_2")
@@ -248,9 +249,9 @@ class ProactiveFissionScanner:
 
         Logger.info(f"[SCAN] Scanning repository: {target_dir}")
         candidates: Any = []
-        for root, dirs, files in os.walk(target_dir):
+        for root, dirs, files in tqdm(os.walk(target_dir), desc="Processing", unit="item"):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-            for file in files:
+            for file in tqdm(files, desc="Processing", unit="item"):
                 if file.endswith(".py"):
                     path: Any = Path(root) / file
                     line_count: Any = self.get_line_count(path)

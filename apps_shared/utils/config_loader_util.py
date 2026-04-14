@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("config_loader_util", "p4obs", "metric_1")
 _emit_emits_metric_event("config_loader_util", "p4obs", "metric_2")
@@ -332,7 +333,7 @@ class ConfigLoader:
         """Apply environment variable overrides to configuration."""
         env_prefix = f"AGENT_CONFIG_{agent_name.upper()}_"
 
-        for key, value in os.environ.items():
+        for key, value in tqdm(os.environ.items(), desc="Processing", unit="item"):
             if key.startswith(env_prefix):
                 config_key = key[len(env_prefix) :].lower()
 

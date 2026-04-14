@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tool_type_types", "p4obs", "metric_1")
 _emit_emits_metric_event("tool_type_types", "p4obs", "metric_2")
@@ -524,7 +525,7 @@ class ObservabilityToolExecutor:
         total_metrics = {}
         all_artifacts = []
         all_warnings = []
-        for item in batch_items:
+        for item in tqdm(batch_items, desc="Processing", unit="item"):
             item_env = exec_env.copy()
             item_env["parameters"] = item
             try:

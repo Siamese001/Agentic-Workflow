@@ -155,6 +155,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.security_util import safe_execute
+from tqdm import tqdm
 
 _emit_emits_metric_event("scan_testing_compliance_util", "p4obs", "metric_1")
 _emit_emits_metric_event("scan_testing_compliance_util", "p4obs", "metric_2")
@@ -345,7 +346,7 @@ def main():
     # Phase 6.9 Sub-50: Use ssot_discovery instead of rglob
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(AGENTIC_CORE):
+    for py_file in tqdm(get_python_files(AGENTIC_CORE), desc="Processing", unit="item"):
         if "__pycache__" in str(py_file) or ".sovereign_healing_backup" in str(py_file):
             continue
 
@@ -360,7 +361,7 @@ def main():
             continue
 
         # Find all agent classes - expanded detection
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 # Detect agents by multiple patterns:
                 # 1. Ends with 'Agent'

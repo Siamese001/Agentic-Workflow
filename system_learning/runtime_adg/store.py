@@ -24,6 +24,7 @@ from system_learning.runtime_adg.snapshot import (
     create_runtime_adg_snapshot,
 )
 from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
+from tqdm import tqdm
 
 emit_determinism_digest("runtime_adg_store", "runtime_adg_store_digest")
 record_execution_trace("runtime_adg_store", "runtime_adg_store_trace")
@@ -182,7 +183,7 @@ def _deserialise_snapshot(payload: bytes) -> RuntimeADGSnapshot:
         nodes: list[RuntimeADGNode] = []
         edges: list[RuntimeADGEdge] = []
 
-        for part in remaining:
+        for part in tqdm(remaining, desc="Processing", unit="item"):
             if not part:
                 continue
             fields = part.split(b"\x1e")

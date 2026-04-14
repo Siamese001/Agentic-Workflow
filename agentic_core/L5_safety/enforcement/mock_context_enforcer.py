@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("mock_context_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("mock_context_enforcer", "p4obs", "metric_2")
@@ -202,7 +203,7 @@ def validate_l2_l3_structure(project_root: Path) -> dict:
     violations = []
     missing_dirs = []
     l1_structure = list(CORE_SUBFOLDER_MAP.keys())
-    for l1_name in l1_structure:
+    for l1_name in tqdm(l1_structure, desc="Processing", unit="item"):
         l1_path = project_root / AGENTIC_CORE_DIR / l1_name
         if not l1_path.exists():
             continue
@@ -267,7 +268,9 @@ def validate_universal_depth(project_root: Path) -> dict:
     from agentic_core.utils.runners.ssot_discovery_validator import get_data_files
 
     target_exts = [".json", ".md", ".yaml", ".yml", ".toml", ".txt"]
-    for file_path in get_data_files(project_root, extensions=target_exts):
+    for file_path in tqdm(
+        get_data_files(project_root, extensions=target_exts), desc="Processing", unit="item"
+    ):
         if file_path.is_dir():
             continue
         if file_path.suffix.lower() not in target_exts:

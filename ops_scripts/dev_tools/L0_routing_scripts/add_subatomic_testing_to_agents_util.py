@@ -72,6 +72,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("add_subatomic_testing_to_agents_util", "p4obs", "metric_1")
 _emit_emits_metric_event("add_subatomic_testing_to_agents_util", "p4obs", "metric_2")
@@ -163,7 +164,7 @@ print(f"Agents WITHOUT tests: {len(agents_without_tests)}")
 modified_count = 0
 skipped_count = 0
 error_count = 0
-for agent in agents_without_tests:
+for agent in tqdm(agents_without_tests, desc="Processing", unit="item"):
     class_name = agent["class_name"]
     agent_path = Path(agent["path"])
     if not agent_path.exists():

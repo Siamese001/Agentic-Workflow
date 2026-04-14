@@ -37,6 +37,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,  # noqa: E402
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -182,7 +183,7 @@ def static_policy_alignment_check(
 ) -> PolicyAlignmentResult:
     """§6.4 — Execute static policy alignment check. Fail-closed on violation."""
     violations: list[str] = []
-    for rule in policy_rules:
+    for rule in tqdm(policy_rules, desc="Processing", unit="item"):
         rule_id = rule.get("id", "unknown")
         check_fn = rule.get("check")
         if check_fn is None:

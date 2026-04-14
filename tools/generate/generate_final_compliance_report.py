@@ -7,6 +7,7 @@ Summarize all completed work and provide final status.
 import json
 from datetime import datetime
 from pathlib import Path
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -36,7 +37,7 @@ class FinalComplianceReporter:
             "adg_separation": "tools/adg_separation_deployment_report.json",
         }
 
-        for report_name, report_path in reports.items():
+        for report_name, report_path in tqdm(reports.items(), desc="Processing", unit="item"):
             report_file = PROJECT_ROOT / report_path
             if report_file.exists():
                 try:

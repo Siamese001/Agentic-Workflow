@@ -164,6 +164,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("StructureHealerAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("StructureHealerAgent", "p4obs", "metric_2")
@@ -361,7 +362,7 @@ class StructureHealerAgent(SovereignBaseAgent):
         class_pattern = re.compile(r"class\s+(\w+)\s*[\(:]")
         matches = class_pattern.findall(content)
 
-        for class_name in matches:
+        for class_name in tqdm(matches, desc="Processing", unit="item"):
             if not class_name.endswith(self._agent_config.agent_suffix):
                 new_name = f"{class_name}{self._agent_config.agent_suffix}"
 
@@ -412,7 +413,7 @@ class StructureHealerAgent(SovereignBaseAgent):
         # Find imports that violate gravity
         import_pattern = re.compile(r"from\s+(agentic_core\.L\d_\w+)")
 
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             match = import_pattern.search(line)
             if match:
                 import_module = match.group(1)

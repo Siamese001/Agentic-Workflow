@@ -19,6 +19,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -91,7 +92,7 @@ def has_top_level_execution(file_path: Path) -> list[str]:
 
         tree = ast.parse(content)
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Check for top-level function calls (not in functions/classes)
             if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
                 if hasattr(node.value.func, "id"):
@@ -105,7 +106,7 @@ def has_top_level_execution(file_path: Path) -> list[str]:
 
             # Check for top-level assignments that might trigger side effects
             if isinstance(node, ast.Assign):
-                for target in node.targets:
+                for target in tqdm(node.targets, desc="Processing", unit="item"):
                     if isinstance(target, ast.Name):
                         name = target.id
                         # Check if RHS is a call
@@ -193,7 +194,7 @@ def main():
     slow = []
     errors = []
 
-    for i, file_path in enumerate(priority_files):
+    for i, file_path in tqdm(enumerate(priority_files), desc="Processing", unit="item"):
         rel_path = file_path.relative_to(PROJECT_ROOT)
         print(
             f"\r[{i + 1}/{len(priority_files)}] Testing: {str(rel_path)[:60]:<60}",

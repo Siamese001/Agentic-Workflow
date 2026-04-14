@@ -74,6 +74,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("add_subatomic_safe_util", "p4obs", "metric_1")
 _emit_emits_metric_event("add_subatomic_safe_util", "p4obs", "metric_2")
@@ -172,11 +173,11 @@ for agent in no_tests:
     territories[territory].append(agent)
 modified = []
 errors = []
-for territory, ags in sorted(territories.items()):
+for territory, ags in tqdm(sorted(territories.items()), desc="Processing", unit="item"):
     print(f"\n{'=' * 70}")
     print(f"Territory: {territory} ({len(ags)} agents)")
     print("=" * 70)
-    for agent in ags:
+    for agent in tqdm(ags, desc="Processing", unit="item"):
         agent_path = project_root / agent["path"]
         class_name = agent["class_name"]
         if not agent_path.exists():

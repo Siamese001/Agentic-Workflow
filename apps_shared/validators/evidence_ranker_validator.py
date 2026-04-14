@@ -83,6 +83,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("evidence_ranker_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("evidence_ranker_validator", "p4obs", "metric_2")
@@ -267,7 +268,7 @@ class EvidenceRanker:
                 return []
             all_entities = self._extract_all_entities(signals)
             ranked_signals = []
-            for idx, signal in enumerate(signals):
+            for idx, signal in tqdm(enumerate(signals), desc="Processing", unit="item"):
                 try:
                     content = signal.get("content", "")
                     semantic_score = float(signal.get("score", 0.0))
@@ -458,7 +459,7 @@ class EvidenceRanker:
                 matches = re.findall(pattern, content)
                 entities.extend(matches)
             normalized_entities = []
-            for entity in entities:
+            for entity in tqdm(entities, desc="Processing", unit="item"):
                 if len(entity) < 2 or len(entity) > 50:
                     continue
                 common_words = {

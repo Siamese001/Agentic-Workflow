@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("create_discovery_snapshot", "p4obs", "metric_1")
 _emit_emits_metric_event("create_discovery_snapshot", "p4obs", "metric_2")
@@ -274,7 +275,7 @@ def main():
     module_status = []
     waivers = load_waivers()
 
-    for module in modules:
+    for module in tqdm(modules, desc="Processing", unit="item"):
         status = check_test_status(module, tests)
 
         # Check if waived

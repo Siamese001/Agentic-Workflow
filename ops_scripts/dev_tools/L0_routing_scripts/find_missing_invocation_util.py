@@ -166,6 +166,7 @@ _emit_invokes_eval("p1", "find_missing_invocation_util", "eval_call")
 _emit_proposal_commits_routing("p1", "find_missing_invocation_util", "routing_commit")
 
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR  # noqa: E402
+from tqdm import tqdm
 
 PROJECT_ROOT = Path(__file__).parent.parent
 dashboard_path = PROJECT_ROOT / REPORTS_DIR / "autonomy_dashboard.html"
@@ -182,8 +183,8 @@ try:
                 invocation_no = 0
                 invocation_inherited = 0
                 missing_invocation_agents = []
-                for territory, agents in agent_data.items():
-                    for agent in agents:
+                for territory, agents in tqdm(agent_data.items(), desc="Processing", unit="item"):
+                    for agent in tqdm(agents, desc="Processing", unit="item"):
                         total_agents += 1
                         inv = agent.get("invocation", "")
                         name = agent.get("name", "Unknown")
@@ -218,7 +219,7 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
     pass
 
     print(Counter(all_invocations))
-    for line in content.split("\n"):
+    for line in tqdm(content.split("\n"), desc="Processing", unit="item"):
         if '"invocation": "No (missing super)"' in line and len(line) > 10000:
             agent_pattern = '\\{"name":\\s*"([^"]+)"[^}]*"path":\\s*"([^"]+)"[^}]*"invocation":\\s*"([^"]+)"'
             matches = re.findall(agent_pattern, line)

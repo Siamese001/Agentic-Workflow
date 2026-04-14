@@ -148,6 +148,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("DuplicateCodeDetectorAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("DuplicateCodeDetectorAgent", "p4obs", "metric_2")
@@ -388,7 +389,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
     def _scan_whole_files(self, file_types: set[str]) -> list[DuplicateFile]:
         """Scan for exact duplicate files by content hash."""
         file_hashes = defaultdict(list)
-        for file_path in self._iter_files(file_types):
+        for file_path in tqdm(self._iter_files(file_types), desc="Processing", unit="item"):
             try:
                 content = file_path.read_bytes()
                 file_hash = hashlib.sha256(content).hexdigest()
@@ -413,7 +414,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
     async def _scan_code_blocks(self) -> list[dict]:
         """Scan Python files for duplicate code blocks."""
         code_blocks = defaultdict(list)
-        for file_path in self._iter_files({".py"}):
+        for file_path in tqdm(self._iter_files({".py"}), desc="Processing", unit="item"):
             try:
                 lines = file_path.read_text(encoding="utf-8", errors="ignore").splitlines()
                 for i in range(len(lines) - self.min_lines + 1):
@@ -447,7 +448,7 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
     def _generate_deletion_plan(self, duplicates: list[DuplicateFile]) -> list[dict]:
         """Generate deletion recommendations with rationale."""
         recommendations = []
-        for dup in duplicates:
+        for dup in tqdm(duplicates, desc="Processing", unit="item"):
             keep_path = self._choose_canonical_path(dup.paths)
             delete_paths = [p for p in dup.paths if p != keep_path]
             rationale = self._generate_rationale(keep_path, delete_paths, dup)
@@ -504,8 +505,8 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         if not dry_run:
             _wg.ensure_dir(archive_dir)
             Logger.info(f"Created archive directory: {archive_dir}")
-        for rec in recommendations:
-            for delete_path_str in rec["delete"]:
+        for rec in tqdm(recommendations, desc="Processing", unit="item"):
+            for delete_path_str in tqdm(rec["delete"], desc="Processing", unit="item"):
                 full_path = self.project_root / delete_path_str
                 try:
                     relative_path = Path(delete_path_str)
@@ -549,8 +550,8 @@ class DuplicateCodeDetectorAgent(AtomicExecutionMixin, SubatomicTestingMixin, He
         """
         deleted = []
         errors = []
-        for rec in recommendations:
-            for delete_path_str in rec["delete"]:
+        for rec in tqdm(recommendations, desc="Processing", unit="item"):
+            for delete_path_str in tqdm(rec["delete"], desc="Processing", unit="item"):
                 full_path = self.project_root / delete_path_str
                 try:
                     if dry_run:

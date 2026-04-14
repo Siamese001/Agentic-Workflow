@@ -1,14 +1,31 @@
-__version__ = "12.0"
+from __future__ import annotations
+
+__version__ = "12.1"
+
 import asyncio
 import json
 import os
 import sys
+from importlib import import_module
+from pathlib import Path
 from typing import Any
+from uuid import uuid4
+from tqdm import tqdm
 
-__version__ = "12.0"
+DEFAULT_INPUT_FILE = "mission_input_LIC.json"
 
 
-def load_mission_input(filename: str = "mission_input_LIC.json") -> dict[str, Any]:
+def _resolve_input_path(filename: str = DEFAULT_INPUT_FILE) -> Path:
+    candidate = Path(filename).expanduser()
+    if candidate.is_absolute():
+        return candidate
+    cwd_candidate = Path.cwd() / candidate
+    if cwd_candidate.exists():
+        return cwd_candidate
+    return Path(__file__).resolve().parent / candidate
+
+
+def load_mission_input(filename: str = DEFAULT_INPUT_FILE) -> dict[str, Any]:
     """
     Loads the mission input JSON file.
 
@@ -21,22 +38,25 @@ def load_mission_input(filename: str = "mission_input_LIC.json") -> dict[str, An
     Raises:
         SystemExit: If file not found or invalid JSON
     """
-    # guardian: allow-path-string
-    if not os.path.exists(filename):
-        print(f"FATAL: {filename} not found. Please create it.")
+    input_path = _resolve_input_path(filename)
+    if not input_path.exists():
+        print(f"FATAL: {input_path.name} not found. Please create it.")
         # guardian: allow-path-string
-        print(f"\nExpected location: {os.path.abspath(filename)}")
+        print(f"\nExpected location: {input_path}")
         print("\nThe file should contain:")
         print("- sender_profile: Your profile information")
         print("- recipient_profile: Target recipient information")
         print("- job_description: Job details for context")
         sys.exit(1)
     try:
-        with open(filename) as f:
+        with input_path.open(encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError as e:
-        print(f"FATAL: Error decoding {filename}: {e}")
+        print(f"FATAL: Error decoding {input_path.name}: {e}")
         print(f"Line {e.lineno}, column {e.colno}: {e.msg}")
+        sys.exit(1)
+    except OSError as e:
+        print(f"FATAL: Could not read {input_path}: {e}")
         sys.exit(1)
 
 
@@ -83,17 +103,44 @@ def create_orchestrator():
     Returns:
         WorkflowOrchestrator instance
     """
-    try:
-        return WorkflowOrchestrator()
-    except ImportError as e:
-        print(f"FATAL: Could not import WorkflowOrchestrator: {e}")
-        print("\nMake sure all required files are present:")
-        print("- workflow_LIC.py")
-        print("- models_LIC.py")
-        print("- config_LIC.py")
-        print("- validation_LIC.py")
-        print("- utils_LIC.py")
-        sys.exit(1)
+    candidates = [
+        ("apps_lic.reasoning.enterprise_campaign_orchestrator", "EnterpriseLicOrchestrator"),
+    ]
+    errors: list[str] = []
+    for module_name, class_name in tqdm(candidates, desc="Processing", unit="item"):
+        try:
+            module = import_module(module_name)
+            cls = getattr(module, class_name)
+            instance = cls()
+            if not hasattr(instance, "execute_workflow"):
+                errors.append(f"{module_name}.{class_name} does not expose execute_workflow()")
+                continue
+            return instance
+        except Exception as exc:  # guardian: allow-silent-swallow - orchestrator discovery loop
+            errors.append(f"{module_name}.{class_name}: {exc}")
+
+    print("FATAL: No compatible workflow orchestrator is available.")
+    print("Checked:")
+    for error in errors:
+        print(f"- {error}")
+    sys.exit(1)
+
+
+def _build_mission(input_data: dict[str, Any]):
+    from apps_lic.types.lic_models_types import OutreachMission
+
+    sender_profile = input_data.get("sender_profile", {})
+    recipient_profile = input_data.get("recipient_profile", {})
+    job_description = input_data.get("job_description", {})
+
+    return OutreachMission(
+        mission_id=str(uuid4()),
+        sender_profile=sender_profile,
+        recipient_profile=recipient_profile,
+        JobDescription=job_description,
+        connection_status=recipient_profile.get("connection_status", "not_connected"),
+        prior_message_count=int(recipient_profile.get("prior_message_count", 0) or 0),
+    )
 
 
 def print_header():
@@ -176,17 +223,7 @@ async def main():
     if not validate_mission_input(input_data):
         sys.exit(1)
     print("✓ Mission input validated")
-    sender_profile = input_data.get("sender_profile", {})
-    recipient_profile = input_data.get("recipient_profile", {})
-    job_description = input_data.get("job_description", {})
-    mission = OutreachMission(
-        mission_id=str(uuid4()),
-        sender_profile=sender_profile,
-        recipient_profile=recipient_profile,
-        job_description=job_description,
-        connection_status=recipient_profile.get("connection_status", "not_connected"),
-        prior_message_count=recipient_profile.get("prior_message_count", 0),
-    )
+    mission = _build_mission(input_data)
     print_mission_summary(mission)
     print("\n🤖 Initializing workflow orchestrator...")
     try:
@@ -216,7 +253,7 @@ async def main():
     print_results(result)
     output_file = f"output_{mission.mission_id[:8]}.json"
     try:
-        with open(output_file, "w") as f:
+        with open(output_file, "w", encoding="utf-8") as f:
             json.dump(result, f, indent=2, default=str)
         print(f"\n💾 Full results saved to: {output_file}")
     except OSError as e:  # guardian: Add error context logging
@@ -235,11 +272,12 @@ if __name__ == "__main__":
         print("\nContinuing anyway...")
     try:
         result = asyncio.run(main())
-        if result["status"] == "success" and result["production_ready"]:
+        if result.get("status") == "success" and result.get("production_ready"):
             sys.exit(0)
         else:
             sys.exit(1)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except KeyboardInterrupt:
+        sys.exit(130)
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"\n❌ Fatal error: {e}")
         sys.exit(1)

@@ -42,6 +42,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -210,7 +211,7 @@ class ReActEngine:
         trace_id: str,
     ) -> None:
         """Execute the main reasoning loop."""
-        for step_num in range(1, self.max_steps + 1):
+        for step_num in tqdm(range(1, self.max_steps + 1), desc="Processing", unit="item"):
             thought = await think_fn(Task, trace.steps)
 
             if not thought or "FINISH" in thought.upper():
@@ -301,7 +302,7 @@ class ReActEngine:
         action_input = {}
 
         lines = thought.split("\n")
-        for _i, line in enumerate(lines):
+        for _i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             if line.strip().lower().startswith("action:"):
                 action = line.split(":", 1)[1].strip()
             elif line.strip().lower().startswith("action input:"):

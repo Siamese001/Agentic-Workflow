@@ -20,6 +20,7 @@ from agentic_core.L0_routing.config.path_constants import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from tqdm import tqdm
 
 # ============================================================================
 # CONFIGURATION
@@ -69,10 +70,10 @@ def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
 
     import hashlib
 
-    for dir_path in CURRENT_DIRS:
+    for dir_path in tqdm(CURRENT_DIRS, desc="Processing", unit="item"):
         if not Path(dir_path).exists():
             continue
-        for py_file in Path(dir_path).rglob("*.py"):
+        for py_file in tqdm(Path(dir_path).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
             try:
@@ -129,7 +130,7 @@ def analyze_file(file_path: Path, existing_classes: set[str], existing_functions
     unique_functions = []
     existing = []
 
-    for node in ast.iter_child_nodes(tree):
+    for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             name_lower = node.name.lower()
             is_agent = node.name.endswith("Agent")
@@ -211,7 +212,7 @@ def main():
     candidates = []
     skipped_folders = set()
 
-    for root, dirs, files in os.walk(ARCHIVES_ROOT):
+    for root, dirs, files in tqdm(os.walk(ARCHIVES_ROOT), desc="Processing", unit="item"):
         root_path = Path(root)
 
         # Skip excluded folders
@@ -222,7 +223,7 @@ def main():
             dirs[:] = []  # Don't descend
             continue
 
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if not file.endswith(".py") or file in SKIP_FILES:
                 continue
 
@@ -275,7 +276,7 @@ def main():
     print("\n[3/4] Restoration candidates...")
     print("-" * 60)
 
-    for c in candidates[:30]:
+    for c in tqdm(candidates[:30], desc="Processing", unit="item"):
         agents = c["unique_agents"]
         classes = c["unique_classes"][:3]
         print(f"\n  [{c['uniqueness']:.0f}%] {c['path'].name}")
@@ -297,7 +298,7 @@ def main():
     restored = 0
     skipped = 0
 
-    for c in candidates:
+    for c in tqdm(candidates, desc="Processing", unit="item"):
         src = c["path"]
         target_dir = Path(c["target"])
         target_dir.mkdir(parents=True, exist_ok=True)

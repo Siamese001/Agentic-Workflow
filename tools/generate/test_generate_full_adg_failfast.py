@@ -11,6 +11,7 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
+from tqdm import tqdm
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -1082,13 +1083,17 @@ class TestSC2Lifecycle:
         db, conn = _make_adg_db(tmp_path)
         conn.execute("INSERT INTO nodes VALUES (1,'Exec','module','L2','module','high','exec.py')")
         conn.execute("INSERT INTO nodes VALUES (2,'Target','module','L2','module','high','t.py')")
-        for rt in [
-            "enters_sandbox",
-            "validates_uwg_intent",
-            "invokes_provider",
-            "orchestrates_healing",
-            "packages_execution_trace",
-        ]:
+        for rt in tqdm(
+            [
+                "enters_sandbox",
+                "validates_uwg_intent",
+                "invokes_provider",
+                "orchestrates_healing",
+                "packages_execution_trace",
+            ],
+            desc="Processing",
+            unit="item",
+        ):
             conn.execute(
                 "INSERT INTO edges (src_id,dst_id,relation_type,edge_kind,source_file,line_no) "
                 "VALUES (1,2,?,'',' exec.py',1)",
@@ -3451,25 +3456,29 @@ class TestEdgeCaseEmptyGraph:
 
         db, conn = _make_adg_db(tmp_path)
         conn.commit()
-        for fn in [
-            _query_ap1_text_to_action,
-            _query_ap2_phase_bypass,
-            _query_ap3_provider_bypass,
-            _query_ap4_direct_write,
-            _query_ap5_tool_overlap,
-            _query_ap6_manager_sprawl,
-            _query_ap7_dup_specialization,
-            _query_ap8_missing_trace,
-            _query_ap9_infra_spread,
-            _query_ap10_mutation_confusion,
-            _query_ap11_work_contracts,
-            _query_ap12_prompt_scatter,
-            _query_ap13_retry_no_exit,
-            _query_ap14_retrieval_no_evidence,
-            _query_ap15_agent_tool_ratio,
-            _query_ap16_dormant_infra,
-            _query_ap17_semantic_precision,
-        ]:
+        for fn in tqdm(
+            [
+                _query_ap1_text_to_action,
+                _query_ap2_phase_bypass,
+                _query_ap3_provider_bypass,
+                _query_ap4_direct_write,
+                _query_ap5_tool_overlap,
+                _query_ap6_manager_sprawl,
+                _query_ap7_dup_specialization,
+                _query_ap8_missing_trace,
+                _query_ap9_infra_spread,
+                _query_ap10_mutation_confusion,
+                _query_ap11_work_contracts,
+                _query_ap12_prompt_scatter,
+                _query_ap13_retry_no_exit,
+                _query_ap14_retrieval_no_evidence,
+                _query_ap15_agent_tool_ratio,
+                _query_ap16_dormant_infra,
+                _query_ap17_semantic_precision,
+            ],
+            desc="Processing",
+            unit="item",
+        ):
             assert fn(conn) == [], f"{fn.__name__} should return [] on empty graph"
         conn.close()
 

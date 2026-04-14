@@ -11,7 +11,7 @@ Model-driven:  none — this is a pure evaluation harness.
 
 from __future__ import annotations
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -92,7 +92,7 @@ import logging
 import time
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -271,121 +271,121 @@ _SCENARIO_DEFINITIONS: dict[str, dict[str, Any]] = {
     "policy_hash_valid": {
         "description": "InstructionPacket with valid policy_hash passes PolicyHashEnforcer",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_policy_hash_valid",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "policy_hash_invalid": {
         "description": "InstructionPacket with mismatched policy_hash is blocked",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_policy_hash_invalid",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "missing_hash": {
         "description": "InstructionPacket with empty policy_hash is blocked",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_missing_hash",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "nondeterministic_time_call": {
         "description": "Module with time.time() call in execution scope is flagged",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_nondeterministic_time_call",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "allowlisted_call": {
         "description": "Module with allowlist comment suppresses nondeterminism flag",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_allowlisted_call",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "clean_module": {
         "description": "Module with no nondeterministic calls passes clean",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_clean_module",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "recruiter_brief": {
         "description": "apps_exec generates recruiter brief with dry_run=True",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_exec_recruiter_brief",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "cto_brief": {
         "description": "apps_exec generates CTO brief with dry_run=True",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_exec_cto_brief",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "dry_run": {
         "description": "apps_exec dry_run returns DRY_RUN status without emitting files",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_exec_dry_run",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "single_hop": {
         "description": "Single-hop orchestration produces checkpoint record",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_single_hop",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "multi_hop_pass": {
         "description": "Multi-hop orchestration completes all hops",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_multi_hop_pass",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "multi_hop_gate_fail": {
         "description": "Multi-hop orchestration with gate failure returns FAILED status",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_multi_hop_gate_fail",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "signed_output_valid": {
         "description": "AgentOutputContract with valid signature verifies correctly",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_signed_output_valid",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "tampered_signature": {
         "description": "AgentOutputContract with tampered signature fails verification",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_tampered_signature",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "binary_precision_perfect": {
         "description": "BinaryClassificationMetric: all predicted positives are true positives → precision=1.0",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_binary_precision_perfect",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "binary_recall_perfect": {
         "description": "BinaryClassificationMetric: all true positives retrieved → recall=1.0",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_binary_recall_perfect",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "binary_f1_harmonic_mean": {
         "description": "F1Score: harmonic mean invariant F1 = 2*P*R/(P+R) holds",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_binary_f1_harmonic_mean",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "multiclass_macro_f1": {
         "description": "MultiClassF1Metric: macro average = unweighted mean of per-class F1",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_multiclass_macro_f1",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "multiclass_weighted_f1": {
         "description": "MultiClassF1Metric: weighted average proportional to class support",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_multiclass_weighted_f1",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
     "confusion_matrix_invariants": {
         "description": "ConfusionMatrix: TP+FP+TN+FN == total sample count invariant holds",
         "target_fn": "apps_eval.engines.scenario_runner._scenario_confusion_matrix_invariants",
-        "expected_outcome": " PASS ",
+        "expected_outcome": "PASS",
         "deterministic": True,
     },
 }

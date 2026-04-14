@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("coverage", "p4obs", "metric_1")
 _emit_emits_metric_event("coverage", "p4obs", "metric_2")
@@ -195,7 +196,7 @@ class CoverageValidator:
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
         l0_modules = list(get_python_files(Path(L0_MAINTENANCE_DIR)))
-        for module in l0_modules[:20]:
+        for module in tqdm(l0_modules[:20], desc="Processing", unit="item"):
             if "__pycache__" in str(module):
                 continue
             violations.append(

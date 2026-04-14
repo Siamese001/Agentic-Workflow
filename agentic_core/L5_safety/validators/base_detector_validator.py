@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("base_detector_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("base_detector_validator", "p4obs", "metric_2")
@@ -352,7 +353,7 @@ class AntiPatternDetector(ABC):
             violations = self.detect(file_path, tree)
 
             # Apply whitelist patterns
-            for violation in violations:
+            for violation in tqdm(violations, desc="Processing", unit="item"):
                 if self._is_violation_whitelisted(violation):
                     violation.whitelisted = True
 
@@ -421,8 +422,8 @@ class AntiPatternDetector(ABC):
 
         results = []
 
-        for pattern in include_patterns:
-            for file_path in directory.glob(pattern):
+        for pattern in tqdm(include_patterns, desc="Processing", unit="item"):
+            for file_path in tqdm(directory.glob(pattern), desc="Processing", unit="item"):
                 # Skip excluded patterns
                 skip = False
                 for exclude in exclude_patterns:
@@ -515,7 +516,7 @@ class CompositeDetector:
         _emit_signs_execution_trace(_trace_id, _seg_hash, _seg_hash, 0)
 
         results = []
-        for detector in self.detectors:
+        for detector in tqdm(self.detectors, desc="Processing", unit="item"):
             result = detector.scan_file(file_path)
             results.append(result)
         return results
@@ -529,7 +530,7 @@ class CompositeDetector:
         """Scan directory with all detectors, grouped by category."""
         results: dict[AntiPatternCategory, list[DetectionResult]] = {}
 
-        for detector in self.detectors:
+        for detector in tqdm(self.detectors, desc="Processing", unit="item"):
             category_results = detector.scan_directory(directory, include_patterns, exclude_patterns)
             results[detector.category] = category_results
 
@@ -547,7 +548,7 @@ class CompositeDetector:
         all_files = set()
         files_with_violations = set()
 
-        for category, category_results in results.items():
+        for category, category_results in tqdm(results.items(), desc="Processing", unit="item"):
             category_violations = 0
 
             for result in category_results:

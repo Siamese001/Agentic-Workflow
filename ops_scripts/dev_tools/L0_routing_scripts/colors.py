@@ -227,6 +227,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("colors", "p4obs", "metric_1")
 _emit_emits_metric_event("colors", "p4obs", "metric_2")
@@ -894,7 +895,7 @@ def report_consolidated_summary(results, gemini_active):
         "total_violations": 0,
     }
     print("\nDomain-by-Domain Health:")
-    for res in results:
+    for res in tqdm(results, desc="Processing", unit="item"):
         domain = res.get("domain", "unknown")
         compliance = res.get("compliance_score", 0)
         fixed = res.get("total_fixed", 0)

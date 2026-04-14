@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("healer_validator_graph", "p4obs", "metric_1")
 _emit_emits_metric_event("healer_validator_graph", "p4obs", "metric_2")
@@ -293,7 +294,7 @@ def detect_healer_validator_relationships(result: ScanResult) -> HealerValidator
     """
     report = HealerValidatorReport()
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type in _HEALER_RELATIONS or edge.relation_type in _VALIDATOR_RELATIONS:
             hv_edge = HealerValidatorEdge(
                 from_module=edge.from_name,
@@ -334,7 +335,7 @@ def _infer_healer_validator_pairs(report: HealerValidatorReport) -> None:
     )
 
     seen: set[tuple[str, str]] = set()
-    for edge in report.healing_dispatch_edges:
+    for edge in tqdm(report.healing_dispatch_edges, desc="Processing", unit="item"):
         if edge.from_module not in report.healer_modules:
             continue
         target = edge.to_symbol

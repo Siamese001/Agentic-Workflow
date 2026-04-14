@@ -5,8 +5,8 @@ Provides deterministic replay capability for validating model consistency
 and detecting drift over time.
 """
 
+import hashlib
 import json
-import time
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -15,6 +15,7 @@ from typing import Any
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_records_execution_trace
 
 from ..models.base_model import ModelPrediction
+from tqdm import tqdm
 
 
 @dataclass
@@ -88,7 +89,7 @@ class ReplayHarness:
         Returns:
             Replay result with comparison
         """
-        start_time = datetime.now()
+        start_time = datetime.utcnow()
 
         try:
             # Replay the prediction
@@ -154,7 +155,7 @@ class ReplayHarness:
 
             return replay_result
 
-        except Exception as e:
+        except (OSError, ValueError, RuntimeError) as e:
             # Replay failed
             error_message = f"Replay failed: {str(e)}"
 
@@ -191,18 +192,18 @@ class ReplayHarness:
             Replay session summary
         """
         if session_id is None:
-            session_id = f"replay_session_{int(time.time())}"
+            session_id = self._stable_session_id(replay_cases)
 
         session = ReplaySession(
             session_id=session_id,
-            start_time=datetime.now(),
+            start_time=datetime.utcnow(),
         )
 
         self.active_sessions[session_id] = session
 
         confidence_diffs = []
 
-        for case in replay_cases:
+        for case in tqdm(replay_cases, desc="Processing", unit="item"):
             session.total_replays += 1
 
             result = self.replay_prediction(
@@ -231,7 +232,7 @@ class ReplayHarness:
         if confidence_diffs:
             session.average_confidence_diff = sum(confidence_diffs) / len(confidence_diffs)
 
-        session.end_time = datetime.now()
+        session.end_time = datetime.utcnow()
 
         # Log session summary
         self._log_session_summary(session)
@@ -279,7 +280,7 @@ class ReplayHarness:
             "mismatches": session.mismatches,
             "failed_replays": session.failed_replays,
             "session_id": session.session_id,
-            "validation_timestamp": datetime.now().isoformat(),
+            "validation_timestamp": datetime.utcnow().isoformat(),
         }
 
         # Log validation result
@@ -310,14 +311,14 @@ class ReplayHarness:
         historical_session = self.replay_batch(
             model,
             historical_cases,
-            f"historical_{int(time.time())}",
+            self._stable_session_id(historical_cases, prefix="historical"),
         )
 
         # Replay current cases
         current_session = self.replay_batch(
             model,
             current_cases,
-            f"current_{int(time.time())}",
+            self._stable_session_id(current_cases, prefix="current"),
         )
 
         # Calculate drift metrics
@@ -351,7 +352,7 @@ class ReplayHarness:
                 "average_confidence": current_confidence,
             },
             "drift_threshold": drift_threshold,
-            "detection_timestamp": datetime.now().isoformat(),
+            "detection_timestamp": datetime.utcnow().isoformat(),
         }
 
         # Log drift detection result
@@ -470,32 +471,37 @@ class ReplayHarness:
                 operation="session_completed",
             )
 
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             print(f"Failed to log session summary: {e}")
 
     def _log_validation_result(self, validation_result: dict[str, Any]) -> None:
         """Log determinism validation result."""
         try:
             _emit_records_execution_trace(
-                root_trace_id=f"determinism_validation_{int(time.time())}",
+                root_trace_id=f"determinism_validation_{validation_result.get('session_id', '')}",
                 layer="L1_ML_DECISION_SUPPORT",
                 operation="determinism_validated",
             )
 
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             print(f"Failed to log validation result: {e}")
 
     def _log_drift_result(self, drift_result: dict[str, Any]) -> None:
         """Log drift detection result."""
         try:
             _emit_records_execution_trace(
-                root_trace_id=f"drift_detection_{int(time.time())}",
+                root_trace_id=f"drift_detection_{drift_result.get('drift_threshold', '')}",
                 layer="L1_ML_DECISION_SUPPORT",
                 operation="drift_detected",
             )
 
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             print(f"Failed to log drift result: {e}")
+
+    def _stable_session_id(self, cases: list[dict[str, Any]], prefix: str = "replay") -> str:
+        """Generate deterministic session ID from case content hash."""
+        digest = hashlib.sha256(json.dumps(cases, sort_keys=True, default=str).encode()).hexdigest()[:16]
+        return f"{prefix}_session_{digest}"
 
     def get_replay_statistics(self) -> dict[str, Any]:
         """Get overall replay statistics."""
@@ -506,7 +512,7 @@ class ReplayHarness:
             mismatches = 0
 
             with open(self.replay_log_file, encoding="utf-8") as f:
-                for line in f:
+                for line in tqdm(f, desc="Processing", unit="item"):
                     try:
                         log_entry = json.loads(line.strip())
                         total_replays += 1

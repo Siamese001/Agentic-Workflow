@@ -267,6 +267,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from tqdm import tqdm
 
 _emit_emits_metric_event("SelfUpdatingSafetyEngineAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SelfUpdatingSafetyEngineAgent", "p4obs", "metric_2")
@@ -469,7 +470,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def _learn_from_detection(self, text: str, matched_rules: list[SafetyRule]) -> Any:
         """Learn from a threat detection."""
-        for rule in matched_rules:
+        for rule in tqdm(matched_rules, desc="Processing", unit="item"):
             pattern_id = f"pattern_{rule.rule_id}"
             if pattern_id not in self.threat_patterns:
                 self.threat_patterns[pattern_id] = ThreatPattern(
@@ -488,7 +489,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
     # guardian: allow-type-erasure
     async def _generate_new_rules_if_needed(self) -> Any:
         """Generate new rules based on detected patterns."""
-        for pattern in self.threat_patterns.values():
+        for pattern in tqdm(self.threat_patterns.values(), desc="Processing", unit="item"):
             if pattern.confidence_score <= 0.75:
                 continue
             if pattern.detection_count < 5:
@@ -498,7 +499,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
             if new_rule_id in existing_rule_ids:
                 continue
             variations = self._generate_pattern_variations(pattern)
-            for i, variation in enumerate(variations[:3]):
+            for i, variation in tqdm(enumerate(variations[:3]), desc="Processing", unit="item"):
                 rule_id = f"{new_rule_id}_v{i}"
                 if rule_id not in existing_rule_ids:
                     new_rule = SafetyRule(
@@ -554,7 +555,7 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
     def _generate_recommendations(self, matched_rules: list[SafetyRule]) -> list[str]:
         """Generate recommendations based on matched rules."""
         recommendations = []
-        for rule in matched_rules:
+        for rule in tqdm(matched_rules, desc="Processing", unit="item"):
             context = {
                 "rule_description": rule.description,
                 "rule_id": rule.rule_id,

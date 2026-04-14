@@ -6,9 +6,11 @@ Ported from: archives/legacy_lic/Agentic LIC/state_manager_LIC.py
 
 import hashlib
 import json
+import os
 import shutil
+import tempfile
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
@@ -205,9 +207,11 @@ class LICStateManager:
             state_directory: foundation directory for state files
             create_if_missing: Create directory if it doesn't exist
         """
-        self.mission_id = mission_id
-        self.base_dir = Path(state_directory)
-        self.mission_dir = self.base_dir / mission_id
+        self.mission_id = self._sanitize_filename(mission_id)
+        self.base_dir = Path(state_directory).expanduser().resolve()
+        self.mission_dir = (self.base_dir / self.mission_id).resolve()
+        if self.base_dir not in self.mission_dir.parents and self.mission_dir != self.base_dir:
+            raise ValueError("mission directory resolved outside base state directory")
         self._checkpoints: dict[str, StateCheckpoint] = {}
         if create_if_missing:
             self.mission_dir.mkdir(parents=True, exist_ok=True)
@@ -229,21 +233,27 @@ class LICStateManager:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "LICStateManager.write_state")
 
-        filename = self._sanitize_filename(hop_id)
-        if not filename.endswith(".json"):
-            filename += ".json"
-        filepath = self.mission_dir / filename
+        filepath = self._state_path_for(hop_id)
         data_with_metadata = {
             "hop_id": hop_id,
             "mission_id": self.mission_id,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "schema_version": self.SCHEMA_VERSION,
             **data,
         }
         if atomic:
-            staging_path = filepath.with_suffix(".staging")
-            with open(staging_path, "w", encoding="utf-8") as f:
+            with tempfile.NamedTemporaryFile(
+                "w",
+                encoding="utf-8",
+                dir=self.mission_dir,
+                prefix=f"{filepath.stem}.",
+                suffix=".staging",
+                delete=False,
+            ) as f:
                 json.dump(data_with_metadata, f, indent=2, default=str)
+                f.flush()
+                os.fsync(f.fileno())
+                staging_path = Path(f.name)
             staging_path.replace(filepath)
         else:
             with open(filepath, "w", encoding="utf-8") as f:
@@ -273,10 +283,7 @@ class LICStateManager:
             FileNotFoundError: If state file doesn't exist
             ValueError: If checksum validation fails
         """
-        filename = self._sanitize_filename(hop_id)
-        if not filename.endswith(".json"):
-            filename += ".json"
-        filepath = self.mission_dir / filename
+        filepath = self._state_path_for(hop_id)
         if not filepath.exists():
             raise FileNotFoundError(f"State file not found: {filepath}")
         if validate_checksum:
@@ -284,18 +291,14 @@ class LICStateManager:
             if stored_checkpoint:
                 current_checksum = self._calculate_checksum(filepath)
                 if stored_checkpoint.checksum != current_checksum:
-                    raise ValueError(f"Checksum mismatch for {filename}: file may be corrupted")
+                    raise ValueError(f"Checksum mismatch for {filepath.name}: file may be corrupted")
         with open(filepath, encoding="utf-8") as f:
             data = json.load(f)
         return data
 
     def state_exists(self, hop_id: str) -> bool:
         """Check if state file exists for a HOP."""
-        filename = self._sanitize_filename(hop_id)
-        if not filename.endswith(".json"):
-            filename += ".json"
-        filepath = self.mission_dir / filename
-        return filepath.exists()
+        return self._state_path_for(hop_id).exists()
 
     def list_states(self) -> list[str]:
         """List all state files for this mission."""
@@ -308,10 +311,7 @@ class LICStateManager:
 
     def delete_state(self, hop_id: str) -> bool:
         """Delete a state file."""
-        filename = self._sanitize_filename(hop_id)
-        if not filename.endswith(".json"):
-            filename += ".json"
-        filepath = self.mission_dir / filename
+        filepath = self._state_path_for(hop_id)
         if filepath.exists():
             filepath.unlink()
             self._checkpoints.pop(hop_id, None)
@@ -364,6 +364,8 @@ class LICStateManager:
 
     def export_mission(self, output_path: str) -> str:
         """Export all mission state to a single archive."""
+        if not self.mission_dir.exists():
+            raise FileNotFoundError(f"Mission directory not found: {self.mission_dir}")
         output_file = Path(output_path)
         if output_file.suffix != ".zip":
             output_file = output_file.with_suffix(".zip")
@@ -372,9 +374,21 @@ class LICStateManager:
 
     def _sanitize_filename(self, hop_id: str) -> str:
         """Sanitize hop_id for use as filename."""
-        sanitized = hop_id.replace(" ", "_")
+        if not isinstance(hop_id, str) or not hop_id.strip():
+            raise ValueError("hop_id must be a non-empty string")
+        sanitized = hop_id.strip().replace(" ", "_")
         sanitized = "".join(c for c in sanitized if c.isalnum() or c in "_-.")
+        sanitized = sanitized.strip("._-")
+        if not sanitized or ".." in sanitized:
+            raise ValueError(f"unsafe hop_id: {hop_id!r}")
         return sanitized
+
+    def _state_path_for(self, hop_id: str) -> Path:
+        filename = self._sanitize_filename(hop_id)
+        filepath = (self.mission_dir / f"{filename}.json").resolve()
+        if self.mission_dir not in filepath.parents:
+            raise ValueError("refusing to access state path outside mission directory")
+        return filepath
 
     def _calculate_checksum(self, filepath: Path) -> str:
         """Calculate SHA256 checksum of a file."""

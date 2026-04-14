@@ -271,7 +271,7 @@ class FeatureFlaggedAgentMixin:
             try:
                 return obj.is_available()
             # guardian: allow-silent-swallow
-            except Exception:
+            except (AttributeError, RuntimeError):
                 return True  # Assume available if check fails
         return True  # Assume available if no is_available method
 
@@ -347,7 +347,7 @@ class FeatureFlaggedAgentMixin:
                     reason="legacy_implementation",
                 )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, RuntimeError, ValueError) as e:
                 logger.warning(f"Verification gate error: {e}")
                 return VerificationResult(
                     success=True,
@@ -544,7 +544,7 @@ class FeatureFlaggedAgentMixin:
                     metadata={"flag": "ENABLE_META_LEARNING", "status": "disabled"},
                 )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, RuntimeError) as e:
                 return LearningResult(
                     success=False,
                     from_cache=False,
@@ -568,7 +568,7 @@ class FeatureFlaggedAgentMixin:
                     metadata={"reason": "ml_unavailable"},
                 )
             # guardian: allow-silent-swallow
-            except Exception as e:
+            except (AttributeError, RuntimeError) as e:
                 return LearningResult(
                     success=False,
                     from_cache=False,
@@ -709,7 +709,11 @@ class FeatureFlaggedAgentMixin:
         else:
             try:
                 result = do_heal()
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                AttributeError,
+                RuntimeError,
+                ValueError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 result = {

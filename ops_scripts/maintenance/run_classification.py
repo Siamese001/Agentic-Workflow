@@ -93,6 +93,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_classification", "p4obs", "metric_1")
 _emit_emits_metric_event("run_classification", "p4obs", "metric_2")
@@ -294,7 +295,7 @@ def find_imports_to_update(
     import_updates = []
     python_files = get_python_files_fast(project_root)
 
-    for path in python_files:
+    for path in tqdm(python_files, desc="Processing", unit="item"):
         try:
             content = path.read_text(encoding="utf-8")
             if old_mod not in content:
@@ -337,7 +338,7 @@ def main():
 
     proposals = []
 
-    for path in python_files:
+    for path in tqdm(python_files, desc="Processing", unit="item"):
         if not path.exists():
             continue
 

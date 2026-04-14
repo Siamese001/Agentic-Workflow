@@ -141,6 +141,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("evaluation_signal_integrator", "p4obs", "metric_1")
 _emit_emits_metric_event("evaluation_signal_integrator", "p4obs", "metric_2")
@@ -348,7 +349,7 @@ class EvaluationSignalIntegrator:
             score,
             label,
         )
-        for cb in self._subscribers.get(target_layer, []):
+        for cb in tqdm(self._subscribers.get(target_layer, []), desc="Processing", unit="item"):
             try:
                 cb(signal)
                 logger.debug(

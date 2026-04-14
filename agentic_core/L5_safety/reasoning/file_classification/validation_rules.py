@@ -171,21 +171,22 @@ def _detect_semantic_duplicates(file_registry: list[Path]) -> list[dict[str, Any
 
 def check_fake_config(path: Path, content: str) -> Violation | None:
     """
-    Detect files ending in _config.py that contain active logic (classes with methods).
+        Detect files ending in _config.py that contain active logic (classes with methods).
 
-    A genuine config file should only contain constants, dataclasses, or simple assignments.
-    If it has class definitions with non-trivial methods (beyond __init__), it's a
-    misnamed utility masquerading as config.
+        A genuine config file should only contain constants, dataclasses, or simple assignments.
+        If it has class definitions with non-trivial methods (beyond __init__), it's a
+        misnamed utility masquerading as config.
 
-    Also classifies Verifier/Guardian/Lock classes as UTILITY unless they inherit
-    from SovereignBaseAgent.
+        Also classifies Verifier/Guardian/Lock classes as UTILITY unless they inherit
+        from SovereignBaseAgent.
+    from tqdm import tqdm
 
-    Args:
-        path: File path being checked
-        content: File content as string
+        Args:
+            path: File path being checked
+            content: File content as string
 
-    Returns:
-        Violation object or None if clean.
+        Returns:
+            Violation object or None if clean.
     """
     stem = path.stem
 
@@ -198,7 +199,7 @@ def check_fake_config(path: Path, content: str) -> Violation | None:
     except SyntaxError:
         return None
 
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.ClassDef):
             continue
 
@@ -256,7 +257,7 @@ def check_domain_root_purity(path: Path) -> Violation | None:
     if path.name == "__init__.py":
         return None
 
-    for i, part in enumerate(parts):
+    for i, part in tqdm(enumerate(parts), desc="Processing", unit="item"):
         if part in domain_roots and i + 1 < len(parts):
             # Check if this file is directly in the domain root (not a subfolder)
             if parts[i + 1] == path.name:

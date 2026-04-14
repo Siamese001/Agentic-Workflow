@@ -193,6 +193,7 @@ _emit_validated_by_safety_plane("p1", "root_hygiene_healer", "safety_validation"
 _emit_invokes_eval("p1", "root_hygiene_healer", "eval_call")
 _emit_proposal_commits_routing("p1", "root_hygiene_healer", "routing_commit")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import emit_determinism_digest
+from tqdm import tqdm
 
 emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_dispatch_entry")
 emit_determinism_digest("trace_root_hygiene_healer", "root_hygiene_healer_dispatch_exit")
@@ -327,7 +328,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         removed = 0
         flagged = []
 
-        for candidate in sorted(self.project_root.rglob("*")):
+        for candidate in tqdm(sorted(self.project_root.rglob("*")), desc="Processing", unit="item"):
             if not candidate.is_file():
                 continue
             # skip archive/backup/cache dirs
@@ -348,7 +349,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
 
         if flagged:
             print(f"[HYGIENE] Found {len(flagged)} _N suffix duplicate file(s):")
-        for dup, original in flagged:
+        for dup, original in tqdm(flagged, desc="Processing", unit="item"):
             rel_dup = dup.relative_to(self.project_root)
             rel_orig = original.relative_to(self.project_root)
             print(f"  [DUP] {rel_dup}  (original: {rel_orig})")
@@ -386,7 +387,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         AGE_THRESHOLD_DAYS = 7
 
         deleted = 0
-        for entry in self.project_root.iterdir():
+        for entry in tqdm(self.project_root.iterdir(), desc="Processing", unit="item"):
             if not entry.is_dir():
                 continue
 
@@ -437,7 +438,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                 _wg.ensure_dir(ops_scripts)
                 _wg.ensure_dir(l0_scripts)
 
-            for item in root_scripts.iterdir():
+            for item in tqdm(root_scripts.iterdir(), desc="Processing", unit="item"):
                 try:
                     if item.is_file() and item.suffix == ".py":
                         # Decision Logic: Does it import agentic_core?
@@ -594,7 +595,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
         delete_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
         try:
-            for entry in self.project_root.iterdir():
+            for entry in tqdm(self.project_root.iterdir(), desc="Processing", unit="item"):
                 name = entry.name
                 if name in approved_dirs or name in approved_files:
                     continue

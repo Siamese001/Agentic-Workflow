@@ -19,6 +19,7 @@ if str(_REPO_ROOT) not in sys.path:
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 # Configure logging for Windows environments
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
@@ -58,8 +59,8 @@ def purge_all_pycache(quiet=False, extended=False):
 
     count = 0
     # Logic: Search for any directory in targets, excluding envs and git
-    for target in targets:
-        for p in root_dir.rglob(target):
+    for target in tqdm(targets, desc="Processing", unit="item"):
+        for p in tqdm(root_dir.rglob(target), desc="Processing", unit="item"):
             if any(part in p.parts for part in [".venv", "env", ".git"]):
                 continue
 
@@ -104,8 +105,8 @@ def purge_all_cache():
     error_count = 0
 
     # Purge cache directories
-    for pattern in cache_patterns:
-        for p in root_dir.rglob(pattern):
+    for pattern in tqdm(cache_patterns, desc="Processing", unit="item"):
+        for p in tqdm(root_dir.rglob(pattern), desc="Processing", unit="item"):
             if ".venv" in p.parts or "env" in p.parts or ".git" in p.parts:
                 continue
 
@@ -125,7 +126,7 @@ def purge_all_cache():
                 error_count += 1
 
     # Purge temporary directories
-    for p in root_dir.rglob("*"):
+    for p in tqdm(root_dir.rglob("*"), desc="Processing", unit="item"):
         if not p.is_dir():
             continue
 
@@ -148,7 +149,7 @@ def purge_all_cache():
                 error_count += 1
 
     # Purge .pyc and .pyo files
-    for p in root_dir.rglob("*.pyc"):
+    for p in tqdm(root_dir.rglob("*.pyc"), desc="Processing", unit="item"):
         if ".venv" in p.parts or "env" in p.parts or ".git" in p.parts:
             continue
 

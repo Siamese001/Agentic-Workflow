@@ -32,6 +32,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _repo_relative,
     canonical_name,
 )
+from tqdm import tqdm
 
 
 @dataclass(frozen=True, order=True)
@@ -56,7 +57,7 @@ class CleanImportVisitor(ast.NodeVisitor):
         self.edges: list[Edge] = []
 
     def visit_Import(self, node: ast.Import):
-        for alias in node.names:
+        for alias in tqdm(node.names, desc="Processing", unit="item"):
             imported = alias.name
             to_name = canonical_name("Symbol", imported)
 
@@ -117,7 +118,7 @@ class CleanInheritanceVisitor(ast.NodeVisitor):
     def visit_ClassDef(self, node: ast.ClassDef):
         class_adg = canonical_name("Symbol", f"{self.module_adg_name}::{node.name}")
 
-        for base in node.bases:
+        for base in tqdm(node.bases, desc="Processing", unit="item"):
             if isinstance(base, ast.Name):
                 base_name = base.id
                 to_name = canonical_name("Symbol", base_name)
@@ -282,7 +283,7 @@ def scan_file_clean(filepath: Path, repo_root: Path) -> list[Edge]:
         CleanLayerVisitor(module_adg, rel),
     ]
 
-    for visitor in visitors:
+    for visitor in tqdm(visitors, desc="Processing", unit="item"):
         visitor.visit(tree)
         all_edges.extend(visitor.edges)
 
@@ -436,8 +437,8 @@ def create_truly_clean_static_adg() -> None:
         node_id_map[module_adg] = cursor.fetchone()[0]
 
     # Symbol nodes from edges
-    for edge in all_edges:
-        for node_name in [edge.from_name, edge.to_name]:
+    for edge in tqdm(all_edges, desc="Processing", unit="item"):
+        for node_name in tqdm([edge.from_name, edge.to_name], desc="Processing", unit="item"):
             if node_name not in node_id_map:
                 entity_type = (
                     "symbol"

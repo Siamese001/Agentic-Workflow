@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -83,15 +84,32 @@ class LocalFileBackend(StorageBackend):
         self._metadata_path = self.base_path / "metadata.json"
         self._metadata: dict[str, dict] = self._load_metadata()
 
+    @staticmethod
+    def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+        temp_path = path.with_suffix(f"{path.suffix}.tmp")
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, path)
+
+    def _validated_content_path(self, artifact_id: str) -> Path:
+        record = self._metadata[artifact_id]
+        content_hash = record.get("content_hash", artifact_id)
+        if not isinstance(content_hash, str) or len(content_hash) != 64:
+            raise ValueError(f"Invalid content hash for artifact {artifact_id}")
+        if any(ch not in "0123456789abcdef" for ch in content_hash):
+            raise ValueError(f"Non-hex content hash for artifact {artifact_id}")
+        return self._content_path(content_hash)
+
     def _load_metadata(self) -> dict:
         if self._metadata_path.exists():
-            with open(self._metadata_path) as f:
+            with open(self._metadata_path, encoding="utf-8") as f:
                 return json.load(f)
         return {}
 
     def _save_metadata(self) -> None:
-        with open(self._metadata_path, "w") as f:
-            json.dump(self._metadata, f, indent=2)
+        self._atomic_write_json(self._metadata_path, self._metadata)
 
     def _content_path(self, content_hash: str) -> Path:
         # Use first 2 chars as subdir for distribution
@@ -105,8 +123,12 @@ class LocalFileBackend(StorageBackend):
         path = self._content_path(content_hash)
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with open(path, "wb") as f:
+        temp_path = path.with_suffix(".tmp")
+        with open(temp_path, "wb") as f:
             f.write(content)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, path)
 
         artifact = StoredArtifact(
             artifact_id=artifact_id,
@@ -135,7 +157,7 @@ class LocalFileBackend(StorageBackend):
         if artifact_id not in self._metadata:
             return None
 
-        path = Path(self._metadata[artifact_id]["storage_path"])
+        path = self._validated_content_path(artifact_id)
         if not path.exists():
             return None
 
@@ -149,7 +171,7 @@ class LocalFileBackend(StorageBackend):
         if artifact_id not in self._metadata:
             return False
 
-        path = Path(self._metadata[artifact_id]["storage_path"])
+        path = self._validated_content_path(artifact_id)
         if path.exists():
             path.unlink()
 

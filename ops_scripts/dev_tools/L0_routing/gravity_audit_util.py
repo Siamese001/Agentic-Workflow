@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("gravity_audit_util", "p4obs", "metric_1")
 _emit_emits_metric_event("gravity_audit_util", "p4obs", "metric_2")
@@ -196,7 +197,7 @@ def audit_gravity() -> Any:
     leaks: Any = []
     from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-    for py_file in get_python_files(CORE):
+    for py_file in tqdm(get_python_files(CORE), desc="Processing", unit="item"):
         if py_file.name == "__init__.py" or "legacy" in str(py_file):
             continue
         try:

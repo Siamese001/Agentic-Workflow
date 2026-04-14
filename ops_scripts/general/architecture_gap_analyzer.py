@@ -36,6 +36,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write")
 _emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write_2")
@@ -358,7 +359,7 @@ class ASTAnalyzer:
     def extract_class_info(self, tree: ast.AST, file_path: str) -> list[dict[str, Any]]:
         """Extract class information from AST."""
         classes = []
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 class_info = {
                     "name": node.name,
@@ -420,7 +421,7 @@ class ASTAnalyzer:
                 " ".join(class_info.get("attributes", [])),
             ]
         ).lower()
-        for capability in component.required_capabilities:
+        for capability in tqdm(component.required_capabilities, desc="Processing", unit="item"):
             cap_words = capability.replace("_", " ").split()
             found = False
             for word in cap_words:
@@ -486,7 +487,7 @@ class ArchitectureGapAnalyzer:
     def _analyze_component(self, component: ArchitectureComponent) -> GapAnalysisResult:
         """Analyze a single architecture component."""
         implementations = []
-        for _key, class_info in self.ast_analyzer.class_info.items():
+        for _key, class_info in tqdm(self.ast_analyzer.class_info.items(), desc="Processing", unit="item"):
             name_score, name_matches = self.ast_analyzer.fuzzy_match_score(
                 class_info["name"], component.key_patterns
             )
@@ -557,7 +558,7 @@ class ArchitectureGapAnalyzer:
             "components": [],
         }
         total_coverage = 0
-        for result in self.results:
+        for result in tqdm(self.results, desc="Processing", unit="item"):
             comp_data = {
                 "name": result.component.name,
                 "category": result.component.category,

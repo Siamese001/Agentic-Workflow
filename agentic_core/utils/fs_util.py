@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Generator
 
 from agentic_core.L0_routing.config.path_constants import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 
 def get_python_files_fast(
@@ -35,7 +36,7 @@ def get_python_files_fast(
     if exclude_patterns is None:
         exclude_patterns = ["*.pyc", "*.pyo", "*.pyd"]
 
-    for root, dirs, files in os.walk(root_dir):
+    for root, dirs, files in tqdm(os.walk(root_dir), desc="Processing", unit="item"):
         # Filter out excluded directories
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
 

@@ -127,6 +127,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("_ssot_validation_artifacts", "p4obs", "metric_1")
 _emit_emits_metric_event("_ssot_validation_artifacts", "p4obs", "metric_2")
@@ -214,7 +215,7 @@ def _write_pre_validation_json(
     findings = []
     severity_counts = {"high": 0, "medium": 0, "low": 0}
     targeted_paths = set()
-    for idx, violation in enumerate(violations):
+    for idx, violation in tqdm(enumerate(violations), desc="Processing", unit="item"):
         validator = violation.get("suggested_agent", "UNKNOWN")
         finding_id = _normalize_finding_id(violation, validator, idx)
         vtype = violation.get("type", "")
@@ -281,7 +282,7 @@ def _write_post_validation_json(
     pre_finding_count = len(pre_finding_ids)
     remaining_violations = phase3_result.get("remaining_violations", [])
     remaining_findings = []
-    for idx, violation in enumerate(remaining_violations):
+    for idx, violation in tqdm(enumerate(remaining_violations), desc="Processing", unit="item"):
         validator = violation.get("suggested_agent", "UNKNOWN")
         finding_id = _normalize_finding_id(violation, validator, idx)
         remaining_findings.append(
@@ -386,7 +387,7 @@ def _write_artifact_integrity_json(trace_id: str, output_dir: Path) -> None:
 
     output_dir.mkdir(parents=True, exist_ok=True)
     artifacts = {}
-    for artifact_path in output_dir.glob("*.json"):
+    for artifact_path in tqdm(output_dir.glob("*.json"), desc="Processing", unit="item"):
         if artifact_path.name == "artifact_integrity.json":
             continue
         try:

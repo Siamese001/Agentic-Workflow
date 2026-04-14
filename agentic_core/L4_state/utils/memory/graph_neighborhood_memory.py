@@ -482,18 +482,19 @@ class GraphNeighborhoodMemory:
     ) -> list[MemoryCard]:
         """Search memory cards by graph distance from a given entity.
 
-        Uses SQLiteGraphStore to find structurally related ADG nodes,
-        then returns their memory cards. This enables retrieval of memories
-        from components that are graph-adjacent (e.g., callers, callees,
-        import dependencies) rather than just text-similar.
+                Uses SQLiteGraphStore to find structurally related ADG nodes,
+                then returns their memory cards. This enables retrieval of memories
+                from components that are graph-adjacent (e.g., callers, callees,
+                import dependencies) rather than just text-similar.
+        from tqdm import tqdm
 
-        Args:
-            adg_entity_name: The ADG entity name to start from
-            max_depth: Maximum graph traversal depth (default: 2)
-            relation_types: Optional filter for relation types (e.g., ['calls', 'imports'])
+                Args:
+                    adg_entity_name: The ADG entity name to start from
+                    max_depth: Maximum graph traversal depth (default: 2)
+                    relation_types: Optional filter for relation types (e.g., ['calls', 'imports'])
 
-        Returns:
-            List of MemoryCard objects for graph-adjacent entities
+                Returns:
+                    List of MemoryCard objects for graph-adjacent entities
         """
         if not self._graph_store:
             logger.warning("Graph store not available, using text search fallback")
@@ -520,7 +521,7 @@ class GraphNeighborhoodMemory:
 
             # Collect unique entity IDs from paths
             related_entity_ids = set()
-            for path in paths:
+            for path in tqdm(paths, desc="Processing", unit="item"):
                 for node in path.nodes:
                     if node.id != start_entity.id:  # Exclude the start node
                         related_entity_ids.add(node.id)
@@ -567,7 +568,7 @@ class GraphNeighborhoodMemory:
 
         try:
             high_centrality_cards = []
-            for card in self._cards.values():
+            for card in tqdm(self._cards.values(), desc="Processing", unit="item"):
                 if layer and card.layer != layer:
                     continue
 

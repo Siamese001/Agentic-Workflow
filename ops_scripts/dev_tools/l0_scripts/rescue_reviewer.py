@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_1")
 _emit_emits_metric_event("rescue_reviewer", "p4obs", "metric_2")
@@ -191,7 +192,7 @@ class RescueReviewer:
         """Map every active .py file hash to its current path"""
         hash_map = {}
         targets = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, TESTS_DIR]
-        for folder in targets:
+        for folder in tqdm(targets, desc="Processing", unit="item"):
             path = self.root / folder
             if not path.exists():
                 continue
@@ -220,7 +221,7 @@ class RescueReviewer:
         )
         from agentic_core.utils.runners.ssot_discovery_validator import get_python_files
 
-        for arch_file in get_python_files(self.archive_path):
+        for arch_file in tqdm(get_python_files(self.archive_path), desc="Processing", unit="item"):
             rel: Any = arch_file.relative_to(self.archive_path)
             content: Any = arch_file.read_text(encoding="utf-8", errors="ignore")
             f_hash: Any = hashlib.sha256(content.encode()).hexdigest()

@@ -34,6 +34,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 _original_setattr = setattr
@@ -183,7 +184,7 @@ def guard_metaclass_creation(name: str, bases: tuple, namespace: dict) -> type:
     Raises:
         RuntimeMutationViolation: If metaclass alters protected permissions
     """
-    for base in bases:
+    for base in tqdm(bases, desc="Processing", unit="item"):
         if is_protected_object(base):
             if "__setattr__" in namespace or "__delattr__" in namespace:
                 raise RuntimeMutationViolation(

@@ -7,6 +7,7 @@ in L4 storage with replay binding capabilities.
 import hashlib
 import json
 import logging
+import os
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -204,21 +205,34 @@ class PhaseLockStore:
         self._locks: dict[int, PhaseLockRecord] = {}
         self._load_locks()
 
+    @staticmethod
+    def _atomic_write_json(path: Path, payload: dict[str, Any]) -> None:
+        temp_path = path.with_suffix(f"{path.suffix}.tmp")
+        with open(temp_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, sort_keys=True)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(temp_path, path)
+
+    @staticmethod
+    def _compute_replay_digest(phase: int, seq: float, metadata: dict[str, Any]) -> str:
+        canonical = f"{phase}:{seq}:{json.dumps(metadata, sort_keys=True)}"
+        return hashlib.sha256(canonical.encode()).hexdigest()
+
     def _load_locks(self) -> None:
         """Load existing phase locks from storage."""
         if not self.storage_file.exists():
             self.storage_path.mkdir(parents=True, exist_ok=True)
             return
         try:
-            with open(self.storage_file) as f:
+            with open(self.storage_file, encoding="utf-8") as f:
                 data = json.load(f)
             for phase_str, lock_data in data.items():
                 phase = int(phase_str)
                 self._locks[phase] = PhaseLockRecord(**lock_data)
             Logger.info(f"Loaded {len(self._locks)} phase locks from storage")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
-            Logger.error(f"Failed to load phase locks: {e}")
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as e:
+            Logger.error(f"Failed to load phase locks, failing closed: {e}")
             self._locks = {}
 
     def _save_locks(self) -> None:
@@ -228,12 +242,11 @@ class PhaseLockStore:
             data = {}
             for phase, lock in self._locks.items():
                 data[str(phase)] = asdict(lock)
-            with open(self.storage_file, "w") as f:
-                json.dump(data, f, indent=2)
+            self._atomic_write_json(self.storage_file, data)
             Logger.debug(f"Saved {len(self._locks)} phase locks to storage")
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            raise
+        except OSError as e:
             Logger.error(f"Failed to save phase locks: {e}")
+            raise
 
     def lock_phase(
         self,
@@ -264,14 +277,16 @@ class PhaseLockStore:
 
         if phase in self._locks and self._locks[phase].locked:
             raise RuntimeError(f"Phase {phase} is already locked")
+        if not signature:
+            raise RuntimeError("Signature required to lock phase")
+        normalized_metadata = metadata or {}
         seq = _next_sequence()
-        replay_data = f"{phase}:{seq}:{metadata or {}}"
-        replay_digest = hashlib.sha256(replay_data.encode()).hexdigest()
+        replay_digest = self._compute_replay_digest(phase, seq, normalized_metadata)
         lock_record = PhaseLockRecord(
             phase=phase,
             locked=True,
             timestamp=seq,
-            metadata=metadata or {},
+            metadata=normalized_metadata,
             signature=signature,
             replay_digest=replay_digest,
         )
@@ -296,13 +311,21 @@ class PhaseLockStore:
         if phase not in self._locks or not self._locks[phase].locked:
             Logger.warning(f"Phase {phase} is not locked")
             return False
+        if not signature:
+            raise RuntimeError("Signature required to unlock phase")
+        current_lock = self._locks[phase]
+        if current_lock.signature and current_lock.signature != signature:
+            raise RuntimeError("Unlock signature does not match lock signature")
+        for higher_phase in range(phase + 1, 21):
+            if self.is_locked(higher_phase):
+                raise RuntimeError(f"Cannot unlock phase {phase} while phase {higher_phase} is locked")
         lock_record = PhaseLockRecord(
             phase=phase,
             locked=False,
             timestamp=_next_sequence(),
-            metadata={},
+            metadata=current_lock.metadata,
             signature=signature,
-            replay_digest="",
+            replay_digest=current_lock.replay_digest,
         )
         self._locks[phase] = lock_record
         self._save_locks()
@@ -343,8 +366,7 @@ class PhaseLockStore:
         if phase not in self._locks:
             return False
         lock = self._locks[phase]
-        replay_data = f"{phase}:{lock.timestamp}:{lock.metadata}"
-        expected_digest = hashlib.sha256(replay_data.encode()).hexdigest()
+        expected_digest = self._compute_replay_digest(phase, lock.timestamp, lock.metadata)
         return lock.replay_digest == expected_digest
 
     def get_all_locked_phases(self) -> dict[int, PhaseLockRecord]:

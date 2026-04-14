@@ -8,6 +8,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 from tools.adg.shared_modules.path_resolver import latest_sqlite
+from tqdm import tqdm
 
 
 def open_db() -> sqlite3.Connection:
@@ -75,13 +76,16 @@ def main() -> None:
         ]
 
         where_clause, where_params = build_like_clause(("adg_name", "resolved_path"), keywords)
-        cur.execute(f"""
+        cur.execute(
+            f"""
             SELECT id, adg_name, layer, entity_type, resolved_path
             FROM nodes
             WHERE layer NOT IN ('L_TEST', 'L_UNKNOWN', '')
             AND ({where_clause})
             ORDER BY layer, adg_name
-        """, where_params)
+        """,
+            where_params,
+        )
         align_nodes = cur.fetchall()
         print(f"=== PROD ALIGNMENT/LLM NODES ({len(align_nodes)}) ===")
         for n in align_nodes:
@@ -125,7 +129,7 @@ def main() -> None:
             "bias": "Bias Detection",
             "red_team": "Red-Teaming",
         }
-        for kw, label in absence_check.items():
+        for kw, label in tqdm(absence_check.items(), desc="Processing", unit="item"):
             pattern = f"%{kw.lower()}%"
             cur.execute(
                 "SELECT COUNT(*) FROM nodes "

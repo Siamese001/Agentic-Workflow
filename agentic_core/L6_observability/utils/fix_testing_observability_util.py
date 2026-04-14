@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("fix_testing_observability_util", "fix_testing_observability_util_trace")
 
@@ -228,7 +229,7 @@ def add_logging_to_file(file_path: Path) -> bool:
         lines = source.splitlines()
         insert_idx = 0
         in_docstring = False
-        for i, line in enumerate(lines):
+        for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
             stripped = line.strip()
             if stripped.startswith('"""') or stripped.startswith("'''"):
                 in_docstring = not in_docstring
@@ -316,7 +317,7 @@ def main():
                 by_file[full_path].append(class_name)
     logging_added = 0
     testing_added = 0
-    for file_path_str, class_names in sorted(by_file.items()):
+    for file_path_str, class_names in tqdm(sorted(by_file.items()), desc="Processing", unit="item"):
         file_path = Path(file_path_str)
         if not file_path.exists():
             continue

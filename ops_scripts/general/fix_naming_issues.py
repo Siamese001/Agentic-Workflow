@@ -6,6 +6,7 @@ Replaces with proper naming: pii_sanitizer, ddd_alignment, ssot_reconciler, hop
 
 import re
 from pathlib import Path
+from tqdm import tqdm
 
 
 def find_files_to_fix() -> list[Path]:
@@ -122,7 +123,7 @@ def main():
     print("\n2. Fixing file contents...")
     files = find_files_to_fix()
     fixed_count = 0
-    for file_path in files:
+    for file_path in tqdm(files, desc="Processing", unit="item"):
         if not file_path.exists():
             continue
         try:

@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
@@ -167,6 +167,17 @@ logger = logging.getLogger(__name__)
 _DEFAULT_CONFIG_TTL = 3600 * 24  # 24 hours
 
 
+def _require_positive_ttl(ttl_seconds: int) -> int:
+    if ttl_seconds <= 0:
+        raise ValueError(f"ttl_seconds must be > 0, got {ttl_seconds}")
+    return ttl_seconds
+
+
+def _config_identity_key(config_path: Path, content_hash: str) -> str:
+    path_hash = hashlib.sha256(str(config_path.resolve()).encode("utf-8")).hexdigest()[:16]
+    return f"config:{path_hash}:{content_hash}"
+
+
 class ConfigFileCache:
     """Cache for parsed YAML/JSON configuration files.
 
@@ -180,12 +191,12 @@ class ConfigFileCache:
         ttl_seconds: int = _DEFAULT_CONFIG_TTL,
     ):
         self._cache = cache or get_hot_cache()
-        self._ttl = ttl_seconds
+        self._ttl = _require_positive_ttl(ttl_seconds)
 
     def get_or_fetch(
         self,
         config_path: Path,
-        fetch_from_disk: Any,
+        fetch_from_disk: Callable[[], dict[str, Any]],
         *,
         replay_mode: bool = False,
     ) -> dict[str, Any]:
@@ -212,34 +223,35 @@ class ConfigFileCache:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "ConfigFileCache.get_or_fetch"
         )
 
+        if not callable(fetch_from_disk):
+            raise TypeError("fetch_from_disk must be callable")
+
         if not replay_mode:
             try:
                 content_hash = self._compute_file_hash(config_path)
-                cache_key = f"config:{config_path.name}:{content_hash}"
+                cache_key = _config_identity_key(config_path, content_hash)
                 cached = self._cache.get_json(cache_key)
                 if cached is not None:
                     logger.debug(f"[Config cache] HIT for {config_path.name}")
                     return cached
-            # guardian: allow-silent-swallow - optional file resource
             except FileNotFoundError:
                 raise
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ValueError) as e:
                 logger.warning(f"[Config cache] Cache read failed: {e}")
 
         logger.debug(f"[Config cache] MISS for {config_path.name} — parsing from disk")
         result = fetch_from_disk()
+        if not isinstance(result, dict):
+            raise TypeError(f"fetch_from_disk must return a dict, got {type(result).__name__}")
 
         if not replay_mode:
             try:
                 content_hash = self._compute_file_hash(config_path)
-                cache_key = f"config:{config_path.name}:{content_hash}"
-                # guardian: allow-silent-swallow - optional file resource
+                cache_key = _config_identity_key(config_path, content_hash)
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:
                 pass  # File may have been deleted after fetch
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ValueError, TypeError) as e:
                 logger.warning(f"[Config cache] Cache write failed: {e}")
 
         return result

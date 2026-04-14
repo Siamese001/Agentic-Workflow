@@ -151,6 +151,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("layer_splitter", "p4obs", "metric_1")
 _emit_emits_metric_event("layer_splitter", "p4obs", "metric_2")
@@ -506,7 +507,7 @@ def _build_plane(
 
     # Step 4: compact edges
     edges: list[dict] = []
-    for r in selected_rels:
+    for r in tqdm(selected_rels, desc="Processing", unit="item"):
         if r.from_name not in name_to_id or r.to_name not in name_to_id:
             continue
         e: dict = {

@@ -13,10 +13,13 @@ schema validation, and the D0 injection fence.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 # Import TemplateCategory at module level since it's used in class definition
 from agentic_core.prompt_governance.core.template_catalog import TemplateCategory
+
+_LOG = logging.getLogger(__name__)
 
 
 # Lazy imports to avoid L_SHARED->L_PG gravity violations
@@ -56,10 +59,11 @@ class PromptRenderingMixin:
     _assigned_templates: list[TemplateCatalogEntry] | None = None
 
     @property
-    def prompt_renderer(self) -> SovereignPromptRenderer:
+    def prompt_renderer(self):
         """Lazy-initialize the sovereign prompt renderer."""
         if self._prompt_renderer is None:
-            self._prompt_renderer = SovereignPromptRenderer()
+            renderer_cls = _get_prompt_renderer()
+            self._prompt_renderer = renderer_cls()
         return self._prompt_renderer
 
     def get_assigned_templates(self) -> list[TemplateCatalogEntry]:
@@ -72,6 +76,7 @@ class PromptRenderingMixin:
             return self._assigned_templates
 
         agent_name = type(self).__name__
+        TEMPLATE_CATALOG, TemplateCatalogEntry, _, TemplateStatus = _get_template_catalog()
         self._assigned_templates = [
             entry
             for entry in TEMPLATE_CATALOG
@@ -116,7 +121,7 @@ class PromptRenderingMixin:
             RuntimeError: If template rendering fails
         """
         agent_name = type(self).__name__
-        logger.debug("Agent %s rendering template %s", agent_name, template_name)
+        _LOG.debug("Agent %s rendering template %s", agent_name, template_name)
         return self.prompt_renderer.render(
             template_name=template_name,
             context=context,

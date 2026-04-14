@@ -125,6 +125,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hotspot_index", "p4obs", "metric_1")
 _emit_emits_metric_event("hotspot_index", "p4obs", "metric_2")
@@ -257,7 +258,7 @@ class HotspotIndex:
                         return prefix + "/__init__.py"
             return None
 
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="Processing", unit="item"):
             if edge.relation_type not in (
                 "imports",
                 "reads_from",

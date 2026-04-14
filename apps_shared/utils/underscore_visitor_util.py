@@ -78,6 +78,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("underscore_visitor_util", "p4obs", "metric_1")
 _emit_emits_metric_event("underscore_visitor_util", "p4obs", "metric_2")
@@ -187,7 +188,7 @@ class UnderscoreVisitor(ast.NodeVisitor):
 def main():
     """Brief description of functionality and purpose."""
     has_error = False
-    for arg in sys.argv[1:]:
+    for arg in tqdm(sys.argv[1:], desc="Processing", unit="item"):
         if SSOT_TARGET not in str(arg).replace("\\", "/"):
             continue
         try:

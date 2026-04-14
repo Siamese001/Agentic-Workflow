@@ -144,6 +144,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("open_telemetry_tracing_adapter_util", "open_telemetry_tracing_adapter_util_trace")
 
@@ -701,7 +702,7 @@ class OpenTelemetryTracingAdapter:
             return []
 
         spans_data = []
-        for span_id, span in self._active_spans.items():
+        for span_id, span in tqdm(self._active_spans.items(), desc="Processing", unit="item"):
             span_data = {
                 "span_id": span_id,
                 "trace_id": getattr(span, "trace_id", "unknown"),

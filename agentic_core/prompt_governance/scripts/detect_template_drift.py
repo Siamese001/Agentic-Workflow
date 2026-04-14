@@ -96,6 +96,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("detect_template_drift", "p4obs", "metric_1")
 _emit_emits_metric_event("detect_template_drift", "p4obs", "metric_2")
@@ -181,8 +182,8 @@ def detect_template_drift(registry_path: Path, base_dir: Path) -> tuple[list[dic
     synchronized = []
     drifted = []
     prompts = registry.get("prompts", {})
-    for template_name, prompt_versions in prompts.items():
-        for prompt_data in prompt_versions:
+    for template_name, prompt_versions in tqdm(prompts.items(), desc="Processing", unit="item"):
+        for prompt_data in tqdm(prompt_versions, desc="Processing", unit="item"):
             if not prompt_data.get("active", False):
                 continue
             template_path = base_dir / "templates" / template_name
@@ -262,8 +263,8 @@ def synchronize_registry_hashes(registry_path: Path, base_dir: Path) -> dict:
     synchronized = []
     drifted = []
     prompts = registry.get("prompts", {})
-    for template_name, prompt_versions in prompts.items():
-        for prompt_data in prompt_versions:
+    for template_name, prompt_versions in tqdm(prompts.items(), desc="Processing", unit="item"):
+        for prompt_data in tqdm(prompt_versions, desc="Processing", unit="item"):
             if not prompt_data.get("active", False):
                 continue
             template_path = base_dir / "templates" / template_name

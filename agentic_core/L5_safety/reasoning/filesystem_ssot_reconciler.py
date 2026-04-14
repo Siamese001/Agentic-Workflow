@@ -166,6 +166,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("filesystem_ssot_reconciler", "p4obs", "metric_1")
 _emit_emits_metric_event("filesystem_ssot_reconciler", "p4obs", "metric_2")
@@ -494,13 +495,13 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             from agentic_core.L5_safety.config.structure_blueprint import ENFORCED_TERRITORIES
 
             roots_to_scan = sorted(ENFORCED_TERRITORIES)
-        for root in roots_to_scan:
+        for root in tqdm(roots_to_scan, desc="Processing", unit="item"):
             root_path = self.project_root / root
             if not root_path.exists():
                 Logger.debug(f"Root {root} does not exist - skipping")
                 continue
             l1_folders = set()
-            for item in root_path.iterdir():
+            for item in tqdm(root_path.iterdir(), desc="Processing", unit="item"):
                 if item.is_dir() and (not item.name.startswith((".", "__"))):
                     l1_folders.add(item.name)
                     if root == AGENTIC_CORE_DIR:
@@ -547,7 +548,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         agentic_core = self.project_root / AGENTIC_CORE_DIR
         from agentic_core.utils.runners.ssot_discovery_validator import get_agent_files
 
-        for py_file in get_agent_files(agentic_core):
+        for py_file in tqdm(get_agent_files(agentic_core), desc="Processing", unit="item"):
             if any(skip in py_file.parts for skip in ["__pycache__", ".git", ARCHIVES_DIR]):
                 continue
             try:
@@ -624,7 +625,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         - Extra subfolders in blueprint
         """
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
-        for root, actual_subfolders in self.actual_folders.items():
+        for root, actual_subfolders in tqdm(self.actual_folders.items(), desc="Processing", unit="item"):
             if "/" in root:
                 continue
             blueprint_subfolders = set(blueprint_registry.get(root, {}).get("subfolders", []))
@@ -659,7 +660,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         - Missing L2 subfolders in actual state
         """
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
-        for key, actual_l2 in self.actual_folders.items():
+        for key, actual_l2 in tqdm(self.actual_folders.items(), desc="Processing", unit="item"):
             if "/" not in key or not key.startswith("agentic_core/"):
                 continue
             l1_folder = key.split("/")[1]
@@ -698,7 +699,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
     ) -> None:
         """Check SOVEREIGN_REGISTRY subfolders for drift."""
         blueprint_registry = current_blueprint.get("sovereign_registry", {})
-        for root, actual_subfolders in self.actual_folders.items():
+        for root, actual_subfolders in tqdm(self.actual_folders.items(), desc="Processing", unit="item"):
             if "/" in root:
                 continue
             blueprint_subfolders = set(blueprint_registry.get(root, {}).get("subfolders", []))
@@ -728,7 +729,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
     def _check_l2_subfolders(self, current_blueprint: dict[str, Any], drift: list[dict[str, Any]]) -> None:
         """Check CORE_SUBFOLDER_MAP (L2 depth) for drift."""
         blueprint_core_map = current_blueprint.get("core_subfolder_map", {})
-        for key, actual_l2 in self.actual_folders.items():
+        for key, actual_l2 in tqdm(self.actual_folders.items(), desc="Processing", unit="item"):
             if "/" not in key or not key.startswith("agentic_core/"):
                 continue
             l1_folder = key.split("/")[1]
@@ -759,7 +760,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         """Generates OS-level folder actions to match blueprint."""
         proposals = []
         Logger.info("Generating filesystem alignment proposals...")
-        for drift_item in drift:
+        for drift_item in tqdm(drift, desc="Processing", unit="item"):
             if drift_item["type"] == "missing_subfolders":
                 for folder in drift_item["folders"]:
                     target = self.project_root / drift_item["root"] / folder
@@ -771,7 +772,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         },
                     )
             elif drift_item["type"] == "orphaned_subfolders":
-                for folder in drift_item["folders"]:
+                for folder in tqdm(drift_item["folders"], desc="Processing", unit="item"):
                     source = self.project_root / drift_item["root"] / folder
                     archive_target = (
                         self.project_root
@@ -802,7 +803,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         applied_logs = []
         Logger.info(f"Applying {len(proposals)} filesystem alignment actions...")
         violations = []
-        for prop in proposals:
+        for prop in tqdm(proposals, desc="Processing", unit="item"):
             coord = ASTCoordinate(
                 line=1,
                 column=0,
@@ -829,7 +830,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             violation_id=f"filesystem_alignment_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
         )
         Logger.info(f"SurgicalContext created for {len(context.violations)} filesystem operations")
-        for prop in proposals:
+        for prop in tqdm(proposals, desc="Processing", unit="item"):
             if prop["action"] == "CREATE_FOLDER":
                 path = Path(prop["target"])
                 _wg.ensure_dir(path)
@@ -875,7 +876,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         """
         Logger.info(f"Applying {len(proposals)} proposals to blueprint...")
         content = self.blueprint_file.read_text(encoding="utf-8")
-        for proposal in proposals:
+        for proposal in tqdm(proposals, desc="Processing", unit="item"):
             action = proposal["action"]
             if action == "add_to_sovereign_registry":
                 content = self._apply_sovereign_registry_update(
@@ -1162,7 +1163,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             List of action dicts with results and batch summary
         """
         actions = []
-        for i, violation in enumerate(violations):
+        for i, violation in tqdm(enumerate(violations), desc="Processing", unit="item"):
             if i >= max_actions:
                 Logger.warning(f"[FilesystemSSOTReconcilerAgent] Cleanup budget exhausted ({max_actions})")
                 break
@@ -1220,7 +1221,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         all_violations: list[ReconciliationViolation] = []
         current_blueprint = self._load_current_blueprint()
         drift_items = self._detect_drift(current_blueprint)
-        for drift in drift_items:
+        for drift in tqdm(drift_items, desc="Processing", unit="item"):
             all_violations.append(
                 ReconciliationViolation(
                     is_valid=False,

@@ -79,7 +79,10 @@ def with_adg_tracing(cls: type) -> type:
     for method_name in ["run", "process", "handle", "invoke"]:
         if hasattr(decorated_cls, method_name):
             original_method = getattr(decorated_cls, method_name)
+            if getattr(original_method, "_adg_hook_wrapped", False):
+                continue
             wrapped_method = _trace_agent_method(original_method, method_name)
+            wrapped_method._adg_hook_wrapped = True
             setattr(decorated_cls, method_name, wrapped_method)
 
     return decorated_cls
@@ -101,7 +104,7 @@ def _trace_agent_init(func: Callable) -> Callable:
                 # Try to initialize IntegratedTracingMixin if not already done
                 try:
                     IntegratedTracingMixin.__init__(self, service_name=service_name)
-                except Exception as e:
+                except (AttributeError, TypeError, RuntimeError) as e:
                     Logger.warning(f"[ADG_HOOKS] Failed to initialize tracing for {class_name}: {e}")
 
         # Trace initialization
@@ -112,7 +115,11 @@ def _trace_agent_init(func: Callable) -> Callable:
                 try:
                     result = func(self, *args, **kwargs)
                     return result
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (
+                    ImportError,
+                    AttributeError,
+                    RuntimeError,
+                ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     Logger.error(f"[ADG_HOOKS] Agent initialization failed for {class_name}: {e}")
                     raise
         else:
@@ -143,9 +150,9 @@ def _trace_agent_execute(func: Callable) -> Callable:
                 },
             ) as span:
                 try:
-                    start_time = time.time()
+                    start_time = time.monotonic()
                     result = func(self, *args, **kwargs)
-                    duration_ms = (time.time() - start_time) * 1000
+                    duration_ms = (time.monotonic() - start_time) * 1000
 
                     # Add execution metadata
                     span.set_attribute("execution_duration_ms", duration_ms)
@@ -153,7 +160,11 @@ def _trace_agent_execute(func: Callable) -> Callable:
 
                     return result
 
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (
+                    AttributeError,
+                    RuntimeError,
+                    ValueError,
+                ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     span.set_attribute("execution_success", False)
                     span.set_attribute("error_type", type(e).__name__)
                     span.set_attribute("error_message", str(e))
@@ -184,9 +195,9 @@ def _trace_agent_method(func: Callable, method_name: str) -> Callable:
                 },
             ) as span:
                 try:
-                    start_time = time.time()
+                    start_time = time.monotonic()
                     result = func(self, *args, **kwargs)
-                    duration_ms = (time.time() - start_time) * 1000
+                    duration_ms = (time.monotonic() - start_time) * 1000
 
                     # Add method execution metadata
                     span.set_attribute("method_duration_ms", duration_ms)
@@ -198,7 +209,11 @@ def _trace_agent_method(func: Callable, method_name: str) -> Callable:
 
                     return result
 
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (
+                    AttributeError,
+                    RuntimeError,
+                    ValueError,
+                ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     span.set_attribute("method_success", False)
                     span.set_attribute("error_type", type(e).__name__)
                     span.set_attribute("error_message", str(e))
@@ -342,7 +357,11 @@ def trace_cognitive_operation(reasoning_mode: str = "react"):
                         result = func(self, *args, **kwargs)
                         span.set_attribute("cognitive_success", True)
                         return result
-                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                    except (
+                        AttributeError,
+                        RuntimeError,
+                        TypeError,
+                    ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         span.set_attribute("cognitive_success", False)
                         span.set_attribute("error_type", type(e).__name__)
                         raise
@@ -387,7 +406,11 @@ def trace_tool_operation(tool_name: str | None = None):
                         result = func(self, *args, **kwargs)
                         span.set_attribute("tool_success", True)
                         return result
-                    except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                    except (
+                        AttributeError,
+                        RuntimeError,
+                        TypeError,
+                    ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                         span.set_attribute("tool_success", False)
                         span.set_attribute("error_type", type(e).__name__)
                         raise

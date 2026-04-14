@@ -262,7 +262,7 @@ class HardeningMixin:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "HardeningMixin.execute_hardened"
         )
 
-        start_time = time.time()
+        start_time = time.monotonic()
         try:
             if validate_token_budget:
                 await asyncio.wait_for(asyncio.to_thread(validate_token_budget), timeout=DEFAULT_TIMEOUT)
@@ -271,7 +271,7 @@ class HardeningMixin:
                 breaker_name=self.circuit_breaker.name,
                 context=metadata or {},
             )
-            latency_ms = (time.time() - start_time) * 1000
+            latency_ms = (time.monotonic() - start_time) * 1000
             self.telemetry.log_success(
                 component=self.component_name,
                 operation=operation,
@@ -280,7 +280,7 @@ class HardeningMixin:
             )
             return result
         except asyncio.TimeoutError as e:
-            latency_ms = (time.time() - start_time) * 1000
+            latency_ms = (time.monotonic() - start_time) * 1000
             self.telemetry.log_failure(
                 component=self.component_name,
                 operation=operation,
@@ -292,7 +292,7 @@ class HardeningMixin:
             raise TokenLimitError("Token budget validation timed out") from e
         # guardian: allow-silent-swallow - acceptable exception handling
         except CircuitBreakerOpenError as e:
-            latency_ms = (time.time() - start_time) * 1000
+            latency_ms = (time.monotonic() - start_time) * 1000
             self.telemetry.log_circuit_breaker(
                 component=self.component_name,
                 breaker_name=e.breaker_name,
@@ -300,8 +300,13 @@ class HardeningMixin:
                 metadata=metadata,
             )
             raise
-        except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-            latency_ms = (time.time() - start_time) * 1000
+        except (
+            RuntimeError,
+            OSError,
+            AttributeError,
+            ValueError,
+        ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            latency_ms = (time.monotonic() - start_time) * 1000
             self.telemetry.log_failure(
                 component=self.component_name,
                 operation=operation,

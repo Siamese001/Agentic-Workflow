@@ -12,6 +12,7 @@ from pathlib import Path
 from tools.adg.repair.base_rule import BaseRepairRule
 from tools.adg.repair.rule_engine import repair_rule
 from tools.adg.repair.types import Deficiency, FixCategory, FixResult
+from tqdm import tqdm
 
 
 @repair_rule("fix_missing_all", priority=10)
@@ -170,7 +171,7 @@ class FixMissingAllRule(BaseRepairRule):
         """
         exports = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 # Skip private classes (starting with _)
                 if not node.name.startswith("_"):

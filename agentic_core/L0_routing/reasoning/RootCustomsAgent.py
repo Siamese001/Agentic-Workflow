@@ -27,6 +27,7 @@ from agentic_core.L0_routing.utils.root_customs_util import (
 from agentic_core.L0_routing.utils.root_customs_util import (
     run_inspection as _run_inspection,
 )
+from tqdm import tqdm
 
 
 class RootCustomsAgent(SovereignBaseAgent):
@@ -209,7 +210,7 @@ class ASTAnalyzer:
         self.function_calls = []
         self.docstring_markers = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # Extract imports
             if isinstance(node, ast.Import):
                 for alias in node.names:
@@ -469,7 +470,7 @@ class RootCustomsAgent(SovereignBaseAgent):
         best_match = None
         best_score = 0
 
-        for destination, config in TEST_TYPE_SIGNALS.items():
+        for destination, config in tqdm(TEST_TYPE_SIGNALS.items(), desc="Processing", unit="item"):
             score = 0
 
             # Check required imports
@@ -571,7 +572,7 @@ class RootCustomsAgent(SovereignBaseAgent):
         best_match = None
         best_score = 0
 
-        for destination, config in AST_PLACEMENT_SIGNALS.items():
+        for destination, config in tqdm(AST_PLACEMENT_SIGNALS.items(), desc="Processing", unit="item"):
             score = 0
 
             # Check import signals
@@ -702,7 +703,7 @@ class RootCustomsAgent(SovereignBaseAgent):
 
         root_files = self.scan_root_directory()
 
-        for file_path in root_files:
+        for file_path in tqdm(root_files, desc="Processing", unit="item"):
             print(f"\n📄 Analyzing: {file_path.name}")
 
             # Analyze content

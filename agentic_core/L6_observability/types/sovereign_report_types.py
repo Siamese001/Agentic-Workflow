@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("sovereign_report_types", "sovereign_report_types_trace")
 
@@ -272,8 +273,8 @@ class SovereignReport:
         Input format example: "path/to/file.py: message text (line XX if present)"
         """
         all_issues = []
-        for dimension, raw_issues in self.issues.items():
-            for raw in raw_issues:
+        for dimension, raw_issues in tqdm(self.issues.items(), desc="Processing", unit="item"):
+            for raw in tqdm(raw_issues, desc="Processing", unit="item"):
                 file_path = str(raw)
                 message = str(raw)
                 line_num = None

@@ -84,6 +84,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
 )
+from tqdm import tqdm
 
 record_execution_trace("telemetry_store", "telemetry_store_trace")
 
@@ -203,7 +204,9 @@ class FileBackedTelemetryStore:
             return ()
         events: list[tuple[int, str, bytes]] = []
         try:
-            for line in self._path.read_text(encoding="utf-8").splitlines():
+            for line in tqdm(
+                self._path.read_text(encoding="utf-8").splitlines(), desc="Processing", unit="item"
+            ):
                 line = line.strip()
                 if not line:
                     continue

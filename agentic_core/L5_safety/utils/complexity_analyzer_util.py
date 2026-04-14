@@ -21,6 +21,7 @@ import threading
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -89,7 +90,7 @@ def calculate_cyclomatic_complexity(node: ast.AST) -> int:
         Cyclomatic complexity score
     """
     complexity = 1
-    for child in ast.walk(node):
+    for child in tqdm(ast.walk(node), desc="Processing", unit="item"):
         # Branching nodes
         if isinstance(
             child,
@@ -144,7 +145,7 @@ class ComplexityAnalyzer:
 
         violations: list[ComplexityViolation] = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
                 # 1. Cyclomatic Complexity
                 complexity = calculate_cyclomatic_complexity(node)
@@ -211,7 +212,7 @@ class ComplexityAnalyzer:
 
         files = list(target.rglob("*.py"))
 
-        for file_path in files:
+        for file_path in tqdm(files, desc="Processing", unit="item"):
             if self.config.ignore_tests and ("test" in file_path.name or "tests" in file_path.parts):
                 continue
             self.analyze_file(file_path)

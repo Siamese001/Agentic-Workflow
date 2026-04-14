@@ -13,6 +13,7 @@ import ast
 from typing import TYPE_CHECKING
 
 from . import BaseStructuralVisitor, VisitorContext, register_visitor
+from tqdm import tqdm
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import Edge
@@ -32,7 +33,7 @@ class _GovernancePlaneVisitor(BaseStructuralVisitor):
         from agentic_core.adg.contracts.schema_util import GOVERNANCE_WRITE_SYMBOLS, canonical_name
         from agentic_core.adg.extraction.static_scanner import Edge as _Edge
 
-        for base in node.bases:
+        for base in tqdm(node.bases, desc="Processing", unit="item"):
             sym = self._extract_symbol(base)
             if sym:
                 tail = sym.split(".")[-1]

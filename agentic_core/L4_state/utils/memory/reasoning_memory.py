@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("reasoning_memory", "p4obs", "metric_1")
 _emit_emits_metric_event("reasoning_memory", "p4obs", "metric_2")
@@ -394,7 +395,7 @@ class ReasoningMemory:
         """Load thoughts from persistent storage."""
         try:
             entries = Ledger.query({"type": "reasoning_memory"}, limit=self.capacity)
-            for entry in entries:
+            for entry in tqdm(entries, desc="Processing", unit="item"):
                 thought_dict = entry.get("thought", {})
                 if thought_dict:
                     self.thoughts.append(

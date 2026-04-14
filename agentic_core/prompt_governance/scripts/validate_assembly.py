@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
 PROMPT_MODULES_DIR = REPO_ROOT / "docs" / REPORTS_DIR / "assessments" / "prompt-modules"
@@ -129,7 +130,7 @@ def validate() -> int:
         module_lookup = {m["path"]: m for m in modules}
         lines = skeleton_content.splitlines(keepends=True)
         assembled_lines = []
-        for line in lines:
+        for line in tqdm(lines, desc="Processing", unit="item"):
             if line.strip().startswith("<!-- MODULE: ") and line.strip().endswith(" -->"):
                 module_rel_path = line.strip()[13:-4].strip()
                 if module_rel_path not in module_lookup:

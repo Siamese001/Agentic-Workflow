@@ -20,6 +20,7 @@ from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 
 @dataclass
@@ -717,7 +718,7 @@ class ADGGraphWatchlistBuilder:
         regressions = []
         summary = {"new": 0, "worsened": 0, "improved": 0, "stable": 0, "resolved": 0}
 
-        for file_path in all_files:
+        for file_path in tqdm(all_files, desc="Processing", unit="item"):
             current_item = next((i for i in current_watchlist if i.file == file_path), None)
             baseline_item = baseline.get(file_path)
 
@@ -833,12 +834,12 @@ class ADGGraphWatchlistBuilder:
             "worsened_repeat": {},
         }
 
-        for run_data in window_data:
+        for run_data in tqdm(window_data, desc="Processing", unit="item"):
             watchlist = run_data.get("watchlist", [])
             delta_tracking = run_data.get("delta_tracking", {})
 
             # Track file occurrences
-            for item in watchlist:
+            for item in tqdm(watchlist, desc="Processing", unit="item"):
                 file_path = item.get("file", "")
                 layer = item.get("layer", "")
                 signal = item.get("graph_anomaly_type", "")
@@ -1177,7 +1178,7 @@ class ADGGraphWatchlistBuilder:
         # Build watchlist items
         items: list[tuple[float, GraphWatchlistItem]] = []
 
-        for file_path in all_files:
+        for file_path in tqdm(all_files, desc="Processing", unit="item"):
             rev = rev_hotspots.get(file_path, {})
             bridge = bridges.get(file_path, {})
             scc = scc_clusters.get(file_path, {})
@@ -1432,7 +1433,7 @@ class ADGProposalPromotionManager:
                 with open(queue_artifacts[-1], encoding="utf-8") as f:
                     data = json.load(f)
                     # Reconstruct queue entries from saved data
-                    for entry_data in data.get("entries", []):
+                    for entry_data in tqdm(data.get("entries", []), desc="Processing", unit="item"):
                         # Create minimal proposal for reconstruction
                         proposal = ProposalPacket(
                             proposal_id=entry_data.get("proposal_id", "unknown"),
@@ -1797,7 +1798,7 @@ class ADGProposalPromotionManager:
         """Get complete audit trail of all decisions."""
         trail = []
 
-        for entry in self.queue:
+        for entry in tqdm(self.queue, desc="Processing", unit="item"):
             trail.append(
                 {
                     "type": "queue_entry",
@@ -1871,7 +1872,7 @@ class AcceptedBaselineManager:
         baseline_artifacts = sorted(self.output_dir.glob("adg_accepted_baseline_*.json"))
         baselines = []
 
-        for artifact_path in baseline_artifacts:
+        for artifact_path in tqdm(baseline_artifacts, desc="Processing", unit="item"):
             try:
                 with open(artifact_path, encoding="utf-8") as f:
                     data = json.load(f)
@@ -2047,7 +2048,7 @@ class GovernedPromotionApplicator:
         """Load previously applied promotions."""
         app_artifacts = sorted(self.output_dir.glob("adg_promotion_application_*.json"))
 
-        for artifact_path in app_artifacts:
+        for artifact_path in tqdm(app_artifacts, desc="Processing", unit="item"):
             try:
                 with open(artifact_path, encoding="utf-8") as f:
                     data = json.load(f)
@@ -2284,7 +2285,7 @@ class ADGGovernanceDashboard:
 
         # Get top pending proposals (bounded)
         top_pending = []
-        for entry in pending[:5]:  # Max 5 for bounded output
+        for entry in tqdm(pending[:5], desc="Processing", unit="item"):  # Max 5 for bounded output
             proposal = entry.original_proposal
             top_pending.append(
                 {
@@ -2329,7 +2330,7 @@ class ADGGovernanceDashboard:
 
         # Format for display (bounded)
         promotions_display = []
-        for app in active_apps[:10]:  # Max 10 for bounded output
+        for app in tqdm(active_apps[:10], desc="Processing", unit="item"):  # Max 10 for bounded output
             promotions_display.append(
                 {
                     "application_id": app.application_id,
@@ -2365,7 +2366,7 @@ class ADGGovernanceDashboard:
         candidates = []
         now = datetime.now()
 
-        for app in sorted_apps[:5]:
+        for app in tqdm(sorted_apps[:5], desc="Processing", unit="item"):
             try:
                 applied_time = datetime.strptime(app.applied_at, "%Y%m%d_%H%M%S")
                 age_days = (now - applied_time).total_seconds() / 86400
@@ -2497,7 +2498,7 @@ class ADGGovernanceDashboard:
 
         # Check 4: Rollback token consistency
         token_mismatches = []
-        for app in active_apps:
+        for app in tqdm(active_apps, desc="Processing", unit="item"):
             # Find corresponding promotion action
             action = next(
                 (
@@ -2726,7 +2727,7 @@ class ADGPolicyReviewPack:
 
         # Collect rollback artifacts within window
         rollback_artifacts = sorted(self.output_dir.glob("adg_promotion_rollback_*.json"))
-        for artifact_path in rollback_artifacts:
+        for artifact_path in tqdm(rollback_artifacts, desc="Processing", unit="item"):
             try:
                 with open(artifact_path, encoding="utf-8") as f:
                     data = json.load(f)
@@ -2775,7 +2776,7 @@ class ADGPolicyReviewPack:
         # Count rollbacks in window
         rollbacks_in_window = 0
         rollback_artifacts = sorted(self.output_dir.glob("adg_promotion_rollback_*.json"))
-        for artifact_path in rollback_artifacts:
+        for artifact_path in tqdm(rollback_artifacts, desc="Processing", unit="item"):
             try:
                 with open(artifact_path, encoding="utf-8") as f:
                     data = json.load(f)
@@ -2803,7 +2804,7 @@ class ADGPolicyReviewPack:
         layer_regression_frequency: dict[str, int] = {}
         signal_type_frequency: dict[str, int] = {}
 
-        for entry in self.promotion_manager.queue:
+        for entry in tqdm(self.promotion_manager.queue, desc="Processing", unit="item"):
             try:
                 queued_time = datetime.strptime(entry.timestamp_queued, "%Y%m%d_%H%M%S")
                 if not (window_start <= queued_time <= window_end):
@@ -2862,7 +2863,7 @@ class ADGPolicyReviewPack:
         pending_count = 0
         never_approved_count = 0
 
-        for entry in self.promotion_manager.queue:
+        for entry in tqdm(self.promotion_manager.queue, desc="Processing", unit="item"):
             try:
                 queued_time = datetime.strptime(entry.timestamp_queued, "%Y%m%d_%H%M%S")
                 if not (window_start <= queued_time <= window_end):
@@ -2924,7 +2925,7 @@ class ADGPolicyReviewPack:
 
         # Track rollbacks in window
         rollback_artifacts = sorted(self.output_dir.glob("adg_promotion_rollback_*.json"))
-        for artifact_path in rollback_artifacts:
+        for artifact_path in tqdm(rollback_artifacts, desc="Processing", unit="item"):
             try:
                 with open(artifact_path, encoding="utf-8") as f:
                     data = json.load(f)
@@ -2939,7 +2940,9 @@ class ADGPolicyReviewPack:
 
         # Calculate rollback rates
         rollback_rates = []
-        for target_type, promotion_count in target_type_frequency.items():
+        for target_type, promotion_count in tqdm(
+            target_type_frequency.items(), desc="Processing", unit="item"
+        ):
             rollback_count = target_type_rollbacks.get(target_type, 0)
             rate = rollback_count / promotion_count if promotion_count > 0 else 0
             rollback_rates.append(

@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("safety_types", "p4obs", "metric_1")
 _emit_emits_metric_event("safety_types", "p4obs", "metric_2")
@@ -454,7 +455,7 @@ class SelfUpdatingSafetyEngine:
 
     async def _learn_from_detection(self, text: str, matched_rules: list[SafetyRule]):
         """Learn from a threat detection."""
-        for rule in matched_rules:
+        for rule in tqdm(matched_rules, desc="Processing", unit="item"):
             pattern_id = f"pattern_{rule.rule_id}"
             if pattern_id not in self.threat_patterns:
                 self.threat_patterns[pattern_id] = ThreatPattern(
@@ -472,7 +473,7 @@ class SelfUpdatingSafetyEngine:
 
     async def _generate_new_rules_if_needed(self):
         """Generate new rules based on detected patterns."""
-        for pattern in self.threat_patterns.values():
+        for pattern in tqdm(self.threat_patterns.values(), desc="Processing", unit="item"):
             if pattern.confidence_score <= 0.75:
                 continue
             if pattern.detection_count < 5:
@@ -482,7 +483,7 @@ class SelfUpdatingSafetyEngine:
             if new_rule_id in existing_rule_ids:
                 continue
             variations = self._generate_pattern_variations(pattern)
-            for i, variation in enumerate(variations[:3]):
+            for i, variation in tqdm(enumerate(variations[:3]), desc="Processing", unit="item"):
                 rule_id = f"{new_rule_id}_v{i}"
                 if rule_id not in existing_rule_ids:
                     new_rule = SafetyRule(

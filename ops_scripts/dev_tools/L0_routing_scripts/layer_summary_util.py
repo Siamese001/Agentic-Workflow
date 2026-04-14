@@ -68,6 +68,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("layer_summary_util", "p4obs", "metric_1")
 _emit_emits_metric_event("layer_summary_util", "p4obs", "metric_2")
@@ -153,7 +154,7 @@ _emit_links_execution_to_snapshot("p4", "layer_summary_util", "exec_snapshot_lin
 
 data = json.load(open(AGENT_DISCOVERY_JSON))
 stats = defaultdict(lambda: {"count": 0, "healing": 0, "mcp": 0, "testing": 0, "tools": 0})
-for a in data:
+for a in tqdm(data, desc="Processing", unit="item"):
     layer = a.get("layer", "misc")
     stats[layer]["count"] += 1
     if a.get("has_healing"):
@@ -166,19 +167,23 @@ for a in data:
         stats[layer]["tools"] += 1
 print("| Layer | Agents | Healing | MCP Hardened | Testing | Tools |")
 print("|-------|--------|---------|--------------|---------|-------|")
-for layer in [
-    "L0",
-    "L1",
-    "L2",
-    "L3",
-    "L4",
-    "L5",
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    TESTS_DIR,
-    "misc",
-]:
+for layer in tqdm(
+    [
+        "L0",
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5",
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
+        TESTS_DIR,
+        "misc",
+    ],
+    desc="Processing",
+    unit="item",
+):
     s = stats[layer]
     if s["count"] > 0:
         h_pct = 100 * s["healing"] // s["count"]

@@ -172,3 +172,30 @@ class TestEmbeddingsInterface:
         assert len(results) == 1
         assert len(results[0].content_preview) == _PREVIEW_CHARS
         assert results[0].content_preview == "a" * _PREVIEW_CHARS
+
+
+@pytest.mark.unit
+class TestEmbeddingsShimInterface:
+    """G6: embeddings_shim.py must match embeddings.py exception handling."""
+
+    def test_attribute_error_from_cache_returns_empty(self):
+        """G6: embeddings_shim catches AttributeError from cache.query — returns [] not raises."""
+        import sys
+
+        from agentic_core.interfaces.embeddings_shim import query_similarity as shim_query
+
+        mock_cache = MagicMock()
+        mock_cache.query.side_effect = AttributeError("query method missing")
+        mock_mod = MagicMock()
+        mock_mod.SovereignSemanticCache.return_value = mock_cache
+        key = "agentic_core.L4_state.utils.memory.sovereign_semantic_cache"
+        saved = sys.modules.pop(key, None)
+        try:
+            sys.modules[key] = mock_mod
+            result = shim_query("find something")
+        finally:
+            if saved is not None:
+                sys.modules[key] = saved
+            else:
+                sys.modules.pop(key, None)
+        assert result == []

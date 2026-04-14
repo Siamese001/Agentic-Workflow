@@ -8,6 +8,7 @@ to establish agentic_core/base_agents/ as the Single Source of Truth.
 import ast
 import json
 from pathlib import Path
+from tqdm import tqdm
 
 
 class SSOTConsolidationAnalyzer:
@@ -43,7 +44,7 @@ class SSOTConsolidationAnalyzer:
                 "line_count": len(content.split("\n")),
                 "complexity_score": 0,
             }
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.ClassDef):
                     features["class_count"] += 1
                     bases = [base.id if isinstance(base, ast.Name) else str(base) for base in node.bases]
@@ -152,7 +153,7 @@ class SSOTConsolidationAnalyzer:
             "comparisons": {},
             "summary": {"USE_UTILS": 0, "USE_BASE": 0, "MERGE": 0, "SKIP": 0},
         }
-        for filename in sorted(all_files):
+        for filename in tqdm(sorted(all_files), desc="Processing", unit="item"):
             print(f"\n🔍 Analyzing: {filename}")
             comparison = self.compare_file_versions(filename)
             results["comparisons"][filename] = comparison

@@ -137,6 +137,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("GravityLeakRepairAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("GravityLeakRepairAgent", "p4obs", "metric_2")
@@ -465,7 +466,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         if checker.module_level_uses:
             return False
         target_func = None
-        for node in tree.body:
+        for node in tqdm(tree.body, desc="Processing", unit="item"):
             if isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
                 if node.lineno > import_node.lineno:
                     target_func = node
@@ -694,7 +695,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         )
         fix_summary = {"RELOCATE": 0, "ABSTRACT": 0, "INJECT": 0, "REMOVE": 0, "DEFERRED": 0}
         fixes_applied = 0
-        for v in violations:
+        for v in tqdm(violations, desc="Processing", unit="item"):
             if hasattr(v, "file_path"):
                 _import_stmt = ""
                 try:
@@ -860,7 +861,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
         self.logger.info(f"Analyzing {len(violations)} gravity violations...")
         fix_summary = {"RELOCATE": 0, "ABSTRACT": 0, "INJECT": 0, "REMOVE": 0, "DEFERRED": 0}
         fixes_applied = 0
-        for v in violations:
+        for v in tqdm(violations, desc="Processing", unit="item"):
             if hasattr(v, "file_path"):
                 _import_stmt = ""
                 try:

@@ -88,6 +88,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("input_validator_util", "p4obs", "metric_1")
 _emit_emits_metric_event("input_validator_util", "p4obs", "metric_2")
@@ -283,7 +284,7 @@ class InputValidator:
         """
         validated = {}
         errors = []
-        for field, rule in self._rules.items():
+        for field, rule in tqdm(self._rules.items(), desc="Processing", unit="item"):
             try:
                 value = data.get(field)
                 if rule.required and value is None:

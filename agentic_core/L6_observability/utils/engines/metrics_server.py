@@ -24,6 +24,7 @@ Usage:
 
 from __future__ import annotations
 
+import ipaddress
 import logging
 import threading
 from typing import Any
@@ -50,8 +51,16 @@ from agentic_core.L6_observability.utils.metrics.prometheus_metrics import AGENT
 logger = logging.getLogger(__name__)
 
 # Track running servers for cleanup
-_running_servers: dict[int, Any] = {}
+_running_servers: dict[tuple[str, int], Any] = {}
 _server_lock = threading.Lock()
+
+
+def _validate_bind(addr: str, port: int) -> tuple[str, int]:
+    if not isinstance(port, int) or not (1 <= port <= 65535):
+        raise ValueError(f"invalid metrics port: {port}")
+    ipaddress.ip_address(addr)
+    return addr, port
+
 
 # Bootstrap ADG edge emission
 emit_replay_key("metrics_server", "L6")
@@ -60,7 +69,7 @@ emit_determinism_digest("metrics_server", "metrics_server_digest")
 
 def start_metrics_server(
     port: int = 8000,
-    addr: str = "0.0.0.0",
+    addr: str = "127.0.0.1",
     registry: CollectorRegistry | None = None,
 ) -> Any:
     """Start HTTP server for Prometheus metrics scraping.
@@ -89,19 +98,23 @@ def start_metrics_server(
         registry = AGENTIC_REGISTRY
 
     try:
+        bind_key = _validate_bind(addr, port)
         # Check if server already running on this port
         with _server_lock:
-            if port in _running_servers:
-                logger.info("Metrics server already running on port %s", port)
-                return _running_servers[port]
+            if bind_key in _running_servers:
+                logger.info("Metrics server already running on %s:%s", addr, port)
+                return _running_servers[bind_key]
 
         # Start the server using prometheus_client's built-in server
         httpd_tuple = _prom_start_server(port=port, addr=addr, registry=registry)
-        # prometheus_client returns (server, thread) tuple
-        httpd = httpd_tuple[0] if isinstance(httpd_tuple, tuple) else httpd_tuple
+        handle = (
+            {"server": httpd_tuple[0], "thread": httpd_tuple[1], "addr": addr, "port": port}
+            if isinstance(httpd_tuple, tuple)
+            else {"server": httpd_tuple, "thread": None, "addr": addr, "port": port}
+        )
 
         with _server_lock:
-            _running_servers[port] = httpd
+            _running_servers[bind_key] = handle
 
         logger.info(
             "metrics_server_started port=%s addr=%s endpoint=%s",
@@ -116,7 +129,7 @@ def start_metrics_server(
             "metrics_server",
         )
 
-        return httpd
+        return handle
 
     except Exception as e:
         logger.error(
@@ -142,13 +155,17 @@ def stop_metrics_server(server: Any) -> bool:
     try:
         # Find and remove from tracking
         with _server_lock:
-            for port, srv in list(_running_servers.items()):
+            for bind_key, srv in list(_running_servers.items()):
                 if srv is server:
-                    del _running_servers[port]
+                    del _running_servers[bind_key]
                     break
 
         # Shutdown the server
-        server.shutdown()
+        server_obj = server.get("server") if isinstance(server, dict) else server
+        if hasattr(server_obj, "shutdown"):
+            server_obj.shutdown()
+        if hasattr(server_obj, "server_close"):
+            server_obj.server_close()
 
         logger.info("metrics_server_stopped")
         _emit_records_execution_trace(
@@ -190,7 +207,7 @@ def is_metrics_server_running(port: int = 8000) -> bool:
         True if server is running, False otherwise
     """
     with _server_lock:
-        return port in _running_servers
+        return any(bound_port == port for _, bound_port in _running_servers.keys())
 
 
 def get_running_server_ports() -> list[int]:
@@ -200,7 +217,7 @@ def get_running_server_ports() -> list[int]:
         List of port numbers
     """
     with _server_lock:
-        return list(_running_servers.keys())
+        return sorted({port for _, port in _running_servers.keys()})
 
 
 class MetricsServerContext:
@@ -213,7 +230,7 @@ class MetricsServerContext:
         # Metrics server is stopped
     """
 
-    def __init__(self, port: int = 8000, addr: str = "0.0.0.0"):
+    def __init__(self, port: int = 8000, addr: str = "127.0.0.1"):
         self.port = port
         self.addr = addr
         self.server: Any = None
@@ -237,6 +254,6 @@ def get_server_status() -> dict[str, Any]:
         return {
             "prometheus_available": PROMETHEUS_AVAILABLE,
             "running_servers": len(_running_servers),
-            "ports": list(_running_servers.keys()),
+            "bindings": [{"addr": addr, "port": port} for addr, port in _running_servers.keys()],
             "metrics_endpoint_template": "http://localhost:{port}/metrics",
         }

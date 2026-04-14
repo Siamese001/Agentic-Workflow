@@ -13,7 +13,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass, field
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -82,7 +82,7 @@ from apps_eval.types.eval_types import ScorecardRow, SuiteResult
 _emit_applies_guardrail("p0", "scorecard_engine", "p0_governance")
 _emit_reads_policy_state("p0", "scorecard_engine", "policy_binding")
 _emit_snapshots_state("p0", "scorecard_engine", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -106,6 +106,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("scorecard_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("scorecard_engine", "p4obs", "metric_2")
@@ -236,7 +237,7 @@ class ScorecardEngine:
             }
             dim_weight_map = default_dims
 
-        for dim_id, weight in dim_weight_map.items():
+        for dim_id, weight in tqdm(dim_weight_map.items(), desc="Processing", unit="item"):
             score = dim_means.get(dim_id, 0.0)
             weighted = score * weight
             weighted_sum += weighted

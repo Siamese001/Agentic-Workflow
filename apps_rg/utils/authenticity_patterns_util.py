@@ -93,6 +93,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("authenticity_patterns_util", "p4obs", "metric_1")
 _emit_emits_metric_event("authenticity_patterns_util", "p4obs", "metric_2")
@@ -722,7 +723,7 @@ class WordCountEnforcementEngine:
         """
         current_content = content
         last_validation = self.validate_content(current_content, content_type)
-        for attempt in range(max_attempts):
+        for attempt in tqdm(range(max_attempts), desc="Processing", unit="item"):
             if last_validation.is_valid:
                 logger.info(f"Content validated on attempt {attempt + 1}")
                 return (current_content, last_validation)

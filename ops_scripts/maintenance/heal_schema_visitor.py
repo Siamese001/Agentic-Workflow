@@ -101,6 +101,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("heal_schema_visitor", "p4obs", "metric_1")
 _emit_emits_metric_event("heal_schema_visitor", "p4obs", "metric_2")
@@ -228,7 +229,7 @@ class HealSchemaVisitor(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         # Check if decorated with @standard_heal
-        for decorator in node.decorator_list:
+        for decorator in tqdm(node.decorator_list, desc="Processing", unit="item"):
             decorator_name = ""
             if isinstance(decorator, ast.Name):
                 decorator_name = decorator.id
@@ -261,7 +262,7 @@ class HealSchemaVisitor(ast.NodeVisitor):
 
     def _check_dict_keys(self, dict_node: ast.Dict, lineno: int):
         """Check dict keys for non-canonical names."""
-        for key in dict_node.keys:
+        for key in tqdm(dict_node.keys, desc="Processing", unit="item"):
             if isinstance(key, ast.Constant) and isinstance(key.value, str):
                 key_name = key.value
 

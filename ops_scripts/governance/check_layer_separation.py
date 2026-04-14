@@ -22,6 +22,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
+from tqdm import tqdm
 
 TARGET_FILE = Path("agentic_core/base_agents/SovereignBaseAgent.py")
 FORBIDDEN_IMPORTS = [
@@ -43,7 +44,7 @@ def check_imports(file_path: Path) -> list[str]:
     except SyntaxError as e:  # guardian: Syntax errors should be caught at parser level, not runtime
         return [f"Syntax Error in {file_path}: {e}"]
     violations = []
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 for forbidden in FORBIDDEN_IMPORTS:

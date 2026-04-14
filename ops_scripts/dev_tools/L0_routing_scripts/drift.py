@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("drift", "p4obs", "metric_1")
 _emit_emits_metric_event("drift", "p4obs", "metric_2")
@@ -216,7 +217,7 @@ class DriftDetector(ast.NodeVisitor):
         if node.name in EXCLUSIONS:
             return
 
-        for base in node.bases:
+        for base in tqdm(node.bases, desc="Processing", unit="item"):
             detected_name = None
 
             # Case 1: Direct Name (class X(L2Agent))
@@ -265,11 +266,11 @@ def scan_repository(root_path: str = ".") -> int:
     # guardian: allow-path-string
     print(f"Scanning root: {os.path.abspath(root_path)}")
 
-    for root, dirs, files in os.walk(root_path):
+    for root, dirs, files in tqdm(os.walk(root_path), desc="Processing", unit="item"):
         # In-place filtering of directories to skip
         dirs[:] = [d for d in dirs if d not in ignored_dirs]
 
-        for f in files:
+        for f in tqdm(files, desc="Processing", unit="item"):
             if not f.endswith(".py"):
                 continue
 

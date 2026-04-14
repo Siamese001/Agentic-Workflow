@@ -110,6 +110,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("AllProvidersDownError", "p4obs", "metric_1")
 _emit_emits_metric_event("AllProvidersDownError", "p4obs", "metric_2")
@@ -205,7 +206,7 @@ class HardenedRouter:
         all_providers = set()
         for config in self.configs.values():
             all_providers.update(config.get_all_providers())
-        for provider in all_providers:
+        for provider in tqdm(all_providers, desc="Processing", unit="item"):
             try:
                 if provider == Provider.OPENAI:
                     self.executors[provider] = HardenedOpenAIExecutor()
@@ -352,7 +353,7 @@ class HardenedRouter:
                 f"Primary provider {primary.value} circuit breaker is OPEN. Routing to fallback...",
             )
             self._log_routing_event(tier_name, primary, is_fallback=True, reason="circuit_breaker_open")
-        for fallback in config.fallback_providers:
+        for fallback in tqdm(config.fallback_providers, desc="Processing", unit="item"):
             if self._is_provider_healthy(fallback):
                 try:
                     logger.info(

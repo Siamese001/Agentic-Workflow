@@ -136,6 +136,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("import_guard", "p4obs", "metric_1")
 _emit_emits_metric_event("import_guard", "p4obs", "metric_2")
@@ -267,7 +268,7 @@ class ImportGuard:
 
         if module_name:
             # Check deny prefixes
-            for prefix in self.DENY_PREFIXES:
+            for prefix in tqdm(self.DENY_PREFIXES, desc="Processing", unit="item"):
                 if module_name.startswith(prefix):
                     verdict = "deny"
                     reason = f"Module prefix denied: {prefix}"

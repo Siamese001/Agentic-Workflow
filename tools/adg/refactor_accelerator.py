@@ -23,6 +23,7 @@ import subprocess
 import sys
 from collections import defaultdict
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -139,7 +140,9 @@ def _fetch_candidates(
     max_lint = max(lint.values(), default=1) if lint else 1
 
     candidates = []
-    for node_id, adg_name, layer, resolved_path, fan_in, fan_out in rows:
+    for node_id, adg_name, layer, resolved_path, fan_in, fan_out in tqdm(
+        rows, desc="Processing", unit="item"
+    ):
         rel_path = (resolved_path or "").replace("\\", "/")
         churn_count = churn.get(rel_path, 0)
         viol_count = violation_counts.get(node_id, 0)
@@ -207,7 +210,7 @@ def _add_blast_radius(conn: sqlite3.Connection, candidates: list[dict], depth: i
 def _add_impacted_tests(conn: sqlite3.Connection, candidates: list[dict]) -> None:
     """Add impacted_tests field to each candidate via 'covers' relation."""
     cur = conn.cursor()
-    for c in candidates:
+    for c in tqdm(candidates, desc="Processing", unit="item"):
         node_id = c["node_id"]
         test_rows = cur.execute(
             """

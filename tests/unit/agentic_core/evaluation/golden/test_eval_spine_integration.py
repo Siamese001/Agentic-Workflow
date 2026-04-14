@@ -236,6 +236,116 @@ class TestAttachGoldenEval:
             integration.shutdown()
 
 
+class TestMaxPendingBound:
+    """Test max_pending queue boundary introduced by patch."""
+
+    def test_max_pending_triggers_process_pending(self, eval_spine):
+        """G4: when _pending reaches max_pending, evaluate_query_async drains it first."""
+        mock_evaluator = MagicMock()
+        mock_evaluator.evaluate_against_test_cases.return_value = []
+        mock_evaluator.list_available_datasets.return_value = []
+
+        integration = GoldenEvalIntegration(
+            eval_spine, evaluator=mock_evaluator, max_workers=2, max_pending=2
+        )
+        try:
+            f1 = integration.evaluate_query_async("q1", "out1")
+            f2 = integration.evaluate_query_async("q2", "out2")
+            # At this point _pending has 2 items == max_pending
+            assert len(integration._pending) <= 2
+
+            # Third submit must trigger process_pending() before appending
+            wait([f1, f2], timeout=5.0)
+            f3 = integration.evaluate_query_async("q3", "out3")
+
+            # After draining, _pending should not grow unbounded
+            assert len(integration._pending) <= 2
+        finally:
+            integration.shutdown()
+
+    def test_max_pending_default_is_128(self, eval_spine):
+        """G4: default max_pending is 128 per constructor signature."""
+        integration = GoldenEvalIntegration(eval_spine)
+        try:
+            assert integration._max_pending == 128
+        finally:
+            integration.shutdown()
+
+
+class TestRecordMetricFallback:
+    """Test _record_metric fallback chain introduced by patch."""
+
+    def test_record_metric_uses_public_hook(self, eval_spine):
+        """G5: _record_metric calls record_metric when present."""
+        result = GoldenEvalResult(
+            case_id="TC001",
+            dataset_name="test_cases",
+            query="q",
+            passed=True,
+            match_score=0.8,
+            expected_contains=[],
+            actual_contains=[],
+            missing_spans=[],
+            extra_spans=[],
+            eval_duration_ms=1.0,
+        )
+        calls = []
+        eval_spine.record_metric = lambda name, value, metadata: calls.append((name, value))
+
+        integration = GoldenEvalIntegration(eval_spine)
+        try:
+            integration._record_metric(result)
+            assert len(calls) == 1
+            assert calls[0] == ("golden_match_test_cases", 0.8)
+        finally:
+            integration.shutdown()
+
+    def test_record_metric_falls_back_to_private_record(self, eval_spine):
+        """G5: _record_metric falls back to _record when record_metric absent."""
+        result = GoldenEvalResult(
+            case_id="TC002",
+            dataset_name="retrieval",
+            query="q",
+            passed=False,
+            match_score=0.4,
+            expected_contains=[],
+            actual_contains=[],
+            missing_spans=[],
+            extra_spans=[],
+            eval_duration_ms=2.0,
+        )
+        private_calls = []
+        eval_spine._record = lambda name, value, metadata: private_calls.append((name, value))
+
+        integration = GoldenEvalIntegration(eval_spine)
+        try:
+            integration._record_metric(result)
+            assert len(private_calls) == 1
+            assert private_calls[0] == ("golden_match_retrieval", 0.4)
+        finally:
+            integration.shutdown()
+
+    def test_record_metric_silent_when_no_hook(self, eval_spine):
+        """G5: _record_metric does nothing when neither hook present."""
+        result = GoldenEvalResult(
+            case_id="TC003",
+            dataset_name="test_cases",
+            query="q",
+            passed=True,
+            match_score=1.0,
+            expected_contains=[],
+            actual_contains=[],
+            missing_spans=[],
+            extra_spans=[],
+            eval_duration_ms=1.0,
+        )
+        integration = GoldenEvalIntegration(eval_spine)
+        try:
+            integration._record_metric(result)
+        finally:
+            integration.shutdown()
+
+
 class TestErrorHandling:
     """Test error handling in integration."""
 

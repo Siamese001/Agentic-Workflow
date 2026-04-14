@@ -30,6 +30,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_writes_learning_snapshot,
 )
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -510,7 +511,7 @@ class CompletenessSnapshotRegistry:
             """)
 
             trigger_counts = {}
-            for (triggers_json,) in cursor.fetchall():
+            for (triggers_json,) in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 try:
                     triggers = json.loads(triggers_json)
                     for trigger in triggers:

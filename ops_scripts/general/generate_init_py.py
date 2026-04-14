@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[2]
 MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint"
@@ -12,13 +13,13 @@ MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprin
 def collect_public_names() -> dict[str, list[str]]:
     """Collect all public names from each modular file using AST."""
     by_module: dict[str, list[str]] = {}
-    for f in sorted(MOD_DIR.glob("*.py")):
+    for f in tqdm(sorted(MOD_DIR.glob("*.py")), desc="Processing", unit="item"):
         if f.name == "__init__.py":
             continue
         src = f.read_text(encoding="utf-8")
         tree = ast.parse(src)
         names: list[str] = []
-        for node in ast.iter_child_nodes(tree):
+        for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
             name = None
             if isinstance(node, ast.Assign):
                 for t in node.targets:

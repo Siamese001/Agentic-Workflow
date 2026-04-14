@@ -110,6 +110,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("style_gate_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("style_gate_validator", "p4obs", "metric_2")
@@ -303,7 +304,7 @@ class StyleGateValidator:
 
     def _check_unsupported_claims(self, section: BriefSection) -> list[StyleViolation]:
         results: list[StyleViolation] = []
-        for pattern in _UNSUPPORTED_CLAIM_PATTERNS:
+        for pattern in tqdm(_UNSUPPORTED_CLAIM_PATTERNS, desc="Processing", unit="item"):
             match = pattern.search(section.body)
             if match:
                 results.append(

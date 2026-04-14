@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("root_hygiene_util", "p4obs", "metric_1")
 _emit_emits_metric_event("root_hygiene_util", "p4obs", "metric_2")
@@ -216,7 +217,7 @@ def enforce_root_hygiene():
         ops_scripts.mkdir(exist_ok=True)
         l0_scripts.mkdir(exist_ok=True, parents=True)
 
-        for item in root_scripts.iterdir():
+        for item in tqdm(root_scripts.iterdir(), desc="Processing", unit="item"):
             if item.is_file() and item.suffix == ".py":
                 # Decision Logic: Does it import agentic_core?
                 try:

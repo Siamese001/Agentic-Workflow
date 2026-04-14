@@ -19,6 +19,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -149,7 +150,9 @@ class QueryDecomposer:
         patterns = self.MODE_QUERY_PATTERNS.get(artifact_mode, self.MODE_QUERY_PATTERNS["brief"])
 
         components: list[ResearchQueryComponent] = []
-        for idx, (section_name, query_type, evidence_req, sources) in enumerate(patterns, 1):
+        for idx, (section_name, query_type, evidence_req, sources) in tqdm(
+            enumerate(patterns, 1), desc="Processing", unit="item"
+        ):
             comp_id = f"Q-{artifact_mode[:3].upper()}-{idx:02d}"
 
             # Adjust query type based on section
@@ -199,7 +202,7 @@ class QueryDecomposer:
         _emit_pulls_context("enterprise", "QueryDecomposer", "decompose_batch")
 
         results: list[QueryDecomposition] = []
-        for topic, mode, audience in queries:
+        for topic, mode, audience in tqdm(queries, desc="Processing", unit="item"):
             try:
                 decomp = self.decompose(topic, mode, audience)
                 results.append(decomp)

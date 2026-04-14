@@ -23,6 +23,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -262,7 +263,7 @@ class ADGRuntimeStructuralBalanceVerifier:
                 cursor.execute("SELECT DISTINCT layer FROM nodes WHERE layer IS NOT NULL")
                 layers = [row[0] for row in cursor.fetchall()]
 
-                for layer in layers:
+                for layer in tqdm(layers, desc="Processing", unit="item"):
                     # Count runtime edges in this layer
                     runtime_placeholders = ",".join(["?" for _ in self.RUNTIME_SEMANTIC_EDGES])
                     cursor.execute(
@@ -362,7 +363,7 @@ class ADGRuntimeStructuralBalanceVerifier:
 
                 domain_balance = {}
 
-                for domain in domains:
+                for domain in tqdm(domains, desc="Processing", unit="item"):
                     # Count runtime edges in this domain
                     runtime_placeholders = ",".join(["?" for _ in self.RUNTIME_SEMANTIC_EDGES])
                     cursor.execute(

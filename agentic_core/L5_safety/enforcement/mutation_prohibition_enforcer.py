@@ -175,6 +175,15 @@ _emit_invokes_eval("p1", "mutation_prohibition_enforcer", "eval_call")
 _emit_proposal_commits_routing("p1", "mutation_prohibition_enforcer", "routing_commit")
 
 logger = logging.getLogger(__name__)
+_WRITE_MODE_FLAGS: frozenset[str] = frozenset({"w", "a", "x", "+"})
+
+
+def _validate_mutating_mode(mode: str) -> None:
+    """Reject accidental read-only use of the write guard."""
+    if not any(flag in mode for flag in _WRITE_MODE_FLAGS):
+        raise ValueError(f"safe_open_write requires a mutating mode, got: {mode}")
+
+
 FORBIDDEN_WRITE_LAYERS: frozenset[str] = frozenset({"L0", "L4", "L6"})
 _ENV_OVERRIDE_KEY = "AGENTIC_ALLOW_MUTATION_FOR_TESTS"
 
@@ -297,7 +306,10 @@ def safe_open_write(
     encoding: str | None = "utf-8",
 ) -> Any:
     """Guarded open(..., 'w'/'a') replacement. Returns file handle."""
+    _validate_mutating_mode(mode)
     assert_no_persistent_write(layer, f"open({mode})", str(filepath), trace_id)
+    if "b" in mode:
+        return open(filepath, mode)
     return open(filepath, mode, encoding=encoding)
 
 

@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("file_analysis", "p4obs", "metric_1")
 _emit_emits_metric_event("file_analysis", "p4obs", "metric_2")
@@ -197,14 +198,14 @@ def extract_docstring(node) -> str:
 def analyze_class(node: ast.ClassDef) -> dict[str, Any]:
     """Deep analysis of a class definition."""
     bases = []
-    for base in node.bases:
+    for base in tqdm(node.bases, desc="Processing", unit="item"):
         if isinstance(base, ast.Name):
             bases.append(base.id)
         elif isinstance(base, ast.Attribute):
             bases.append(base.attr)
 
     methods = []
-    for item in node.body:
+    for item in tqdm(node.body, desc="Processing", unit="item"):
         if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
             params = [arg.arg for arg in item.args.args if arg.arg != "self"]
             methods.append(
@@ -328,7 +329,7 @@ def analyze_file(file_path: Path) -> FileAnalysis | None:
     analysis.docstring = extract_docstring(tree)[:300] if extract_docstring(tree) else ""
 
     # Extract imports
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.Import):
             for alias in node.names:
                 analysis.imports.append(alias.name)
@@ -347,7 +348,7 @@ def analyze_file(file_path: Path) -> FileAnalysis | None:
                 analysis.external_deps.append(module)
 
     # Extract classes and functions
-    for node in ast.iter_child_nodes(tree):
+    for node in tqdm(ast.iter_child_nodes(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef):
             cls_info = analyze_class(node)
             analysis.classes.append(cls_info)
@@ -382,8 +383,8 @@ def find_similar_in_codebase(analysis: FileAnalysis, current_dirs: list[str]) ->
         for m in c["methods"]:
             archived_methods.add(m["name"].lower())
 
-    for dir_path in current_dirs:
-        for py_file in Path(dir_path).rglob("*.py"):
+    for dir_path in tqdm(current_dirs, desc="Processing", unit="item"):
+        for py_file in tqdm(Path(dir_path).rglob("*.py"), desc="Processing", unit="item"):
             if "__pycache__" in str(py_file):
                 continue
 
@@ -450,7 +451,7 @@ def main():
 
     results = []
 
-    for archive_path in archive_files:
+    for archive_path in tqdm(archive_files, desc="Processing", unit="item"):
         path = Path(archive_path)
         if not path.exists():
             print(f"\n[NOT FOUND] {archive_path}")

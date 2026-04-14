@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("history_action_types", "p4obs", "metric_1")
 _emit_emits_metric_event("history_action_types", "p4obs", "metric_2")
@@ -368,7 +369,7 @@ class SchemaHistoryFetcher:
             total_count = len(filtered_records)
             paginated_records = filtered_records[query.offset : query.offset + query.limit]
             if not query.include_changes:
-                for record in paginated_records:
+                for record in tqdm(paginated_records, desc="Processing", unit="item"):
                     record = record.__class__(
                         id=record.id,
                         schema_id=record.schema_id,
@@ -530,13 +531,13 @@ class SchemaHistoryFetcher:
             if not storage_path.exists():
                 storage_path.mkdir(parents=True, exist_ok=True)
                 return
-            for history_file in storage_path.glob("*.json"):
+            for history_file in tqdm(storage_path.glob("*.json"), desc="Processing", unit="item"):
                 try:
                     schema_id = history_file.stem
                     with open(history_file, encoding="utf-8") as f:
                         data = json.load(f)
                     records = []
-                    for record_data in data.get("records", []):
+                    for record_data in tqdm(data.get("records", []), desc="Processing", unit="item"):
                         record = SchemaChangeRecord(
                             id=record_data["id"],
                             schema_id=record_data["schema_id"],

@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("governance_reward_model", "p4obs", "metric_1")
 _emit_emits_metric_event("governance_reward_model", "p4obs", "metric_2")
@@ -445,7 +446,7 @@ class GovernanceRewardModel:
         """
         score_by_pid: dict[str, GovernanceRewardScore] = {s.proposal_id: s for s in scores}
         annotated: list[OptimizationProposal] = []
-        for p in proposals:
+        for p in tqdm(proposals, desc="Processing", unit="item"):
             gs = score_by_pid.get(p.proposal_id)
             if gs is None:
                 annotated.append(p)

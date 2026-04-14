@@ -354,7 +354,7 @@ class BatchingMixin:
                 try:
                     results[index] = await awaitable
                 # guardian: allow-silent-swallow
-                except Exception as exc:
+                except (RuntimeError, OSError, ValueError, AttributeError, TypeError) as exc:
                     results[index] = exc
 
         runner = _run_safe if return_exceptions else _run
@@ -382,7 +382,7 @@ class BatchingMixin:
                 try:
                     results.append(await task)
                 # guardian: allow-silent-swallow
-                except Exception as e:
+                except (RuntimeError, OSError, ValueError, AttributeError, TypeError) as e:
                     results.append(e)
             return results
         return await self.execute_batch(

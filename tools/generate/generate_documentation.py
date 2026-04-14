@@ -23,6 +23,7 @@ from agentic_core.core.documentation_framework import (
     DocumentationType,
     documentation_manager,
 )
+from tqdm import tqdm
 
 # Configure logging
 logging.basicConfig(
@@ -38,7 +39,7 @@ def generate_api_documentation(source_paths: list[Path], output_dir: Path) -> bo
 
     success = True
 
-    for source_path in source_paths:
+    for source_path in tqdm(source_paths, desc="Processing", unit="item"):
         if not source_path.exists():
             logger.warning(f"Source path not found: {source_path}")
             continue
@@ -49,7 +50,7 @@ def generate_api_documentation(source_paths: list[Path], output_dir: Path) -> bo
         else:
             python_files = list(source_path.rglob("*.py"))
 
-        for py_file in python_files:
+        for py_file in tqdm(python_files, desc="Processing", unit="item"):
             try:
                 # Generate output path
                 relative_path = py_file.relative_to(source_path.parent)
@@ -807,7 +808,7 @@ This guide provides comprehensive patterns and best practices for developing rob
     success = True
     tutorials_dir = output_dir / "tutorials"
 
-    for tutorial in tutorials:
+    for tutorial in tqdm(tutorials, desc="Processing", unit="item"):
         try:
             tutorial_path = tutorials_dir / tutorial["file_name"]
             tutorial_path.parent.mkdir(parents=True, exist_ok=True)
@@ -837,7 +838,7 @@ def validate_documentation(docs_dir: Path) -> bool:
     total_files = len(md_files)
     valid_files = 0
 
-    for md_file in md_files:
+    for md_file in tqdm(md_files, desc="Processing", unit="item"):
         try:
             with open(md_file, encoding="utf-8") as f:
                 content = f.read()

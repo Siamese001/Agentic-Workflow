@@ -27,6 +27,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -241,7 +242,7 @@ class ADGProvenanceVerifier:
             "repo_root",
         }
 
-        for field in consistent_fields:
+        for field in tqdm(consistent_fields, desc="Processing", unit="item"):
             values = {}
             for artifact_name, metadata in all_metadata.items():
                 if field in metadata:
@@ -274,7 +275,7 @@ class ADGProvenanceVerifier:
         # Load metadata from all artifacts
         all_metadata = {}
 
-        for artifact_name, artifact_path in artifacts.items():
+        for artifact_name, artifact_path in tqdm(artifacts.items(), desc="Processing", unit="item"):
             print(f"🔍 Verifying {artifact_name}: {artifact_path.name}")
 
             if artifact_name == "sqlite":

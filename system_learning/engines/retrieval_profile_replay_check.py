@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("retrieval_profile_replay_check", "retrieval_profile_replay_check_trace")
 
@@ -249,7 +250,7 @@ class RetrievalProfileReplayChecker:
             Deterministic output dictionary
         """
         results = []
-        for query in self._test_queries:
+        for query in tqdm(self._test_queries, desc="Processing", unit="item"):
             query_embedding = self._test_embeddings[query]
             similarities = []
             for other_query, other_embedding in self._test_embeddings.items():

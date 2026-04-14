@@ -47,6 +47,7 @@ import re
 import sys
 import time
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -191,7 +192,7 @@ def process_file(md_file: Path, doc_type: str, repo_root: Path, seen: set[str]) 
     canonical_digest = compute_digest(source)
     layer = detect_layer(md_file)
     docs = []
-    for chunk_idx, chunk in enumerate(chunk_text(source)):
+    for chunk_idx, chunk in tqdm(enumerate(chunk_text(source)), desc="Processing", unit="item"):
         docs.append(
             {
                 "text": chunk,
@@ -216,7 +217,7 @@ def collect_documents(repo_root: Path) -> list[dict]:
     counts: dict[str, int] = {}
 
     # Scan configured directories
-    for dir_rel, doc_type in SCAN_DIRS:
+    for dir_rel, doc_type in tqdm(SCAN_DIRS, desc="Processing", unit="item"):
         base = repo_root / dir_rel
         if not base.exists():
             continue

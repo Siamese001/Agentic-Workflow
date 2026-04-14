@@ -12,6 +12,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "terminal_alignment_final_util", "uwg_governed_write")
 _emit_writes_through("p1", "terminal_alignment_final_util", "uwg_governed_write_2")
@@ -143,7 +144,7 @@ def main():
         "syntax_errors": [],
         "missing_imports": [],
     }
-    for py_file in engines_dir.glob("*.py"):
+    for py_file in tqdm(engines_dir.glob("*.py"), desc="Processing", unit="item"):
         if py_file.name == "__init__.py":
             continue
         if fix_dataclass_field_syntax(py_file):

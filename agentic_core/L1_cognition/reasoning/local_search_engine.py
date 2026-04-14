@@ -55,6 +55,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 emit_replay_key("p0", "local_search_engine")
 emit_determinism_digest("p0", "local_search_engine")
@@ -225,17 +226,17 @@ class LocalSearchEngine:
         # BFS traversal up to max_hops
         current_level = seed_entities
 
-        for hop in range(1, self.config.max_hops + 1):
+        for hop in tqdm(range(1, self.config.max_hops + 1), desc="Processing", unit="item"):
             next_level = []
 
-            for entity in current_level:
+            for entity in tqdm(current_level, desc="Processing", unit="item"):
                 # Get relationships (sync call)
                 relationships = self.graph_store.get_relationships(
                     entity.id,
                     direction="both",
                 )
 
-                for rel in relationships:
+                for rel in tqdm(relationships, desc="Processing", unit="item"):
                     # Add connected entities
                     connected_id = rel.target_id if rel.source_id == entity.id else rel.source_id
 
@@ -273,7 +274,7 @@ class LocalSearchEngine:
         results = []
         seed_entity_ids = {e.id for e in seed_entities}
 
-        for entity in entities:
+        for entity in tqdm(entities, desc="Processing", unit="item"):
             # Text similarity score (simplified)
             text_score = self._calculate_text_similarity(entity, query)
 

@@ -286,7 +286,7 @@ class HybridSearchEngine:
         try:
             fts_results = sparse.search(query, top_k=self.top_k * 2)
 
-            for item in fts_results:
+            for item in tqdm(fts_results, desc="Processing", unit="item"):
                 doc_id = item.get("id", "")
                 if not doc_id:
                     continue

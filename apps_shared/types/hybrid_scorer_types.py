@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hybrid_scorer_types", "p4obs", "metric_1")
 _emit_emits_metric_event("hybrid_scorer_types", "p4obs", "metric_2")
@@ -246,7 +247,7 @@ class BM25Scorer:
             return 0.0
         score = 0.0
         doc_term_counts = Counter(doc_terms)
-        for term in query_terms:
+        for term in tqdm(query_terms, desc="Processing", unit="item"):
             if term in doc_term_counts:
                 tf = doc_term_counts[term]
                 df = self.doc_freqs.get(term, 0)
@@ -305,7 +306,7 @@ class HybridScorer:
             List of scoring results
         """
         results = []
-        for i, doc in enumerate(self.documents):
+        for i, doc in tqdm(enumerate(self.documents), desc="Processing", unit="item"):
             bm25_score = self.bm25_scorer.score(query, i)
             semantic_score = self._calculate_semantic_score(doc["content"], query)
             tfidf_score = self._calculate_tfidf_score(doc["content"], query)

@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("runtime_graph", "p4obs", "metric_1")
 _emit_emits_metric_event("runtime_graph", "p4obs", "metric_2")
@@ -364,7 +365,7 @@ def build_runtime_graph(result: ScanResult) -> RuntimeGraphReport:
     agent_actions: dict[str, list[str]] = {}  # mod_path → [symbols]
     tool_invocations: dict[str, list[str]] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type not in ("calls", "invokes_provider"):
             continue
         if not edge.from_name.startswith(_MODULE_PREFIX):
@@ -395,7 +396,7 @@ def build_runtime_graph(result: ScanResult) -> RuntimeGraphReport:
     upward_violations: list[LayerTransitionEdge] = []
     layer_coverage: dict[str, int] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type not in ("calls", "imports", "instantiates"):
             continue
         if not edge.from_name.startswith(_MODULE_PREFIX):

@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 import yaml
+from tqdm import tqdm
 
 
 def check_auto_stage_hook_present(config):
@@ -21,9 +22,9 @@ def check_auto_stage_hook_present(config):
     all_t0_hooks = []
 
     # Find all T0 hooks in order
-    for repo in config.get("repos", []):
+    for repo in tqdm(config.get("repos", []), desc="Processing", unit="item"):
         hooks = repo.get("hooks", [])
-        for i, hook in enumerate(hooks):
+        for i, hook in tqdm(enumerate(hooks), desc="Processing", unit="item"):
             hook_id = hook.get("id")
             # Add all T0 hooks in order
             if hook_id in [

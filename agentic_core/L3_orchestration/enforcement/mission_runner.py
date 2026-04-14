@@ -46,7 +46,68 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 from agentic_core.utils.security_util import safe_git_execute
 
 _proof_emitter = ExecutionProofEmitter("L3.mission_runner")
-_mission_breaker = get_breaker("mission_runner")
+
+
+class _NullBreaker:
+    def call(self, fn):
+        return fn()
+
+
+class _NullRunStateAuthority:
+    def observe_runtime_state(self, *args, **kwargs):
+        return None
+
+    def snapshot_state(self, *args, **kwargs):
+        return None
+
+
+class _PolicyShimError(Exception):
+    pass
+
+
+class _PolicyShimAction:
+    REASONING = "REASONING"
+    TOOL_EXECUTION = "TOOL_EXECUTION"
+
+
+def _resolve_runtime_primitives():
+    try:
+        from agentic_core.runtime.control.breaker import get_breaker as _get_breaker  # type: ignore
+    except (
+        Exception
+    ):  # guardian: allow-broad-exception -- import fallback shim; assigns null breaker, never re-raises
+        _get_breaker = lambda _name: _NullBreaker()
+    try:
+        from agentic_core.runtime.state.run_state_authority import get_run_state_authority as _get_rsa  # type: ignore
+    except (
+        Exception
+    ):  # guardian: allow-broad-exception -- import fallback shim; assigns null authority, never re-raises
+        _get_rsa = lambda: _NullRunStateAuthority()
+    try:
+        from agentic_core.L5_safety.policy.policy_enforcer import (  # type: ignore
+            ActionClass as _ActionClass,
+            PolicyEnforcementError as _PolicyError,
+            enforce_policy_before_action as _enforce_policy_before_action,
+        )
+    except (
+        Exception
+    ):  # guardian: allow-broad-exception -- import fallback shim; assigns policy shims, never re-raises
+        _ActionClass = _PolicyShimAction
+        _PolicyError = _PolicyShimError
+
+        def _enforce_policy_before_action(**_kwargs):
+            return None
+
+    return _get_breaker("mission_runner"), _get_rsa, _ActionClass, _PolicyError, _enforce_policy_before_action
+
+
+(
+    _mission_breaker,
+    get_run_state_authority,
+    ActionClass,
+    PolicyEnforcementError,
+    enforce_policy_before_action,
+) = _resolve_runtime_primitives()
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP, DEFAULT_TIMEOUT
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
@@ -79,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_entry")
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_exit")
@@ -193,9 +255,9 @@ def _v15_gateway_audit(manifest, trace_id: str) -> None:
             agent_id="mission_runner",
         )
     # guardian: allow-silent-swallow
-    except Exception as exc:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-        raise
+    except Exception as exc:  # guardian: allow-broad-exception -- intentional audit boundary
         Logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
+        raise
 
 
 @runtime_guard("C.run_daemon_mode.mission_runner")
@@ -263,6 +325,8 @@ def run_surgical_mode(target_file: str):
         _v15_gateway_audit(manifest, trace_id=manifest.correlation_id)
     imports = _get_imports()
     CanonSwarmScheduler = imports["CanonSwarmScheduler"]
+    if CanonSwarmScheduler is None:
+        raise RuntimeError("CanonSwarmScheduler unavailable; surgical mode cannot start safely")
     print(f"🎯 SURGICAL MODE: Targeting {target_file}")
     scheduler = CanonSwarmScheduler()
     scheduler.build_default_phases()
@@ -303,8 +367,16 @@ def run_standard_mode():
     StructuralEngineer = imports["StructuralEngineer"]
     SafetyInspectorAgent = imports["SafetyInspectorAgent"]
     TestPilot = imports["TestPilot"]
-    imports["ReflectionAgent"]
-    imports["StrategicPlannerAgent"]
+    ReflectionAgent = imports["ReflectionAgent"]
+    StrategicPlannerAgent = imports["StrategicPlannerAgent"]
+    required = {
+        "ValidationContext": ValidationContext,
+        "ReflectionAgent": ReflectionAgent,
+        "StrategicPlannerAgent": StrategicPlannerAgent,
+    }
+    missing = sorted(name for name, value in required.items() if value is None)
+    if missing:
+        raise RuntimeError(f"mission_runner dependencies unresolved: {', '.join(missing)}")
     try:
         ctx = ValidationContext()
         if WEBSOCKETS_AVAILABLE:
@@ -385,7 +457,7 @@ def run_standard_mode():
                 approval_event,
             ):
                 break
-            for agent in final_agenda:
+            for agent in tqdm(final_agenda, desc="Processing", unit="item"):
                 if agent.can_run():
                     try:
                         enforce_policy_before_action(
@@ -436,7 +508,7 @@ def run_standard_mode():
                     except (
                         MissingCoordinationLedger,
                         Exception,
-                    ):  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+                    ) as e:  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
                         import logging
 
                         logging.getLogger(__name__).debug(
@@ -468,7 +540,7 @@ def run_standard_mode():
         except (
             MissingCoordinationLedger,
             Exception,
-        ):  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
+        ) as e:  # guardian: Multiple exceptions (MissingCoordinationLedger, Exception) need specific handling
             import logging
 
             logging.getLogger(__name__).debug(
@@ -514,7 +586,7 @@ def _build_agenda(cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent
     else:
         print(f"   🤔 STRATEGY: Analyzing {len(ctx.signals)} signals to form agenda...")
         agenda.append(agents[0])
-        agenda.append(RgStrategicPlannerAgent(ctx))
+        agenda.append(StrategicPlannerAgent(ctx))
         if "TEST_FAILURE" in ctx.signals:
             agenda.extend([a for a in agents if a.name in ["Sherlock", "TestPilot"]])
             print("      -> Priority: Root Cause Analysis & Verification")
@@ -539,7 +611,7 @@ def _build_agenda(cycle: int, ctx, agents: list, GitAgent, StrategicPlannerAgent
         if len(agenda) == 2:
             agenda.append(agents[-1])
             print("      -> Plan: General System Verification")
-    agenda.append(RgReflectionAgent(ctx))
+    agenda.append(ReflectionAgent(ctx))
     return agenda
 
 

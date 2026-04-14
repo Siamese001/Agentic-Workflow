@@ -24,6 +24,7 @@ from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 
 class EnforcementType(Enum):
@@ -170,7 +171,7 @@ class CodeEnforcer:
         violations = []
         lines = content.split("\n")
 
-        for i, line in enumerate(lines, 1):
+        for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
             match = self._agent_suffix_pattern.search(line)
             if match:
                 class_name = match.group(1)
@@ -194,8 +195,8 @@ class CodeEnforcer:
         violations = []
         lines = content.split("\n")
 
-        for pattern_name, pattern in self._forbidden_patterns.items():
-            for i, line in enumerate(lines, 1):
+        for pattern_name, pattern in tqdm(self._forbidden_patterns.items(), desc="Processing", unit="item"):
+            for i, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
                 if pattern.search(line):
                     violations.append(
                         CodeViolation(
@@ -218,7 +219,7 @@ class CodeEnforcer:
         except SyntaxError:
             return violations
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.FunctionDef):
                 if node.returns is None and not node.name.startswith("_"):
                     violations.append(
@@ -246,7 +247,7 @@ class CodeEnforcer:
         except SyntaxError:
             return violations
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.Import | ast.ImportFrom):
                 import_layer = self._extract_layer_from_import(node)
                 if import_layer and self._is_sovereignty_violation(file_layer, import_layer):

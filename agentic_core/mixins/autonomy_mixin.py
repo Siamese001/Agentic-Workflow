@@ -171,7 +171,7 @@ class AutonomyMixin(SovereignBaseAgent):
     _last_proactive_check: float = 0.0
     _max_proactive_actions_per_hour: int = 12
     _proactive_action_count_this_hour: int = 0
-    _hour_boundary: float = time.time()
+    _hour_boundary: float = 0.0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -187,7 +187,7 @@ class AutonomyMixin(SovereignBaseAgent):
 
         if not self._autonomy_enabled:
             return False
-        now = time.time()
+        now = time.monotonic()
         if now - self._hour_boundary >= 3600:
             self._proactive_action_count_this_hour = 0
             self._hour_boundary = now
@@ -217,5 +217,5 @@ class AutonomyMixin(SovereignBaseAgent):
         try:
             result = await self.execute(proactive=True, opportunity_context=opportunity)
             return {"proactive": True, "success": True, "result": result}
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError) as e:
             return {"proactive": True, "success": False, "error": str(e)}

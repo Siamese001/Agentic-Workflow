@@ -16,6 +16,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from ops_scripts.ci.adg_gates.gate_base import ADGGateBase, GateResult, GateViolation
+from tqdm import tqdm
 
 
 class TraceReplayEvalGate(ADGGateBase):
@@ -54,7 +55,7 @@ class TraceReplayEvalGate(ADGGateBase):
                 FROM mv_trace_replay_eval_gaps
                 WHERE gap_type != 'ok'
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 node_id, file, layer, has_trace, has_replay_link, has_eval, gap_type = row
 
                 key = f"{layer}:{node_id}"
@@ -99,7 +100,7 @@ class TraceReplayEvalGate(ADGGateBase):
                 SELECT layer, action_node_count, eval_covered_count, gap_count, coverage_pct
                 FROM mv_eval_coverage_by_path
             """)
-            for row in cursor.fetchall():
+            for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                 layer, action_node_count, eval_covered_count, gap_count, coverage_pct = row
 
                 summary["eval_coverage_by_layer"][layer] = {

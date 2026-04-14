@@ -157,6 +157,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("integrity_report_generator_util", "integrity_report_generator_util_trace")
 
@@ -306,7 +307,7 @@ class AgentIntegrityReporter:
         gaps: list[GapAnalysisItem] = []
 
         # Gap items from Phase 1: Missing from registry
-        for agent in registry_result.missing_agents:
+        for agent in tqdm(registry_result.missing_agents, desc="Processing", unit="item"):
             gaps.append(
                 GapAnalysisItem(
                     agent_class=agent.class_name,
@@ -320,7 +321,7 @@ class AgentIntegrityReporter:
             )
 
         # Gap items from Phase 1: Orphan agents
-        for orphan in registry_result.orphan_agents:
+        for orphan in tqdm(registry_result.orphan_agents, desc="Processing", unit="item"):
             gaps.append(
                 GapAnalysisItem(
                     agent_class=orphan["class_name"],
@@ -334,7 +335,7 @@ class AgentIntegrityReporter:
             )
 
         # Gap items from Phase 2: Missing Soul tier (unit tests)
-        for compliance in compliance_result.agent_compliance:
+        for compliance in tqdm(compliance_result.agent_compliance, desc="Processing", unit="item"):
             if not compliance.soul_tier.is_covered:
                 gaps.append(
                     GapAnalysisItem(
@@ -349,7 +350,7 @@ class AgentIntegrityReporter:
                 )
 
         # Gap items from Phase 3: Structure violations
-        for violation in structure_result.violations:
+        for violation in tqdm(structure_result.violations, desc="Processing", unit="item"):
             priority = "medium"
             if violation.severity == "critical":
                 priority = "critical"

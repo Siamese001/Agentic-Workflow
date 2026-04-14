@@ -42,10 +42,10 @@ def query_similarity(query: str, top_k: int = _MAX_TOP_K, namespace: str = "") -
         LOGGER.warning("Embedding cache unavailable: %s", exc)
         return []
 
-    cache = SovereignSemanticCache()
     try:
+        cache = SovereignSemanticCache()
         raw_results = cache.query(normalized_query, top_k=_normalize_top_k(top_k), namespace=namespace)
-    except (RuntimeError, ValueError, TypeError) as exc:
+    except (RuntimeError, ValueError, TypeError, AttributeError) as exc:
         LOGGER.warning("Embedding query failed: %s", exc)
         return []
 

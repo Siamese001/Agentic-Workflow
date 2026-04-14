@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -124,7 +125,7 @@ def remove_from_requirements_txt(
     new_lines: list[str] = []
     removed: int = 0
 
-    for line in lines:
+    for line in tqdm(lines, desc="Processing", unit="item"):
         line_stripped = line.strip()
         if not line_stripped or line_stripped.startswith("#"):
             new_lines.append(line)

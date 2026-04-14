@@ -23,6 +23,7 @@ from agentic_core.L0_routing.config.path_constants import (
     PROJECT_ROOT_WHITELIST,
     ROOT_PROTECTED_FILES,
 )
+from tqdm import tqdm
 
 # ============================================================================
 # APP-SPECIFIC CONSTANTS (extracted from artifacts.py)
@@ -261,7 +262,7 @@ def validate_artifact_routing(
         Tuple of (is_valid, matched_destination, rejection_reason)
     """
     file_ext = Path(filename).suffix.lower()
-    for dest, rules in ARTIFACT_ROUTING_MAP.items():
+    for dest, rules in tqdm(ARTIFACT_ROUTING_MAP.items(), desc="Processing", unit="item"):
         allowed_exts = rules.get("file_extensions", [])
         matches_positive = False
         if allowed_exts and file_ext in allowed_exts:

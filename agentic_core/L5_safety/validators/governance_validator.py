@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("governance_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("governance_validator", "p4obs", "metric_2")
@@ -268,7 +269,7 @@ class GovernanceShieldValidator:
         issues: list[str] = []
         risk_scores = {"high": 0, "medium": 0, "low": 0}
         content_lower = content.lower()
-        for level, keywords in self.risk_keywords.items():
+        for level, keywords in tqdm(self.risk_keywords.items(), desc="Processing", unit="item"):
             for keyword in keywords:
                 matches = len(re.findall(f"\\b{re.escape(keyword)}\\b", content_lower))
                 risk_scores[level] += matches

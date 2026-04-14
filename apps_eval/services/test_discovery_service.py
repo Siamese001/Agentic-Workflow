@@ -11,7 +11,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_applies_guardrail,
     _emit_records_execution_trace,
@@ -22,6 +22,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -116,7 +117,7 @@ class TestDiscoveryService:
         test_patterns = test_patterns or ["test_*.py", "*_test.py"]
         discovered: list[dict[str, Any]] = []
 
-        for source_dir in source_dirs:
+        for source_dir in tqdm(source_dirs, desc="Processing", unit="item"):
             path = Path(source_dir)
             if not path.exists():
                 _log.warning("Source directory does not exist: %s", source_dir)

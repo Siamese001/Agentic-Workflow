@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from tqdm import tqdm
 
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s %(name)s: %(message)s")
 _log = logging.getLogger("apps_exec.tools.exec_dry_run_tool")
@@ -25,7 +26,7 @@ def main() -> int:
     personas = [p.value for p in AudiencePersona]
     failures = 0
 
-    for persona in personas:
+    for persona in tqdm(personas, desc="Processing", unit="item"):
         try:
             req = ExecBriefRequest(
                 audience=AudiencePersona(persona),

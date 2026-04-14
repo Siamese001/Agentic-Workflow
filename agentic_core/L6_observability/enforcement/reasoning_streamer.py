@@ -8,12 +8,13 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 
 "\nL5 Streamer - Live Reasoning Broadcast System\n\nImplements non-blocking JSONL streaming of agent thoughts and actions\nto observability/audit/live_stream.jsonl for real-time monitoring.\n\nFeatures:\n- Non-blocking asyncio.Queue based streaming\n- WebSocket server for real-time browser updates\n- Reasoning extraction from LLM responses\n- Agent lifecycle broadcasts\n- Graceful shutdown with queue drain\n"
 import asyncio
+from contextlib import suppress
 import json
 import logging
 import re
 import sys
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -21,7 +22,7 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 
 if sys.platform == "win32":
     sys.stdout = open(sys.stdout.fileno(), mode="w", encoding="utf-8", buffering=1)
-Logger: Any = logging.getLogger(__name__)
+LOGGER: Any = logging.getLogger(__name__)
 try:
     import websockets
     from websockets.server import WebSocketServerProtocol
@@ -29,6 +30,8 @@ try:
     WEBSOCKETS_AVAILABLE: Any = True
 except ImportError:  # guardian: allow-silent-swallow
     WEBSOCKETS_AVAILABLE: Any = False
+    websockets = None
+    WebSocketServerProtocol = Any
     LOGGER.warning("websockets not available - live browser updates disabled")
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -36,6 +39,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 record_execution_trace("reasoning_streamer", "reasoning_streamer_trace")
 
@@ -68,13 +72,16 @@ class L5Streamer:
         _emit_applies_guardrail(str(_uuid.uuid4()), "L5Streamer.__init__", "p0_governance")
         self.stream_dir = Path(stream_dir)
         self.log_path = self.stream_dir / "live_stream.jsonl"
-        self.stream_queue: asyncio.Queue = asyncio.Queue()
+        self.stream_queue: asyncio.Queue = asyncio.Queue(maxsize=1000)
         self.stream_task: asyncio.Task | None = None
         self._streamer_initialized: bool = False
         self._current_agent: str = "System"
         self._websocket_server: Any | None = None
         self._websocket_clients: set[WebSocketServerProtocol] = set()
         self._websocket_task: threading.Thread | None = None
+        self._websocket_loop: asyncio.AbstractEventLoop | None = None
+        self._websocket_ready = threading.Event()
+        self._websocket_stop: asyncio.Future | None = None
         self.signals: set[str] = set()
         LOGGER.info(f"L5Streamer initialized with output: {self.log_path}")
 
@@ -92,8 +99,10 @@ class L5Streamer:
             self.stream_task = asyncio.create_task(self._stream_worker())
             self._streamer_initialized = True
         if WEBSOCKETS_AVAILABLE and (not self._websocket_server):
+            self._websocket_ready.clear()
             self._websocket_task = threading.Thread(target=self._run_websocket_server, daemon=True)
             self._websocket_task.start()
+            self._websocket_ready.wait(timeout=2.0)
         await self.broadcast("L5 Streamer initialized and operational", level="SYSTEM")
         LOGGER.info("L5 Streamer started")
 
@@ -107,28 +116,30 @@ class L5Streamer:
                     if self._websocket_clients:
                         message = json.dumps(payload)
                         disconnected = set()
-                        for client in self._websocket_clients:
+                        for client in tqdm(list(self._websocket_clients), desc="Processing", unit="item"):
                             try:
+                                if not self._websocket_loop or self._websocket_loop.is_closed():
+                                    disconnected.add(client)
+                                    continue
                                 asyncio.run_coroutine_threadsafe(
                                     client.send(message),
-                                    asyncio.get_event_loop(),
+                                    self._websocket_loop,
                                 ).result(timeout=DEFAULT_TIMEOUT)
-                            except (ValueError, TypeError, RuntimeError) as e:
-                                raise
+                            except Exception as exc:  # guardian: allow-broad-exception -- websocket client handler; network and protocol errors are expected
+                                LOGGER.warning("reasoning_streamer websocket_send_failed: %s", exc)
                                 disconnected.add(client)
                         self._websocket_clients -= disconnected
                 finally:
                     self.stream_queue.task_done()
             except asyncio.CancelledError:
                 break
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                LOGGER.error(f"Streamer error writing to stream: {e}")
+            except Exception as exc:  # guardian: allow-broad-exception -- asyncio stream worker error boundary; worker must not die on transient write errors
+                LOGGER.exception("reasoning_streamer worker failure: %s", exc)
 
     def _run_websocket_server(self):
         """Run WebSocket server in a separate thread with its own event loop."""
 
-        async def handle_client(websocket: WebSocketServerProtocol, path: str):
+        async def handle_client(websocket: WebSocketServerProtocol, path: str | None = None):
             """Handle new WebSocket client connections."""
             self._websocket_clients.add(websocket)
             LOGGER.info(f"WebSocket client connected: {websocket.remote_address}")
@@ -143,9 +154,8 @@ class L5Streamer:
                     ),
                 )
                 await websocket.wait_closed()
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                LOGGER.error(f"WebSocket client error: {e}")
+            except Exception as exc:  # guardian: allow-broad-exception -- websocket client handler; network and protocol errors are expected and must not kill the server
+                LOGGER.warning("reasoning_streamer websocket_client_error: %s", exc)
             finally:
                 self._websocket_clients.discard(websocket)
                 LOGGER.info("WebSocket client disconnected")
@@ -153,16 +163,35 @@ class L5Streamer:
         async def server_main():
             """Main WebSocket server coroutine."""
             try:
-                async with websockets.serve(handle_client, "127.0.0.1", 8765):
-                    LOGGER.info("🌐 WebSocket server started at ws://127.0.0.1:8765")
-                    await asyncio.Future()
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                LOGGER.error(f"WebSocket server error: {e}")
+                self._websocket_server = await websockets.serve(handle_client, "127.0.0.1", 8765)
+                self._websocket_stop = asyncio.get_running_loop().create_future()
+                self._websocket_ready.set()
+                LOGGER.info("WebSocket server started at ws://127.0.0.1:8765")
+                await self._websocket_stop
+            except Exception as exc:  # guardian: allow-broad-exception -- websocket server error boundary; all errors logged and trigger graceful shutdown
+                LOGGER.exception("reasoning_streamer websocket_server_error: %s", exc)
+            finally:
+                if self._websocket_server is not None:
+                    self._websocket_server.close()
+                    await self._websocket_server.wait_closed()
+                self._websocket_server = None
+                self._websocket_ready.set()
 
         loop = asyncio.new_event_loop()
+        self._websocket_loop = loop
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(server_main())
+        try:
+            loop.run_until_complete(server_main())
+        finally:
+            pending = asyncio.all_tasks(loop)
+            for task in pending:
+                task.cancel()
+            with suppress(
+                Exception
+            ):  # guardian: allow-broad-exception -- suppress task cancellation errors during event loop shutdown
+                loop.run_until_complete(asyncio.gather(*pending, return_exceptions=True))
+            loop.close()
+            self._websocket_loop = None
 
     async def broadcast(self, message: str, agent: str = None, level: str = "INFO") -> Any:
         """
@@ -174,13 +203,16 @@ class L5Streamer:
             level: Log level (INFO, THOUGHT, AGENT_START, AGENT_END, ERROR)
         """
         payload: Any = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "agent": agent or self._current_agent,
             "level": level,
             "content": message,
             "signals": list(self.signals),
         }
-        await self.stream_queue.put(payload)
+        try:
+            self.stream_queue.put_nowait(payload)
+        except asyncio.QueueFull:
+            LOGGER.warning("reasoning_streamer queue full, dropping payload level=%s agent=%s", level, agent)
 
     async def broadcast_reasoning(self, response_text: str, agent: str = None) -> Any:
         """
@@ -243,12 +275,17 @@ class L5Streamer:
             self.stream_task = None
         for client in list(self._websocket_clients):
             try:
-                asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(
-                    timeout=DEFAULT_TIMEOUT,
-                )
-            except (ValueError, TypeError, RuntimeError) as e:
-                raise
-                pass
+                if self._websocket_loop and not self._websocket_loop.is_closed():
+                    asyncio.run_coroutine_threadsafe(client.close(), self._websocket_loop).result(
+                        timeout=DEFAULT_TIMEOUT,
+                    )
+            except Exception as exc:  # guardian: allow-broad-exception -- websocket close errors during shutdown are non-critical and must not block cleanup
+                LOGGER.debug("reasoning_streamer websocket_close_failed: %s", exc)
+        if self._websocket_loop and self._websocket_stop and not self._websocket_stop.done():
+            self._websocket_loop.call_soon_threadsafe(self._websocket_stop.set_result, None)
+        if self._websocket_task and self._websocket_task.is_alive():
+            self._websocket_task.join(timeout=DEFAULT_TIMEOUT)
+        self._websocket_task = None
         self._websocket_clients.clear()
         self._streamer_initialized = False
         LOGGER.info("L5 Streamer stopped")

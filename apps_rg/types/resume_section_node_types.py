@@ -80,6 +80,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("resume_section_node_types", "p4obs", "metric_1")
 _emit_emits_metric_event("resume_section_node_types", "p4obs", "metric_2")
@@ -422,7 +423,7 @@ class ResumeSectionNode:
         best_confidence = 0.5
         best_keywords = []
         best_subcategory = None
-        for industry, config in self.industry_keywords.items():
+        for industry, config in tqdm(self.industry_keywords.items(), desc="Processing", unit="item"):
             industry_matches = [kw for kw in config["keywords"] if kw in jd_lower]
             if industry_matches:
                 confidence = min(0.95, 0.5 + len(industry_matches) * 0.15)

@@ -16,6 +16,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_snapshots_state,
 )
+from tqdm import tqdm
 
 ROOT: Any = Path("C:/Git/Agentic-Workflow")
 CORE: Any = ROOT / AGENTIC_CORE_DIR
@@ -44,7 +45,7 @@ def trim_airlock(init_file: Any) -> Any:
     new_lines: Any = []
     in_all: Any = False
     all_items: Any = []
-    for line in lines:
+    for line in tqdm(lines, desc="Processing", unit="item"):
         stripped: Any = line.strip()
         if not stripped:
             continue

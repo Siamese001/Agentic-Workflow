@@ -129,6 +129,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_inherited_invocation_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_inherited_invocation_util", "p4obs", "metric_2")
@@ -203,7 +204,7 @@ def find_class_end(source: str, class_name: str) -> tuple[int, int]:
         tree = ast.parse(source)
     except SyntaxError:  # guardian: Syntax errors should be caught at parser level, not runtime
         return (-1, -1)
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if isinstance(node, ast.ClassDef) and node.name == class_name:
             if node.body:
                 last_node = node.body[-1]
@@ -288,7 +289,7 @@ def main():
     added = 0
     skipped = 0
     errors = 0
-    for file_path_str, class_names in sorted(by_file.items()):
+    for file_path_str, class_names in tqdm(sorted(by_file.items()), desc="Processing", unit="item"):
         file_path = Path(file_path_str)
         if not file_path.exists():
             print(f"[SKIP] File not found: {file_path}")

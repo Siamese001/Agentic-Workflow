@@ -86,6 +86,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fact_ledger_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("fact_ledger_validator", "p4obs", "metric_2")
@@ -340,10 +341,10 @@ class ClaimExtractor:
         value_str = None
         numeric_value = None
         unit = None
-        for pattern_name, pattern in self.patterns.items():
+        for pattern_name, pattern in tqdm(self.patterns.items(), desc="Processing", unit="item"):
             match = pattern.search(text)
             if match:
-                for group in match.groups():
+                for group in tqdm(match.groups(), desc="Processing", unit="item"):
                     if group and re.match("\\d", group):
                         clean_num = re.sub("[^\\d.]", "", group)
                         try:
@@ -445,10 +446,10 @@ class FactLedger:
             Number of facts extracted
         """
         count = 0
-        for exp in experience:
+        for exp in tqdm(experience, desc="Processing", unit="item"):
             company = exp.get("company", "Unknown")
             title = exp.get("title", "Unknown")
-            for bullet in exp.get("bullets", []):
+            for bullet in tqdm(exp.get("bullets", []), desc="Processing", unit="item"):
                 entity, value_str, numeric_value, unit = self.extractor.extract_claim(bullet)
                 if entity and numeric_value is not None:
                     fact = Fact(
@@ -475,7 +476,7 @@ class FactLedger:
             Number of facts extracted
         """
         count = 0
-        for achievement in achievements:
+        for achievement in tqdm(achievements, desc="Processing", unit="item"):
             description = achievement.get("description", "")
             entity, value_str, numeric_value, unit = self.extractor.extract_claim(description)
             if entity and numeric_value is not None:
@@ -503,7 +504,7 @@ class FactLedger:
             Number of facts extracted
         """
         count = 0
-        for key, value in metrics.items():
+        for key, value in tqdm(metrics.items(), desc="Processing", unit="item"):
             if isinstance(value, int | float):
                 unit = self._infer_unit_from_key(key)
                 fact = Fact(

@@ -209,7 +209,7 @@ class EmbeddingMixin:
         """Get batch embeddings through gateway."""
         try:
             return await self.embedding_gateway.get_embeddings_batch(contents, provider)
-        except Exception as e:
+        except (AttributeError, RuntimeError, OSError) as e:
             import logging
 
             logging.getLogger(__name__).debug("embedding_mixin: Exception swallowed at L204: %s", e)

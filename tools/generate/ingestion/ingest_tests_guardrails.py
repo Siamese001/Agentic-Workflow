@@ -25,6 +25,7 @@ import hashlib
 import sys
 import time
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -88,12 +89,12 @@ def collect_documents(repo_root: Path) -> list[dict]:
     all_docs: list[dict] = []
     seen: set[str] = set()
 
-    for dir_rel, glob, doc_type in SCAN_DIRS:
+    for dir_rel, glob, doc_type in tqdm(SCAN_DIRS, desc="Processing", unit="item"):
         base = repo_root / dir_rel
         if not base.exists():
             continue
         batch = []
-        for src_file in sorted(base.rglob(glob)):
+        for src_file in tqdm(sorted(base.rglob(glob)), desc="Processing", unit="item"):
             if not src_file.is_file():
                 continue
             if any(excl in src_file.parts for excl in EXCLUDE_DIRS):
@@ -109,7 +110,7 @@ def collect_documents(repo_root: Path) -> list[dict]:
             if len(source.strip()) < MIN_BODY_CHARS:
                 continue
             canonical_digest = compute_digest(source)
-            for chunk_idx, chunk in enumerate(chunk_text(source)):
+            for chunk_idx, chunk in tqdm(enumerate(chunk_text(source)), desc="Processing", unit="item"):
                 batch.append(
                     {
                         "text": chunk,

@@ -144,6 +144,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("hitl_escalation_activator", "p4obs", "metric_1")
 _emit_emits_metric_event("hitl_escalation_activator", "p4obs", "metric_2")
@@ -310,7 +311,7 @@ class HITLEscalationActivator:
         )
 
         # Dispatch to handlers synchronously
-        for handler in self._handlers:
+        for handler in tqdm(self._handlers, desc="Processing", unit="item"):
             try:
                 result = handler(req)
                 if result:

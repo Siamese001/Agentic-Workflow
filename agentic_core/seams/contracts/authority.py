@@ -7,7 +7,10 @@ All upward imports (→ L5) are deferred inside the factory function.
 
 from __future__ import annotations
 
-from typing import Any, Protocol, runtime_checkable
+import logging
+import os
+from functools import lru_cache
+from typing import Any, Mapping, Protocol, runtime_checkable
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -155,6 +158,9 @@ _emit_stores_embedding("p4", "authority", "embedding_store")
 _emit_updates_meta_learning_state("p4", "authority", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "authority", "exec_snapshot_link")
 
+logger = logging.getLogger(__name__)
+_FAIL_OPEN_ENV = "SEAMS_ALLOW_FAIL_OPEN_AUTHORITY"
+
 
 @runtime_checkable
 class MCPAuthorityProtocol(Protocol):
@@ -164,47 +170,80 @@ class MCPAuthorityProtocol(Protocol):
 
     def record_breach(self, error_msg: str) -> Any: ...
 
-    def authorize_tool_call(self, tool_name: str, args: dict) -> None: ...
+    def authorize_tool_call(self, tool_name: str, args: Mapping[str, Any]) -> None: ...
 
 
 class _NullAuthority:
-    """No-op fallback when L5 authority is unavailable (CI / offline)."""
+    """Fallback authority when L5 authority is unavailable.
+
+    Defaults to fail-closed. Operators can explicitly opt into fail-open
+    behavior by setting ``SEAMS_ALLOW_FAIL_OPEN_AUTHORITY=1`` for local CI.
+    """
+
+    def __init__(self, reason: str) -> None:
+        self._reason = reason
 
     def is_authorized(self) -> bool:
-        return True
+        return os.getenv(_FAIL_OPEN_ENV, "0") == "1"
 
-    def record_breach(self, error_msg: str) -> Any:
+    def record_breach(self, error_msg: str) -> dict[str, Any]:
         import uuid as _uuid  # noqa: PLC0415
 
-        _trace_id = str(_uuid.uuid4())
+        trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id,
+            trace_id,
             LayerSegment.L3_ORCHESTRATION,
             "_NullAuthority.record_breach",
         )
+        logger.error(
+            "[NullAuthority] breach recorded trace_id=%s reason=%s error=%s",
+            trace_id,
+            self._reason,
+            error_msg,
+        )
+        return {
+            "trace_id": trace_id,
+            "authorized": False,
+            "reason": self._reason,
+            "error": error_msg,
+        }
 
-        import logging
+    def authorize_tool_call(self, tool_name: str, args: Mapping[str, Any]) -> None:
+        if not tool_name:
+            raise ValueError("tool_name must be non-empty")
 
-        logging.getLogger(__name__).warning("[NullAuthority] breach recorded: %s", error_msg)
+        if self.is_authorized():
+            logger.warning(
+                "[NullAuthority] fail-open enabled via %s for tool=%s",
+                _FAIL_OPEN_ENV,
+                tool_name,
+            )
+            return
 
-    def authorize_tool_call(self, tool_name: str, args: dict) -> None:
-        pass
+        raise PermissionError(
+            "MCP authority unavailable; refusing tool call "
+            f"{tool_name!r}. Set {_FAIL_OPEN_ENV}=1 only for controlled offline runs."
+        )
 
 
+@lru_cache(maxsize=1)
 def get_mcp_authority() -> MCPAuthorityProtocol:
-    """Return the live MCPSovereignAuthority singleton, or a no-op fallback.
-
-    Lazy import holds the L5 upward dependency inside the seam so that
-    L2/L3 consumers can call this without gravity violations.
-    """
+    """Return the live MCPSovereignAuthority singleton or a guarded fallback."""
     try:
         from agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer import (
             mcp_authority,
         )
+    except ImportError as exc:
+        reason = f"authority import failed: {exc}"
+        logger.error(reason)
+        return _NullAuthority(reason)
 
-        return mcp_authority  # type: ignore[return-value]
-    except ImportError:  # guardian: allow-silent-swallow
-        return _NullAuthority()
+    if not isinstance(mcp_authority, MCPAuthorityProtocol):
+        reason = "imported mcp_authority does not satisfy MCPAuthorityProtocol"
+        logger.error(reason)
+        return _NullAuthority(reason)
+
+    return mcp_authority
 
 
 __all__ = ["MCPAuthorityProtocol", "get_mcp_authority"]

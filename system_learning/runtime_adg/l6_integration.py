@@ -23,6 +23,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     record_execution_trace,
 )
 from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
+from tqdm import tqdm
 
 
 class L6MetaLearningBridge:
@@ -228,7 +229,7 @@ class L6MetaLearningBridge:
         max_fast_ops = 100
 
         # Analyze nodes for patterns
-        for node in snapshot.nodes:
+        for node in tqdm(snapshot.nodes, desc="Processing", unit="item"):
             # Layer distribution
             layer = node.layer[:8] if node.layer else "unknown"
             patterns["layer_distribution"][layer] = patterns["layer_distribution"].get(layer, 0) + 1
@@ -286,7 +287,7 @@ class L6MetaLearningBridge:
         """Log system evolution event with size validation."""
         # Validate and sanitize event data
         sanitized_data = {}
-        for key, value in data.items():
+        for key, value in tqdm(data.items(), desc="Processing", unit="item"):
             if isinstance(value, str):
                 sanitized_data[key[:64]] = value[:512]  # Limit string values
             elif isinstance(value, (int, float, bool)):
@@ -372,7 +373,7 @@ class L6MetaLearningBridge:
                 "total_snapshots": len(self._pattern_index),
             }
 
-            for patterns in self._pattern_index.values():
+            for patterns in tqdm(self._pattern_index.values(), desc="Processing", unit="item"):
                 for layer, count in patterns.get("layer_distribution", {}).items():
                     aggregated["layer_distribution"][layer] = (
                         aggregated["layer_distribution"].get(layer, 0) + count
@@ -415,7 +416,7 @@ class L6MetaLearningBridge:
 
         events = []
         with open(self._evolution_log_path, encoding="utf-8") as f:
-            for line in f:
+            for line in tqdm(f, desc="Processing", unit="item"):
                 try:
                     event = json.loads(line.strip())
                     if event_type is None or event["event_type"] == event_type:

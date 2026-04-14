@@ -21,6 +21,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -274,10 +275,12 @@ class CredentialScanner:
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             lines = content.split("\n")
-            for line_num, line in enumerate(lines, start=1):
-                for pattern_name, (compiled_regex, severity, confidence) in self._compiled_patterns.items():
+            for line_num, line in tqdm(enumerate(lines, start=1), desc="Processing", unit="item"):
+                for pattern_name, (compiled_regex, severity, confidence) in tqdm(
+                    self._compiled_patterns.items(), desc="Processing", unit="item"
+                ):
                     matches = compiled_regex.finditer(line)
-                    for _match in matches:
+                    for _match in tqdm(matches, desc="Processing", unit="item"):
                         if _is_false_positive(line, pattern_name):
                             continue
                         self.matches.append(
@@ -316,7 +319,7 @@ class CredentialScanner:
         Logger.info(f"[CREDENTIAL SCAN] Scanning {len(scannable_files)} files")
 
         self.matches = []
-        for file_path in scannable_files:
+        for file_path in tqdm(scannable_files, desc="Processing", unit="item"):
             self._scan_file(file_path)
 
         summary = _generate_summary(self.matches)

@@ -93,6 +93,9 @@ _emit_links_execution_to_snapshot("p4", "secure_tools_impl", "exec_snapshot_link
 
 "\nSecure Tools - Atomic Module\nExtracted from ActionNode.py via Atomic Fission Protocol\nImplements sandboxed file operations and command execution\n"
 import logging
+import os
+import shlex
+import shutil
 import subprocess
 import uuid
 from pathlib import Path
@@ -209,6 +212,22 @@ class SecureToolsImpl:
     """
 
     BLACKLIST_COMMANDS: list[str] = ["rm -rf", "sudo", "format", "> /dev/sda", "mkfs"]
+    SAFE_BINARIES: frozenset[str] = frozenset(
+        {
+            "python",
+            "python3",
+            "pytest",
+            "ruff",
+            "mypy",
+            "node",
+            "npm",
+            "git",
+            "ls",
+            "cat",
+            "echo",
+        }
+    )
+    SHELL_METACHARS: tuple[str, ...] = (";", "&&", "||", "|", ">", "<", "$(", "`")
 
     def __init__(self, work_dir: Path):
         """
@@ -217,7 +236,40 @@ class SecureToolsImpl:
         Args:
             work_dir (Path): Working directory for sandboxing
         """
-        self.work_dir = work_dir
+        self.work_dir = work_dir.resolve()
+        if not self.work_dir.exists() or not self.work_dir.is_dir():
+            raise ValueError(f"SECURITY VIOLATION: Working directory is invalid: {self.work_dir}")
+
+    def _safe_cwd(self) -> Path:
+        cwd = self.work_dir.resolve()
+        if not cwd.exists() or not cwd.is_dir():
+            raise ValueError(f"SECURITY VIOLATION: Working directory is invalid: {cwd}")
+        return cwd
+
+    def _parse_and_validate_command(self, command: str) -> list[str]:
+        if not command or not command.strip():
+            raise ValueError("SECURITY VIOLATION: Empty command.")
+        if any(token in command for token in self.SHELL_METACHARS):
+            raise ValueError(
+                "SECURITY VIOLATION: Shell metacharacters are not allowed. Pass argv-style commands only.",
+            )
+        if any(b in command for b in self.BLACKLIST_COMMANDS):
+            raise ValueError(
+                "SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute.",
+            )
+        argv = shlex.split(command, posix=True)
+        if not argv:
+            raise ValueError("SECURITY VIOLATION: Command did not parse into argv.")
+        binary = Path(argv[0]).name
+        if binary not in self.SAFE_BINARIES:
+            raise ValueError(
+                f"SECURITY VIOLATION: Binary '{binary}' is not in the allowlist.",
+            )
+        resolved = shutil.which(binary)
+        if resolved is None:
+            raise ValueError(f"SECURITY VIOLATION: Binary '{binary}' not found on PATH.")
+        argv[0] = resolved
+        return argv
 
     def _safe_path(self, filename: str) -> Path:
         """
@@ -344,25 +396,29 @@ class SecureToolsImpl:
             command,
             target_name="secure_tools.tool_run_command",
         )
-        if any(b in command for b in self.BLACKLIST_COMMANDS):
-            Logger.error(f"SECURITY VIOLATION: Command '{command}' contains blacklisted patterns.")
-            raise ValueError(
-                "SECURITY VIOLATION: Command contains blacklisted patterns. Refusing to execute.",
-            )
-        Logger.warning(f"Executing potentially dangerous command: '{command}' in '{self.work_dir}'")
+        argv = self._parse_and_validate_command(command)
+        cwd = self._safe_cwd()
+        safe_env = {
+            "PATH": os.environ.get("PATH", ""),
+            "PYTHONPATH": os.environ.get("PYTHONPATH", ""),
+            "HOME": str(cwd),
+        }
+        Logger.warning(f"Executing vetted argv: {argv!r} in '{cwd}'")
         try:
             result: Any = subprocess.run(
-                command,
-                shell=True,
-                cwd=self.work_dir,
+                argv,
+                shell=False,
+                cwd=cwd,
+                env=safe_env,
                 capture_output=True,
                 text=True,
                 timeout=DEFAULT_TIMEOUT,
+                check=False,
             )
             if result.returncode != 0:
                 Logger.error(f"Command failed with return code {result.returncode}: {result.stderr}")
                 return f"Command Error (Exit {result.returncode}): {result.stderr}"
-            Logger.info(f"Command executed successfully: {command}")
+            Logger.info(f"Command executed successfully: {argv!r}")
             return result.stdout
         except subprocess.TimeoutExpired:
             Logger.error(f"Command timed out: {command}")

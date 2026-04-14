@@ -146,6 +146,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("module_collision_guardrail", "p4obs", "metric_1")
 _emit_emits_metric_event("module_collision_guardrail", "p4obs", "metric_2")
@@ -222,7 +223,7 @@ def scan_directory(root: Path, repo_root: Path | None = None) -> dict[str, list[
     logical_map = defaultdict(list)
     if repo_root is None:
         repo_root = Path.cwd().resolve()
-    for py_file in root.rglob("*.py"):
+    for py_file in tqdm(root.rglob("*.py"), desc="Processing", unit="item"):
         if should_exclude(py_file):
             continue
         logical_path = compute_logical_import_path(py_file, root)
@@ -278,7 +279,7 @@ def detect_collisions(scans: dict[str, dict[str, list[Path]]]) -> dict[str, list
     for logical_path, files in logical_paths_map.items():
         case_key = logical_path.lower()
         case_map[case_key].append((logical_path, files))
-    for case_key, entries in case_map.items():
+    for case_key, entries in tqdm(case_map.items(), desc="Processing", unit="item"):
         unique_paths = {logical for logical, _ in entries}
         if len(unique_paths) > 1:
             root_groups = defaultdict(list)
@@ -290,7 +291,7 @@ def detect_collisions(scans: dict[str, dict[str, list[Path]]]) -> dict[str, list
                     violations["case_insensitive_collisions"].append(
                         (f"{root_name}:{case_key}", [(case_key, root_files)]),
                     )
-    for logical_path, files in logical_paths_map.items():
+    for logical_path, files in tqdm(logical_paths_map.items(), desc="Processing", unit="item"):
         root_groups = defaultdict(list)
         for root_name, file_path in files:
             root_groups[root_name].append((root_name, file_path))
@@ -307,7 +308,7 @@ def detect_collisions(scans: dict[str, dict[str, list[Path]]]) -> dict[str, list
 def format_violations(violations: dict[str, list[tuple[str, list[Path]]]]) -> str:
     """Format violations for output with deterministic sorting."""
     output_lines = []
-    for violation_type, items in violations.items():
+    for violation_type, items in tqdm(violations.items(), desc="Processing", unit="item"):
         if not items:
             continue
         output_lines.append(f"🚨 {violation_type.upper().replace('_', ' ')}:")

@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_hygiene_guardian_util", "p4obs", "metric_1")
 _emit_emits_metric_event("run_hygiene_guardian_util", "p4obs", "metric_2")
@@ -202,7 +203,11 @@ def scan_temp_artifacts(root: Path) -> list[Path]:
     artifacts = []
     from agentic_core.utils.runners.ssot_discovery_validator import get_data_files
 
-    for path in get_data_files(root, extensions=[".pyc", ".pyo", ".tmp", ".bak", ".swp"]):
+    for path in tqdm(
+        get_data_files(root, extensions=[".pyc", ".pyo", ".tmp", ".bak", ".swp"]),
+        desc="Processing",
+        unit="item",
+    ):
         if ".git" not in path.parts:
             artifacts.append(path)
     return artifacts
@@ -211,11 +216,13 @@ def scan_temp_artifacts(root: Path) -> list[Path]:
 def scan_empty_folders(root: Path) -> list[Path]:
     """Scan for empty folders without removing them."""
     empty_folders = []
-    for root_folder in ALLOWED_ROOT_FOLDERS:
+    for root_folder in tqdm(ALLOWED_ROOT_FOLDERS, desc="Processing", unit="item"):
         root_path = root / root_folder
         if not root_path.exists():
             continue
-        for dirpath, _dirnames, _filenames in os.walk(root_path, topdown=False):
+        for dirpath, _dirnames, _filenames in tqdm(
+            os.walk(root_path, topdown=False), desc="Processing", unit="item"
+        ):
             _dirnames[:] = [d for d in _dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             current_dir = Path(dirpath)
             if ".git" in current_dir.parts:
@@ -235,11 +242,13 @@ def scan_empty_folders(root: Path) -> list[Path]:
 def scan_folders_with_only_init(root: Path) -> list[Path]:
     """Scan for folders that only contain __init__.py (no other meaningful content)."""
     init_only_folders = []
-    for root_folder in ALLOWED_ROOT_FOLDERS:
+    for root_folder in tqdm(ALLOWED_ROOT_FOLDERS, desc="Processing", unit="item"):
         root_path = root / root_folder
         if not root_path.exists():
             continue
-        for dirpath, _dirnames, _filenames in os.walk(root_path, topdown=False):
+        for dirpath, _dirnames, _filenames in tqdm(
+            os.walk(root_path, topdown=False), desc="Processing", unit="item"
+        ):
             _dirnames[:] = [d for d in _dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             current_dir = Path(dirpath)
             if ".git" in current_dir.parts:
@@ -267,7 +276,7 @@ def remove_artifacts(artifacts: list[Path]) -> tuple[int, list[str]]:
     """Remove artifacts and return count and errors."""
     removed = 0
     errors = []
-    for path in artifacts:
+    for path in tqdm(artifacts, desc="Processing", unit="item"):
         try:
             if path.is_file():
                 path.unlink()

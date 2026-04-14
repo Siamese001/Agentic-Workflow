@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("archive_duplicate_tests_util", "p4obs", "metric_1")
 _emit_emits_metric_event("archive_duplicate_tests_util", "p4obs", "metric_2")
@@ -205,8 +206,8 @@ def main():
     archive_dir = Path(__file__).parent.parent / ARCHIVES_DIR / f"duplicate_tests_{timestamp}"
     archive_dir.mkdir(parents=True, exist_ok=True)
     archived = 0
-    for dup_list in duplicates:
-        for dup in dup_list:
+    for dup_list in tqdm(duplicates, desc="Processing", unit="item"):
+        for dup in tqdm(dup_list, desc="Processing", unit="item"):
             try:
                 relative_path = dup.relative_to(test_dir)
                 archive_target = archive_dir / relative_path

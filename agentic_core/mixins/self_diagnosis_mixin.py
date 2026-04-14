@@ -100,6 +100,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("self_diagnosis_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("self_diagnosis_mixin", "p4obs", "metric_2")
@@ -187,7 +188,7 @@ class SelfDiagnosisMixin:
             "self_repair_attempts": [],
         }
         self.Logger.info("Initiating self-diagnosis cycle")
-        for component_name in self.MANDATORY_COMPONENTS:
+        for component_name in tqdm(self.MANDATORY_COMPONENTS, desc="Processing", unit="item"):
             component = getattr(self, component_name, None)
             check_result = {"component": component_name, "found": component is not None}
             if component is None:
@@ -219,7 +220,11 @@ class SelfDiagnosisMixin:
                             diagnosis["self_repair_attempts"].append(
                                 {"component": component_name, "success": True},
                             )
-                except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+                except (
+                    AttributeError,
+                    RuntimeError,
+                    OSError,
+                ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                     raise
                     issue = {
                         "type": "component_diagnosis_failed",
@@ -243,7 +248,7 @@ class SelfDiagnosisMixin:
                 diagnosis["adg_antipatterns"] = sorted(_bp.antipattern_signals)
                 diagnosis["adg_behavioral_score"] = _bp.behavioral_score
         # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, ImportError, RuntimeError) as e:
             import logging
 
             logging.getLogger(__name__).debug("self_diagnosis_mixin: Exception swallowed at L243: %s", e)

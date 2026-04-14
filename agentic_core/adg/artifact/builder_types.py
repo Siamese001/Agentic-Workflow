@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("builder", "p4obs", "metric_1")
 _emit_emits_metric_event("builder", "p4obs", "metric_2")
@@ -492,7 +493,7 @@ class ADGArtifactBuilder:
 
     def _populate_relations(self, result: ScanResult, artifact: ADGArtifact) -> None:
         seen: set[tuple] = set()
-        for edge in sorted(result.edges):
+        for edge in tqdm(sorted(result.edges), desc="Processing", unit="item"):
             key = (
                 edge.from_name,
                 edge.relation_type,
@@ -531,7 +532,7 @@ class ADGArtifactBuilder:
 
     def _populate_module_entities(self, result: ScanResult, artifact: ADGArtifact) -> None:
         existing_adg: set[str] = {e.adg_name for e in artifact.entities}
-        for rel_path in sorted(result.modules):
+        for rel_path in tqdm(sorted(result.modules), desc="Processing", unit="item"):
             adg = canonical_name("Module", rel_path)
             if adg in existing_adg:
                 continue
@@ -588,7 +589,7 @@ class ADGArtifactBuilder:
             if edge.from_name not in existing_adg:
                 to_resolve.add(edge.from_name)
 
-        for adg_target in sorted(to_resolve):
+        for adg_target in tqdm(sorted(to_resolve), desc="Processing", unit="item"):
             if adg_target in existing_adg:
                 continue
 
@@ -812,7 +813,7 @@ class ADGArtifactBuilder:
         seen_dynamic: set[tuple] = set()
         seen_star: set[tuple] = set()
 
-        for edge in result.edges:
+        for edge in tqdm(result.edges, desc="Processing", unit="item"):
             loc = (edge.source_file, edge.line_no)
 
             # Dynamic imports: either a __dynamic__ symbol target OR an exec edge_kind

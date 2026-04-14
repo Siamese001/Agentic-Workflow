@@ -109,7 +109,7 @@ class IntegratedTracingMixin(TracingMixin):
                     f"[INTEGRATED_TRACING] {self._otel_service_name} - OpenTelemetry disabled, Runtime ADG only",
                 )
 
-        except Exception as e:
+        except (ImportError, AttributeError, RuntimeError) as e:
             Logger.error(
                 f"[INTEGRATED_TRACING] {self._otel_service_name} - Failed to initialize OpenTelemetry: {e}",
             )
@@ -145,7 +145,11 @@ class IntegratedTracingMixin(TracingMixin):
                 integrated_span = IntegratedSpanContext(tm_span, otel_span_context, self)
                 with integrated_span:
                     yield integrated_span
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
+            except (
+                AttributeError,
+                RuntimeError,
+                TypeError,
+            ) as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
                 # Set error status on TracingMixin span
                 tm_span.status = "ERROR"
                 tm_span.attributes["error"] = str(e)

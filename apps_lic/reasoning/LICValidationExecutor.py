@@ -104,6 +104,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("LICValidationExecutor", "p4obs", "metric_1")
 _emit_emits_metric_event("LICValidationExecutor", "p4obs", "metric_2")
@@ -236,7 +237,7 @@ class LICValidationExecutor(LICEngineValidationCapability, ParameterizedValidato
         """
         issues = []
         messages = data.get("messages", [])
-        for i, message in enumerate(messages):
+        for i, message in tqdm(enumerate(messages), desc="Processing", unit="item"):
             content = message.get("content", "").lower()
             subject = message.get("subject", "").lower()
             for word in self._MESSAGE_COMPLIANCE_FORBIDDEN_WORDS:

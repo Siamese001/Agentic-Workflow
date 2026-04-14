@@ -5,6 +5,7 @@ Mirrors PromptLoader pattern exactly — pure infrastructure, no business logic.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -178,6 +179,8 @@ class EvaluationLoader:
     - No direct apps_* access
     """
 
+    _SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
+
     def __init__(self, eval_dir: Path) -> None:
         """Initialize with injected evaluation directory.
 
@@ -196,6 +199,16 @@ class EvaluationLoader:
             raise ValueError(f"eval_dir must be a directory: {eval_dir}")
         self._eval_dir = eval_dir.resolve()
         self._cache: dict[str, dict[str, Any]] = {}
+
+    def _resolve_eval_file(self, name: str) -> Path:
+        """Resolve evaluation file path with traversal prevention."""
+        if "/" in name or "\\" in name:
+            raise ValueError("name must not contain path separators")
+        if not self._SAFE_NAME_RE.fullmatch(name):
+            raise ValueError(f"name contains unsafe characters: {name!r}")
+        eval_file = (self._eval_dir / f"{name}.yaml").resolve()
+        eval_file.relative_to(self._eval_dir)  # raises ValueError if outside
+        return eval_file
 
     def load_eval_set(self, name: str) -> dict[str, Any]:
         """Load and cache an evaluation set by name.
@@ -220,7 +233,7 @@ class EvaluationLoader:
         if not name or not isinstance(name, str):
             raise ValueError("name must be a non-empty string")
         if name not in self._cache:
-            eval_file = self._eval_dir / f"{name}.yaml"
+            eval_file = self._resolve_eval_file(name)
             if not eval_file.exists():
                 raise EvalLoadError(f"Evaluation file not found: {eval_file}")
             if not eval_file.is_file():

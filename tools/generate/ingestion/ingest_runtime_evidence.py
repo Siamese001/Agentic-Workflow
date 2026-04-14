@@ -28,6 +28,7 @@ import json
 import sys
 import time
 from pathlib import Path
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
@@ -119,7 +120,7 @@ def collect_runtime_state(repo_root: Path) -> list[dict]:
 
     # Completed agents chunks
     completed = data.get("completed_agents", [])
-    for i, agent_rec in enumerate(completed[:100]):
+    for i, agent_rec in tqdm(enumerate(completed[:100]), desc="Processing", unit="item"):
         text = f"agent execution record\n{flatten_json_to_text(agent_rec)}"
         if len(text.strip()) < MIN_BODY_CHARS:
             continue
@@ -148,7 +149,7 @@ def collect_compliance_reports(repo_root: Path) -> list[dict]:
     if not cr_dir.exists():
         return docs
 
-    for json_file in sorted(cr_dir.rglob("*.json")):
+    for json_file in tqdm(sorted(cr_dir.rglob("*.json")), desc="Processing", unit="item"):
         try:
             data = json.loads(json_file.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
@@ -158,7 +159,7 @@ def collect_compliance_reports(repo_root: Path) -> list[dict]:
         if len(text.strip()) < MIN_BODY_CHARS:
             continue
         canonical_digest = compute_digest(text)
-        for chunk_idx, chunk in enumerate(chunk_text(text)):
+        for chunk_idx, chunk in tqdm(enumerate(chunk_text(text)), desc="Processing", unit="item"):
             docs.append(
                 {
                     "text": chunk,
@@ -184,7 +185,7 @@ def collect_l4_healing_records(repo_root: Path) -> list[dict]:
     if not l4_dir.exists():
         return docs
 
-    for json_file in sorted(l4_dir.rglob("*.json")):
+    for json_file in tqdm(sorted(l4_dir.rglob("*.json")), desc="Processing", unit="item"):
         try:
             data = json.loads(json_file.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
@@ -218,7 +219,7 @@ def collect_healing_intakes(repo_root: Path) -> list[dict]:
     if not hi_dir.exists():
         return docs
 
-    for json_file in sorted(hi_dir.rglob("*.json")):
+    for json_file in tqdm(sorted(hi_dir.rglob("*.json")), desc="Processing", unit="item"):
         if json_file.name == "_index.json":
             continue
         try:
@@ -257,11 +258,11 @@ def collect_evidence_docs(repo_root: Path) -> list[dict]:
         ("docs/runbooks", "runbook"),
     ]
     seen: set[str] = set()
-    for dir_rel, evidence_type in md_sources:
+    for dir_rel, evidence_type in tqdm(md_sources, desc="Processing", unit="item"):
         d = repo_root / dir_rel
         if not d.exists():
             continue
-        for md_file in sorted(d.rglob("*.md")):
+        for md_file in tqdm(sorted(d.rglob("*.md")), desc="Processing", unit="item"):
             try:
                 source = md_file.read_text(encoding="utf-8")
             except (OSError, UnicodeDecodeError):
@@ -273,7 +274,7 @@ def collect_evidence_docs(repo_root: Path) -> list[dict]:
                 continue
             seen.add(rel_path)
             canonical_digest = compute_digest(source)
-            for chunk_idx, chunk in enumerate(chunk_text(source)):
+            for chunk_idx, chunk in tqdm(enumerate(chunk_text(source)), desc="Processing", unit="item"):
                 docs.append(
                     {
                         "text": chunk,

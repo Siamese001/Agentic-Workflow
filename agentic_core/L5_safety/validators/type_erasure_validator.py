@@ -244,7 +244,7 @@ class TypeErasureDetector(AntiPatternDetector):
             raise
             source_lines = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, ast.ClassDef):
                 # Check if this is an agent/validator class
                 if self.check_agent_classes_only and not self._is_agent_class(node):
@@ -407,6 +407,7 @@ class TypeErasureDetector(AntiPatternDetector):
 import uuid
 from typing import Any
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from tqdm import tqdm
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

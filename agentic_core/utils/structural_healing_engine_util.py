@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import logging
 import shutil
 from pathlib import Path
 from typing import Any
@@ -116,6 +117,8 @@ _emit_reads_runtime_state("structural_healing_engine_util", "runtime_state", "p2
 _emit_reads_runtime_state("structural_healing_engine_util", "runtime_state", "p2_rt_2")
 
 _emit_records_execution_trace("p0", "evidence", "structural_healing_engine_util")
+logger = logging.getLogger(__name__)
+
 _emit_applies_guardrail("p0", "structural_healing_engine_util", "p0_governance")
 _emit_reads_policy_state("p0", "structural_healing_engine_util", "policy_binding")
 _emit_snapshots_state("p0", "structural_healing_engine_util", "state_snapshot")
@@ -296,10 +299,13 @@ def calculate_file_hash(file_path: Path) -> str:
 def _is_safe_relocation(source: Path, target: Path, project_root: Path) -> bool:
     """Check both paths are within the project root."""
     try:
-        source.resolve().relative_to(project_root.resolve())
-        target.resolve().relative_to(project_root.resolve())
+        root = project_root.resolve(strict=True)
+        source.resolve(strict=True).relative_to(root)
+        target.resolve(strict=False).relative_to(root)
         return True
-    except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+    except (OSError, RuntimeError, ValueError, FileNotFoundError) as e:
+        logger.warning(
+            "Rejected relocation outside project root or with unresolved source: %s",
+            e,
+        )
         return False

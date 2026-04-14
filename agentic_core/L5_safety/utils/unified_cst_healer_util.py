@@ -152,6 +152,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("unified_cst_healer_util", "p4obs", "metric_1")
 _emit_emits_metric_event("unified_cst_healer_util", "p4obs", "metric_2")
@@ -418,7 +419,7 @@ class UnifiedCSTHealer:
         if self.config.enable_bare_except_healing:
             import re
 
-            for i, line in enumerate(lines):
+            for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
                 if re.match(r"^\s*except\s*:\s*$", line):
                     coord = ASTCoordinate(
                         line=i + 1,

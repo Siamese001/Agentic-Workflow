@@ -11,6 +11,7 @@ from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
     ARCHIVES_DIR,
 )
+from tqdm import tqdm
 
 ROOT = Path(APPS_RG_DIR)
 REQUIRED_BASE = "BaseRGEngine"
@@ -51,7 +52,7 @@ def main():
     clean_files = 0
     all_issues = []
 
-    for path in ROOT.rglob("*.py"):
+    for path in tqdm(ROOT.rglob("*.py"), desc="Processing", unit="item"):
         if path.name == "__init__.py":
             continue
         # Skip legacy and quarantine folders

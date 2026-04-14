@@ -18,6 +18,7 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 from typing import NamedTuple
+from tqdm import tqdm
 
 
 class ViolationInfo(NamedTuple):
@@ -90,7 +91,7 @@ class ViolationDispositionProcessor:
         # Process dispositions
         results = {"tested": 0, "approved": 0, "remaining": 0}
 
-        for violation in violations:
+        for violation in tqdm(violations, desc="Processing", unit="item"):
             disposition, source = self._determine_disposition(violation, test_coverage, guardian_comments)
 
             if disposition != violation.disposition:
@@ -191,7 +192,7 @@ class ViolationDispositionProcessor:
 
         guardian_comments = []
 
-        for (file_path,) in cursor.fetchall():
+        for (file_path,) in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
             try:
                 file_obj = Path(file_path)
                 if not file_obj.exists():

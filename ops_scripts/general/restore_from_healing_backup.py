@@ -103,6 +103,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_1")
 _emit_emits_metric_event("restore_from_healing_backup", "p4obs", "metric_2")
@@ -214,7 +215,7 @@ def _infer_agent_layer(py_path: Path) -> Path | None:
         tree = ast.parse(src)
     except (OSError, SyntaxError):
         return None
-    for node in ast.walk(tree):
+    for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
         if not isinstance(node, ast.ClassDef):
             continue
         for base in node.bases:
@@ -293,7 +294,7 @@ def restore(backup_root: Path = DEFAULT_BACKUP_ROOT, dry_run: bool = True) -> di
     all_py = list(backup_root.rglob("*.py"))
     print(f"[restore] Scanning {len(all_py)} .py files under {backup_root.name}/")
 
-    for src_path in all_py:
+    for src_path in tqdm(all_py, desc="Processing", unit="item"):
         try:
             rel = src_path.relative_to(backup_root)
         except ValueError:

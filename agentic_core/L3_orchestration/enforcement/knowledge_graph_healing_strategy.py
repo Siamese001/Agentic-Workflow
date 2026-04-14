@@ -28,6 +28,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ class KnowledgeGraphHealingStrategy:
         if not config.KNOWLEDGE_GRAPH_HEALING_ENABLED:
             Logger.info("[L0 KG HEALING] Knowledge graph healing disabled in config")
             return fixes
-        for issue in issues:
+        for issue in tqdm(issues, desc="Processing", unit="item"):
             desc: Any = issue.get("description", "").lower()
             message: Any = issue.get("message", "").lower()
             if any(
@@ -187,7 +188,7 @@ class KnowledgeGraphHealingStrategy:
             relations: list[dict] = []
             try:
                 tree = ast.parse(text)
-                for node in ast.walk(tree):
+                for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                     if isinstance(node, ast.ClassDef):
                         entities.append(
                             {

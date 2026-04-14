@@ -30,6 +30,8 @@ Usage:
 from __future__ import annotations
 
 import logging
+import os
+import re
 import time
 from typing import Any
 
@@ -309,11 +311,16 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
             storage_dir.mkdir(parents=True, exist_ok=True)
 
             # Write snapshot to file
-            filename = f"{snapshot.snapshot_id}.json"
+            safe_snapshot_id = re.sub(r"[^A-Za-z0-9_.-]", "_", snapshot.snapshot_id or "").strip("._")
+            filename = f"{safe_snapshot_id or 'snapshot'}.json"
             filepath = storage_dir / filename
+            tmp_path = storage_dir / f".{filename}.tmp"
 
-            with open(filepath, "w", encoding="utf-8") as f:
-                json.dump(snapshot.to_dict(), f, indent=2)
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(snapshot.to_dict(), f, indent=2, sort_keys=True)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, filepath)
 
             if self.enable_logging:
                 logger.debug(
@@ -328,7 +335,10 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):  # type: ignor
 
         except Exception as e:
             if self.enable_logging:
-                logger.error("local_persist_failed", extra={"error": str(e)})
+                logger.error(
+                    "local_persist_failed",
+                    extra={"error": str(e), "storage_path": str(self.adg_storage_path)},
+                )
             return False
 
     def get_snapshot_id(self) -> str | None:

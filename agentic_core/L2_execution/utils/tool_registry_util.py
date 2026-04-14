@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("tool_registry_util", "p4obs", "metric_1")
 _emit_emits_metric_event("tool_registry_util", "p4obs", "metric_2")
@@ -353,7 +354,7 @@ class ToolRegistry:
         """
         discovered = self.discover_tools(pattern)
         registered = 0
-        for tool_path in discovered:
+        for tool_path in tqdm(discovered, desc="Processing", unit="item"):
             if tool_loader:
                 try:
                     tool_name, tool_func, description = tool_loader(tool_path)

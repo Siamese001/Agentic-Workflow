@@ -6,6 +6,7 @@ Handles rule registration, matching, and conflict resolution.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
+from tqdm import tqdm
 
 if TYPE_CHECKING:
     from .base_rule import BaseRepairRule
@@ -100,7 +101,7 @@ class RuleEngine:
         """
         matches = []
 
-        for rule_id, rule in self._rules.items():
+        for rule_id, rule in tqdm(self._rules.items(), desc="Processing", unit="item"):
             try:
                 if rule.match(deficiency):
                     can_apply, _ = rule.can_fix(deficiency)
@@ -152,7 +153,7 @@ class RuleEngine:
         conflicts = []
         file_rules: dict[str, list[tuple[str, str]]] = {}
 
-        for deficiency in deficiencies:
+        for deficiency in tqdm(deficiencies, desc="Processing", unit="item"):
             matches = self.match_deficiency(deficiency)
             applicable = [m for m in matches if m.can_apply]
 
@@ -164,7 +165,7 @@ class RuleEngine:
             if file_path not in file_rules:
                 file_rules[file_path] = []
 
-            for match in applicable[:3]:  # Check top 3 rules
+            for match in tqdm(applicable[:3], desc="Processing", unit="item"):  # Check top 3 rules
                 rule_id = match.rule_id
 
                 # Check for multiple rules modifying same file

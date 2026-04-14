@@ -14,6 +14,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_telemetry_event,
 )
+from tqdm import tqdm
 
 log = logging.getLogger(__name__)
 
@@ -101,7 +102,7 @@ class PreRetrievalGate:
         allowed_filters: dict[str, Any] = {}
         denied_filters: list[FilterResult] = []
 
-        for filter_name in filters_to_apply:
+        for filter_name in tqdm(filters_to_apply, desc="Processing", unit="item"):
             if filter_name not in self._filters:
                 log.warning(f"Unknown filter: {filter_name}")
                 continue

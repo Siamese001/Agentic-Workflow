@@ -15,6 +15,7 @@ from agentic_core.L2_execution.utils.cpu_optimizer import (
     AMD9950X3DOptimizer,
     CPUConfig,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -103,7 +104,7 @@ class BatchProcessor(Generic[T, R]):
 
         logger.info(f"Processing {total} items in batches of {self.batch_size}")
 
-        for i in range(0, total, self.batch_size):
+        for i in tqdm(range(0, total, self.batch_size), desc="Processing", unit="item"):
             batch = items[i : i + self.batch_size]
             batch_num = i // self.batch_size + 1
             total_batches = (total + self.batch_size - 1) // self.batch_size
@@ -158,7 +159,7 @@ class BatchProcessor(Generic[T, R]):
 
         logger.info(f"Parallel processing {total} items with {self.optimizer.get_optimal_workers()} workers")
 
-        for i in range(0, total, self.batch_size):
+        for i in tqdm(range(0, total, self.batch_size), desc="Processing", unit="item"):
             batch = items[i : i + self.batch_size]
 
             start = time.time()

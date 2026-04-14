@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("cache_metrics_util", "p4obs", "metric_1")
 _emit_emits_metric_event("cache_metrics_util", "p4obs", "metric_2")
@@ -211,7 +212,7 @@ class CacheMetrics:
         """Get aggregated statistics for all operations."""
         with self._stats_lock:
             result = {}
-            for op, data in self.stats.items():
+            for op, data in tqdm(self.stats.items(), desc="Processing", unit="item"):
                 total = data["ops"]
                 result[op] = {
                     "hit_rate": round(data["hits"] / total, 4) if total else 0.0,

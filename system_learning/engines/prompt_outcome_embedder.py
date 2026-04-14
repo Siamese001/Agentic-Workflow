@@ -124,6 +124,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("prompt_outcome_embedder", "p4obs", "metric_1")
 _emit_emits_metric_event("prompt_outcome_embedder", "p4obs", "metric_2")
@@ -495,7 +496,7 @@ class PromptOutcomeEmbedder:
         evicted = 0
         with self._lock:
             keep: list[CorpusRecord] = []
-            for record in self._records:
+            for record in tqdm(self._records, desc="Processing", unit="item"):
                 tid = record.trace_id
                 if tid.startswith("@TS:"):
                     try:
@@ -540,7 +541,7 @@ class PromptOutcomeEmbedder:
 
             raw_results = query_similarity(query_text, top_k=k, namespace=namespace)
             out: list[PromptOutcomeRetrievalResult] = []
-            for r in raw_results:
+            for r in tqdm(raw_results, desc="Processing", unit="item"):
                 ch = r.content_hash
                 meta = self._meta.get(ch, {})
                 out.append(

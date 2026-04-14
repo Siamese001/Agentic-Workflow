@@ -75,6 +75,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("clerk_extractor_util", "p4obs", "metric_1")
 _emit_emits_metric_event("clerk_extractor_util", "p4obs", "metric_2")
@@ -202,7 +203,7 @@ class ClerkExtractor:
     def _build_experience_sections(self) -> list[dict]:
         """Build structured experience_sections from master resume."""
         SECTIONS = []
-        for exp in self.master_resume.get("experience", []):
+        for exp in tqdm(self.master_resume.get("experience", []), desc="Processing", unit="item"):
             BULLETS = [
                 {
                     "bullet_text": text,

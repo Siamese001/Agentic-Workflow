@@ -18,6 +18,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
 )
+from tqdm import tqdm
 
 LOGGER = logging.getLogger(__name__)
 Logger: Any = logging.getLogger(__name__)
@@ -156,7 +157,7 @@ class CanaryDefense:
             Tuple of (is_valid, issues)
         """
         issues: Any = []
-        for i, message in enumerate(messages):
+        for i, message in tqdm(enumerate(messages), desc="Processing", unit="item"):
             if message.get("role") == "user":
                 content: Any = message.get("content", "")
                 if not content.startswith("<user_input>") or not content.endswith("</user_input>"):

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -175,6 +176,8 @@ class PromptLoader:
     - No direct apps_* access
     """
 
+    _SAFE_NAME_RE = re.compile(r"^[A-Za-z0-9_.-]+$")
+
     def __init__(self, prompt_dir: Path) -> None:
         """Initialize with injected prompt directory.
 
@@ -190,6 +193,18 @@ class PromptLoader:
             raise ValueError(f"prompt_dir must be a directory: {prompt_dir}")
         self._prompt_dir = prompt_dir.resolve()
         self._prompt_cache: dict[str, dict[str, Any]] = {}
+
+    def _resolve_prompt_file(self, domain: str, name: str) -> Path:
+        """Resolve prompt file path with traversal prevention."""
+        if "/" in domain or "\\" in domain or "/" in name or "\\" in name:
+            raise ValueError("domain and name must not contain path separators")
+        if not self._SAFE_NAME_RE.fullmatch(domain):
+            raise ValueError(f"domain contains unsafe characters: {domain!r}")
+        if not self._SAFE_NAME_RE.fullmatch(name):
+            raise ValueError(f"name contains unsafe characters: {name!r}")
+        prompt_file = (self._prompt_dir / domain / f"{name}.yaml").resolve()
+        prompt_file.relative_to(self._prompt_dir)  # raises ValueError if outside
+        return prompt_file
 
     def load_prompt(self, domain: str, name: str) -> dict[str, Any]:
         """Load and cache prompt by domain and name.
@@ -216,7 +231,7 @@ class PromptLoader:
             raise ValueError("name must be a non-empty string")
         cache_key = f"{domain}:{name}"
         if cache_key not in self._prompt_cache:
-            prompt_file = self._prompt_dir / domain / f"{name}.yaml"
+            prompt_file = self._resolve_prompt_file(domain, name)
             if not prompt_file.exists():
                 raise PromptLoadError(f"Prompt file not found: {prompt_file}")
             if not prompt_file.is_file():
@@ -272,6 +287,6 @@ class PromptLoader:
         """Clear the internal cache. Useful for testing."""
         self._prompt_cache.clear()
 
-    def cache_info(self) -> dict[str, int]:
+    def cache_info(self) -> dict[str, Any]:
         """Get cache statistics for testing and monitoring."""
         return {"cached_items": len(self._prompt_cache), "cache_keys": list(self._prompt_cache.keys())}

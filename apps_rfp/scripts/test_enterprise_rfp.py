@@ -153,7 +153,7 @@ async def test_with_sample_rfp():
     print("TEST 1: Process Financial Services RFP Document")
     print("=" * 60)
 
-    rfp_path = Path(__file__).parent / "sample_rfps" / "financial_services_rfp.md"
+    rfp_path = Path(__file__).resolve().parents[1] / "data" / "sample_rfps" / "financial_services_rfp.md"
 
     if not rfp_path.exists():
         print(f"Sample RFP not found: {rfp_path}")
@@ -234,7 +234,7 @@ async def test_full_pipeline():
     orchestrator = EnterpriseRfpOrchestrator()
 
     # Create request with healthcare RFP
-    rfp_path = Path(__file__).parent / "sample_rfps" / "healthcare_rfp.md"
+    rfp_path = Path(__file__).resolve().parents[1] / "data" / "sample_rfps" / "healthcare_rfp.md"
 
     request = EnterpriseRfpRequest(
         rfp_document_path=str(rfp_path) if rfp_path.exists() else None,

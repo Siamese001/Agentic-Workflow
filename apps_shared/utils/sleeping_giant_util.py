@@ -94,6 +94,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("sleeping_giant_util", "p4obs", "metric_1")
 _emit_emits_metric_event("sleeping_giant_util", "p4obs", "metric_2")
@@ -328,7 +329,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
 
     # Check for mutation patterns in raw content
     mutation_methods = []
-    for pattern in MUTATION_PATTERNS:
+    for pattern in tqdm(MUTATION_PATTERNS, desc="Processing", unit="item"):
         if re.search(pattern, content):
             mutation_methods.append(pattern.replace("\\", "").replace("s*", "").replace("(", ""))
 
@@ -338,7 +339,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
     )
 
     # Find agent classes
-    for class_name, class_info in analyzer.classes.items():
+    for class_name, class_info in tqdm(analyzer.classes.items(), desc="Processing", unit="item"):
         if not class_name.endswith("Agent"):
             continue
 
@@ -481,7 +482,7 @@ def main():
     print("DETAILED ANALYSIS: Critical & High Risk Giants")
     print("=" * 80)
 
-    for giant in (critical_giants + high_giants)[:10]:
+    for giant in tqdm((critical_giants + high_giants)[:10], desc="Processing", unit="item"):
         print()
         print(f"🔴 {giant.agent_name}")
         print(f"   File: {giant.file_path.relative_to(root.parent)}")

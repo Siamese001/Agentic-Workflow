@@ -140,6 +140,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("prompt_chain_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("prompt_chain_engine", "p4obs", "metric_2")
@@ -283,7 +284,7 @@ class PromptChainEngine:
 
         Logger.info("prompt_chain_start", extra={"steps": len(self._steps)})
 
-        for step in self._steps:
+        for step in tqdm(self._steps, desc="Processing", unit="item"):
             Logger.debug("prompt_chain_step", extra={"step": step.name})
             try:
                 output = await step.fn(context)

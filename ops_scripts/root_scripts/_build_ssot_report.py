@@ -10,6 +10,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write")
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write_2")
@@ -69,13 +70,13 @@ W(
 W("")
 W("## Per-Territory Agent Results")
 W("")
-for territory in data["territories_scanned"]:
+for territory in tqdm(data["territories_scanned"], desc="Processing", unit="item"):
     t_results = data["territory_results"].get(territory, {})
     W(f"### {territory}")
     W("")
     W("| Agent | Status | Result |")
     W("|---|---|---|")
-    for agent_name, result in t_results.items():
+    for agent_name, result in tqdm(t_results.items(), desc="Processing", unit="item"):
         if result.get("success"):
             r = result.get("result", {})
             if isinstance(r, dict):
@@ -116,7 +117,7 @@ for line in stderr.split("\n"):
 total_renames = sum(len(v) for v in rename_by_territory.values())
 W(f"**Total proposed renames**: {total_renames}")
 W("")
-for territory in data["territories_scanned"]:
+for territory in tqdm(data["territories_scanned"], desc="Processing", unit="item"):
     renames = rename_by_territory.get(territory, [])
     if renames:
         W(f"### {territory} ({len(renames)} renames)")
@@ -144,7 +145,7 @@ other_tags = [
     "FAKE_CONFIG",
     "MISPLACED-TEST",
 ]
-for tag in other_tags:
+for tag in tqdm(other_tags, desc="Processing", unit="item"):
     tag_lines = re.findall(f"\\[{re.escape(tag)}\\] (.+?)$", stderr, re.MULTILINE)
     if tag_lines:
         unique = sorted(set(tag_lines))
@@ -165,7 +166,7 @@ W("")
 layer_by_type = defaultdict(list)
 for v in data["layer_violations"]:
     layer_by_type[v["violation"]].append(v)
-for vtype in sorted(layer_by_type.keys()):
+for vtype in tqdm(sorted(layer_by_type.keys()), desc="Processing", unit="item"):
     items = layer_by_type[vtype]
     W(f"### {vtype} ({len(items)})")
     W("")
@@ -194,7 +195,7 @@ for vtype in sorted(layer_by_type.keys()):
     W("")
 W("## ArchitectureGovernorAgent Audit Results")
 W("")
-for territory in data["territories_scanned"]:
+for territory in tqdm(data["territories_scanned"], desc="Processing", unit="item"):
     t_results = data["territory_results"].get(territory, {})
     gov = t_results.get("ArchitectureGovernorAgent", {})
     if gov.get("success"):

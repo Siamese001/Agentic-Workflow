@@ -125,6 +125,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("extract_agent_duplicates_util", "p4obs", "metric_1")
 _emit_emits_metric_event("extract_agent_duplicates_util", "p4obs", "metric_2")
@@ -214,11 +215,11 @@ def infer_rationale(canonical: str, dup_path: str, action: str) -> str:
 
 data = json.load(sys.stdin)
 results = []
-for item in data:
+for item in tqdm(data, desc="Processing", unit="item"):
     canonical = item["canonical_file"]
     if not is_agent_file(canonical):
         continue
-    for dup in item["duplicates"]:
+    for dup in tqdm(item["duplicates"], desc="Processing", unit="item"):
         dup_path = dup["path"]
         if not is_agent_file(dup_path):
             continue

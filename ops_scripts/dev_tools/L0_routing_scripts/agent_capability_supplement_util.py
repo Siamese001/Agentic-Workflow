@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_capability_supplement_util", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_capability_supplement_util", "p4obs", "metric_2")
@@ -215,7 +216,7 @@ def extract_capabilities_from_source(source: str, class_node: ast.ClassDef) -> d
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "extract_capabilities_from_source")
     caps = {"semantic_tags": set(), "unique_methods": set(), "patterns": set(), "valuable_methods": []}
     common_methods = {"__init__", "heal_violation", "execute", "run", "validate", "monitor"}
-    for item in class_node.body:
+    for item in tqdm(class_node.body, desc="Processing", unit="item"):
         if not isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
             continue
         method_name = item.name
@@ -304,7 +305,7 @@ def generate_markdown_report(
     if unique_to_dead:
         lines.append(f"Found **{len(unique_to_dead)}** capabilities present ONLY in DEAD agents:")
         lines.append("")
-        for cap in sorted(unique_to_dead):
+        for cap in tqdm(sorted(unique_to_dead), desc="Processing", unit="item"):
             donors = [
                 name
                 for name, detail in dead_cap_detail.items()
@@ -344,7 +345,7 @@ def generate_markdown_report(
     lines.append("")
     lines.append("## Dead Agent Capability Detail")
     lines.append("")
-    for name in sorted(dead_cap_detail.keys()):
+    for name in tqdm(sorted(dead_cap_detail.keys()), desc="Processing", unit="item"):
         detail = dead_cap_detail[name]
         caps = detail["caps"]
         lines.append(f"### `{name}`")

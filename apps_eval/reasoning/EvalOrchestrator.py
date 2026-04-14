@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -120,7 +120,7 @@ except ImportError as _qwen_import_err:
 
 _emit_reads_policy_state("p0", "EvalOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "EvalOrchestrator", "state_snapshot")
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -144,6 +144,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("EvalOrchestrator", "p4obs", "metric_1")
 _emit_emits_metric_event("EvalOrchestrator", "p4obs", "metric_2")
@@ -407,7 +408,7 @@ class EvalOrchestrator:
         suite_ids = request.suite_ids or list(self._specs.benchmark_suites.keys())
         results = []
 
-        for suite_id in suite_ids:
+        for suite_id in tqdm(suite_ids, desc="Processing", unit="item"):
             suite_cfg = self._specs.benchmark_suites.get(suite_id)
             if suite_cfg is None:
                 _log.warning("[EvalOrchestrator] Unknown suite: %s — skipping", suite_id)
@@ -450,7 +451,7 @@ class EvalOrchestrator:
             )
         lines += ["", "---", "", "## Suite Results", ""]
 
-        for sr in result.suite_results:
+        for sr in tqdm(result.suite_results, desc="Processing", unit="item"):
             lines.append(f"### {sr.display_name} (`{sr.suite_id}`)")
             lines.append(f"- **Pass Rate:** {sr.pass_rate:.0%}")
             lines.append(f"- **Mean Latency:** {sr.mean_latency_ms:.1f} ms")
@@ -494,7 +495,7 @@ class EvalOrchestrator:
                 writer.writerow(
                     ["dimension_id", "display_name", "score", "weight", "weighted_score", "verdict"],
                 )
-                for row in result.scorecard:
+                for row in tqdm(result.scorecard, desc="Processing", unit="item"):
                     writer.writerow(
                         [
                             row.dimension_id,
@@ -578,15 +579,19 @@ class EvalOrchestrator:
             )
             if template_text:
                 rendered_prompt = template_text
-                for slot in (
-                    "prompt",
-                    "code",
-                    "function",
-                    "design",
-                    "documentation",
-                    "findings",
-                    "data",
-                    "literature",
+                for slot in tqdm(
+                    (
+                        "prompt",
+                        "code",
+                        "function",
+                        "design",
+                        "documentation",
+                        "findings",
+                        "data",
+                        "literature",
+                    ),
+                    desc="Processing",
+                    unit="item",
                 ):
                     rendered_prompt = rendered_prompt.replace(f"{{{slot}}}", prompt)
 

@@ -14,6 +14,7 @@ from pathlib import Path
 from tools.adg.repair.base_rule import BaseRepairRule
 from tools.adg.repair.rule_engine import repair_rule
 from tools.adg.repair.types import Deficiency, FixCategory, FixResult
+from tqdm import tqdm
 
 
 @repair_rule("fix_missing_typing", priority=60)
@@ -108,7 +109,7 @@ class FixMissingTypingRule(BaseRepairRule):
             # In a full implementation, we'd use AST transformation
             new_lines = list(lines)
 
-            for func_node, needs_return, needs_params in functions:
+            for func_node, needs_return, needs_params in tqdm(functions, desc="Processing", unit="item"):
                 if needs_return:
                     line_idx = func_node.lineno - 1
                     line = new_lines[line_idx]
@@ -178,7 +179,7 @@ class FixMissingTypingRule(BaseRepairRule):
         """
         results = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 # Skip private methods and special methods
                 if node.name.startswith("_") and not node.name.startswith("__"):

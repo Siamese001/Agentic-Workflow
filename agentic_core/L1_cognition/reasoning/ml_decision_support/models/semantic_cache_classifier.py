@@ -6,7 +6,6 @@ semantic cache entries based on usage patterns, access frequency,
 and content relevance.
 """
 
-import pickle
 from collections import deque
 from datetime import datetime
 from pathlib import Path
@@ -16,7 +15,9 @@ import numpy as np
 
 from ..config.feature_schemas import FeatureSchema
 from ..config.model_registry import DecisionMode
+from ._pickle_io import safe_pickle_dump, safe_pickle_load
 from .base_model import BaseMLModel, DecisionMode, ModelInput, ModelPrediction, PredictionType
+from tqdm import tqdm
 
 
 class EWMACacheClassifier(BaseMLModel):
@@ -181,8 +182,7 @@ class EWMACacheClassifier(BaseMLModel):
             raise FileNotFoundError(f"Model file not found: {self.model_file_path}")
 
         try:
-            with open(self.model_file_path, "rb") as f:
-                model_data = pickle.load(f)
+            model_data = safe_pickle_load(self.model_file_path)
 
             self.cache_entries = model_data.get("cache_entries", {})
             self.access_history = model_data.get("access_history", {})
@@ -219,8 +219,7 @@ class EWMACacheClassifier(BaseMLModel):
             },
         }
 
-        with open(model_file_path, "wb") as f:
-            pickle.dump(model_data, f)
+        safe_pickle_dump(model_data, model_file_path)
 
     def predict(
         self,
@@ -785,7 +784,7 @@ class EWMACacheClassifier(BaseMLModel):
         processed_features, preprocessing_steps = super().preprocess_features(features)
 
         # Additional preprocessing for EWMA
-        for key, value in processed_features.items():
+        for key, value in tqdm(processed_features.items(), desc="Processing", unit="item"):
             # Ensure all features are numeric and in valid range
             if isinstance(value, str):
                 try:

@@ -144,6 +144,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("config_with_logic_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("config_with_logic_validator", "p4obs", "metric_2")
@@ -234,7 +235,7 @@ class ConfigWithLogicDetector(AntiPatternDetector):
             raise
             source_lines = []
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             # 1. Module-level assignment: x_config = {...lambda...}
             if isinstance(node, ast.Assign):
                 for target in node.targets:
@@ -251,7 +252,7 @@ class ConfigWithLogicDetector(AntiPatternDetector):
             # 3. Function named *_config/*_spec/*_policy contains if/match
             elif isinstance(node, ast.FunctionDef):
                 if any(node.name.endswith(s) for s in _CONFIG_SUFFIXES):
-                    for child in ast.walk(node):
+                    for child in tqdm(ast.walk(node), desc="Processing", unit="item"):
                         if isinstance(child, ast.If):
                             if not self._is_whitelisted_line(source_lines, child.lineno):
                                 evidence = self._get_source_line(file_path, child.lineno)
@@ -297,7 +298,7 @@ class ConfigWithLogicDetector(AntiPatternDetector):
     ) -> list[AntiPatternViolation]:
         """Walk a value node and flag any lambda expressions found."""
         violations: list[AntiPatternViolation] = []
-        for child in ast.walk(value):
+        for child in tqdm(ast.walk(value), desc="Processing", unit="item"):
             if isinstance(child, ast.Lambda):
                 line = getattr(child, "lineno", lineno)
                 if self._is_whitelisted_line(source_lines, line):

@@ -17,6 +17,7 @@ from pathlib import Path
 
 from ops_scripts.ci.adg_gates import GATE_REGISTRY, get_gate, list_gates, run_all, run_phase
 from ops_scripts.ci.adg_gates.gate_base import CI_ARTIFACTS_DIR
+from tqdm import tqdm
 
 
 def cmd_list() -> int:
@@ -47,7 +48,7 @@ def cmd_run_phase(phase: str) -> int:
     warned = []
     passed = []
 
-    for gate_id, result in results.items():
+    for gate_id, result in tqdm(results.items(), desc="Processing", unit="item"):
         gate_name = GATE_REGISTRY[gate_id][0].gate_family
         if result.status == "blocked":
             blocked.append((gate_id, gate_name, len(result.violations)))
@@ -80,7 +81,7 @@ def cmd_run_gate(gate_ids: list[str]) -> int:
     blocked = []
     results = {}
 
-    for gate_id in gate_ids:
+    for gate_id in tqdm(gate_ids, desc="Processing", unit="item"):
         gate = get_gate(gate_id)
         if not gate:
             print(f"  Gate {gate_id}: UNKNOWN (skipping)")
@@ -171,7 +172,7 @@ def cmd_status() -> int:
         print("No baselines initialized yet.")
         return 0
 
-    for baseline_file in sorted(CI_RATchet_DIR.glob("*_baseline.json")):
+    for baseline_file in tqdm(sorted(CI_RATchet_DIR.glob("*_baseline.json")), desc="Processing", unit="item"):
         name = baseline_file.stem.replace("_baseline", "")
         try:
             data = json.loads(baseline_file.read_text(encoding="utf-8"))

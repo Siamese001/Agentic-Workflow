@@ -27,6 +27,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import Any
+from tqdm import tqdm
 
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -172,7 +173,7 @@ class ADGTraceReplayCoverageVerifier:
         coverage_results = []
         critical_failures = []
 
-        for module_id, module_name, layer in first_party_modules:
+        for module_id, module_name, layer in tqdm(first_party_modules, desc="Processing", unit="item"):
             coverage = self._analyze_execution_surface_coverage(module_id, module_name)
             coverage["layer"] = layer
             coverage_results.append(coverage)
@@ -326,7 +327,7 @@ class ADGTraceReplayCoverageVerifier:
                 """)
 
                 hard_failures = []
-                for row in cursor.fetchall():
+                for row in tqdm(cursor.fetchall(), desc="Processing", unit="item"):
                     hard_failures.append(
                         {
                             "edge_id": row[0],
@@ -342,7 +343,7 @@ class ADGTraceReplayCoverageVerifier:
 
                 # Check if hard failures have corresponding trace edges
                 untranscripted_critical = []
-                for hf in hard_failures:
+                for hf in tqdm(hard_failures, desc="Processing", unit="item"):
                     cursor.execute(
                         """
                         SELECT COUNT(*) FROM edges

@@ -146,6 +146,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("agent_analysis_config", "p4obs", "metric_1")
 _emit_emits_metric_event("agent_analysis_config", "p4obs", "metric_2")
@@ -288,7 +289,7 @@ def analyze_file(file_path: Path) -> AgentAnalysis | None:
     analysis.has_pinecone_mixin = "PineconeVectorMixin" in content
 
     # Check for LLM calls
-    for pattern in LLM_PATTERNS:
+    for pattern in tqdm(LLM_PATTERNS, desc="Processing", unit="item"):
         if re.search(pattern, content, re.IGNORECASE):
             analysis.has_llm_calls = True
             break
@@ -306,7 +307,7 @@ def analyze_file(file_path: Path) -> AgentAnalysis | None:
             break
 
     # Find methods needing hardening
-    for method in METHODS_NEEDING_CACHE:
+    for method in tqdm(METHODS_NEEDING_CACHE, desc="Processing", unit="item"):
         if re.search(rf"def\s+{method}\s*\(", content):
             # Check if this method has cache logic
             method_match = re.search(
@@ -350,7 +351,7 @@ def scan_ssot_folders(project_root: Path) -> list[AgentAnalysis]:
 
     results = []
 
-    for folder in ssot_folders:
+    for folder in tqdm(ssot_folders, desc="Processing", unit="item"):
         if not folder.exists():
             continue
 
@@ -387,7 +388,7 @@ def generate_report(results: list[AgentAnalysis]) -> str:
     for r in results:
         by_priority.setdefault(r.priority, []).append(r)
 
-    for priority in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
+    for priority in tqdm(["CRITICAL", "HIGH", "MEDIUM", "LOW"], desc="Processing", unit="item"):
         agents = by_priority.get(priority, [])
         if not agents:
             continue
@@ -396,7 +397,7 @@ def generate_report(results: list[AgentAnalysis]) -> str:
         lines.append(f"PRIORITY: {priority} ({len(agents)} agents)")
         lines.append(f"{'=' * 40}")
 
-        for agent in agents:
+        for agent in tqdm(agents, desc="Processing", unit="item"):
             lines.append(f"\n[FILE] {agent.file_path.relative_to(agent.file_path.parents[4])}")
             lines.append(f"   Class: {agent.class_name}")
             lines.append(f"   Has Redis Mixin: {'YES' if agent.has_redis_mixin else 'NO'}")

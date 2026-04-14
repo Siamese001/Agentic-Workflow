@@ -79,6 +79,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("document_score_util", "p4obs", "metric_1")
 _emit_emits_metric_event("document_score_util", "p4obs", "metric_2")
@@ -215,7 +216,7 @@ class RAGScorer:
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "RAGScorer.score_documents")
 
         scores = []
-        for i, doc in enumerate(documents):
+        for i, doc in tqdm(enumerate(documents), desc="Processing", unit="item"):
             relevance = self._calculate_relevance(doc["content"], query)
             semantic = self._calculate_semantic_score(
                 doc,

@@ -141,6 +141,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("evaluator_optimizer_engine", "p4obs", "metric_1")
 _emit_emits_metric_event("evaluator_optimizer_engine", "p4obs", "metric_2")
@@ -235,7 +236,7 @@ class EvaluatorOptimizerEngine:
         content = await self.generator_fn(task, context)
         history: list[dict[str, Any]] = []
 
-        for iteration in range(1, self.max_iterations + 1):
+        for iteration in tqdm(range(1, self.max_iterations + 1), desc="Processing", unit="item"):
             eval_result = await self.evaluator_fn(content)
             score = float(eval_result.get("score", 0.0))
             issues = eval_result.get("issues", [])

@@ -176,6 +176,26 @@ _emit_proposal_commits_routing("p1", "secure_error_handler_enforcer", "routing_c
 Logger = logging.getLogger(__name__)
 
 
+def _build_sanitized_context(func, args, kwargs, sanitize_args: bool) -> dict[str, Any]:
+    """Build sanitized argument context without leaking raw values."""
+    if not sanitize_args:
+        return {}
+
+    context: dict[str, Any] = {}
+    try:
+        sig = inspect.signature(func)
+        bound_args = sig.bind_partial(*args, **kwargs)
+        bound_args.apply_defaults()
+        for name, value in bound_args.arguments.items():
+            if isinstance(value, str) and len(value) < 200:
+                context[f"arg_{name}"] = ErrorSanitizer.sanitize_message(value)
+            else:
+                context[f"arg_{name}"] = "<sanitized>"
+    except (TypeError, ValueError):
+        context["arg_binding"] = "<sanitized>"
+    return context
+
+
 class SecureError(Exception):
     """Base class for secure errors with sanitized messages."""
 
@@ -363,21 +383,11 @@ def secure_exception(
             except SecureError:  # guardian: SecureError should be handled with specific context
                 raise
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                context = {}
-                if sanitize_args:
-                    sig = inspect.signature(func)
-                    bound_args = sig.bind(*args, **kwargs)
-                    bound_args.apply_defaults()
-                    for name, value in bound_args.arguments.items():
-                        if isinstance(value, str) and len(value) < 200:
-                            context[f"arg_{name}"] = ErrorSanitizer.sanitize_message(value)
-                        else:
-                            context[f"arg_{name}"] = "<sanitized>"
+                context = _build_sanitized_context(func, args, kwargs, sanitize_args)
                 secure_error = ErrorSanitizer.create_secure_error(
                     error_type, e, ErrorCode, context
                 )  # guardian: SecureError should be handled with specific context
-                raise secure_error
+                raise secure_error from e
 
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
@@ -386,19 +396,9 @@ def secure_exception(
             except SecureError:  # guardian: SecureError should be handled with specific context
                 raise
             except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                raise
-                context = {}
-                if sanitize_args:
-                    sig = inspect.signature(func)
-                    bound_args = sig.bind(*args, **kwargs)
-                    bound_args.apply_defaults()
-                    for name, value in bound_args.arguments.items():
-                        if isinstance(value, str) and len(value) < 200:
-                            context[f"arg_{name}"] = ErrorSanitizer.sanitize_message(value)
-                        else:
-                            context[f"arg_{name}"] = "<sanitized>"
+                context = _build_sanitized_context(func, args, kwargs, sanitize_args)
                 secure_error = ErrorSanitizer.create_secure_error(error_type, e, ErrorCode, context)
-                raise secure_error
+                raise secure_error from e
 
         if inspect.iscoroutinefunction(func):
             return async_wrapper

@@ -36,6 +36,7 @@ from typing import Any
 
 from agentic_core.cache.redis_cache_client import (
     DeterministicRedisCache,
+    get_workspace_cache,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -191,6 +192,19 @@ _TTL_REPLAY_FRAG: int = 600  # 10 min: replay assist cache
 _TTL_NOVELTY: int = 1800  # 30 min: novelty cluster working cache
 
 
+def _require_hash_input(name: str, value: str) -> str:
+    if not value:
+        raise ValueError(f"{name} must not be empty")
+    return value
+
+
+def _bounded_ttl(name: str, ttl_seconds: int | None, cap: int) -> int:
+    ttl = cap if ttl_seconds is None else ttl_seconds
+    if ttl <= 0:
+        raise ValueError(f"{name} ttl_seconds must be > 0, got {ttl}")
+    return min(ttl, cap)
+
+
 class RedisCoordinationFabric:
     """DB-2 bounded operational workspace — the "working desk" layer.
 
@@ -199,7 +213,7 @@ class RedisCoordinationFabric:
     """
 
     def __init__(self, cache: DeterministicRedisCache | None = None) -> None:
-        self._cache = cache or get_hot_cache()
+        self._cache = cache or get_workspace_cache()
 
     # -------------------------------------------------------------------------
     # Trace working set (per-trace active request state)
@@ -209,9 +223,10 @@ class RedisCoordinationFabric:
         self, trace_id_hash: str, *, replay_mode: bool = False
     ) -> dict[str, Any] | None:
         """Return per-trace working set dict or None if not found/expired."""
+        _require_hash_input("trace_id_hash", trace_id_hash)
         if replay_mode:
             return None
-        return self._cache.get_json(f"trace_ws:{trace_id_hash}", db=_DB_WORKSPACE)
+        return self._cache.get_json(f"trace_ws:{trace_id_hash}")
 
     def set_trace_working_set(
         self,
@@ -222,10 +237,11 @@ class RedisCoordinationFabric:
         replay_mode: bool = False,
     ) -> None:
         """Store per-trace working set dict (JSON-serialisable only)."""
+        _require_hash_input("trace_id_hash", trace_id_hash)
         if replay_mode:
             return
-        ttl = min(ttl_seconds or _TTL_TRACE_WS, _TTL_TRACE_WS)
-        self._cache.set_json(f"trace_ws:{trace_id_hash}", data, ttl_seconds=ttl, db=_DB_WORKSPACE)
+        ttl = _bounded_ttl("trace_ws", ttl_seconds, _TTL_TRACE_WS)
+        self._cache.set_json(f"trace_ws:{trace_id_hash}", data, ttl_seconds=ttl)
 
     # -------------------------------------------------------------------------
     # Team lock (duplicate-work prevention)
@@ -235,17 +251,35 @@ class RedisCoordinationFabric:
         self, resource_hash: str, holder_id: str, *, ttl_seconds: int | None = None
     ) -> bool:
         """Try to acquire a team-sync lease. Returns True if acquired."""
-        ttl = min(ttl_seconds or _TTL_TEAM_LOCK, _TTL_TEAM_LOCK)
-        return self._cache.set_nx(f"team_lock:{resource_hash}", holder_id, ttl_seconds=ttl, db=_DB_WORKSPACE)
+        _require_hash_input("resource_hash", resource_hash)
+        if not holder_id:
+            raise ValueError("holder_id must not be empty")
+        ttl = _bounded_ttl("team_lock", ttl_seconds, _TTL_TEAM_LOCK)
+        return self._cache.set_nx(f"team_lock:{resource_hash}", holder_id, ttl_seconds=ttl)
 
     def release_team_lock(self, resource_hash: str, holder_id: str) -> bool:
         """Release team lock if held by holder_id."""
+        _require_hash_input("resource_hash", resource_hash)
+        if not holder_id:
+            raise ValueError("holder_id must not be empty")
         key = f"team_lock:{resource_hash}"
-        current = self._cache.get(key, db=_DB_WORKSPACE)
-        if current == holder_id:
-            self._cache.delete(key, db=_DB_WORKSPACE)
-            return True
-        return False
+        client = self._cache._get_client()
+        if client is None:
+            return False
+        with client.pipeline() as pipe:
+            try:
+                pipe.watch(key)
+                current = pipe.get(key)
+                if current != holder_id:
+                    pipe.unwatch()
+                    return False
+                pipe.multi()
+                pipe.delete(key)
+                pipe.execute()
+                return True
+            except Exception as e:  # guardian: allow-broad-exception -- Redis pipeline raises WatchError and varied types; broad catch required for atomic release safety
+                logger.warning("[Coordination fabric] Team lock release failed for %s: %s", key, e)
+                return False
 
     # -------------------------------------------------------------------------
     # Route context (hot routing cache for fast path election)
@@ -253,16 +287,18 @@ class RedisCoordinationFabric:
 
     def get_route_context(self, intent_hash: str, *, replay_mode: bool = False) -> dict[str, Any] | None:
         """Return hot routing context or None if not found."""
+        _require_hash_input("intent_hash", intent_hash)
         if replay_mode:
             return None
-        return self._cache.get_json(f"route_ctx:{intent_hash}", db=_DB_WORKSPACE)
+        return self._cache.get_json(f"route_ctx:{intent_hash}")
 
     def set_route_context(
         self, intent_hash: str, data: dict[str, Any], *, ttl_seconds: int | None = None
     ) -> None:
         """Store hot routing context."""
-        ttl = min(ttl_seconds or _TTL_ROUTE_CTX, _TTL_ROUTE_CTX)
-        self._cache.set_json(f"route_ctx:{intent_hash}", data, ttl_seconds=ttl, db=_DB_WORKSPACE)
+        _require_hash_input("intent_hash", intent_hash)
+        ttl = _bounded_ttl("route_ctx", ttl_seconds, _TTL_ROUTE_CTX)
+        self._cache.set_json(f"route_ctx:{intent_hash}", data, ttl_seconds=ttl)
 
     # -------------------------------------------------------------------------
     # Replay fragment (transcript assist cache)
@@ -272,9 +308,10 @@ class RedisCoordinationFabric:
         self, replay_key_hash: str, *, replay_mode: bool = False
     ) -> dict[str, Any] | None:
         """Return replay assist fragment or None if not found."""
+        _require_hash_input("replay_key_hash", replay_key_hash)
         if replay_mode:
             return None
-        return self._cache.get_json(f"replay_frag:{replay_key_hash}", db=_DB_WORKSPACE)
+        return self._cache.get_json(f"replay_frag:{replay_key_hash}")
 
     def set_replay_fragment(
         self,
@@ -284,8 +321,9 @@ class RedisCoordinationFabric:
         ttl_seconds: int | None = None,
     ) -> None:
         """Store replay assist fragment."""
-        ttl = min(ttl_seconds or _TTL_REPLAY_FRAG, _TTL_REPLAY_FRAG)
-        self._cache.set_json(f"replay_frag:{replay_key_hash}", fragment, ttl_seconds=ttl, db=_DB_WORKSPACE)
+        _require_hash_input("replay_key_hash", replay_key_hash)
+        ttl = _bounded_ttl("replay_frag", ttl_seconds, _TTL_REPLAY_FRAG)
+        self._cache.set_json(f"replay_frag:{replay_key_hash}", fragment, ttl_seconds=ttl)
 
     # -------------------------------------------------------------------------
     # Novelty cluster (incident burst working cache)
@@ -293,9 +331,10 @@ class RedisCoordinationFabric:
 
     def get_novelty_cluster(self, cluster_hash: str, *, replay_mode: bool = False) -> dict[str, Any] | None:
         """Return novelty/cluster centroid or None if not found."""
+        _require_hash_input("cluster_hash", cluster_hash)
         if replay_mode:
             return None
-        return self._cache.get_json(f"novelty:{cluster_hash}", db=_DB_WORKSPACE)
+        return self._cache.get_json(f"novelty:{cluster_hash}")
 
     def set_novelty_cluster(
         self,
@@ -305,8 +344,9 @@ class RedisCoordinationFabric:
         ttl_seconds: int | None = None,
     ) -> None:
         """Store novelty/cluster centroid."""
-        ttl = min(ttl_seconds or _TTL_NOVELTY, _TTL_NOVELTY)
-        self._cache.set_json(f"novelty:{cluster_hash}", data, ttl_seconds=ttl, db=_DB_WORKSPACE)
+        _require_hash_input("cluster_hash", cluster_hash)
+        ttl = _bounded_ttl("novelty", ttl_seconds, _TTL_NOVELTY)
+        self._cache.set_json(f"novelty:{cluster_hash}", data, ttl_seconds=ttl)
 
 
 # Singleton instance

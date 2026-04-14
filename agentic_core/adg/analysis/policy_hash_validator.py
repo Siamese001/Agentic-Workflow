@@ -125,6 +125,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("policy_hash_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("policy_hash_validator", "p4obs", "metric_2")
@@ -295,7 +296,7 @@ def validate_policy_hash_coupling(result: ScanResult) -> PolicyHashReport:
     """
     # Pass 1: instruction packet usage per module
     instruction_map: dict[str, list[str]] = {}
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type not in ("calls", "instantiates", "imports"):
             continue
         if not edge.from_name.startswith(_MODULE_PREFIX):
@@ -311,7 +312,7 @@ def validate_policy_hash_coupling(result: ScanResult) -> PolicyHashReport:
 
     # Pass 2: policy hash usage per module
     policy_hash_modules: set[str] = set()
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if not edge.from_name.startswith(_MODULE_PREFIX):
             continue
         sym = edge.to_name
@@ -328,7 +329,7 @@ def validate_policy_hash_coupling(result: ScanResult) -> PolicyHashReport:
     coupled: list[str] = []
     instruction_mods: list[str] = sorted(instruction_map.keys())
 
-    for mod in instruction_mods:
+    for mod in tqdm(instruction_mods, desc="Processing", unit="item"):
         layer = module_path_to_layer(mod)
         if layer not in _POLICY_REQUIRED_LAYERS:
             continue

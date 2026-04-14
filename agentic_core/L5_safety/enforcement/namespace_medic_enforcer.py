@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("namespace_medic_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("namespace_medic_enforcer", "p4obs", "metric_2")
@@ -231,7 +232,7 @@ def inject_imports(content: str, imports: list[str]) -> str:
     insert_idx: Any = 0
     in_docstring: Any = False
     docstring_char: Any = None
-    for i, line in enumerate(lines):
+    for i, line in tqdm(enumerate(lines), desc="Processing", unit="item"):
         stripped: Any = line.strip()
         if stripped.startswith("#"):
             insert_idx: Any = i + 1
@@ -312,7 +313,7 @@ def main() -> Any:
     print(f"[SCAN] Found {len(python_files)} Python files\n")
     healed_count: Any = 0
     total_imports: Any = 0
-    for file_path in python_files:
+    for file_path in tqdm(python_files, desc="Processing", unit="item"):
         was_healed, num_imports = heal_file(file_path, dry_run=args.dry_run)
         if was_healed:
             healed_count += 1

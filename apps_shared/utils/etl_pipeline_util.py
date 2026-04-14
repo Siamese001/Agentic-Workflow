@@ -82,6 +82,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("etl_pipeline_util", "p4obs", "metric_1")
 _emit_emits_metric_event("etl_pipeline_util", "p4obs", "metric_2")
@@ -236,7 +237,7 @@ class ETLPipeline:
                 filter=filter_dict,
             )
             patterns = []
-            for match in results["matches"]:
+            for match in tqdm(results["matches"], desc="Processing", unit="item"):
                 if match["score"] > 0:
                     metadata = match["metadata"]
                     entry = CanonEntry(
@@ -265,7 +266,7 @@ class ETLPipeline:
         loaded_count = 0
         try:
             pipe = self.redis_conn.client.pipeline()
-            for pattern in patterns:
+            for pattern in tqdm(patterns, desc="Processing", unit="item"):
                 fields = pattern.to_redis_fields()
                 key = f"canon:{fields['id']}"
                 pipe.hset(key, mapping=fields)
@@ -312,10 +313,10 @@ class ETLPipeline:
         logger.info(f"Starting backfill of {len(code_files)} code files")
         processed = 0
         failed = 0
-        for i in range(0, len(code_files), batch_size):
+        for i in tqdm(range(0, len(code_files), batch_size), desc="Processing", unit="item"):
             batch = code_files[i : i + batch_size]
             entries = []
-            for file_path in batch:
+            for file_path in tqdm(batch, desc="Processing", unit="item"):
                 try:
                     with open(file_path, encoding="utf-8") as f:
                         code = f.read()

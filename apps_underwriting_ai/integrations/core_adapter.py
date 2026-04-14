@@ -8,6 +8,17 @@ from typing import Any, Dict, Optional
 from ..types import AuditTrace, DecisionMemo, DecisionPacket, UnderwritingRequest
 
 
+def _model_to_dict(model: Optional[Any]) -> Dict[str, Any]:
+    """Support both Pydantic v1 and v2 serialization APIs."""
+    if model is None:
+        return {}
+    if hasattr(model, "model_dump"):
+        return model.model_dump()
+    if hasattr(model, "dict"):
+        return model.dict()
+    return {}
+
+
 @dataclass
 class CoreHandoffPayload:
     """Payload prepared for handoff to agentic_core."""
@@ -62,7 +73,7 @@ class CoreAdapter:
 
         # Build audit metadata
         payload.audit_metadata = {
-            "derived_features": trace.derived_features.dict() if trace.derived_features else {},
+            "derived_features": _model_to_dict(trace.derived_features),
             "evidence_count": len(trace.evidence_refs),
             "validators_run": trace.validators_run,
             "human_review_triggered": trace.human_review_triggered,

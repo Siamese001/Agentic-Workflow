@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_stores_embedding,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -94,7 +95,7 @@ class InMemoryBriefStore:
 
         # Score all briefs
         scored: list[tuple[str, float]] = []
-        for brief_id, emb in self._embeddings.items():
+        for brief_id, emb in tqdm(self._embeddings.items(), desc="Processing", unit="item"):
             score = self._cosine_similarity(query_emb, emb)
 
             # Apply filters
@@ -108,7 +109,7 @@ class InMemoryBriefStore:
         scored.sort(key=lambda x: x[1], reverse=True)
 
         results: list[RetrievedBrief] = []
-        for brief_id, score in scored[:n_results]:
+        for brief_id, score in tqdm(scored[:n_results], desc="Processing", unit="item"):
             br = self._briefs[brief_id]
             meta = br["metadata"]
             data = br["data"]
@@ -134,7 +135,7 @@ class InMemoryBriefStore:
         """Get briefs for a specific audience."""
         results: list[RetrievedBrief] = []
 
-        for brief_id, br in self._briefs.items():
+        for brief_id, br in tqdm(self._briefs.items(), desc="Processing", unit="item"):
             meta = br["metadata"]
             if meta.get("audience_persona") == audience:
                 data = br["data"]
@@ -261,7 +262,7 @@ class BriefRetrievalEngine:
         dimensions = ["buzzword_density", "evidence_density", "readability_score", "professional_tone"]
         trends: dict[str, StyleTrend] = {}
 
-        for dim in dimensions:
+        for dim in tqdm(dimensions, desc="Processing", unit="item"):
             values: list[float] = []
             best_score = 0.0
             best_id = ""

@@ -130,6 +130,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("cache_guard", "p4obs", "metric_1")
 _emit_emits_metric_event("cache_guard", "p4obs", "metric_2")
@@ -186,8 +187,8 @@ def estimate_directory_size(dir_path: Path) -> int:
     total_size = 0
     max_scan_bytes = 200 * 1024 * 1024
     try:
-        for root, dirs, files in os.walk(dir_path):
-            for file in files:
+        for root, dirs, files in tqdm(os.walk(dir_path), desc="Processing", unit="item"):
+            for file in tqdm(files, desc="Processing", unit="item"):
                 file_path = Path(root) / file
                 try:
                     total_size += file_path.stat().st_size
@@ -243,7 +244,7 @@ def scan_cache_directories(root_path: Path) -> dict[str, Any]:
     inventory = []
     dirs_scanned = 0
     all_dirs = sorted(root_path.rglob("*"))
-    for item_path in all_dirs:
+    for item_path in tqdm(all_dirs, desc="Processing", unit="item"):
         if not item_path.is_dir():
             continue
         if is_excluded_directory(item_path):
@@ -295,7 +296,7 @@ def main():
     print(f"Violations found: {len(result['violations'])}")
     total_size = 0
     oversize_count = 0
-    for item in result["inventory"]:
+    for item in tqdm(result["inventory"], desc="Processing", unit="item"):
         detail = item.get("detail", "")
         if "Size:" in detail:
             try:

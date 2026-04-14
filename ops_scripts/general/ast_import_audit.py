@@ -467,7 +467,7 @@ def extract_imports_from_file(filepath: Path) -> dict:
                 if isinstance(child, (ast.Import, ast.ImportFrom)):
                     func_body_ids.add(id(child))
 
-    for node in import_nodes:
+    for node in tqdm(import_nodes, desc="Processing", unit="item"):
         names = list(_extract_import_names(node))
         in_try = id(node) in try_body_ids
         in_func = id(node) in func_body_ids
@@ -533,10 +533,10 @@ def run_scan(roots: list[str], tag: str, exclude_subdirs: list[str] | None = Non
     all_errors: list[str] = []
     files_scanned = 0
 
-    for root_name in roots:
+    for root_name in tqdm(roots, desc="Processing", unit="item"):
         root_path = PROJECT_ROOT / root_name
         py_files = walk_python_files(root_path, EXCLUDED_DIRS)
-        for fpath in py_files:
+        for fpath in tqdm(py_files, desc="Processing", unit="item"):
             files_scanned += 1
             rel = fpath.relative_to(PROJECT_ROOT).as_posix()
             result = extract_imports_from_file(fpath)
@@ -589,7 +589,7 @@ def run_scan(roots: list[str], tag: str, exclude_subdirs: list[str] | None = Non
             "conditional_files": [],
         },
     )
-    for rel, info in file_data.items():
+    for rel, info in tqdm(file_data.items(), desc="Processing", unit="item"):
         for name in info["hard"]:
             dist = import_name_to_dist(name)
             dist_summary[dist]["import_names"].add(name)
@@ -658,7 +658,7 @@ def print_scan_summary(inventory: dict) -> None:
             print(f"    ERROR: {err}")
     print()
     print("  Dist packages found:")
-    for dist, info in sorted(ds.items()):
+    for dist, info in tqdm(sorted(ds.items()), desc="Processing", unit="item"):
         h = len(info["hard_files"])
         eh = len(info["excluded_hard_files"])
         d = len(info["deferred_files"])
@@ -728,7 +728,7 @@ def merge_inventories(out_dir: Path) -> dict:
 
     # Assign buckets
     pkg_map: dict[str, dict] = {}
-    for dist, info in sorted(all_dists.items()):
+    for dist, info in tqdm(sorted(all_dists.items()), desc="Processing", unit="item"):
         if dist in DEV_TOOL_DISTS:
             bucket = "dev"
         elif info["tags"] == {"sdks"}:
@@ -850,7 +850,7 @@ def generate_markdown_report(merged: dict) -> str:
     for info in pkg_map.values():
         buckets[info["bucket"]].append(info)
 
-    for bname in ["core", "dev", "infra", "sdks"]:
+    for bname in tqdm(["core", "dev", "infra", "sdks"], desc="Processing", unit="item"):
         pkgs = buckets.get(bname, [])
         if not pkgs:
             continue

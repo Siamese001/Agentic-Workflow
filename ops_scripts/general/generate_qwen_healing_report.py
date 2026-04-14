@@ -379,6 +379,7 @@ _BMG_HELPER = '''\
         except Exception as exc:  # noqa: BLE001
             import logging
 from agentic_core.runtime.contracts.lifecycle_trace_contract import _emit_reads_through
+from tqdm import tqdm
             logging.getLogger(__name__).warning("BMG retrieval failed: %s", exc)
             return []
 '''
@@ -467,7 +468,7 @@ def build_report() -> str:
 
     # Classify + collect AST info
     rows: list[dict] = []
-    for entry in agents:
+    for entry in tqdm(agents, desc="Processing", unit="item"):
         rel = entry["file"]
         class_name = entry.get("class_name") or Path(rel).stem
         layer = entry.get("layer", "unknown")
@@ -640,7 +641,7 @@ def build_report() -> str:
     md.append("")
 
     # Emit diffs grouped by layer
-    for layer in layer_order:
+    for layer in tqdm(layer_order, desc="Processing", unit="item"):
         layer_q = [r for r in by_layer.get(layer, []) if r["raw_mode"] in ("Q", "H")]
         if not layer_q:
             continue
@@ -658,7 +659,7 @@ def build_report() -> str:
             md.append("")
 
     # Any remaining HYBRID not in canonical order
-    for layer, layer_rows in by_layer.items():
+    for layer, layer_rows in tqdm(by_layer.items(), desc="Processing", unit="item"):
         if layer not in layer_order:
             layer_q = [r for r in layer_rows if r["raw_mode"] in ("Q", "H")]
             if not layer_q:

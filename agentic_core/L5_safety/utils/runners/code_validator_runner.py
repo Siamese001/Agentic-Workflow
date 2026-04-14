@@ -133,6 +133,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("code_validator_runner", "p4obs", "metric_1")
 _emit_emits_metric_event("code_validator_runner", "p4obs", "metric_2")
@@ -223,7 +224,7 @@ def validate_directory(project_root: Path, directory: str) -> dict:
         return {"success": False, "error": f"Directory does not exist: {target_dir}"}
     result = agent.validate_repository()
     violations = []
-    for v in result.get("violations", []):
+    for v in tqdm(result.get("violations", []), desc="Processing", unit="item"):
         if target_dir in Path(v.file_path).parents:
             violations.append(
                 {

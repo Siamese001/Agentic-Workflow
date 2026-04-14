@@ -128,6 +128,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("truth_keeper_validator", "p4obs", "metric_1")
 _emit_emits_metric_event("truth_keeper_validator", "p4obs", "metric_2")
@@ -219,7 +220,7 @@ class TruthKeeper:
             with open(file_path, encoding="utf-8") as f:
                 content: Any = f.read()
             tree: Any = ast.parse(content)
-            for node in ast.walk(tree):
+            for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                 if isinstance(node, ast.FunctionDef) and (not node.name.startswith("_")):
                     result: Any = await self._check_function_consistency(file_path, node, content)
                     if result.get("Violation"):

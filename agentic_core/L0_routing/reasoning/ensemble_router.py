@@ -24,6 +24,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_learning_event,
     _emit_stores_learning_state,
 )
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -463,7 +464,7 @@ class EnsembleRouter:
 
         # Get predictions from all base models
         base_predictions = []
-        for model in self.base_models:
+        for model in tqdm(self.base_models, desc="Processing", unit="item"):
             try:
                 prediction = model.predict(query, context)
                 base_predictions.append(prediction)

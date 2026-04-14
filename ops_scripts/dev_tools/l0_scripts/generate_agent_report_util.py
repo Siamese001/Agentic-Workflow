@@ -20,6 +20,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+from tqdm import tqdm
 
 _emit_writes_through("p1", "generate_agent_report_util", "uwg_governed_write")
 _emit_writes_through("p1", "generate_agent_report_util", "uwg_governed_write_2")
@@ -123,7 +124,7 @@ lines.append("## DETAILED AGENT TABLES BY LAYER")
 lines.append("")
 
 # Generate tables per layer
-for layer in layer_order:
+for layer in tqdm(layer_order, desc="Processing", unit="item"):
     layer_agents = by_layer[layer]
     if not layer_agents:
         continue
@@ -133,7 +134,7 @@ for layer in layer_order:
     lines.append("| Agent Name | Inheritance | Tools | Memory | Healing | Testing | LOC | Description |")
     lines.append("|------------|-------------|-------|--------|---------|---------|-----|-------------|")
 
-    for a in sorted(layer_agents, key=lambda x: x["class_name"]):
+    for a in tqdm(sorted(layer_agents, key=lambda x: x["class_name"]), desc="Processing", unit="item"):
         name = a["class_name"][:35]
         inherit = ", ".join(a["inheritance"][:2])[:25] if a["inheritance"] else "-"
         tools_v = "Y" if a["has_tools"] else "-"
@@ -198,7 +199,7 @@ lines.append("## PHASE 4: VALIDATION EXAMPLES")
 lines.append("")
 
 # Top 3 agents per core layer with code examples
-for layer in ["L0", "L1", "L2", "L3", "L4", "L5"]:
+for layer in tqdm(["L0", "L1", "L2", "L3", "L4", "L5"], desc="Processing", unit="item"):
     layer_agents = by_layer[layer][:3]
     if not layer_agents:
         continue

@@ -72,6 +72,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fix_mislocated", "p4obs", "metric_1")
 _emit_emits_metric_event("fix_mislocated", "p4obs", "metric_2")
@@ -163,7 +164,7 @@ def main():
     mislocated = [m for m in snapshot["modules"] if m["status"] == "MISLOCATED"]
     print(f"Found {len(mislocated)} mislocated tests")
 
-    for module_info in mislocated:
+    for module_info in tqdm(mislocated, desc="Processing", unit="item"):
         module_path = pathlib.Path(module_info["module"])
         expected_test_path = pathlib.Path(module_info["expected_test"])
 

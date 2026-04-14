@@ -91,6 +91,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("feedback_loop_orchestrator_types", "p4obs", "metric_1")
 _emit_emits_metric_event("feedback_loop_orchestrator_types", "p4obs", "metric_2")
@@ -296,7 +297,7 @@ class FeedbackLoopOrchestrator:
         checkpoints = []
         temperature = self.adaptive_temperature_config["initial_temperature"]
         context = initial_context.copy()
-        for attempt in range(1, self.max_attempts + 1):
+        for attempt in tqdm(range(1, self.max_attempts + 1), desc="Processing", unit="item"):
             logger.info(f"Attempt {attempt}/{self.max_attempts} for {k_node_id} (temp={temperature:.2f})")
             try:
                 content = await generator(context, temperature)
@@ -545,7 +546,7 @@ class FeedbackLoopOrchestrator:
             "",
             "ATTEMPT HISTORY:",
         ]
-        for checkpoint in result.checkpoints:
+        for checkpoint in tqdm(result.checkpoints, desc="Processing", unit="item"):
             report_lines.append(f"\nAttempt {checkpoint.attempt}:")
             report_lines.append(f"  Temperature: {checkpoint.temperature:.2f}")
             report_lines.append(f"  Score: {checkpoint.score:.2f}")

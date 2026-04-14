@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 record_execution_trace("determinism_serialization_check", "determinism_serialization_check_trace")
 
@@ -301,7 +302,7 @@ def scan_repository_for_determinism(repo_root: Path) -> list[tuple[str, int, str
     """
     all_violations = []
     scan_patterns = ["agentic_core/L3_orchestration/replay/**/*.py", "agentic_core/L4_state/storage/**/*.py"]
-    for pattern in scan_patterns:
+    for pattern in tqdm(scan_patterns, desc="Processing", unit="item"):
         for py_file in repo_root.glob(pattern):
             violations = scan_file_for_determinism(py_file)
             for lineno, rule_id, snippet in violations:
@@ -458,7 +459,7 @@ def scan_execution_scope_for_nondeterminism(
         Sorted list of (file_path, lineno, rule_id, snippet) tuples.
     """
     all_violations: list[tuple[str, int, str, str]] = []
-    for pattern in _EXECUTION_SCOPE_PATTERNS:
+    for pattern in tqdm(_EXECUTION_SCOPE_PATTERNS, desc="Processing", unit="item"):
         for py_file in repo_root.glob(pattern):
             if "__pycache__" in str(py_file):
                 continue

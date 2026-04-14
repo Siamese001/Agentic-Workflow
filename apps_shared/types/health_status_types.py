@@ -85,6 +85,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("health_status_types", "p4obs", "metric_1")
 _emit_emits_metric_event("health_status_types", "p4obs", "metric_2")
@@ -557,7 +558,7 @@ class HealthCheckRegistry:
                 tasks.append(task)
             if tasks:
                 checker_results = await asyncio.gather(*tasks, return_exceptions=True)
-                for result in checker_results:
+                for result in tqdm(checker_results, desc="Processing", unit="item"):
                     if isinstance(result, Exception):
                         error_result = HealthCheckResult(
                             component_name="unknown",

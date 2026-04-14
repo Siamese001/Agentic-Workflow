@@ -132,6 +132,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("fission_executor_util", "p4obs", "metric_1")
 _emit_emits_metric_event("fission_executor_util", "p4obs", "metric_2")
@@ -210,7 +211,7 @@ async def apply_fission_blueprint(file_path: str, blueprint: dict, fission_mgr: 
         submodule_dir: Any = Path(file_dir) / f"{base_name}_modules"
         os.makedirs(submodule_dir, exist_ok=True)
         created_modules: Any = []
-        for module_name, module_data in blueprint.items():
+        for module_name, module_data in tqdm(blueprint.items(), desc="Processing", unit="item"):
             if not isinstance(module_data, dict):
                 Logger.warning(f"   [!] Skipping invalid module entry: {module_name}")
                 continue

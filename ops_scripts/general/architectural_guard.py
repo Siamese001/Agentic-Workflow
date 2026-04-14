@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS
+from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TARGET_DIR = str(REPO_ROOT / "apps_shared" / "common_utils")
@@ -23,9 +24,9 @@ def scan_for_violations() -> list[str]:
     if not os.path.exists(TARGET_DIR):
         print(f"Target directory {TARGET_DIR} does not exist. Skipping.")
         return []
-    for root, dirs, files in os.walk(TARGET_DIR):
+    for root, dirs, files in tqdm(os.walk(TARGET_DIR), desc="Processing", unit="item"):
         dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
-        for file in files:
+        for file in tqdm(files, desc="Processing", unit="item"):
             if not file.endswith(".py"):
                 continue
             for suffix in BANNED_SUFFIXES:
@@ -35,7 +36,7 @@ def scan_for_violations() -> list[str]:
             try:
                 with open(full_path, encoding="utf-8") as f:
                     tree = ast.parse(f.read())
-                for node in ast.walk(tree):
+                for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
                     if isinstance(node, ast.Import):
                         for name in node.names:
                             if any(banned in name.name for banned in BANNED_IMPORTS):

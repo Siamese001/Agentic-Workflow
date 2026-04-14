@@ -14,11 +14,12 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_eval._telemetry import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_verifies_policy,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -184,7 +185,7 @@ class EvaluationValidator:
         violations: list[ValidationViolation] = []
 
         dimension_scores = eval_result.get("dimension_scores", {})
-        for dim_id, score in dimension_scores.items():
+        for dim_id, score in tqdm(dimension_scores.items(), desc="Processing", unit="item"):
             if score < 0.0 or score > 1.0:
                 violations.append(
                     ValidationViolation(
@@ -212,7 +213,7 @@ class EvaluationValidator:
         actual_dims = set(eval_result.get("dimension_scores", {}).keys())
 
         missing = expected_dims - actual_dims
-        for dim in missing:
+        for dim in tqdm(missing, desc="Processing", unit="item"):
             violations.append(
                 ValidationViolation(
                     violation_id=f"V{len(violations) + 1:03d}",
@@ -262,7 +263,7 @@ class EvaluationValidator:
         evaluated_suites = set(eval_result.get("suite_results", {}).keys())
 
         missing = configured_suites - evaluated_suites
-        for suite_id in missing:
+        for suite_id in tqdm(missing, desc="Processing", unit="item"):
             if suite_id:  # Skip None values
                 violations.append(
                     ValidationViolation(

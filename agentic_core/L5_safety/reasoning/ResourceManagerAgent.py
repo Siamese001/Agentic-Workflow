@@ -138,6 +138,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("ResourceManagerAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("ResourceManagerAgent", "p4obs", "metric_2")
@@ -390,7 +391,7 @@ class ResourceManagerAgent(SovereignBaseAgent):
         priority: int,
     ) -> ResourceAllocation:
         """Apply fallback strategies when allocation fails."""
-        for strategy in self._agent_config.fallback_strategies:
+        for strategy in tqdm(self._agent_config.fallback_strategies, desc="Processing", unit="item"):
             if strategy == "queue":
                 self._pending_queue.append((agent_id, resource_type, amount, priority))
                 Logger.info(f"Queued allocation request from {agent_id}")

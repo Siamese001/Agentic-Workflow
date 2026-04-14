@@ -29,6 +29,7 @@ from agentic_core.L0_routing.config.path_constants import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from tqdm import tqdm
 
 Logger = logging.getLogger(__name__)
 
@@ -49,7 +50,7 @@ def find_non_approved_files(project_root: Path) -> list[Path]:
     """Find all files in non-SSOT-approved folders."""
     non_approved_files: list[Path] = []
 
-    for root, dirs, files in os.walk(project_root):
+    for root, dirs, files in tqdm(os.walk(project_root), desc="Processing", unit="item"):
         root_path = Path(root)
 
         # Skip approved folders
@@ -167,7 +168,7 @@ def update_imports_for_moved_file(
     new_module = str(rel_new.as_posix()).replace("/", ".")
     new_module = new_module.replace(".py", "")
 
-    for py_file in project_root.rglob("*.py"):
+    for py_file in tqdm(project_root.rglob("*.py"), desc="Processing", unit="item"):
         if py_file == old_path or py_file == new_path:
             continue
 
@@ -204,7 +205,7 @@ def delete_empty_folders(
     """
     deleted_count = 0
 
-    for root, dirs, files in os.walk(str(project_root), topdown=False):
+    for root, dirs, files in tqdm(os.walk(str(project_root), topdown=False), desc="Processing", unit="item"):
         root_path = Path(root)
 
         # Skip approved folders
@@ -250,7 +251,7 @@ def cleanup_repository(
 
     move_plan: list[dict[str, Any]] = []
 
-    for file_path in non_approved_files:
+    for file_path in tqdm(non_approved_files, desc="Processing", unit="item"):
         triage = triage_file(file_path, project_root)
 
         if triage["action"] == "MOVE" and triage["target_path"]:
@@ -276,7 +277,7 @@ def cleanup_repository(
             Logger.info(f"Skipping {file_path}: {triage['action']} - {triage['reason']}")
 
     # Execute moves
-    for plan in move_plan:
+    for plan in tqdm(move_plan, desc="Processing", unit="item"):
         source = plan["source"]
         target = plan["target"]
 

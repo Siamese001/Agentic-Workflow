@@ -25,6 +25,7 @@ from agentic_core.evaluation.judges.types import (
     RubricDefinition,
     ScoringCriterion,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -182,7 +183,7 @@ class RubricEngine:
         """
         self._ensure_loaded()
         results = []
-        for rubric in self._rubrics.values():
+        for rubric in tqdm(self._rubrics.values(), desc="Processing", unit="item"):
             if deterministic_only and not rubric.is_deterministic:
                 continue
 

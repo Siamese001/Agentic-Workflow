@@ -15,13 +15,14 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.runtime.contracts.lifecycle_trace_contract import (
+from apps_rfp._compat.lifecycle_trace import (
     _emit_coordinates_agents,
     _emit_dispatches_agent,
     _emit_orchestrates_workflow,
     _emit_records_execution_trace,
     _emit_records_workflow_lineage,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -328,7 +329,7 @@ class SectionOrchestrator:
 
         # Create section requests
         sections: list[SectionRequest] = []
-        for idx, section_type in enumerate(required_sections, 1):
+        for idx, section_type in tqdm(enumerate(required_sections, 1), desc="Processing", unit="item"):
             section_id = f"SEC-{idx:02d}-{section_type.value[:8].upper()}"
 
             # Build context from RFP and decompositions
@@ -367,7 +368,7 @@ class SectionOrchestrator:
         results: list[SectionResult] = []
 
         # Execute in dependency order
-        for batch in plan.execution_order:
+        for batch in tqdm(plan.execution_order, desc="Processing", unit="item"):
             _emit_coordinates_agents("enterprise", "SectionOrchestrator", f"batch_{len(batch)}")
 
             # Create tasks for parallel execution within batch
@@ -385,7 +386,7 @@ class SectionOrchestrator:
             # Wait for batch completion
             batch_results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            for result in batch_results:
+            for result in tqdm(batch_results, desc="Processing", unit="item"):
                 if isinstance(result, Exception):
                     _log.error(f"[SectionOrchestrator] Batch error: {result}")
                 else:

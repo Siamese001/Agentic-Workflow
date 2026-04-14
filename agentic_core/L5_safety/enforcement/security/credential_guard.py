@@ -134,6 +134,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("credential_guard", "p4obs", "metric_1")
 _emit_emits_metric_event("credential_guard", "p4obs", "metric_2")
@@ -317,7 +318,7 @@ def scan_file(file_path: Path) -> list[dict[str, Any]]:
     except (UnicodeDecodeError, PermissionError):
         return violations
     lines = content.split("\n")
-    for line_num, line in enumerate(lines, 1):
+    for line_num, line in tqdm(enumerate(lines, 1), desc="Processing", unit="item"):
         for pattern in PATTERNS:
             if pattern["regex"].search(line):
                 violations.append(
@@ -331,7 +332,7 @@ def scan_repository(root_path: Path) -> dict[str, Any]:
     all_violations = []
     files_scanned = 0
     all_files = sorted(root_path.rglob("*"))
-    for file_path in all_files:
+    for file_path in tqdm(all_files, desc="Processing", unit="item"):
         if file_path.is_dir():
             continue
         if any(exclude_dir in file_path.parts for exclude_dir in EXCLUDE_DIRS):

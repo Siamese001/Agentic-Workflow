@@ -131,6 +131,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("routing_optimization", "p4obs", "metric_1")
 _emit_emits_metric_event("routing_optimization", "p4obs", "metric_2")
@@ -386,7 +387,7 @@ class RoutingOptimizationRegistry:
             start_key = int(start_tick // 300) * 300
             end_key = int(end_tick // 300) * 300
 
-            for window_key in range(start_key, end_key + 300, 300):
+            for window_key in tqdm(range(start_key, end_key + 300, 300), desc="Processing", unit="item"):
                 if window_key in self._time_index:
                     for optimization_id in self._time_index[window_key]:
                         optimization = self._optimizations.get(optimization_id)

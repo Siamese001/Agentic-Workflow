@@ -139,6 +139,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("learning_types", "p4obs", "metric_1")
 _emit_emits_metric_event("learning_types", "p4obs", "metric_2")
@@ -300,9 +301,11 @@ class AdaptiveLearningEngine:
         try:
             with open(self.pattern_storage_path, encoding="utf-8") as f:
                 data = json.load(f)
-            for key_str, patterns_data in data.get("patterns", {}).items():
+            for key_str, patterns_data in tqdm(
+                data.get("patterns", {}).items(), desc="Processing", unit="item"
+            ):
                 key = int(key_str)
-                for p_data in patterns_data:
+                for p_data in tqdm(patterns_data, desc="Processing", unit="item"):
                     pattern = HealingPattern(
                         violation_key=p_data["violation_key"],
                         violation_signature=p_data["violation_signature"],
@@ -341,7 +344,7 @@ class AdaptiveLearningEngine:
                     _wg.remove_file(backups[0])
                     backups.pop(0)
             data = {"patterns": {}, "last_updated": datetime.now().isoformat()}
-            for key, patterns in self.patterns.items():
+            for key, patterns in tqdm(self.patterns.items(), desc="Processing", unit="item"):
                 data["patterns"][str(key)] = [
                     {
                         "violation_key": p.violation_key,
@@ -455,7 +458,7 @@ class AdaptiveLearningEngine:
         predictions: Any = []
         file_history: Any = self.violation_history.get(file_path, [])
         recent_violations: Any = [v[0] for v in file_history[-5:] if not v[1]]
-        for violation_key in set(recent_violations):
+        for violation_key in tqdm(set(recent_violations), desc="Processing", unit="item"):
             patterns: Any = self.patterns.get(violation_key, [])
             high_confidence_patterns: Any = [p for p in patterns if p.confidence_score > 0.75]
             if high_confidence_patterns:
@@ -469,10 +472,10 @@ class AdaptiveLearningEngine:
                         reasoning=f"File has history of Key {violation_key} violations",
                     ),
                 )
-        for violation_key, patterns in self.patterns.items():
+        for violation_key, patterns in tqdm(self.patterns.items(), desc="Processing", unit="item"):
             if violation_key in recent_violations:
                 continue
-            for pattern in patterns:
+            for pattern in tqdm(patterns, desc="Processing", unit="item"):
                 if pattern.confidence_score < 0.8:
                     continue
                 file_pattern: Any = self._extract_file_pattern(file_path)

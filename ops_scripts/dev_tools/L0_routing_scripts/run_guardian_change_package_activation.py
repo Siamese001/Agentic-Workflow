@@ -152,6 +152,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("run_guardian_change_package_activation", "p4obs", "metric_1")
 _emit_emits_metric_event("run_guardian_change_package_activation", "p4obs", "metric_2")
@@ -244,7 +245,7 @@ def scan_activation_patterns(
     vs_commit_viols: list[dict] = []
     gate_viols: list[dict] = []
 
-    for fpath in files:
+    for fpath in tqdm(files, desc="Processing", unit="item"):
         rel = normalize_repo_path(fpath.relative_to(repo_root))
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
@@ -252,7 +253,7 @@ def scan_activation_patterns(
         except SyntaxError:
             continue
 
-        for node in ast.walk(tree):
+        for node in tqdm(ast.walk(tree), desc="Processing", unit="item"):
             if not isinstance(node, ast.Call):
                 continue
             func = node.func
@@ -313,10 +314,14 @@ def run_change_package_activation_guardian(
     )
 
     viols = scan_activation_patterns(repo_root)
-    for check_id in (
-        "proposal_only_bypass",
-        "direct_version_store_commit",
-        "activation_without_approval_gate",
+    for check_id in tqdm(
+        (
+            "proposal_only_bypass",
+            "direct_version_store_commit",
+            "activation_without_approval_gate",
+        ),
+        desc="Processing",
+        unit="item",
     ):
         v = viols[check_id]
         if v:

@@ -56,8 +56,8 @@ class ExecutionAdapter:
             request_id=request.trace_id or "rfp-unknown",
             priority="high" if not result.passed_gate else "normal",
             payload={
-                "rfp_request": request.model_dump(),
-                "rfp_result": result.model_dump(),
+                "rfp_request": request.model_dump() if hasattr(request, "model_dump") else request.dict(),
+                "rfp_result": result.model_dump() if hasattr(result, "model_dump") else result.dict(),
                 "gate_passed": result.passed_gate,
                 "sections_count": len(result.sections),
                 "risks_count": len(result.risks),

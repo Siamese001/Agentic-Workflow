@@ -22,6 +22,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_workflow_lineage,
 )
+from tqdm import tqdm
 
 _log = logging.getLogger(__name__)
 
@@ -279,7 +280,7 @@ class ResearchOrchestrator:
 
         results: list[ResearchAgentResult] = []
 
-        for batch in plan.execution_order:
+        for batch in tqdm(plan.execution_order, desc="Processing", unit="item"):
             _emit_coordinates_agents("enterprise", "ResearchOrchestrator", f"batch_{len(batch)}")
 
             # Create tasks for parallel execution
@@ -295,7 +296,7 @@ class ResearchOrchestrator:
             # Wait for batch completion
             batch_results = await asyncio.gather(*tasks, return_exceptions=True)
 
-            for result in batch_results:
+            for result in tqdm(batch_results, desc="Processing", unit="item"):
                 if isinstance(result, Exception):
                     _log.error(f"[ResearchOrchestrator] Batch error: {result}")
                 else:

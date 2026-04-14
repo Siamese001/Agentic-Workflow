@@ -45,6 +45,7 @@ from system_learning.types.case_memory_types import (
     CaseRecord,
     OutcomeClass,
 )
+from tqdm import tqdm
 
 # ADG wiring for case compilation engine
 _emit_records_execution_trace("case_compilation_engine", "p0", "case_compilation_trace")
@@ -364,7 +365,7 @@ class CaseCompilationEngine:
 
         case_records: list[CaseRecord] = []
 
-        for sealed_ref in compilation_input.sealed_outputs:
+        for sealed_ref in tqdm(compilation_input.sealed_outputs, desc="Processing", unit="item"):
             # Build CaseRecord from sealed output reference
             # In full implementation, would read actual sealed output content
             # via output_reader and build comprehensive CaseRecord

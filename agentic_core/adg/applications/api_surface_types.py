@@ -124,6 +124,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("api_surface", "p4obs", "metric_1")
 _emit_emits_metric_event("api_surface", "p4obs", "metric_2")
@@ -287,7 +288,7 @@ def build_api_surface(result: ScanResult) -> APISurfaceReport:
     """
     surface: dict[str, ModuleAPISurface] = {}
 
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type not in ("exports", "re_exports"):
             continue
         if not edge.from_name.startswith(_MODULE_PREFIX):
@@ -320,7 +321,7 @@ def build_api_surface(result: ScanResult) -> APISurfaceReport:
             internal_set.add((mod_path, sym))
 
     violations: list[BoundaryViolation] = []
-    for edge in result.edges:
+    for edge in tqdm(result.edges, desc="Processing", unit="item"):
         if edge.relation_type != "imports":
             continue
         symbol = edge.symbol or ""

@@ -141,6 +141,7 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from tqdm import tqdm
 
 _emit_emits_metric_event("data_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("data_enforcer", "p4obs", "metric_2")
@@ -241,7 +242,7 @@ class DataValidator:
         print("📋 Check 1: Base Agent Uniqueness")
         print("-" * 80)
         base_agents_by_layer = defaultdict(list)
-        for agent in self.data:
+        for agent in tqdm(self.data, desc="Processing", unit="item"):
             class_name = agent.get("class_name", "")
             layer = agent.get("layer", "")
             is_base = (
@@ -254,7 +255,7 @@ class DataValidator:
                 if layer_prefix in LAYERS:
                     base_agents_by_layer[layer_prefix].append(agent)
         issues_found = False
-        for layer in LAYERS:
+        for layer in tqdm(LAYERS, desc="Processing", unit="item"):
             agents = base_agents_by_layer.get(layer, [])
             canonical = CANONICAL_BASE_AGENTS.get(layer)
             if len(agents) == 0:
@@ -322,7 +323,7 @@ class DataValidator:
         print("📋 Check 4: Metric Sanity")
         print("-" * 80)
         metric_issues = []
-        for agent in self.data:
+        for agent in tqdm(self.data, desc="Processing", unit="item"):
             name = agent.get("class_name", "Unknown")
             for field in ["typed_pct", "documented_pct", "test_coverage"]:
                 value = agent.get(field, 0)
@@ -350,7 +351,7 @@ class DataValidator:
         print("📋 Check 5: Inheritance Patterns")
         print("-" * 80)
         inheritance_issues = []
-        for agent in self.data:
+        for agent in tqdm(self.data, desc="Processing", unit="item"):
             name = agent.get("class_name", "Unknown")
             inheritance = agent.get("inheritance", [])
             layer = agent.get("layer", "")
@@ -374,7 +375,7 @@ class DataValidator:
         print("📋 Check 6: Naming Conventions")
         print("-" * 80)
         naming_issues = []
-        for agent in self.data:
+        for agent in tqdm(self.data, desc="Processing", unit="item"):
             name = agent.get("class_name", "")
             if not name.endswith("Agent"):
                 naming_issues.append(f"{name}: Does not end with 'Agent'")
