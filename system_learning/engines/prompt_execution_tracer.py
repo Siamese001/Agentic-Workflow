@@ -515,7 +515,7 @@ class PromptExecutionTracer:
         for prompt_hash, trace_id, signal, ts in executions:
             try:
                 results.append(self.trace(prompt_hash, trace_id, signal, ts))
-            except Exception as exc:
+            except (AttributeError, KeyError, TypeError, ValueError) as exc:
                 logger.warning(
                     "prompt_execution_tracer: trace failed",
                     extra={"trace_id": trace_id, "error": str(exc)},

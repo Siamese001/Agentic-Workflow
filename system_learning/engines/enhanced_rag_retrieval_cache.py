@@ -311,8 +311,8 @@ class EnhancedRagRetrievalCache:
 
             return True
 
-        except Exception as e:
-            logger.error(f"Failed to store cache entry: {e}")
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            logger.error("Failed to store cache entry: %s", exc)
             _emit_captures_runtime_anomaly("p4obs", "enhanced_rag_retrieval_cache", "cache_store_failure")
             return False
 
@@ -366,8 +366,8 @@ class EnhancedRagRetrievalCache:
 
             return True
 
-        except Exception as e:
-            logger.debug(f"Policy validation failed: {e}")
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("Policy validation failed: %s", exc)
             return False
 
     def invalidate(

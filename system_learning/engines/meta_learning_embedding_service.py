@@ -210,8 +210,7 @@ class MetaLearningEmbeddingService:
                     from system_learning.engines.openai_embedder import BGEEmbedder
 
                     self.embedder = BGEEmbedder()
-                # guardian: allow-silent-swallow
-                except Exception:
+                except (AttributeError, ImportError, RuntimeError, TypeError, ValueError):
                     self.embedder = None
             else:
                 self.embedder = None

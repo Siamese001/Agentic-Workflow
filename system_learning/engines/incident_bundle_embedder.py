@@ -316,8 +316,7 @@ class IncidentBundleEmbedder:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("IncidentBundleEmbedder.retrieve_similar: %s", exc)
             return []
 

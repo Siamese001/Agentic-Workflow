@@ -70,8 +70,15 @@ def _capture_start_of_run_state(
             try:
                 text = path.read_text(encoding="utf-8")
                 _START_OF_RUN_CACHE[cache_key] = json.loads(text)
-            # guardian: allow-silent-swallow - acceptable exception handling
-            except (json.JSONDecodeError, UnicodeDecodeError):
+            except (json.JSONDecodeError, UnicodeDecodeError, OSError) as exc:
+                import logging
+
+                logging.getLogger(__name__).debug(
+                    "config_store: failed to warm start-of-run cache for %s/%s: %s",
+                    app_id,
+                    component,
+                    exc,
+                )
                 _START_OF_RUN_CACHE[cache_key] = {}
         else:
             _START_OF_RUN_CACHE[cache_key] = {}
@@ -88,8 +95,15 @@ def _capture_start_of_run_state(
         try:
             text = path.read_text(encoding="utf-8")
             return json.loads(text)  # guardian: Encoding errors should specify fallback encoding strategy
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except (json.JSONDecodeError, UnicodeDecodeError, OSError) as exc:
+            import logging
+
+            logging.getLogger(__name__).debug(
+                "config_store: failed to read uncached state for %s/%s: %s",
+                app_id,
+                component,
+                exc,
+            )
             return {}
     return {}
 
@@ -292,10 +306,17 @@ def get_active_version(
     # Read the current.json to extract version info    # guardian: Encoding errors should specify fallback encoding strategy
     try:
         # Version is stored in the snapshot metadata, not payload
-        # guardian: allow-silent-swallow - acceptable exception handling
         # For now, we'll scan the versions directory
         return _scan_latest_version(store_root, app_id, component)
-    except (json.JSONDecodeError, UnicodeDecodeError):
+    except (OSError, ValueError) as exc:
+        import logging
+
+        logging.getLogger(__name__).debug(
+            "config_store: failed to determine active version for %s/%s: %s",
+            app_id,
+            component,
+            exc,
+        )
         return 0
 
 

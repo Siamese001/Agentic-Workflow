@@ -583,7 +583,7 @@ class MetaLearningBus:
     ) -> list[FeatureBundle]:
         try:
             return self._extractor.extract_batch(list(traces))
-        except Exception as exc:  # guardian: allow-silent-swallow
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning(
                 "meta_learning_bus: feature extraction stage failed",
                 extra={"error": str(exc)},
@@ -608,7 +608,7 @@ class MetaLearningBus:
                         f"ADG::TraceFeatureRecord::{record.record_id[:12]}",
                     ),
                 )
-            except Exception as exc:  # guardian: allow-silent-swallow
+            except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
                 logger.warning(
                     "meta_learning_bus: record promotion failed",
                     extra={"trace_id": bundle.trace_id, "error": str(exc)},
@@ -643,7 +643,7 @@ class MetaLearningBus:
                     ),
                 )
             return clusters
-        except Exception as exc:  # guardian: allow-silent-swallow
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning(
                 "meta_learning_bus: RCA clustering stage failed",
                 extra={"error": str(exc)},
@@ -657,7 +657,7 @@ class MetaLearningBus:
     ) -> list[OptimizationProposal]:
         try:
             return self._proposal_engine.generate(clusters, timestamp_utc)
-        except Exception as exc:  # guardian: allow-silent-swallow
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning(
                 "meta_learning_bus: proposal generation stage failed",
                 extra={"error": str(exc)},
@@ -845,7 +845,7 @@ class MetaLearningBus:
                         timestamp_utc=timestamp_utc,
                     ),
                 )
-            except Exception as exc:  # guardian: allow-silent-swallow
+            except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
                 logger.warning(
                     "meta_learning_bus: reward signal synthesis failed",
                     extra={"trace_id": bundle.trace_id, "error": str(exc)},
@@ -872,7 +872,7 @@ class MetaLearningBus:
                     relation_type=relation_type,
                     to_entity=to_entity,
                 )
-            except Exception as exc:  # guardian: allow-silent-swallow
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
                 logger.debug(
                     "meta_learning_bus: ADG relation emission failed",
                     extra={

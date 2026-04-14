@@ -414,20 +414,22 @@ class PatternAnalysisEngine:
                                 metrics=tuple(sorted([("drift_score", round(score, 6))])),
                             ),
                         )
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (KeyError, TypeError, ValueError) as exc:
                 import logging
 
                 logging.getLogger(__name__).debug(
-                    "pattern_analysis_engine: Exception swallowed at L404: %s", e
+                    "pattern_analysis_engine: drift snapshot parsing failed: %s", exc
                 )
         if detection_signal_bytes is not None:
             try:
                 det = _json.loads(detection_signal_bytes.decode("utf-8"))
                 detection_version = det.get("version")
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
+            except (UnicodeDecodeError, ValueError, TypeError) as exc:
+                import logging
+
+                logging.getLogger(__name__).debug(
+                    "pattern_analysis_engine: detection signal decode failed: %s", exc
+                )
         findings.sort(key=lambda f: (f.key.label, f.key.component, f.key.dimension))
         source_ids = PatternSourceIds(
             healing_snapshot_version=healing_version,
@@ -700,11 +702,12 @@ class PatternAnalysisEngine:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=now_utc,
             )
-        except Exception as e:
-            # Bridge unavailable - continue without it
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             import logging
 
-            logging.getLogger(__name__).debug("pattern_analysis_engine: Exception swallowed at L663: %s", e)
+            logging.getLogger(__name__).debug(
+                "pattern_analysis_engine: failed to persist cross-domain analysis: %s", exc
+            )
 
         return analysis
 

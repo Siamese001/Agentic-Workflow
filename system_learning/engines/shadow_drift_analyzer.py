@@ -268,11 +268,11 @@ class ShadowDriftAnalyzer:
                 if violation_delta > 0:
                     # Violations increased - this is structural drift
                     drift_source = "adg_structural"
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             # ADG data unavailable - continue with embedding-only analysis
             import logging
 
-            logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L259: %s", e)
+            logging.getLogger(__name__).debug("shadow_drift_analyzer: violation count lookup failed: %s", exc)
 
         mean_cosine = statistics.mean(cosine_values)
         p95_cosine = self._compute_percentile(cosine_values, 95)
@@ -284,7 +284,7 @@ class ShadowDriftAnalyzer:
             # Boost drift score for structural violations
             drift_score = max(drift_score, 0.5 + (violation_delta / 10.0))
 
-        return DriftSummary(
+        summary = DriftSummary(
             profile_id=profile_id,
             batch_size=len(shadow_records),
             mean_cosine=round(mean_cosine, 6),
@@ -296,7 +296,6 @@ class ShadowDriftAnalyzer:
             violation_delta=violation_delta,
         )
 
-        # Emit to registry
         self._emit_to_registry(summary)
         return summary
 
@@ -306,9 +305,12 @@ class ShadowDriftAnalyzer:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
             get_sl_memory_bridge().persist_drift_summary(summary)
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            import logging
+
+            logging.getLogger(__name__).debug(
+                "shadow_drift_analyzer: drift summary persistence failed: %s", exc
+            )
         try:
             import hashlib
             import json as _json
@@ -363,12 +365,16 @@ class ShadowDriftAnalyzer:
                         proposal_only=True,
                     )
                     bus.enqueue(pkg)
-                # guardian: allow-silent-swallow
-                except Exception:
-                    pass
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+                except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+                    import logging
+
+                    logging.getLogger(__name__).debug(
+                        "shadow_drift_analyzer: drift alert enqueue failed: %s", exc
+                    )
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+            import logging
+
+            logging.getLogger(__name__).debug("shadow_drift_analyzer: registry emission failed: %s", exc)
 
     # Wave B-7: Infrastructure drift detection from cache coherence violations
     def analyze_infrastructure_drift(
@@ -444,11 +450,13 @@ class ShadowDriftAnalyzer:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=now_utc,
             )
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             # Bridge unavailable - continue without it
             import logging
 
-            logging.getLogger(__name__).debug("shadow_drift_analyzer: Exception swallowed at L431: %s", e)
+            logging.getLogger(__name__).debug(
+                "shadow_drift_analyzer: infrastructure drift persistence failed: %s", exc
+            )
 
         return analysis
 

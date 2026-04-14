@@ -273,9 +273,8 @@ def _analyze_shadow_drift_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    # guardian: allow-silent-swallow
-    except Exception as _l4_err:
-        logger.warning("[MetaLearning] L4C shadow_drift write failed: %s", _l4_err)
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        logger.warning("[MetaLearning] L4C shadow_drift write failed: %s", exc)
     _shadow_telemetry_batch.clear()
     return drift_summary
 
@@ -311,9 +310,8 @@ def _generate_policy_recommendation_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    # guardian: allow-silent-swallow
-    except Exception as _l4_err:
-        logger.warning("[MetaLearning] L4C policy_recommendation write failed: %s", _l4_err)
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        logger.warning("[MetaLearning] L4C policy_recommendation write failed: %s", exc)
     return recommendation
 
 
@@ -348,9 +346,8 @@ def _create_proposal_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    # guardian: allow-silent-swallow
-    except Exception as _l4_err:
-        logger.warning("[MetaLearning] L4C retrieval_profile_proposal write failed: %s", _l4_err)
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+        logger.warning("[MetaLearning] L4C retrieval_profile_proposal write failed: %s", exc)
     return proposal
 
 
@@ -931,11 +928,11 @@ def run_pipeline(
 
         adapter = get_adapter()
         violation_file_set = adapter.get_violation_file_set()
-    except Exception as e:
+    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
         # ADG unavailable - continue without violation correlation
         import logging
 
-        logging.getLogger(__name__).debug("meta_learning_pipeline: Exception swallowed at L906: %s", e)
+        logging.getLogger(__name__).debug("meta_learning_pipeline: violation file-set lookup failed: %s", exc)
 
     rca_report = analyze_failures(
         snapshot_id=snapshot.snapshot_id,
@@ -1216,9 +1213,8 @@ def run_pipeline(
             )
 
             _get_sl_bridge_agg().persist_healing_aggregate_snapshot(aggregate_snapshot, ts=str(now_utc))
-        # guardian: allow-silent-swallow -- MCP aggregate persist is non-critical telemetry; pipeline output unaffected by bridge failure
-        except Exception:
-            pass
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("[MetaLearning] aggregate snapshot persist failed: %s", exc)
     else:
         _8_5_aggregate_snapshot = None
     _detection_signal_bytes_86: bytes | None = None
@@ -1262,9 +1258,8 @@ def run_pipeline(
                 )
 
                 _get_sl_bridge_drift().persist_drift_summary(drift_summary)
-            # guardian: allow-silent-swallow -- MCP drift-summary persist is non-critical telemetry; digest already emitted above
-            except Exception:
-                pass
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+                logger.debug("[MetaLearning] drift summary persist failed: %s", exc)
         policy_recommendation = _generate_policy_recommendation_and_write(
             drift_summary=drift_summary,
             active_profile=active_profile,
@@ -1279,9 +1274,8 @@ def run_pipeline(
                 )
 
                 _get_sl_bridge_pol().persist_policy_recommendation(policy_recommendation)
-            # guardian: allow-silent-swallow -- MCP policy-rec persist is non-critical telemetry; digest already emitted above
-            except Exception:
-                pass
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+                logger.debug("[MetaLearning] policy recommendation persist failed: %s", exc)
         profile_proposal = _create_proposal_and_write(
             policy_recommendation=policy_recommendation,
             active_profile=active_profile,
@@ -1367,10 +1361,12 @@ def run_pipeline(
         # Query recent Execute_SSOT phase outcomes
         # This would need a query method in the bridge - for now track that we attempted
         bridge._query_execute_ssot_outcomes(now_utc)
-    except Exception as e:
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
         # Query failed - continue without it
         import logging
 
-        logging.getLogger(__name__).debug("meta_learning_pipeline: Exception swallowed at L1316: %s", e)
+        logging.getLogger(__name__).debug(
+            "meta_learning_pipeline: Execute_SSOT outcome query failed: %s", exc
+        )
 
     return tuple(validated_proposals)

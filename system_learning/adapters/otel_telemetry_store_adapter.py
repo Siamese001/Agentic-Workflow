@@ -15,6 +15,7 @@ from system_learning.adapters.system_learning_memory_bridge import get_sl_memory
 from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
+_MAX_SPANS_PER_BATCH = 50
 
 
 class OTelTelemetryStoreAdapter:
@@ -50,17 +51,26 @@ class OTelTelemetryStoreAdapter:
             return False
 
         try:
-            # Store each span as a separate telemetry event
+            if len(span_data) > _MAX_SPANS_PER_BATCH:
+                logger.warning(
+                    "[OTelAdapter] Truncating span batch from %d to %d entries",
+                    len(span_data),
+                    _MAX_SPANS_PER_BATCH,
+                )
             stored_count = 0
-            for span in tqdm(
-                span_data[:50], desc="Processing", unit="item"
-            ):  # Limit to prevent storage overload
-                span_json = json.dumps(span, sort_keys=True, separators=(",", ":"))
+            skipped_count = 0
+            for span in tqdm(span_data[:_MAX_SPANS_PER_BATCH], desc="Processing", unit="item"):
+                try:
+                    span_json = json.dumps(span, sort_keys=True, separators=(",", ":"))
+                except (TypeError, ValueError) as exc:
+                    skipped_count += 1
+                    logger.debug("[OTelAdapter] Skipping non-serializable span: %s", exc)
+                    continue
 
                 success = self._bridge.persist_otel_span(
-                    span_id=span.get("span_id", "unknown"),
-                    trace_id=span.get("trace_id", "unknown"),
-                    span_name=span.get("name", "unknown"),
+                    span_id=str(span.get("span_id", "unknown")),
+                    trace_id=str(span.get("trace_id", "unknown")),
+                    span_name=str(span.get("name", "unknown")),
                     span_data_json=span_json,
                     timestamp_utc=timestamp_utc,
                 )
@@ -68,11 +78,13 @@ class OTelTelemetryStoreAdapter:
                 if success:
                     stored_count += 1
 
-            logger.debug(f"[OTelAdapter] Stored {stored_count} spans out of {len(span_data)}")
+            if skipped_count:
+                logger.warning("[OTelAdapter] Skipped %d non-serializable spans", skipped_count)
+            logger.debug("[OTelAdapter] Stored %d spans out of %d", stored_count, len(span_data))
             return stored_count > 0
 
-        except Exception as e:
-            logger.debug(f"[OTelAdapter] Failed to store span data: {e}")
+        except AttributeError as exc:
+            logger.debug("[OTelAdapter] Bridge missing span persistence method: %s", exc)
             return False
 
     def store_span_metrics(
@@ -98,12 +110,12 @@ class OTelTelemetryStoreAdapter:
             )
 
             if success:
-                logger.debug(f"[OTelAdapter] Stored span metrics: total={metrics.get('total_spans', 0)}")
+                logger.debug("[OTelAdapter] Stored span metrics: total=%s", metrics.get("total_spans", 0))
 
             return success
 
-        except Exception as e:
-            logger.debug(f"[OTelAdapter] Failed to store span metrics: {e}")
+        except (AttributeError, TypeError, ValueError) as exc:
+            logger.debug("[OTelAdapter] Failed to store span metrics: %s", exc)
             return False
 
     def query_spans_by_time_range(
@@ -191,8 +203,8 @@ class OTelTelemetryStoreAdapter:
 
             return spans_stored or metrics_stored
 
-        except Exception as e:
-            logger.debug(f"[OTelAdapter] Failed to collect spans: {e}")
+        except (AttributeError, ImportError, TypeError, ValueError) as exc:
+            logger.debug("[OTelAdapter] Failed to collect spans: %s", exc)
             return False
 
 

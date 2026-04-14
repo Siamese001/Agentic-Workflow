@@ -380,7 +380,7 @@ class EmbeddingServiceFactory:
             cpu_index.add(cpu_matrix)
             gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
             return gpu_index
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning("faiss-gpu index construction failed, staying on CPU: %s", exc)
             return None
 

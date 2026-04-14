@@ -186,8 +186,7 @@ class L4MetaPriorProvider:
             from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 
             return HealingOutcomeIntakeStore()
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("L4MetaPriorProvider: default store not available: %s", exc)
             return None
 
@@ -210,8 +209,7 @@ class L4MetaPriorProvider:
             if rate is None:
                 return _NEUTRAL_PRIOR
             return float(max(0.0, min(1.0, rate)))
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning(
                 "L4MetaPriorProvider.get_prior(%r) error: %s — returning neutral",
                 error_signature,

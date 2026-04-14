@@ -310,8 +310,8 @@ class RandomForestModel(BaseMLModel):
             with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Failed to save model: {e}")
+        except (OSError, TypeError, ValueError, pickle.PickleError) as exc:
+            Logger.error(f"[ML_PIPELINE] Failed to save model: {exc}")
             return False
 
     def load_model(self, filepath: str) -> bool:
@@ -321,8 +321,8 @@ class RandomForestModel(BaseMLModel):
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
+        except (OSError, TypeError, ValueError, pickle.PickleError) as exc:
+            Logger.error(f"[ML_PIPELINE] Failed to load model: {exc}")
             return False
 
 
@@ -420,8 +420,8 @@ class XGBoostModel(BaseMLModel):
             with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Failed to save model: {e}")
+        except (OSError, TypeError, ValueError, pickle.PickleError) as exc:
+            Logger.error(f"[ML_PIPELINE] Failed to save model: {exc}")
             return False
 
     def load_model(self, filepath: str) -> bool:
@@ -431,8 +431,8 @@ class XGBoostModel(BaseMLModel):
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
+        except (OSError, TypeError, ValueError, pickle.PickleError) as exc:
+            Logger.error(f"[ML_PIPELINE] Failed to load model: {exc}")
             return False
 
 
@@ -536,8 +536,8 @@ class NeuralNetworkModel(BaseMLModel):
             with open(filepath, "wb") as f:
                 pickle.dump(self.model, f)
             return True
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Failed to save model: {e}")
+        except (OSError, TypeError, ValueError, pickle.PickleError) as exc:
+            Logger.error(f"[ML_PIPELINE] Failed to save model: {exc}")
             return False
 
     def load_model(self, filepath: str) -> bool:
@@ -547,8 +547,8 @@ class NeuralNetworkModel(BaseMLModel):
                 self.model = pickle.load(f)
             self.is_trained = True
             return True
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Failed to load model: {e}")
+        except (OSError, TypeError, ValueError, pickle.PickleError) as exc:
+            Logger.error(f"[ML_PIPELINE] Failed to load model: {exc}")
             return False
 
 
@@ -629,8 +629,8 @@ class MLTrainingPipeline:
             Logger.info("[ML_PIPELINE] Training pipeline initialized")
             return True
 
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Pipeline initialization failed: {e}")
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            Logger.error(f"[ML_PIPELINE] Pipeline initialization failed: {exc}")
             return False
 
     def add_training_data(self, dataset_name: str, data: pd.DataFrame) -> bool:
@@ -649,8 +649,8 @@ class MLTrainingPipeline:
             Logger.info(f"[ML_PIPELINE] Added training data: {dataset_name} ({len(data)} samples)")
             return True
 
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Failed to add training data {dataset_name}: {e}")
+        except (AttributeError, TypeError, ValueError) as exc:
+            Logger.error(f"[ML_PIPELINE] Failed to add training data {dataset_name}: {exc}")
             return False
 
     def train_anomaly_detection_model(
@@ -728,8 +728,8 @@ class MLTrainingPipeline:
 
             return model_id
 
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Anomaly detection model training failed: {e}")
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+            Logger.error(f"[ML_PIPELINE] Anomaly detection model training failed: {exc}")
             return None
 
     def _create_model(self, model_type: ModelType, config: ModelConfig) -> BaseMLModel:
@@ -800,8 +800,8 @@ class MLTrainingPipeline:
 
             return test_metrics
 
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Model evaluation failed: {e}")
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+            Logger.error(f"[ML_PIPELINE] Model evaluation failed: {exc}")
             return None
 
     def deploy_model(self, model_id: str, environment: str = "production") -> str | None:
@@ -839,8 +839,8 @@ class MLTrainingPipeline:
 
             return deployment_id
 
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Model deployment failed: {e}")
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            Logger.error(f"[ML_PIPELINE] Model deployment failed: {exc}")
             return None
 
     def get_model_predictions(self, model_id: str, data: pd.DataFrame) -> np.ndarray | None:
@@ -870,8 +870,8 @@ class MLTrainingPipeline:
 
             return predictions
 
-        except Exception as e:
-            Logger.error(f"[ML_PIPELINE] Model prediction failed: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            Logger.error(f"[ML_PIPELINE] Model prediction failed: {exc}")
             return None
 
     def get_model_metrics(self, model_id: str | None = None) -> TrainingMetrics | dict[str, TrainingMetrics]:

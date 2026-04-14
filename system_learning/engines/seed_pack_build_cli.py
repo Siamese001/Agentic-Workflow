@@ -345,9 +345,8 @@ def main() -> None:
         print(f"  {output_path}\\row_index.jsonl")
         print(f"  {output_path}\\embeddings.f32")
         print(f"  {output_path}\\seed_manifest.json")
-    # guardian: allow-silent-swallow
-    except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+    except (AttributeError, FileNotFoundError, OSError, RuntimeError, TypeError, ValueError) as exc:
+        print(f"Error: {exc}", file=sys.stderr)
         sys.exit(1)
 
 

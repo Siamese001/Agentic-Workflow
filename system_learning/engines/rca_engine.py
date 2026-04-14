@@ -343,9 +343,8 @@ def analyze_failures_and_persist(
             window_start=window_start_utc,
             window_end=window_end_utc,
         )
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
         import logging
 
-        logging.getLogger(__name__).debug("rca_engine: Exception swallowed at L332: %s", e)
+        logging.getLogger(__name__).debug("Failed to persist RCA findings for %s: %s", snapshot_id, exc)
     return report

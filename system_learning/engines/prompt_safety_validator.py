@@ -318,7 +318,7 @@ class PromptSafetyValidator:
         # Policy gate
         try:
             p_pass, p_reason = _gate_policy(artifact, cfg)
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning("prompt_safety_validator: policy gate exception: %s", exc)
             p_pass, p_reason = False, "POLICY_GATE_EXCEPTION"
         relations.append(
@@ -330,7 +330,7 @@ class PromptSafetyValidator:
         # Guardrail gate
         try:
             g_pass, g_reason = _gate_guardrail(artifact, cfg)
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning("prompt_safety_validator: guardrail gate exception: %s", exc)
             g_pass, g_reason = False, "GUARDRAIL_GATE_EXCEPTION"
         guardrail_set = tuple(sorted(cfg.active_guardrails))
@@ -343,7 +343,7 @@ class PromptSafetyValidator:
         # Budget gate
         try:
             b_pass, b_reason = _gate_budget(artifact, cfg)
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning("prompt_safety_validator: budget gate exception: %s", exc)
             b_pass, b_reason = False, "BUDGET_GATE_EXCEPTION"
         relations.append(

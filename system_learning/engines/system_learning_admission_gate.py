@@ -228,8 +228,8 @@ class SystemLearningCacheAdmissionGate:
 
             return final_decision
 
-        except Exception as e:
-            logger.error(f"Admission evaluation failed: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            logger.error("Admission evaluation failed: %s", exc)
             _emit_captures_runtime_anomaly(
                 "p4obs",
                 "system_learning_admission_gate",
@@ -240,7 +240,7 @@ class SystemLearningCacheAdmissionGate:
             return SystemLearningAdmissionDecision(
                 admitted=False,
                 reason="error",
-                explanation=f"Admission evaluation failed: {e}",
+                explanation=f"Admission evaluation failed: {exc}",
                 learning_context=context,
             )
 
@@ -292,8 +292,8 @@ class SystemLearningCacheAdmissionGate:
                 "quality_factors": quality_factors,
             }
 
-        except Exception as e:
-            logger.debug(f"Learning quality evaluation failed: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("Learning quality evaluation failed: %s", exc)
             return {
                 "meets_quality": False,
                 "quality_score": 0.0,
@@ -354,8 +354,8 @@ class SystemLearningCacheAdmissionGate:
                 "indicators": drift_indicators,
             }
 
-        except Exception as e:
-            logger.debug(f"Drift evaluation failed: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("Drift evaluation failed: %s", exc)
             return {
                 "has_drift": True,  # Fail closed
                 "drift_score": 1.0,
@@ -406,8 +406,8 @@ class SystemLearningCacheAdmissionGate:
                 "factors": correlation_factors,
             }
 
-        except Exception as e:
-            logger.debug(f"Telemetry correlation evaluation failed: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("Telemetry correlation evaluation failed: %s", exc)
             return {
                 "correlates": False,  # Fail closed
                 "correlation_score": 0.0,
@@ -513,8 +513,8 @@ class SystemLearningCacheAdmissionGate:
             else:
                 _emit_captures_pattern("p3lm", "system_learning_admission_gate", "denial_recorded")
 
-        except Exception as e:
-            logger.debug(f"Failed to record admission decision: {e}")
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("Failed to record admission decision: %s", exc)
 
     def get_metrics(self) -> dict[str, Any]:
         """Get admission gate metrics."""

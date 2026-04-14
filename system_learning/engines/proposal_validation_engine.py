@@ -529,7 +529,7 @@ class ProposalValidationEngine:
         for gate_name, gate_fn in tqdm(gates, desc="Processing", unit="item"):
             try:
                 result = gate_fn()
-            except Exception as exc:  # guardian: allow-silent-swallow
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
                 logger.warning(
                     "validation_engine: gate raised exception",
                     extra={

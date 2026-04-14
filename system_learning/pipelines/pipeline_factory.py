@@ -277,9 +277,9 @@ def build_pipeline_deps(
         from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
 
         pattern_engine = PatternAnalysisEngine()
-    # guardian: allow-silent-swallow - optional dependency
-    except ImportError:
-        logger.warning("PatternAnalysisEngine not available; Stage 8.6 will be skipped.")
+    except ImportError as exc:
+        logger.warning("PatternAnalysisEngine not available; Stage 8.6 will be skipped: %s", exc)
+        _emit_captures_runtime_anomaly("p4obs", "pipeline_factory", "pattern_engine_unavailable")
 
     optimizer = healing_config_optimizer
     if optimizer is None:
@@ -287,8 +287,9 @@ def build_pipeline_deps(
             from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
 
             optimizer = HealingConfigOptimizer()
-        except ImportError:
-            logger.debug("HealingConfigOptimizer not available; skipping.")
+        except ImportError as exc:
+            logger.warning("HealingConfigOptimizer not available; skipping: %s", exc)
+            _emit_captures_runtime_anomaly("p4obs", "pipeline_factory", "healing_optimizer_unavailable")
 
     # GAP-013: Wire Stage 5 extension surfaces
     confidence_scorer = None

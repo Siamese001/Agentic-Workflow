@@ -310,16 +310,19 @@ class MemoryAwarePolicyRecommendationEngine(PolicyRecommendationEngine):
                     recommendation.confidence_score = max(
                         0.0, min(1.0, recommendation.confidence_score + quality_adjustment)
                     )
-            except Exception as e:
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
                 # Quality adjustment unavailable - continue without it
                 import logging
 
                 logging.getLogger(__name__).debug(
-                    "policy_recommendation_engine: Exception swallowed at L302: %s", e
+                    "policy_recommendation_engine: retrieval quality adjustment failed: %s", exc
                 )
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+            import logging
+
+            logging.getLogger(__name__).debug(
+                "policy_recommendation_engine: memory-aware augmentation unavailable: %s", exc
+            )
         return recommendation
 
 

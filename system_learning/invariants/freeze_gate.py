@@ -8,6 +8,7 @@ JsonFileBackedFreezeReader that reads from runtime_state.json.
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Protocol
 
@@ -157,6 +158,8 @@ _emit_stores_embedding("p4", "freeze_gate", "embedding_store")
 _emit_updates_meta_learning_state("p4", "freeze_gate", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "freeze_gate", "exec_snapshot_link")
 
+logger = logging.getLogger(__name__)
+
 
 class FreezeStateReader(Protocol):
     """Protocol: report whether the system is currently frozen."""
@@ -194,7 +197,11 @@ class JsonFileBackedFreezeReader:
         try:
             text = self._path.read_text(encoding="utf-8", errors="replace")
             data: dict = json.loads(text)
-        except (OSError, json.JSONDecodeError):  # guardian: Add error context logging
+        except OSError as exc:
+            logger.warning("Failed to read freeze state %s: %s", self._path, exc)
+            return False
+        except json.JSONDecodeError as exc:
+            logger.warning("Failed to parse freeze state %s: %s", self._path, exc)
             return False
         if data.get("freeze"):
             return True

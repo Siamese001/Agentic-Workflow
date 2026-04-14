@@ -250,12 +250,11 @@ class HealingSuccessRateStore:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
             get_sl_memory_bridge().persist_healing_success_rate(error_signature, rate, count)
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            import logging
-
-            logging.getLogger(__name__).debug(
-                "healing_success_rate_store: Exception swallowed at L251: %s", e
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug(
+                "Failed to persist healing success rate for %s: %s",
+                error_signature,
+                exc,
             )
 
     def _log_update(self, error_signature: str, success: bool, new_rate: float, new_count: int) -> None:
@@ -304,8 +303,8 @@ class HealingSuccessRateStore:
             from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
             restored = get_sl_memory_bridge().restore_healing_success_rates()
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("Failed to restore healing success rates from Memory MCP: %s", exc)
             return 0
         merged = 0
         for sig, (rate, count) in restored.items():

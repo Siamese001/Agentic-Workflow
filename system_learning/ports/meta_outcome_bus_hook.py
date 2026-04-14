@@ -240,8 +240,7 @@ class DefaultMetaOutcomeBusHook:
                 },
             )
             self._bus.enqueue(package)
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning(
                 "meta_outcome_bus_enqueue_failed",
                 extra={

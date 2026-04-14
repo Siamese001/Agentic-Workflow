@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import logging
+import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -197,12 +198,24 @@ class FileBackedActivator:
         if self._active_path.exists():
             try:
                 return json.loads(self._active_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.warning("Failed to load active-version map %s: %s", self._active_path, exc)
                 return {}
         return {}
 
     def _save(self) -> None:
-        self._active_path.write_text(json.dumps(self._active, indent=2, sort_keys=True), encoding="utf-8")
+        self._active_path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=self._active_path.parent,
+            prefix=self._active_path.name + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            json.dump(self._active, handle, indent=2, sort_keys=True)
+            tmp_name = handle.name
+        Path(tmp_name).replace(self._active_path)
 
     def activate(self, component: str, version_id: str) -> None:
         """Activate a specific version for a component."""
@@ -220,7 +233,7 @@ class FileBackedActivator:
         self._save()
         try:
             get_sl_memory_bridge().persist_active_version(component, version_id)
-        except Exception as exc:  # guardian: allow-silent-swallower
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("Failed to persist active version for %s: %s", component, exc)
 
     def get_active(self, component: str) -> str | None:

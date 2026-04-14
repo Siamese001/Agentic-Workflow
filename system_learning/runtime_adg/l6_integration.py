@@ -13,6 +13,8 @@ Validation Gates:
 from __future__ import annotations
 
 import json
+import logging
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -24,6 +26,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
 )
 from system_learning.runtime_adg.snapshot import RuntimeADGSnapshot
 from tqdm import tqdm
+
+logger = logging.getLogger(__name__)
 
 
 class L6MetaLearningBridge:
@@ -65,13 +69,25 @@ class L6MetaLearningBridge:
         if index_path.exists():
             try:
                 return json.loads(index_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.warning("Failed to load L6 index %s: %s", index_path, exc)
                 return {}
         return {}
 
     def _save_index(self, index_path: Path, data: dict[str, Any]) -> None:
         """Save index file."""
-        index_path.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
+        index_path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=index_path.parent,
+            prefix=index_path.name + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            json.dump(data, handle, indent=2, sort_keys=True)
+            tmp_name = handle.name
+        Path(tmp_name).replace(index_path)
 
     def store_snapshot_for_meta_learning(self, snapshot: RuntimeADGSnapshot) -> str:
         """Store runtime ADG snapshot for meta-learning analysis.
@@ -158,7 +174,17 @@ class L6MetaLearningBridge:
                 f"Snapshot size {len(serialized) / (1024 * 1024):.1f}MB exceeds limit {self._max_snapshot_size_mb}MB",
             )
 
-        snapshot_file.write_text(serialized, encoding="utf-8")
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=self._l6_base_dir,
+            prefix=safe_id + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            handle.write(serialized)
+            tmp_name = handle.name
+        Path(tmp_name).replace(snapshot_file)
 
         # Update snapshot index with size limit
         project_root = get_validated_project_root()
@@ -310,11 +336,8 @@ class L6MetaLearningBridge:
         try:
             with open(self._evolution_log_path, "a", encoding="utf-8") as f:
                 f.write(json.dumps(event, separators=(",", ":")) + "\n")
-        except OSError as e:
-            # Log to stderr if file write fails
-            import sys
-
-            print(f"Warning: Failed to write evolution log: {e}", file=sys.stderr)
+        except OSError as exc:
+            logger.warning("Failed to write evolution log %s: %s", self._evolution_log_path, exc)
 
     def get_meta_learning_snapshots(self, limit: int = 100) -> list[dict[str, Any]]:
         """Get recent snapshots for meta-learning analysis.

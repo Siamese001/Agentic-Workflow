@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import tempfile
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -225,12 +226,24 @@ class FileBackedVersionStore:
         if self._index_path.exists():
             try:
                 return json.loads(self._index_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.warning("Failed to load version index %s: %s", self._index_path, exc)
                 return {}
         return {}
 
     def _save_index(self) -> None:
-        self._index_path.write_text(json.dumps(self._index, indent=2, sort_keys=True), encoding="utf-8")
+        self._index_path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=self._index_path.parent,
+            prefix=self._index_path.name + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            json.dump(self._index, handle, indent=2, sort_keys=True)
+            tmp_name = handle.name
+        Path(tmp_name).replace(self._index_path)
 
     def commit_change_package(self, pkg: Any) -> str:
         """Commit a change package and return its version_id."""
@@ -260,12 +273,22 @@ class FileBackedVersionStore:
             "type": type(pkg).__name__,
             "payload_hex": payload.hex(),
         }
-        entry_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=shard_dir,
+            prefix=entry_path.name + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            json.dump(meta, handle, indent=2)
+            tmp_name = handle.name
+        Path(tmp_name).replace(entry_path)
         self._index[version_id] = content_hash
         self._save_index()
         try:
             get_sl_memory_bridge().persist_active_version("version_store", version_id, ts=str(uuid.uuid4()))
-        except Exception as exc:  # guardian: allow-silent-swallower
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("Failed to persist version metadata for %s: %s", version_id, exc)
         return version_id
 

@@ -60,8 +60,8 @@ class WorkflowOutcomeSLAdapter:
                 logger.debug("Failed to persist workflow outcome: %s", outcome.bundle_id)
                 self._error_count += 1
 
-        except Exception as e:
-            logger.error("WorkflowOutcomeSLAdapter failed to accept outcome: %s", e)
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+            logger.error("WorkflowOutcomeSLAdapter failed to accept outcome: %s", exc)
             self._error_count += 1
 
     def get_stats(self) -> dict[str, Any]:
@@ -97,8 +97,8 @@ def register_with_workflow_bridge() -> None:
 
         bridge.register_learner("system_learning", adapter.accept)
         logger.info("WorkflowOutcomeSLAdapter registered with WorkflowLearningBridge")
-    except Exception as e:
-        logger.error("Failed to register WorkflowOutcomeSLAdapter: %s", e)
+    except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+        logger.error("Failed to register WorkflowOutcomeSLAdapter: %s", exc)
 
 
 __all__ = [

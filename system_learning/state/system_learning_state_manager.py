@@ -533,8 +533,8 @@ class SystemLearningStateManager:
 
             self._cache.set_json(cache_key, cache_data, ttl_seconds=self.state_cache_ttl)
 
-        except Exception as e:
-            logger.debug(f"Failed to cache snapshot: {e}")
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("Failed to cache snapshot %s: %s", snapshot.state_id, exc)
 
     async def _get_cached_snapshot(
         self,
@@ -568,8 +568,8 @@ class SystemLearningStateManager:
 
             return snapshot
 
-        except Exception as e:
-            logger.debug(f"Failed to get cached snapshot: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            logger.debug("Failed to get cached snapshot %s: %s", state_id, exc)
             return None
 
     async def _cleanup_old_snapshots(

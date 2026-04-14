@@ -203,28 +203,31 @@ class FileBackedTelemetryStore:
         if not self._path.exists():
             return ()
         events: list[tuple[int, str, bytes]] = []
+        malformed_lines = 0
         try:
-            for line in tqdm(
-                self._path.read_text(encoding="utf-8").splitlines(), desc="Processing", unit="item"
-            ):
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    obj = json.loads(line)
-                    ts = int(obj.get("timestamp_utc", 0))
-                    if window_start_utc <= ts <= window_end_utc:
-                        event_type = str(obj.get("event_type", "unknown"))
-                        payload = json.dumps(
-                            obj.get("payload", {}),
-                            separators=(",", ":"),
-                            sort_keys=True,
-                        ).encode("utf-8")
-                        events.append((ts, event_type, payload))
-                except (json.JSONDecodeError, ValueError, TypeError):
-                    continue
+            with self._path.open(encoding="utf-8", errors="replace") as handle:
+                for line in tqdm(handle, desc="Processing", unit="item"):
+                    line = line.strip()
+                    if not line:
+                        continue
+                    try:
+                        obj = json.loads(line)
+                        ts = int(obj.get("timestamp_utc", 0))
+                        if window_start_utc <= ts <= window_end_utc:
+                            event_type = str(obj.get("event_type", "unknown"))
+                            payload = json.dumps(
+                                obj.get("payload", {}),
+                                separators=(",", ":"),
+                                sort_keys=True,
+                            ).encode("utf-8")
+                            events.append((ts, event_type, payload))
+                    except (json.JSONDecodeError, ValueError, TypeError) as exc:
+                        malformed_lines += 1
+                        logger.debug("Skipping malformed telemetry line in %s: %s", self._path, exc)
         except OSError as exc:  # guardian: Add error context logging
             logger.debug("Failed to read telemetry file %s: %s", self._path, exc)
+        if malformed_lines:
+            logger.warning("Ignored %d malformed telemetry lines in %s", malformed_lines, self._path)
         if events:
             try:
                 get_sl_memory_bridge().persist_telemetry_window(

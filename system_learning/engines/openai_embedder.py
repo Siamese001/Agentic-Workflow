@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+from typing import Iterable
 
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -161,6 +162,12 @@ _emit_transcripts_response("p1", "openai_embedder", "transcript")
 _emit_hard_fails_untranscripted("p1", "openai_embedder")
 _emit_gated_by_confidence("p1", "openai_embedder", "confidence_gate")
 
+
+def _chunked(values: list[str], size: int) -> Iterable[list[str]]:
+    for start in range(0, len(values), size):
+        yield values[start : start + size]
+
+
 _MODEL_DIMENSIONS = {
     "text-embedding-3-large": 1536,
     "text-embedding-3-small": 1536,
@@ -210,9 +217,17 @@ class OpenAIEmbedder:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OpenAIEmbedder.embed_batch")
 
+        if not texts:
+            return []
         normalized = [t.replace("\r\n", " ").replace("\n", " ").replace("\r", " ") for t in texts]
-        response = self._client.embeddings.create(model=self.model, input=normalized)
-        return [item.embedding for item in response.data]
+        batch_limit = int(os.environ.get("OPENAI_EMBEDDING_BATCH_SIZE", "128"))
+        if batch_limit <= 0:
+            raise ValueError(f"OPENAI_EMBEDDING_BATCH_SIZE must be > 0, got {batch_limit}")
+        results: list[list[float]] = []
+        for batch in _chunked(normalized, batch_limit):
+            response = self._client.embeddings.create(model=self.model, input=batch)
+            results.extend(item.embedding for item in response.data)
+        return results
 
     def get_model_info(self) -> dict:
         """Return model information including dimensions."""
@@ -251,6 +266,8 @@ class BGEEmbedder:
 
         from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
 
+        if not texts:
+            return []
         results = []
         for text in texts:
             vec = bmg_embed_text(text)

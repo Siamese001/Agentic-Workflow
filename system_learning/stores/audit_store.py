@@ -205,19 +205,27 @@ class FileBackedAuditStore:
         if not self._reports_dir.exists():
             return b"[]"
         matched: list[dict] = []
+        unreadable_reports = 0
         for report_path in tqdm(sorted(self._reports_dir.glob("*.json")), desc="Processing", unit="item"):
             try:
-                data = json.loads(report_path.read_text(encoding="utf-8"))
-                ts = data.get("timestamp_utc") or data.get("created_utc", 0)
-                if isinstance(ts, str):
+                data = json.loads(report_path.read_text(encoding="utf-8", errors="replace"))
+                raw_ts = data.get("timestamp_utc") or data.get("created_utc", 0)
+                try:
+                    ts = int(raw_ts)
+                except (TypeError, ValueError):
                     ts = 0
                 if window_start_utc <= ts <= window_end_utc:
                     matched.append(data)
                 elif ts == 0:
                     matched.append(data)
             except (json.JSONDecodeError, OSError) as exc:  # guardian: Add error context logging
+                unreadable_reports += 1
                 logger.debug("Skipping unreadable report %s: %s", report_path.name, exc)
                 continue
+        if unreadable_reports:
+            logger.warning(
+                "Ignored %d unreadable compliance reports under %s", unreadable_reports, self._reports_dir
+            )
         return json.dumps(matched, separators=(",", ":"), sort_keys=True).encode("utf-8")
 
 

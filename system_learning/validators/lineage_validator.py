@@ -216,16 +216,16 @@ class LineageValidator:
             visited.add(current)
             try:
                 pkg = self._store.get_change_package(current)
-            except Exception as e:
-                raise ParentNotFound(f"PARENT_NOT_FOUND: version {current!r} does not exist") from e
+            except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+                raise ParentNotFound(f"PARENT_NOT_FOUND: version {current!r} does not exist") from exc
             current = pkg.parent_version_id
             if current is not None:
                 try:
                     self._store.get_change_package(current)
-                except Exception as e:
+                except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
                     raise ParentNotFound(
                         f"PARENT_NOT_FOUND: parent version {current!r} does not exist",
-                    ) from e
+                    ) from exc
 
     def validate_chain(self, version_id: str) -> list[str]:
         """Validate and return the full lineage chain.

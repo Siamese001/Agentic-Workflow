@@ -345,8 +345,7 @@ class MutationDiffEmbedder:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("MutationDiffEmbedder._retrieve: %s", exc)
             return []
 

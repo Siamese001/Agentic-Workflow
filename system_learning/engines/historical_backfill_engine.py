@@ -23,6 +23,7 @@ import hashlib
 import json
 import logging
 import re
+import tempfile
 from datetime import timezone
 from pathlib import Path
 from typing import Any
@@ -170,37 +171,37 @@ def _existing_hashes(corpus_path: Path) -> set[str]:
     hashes: set[str] = set()
     if not corpus_path.exists():
         return hashes
-    for line in tqdm(corpus_path.read_text(encoding="utf-8").splitlines(), desc="Processing", unit="item"):
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            hashes.add(json.loads(line).get("content_hash", ""))
-        except json.JSONDecodeError as e:
-            import logging
-
-            logging.getLogger(__name__).debug(
-                "historical_backfill_engine: Exception swallowed at L178: %s", e
-            )
+    malformed_lines = 0
+    with corpus_path.open(encoding="utf-8", errors="replace") as handle:
+        for line in tqdm(handle, desc="Processing", unit="item"):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                hashes.add(json.loads(line).get("content_hash", ""))
+            except json.JSONDecodeError as exc:
+                malformed_lines += 1
+                logger.debug("[Backfill] Skipping malformed corpus line in %s: %s", corpus_path, exc)
+    if malformed_lines:
+        logger.warning("[Backfill] Ignored %d malformed corpus lines in %s", malformed_lines, corpus_path)
     return hashes
 
 
 def _load_jsonl_lenient(path: Path) -> list[dict[str, Any]]:
     records = []
-    for line in tqdm(
-        path.read_text(encoding="utf-8", errors="replace").splitlines(), desc="Processing", unit="item"
-    ):
-        line = line.strip()
-        if not line:
-            continue
-        try:
-            records.append(json.loads(line))
-        except json.JSONDecodeError as e:
-            import logging
-
-            logging.getLogger(__name__).debug(
-                "historical_backfill_engine: Exception swallowed at L191: %s", e
-            )
+    malformed_lines = 0
+    with path.open(encoding="utf-8", errors="replace") as handle:
+        for line in tqdm(handle, desc="Processing", unit="item"):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError as exc:
+                malformed_lines += 1
+                logger.debug("[Backfill] Skipping malformed JSONL line in %s: %s", path, exc)
+    if malformed_lines:
+        logger.warning("[Backfill] Ignored %d malformed JSONL lines in %s", malformed_lines, path)
     return records
 
 
@@ -259,8 +260,8 @@ def backfill_protected_root_blocks(
 
             dt = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))
             created_utc = int(dt.replace(tzinfo=timezone.utc).timestamp())
-        except (ValueError, TypeError, RuntimeError) as e:
-            pass  # guardian: allow-silent-swallow -- intentional: ValueError used for control flow
+        except (ValueError, TypeError, RuntimeError) as exc:
+            logger.debug("[Backfill] Invalid ts_utc=%r for caller=%s: %s", ts_utc, caller, exc)
 
         entry = {
             "schema_version": 1,
@@ -409,12 +410,22 @@ def run_backfill(
 
     if not dry_run and not sentinel.exists():
         sentinel.parent.mkdir(parents=True, exist_ok=True)
-        sentinel.write_text(
-            json.dumps(
-                {"corpus_records_added": corpus_added, "territories_seeded": list(territories.keys())},
-            ),
+        with tempfile.NamedTemporaryFile(
+            mode="w",
             encoding="utf-8",
-        )
+            dir=sentinel.parent,
+            prefix=sentinel.name + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            json.dump(
+                {"corpus_records_added": corpus_added, "territories_seeded": list(territories.keys())},
+                handle,
+                separators=(",", ":"),
+                sort_keys=True,
+            )
+            tmp_name = handle.name
+        Path(tmp_name).replace(sentinel)
 
     return {
         "skipped": False,

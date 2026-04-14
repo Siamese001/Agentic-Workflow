@@ -558,8 +558,7 @@ class RetrievalCaseEmbedder:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("RetrievalCaseEmbedder._retrieve: %s", exc)
             return []
 

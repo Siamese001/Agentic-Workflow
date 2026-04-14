@@ -325,7 +325,7 @@ class PromptOutcomeBusAdapter:
         for outcome in outcomes:
             try:
                 records.append(self.convert(outcome))
-            except Exception as exc:
+            except (AttributeError, TypeError, ValueError) as exc:
                 logger.warning(
                     "prompt_outcome_bus_adapter: conversion failed",
                     extra={"outcome_id": outcome.outcome_id, "error": str(exc)},

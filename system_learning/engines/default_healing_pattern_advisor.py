@@ -216,8 +216,7 @@ class DefaultHealingPatternAdvisor:
             patterns = self._ml_client.retrieve_healing_patterns(
                 error_signature=healing_input.error_signature,
             )
-        # guardian: allow-silent-swallow
-        except Exception as exc:  # guardian: allow-silent-swallower
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning(
                 "pattern_advisor_query_failed",
                 extra={
@@ -253,13 +252,8 @@ class DefaultHealingPatternAdvisor:
                             "description": f"Module {module_name} is in top-20 fan-out hotspots",
                         }
                     )
-            except Exception as e:
-                # ADG unavailable - continue without hotspot boost
-                import logging
-
-                logging.getLogger(__name__).debug(
-                    "default_healing_pattern_advisor: Exception swallowed at L250: %s", e
-                )
+            except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
+                logger.debug("default_healing_pattern_advisor: hotspot lookup failed: %s", exc)
 
         # Take the highest-confidence pattern (advisory only)
         best = max(patterns, key=lambda p: p.get("confidence_boost", 0.0))

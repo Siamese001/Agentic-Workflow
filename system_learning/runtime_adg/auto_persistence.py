@@ -102,11 +102,11 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
                         },
                     )
 
-            except Exception as e:
+            except (ImportError, OSError, RuntimeError, TypeError, ValueError) as exc:
                 if enable_logging:
                     logger.error(
                         "auto_persistence_init_failed",
-                        extra={"error": str(e)},
+                        extra={"error": str(exc)},
                         exc_info=True,
                     )
                 # Disable auto-persistence if initialization fails
@@ -137,11 +137,11 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
         if self._auto_persistence_enabled:
             try:
                 self._auto_persist_runtime_adg(mission, start_time)
-            except Exception as e:
+            except (OSError, RuntimeError, TypeError, ValueError) as exc:
                 if self.enable_logging:
                     logger.error(
                         "auto_persistence_failed",
-                        extra={"mission": mission, "error": str(e)},
+                        extra={"mission": mission, "error": str(exc)},
                         exc_info=True,
                     )
 
@@ -197,12 +197,12 @@ class AutoPersistenceTracingAdapter(OpenTelemetryTracingAdapter):
 
             return persistence_result
 
-        except Exception as e:
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
             error_result = {
                 "success": False,
                 "mission": mission,
                 "span_count": len(spans),
-                "error": str(e),
+                "error": str(exc),
                 "duration_ms": (time.time() - start_time) * 1000,
             }
 

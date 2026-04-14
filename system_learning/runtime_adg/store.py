@@ -10,6 +10,8 @@ Idempotency: committing the same snapshot twice returns the same version_id.
 from __future__ import annotations
 
 import json
+import logging
+import tempfile
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import L4_APPROVED_FOLDERS, get_validated_project_root
@@ -28,6 +30,8 @@ from tqdm import tqdm
 
 emit_determinism_digest("runtime_adg_store", "runtime_adg_store_digest")
 record_execution_trace("runtime_adg_store", "runtime_adg_store_trace")
+
+logger = logging.getLogger(__name__)
 
 
 class InMemoryRuntimeADGStore:
@@ -112,22 +116,31 @@ class FileBackedRuntimeADGStore:
                     f"Approved L4 folders include: {sorted(L4_APPROVED_FOLDERS)[:3]}...",
                 )
 
-        except Exception as e:
-            raise ValueError(f"L4 compliance validation failed for {self._base_dir}: {e}")
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            raise ValueError(f"L4 compliance validation failed for {self._base_dir}: {exc}") from exc
 
     def _load_trace_index(self) -> dict[str, str]:
         if self._trace_index_path.exists():
             try:
                 return json.loads(self._trace_index_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):
+            except (json.JSONDecodeError, OSError) as exc:
+                logger.warning("Failed to load runtime ADG trace index %s: %s", self._trace_index_path, exc)
                 return {}
         return {}
 
     def _save_trace_index(self) -> None:
-        self._trace_index_path.write_text(
-            json.dumps(self._trace_index, indent=2, sort_keys=True),
+        self._trace_index_path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(
+            mode="w",
             encoding="utf-8",
-        )
+            dir=self._trace_index_path.parent,
+            prefix=self._trace_index_path.name + ".",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            json.dump(self._trace_index, handle, indent=2, sort_keys=True)
+            tmp_name = handle.name
+        Path(tmp_name).replace(self._trace_index_path)
 
     def persist(self, snapshot: RuntimeADGSnapshot) -> str:
         """Persist snapshot idempotently. Returns version_id."""

@@ -195,7 +195,8 @@ class FileBackedConfigProvider:
             return {}
         try:
             return json.loads(self._runtime_state_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):  # guardian: Add error context logging
+        except (json.JSONDecodeError, OSError) as exc:
+            logger.warning("Failed to load runtime state %s: %s", self._runtime_state_path, exc)
             return {}
 
     def get_current_configs(self) -> dict[str, bytes]:
@@ -223,7 +224,8 @@ class FileBackedConfigProvider:
                 try:
                     raw = cfg_path.read_bytes()
                     configs[surface] = raw
-                except OSError:  # guardian: Add error context logging
+                except OSError as exc:
+                    logger.warning("Failed to read config surface %s: %s", cfg_path, exc)
                     continue
 
         # Fall back to runtime_state sections
@@ -239,7 +241,7 @@ class FileBackedConfigProvider:
                 bridge = get_sl_memory_bridge()
                 for surface_name, raw in configs.items():
                     bridge.persist_config_snapshot(surface_name, raw)
-            except Exception as exc:  # guardian: allow-silent-swallower
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
                 logger.debug("Failed to persist config snapshots: %s", exc)
 
         return configs
@@ -263,6 +265,8 @@ class FileBackedConfigProvider:
         Reads from runtime state ``"<surface>_history"`` key, expected to
         be a list of floats.
         """
+        if n <= 0:
+            return ()
         state = self._load_runtime_state()
         key = f"{surface_name}_history"
         history = state.get(key, [])

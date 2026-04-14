@@ -267,7 +267,7 @@ class L1MetaAdapter:
                     window_start=min(timestamps),
                     window_end=max(timestamps),
                 )
-            except Exception as exc:  # guardian: allow-silent-swallower
+            except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
                 logger.debug("Failed to persist L1 telemetry events: %s", exc)
         return events
 
@@ -311,7 +311,7 @@ class L1MetaAdapter:
         )
         try:
             get_sl_memory_bridge().persist_l1_drift_signal(signal)
-        except Exception as exc:  # guardian: allow-silent-swallower
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("Failed to persist L1 drift signal: %s", exc)
         return signal
 

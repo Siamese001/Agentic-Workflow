@@ -367,8 +367,8 @@ class SystemLearningPolicyValidator:
 
             return result
 
-        except Exception as e:
-            logger.error(f"Policy validation failed: {e}")
+        except (AttributeError, KeyError, RuntimeError, TypeError, ValueError) as exc:
+            logger.error("Policy validation failed: %s", exc)
             _emit_captures_runtime_anomaly(
                 "p4obs",
                 self.component_name,
@@ -380,7 +380,7 @@ class SystemLearningPolicyValidator:
                 is_compliant=False,
                 validation_type=validation_type,
                 score=0.0,
-                violations=[f"Validation error: {str(e)}"],
+                violations=[f"Validation error: {str(exc)}"],
             )
 
     async def _validate_cache_policy(

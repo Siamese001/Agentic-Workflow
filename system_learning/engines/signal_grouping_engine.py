@@ -396,11 +396,13 @@ class SignalGroupingEngine:
                 analysis_json=json.dumps(analysis, sort_keys=True),
                 timestamp_utc=analysis["timestamp_utc"],
             )
-        except Exception as e:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             # Bridge unavailable - continue without it
             import logging
 
-            logging.getLogger(__name__).debug("signal_grouping_engine: Exception swallowed at L383: %s", e)
+            logging.getLogger(__name__).debug(
+                "signal_grouping_engine: failed to persist spike detection: %s", exc
+            )
 
         return analysis
 

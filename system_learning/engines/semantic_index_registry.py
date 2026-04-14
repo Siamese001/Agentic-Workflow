@@ -399,8 +399,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_incidents: %s", exc)
             return []
 
@@ -425,8 +424,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_graph_motifs: %s", exc)
             return []
 
@@ -450,8 +448,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_mutations: %s", exc)
             return []
 
@@ -476,8 +473,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_prompt_outcomes: %s", exc)
             return []
 
@@ -502,8 +498,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_retrieval_cases: %s", exc)
             return []
 
@@ -527,8 +522,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_replay_failures: %s", exc)
             return []
 
@@ -552,8 +546,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_preferences: %s", exc)
             return []
 
@@ -578,8 +571,7 @@ class SemanticIndexRegistry:
                     ),
                 )
             return out
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
             logger.debug("SemanticIndexRegistry.query_guardrail_cases: %s", exc)
             return []
 

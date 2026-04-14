@@ -229,8 +229,7 @@ class DefaultOutcomeWriteBackHook:
 
         try:
             self._store.record_outcome(healing_input.error_signature, success)
-        # guardian: allow-silent-swallow
-        except Exception as exc:
+        except (AttributeError, RuntimeError, TypeError, ValueError) as exc:
             logger.warning(
                 "write_back_store_failed",
                 extra={
@@ -248,8 +247,7 @@ class DefaultOutcomeWriteBackHook:
                 )
 
                 update_qwen_confidence_prior(healing_input.error_signature, success)
-            # guardian: allow-silent-swallow
-            except Exception as exc:
+            except (AttributeError, ImportError, RuntimeError, TypeError, ValueError) as exc:
                 logger.warning(
                     "write_back_qwen_prior_failed",
                     extra={

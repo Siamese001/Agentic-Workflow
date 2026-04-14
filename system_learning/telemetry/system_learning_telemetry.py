@@ -616,10 +616,25 @@ def telemetry_traced(
             context = emitter.start_operation(operation_type)
 
             try:
-                # Execute function
                 result = func(self, *args, **kwargs)
+            except Exception as exc:  # guardian: allow-broad-exception -- preserves wrapped method semantics
+                try:
+                    emitter.end_operation(
+                        context,
+                        success=False,
+                        error=exc,
+                        args_count=len(args),
+                        kwargs_count=len(kwargs),
+                    )
+                except (AttributeError, RuntimeError, TypeError, ValueError) as end_exc:
+                    logger.warning("Telemetry end_operation failed during error path: %s", end_exc)
 
-                # End operation with success
+                if emit_on_error:
+                    raise
+
+                return None
+
+            try:
                 emitter.end_operation(
                     context,
                     success=True,
@@ -627,23 +642,10 @@ def telemetry_traced(
                     args_count=len(args),
                     kwargs_count=len(kwargs),
                 )
+            except (AttributeError, RuntimeError, TypeError, ValueError) as end_exc:
+                logger.warning("Telemetry end_operation failed during success path: %s", end_exc)
 
-                return result
-
-            except Exception as e:  # guardian: allow-broad-exception -- intentional error boundary, re-raises all caught exceptions to caller
-                # End operation with error
-                emitter.end_operation(
-                    context,
-                    success=False,
-                    error=e,
-                    args_count=len(args),
-                    kwargs_count=len(kwargs),
-                )
-
-                if emit_on_error:
-                    raise
-
-                return None
+            return result
 
         return wrapper
 

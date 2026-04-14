@@ -7,6 +7,7 @@ Enforces deterministic ordering, canonicalization, and L2 normalization.
 from __future__ import annotations
 
 import json
+import logging
 import math
 from dataclasses import dataclass
 from pathlib import Path
@@ -107,6 +108,8 @@ from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_writes_through,
 )
 from tqdm import tqdm
+
+logger = logging.getLogger(__name__)
 
 _emit_emits_metric_event("local_embedding_population_service", "p4obs", "metric_1")
 _emit_emits_metric_event("local_embedding_population_service", "p4obs", "metric_2")
@@ -261,16 +264,9 @@ class LocalEmbeddingPopulationService:
     ) -> IndexBuildMetadata:
         """Populate index from JSONL source files.
 
-        Args:
-            index_id: Identifier for the index.
-            source_files: List of JSONL source files.
-            dimension: Embedding dimension.
-            built_at_utc: Build timestamp (injected, not wall clock).
-            batch_size: Batch size for embedding calls.
-            max_workers: Maximum parallel workers for embedding.
-
-        Returns:
-            IndexBuildMetadata for the built index.
+        Streams input records in deterministic file/line order so large backfills
+        do not materialize the full corpus in memory. ``max_workers`` is kept for
+        API compatibility but execution remains single-threaded for determinism.
         """
         import uuid as _uuid  # noqa: PLC0415
 
@@ -279,44 +275,84 @@ class LocalEmbeddingPopulationService:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "LocalEmbeddingPopulationService.populate_from_jsonl"
         )
 
+        if batch_size <= 0:
+            raise ValueError(f"batch_size must be > 0, got {batch_size}")
+        if dimension <= 0:
+            raise ValueError(f"dimension must be > 0, got {dimension}")
+        if max_workers <= 0:
+            raise ValueError(f"max_workers must be > 0, got {max_workers}")
+
         sorted_files = sorted(source_files, key=lambda p: str(p))
-        all_records = []
-        for file_path in sorted_files:
-            with open(file_path, encoding="utf-8") as f:
-                for record_index, line in enumerate(f):
-                    line = line.strip()
-                    if not line:
-                        continue
-                    record = json.loads(line)
-                    all_records.append((_RecordKey(str(file_path), record_index), record))
-        all_records.sort(key=lambda x: (x[0].file_path, x[0].record_index))
+        pending_texts: list[str] = []
+        pending_metadata: list[dict[str, str]] = []
+
+        def flush_batch() -> None:
+            nonlocal pending_texts, pending_metadata
+            if not pending_texts:
+                return
+            try:
+                batch_vectors = self.embedder.embed_batch(pending_texts, dimensions=dimension)
+            except TypeError:
+                batch_vectors = self.embedder.embed_batch(pending_texts, dimension)
+            if len(batch_vectors) != len(pending_texts):
+                raise ValueError(
+                    f"embedder returned {len(batch_vectors)} vectors for {len(pending_texts)} texts"
+                )
+            normalized_vectors = [normalize_l2(v) for v in batch_vectors]
+            for vector in normalized_vectors:
+                if len(vector) != dimension:
+                    raise ValueError(
+                        f"embedding dimension mismatch for {index_id}: expected {dimension}, got {len(vector)}"
+                    )
+            self.faiss_store.add_vectors(index_id, normalized_vectors, pending_metadata)
+            pending_texts = []
+            pending_metadata = []
+
         self.faiss_store.begin_build(index_id, dimension, self.build_seed)
-        vectors = []
-        metadatas = []
-        for i, (_, record) in tqdm(enumerate(all_records), desc="Processing", unit="item"):
-            canonical_record = json.dumps(record, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
-            text = extract_embedding_text(record)
-            vectors.append(text)
-            metadatas.append(
-                {
-                    "content_hash": record.get("content_hash", ""),
-                    "trace_id": record.get("trace_id", ""),
-                    "canonical_record": canonical_record,
-                },
+        try:
+            for file_path in sorted_files:
+                with open(file_path, encoding="utf-8") as handle:
+                    for record_index, raw_line in enumerate(handle, start=1):
+                        line = raw_line.strip()
+                        if not line:
+                            continue
+                        try:
+                            record = json.loads(line)
+                        except json.JSONDecodeError as exc:
+                            raise ValueError(
+                                f"Invalid JSONL record in {file_path}:{record_index}: {exc.msg}"
+                            ) from exc
+                        canonical_record = json.dumps(
+                            record,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                            ensure_ascii=True,
+                        )
+                        pending_texts.append(extract_embedding_text(record))
+                        pending_metadata.append(
+                            {
+                                "content_hash": str(record.get("content_hash", "")),
+                                "trace_id": str(record.get("trace_id", "")),
+                                "canonical_record": canonical_record,
+                                "source_file": str(file_path),
+                                "source_line": str(record_index),
+                            },
+                        )
+                        if len(pending_texts) >= batch_size:
+                            flush_batch()
+            flush_batch()
+            return self.faiss_store.finalize_build(
+                index_id,
+                built_at_utc=built_at_utc,
+                canonicalization_version=self.canonicalization_version,
+                embedding_model_version=self.embedding_model_version,
+                embedding_model_checksum=self.embedding_model_checksum,
             )
-            if len(vectors) >= batch_size or i == len(all_records) - 1:
-                batch_vectors = self.embedder.embed_batch(vectors, dimension)
-                normalized_vectors = [normalize_l2(v) for v in batch_vectors]
-                self.faiss_store.add_vectors(index_id, normalized_vectors, metadatas)
-                vectors = []
-                metadatas = []
-        return self.faiss_store.finalize_build(
-            index_id,
-            built_at_utc=built_at_utc,
-            canonicalization_version=self.canonicalization_version,
-            embedding_model_version=self.embedding_model_version,
-            embedding_model_checksum=self.embedding_model_checksum,
-        )
+        except Exception:
+            if hasattr(self.faiss_store, "discard_build"):
+                self.faiss_store.discard_build(index_id)
+            logger.exception("populate_from_jsonl failed for %s", index_id)
+            raise
 
 
 __all__ = ["LocalEmbeddingPopulationService", "EmbeddingProvider", "extract_embedding_text", "normalize_l2"]
