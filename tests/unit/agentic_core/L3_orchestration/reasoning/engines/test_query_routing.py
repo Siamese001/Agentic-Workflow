@@ -130,7 +130,7 @@ class TestDetectTopicDomain:
         assert isinstance(result, str)
 
     def test_valid_domain_values(self) -> None:
-        valid = {"architecture", "best_practice", "code", "general", "tool_contracts"}
+        valid = {"architecture", "best_practice", "code", "general", "policy", "tool_contracts"}
         for query in ["ADR", "LangChain", "class Foo", "random words xyz"]:
             result = self.detector.detect_topic_domain(query)
             assert result in valid, f"detect_topic_domain({query!r}) = {result!r} not in {valid}"
@@ -900,6 +900,24 @@ class TestFilterNormativeSources:
         assert curated in accepted
         assert arch in rejected
         assert arch not in accepted
+
+    def test_curated_with_invalid_true_is_rejected(self) -> None:
+        """Curated chunk explicitly marked invalid_for_normative_use=True must be rejected.
+
+        Validates the ``invalid is False`` identity guard from Phase 3: even a
+        chunk with an otherwise allowed collection and tier is rejected when the
+        flag is True, not merely falsy.
+        """
+        r = _make_provenance_result(
+            "cur_invalid",
+            0.9,
+            source_collection="curated_agent_docs",
+            authority_tier="T3_guidance",
+            invalid_for_normative_use=True,
+        )
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == []
+        assert r in rejected
 
     def test_low_normative_coverage_constant_exported(self) -> None:
         assert LOW_NORMATIVE_COVERAGE == "LOW_NORMATIVE_COVERAGE"
