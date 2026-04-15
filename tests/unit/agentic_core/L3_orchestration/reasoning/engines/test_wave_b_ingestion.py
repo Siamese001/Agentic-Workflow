@@ -24,6 +24,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -77,6 +78,12 @@ from tools.generate.ingestion.ingest_ext_knowledge import (
     _WAVE_B_EXT_RAW_FIELDS,
     _load_ext_authority_urls,
 )
+
+# ── Import Wave B3 routing / shaping (evidence_shaper, query_router) ──────────
+from agentic_core.L3_orchestration.reasoning.engines.evidence_shaper import (
+    filter_normative_sources,
+)
+from agentic_core.L3_orchestration.reasoning.engines.query_router import QueryRouter
 
 
 # ==============================================================================
@@ -814,3 +821,167 @@ class TestExtRawUrlDedup:
         filtered = [d for d in all_docs if d["metadata"].get("source_url") not in authority_urls]
         assert len(filtered) == 1
         assert filtered[0]["metadata"]["source_url"] == "https://some-other-scraped.com/page"
+
+    def test_notfounderror_on_get_collection_returns_empty_set(self, tmp_path: Path) -> None:
+        """G3: chromadb.errors.NotFoundError on get_collection (TOCTOU) must return empty set."""
+        import chromadb  # type: ignore[import]
+
+        mock_col_stub = MagicMock()
+        mock_col_stub.name = "ext_authority"
+        mock_client = MagicMock()
+        mock_client.list_collections.return_value = [mock_col_stub]
+        mock_client.get_collection.side_effect = chromadb.errors.NotFoundError("ext_authority")
+
+        with patch("chromadb.PersistentClient", return_value=mock_client):
+            result = _load_ext_authority_urls(tmp_path)
+
+        assert isinstance(result, set)
+        assert len(result) == 0
+
+
+# ==============================================================================
+# evidence_shaper — filter_normative_sources (Wave B3 cutover)  [G1]
+# ==============================================================================
+
+
+class TestFilterNormativeSources:
+    """Validate that filter_normative_sources correctly enforces the Wave B3 contract.
+
+    After the cutover, the default allowed_collections is ("ext_authority",).
+    The retired name "curated_agent_docs" must be rejected; repo_evidence must
+    be rejected; invalid_for_normative_use=True must be rejected regardless of
+    collection; and missing metadata must fail closed.
+    """
+
+    def _result(
+        self,
+        source_collection: str,
+        authority_tier: str,
+        invalid: bool | object = False,
+    ) -> SimpleNamespace:
+        return SimpleNamespace(
+            metadata={
+                "source_collection": source_collection,
+                "authority_tier": authority_tier,
+                "invalid_for_normative_use": invalid,
+            }
+        )
+
+    def test_ext_authority_t2_accepted_by_default(self) -> None:
+        r = self._result("ext_authority", "T2_standard", False)
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == [r]
+        assert rejected == []
+
+    def test_ext_authority_t3_accepted_by_default(self) -> None:
+        r = self._result("ext_authority", "T3_guidance", False)
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == [r]
+        assert rejected == []
+
+    def test_curated_agent_docs_rejected_after_cutover(self) -> None:
+        """Old collection name must be rejected — validates Wave B3 cutover."""
+        r = self._result("curated_agent_docs", "T2_standard", False)
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == []
+        assert rejected == [r]
+
+    def test_repo_evidence_rejected_by_default_allowed_collections(self) -> None:
+        r = self._result("repo_evidence", "T4_repo_canonical", False)
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == []
+        assert rejected == [r]
+
+    def test_ext_raw_rejected_by_default_allowed_collections(self) -> None:
+        r = self._result("ext_raw", "T5_unvetted", False)
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == []
+        assert rejected == [r]
+
+    def test_invalid_for_normative_use_true_rejects_even_ext_authority(self) -> None:
+        """Fail-closed: invalid_for_normative_use=True always rejects, regardless of collection."""
+        r = self._result("ext_authority", "T2_standard", True)
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == []
+        assert rejected == [r]
+
+    def test_missing_invalid_flag_fails_closed(self) -> None:
+        """Missing invalid_for_normative_use defaults to True (fail-closed) → rejected."""
+        r = SimpleNamespace(metadata={"source_collection": "ext_authority", "authority_tier": "T2_standard"})
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == []
+        assert rejected == [r]
+
+    def test_missing_metadata_attr_fails_closed(self) -> None:
+        """Object with no .metadata attribute is rejected (fail-closed)."""
+        r = SimpleNamespace()
+        accepted, rejected = filter_normative_sources([r])
+        assert accepted == []
+        assert rejected == [r]
+
+    def test_empty_results_returns_empty_lists(self) -> None:
+        accepted, rejected = filter_normative_sources([])
+        assert accepted == []
+        assert rejected == []
+
+    def test_mixed_batch_partitions_correctly(self) -> None:
+        good = self._result("ext_authority", "T2_standard", False)
+        old_name = self._result("curated_agent_docs", "T2_standard", False)
+        repo = self._result("repo_evidence", "T4_repo_canonical", False)
+        accepted, rejected = filter_normative_sources([good, old_name, repo])
+        assert accepted == [good]
+        assert len(rejected) == 2
+        assert old_name in rejected
+        assert repo in rejected
+
+
+# ==============================================================================
+# query_router — collection routing and arch prefilter (Wave B3 cutover)  [G2]
+# ==============================================================================
+
+
+class TestQueryRouterWaveB3:
+    """Validate that _get_target_collection and _get_arch_prefilter reflect Wave B3.
+
+    Phase changes:
+      policy/best_practice/tool_contracts → ext_authority (was curated_agent_docs)
+      architecture → repo_evidence (was arch_docs)
+      _get_arch_prefilter → {"source_band": "repo_canonical"} (was {"canonical": True})
+    """
+
+    def test_policy_routes_to_ext_authority(self) -> None:
+        assert QueryRouter._get_target_collection("policy", "default") == "ext_authority"
+
+    def test_best_practice_routes_to_ext_authority(self) -> None:
+        assert QueryRouter._get_target_collection("best_practice", "default") == "ext_authority"
+
+    def test_tool_contracts_routes_to_ext_authority(self) -> None:
+        assert QueryRouter._get_target_collection("tool_contracts", "default") == "ext_authority"
+
+    def test_architecture_routes_to_repo_evidence(self) -> None:
+        assert QueryRouter._get_target_collection("architecture", "default") == "repo_evidence"
+
+    def test_code_routes_to_code_chunks(self) -> None:
+        assert QueryRouter._get_target_collection("code", "default") == "code_chunks"
+
+    def test_unknown_domain_passes_through_default_collection(self) -> None:
+        assert QueryRouter._get_target_collection("unknown_xyz", "fallback_col") == "fallback_col"
+
+    def test_arch_prefilter_uses_source_band_not_canonical(self) -> None:
+        """Wave B3 fix: prefilter must use source_band, not the retired canonical field."""
+        result = QueryRouter._get_arch_prefilter("architecture")
+        assert result == {"source_band": "repo_canonical"}
+        assert "canonical" not in (result or {})
+
+    def test_non_arch_domains_return_none_prefilter(self) -> None:
+        for domain in ("policy", "best_practice", "tool_contracts", "code", "unknown"):
+            assert QueryRouter._get_arch_prefilter(domain) is None, (
+                f"domain={domain!r} should return None prefilter"
+            )
+
+    def test_retired_collection_names_never_returned(self) -> None:
+        """curated_agent_docs, arch_docs, ext_knowledge must never be routing targets."""
+        retired = {"curated_agent_docs", "arch_docs", "ext_knowledge"}
+        for domain in ("policy", "best_practice", "tool_contracts", "architecture", "code"):
+            col = QueryRouter._get_target_collection(domain, "default")
+            assert col not in retired, f"domain={domain!r} still routes to retired collection {col!r}"

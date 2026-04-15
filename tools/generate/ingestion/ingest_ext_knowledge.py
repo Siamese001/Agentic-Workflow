@@ -299,7 +299,10 @@ def _load_ext_authority_urls(store_path: Path) -> set[str]:
         existing = {c.name for c in client.list_collections()}
         if "ext_authority" not in existing:
             return set()
-        col = client.get_collection("ext_authority")
+        try:
+            col = client.get_collection("ext_authority")
+        except (ValueError, chromadb.errors.NotFoundError):
+            return set()
         total = col.count()
         if total == 0:
             return set()

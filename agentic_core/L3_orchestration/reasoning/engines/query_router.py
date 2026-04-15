@@ -42,7 +42,7 @@ class QueryRouter:
     def _get_arch_prefilter(topic_domain: str) -> dict[str, Any] | None:
         """Return a ChromaDB where= filter for canonical arch docs, or None."""
         if topic_domain == "architecture":
-            return {"canonical": True}
+            return {"source_band": "repo_canonical"}
         return None
 
     def route(

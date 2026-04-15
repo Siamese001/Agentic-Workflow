@@ -1,0 +1,56 @@
+{
+  "timestamp": "2026-04-15T18:00:10Z",
+  "all_pass": false,
+  "grounding_summary": {
+    "STRONG": 5,
+    "ADEQUATE": 9,
+    "WEAK": 6,
+    "EMPTY": 0
+  },
+  "gates": {
+    "G1_C2_ext_authority_normative_use": {
+      "pass": true,
+      "detail": "0 chunks with invalid_for_normative_use != False"
+    },
+    "G2_C4_ext_authority_https_urls": {
+      "pass": true,
+      "detail": "0 chunks with non-https source_url"
+    },
+    "G3_ext_authority_required_fields": {
+      "pass": true,
+      "detail": "0 chunks missing required fields"
+    },
+    "G4_C3_repo_evidence_normative_gate": {
+      "pass": true,
+      "detail": "0 chunks with invalid_for_normative_use != True"
+    },
+    "G5_C5_repo_evidence_no_web_urls": {
+      "pass": true,
+      "detail": "0 chunks with https:// source_url (should be local paths)"
+    },
+    "G6_repo_evidence_required_fields": {
+      "pass": true,
+      "detail": "0 chunks missing required fields"
+    },
+    "G7_C3_ext_raw_normative_gate": {
+      "pass": true,
+      "detail": "0 chunks with invalid_for_normative_use != True"
+    },
+    "G8_C9_ext_raw_no_url_overlap": {
+      "pass": true,
+      "detail": "0 chunks with source_url already in ext_authority"
+    },
+    "G9_target_state_retrieval_strength": {
+      "pass": false,
+      "detail": "Strong=5 Adequate=9 Weak=6 Empty=0"
+    },
+    "G10_repo_contamination_zero": {
+      "pass": true,
+      "detail": "0 non-ext_authority chunks in target-state audit results"
+    },
+    "G11_ext_raw_contamination_zero": {
+      "pass": true,
+      "detail": "0 ext_raw chunks in target-state audit results"
+    }
+  }
+}

@@ -406,7 +406,7 @@ def compute_metrics(
 
     for i, (doc, meta, dist) in enumerate(zip(docs, metas, dists)):
         # Phase 4: record source_collection provenance for contamination gate
-        if meta.get("source_collection", "") == "arch_docs":
+        if meta.get("source_collection", "") == "repo_evidence":
             arch_contam_count += 1
 
         # Redundancy = same source URL appears multiple times in top-K (same-doc concentration)
@@ -468,9 +468,7 @@ def generate_report(
 ) -> str:
     lines: list[str] = []
     mode_tag = " — live-path (authority-rerank + collapse-dedup)" if live_path else ""
-    lines.append(
-        f"# Retrieval Quality Benchmark — curated_agent_docs vs arch_docs vs ext_knowledge{mode_tag}"
-    )
+    lines.append(f"# Retrieval Quality Benchmark — repo_evidence vs ext_raw vs ext_authority{mode_tag}")
     lines.append(
         f"\n**Queries**: {len(set(m.query_id for m in all_metrics))} · **K**: {k} · **Elapsed**: {elapsed:.1f}s\n"
     )
@@ -481,9 +479,7 @@ def generate_report(
     for m in all_metrics:
         col_metrics.setdefault(m.collection, []).append(m)
 
-    header = (
-        f"| Metric                | {'arch_docs':>18} | {'ext_knowledge':>18} | {'curated_agent_docs':>20} |"
-    )
+    header = f"| Metric                | {'repo_evidence':>18} | {'ext_raw':>18} | {'ext_authority':>20} |"
     separator = "|" + "-" * 23 + "|" + "-" * 20 + "|" + "-" * 20 + "|" + "-" * 22 + "|"
     lines.append(header)
     lines.append(separator)
@@ -527,8 +523,8 @@ def generate_report(
     # ── 2. Per-category win rates ─────────────────────────────────────────
     lines.append("## 2. Per-Category Win Rate\n")
     cats = sorted({m.cat for m in all_metrics})
-    lines.append("| Category     | arch_docs wins | ext_knowledge wins | curated_agent_docs wins |")
-    lines.append("|--------------|---------------|-------------------|-----------------------|")
+    lines.append("| Category     | repo_evidence wins | ext_raw wins | ext_authority wins |")
+    lines.append("|--------------|-------------------|--------------|-------------------|")
     for cat in cats:
         # Group by query_id, pick winner per query by win_score
         query_ids = {m.query_id for m in all_metrics if m.cat == cat}
@@ -544,17 +540,17 @@ def generate_report(
             return f"{wins[c]}/{total}"
 
         lines.append(
-            f"| {cat:<12} | {pct('arch_docs'):>13} | {pct('ext_knowledge'):>17} | {pct('curated_agent_docs'):>23} |"
+            f"| {cat:<12} | {pct('repo_evidence'):>17} | {pct('ext_raw'):>12} | {pct('ext_authority'):>18} |"
         )
     lines.append("")
 
     # ── 3. Query-by-query win/loss table ─────────────────────────────────
     lines.append("## 3. Query-by-Query Win/Loss Summary\n")
     lines.append(
-        "| QID       | Category     | Winner               | arch dist@1 | ext dist@1 | curated dist@1 | Notes |"
+        "| QID       | Category     | Winner               | repo dist@1 | raw dist@1 | authority dist@1 | Notes |"
     )
     lines.append(
-        "|-----------|--------------|----------------------|-------------|------------|----------------|-------|"
+        "|-----------|--------------|----------------------|-------------|------------|------------------|-------|"
     )
     query_ids_sorted = sorted({m.query_id for m in all_metrics})
     query_notes: dict[str, str] = {}  # filled below
@@ -564,8 +560,8 @@ def generate_report(
         winner = max(qm, key=lambda c: qm[c].win_score) if qm else "?"
         d1 = {c: _fmt(qm[c].dist_at_1) if c in qm else "N/A" for c in COLLECTIONS}
         notes = ""
-        if "curated_agent_docs" in qm:
-            cm = qm["curated_agent_docs"]
+        if "ext_authority" in qm:
+            cm = qm["ext_authority"]
             if cm.tooling_contamination > 0.3:
                 notes = "tooling contam"
             elif cm.dist_at_1 > 0.6:
@@ -574,14 +570,14 @@ def generate_report(
                 notes = "high redundancy"
         query_notes[qid] = notes
         lines.append(
-            f"| {qid:<9} | {cat:<12} | {winner:<20} | {d1['arch_docs']:>11} | {d1['ext_knowledge']:>10} | {d1['curated_agent_docs']:>14} | {notes} |"
+            f"| {qid:<9} | {cat:<12} | {winner:<20} | {d1['repo_evidence']:>11} | {d1['ext_raw']:>10} | {d1['ext_authority']:>16} | {notes} |"
         )
     lines.append("")
 
     # ── 4. Worst 10 queries for curated collection ────────────────────────
-    lines.append("## 4. Worst 10 Queries for curated_agent_docs (RCA)\n")
+    lines.append("## 4. Worst 10 Queries for ext_authority (RCA)\n")
     curated_metrics = sorted(
-        [m for m in all_metrics if m.collection == "curated_agent_docs"],
+        [m for m in all_metrics if m.collection == "ext_authority"],
         key=lambda m: m.win_score,
     )[:10]
     lines.append("| Rank | QID       | Category     | win_score | dist@1 | P@K   | Canonical | Auth  | RCA |")
@@ -612,8 +608,8 @@ def generate_report(
         return f"{wins}/{total} ({100 * wins // total if total else 0}%)"
 
     lines.append("## 5. Win Rate Summary by Query Group\n")
-    lines.append("| Group                  | arch_docs | ext_knowledge | curated_agent_docs |")
-    lines.append("|------------------------|-----------|---------------|--------------------|")
+    lines.append("| Group                  | repo_evidence | ext_raw | ext_authority |")
+    lines.append("|------------------------|---------------|---------|---------------|")
     for label, cat_set in [
         ("Architecture/Policy/History", arch_cats),
         ("Best-practice/Standards/MA", bp_cats),
@@ -621,21 +617,21 @@ def generate_report(
         ("All queries", set(m.cat for m in all_metrics)),
     ]:
         lines.append(
-            f"| {label:<22} | {win_rate_for_cats('arch_docs', cat_set):>9} | "
-            f"{win_rate_for_cats('ext_knowledge', cat_set):>13} | "
-            f"{win_rate_for_cats('curated_agent_docs', cat_set):>18} |"
+            f"| {label:<22} | {win_rate_for_cats('repo_evidence', cat_set):>13} | "
+            f"{win_rate_for_cats('ext_raw', cat_set):>7} | "
+            f"{win_rate_for_cats('ext_authority', cat_set):>13} |"
         )
     lines.append("")
 
     # ── 6. Phase 4 — arch_docs contamination gate (normative query classes) ─────
-    lines.append("## 6. Phase 4 — arch_docs Contamination Gate\n")
+    lines.append("## 6. Wave B3 — repo_evidence Contamination Gate\n")
     lines.append(
         "**Normative classes**: `policy` · `tooling` · `standards`  \n"
-        "**Pass condition**: arch_docs_contamination = 0 for all normative queries in curated_agent_docs  \n"
+        "**Pass condition**: repo_evidence chunk count = 0 for all normative queries in ext_authority  \n"
         "**Mechanism**: source_collection metadata field on each returned chunk (set at ingest time)\n"
     )
-    lines.append("| QID       | Category  | arch_docs chunks in curated top-5 | Status   |")
-    lines.append("|-----------|-----------|-----------------------------------|----------|")
+    lines.append("| QID       | Category  | repo_evidence chunks in ext_authority top-5 | Status   |")
+    lines.append("|-----------|-----------|---------------------------------------------|----------|")
 
     total_contamination = 0
     normative_query_count = 0
@@ -647,7 +643,7 @@ def generate_report(
             continue
         normative_query_count += 1
         curated_m = next(
-            (m for m in all_metrics if m.query_id == qid and m.collection == "curated_agent_docs"),
+            (m for m in all_metrics if m.query_id == qid and m.collection == "ext_authority"),
             None,
         )
         contam = curated_m.arch_docs_contamination if curated_m else 0
@@ -660,13 +656,13 @@ def generate_report(
     lines.append("")
     lines.append(
         f"**Normative queries checked**: {normative_query_count} · "
-        f"**arch_docs chunks found**: {total_contamination}  "
+        f"**repo_evidence chunks in ext_authority results**: {total_contamination}  "
     )
     if gate_failures:
         lines.append(f"\n**Gate verdict**: **FAIL** ✗ — contamination found in: {', '.join(gate_failures)}\n")
     else:
         lines.append(
-            "\n**Gate verdict**: **PASS** ✓ — arch_docs_contamination = 0 across all normative query classes\n"
+            "\n**Gate verdict**: **PASS** ✓ — repo_contamination = 0 across all normative query classes\n"
         )
     lines.append("")
 
@@ -693,11 +689,11 @@ def generate_report(
                     total += 1
             return wins, total
 
-        v5_all = _wrate("curated_agent_docs", set(m.cat for m in all_metrics))
-        v5_arch = _wrate("curated_agent_docs", {"architecture", "policy", "history"})
-        v5_bp = _wrate("curated_agent_docs", {"standards", "retrieval", "multiagent"})
-        v5_tool = _wrate("curated_agent_docs", {"tooling"})
-        curated_all = [m for m in all_metrics if m.collection == "curated_agent_docs"]
+        v5_all = _wrate("ext_authority", set(m.cat for m in all_metrics))
+        v5_arch = _wrate("ext_authority", {"architecture", "policy", "history"})
+        v5_bp = _wrate("ext_authority", {"standards", "retrieval", "multiagent"})
+        v5_tool = _wrate("ext_authority", {"tooling"})
+        curated_all = [m for m in all_metrics if m.collection == "ext_authority"]
         v5_canon = sum(m.canonical_hit_rate for m in curated_all) / len(curated_all) if curated_all else 0.0
         v5_contam = (
             sum(m.tooling_contamination for m in curated_all) / len(curated_all) if curated_all else 0.0
@@ -737,7 +733,7 @@ def generate_report(
             f"{_gate(v5_contam, V4['tooling_contamination'], lower_better=True)} |"
         )
         lines.append(
-            f"| arch_docs_contamination (normative) | N/A (not tracked) | {norm_contam_total} | "
+            f"| repo_contamination (normative) | N/A (not tracked) | {norm_contam_total} | "
             f"{'PASS ✓' if norm_contam_total == 0 else 'FAIL ✗'} |"
         )
         lines.append("")
@@ -752,10 +748,10 @@ def generate_report(
         )
         if regression_pass:
             lines.append(
-                "**PASS — Prompt 4 is complete.**  \n"
+                "**PASS — Wave B3 eval complete.**  \n"
                 "All four regression gates cleared: overall win rate ≥ 95%, "
                 "canonical_hit_rate = 1.000, tooling_contamination = 0.000, "
-                "arch_docs_contamination = 0 for all normative query classes.  \n"
+                "repo_contamination = 0 for all normative query classes.  \n"
                 "Authority enforcement is live and verified by the real eval harness.\n"
             )
         else:
@@ -767,8 +763,8 @@ def generate_report(
             if v5_contam > 1e-6:
                 failing.append(f"tooling_contamination {_fmt(v5_contam)} > 0")
             if norm_contam_total > 0:
-                failing.append(f"arch_docs_contamination {norm_contam_total} > 0")
-            lines.append(f"**FAIL — Prompt 4 blocked.**  \nFailing gates: {'; '.join(failing)}.\n")
+                failing.append(f"repo_contamination {norm_contam_total} > 0")
+            lines.append(f"**FAIL — Wave B3 eval blocked.**  \nFailing gates: {'; '.join(failing)}.\n")
         lines.append("")
 
     return "\n".join(lines)
@@ -952,7 +948,9 @@ def run_eval(k: int = 5, out_path: Path | None = None, live_path: bool = False) 
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Retrieval quality benchmark for curated_agent_docs")
+    parser = argparse.ArgumentParser(
+        description="Retrieval quality benchmark for ext_authority vs repo_evidence vs ext_raw"
+    )
     parser.add_argument("--k", type=int, default=5, help="Top-K results per query (default: 5)")
     parser.add_argument("--out", type=Path, default=None, help="Write markdown report to this path")
     parser.add_argument(
