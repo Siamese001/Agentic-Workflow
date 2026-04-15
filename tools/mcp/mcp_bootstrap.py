@@ -1,41 +1,12 @@
 """
-Shared MCP Server Bootstrap — Standardized initialization for all Python MCP servers.
+Shared MCP Server Bootstrap — standardized initialization for Python MCP servers.
 
-This module eliminates duplicated boilerplate across all 7 Python MCP servers
-(adg_sqlite, memory, redis, otel_mcp, vector_db, enhanced_http, pytest_mcp)
-by providing a single, tested entry point for:
-
-  1. Repo-root sys.path bootstrapping
-  2. Logging to stderr (never stdout — MCP stdio transport safety)
-  3. Environment safety: TOKENIZERS_PARALLELISM, PYTHONUNBUFFERED
-  4. FastMCP import with clear error on missing dependency
-  5. Standardized entry point via run_server()
-  6. Optional thread-pool worker cap when supported by the installed FastMCP
-
-Usage in any MCP server::
-
-    from tools.mcp.mcp_bootstrap import create_mcp_server, run_server
-
-    mcp = create_mcp_server("my-server", "Description here")
-
-    @mcp.tool()
-    def my_tool(arg: str) -> str:
-        return f"Hello {arg}"
-
-    if __name__ == "__main__":
-        run_server(mcp)
-
-Pattern compliance
-------------------
-All working MCP servers follow this exact pattern:
-- FastMCP("name") + @mcp.tool() decorators
-- mcp.run(transport="stdio") entry point
-- logging.basicConfig(stream=sys.stderr)
-- sys.path.insert(0, repo_root)
-- os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-Servers that deviated (low-level Server API, anyio.run, asyncio.ensure_future)
-caused persistent hanging on Windows stdio transport.
+This module keeps transport-specific concerns in one place:
+1. Repo-root sys.path bootstrapping
+2. Logging to stderr only (never stdout on stdio MCP)
+3. Environment safety for tokenizer / buffering behavior
+4. FastMCP import with clear failure messaging
+5. Optional worker-cap wiring when supported by the installed FastMCP
 """
 
 from __future__ import annotations
@@ -47,20 +18,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-# ── Repo-root bootstrap — idempotent ──────────────────────────────────────
 REPO_ROOT: Path = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-# ── MCP stdio transport safety ────────────────────────────────────────────
-# These MUST be set before any transformer/tokenizer library is imported.
-# tokenizers spawns parallel processes that inherit stdin/stdout and corrupt
-# the JSON-RPC stream.  PYTHONUNBUFFERED prevents output buffering issues.
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 os.environ.setdefault("PYTHONUNBUFFERED", "1")
 
-# ── Logging — always stderr, never stdout ─────────────────────────────────
-# basicConfig is a no-op if handlers already exist; force=True overrides that.
 logging.basicConfig(
     level=logging.INFO,
     stream=sys.stderr,
@@ -68,9 +32,8 @@ logging.basicConfig(
     force=True,
 )
 
-# ── FastMCP import with clear error ───────────────────────────────────────
 try:
-    from mcp.server.fastmcp import FastMCP  # noqa: F401 — re-exported
+    from mcp.server.fastmcp import FastMCP  # type: ignore
 except ImportError:
     print(
         "[mcp_bootstrap] FATAL: mcp package not found. Install with: pip install mcp",
@@ -87,11 +50,17 @@ def _parse_positive_int_env(name: str) -> int | None:
         value = int(raw)
     except ValueError:
         logging.getLogger("mcp_bootstrap").warning(
-            "%s=%r is invalid — expected a positive integer; ignoring", name, raw
+            "%s=%r is invalid — expected a positive integer; ignoring",
+            name,
+            raw,
         )
         return None
     if value < 1:
-        logging.getLogger("mcp_bootstrap").warning("%s=%r is invalid — expected >= 1; ignoring", name, raw)
+        logging.getLogger("mcp_bootstrap").warning(
+            "%s=%r is invalid — expected >= 1; ignoring",
+            name,
+            raw,
+        )
         return None
     return value
 
@@ -122,38 +91,22 @@ def _resolve_fastmcp_kwargs(name: str, instructions: str) -> dict[str, Any]:
             return kwargs
 
     logger.warning(
-        "MCP_MAX_THREADPOOL_WORKERS=%d is set but the installed FastMCP constructor does not expose a supported worker parameter",
+        "MCP_MAX_THREADPOOL_WORKERS=%d is set but the installed FastMCP constructor "
+        "does not expose a supported worker parameter",
         workers,
     )
     return kwargs
 
 
 def create_mcp_server(name: str, instructions: str = "") -> FastMCP:
-    """Create a FastMCP server instance with standardized configuration.
-
-    Args:
-        name: Server name (e.g. "vector-db", "redis-mcp", "otel-mcp")
-        instructions: Optional description surfaced to the MCP client
-
-    Returns:
-        Configured FastMCP instance ready for @mcp.tool() decorators
-    """
+    """Create a FastMCP server instance with standardized configuration."""
     logger = logging.getLogger(name)
     logger.info("Creating FastMCP server: %s", name)
     return FastMCP(name, **_resolve_fastmcp_kwargs(name, instructions))
 
 
 def run_server(mcp: FastMCP, *, transport: str = "stdio") -> None:
-    """Run the MCP server — standardized entry point.
-
-    This is the ONLY blessed way to start a Python MCP server in this repo.
-    Using anyio.run(), asyncio.ensure_future, or low-level Server API
-    has been proven to cause hanging on Windows stdio transport.
-
-    Args:
-        mcp: FastMCP instance with tools registered
-        transport: Transport protocol ("stdio" for Windsurf)
-    """
-    logger = logging.getLogger(mcp.name if hasattr(mcp, "name") else "mcp")
+    """Run the MCP server using the standard repo entrypoint."""
+    logger = logging.getLogger(getattr(mcp, "name", "mcp"))
     logger.info("Starting MCP server (transport=%s)", transport)
     mcp.run(transport=transport)

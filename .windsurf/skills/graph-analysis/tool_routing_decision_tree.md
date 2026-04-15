@@ -29,7 +29,9 @@ QUERY: "What does Z depend on / what does Z import?"
 
 QUERY: "Blast radius of changing A / impact of modifying A?"
   └─ Observable: query mentions blast radius, impact, or affected files
-  └─ ROUTE → mcp1_adg_nodes_by_file(file_path=A) → mcp1_adg_edge_fanin(tgt_id=<node_id>, relation_type="imports")
+  └─ ROUTE → mcp1_adg_nodes_by_file(file_path=A)
+             → for EACH symbol node: mcp1_adg_edge_fanin(tgt_id=<symbol_id>, relation_type="imports")
+             → merge all results
   └─ NEVER → grep_search("A", Includes=["*.py"])
 
 QUERY: "All uses of CONSTANT_NAME / where is CONFIG_KEY used?"
@@ -45,6 +47,23 @@ QUERY: "Which layer does X belong to / layer violations?"
 QUERY: "Find TODOs / FIXMEs / literal string / non-Python content"
   └─ Observable: query targets literal text, comments, or non-code content
   └─ ROUTE → grep_search ← THIS IS THE ONLY VALID USE
+```
+
+### File-Path vs ADG-Name Routing (CRITICAL)
+
+```
+INPUT: bare file path (e.g., "tools/mcp/vector_db_server.py")
+  └─ ROUTE → mcp1_adg_nodes_by_file(file_path="tools/mcp/vector_db_server.py")
+  └─ NEVER → mcp1_adg_find_node("tools/mcp/vector_db_server.py")
+     WHY: adg_find_node matches on adg_name (format: "ADG::Module::..."),
+          NOT bare file paths. Bare paths return 0 results — silent failure.
+
+INPUT: ADG-format name (e.g., "ADG::Module::tools/mcp/vector_db_server.py")
+  └─ ROUTE → mcp1_adg_find_node(name="ADG::Module::tools/mcp/vector_db_server.py")
+
+INPUT: Python dotted module (e.g., "tools.mcp.vector_db_server")
+  └─ ROUTE → mcp1_adg_find_node(name="tools.mcp.vector_db_server")
+     OR    → mcp1_adg_nodes_by_file(file_path="tools/mcp/vector_db_server.py")
 ```
 
 ### Quick Reference: ADG MCP Tool Selection

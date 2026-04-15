@@ -1,38 +1,25 @@
 """
-Focused tests for enhanced_http_server.py P0/P1 hardening invariants.
+Focused tests for the enhanced HTTP MCP subpackage P0/P1 hardening invariants.
 Tests cover: URL blocking, redirect cap, SSL verification, header redaction,
 batch partial failure isolation, and bounded response reading.
 All network calls are mocked.
 """
 
 import asyncio
-import unittest
+import os
+import sys
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-
-# ---------------------------------------------------------------------------
-# Helpers to import the server under test
-# ---------------------------------------------------------------------------
-import sys
-import os
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
 
-from tools.mcp.enhanced_http_server import (
-    MAX_REDIRECTS,
-    MAX_RESPONSE_SIZE,
-    EnhancedHTTPMCPServer,
-)
-
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-@pytest.fixture
-def server():
-    return EnhancedHTTPMCPServer()
+from tools.mcp.http_mcp.batch import execute_batch_requests
+from tools.mcp.http_mcp.client import execute_connectivity_test, execute_formatted_request
+from tools.mcp.http_mcp.constants import MAX_REDIRECTS, MAX_RESPONSE_SIZE
+from tools.mcp.http_mcp.headers import redact_headers
+from tools.mcp.http_mcp.response_io import read_response_bounded
+from tools.mcp.http_mcp.safety import validate_url
 
 
 # ---------------------------------------------------------------------------
@@ -69,13 +56,13 @@ class TestValidateUrl:
         "http://8.8.8.8/",
     ]
 
-    def test_blocked_urls_are_rejected(self, server):
+    def test_blocked_urls_are_rejected(self):
         for url in self.BLOCKED:
-            assert server._validate_url(url) is False, f"Expected {url!r} to be blocked"
+            assert validate_url(url) is False, f"Expected {url!r} to be blocked"
 
-    def test_allowed_urls_are_accepted(self, server):
+    def test_allowed_urls_are_accepted(self):
         for url in self.ALLOWED:
-            assert server._validate_url(url) is True, f"Expected {url!r} to be allowed"
+            assert validate_url(url) is True, f"Expected {url!r} to be allowed"
 
 
 # ---------------------------------------------------------------------------
@@ -87,7 +74,7 @@ class TestRedirectCap:
         assert MAX_REDIRECTS >= 1
 
     @pytest.mark.asyncio
-    async def test_http_get_passes_max_redirects_to_aiohttp(self, server):
+    async def test_http_get_passes_max_redirects_to_aiohttp(self):
         mock_response = MagicMock()
         mock_response.status = 200
         mock_response.headers = {}
@@ -101,8 +88,15 @@ class TestRedirectCap:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            await server._http_get({"url": "https://example.com/"})
+        with patch("tools.mcp.http_mcp.client.aiohttp.ClientSession", return_value=mock_session):
+            await execute_formatted_request(
+                method="GET",
+                url="https://example.com/",
+                headers={},
+                timeout=30,
+                verify_ssl=True,
+                follow_redirects=True,
+            )
 
         call_kwargs = mock_session.get.call_args.kwargs
         assert call_kwargs.get("max_redirects") == MAX_REDIRECTS
@@ -113,7 +107,7 @@ class TestRedirectCap:
 # ---------------------------------------------------------------------------
 class TestVerifySslTestConnectivity:
     @pytest.mark.asyncio
-    async def test_test_connectivity_uses_ssl_true(self, server):
+    async def test_test_connectivity_uses_ssl_true(self):
         mock_response = MagicMock()
         mock_response.status = 200
         mock_response.headers = {"Server": "nginx"}
@@ -125,8 +119,8 @@ class TestVerifySslTestConnectivity:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            await server._test_connectivity({"url": "https://example.com/"})
+        with patch("tools.mcp.http_mcp.client.aiohttp.ClientSession", return_value=mock_session):
+            await execute_connectivity_test(url="https://example.com/", timeout=10)
 
         call_kwargs = mock_session.head.call_args.kwargs
         assert call_kwargs.get("ssl") is True
@@ -137,7 +131,7 @@ class TestVerifySslTestConnectivity:
 # ---------------------------------------------------------------------------
 class TestVerifySslBatchRequests:
     @pytest.mark.asyncio
-    async def test_batch_requests_passes_verify_ssl_false(self, server):
+    async def test_batch_requests_passes_verify_ssl_false(self):
         mock_response = MagicMock()
         mock_response.status = 200
         mock_response.headers = {}
@@ -151,16 +145,16 @@ class TestVerifySslBatchRequests:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            await server._batch_requests(
-                {"requests": [{"method": "GET", "url": "https://example.com/", "verify_ssl": False}]}
+        with patch("tools.mcp.http_mcp.batch.aiohttp.ClientSession", return_value=mock_session):
+            await execute_batch_requests(
+                requests=[{"method": "GET", "url": "https://example.com/", "verify_ssl": False}]
             )
 
         call_kwargs = mock_session.get.call_args.kwargs
         assert call_kwargs.get("ssl") is False
 
     @pytest.mark.asyncio
-    async def test_batch_requests_defaults_verify_ssl_true(self, server):
+    async def test_batch_requests_defaults_verify_ssl_true(self):
         mock_response = MagicMock()
         mock_response.status = 200
         mock_response.headers = {}
@@ -174,8 +168,8 @@ class TestVerifySslBatchRequests:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            await server._batch_requests({"requests": [{"method": "GET", "url": "https://example.com/"}]})
+        with patch("tools.mcp.http_mcp.batch.aiohttp.ClientSession", return_value=mock_session):
+            await execute_batch_requests(requests=[{"method": "GET", "url": "https://example.com/"}])
 
         call_kwargs = mock_session.get.call_args.kwargs
         assert call_kwargs.get("ssl") is True
@@ -185,7 +179,7 @@ class TestVerifySslBatchRequests:
 # 5. Header redaction
 # ---------------------------------------------------------------------------
 class TestHeaderRedaction:
-    def test_sensitive_headers_are_redacted(self, server):
+    def test_sensitive_headers_are_redacted(self):
         headers = {
             "Content-Type": "application/json",
             "Set-Cookie": "session=abc123; Path=/",
@@ -194,37 +188,37 @@ class TestHeaderRedaction:
             "WWW-Authenticate": "Bearer realm=example",
             "X-Request-Id": "req-123",
         }
-        redacted = server._redact_headers(headers)
+        result = redact_headers(headers)
 
-        assert redacted["Set-Cookie"] == "[REDACTED]"
-        assert redacted["Authorization"] == "[REDACTED]"
-        assert redacted["Proxy-Authorization"] == "[REDACTED]"
-        assert redacted["WWW-Authenticate"] == "[REDACTED]"
+        assert result["Set-Cookie"] == "[REDACTED]"
+        assert result["Authorization"] == "[REDACTED]"
+        assert result["Proxy-Authorization"] == "[REDACTED]"
+        assert result["WWW-Authenticate"] == "[REDACTED]"
 
-    def test_non_sensitive_headers_are_preserved(self, server):
+    def test_non_sensitive_headers_are_preserved(self):
         headers = {
             "Content-Type": "application/json",
             "X-Request-Id": "req-123",
             "Content-Length": "42",
         }
-        redacted = server._redact_headers(headers)
+        result = redact_headers(headers)
 
-        assert redacted["Content-Type"] == "application/json"
-        assert redacted["X-Request-Id"] == "req-123"
-        assert redacted["Content-Length"] == "42"
+        assert result["Content-Type"] == "application/json"
+        assert result["X-Request-Id"] == "req-123"
+        assert result["Content-Length"] == "42"
 
-    def test_redaction_is_case_insensitive(self, server):
+    def test_redaction_is_case_insensitive(self):
         headers = {
             "set-cookie": "session=abc",
             "AUTHORIZATION": "Bearer token",
         }
-        redacted = server._redact_headers(headers)
+        result = redact_headers(headers)
 
-        assert redacted["set-cookie"] == "[REDACTED]"
-        assert redacted["AUTHORIZATION"] == "[REDACTED]"
+        assert result["set-cookie"] == "[REDACTED]"
+        assert result["AUTHORIZATION"] == "[REDACTED]"
 
     @pytest.mark.asyncio
-    async def test_batch_response_headers_are_redacted(self, server):
+    async def test_batch_response_headers_are_redacted(self):
         mock_response = MagicMock()
         mock_response.status = 200
         mock_response.headers = {
@@ -242,12 +236,9 @@ class TestHeaderRedaction:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            result = await server._batch_requests(
-                {"requests": [{"method": "GET", "url": "https://example.com/"}]}
-            )
+        with patch("tools.mcp.http_mcp.batch.aiohttp.ClientSession", return_value=mock_session):
+            output = await execute_batch_requests(requests=[{"method": "GET", "url": "https://example.com/"}])
 
-        output = result.content[0].text
         assert "session=abc" not in output
         assert "Bearer leak" not in output
 
@@ -257,11 +248,9 @@ class TestHeaderRedaction:
 # ---------------------------------------------------------------------------
 class TestBatchPartialFailureIsolation:
     @pytest.mark.asyncio
-    async def test_one_failed_request_does_not_abort_batch(self, server):
+    async def test_one_failed_request_does_not_abort_batch(self):
         """First request fails with network error; second should still succeed."""
         import aiohttp as _aiohttp
-
-        call_count = 0
 
         def make_failing_cm():
             """Returns a context manager that raises on __aenter__."""
@@ -293,23 +282,20 @@ class TestBatchPartialFailureIsolation:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            result = await server._batch_requests(
-                {
-                    "requests": [
-                        {"method": "GET", "url": "https://fail.example.com/"},
-                        {"method": "GET", "url": "https://ok.example.com/"},
-                    ]
-                }
+        with patch("tools.mcp.http_mcp.batch.aiohttp.ClientSession", return_value=mock_session):
+            text = await execute_batch_requests(
+                requests=[
+                    {"method": "GET", "url": "https://fail.example.com/"},
+                    {"method": "GET", "url": "https://ok.example.com/"},
+                ]
             )
 
-        assert result.isError is not True
-        text = result.content[0].text
-        assert "❌" in text
-        assert "✅" in text
+        assert isinstance(text, str)
+        assert "\u274c" in text
+        assert "\u2705" in text
 
     @pytest.mark.asyncio
-    async def test_blocked_url_in_batch_does_not_abort_batch(self, server):
+    async def test_blocked_url_in_batch_does_not_abort_batch(self):
         mock_response = MagicMock()
         mock_response.status = 200
         mock_response.headers = {}
@@ -323,20 +309,17 @@ class TestBatchPartialFailureIsolation:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            result = await server._batch_requests(
-                {
-                    "requests": [
-                        {"method": "GET", "url": "http://127.0.0.1/steal"},
-                        {"method": "GET", "url": "https://example.com/"},
-                    ]
-                }
+        with patch("tools.mcp.http_mcp.batch.aiohttp.ClientSession", return_value=mock_session):
+            text = await execute_batch_requests(
+                requests=[
+                    {"method": "GET", "url": "http://127.0.0.1/steal"},
+                    {"method": "GET", "url": "https://example.com/"},
+                ]
             )
 
-        assert result.isError is not True
-        text = result.content[0].text
+        assert isinstance(text, str)
         assert "Invalid or unsafe URL" in text
-        assert "✅" in text
+        assert "\u2705" in text
 
 
 # ---------------------------------------------------------------------------
@@ -344,39 +327,39 @@ class TestBatchPartialFailureIsolation:
 # ---------------------------------------------------------------------------
 class TestBoundedResponseReading:
     @pytest.mark.asyncio
-    async def test_response_within_limit_is_returned_fully(self, server):
+    async def test_response_within_limit_is_returned_fully(self):
         body = b"hello world"
         mock_response = MagicMock()
         mock_response.content = MagicMock()
         mock_response.content.iter_chunked = MagicMock(return_value=_async_iter([body]))
 
-        result = await server._read_response_bounded(mock_response)
+        result = await read_response_bounded(mock_response)
         assert result == "hello world"
 
     @pytest.mark.asyncio
-    async def test_response_exceeding_limit_is_truncated(self, server):
+    async def test_response_exceeding_limit_is_truncated(self):
         oversized = b"x" * (MAX_RESPONSE_SIZE + 5000)
         mock_response = MagicMock()
         mock_response.content = MagicMock()
         mock_response.content.iter_chunked = MagicMock(return_value=_async_iter([oversized]))
 
-        result = await server._read_response_bounded(mock_response)
+        result = await read_response_bounded(mock_response)
         assert "(content truncated)" in result
         assert len(result) <= MAX_RESPONSE_SIZE + 30  # small allowance for suffix
 
     @pytest.mark.asyncio
-    async def test_response_exactly_at_limit_is_not_truncated(self, server):
+    async def test_response_exactly_at_limit_is_not_truncated(self):
         exact = b"y" * MAX_RESPONSE_SIZE
         mock_response = MagicMock()
         mock_response.content = MagicMock()
         mock_response.content.iter_chunked = MagicMock(return_value=_async_iter([exact]))
 
-        result = await server._read_response_bounded(mock_response)
+        result = await read_response_bounded(mock_response)
         assert "(content truncated)" not in result
         assert len(result) == MAX_RESPONSE_SIZE
 
     @pytest.mark.asyncio
-    async def test_http_get_uses_bounded_read(self, server):
+    async def test_http_get_uses_bounded_read(self):
         oversized_chunk = b"z" * (MAX_RESPONSE_SIZE + 10000)
         mock_response = MagicMock()
         mock_response.status = 200
@@ -391,10 +374,18 @@ class TestBoundedResponseReading:
         mock_session.__aenter__ = AsyncMock(return_value=mock_session)
         mock_session.__aexit__ = AsyncMock(return_value=False)
 
-        with patch("tools.mcp.enhanced_http_server.aiohttp.ClientSession", return_value=mock_session):
-            result = await server._http_get({"url": "https://example.com/"})
+        with patch("tools.mcp.http_mcp.client.aiohttp.ClientSession", return_value=mock_session):
+            result = await execute_formatted_request(
+                method="GET",
+                url="https://example.com/",
+                headers={},
+                timeout=30,
+                verify_ssl=True,
+                include_content_length=True,
+                include_headers=True,
+            )
 
-        assert "(content truncated)" in result.content[0].text
+        assert "(content truncated)" in result
 
 
 # ---------------------------------------------------------------------------

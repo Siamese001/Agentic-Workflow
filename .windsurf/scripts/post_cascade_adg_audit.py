@@ -131,10 +131,38 @@ def _is_dep_analysis_query(query: str) -> bool:
     return False
 
 
+def _build_remediation(violation_type: str, context: str) -> str:
+    """Build a structured remediation message for the violation."""
+    if "import" in context.lower():
+        return (
+            "REQUIRED: mcp1_adg_nodes_by_file(file_path=<target>) "
+            "→ mcp1_adg_edge_fanin(tgt_id=<node>, relation_type='imports'). "
+            "For symbol-level: expand to each symbol node's fan-in."
+        )
+    if any(kw in context.lower() for kw in ("consumer", "blast", "impact", "who uses")):
+        return (
+            "REQUIRED: mcp1_adg_nodes_by_file(file_path=<target>) "
+            "→ for EACH symbol node: mcp1_adg_edge_fanin(tgt_id=<symbol_id>). "
+            "Merge results to get full consumer set."
+        )
+    return (
+        "REQUIRED: Use ADG MCP (adg_nodes_by_file → adg_edge_fanin/fanout) "
+        "instead of grep_search for dependency analysis. "
+        "If ADG is unhealthy, call mcp1_adg_health first and emit DEGRADED_FALLBACK."
+    )
+
+
 def detect_violations(response_text: str) -> list[dict]:
     """
     Scan response for grep-for-deps violations.
-    Returns list of violation records.
+    Returns list of violation records with pre-fallback gate enforcement.
+
+    Pre-fallback gate logic:
+    - If grep_search is used for a dependency pattern AND mcp1_adg_health was NOT
+      called first, severity is upgraded to 'critical' (silent fallback).
+    - If mcp1_adg_health WAS called and returned unhealthy, grep is tolerated
+      if DEGRADED_FALLBACK reason is present (severity: 'warning').
+    - Remediation guidance is always attached to help Cascade self-correct.
     """
     violations = []
 
@@ -163,30 +191,50 @@ def detect_violations(response_text: str) -> list[dict]:
         context_end = min(len(response_text), match.end() + 100)
         context = response_text[context_start:context_end].strip()
 
-        # Determine severity: critical when no ADG tool, no health check, and no reason code.
+        # Pre-fallback gate enforcement:
+        # severity is determined by whether the required health-check-before-grep
+        # protocol was followed.
+        is_silent_fallback = not adg_mcp_used and not adg_health_checked and not degraded_fallback_declared
+
         if adg_mcp_used:
             sev = "warning"  # ADG was also used — grep may have been supplementary
+        elif adg_health_checked and degraded_fallback_declared:
+            sev = "info"  # proper protocol: health checked, reason emitted — compliant fallback
         elif adg_health_checked or degraded_fallback_declared:
-            sev = "error"  # partial compliance: health checked or reason emitted but ADG skipped
+            sev = "error"  # partial compliance: health checked or reason emitted but not both
         else:
             sev = "critical"  # silent fallback: no ADG, no health check, no reason code
+
+        remediation = _build_remediation("grep_for_dependency_analysis", context)
 
         violation = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "violation_type": "grep_for_dependency_analysis",
             "severity": sev,
-            "silent_fallback": not adg_mcp_used and not adg_health_checked and not degraded_fallback_declared,
+            "silent_fallback": is_silent_fallback,
             "context_snippet": context[:300],
             "adg_mcp_also_used": adg_mcp_used,
             "adg_health_checked": adg_health_checked,
             "degraded_fallback_declared": degraded_fallback_declared,
+            "pre_fallback_gate": (
+                "COMPLIANT"
+                if (adg_health_checked and degraded_fallback_declared)
+                else "PARTIAL"
+                if (adg_health_checked or degraded_fallback_declared)
+                else "VIOLATED"
+            ),
+            "remediation": remediation,
             "mitigation": (
                 "ADG MCP was also used — grep may have been supplementary"
                 if adg_mcp_used
                 else (
-                    "Health checked or DEGRADED_FALLBACK emitted — partial compliance"
-                    if adg_health_checked or degraded_fallback_declared
-                    else "Silent fallback: no ADG, no health check, no reason code"
+                    "Health checked AND DEGRADED_FALLBACK emitted — compliant fallback"
+                    if adg_health_checked and degraded_fallback_declared
+                    else (
+                        "Health checked or DEGRADED_FALLBACK emitted — partial compliance"
+                        if adg_health_checked or degraded_fallback_declared
+                        else "Silent fallback: no ADG, no health check, no reason code"
+                    )
                 )
             ),
             "rule": "constitutional.md §ADG-First, global_rules.md §ADG-First Analysis",

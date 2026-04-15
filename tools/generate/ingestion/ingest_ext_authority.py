@@ -1,11 +1,12 @@
-"""Wave B2 ingestion — ext_authority ChromaDB collection.
+"""Wave B2/B6 ingestion — ext_authority ChromaDB collection.
 
-Status  : Active (Wave B2)
+Status  : Active (Wave B6 — gap-close additions)
 Replaces: web-source portions of ingest_curated_agent_docs.py (RETIRED in Wave B2)
 See     : docs/requirements/wave_b_chromadb_topology.md
           docs/requirements/wave_b_metadata_contract.md
 
-Ingest 18 vetted external web sources into the ``ext_authority`` collection.
+Ingest 25 vetted external web sources into the ``ext_authority`` collection.
+B6 additions (7 sources) close proven blocking families F06/F08/F09/F12/F13/F14/F17/F25.
 
 Lane A — target_state_authority / T2_standard:
     MCP Python SDK README (canonical spec source)
@@ -255,6 +256,77 @@ EXT_AUTHORITY_SOURCES: list[dict] = [
         "doc_family": "reference",
         "topic_bucket": "orchestration",
         "collapse_group": "autogen",
+        "required": False,
+    },
+    # ── B6 gap-close additions (P1–P8) ─────────────────────────────────────────
+    # P1 — Deterministic exact-response caching / policy-key short-circuit (F08)
+    {
+        "path": "https://raw.githubusercontent.com/anthropics/anthropic-cookbook/main/misc/prompt_caching.ipynb",
+        "title": "Anthropic — Prompt Caching: Exact API-Level Response Caching with Cache Control",
+        "doc_type": "notebook",
+        "doc_family": "guide",
+        "topic_bucket": "retrieval_cache",
+        "collapse_group": "langchain_caching",
+        "required": False,
+    },
+    # P2 — Semantic / vector-similarity query caching (F09)
+    {
+        "path": "https://raw.githubusercontent.com/zilliztech/GPTCache/main/README.md",
+        "title": "GPTCache — Semantic Caching Library for LLM Applications",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "retrieval_cache",
+        "collapse_group": "gptcache",
+        "required": False,
+    },
+    # P3 — Hybrid dense+sparse retrieval with BM25 score fusion (F12)
+    {
+        "path": "https://raw.githubusercontent.com/deepset-ai/haystack/main/README.md",
+        "title": "Haystack — BM25 and Dense Hybrid Retrieval Pipeline with Score Fusion",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "retrieval_rag",
+        "collapse_group": "haystack",
+        "required": False,
+    },
+    # P4 — Cross-encoder reranking pipeline + P7 embedding model selection (F12, F13)
+    {
+        "path": "https://raw.githubusercontent.com/UKPLab/sentence-transformers/master/README.md",
+        "title": "Sentence Transformers — Embedding Models and Cross-Encoder Reranking",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "retrieval_rag",
+        "collapse_group": "sentence_transformers",
+        "required": False,
+    },
+    # P5 — Parent-child document / chunk expansion retrieval (F12)
+    {
+        "path": "https://raw.githubusercontent.com/run-llama/llama_index/main/README.md",
+        "title": "LlamaIndex — Hierarchical Node Parser and Parent-Child Chunk Retrieval",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "retrieval_rag",
+        "collapse_group": "llamaindex",
+        "required": False,
+    },
+    # P6 — Abstain / refine / graceful fallback guidance (F06, F14, F17)
+    {
+        "path": "https://raw.githubusercontent.com/openai/openai-cookbook/main/articles/techniques_to_improve_reliability.md",
+        "title": "OpenAI Cookbook — Techniques to Improve LLM Reliability and Graceful Abstain",
+        "doc_type": "markdown",
+        "doc_family": "guide",
+        "topic_bucket": "safety_eval",
+        "collapse_group": "openai_cookbook",
+        "required": False,
+    },
+    # P8 — Tiered healing / remediation / escalation patterns for agentic systems (F25)
+    {
+        "path": "https://raw.githubusercontent.com/openai/swarm/main/README.md",
+        "title": "OpenAI Swarm — Agent Handoff Routing, Error Recovery and Escalation Patterns",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "orchestration",
+        "collapse_group": "openai_swarm",
         "required": False,
     },
 ]
@@ -695,7 +767,14 @@ def run(store_path: Path, dry_run: bool = False) -> None:
     from tools.progress_display import ProgressReporter
 
     print(f"Loading embedding model: {EMBEDDING_MODEL}")
-    model = SentenceTransformer(EMBEDDING_MODEL, device="cuda")
+    try:
+        import torch as _torch
+
+        _device = "cuda" if _torch.cuda.is_available() else "cpu"
+    except ImportError:
+        _device = "cpu"
+    print(f"Using device: {_device}")
+    model = SentenceTransformer(EMBEDDING_MODEL, device=_device)
     model.max_seq_length = 512
     actual_dim = model.get_sentence_embedding_dimension()
     if actual_dim != EMBEDDING_DIM:

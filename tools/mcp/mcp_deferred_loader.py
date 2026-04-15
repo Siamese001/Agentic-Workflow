@@ -1,9 +1,9 @@
 """
-Shared MCP deferred resource loader.
+Shared deferred resource loader.
 
-Heavy resources (embedding models, gRPC tracers, database connections) MUST NOT
-block the MCP stdio handshake. This module provides a standardized pattern for
-lazy-loading expensive resources on first use, with timeout protection.
+Heavy resources must not block the MCP stdio handshake. This loader starts work
+in a daemon thread and lets callers wait for a bounded period. It is suitable
+for lazy model and database client initialization.
 """
 
 from __future__ import annotations
@@ -17,24 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class DeferredLoader:
-    """Thread-safe deferred resource loader with bounded caller wait.
+    """Thread-safe deferred loader with bounded wait semantics."""
 
-    Design:
-    - The factory runs in a daemon thread so a stuck load cannot block process exit.
-    - Callers wait on an Event with a bounded timeout.
-    - The first caller starts background load and may optionally wait up to timeout.
-    - Subsequent callers either get the cached value instantly or time out cleanly.
-    - ``get(wait_timeout=0)`` is a true non-blocking kickoff — starts the factory
-      in background and returns None immediately without waiting.
-    - ``call_serialized()`` provides single-flight access to the loaded resource for
-      callers that need to avoid concurrent use of a non-thread-friendly object.
-
-    Important limitation:
-    - Python cannot safely cancel an in-flight thread. When a serialized call times
-      out, this loader keeps the single-flight lock held until the worker thread
-      actually exits. That prevents cascading concurrent calls against the same
-      resource and avoids poisoning a permanent worker thread.
-    """
+    _QUARANTINE_RELEASE_TIMEOUT: float = 5.0
 
     def __init__(
         self,
@@ -52,11 +37,10 @@ class DeferredLoader:
         self._loading = False
         self._last_error: BaseException | None = None
         self._worker: threading.Thread | None = None
-
         self._call_lock = threading.Lock()
 
     def get(self, wait_timeout: float | None = None) -> Any | None:
-        """Return the resource, loading on first call. Always bounded."""
+        """Return the resource, loading on first call."""
         if self._result:
             return self._result[0]
 
@@ -108,7 +92,7 @@ class DeferredLoader:
         queue_wait_timeout: float | None = None,
         op_name: str | None = None,
     ) -> Any:
-        """Run fn(resource) under a single-flight lock with timeout-aware quarantine."""
+        """Run fn(resource) under a single-flight lock with bounded wait."""
         resource = self.get(wait_timeout=wait_timeout)
         effective_op_name = op_name or f"{self.name}-serialized-call"
 
@@ -138,7 +122,7 @@ class DeferredLoader:
         def _worker() -> None:
             try:
                 result_q.put((True, fn(resource)))
-            except BaseException as exc:  # guardian: allow-broad-except -- worker boundary
+            except BaseException as exc:  # guardian: allow-broad-except
                 result_q.put((False, exc))
 
         worker = threading.Thread(
@@ -157,7 +141,8 @@ class DeferredLoader:
             ok, payload = result_q.get(timeout=effective_call_timeout)
         except queue.Empty as exc:
             logger.warning(
-                "DEFERRED_SERIAL_CALL_TIMEOUT: %s — no result after %.1fs; quarantining subsequent calls until worker exits",
+                "DEFERRED_SERIAL_CALL_TIMEOUT: %s — no result after %.1fs; quarantining "
+                "subsequent calls until worker exits or bounded release fires",
                 effective_op_name,
                 effective_call_timeout,
             )
@@ -170,12 +155,19 @@ class DeferredLoader:
         raise payload  # type: ignore[misc]
 
     def _release_lock_when_done(self, worker: threading.Thread, op_name: str) -> None:
-        """Release the single-flight lock only after the timed-out worker actually exits."""
+        """Release the single-flight lock after worker exit or bounded wait."""
 
         def _releaser() -> None:
-            worker.join()
+            worker.join(timeout=self._QUARANTINE_RELEASE_TIMEOUT)
+            if worker.is_alive():
+                logger.warning(
+                    "DEFERRED_SERIAL_CALL_FORCE_RELEASE: %s worker still running after %.0fs — "
+                    "releasing lock to unblock subsequent calls",
+                    op_name,
+                    self._QUARANTINE_RELEASE_TIMEOUT,
+                )
             self._call_lock.release()
-            logger.info("DEFERRED_SERIAL_CALL_RELEASED: %s finished after timeout", op_name)
+            logger.info("DEFERRED_SERIAL_CALL_RELEASED: %s lock released", op_name)
 
         threading.Thread(
             target=_releaser,
@@ -184,7 +176,6 @@ class DeferredLoader:
         ).start()
 
     def _run_factory(self) -> None:
-        """Run the factory in a daemon thread and publish result/error."""
         try:
             value = self._factory()
             self._result[:] = [value]
@@ -195,7 +186,7 @@ class DeferredLoader:
         except (RuntimeError, OSError, ValueError) as exc:
             self._last_error = exc
             logger.error("DEFERRED_LOAD_FAIL: %s — %s", self.name, exc)
-        except BaseException as exc:  # guardian: allow-broad-except -- daemon thread must not crash silently
+        except BaseException as exc:  # guardian: allow-broad-except
             self._last_error = exc
             logger.exception("DEFERRED_LOAD_FAIL: %s — unexpected error", self.name)
         finally:
@@ -203,25 +194,19 @@ class DeferredLoader:
             self._ready.set()
 
     def is_loaded(self) -> bool:
-        """Check if the resource has been loaded without triggering a load."""
         return bool(self._result)
 
     def is_loading(self) -> bool:
-        """Check if a background load attempt is currently running."""
         return self._loading
 
     def require(self) -> Any:
-        """Return the resource or raise RuntimeError with a helpful message."""
         value = self.get()
         if value is not None:
             return value
-
         if self._loading:
             raise RuntimeError(
                 f"{self.name} still loading — retry shortly and check stderr for DEFERRED_LOAD logs"
             )
-
         if self._last_error is not None:
             raise RuntimeError(f"{self.name} unavailable — last error: {self._last_error}")
-
         raise RuntimeError(f"{self.name} unavailable — check server logs (stderr) for DEFERRED_LOAD errors")

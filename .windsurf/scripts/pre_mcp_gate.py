@@ -225,6 +225,31 @@ def _increment_memory_block_attempts() -> int:
         return MAX_MEMORY_BLOCK_ATTEMPTS  # fail-open: treat counter as exhausted
 
 
+def _mark_memory_recalled() -> None:
+    """Set memory_recalled=True and reset block counter in session state."""
+    try:
+        state = _read_session_state()
+        state["memory_recalled"] = True
+        state["max_memory_block_attempts"] = 0
+        SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
+        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+    except (OSError, json.JSONDecodeError):
+        pass  # fail-open: worst case we block again next call
+
+
+# Recovery/health tools across ALL servers that should never be blocked
+# by the memory-first gate. These are precondition-free probes.
+_MEMORY_GATE_EXEMPT_TOOLS: set[str] = (
+    ADG_RECOVERY_TOOLS
+    | PYTEST_RECOVERY_TOOLS
+    | REDIS_RECOVERY_TOOLS
+    | MEMORY_RECOVERY_TOOLS
+    | TASK_MANAGER_RECOVERY_TOOLS
+    | VECTOR_DB_RECOVERY_TOOLS
+    | OTEL_MCP_RECOVERY_TOOLS
+)
+
+
 def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     """
     Hard gate: block non-memory MCP tool calls until mem_recall_session_start
@@ -233,9 +258,12 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     Rules (checked in order):
     1. memory server calls always pass — never deadlock recall itself.
     1a. filesystem read tools always pass — pure stateless reads need no session context.
+    1b. Recovery/health tools on any MCP server always pass — these are
+        precondition-free probes and must not consume retry budget.
     2. memory_recalled=True in session state → gate satisfied, allow.
-    3. Memory MCP unhealthy → degrade-open to avoid full-system blockage.
-    4. max_memory_block_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS → degrade-open.
+    3. Memory MCP unhealthy → degrade-open (auto-mark recalled) to avoid blockage.
+    4. max_memory_block_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS → degrade-open
+       (auto-mark recalled) to prevent permanent blocking.
     5. Otherwise: increment attempt counter and block with redirect message.
 
     Return 0 (allow) or 2 (block).
@@ -249,6 +277,11 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     if server_name == FILESYSTEM_SERVER_NAME and tool_name not in FILESYSTEM_WRITE_TOOLS:
         return 0
 
+    # Rule 1b: never block recovery/health tools on any server — these are
+    # precondition-free probes and blocking them wastes retry budget on non-work.
+    if tool_name in _MEMORY_GATE_EXEMPT_TOOLS:
+        return 0
+
     state = _read_session_state()
 
     # Rule 2: memory already recalled this session — gate satisfied.
@@ -258,9 +291,11 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     # Rule 3: degrade-open if memory MCP is unhealthy (SQLite inaccessible)
     if check_memory_gate(REPO_ROOT) != 0:
         print(
-            "[pre_mcp_gate] memory-first gate: memory MCP unhealthy — degrading to open.",
+            "[pre_mcp_gate] memory-first gate: memory MCP unhealthy — degrading to open "
+            "(auto-marking recalled to prevent retry burn).",
             file=sys.stderr,
         )
+        _mark_memory_recalled()
         return 0
 
     # Rule 4: degrade-open after too many consecutive blocks (prevent infinite loop)
@@ -268,9 +303,11 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
     if current_attempts >= MAX_MEMORY_BLOCK_ATTEMPTS:
         print(
             f"[pre_mcp_gate] memory-first gate: max_memory_block_attempts={current_attempts} "
-            f">= {MAX_MEMORY_BLOCK_ATTEMPTS} — degrading to open.",
+            f">= {MAX_MEMORY_BLOCK_ATTEMPTS} — degrading to open "
+            "(auto-marking recalled to prevent further blocking).",
             file=sys.stderr,
         )
+        _mark_memory_recalled()
         return 0
 
     # Rule 5: block and redirect

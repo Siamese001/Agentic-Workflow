@@ -33,6 +33,31 @@ Unified skill that consolidates `dependency-graph-analysis`, `scope-guard`, and 
 `grep_search` is ONLY permitted for literal string searches (TODOs, comments, non-Python content).
 For ALL dependency analysis: `mcp1_adg_nodes_by_file` → `mcp1_adg_edge_fanin` / `mcp1_adg_edge_fanout`.
 
+## Module→Symbol Auto-Expansion Protocol
+
+**AFTER `adg_nodes_by_file` returns nodes for a file, expand to symbol-level fan-in:**
+
+```
+Step 1: nodes = mcp1_adg_nodes_by_file(file_path="path/to/file.py")
+Step 2: Separate nodes into:
+         - module_nodes: entity_type="module"
+         - symbol_nodes: entity_type="symbol" OR identity_kind="inferred_symbol"
+Step 3: Run fan-in on EACH node:
+         - mcp1_adg_edge_fanin(tgt_id=<module_node_id>, relation_type="imports")
+           → catches file-level imports (from X import Y, import X)
+         - mcp1_adg_edge_fanin(tgt_id=<symbol_node_id>, relation_type="imports")
+           → catches name-level imports (from X import SpecificClass)
+Step 4: Merge all fan-in results — deduplicate by source node ID
+```
+
+**Why this matters:** A module-only fan-in query misses callers that import specific
+symbols (e.g., `from mcp_deferred_loader import DeferredLoader`). The symbol-level
+expansion catches these name-level references that the module node alone misses.
+
+**When to use:** Any dependency/consumer/blast-radius query on a file with exported
+symbols. Skip expansion only for leaf files with no public API (e.g., `__init__.py`
+re-exports, config files).
+
 ## Files
 
 - **`tool_routing_decision_tree.md`** — **START HERE.** Concrete decision tree for ADG MCP vs grep_search routing (per OpenDev §3.2)
@@ -138,7 +163,26 @@ Justification (if create): <why no existing symbol is suitable>
 **Edge Classes**: <types of edges found>
 **Boundary/Cycle Findings**: <any layer violations or cycles>
 **Scope Justification**: <reason each file is included>
+**Backend Provenance**: <redis_cache | sqlite | degraded_grep>
 ```
+
+## Backend Provenance Reporting
+
+**Every ADG-backed answer MUST include `backend_used` provenance.**
+
+ADG MCP responses include a `backend_used` field in their metadata:
+- **`redis_cache`** — Result served from Redis hot cache (fast path, ~75ms)
+- **`sqlite`** — Result served from canonical SQLite (fallback, ~200ms)
+- **`degraded_grep`** — ADG was unavailable; grep used with `DEGRADED_FALLBACK` reason
+
+**Reporting format** (include in any ADG analysis output):
+```
+ADG Provenance: backend_used=<redis_cache|sqlite|degraded_grep>, query_count=<N>, cache_hits=<M>
+```
+
+**Why this matters:** Provenance makes the data source visible. If all queries
+fall back to SQLite, it signals Redis cache needs warming. If degraded_grep
+appears, it flags an ADG health issue requiring `/mcp-failure-rca`.
 
 ## Constitutional Requirements Enforced
 

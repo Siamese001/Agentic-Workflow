@@ -1,0 +1,150 @@
+"""Embedding runtime for the retrieval service."""
+
+from __future__ import annotations
+
+import logging
+import os
+import threading
+from typing import Any
+
+from tools.mcp.mcp_deferred_loader import DeferredLoader
+
+from .vector_config import (
+    ALLOW_MODEL_DOWNLOAD,
+    DEFAULT_EMBEDDING_MODEL,
+    EMBEDDING_QUEUE_WAIT_TIMEOUT,
+    KNOWN_MODEL_DIMS,
+    MODEL_LOAD_TIMEOUT,
+)
+from .vector_errors import VectorUnavailableError
+
+logger = logging.getLogger("vector_service")
+
+
+class EmbeddingRuntime:
+    """Owns model lifecycle and embedding calls for retrieval workloads."""
+
+    def __init__(
+        self,
+        *,
+        model_name: str = DEFAULT_EMBEDDING_MODEL,
+        allow_model_download: bool = ALLOW_MODEL_DOWNLOAD,
+        model_load_timeout: float = MODEL_LOAD_TIMEOUT,
+        queue_wait_timeout: float = EMBEDDING_QUEUE_WAIT_TIMEOUT,
+        model_override: Any | None = None,
+    ) -> None:
+        self.model_name = model_name
+        self.allow_model_download = allow_model_download
+        self.model_load_timeout = model_load_timeout
+        self.queue_wait_timeout = queue_wait_timeout
+        self._model_override = model_override
+        self._encode_lock = threading.Lock()
+        self._loader = DeferredLoader(
+            "embedding-model",
+            self._load_model,
+            timeout=self.model_load_timeout,
+        )
+
+    @property
+    def model_override(self) -> Any | None:
+        return self._model_override
+
+    @model_override.setter
+    def model_override(self, value: Any | None) -> None:
+        self._model_override = value
+
+    def is_loaded(self) -> bool:
+        return self._model_override is not None or self._loader.is_loaded()
+
+    def is_loading(self) -> bool:
+        if self._model_override is not None:
+            return False
+        return self._loader.is_loading()
+
+    def ensure_ready(self) -> Any:
+        if self._model_override is not None:
+            return self._model_override
+        model = self._loader.get(wait_timeout=self.model_load_timeout)
+        if model is None:
+            if self._loader.is_loading():
+                raise VectorUnavailableError(
+                    "Embedding model is still initializing. Retry shortly and check stderr for DEFERRED_LOAD logs."
+                )
+            raise VectorUnavailableError("Embedding model is unavailable.")
+        return model
+
+    def get_dimension(self) -> int | None:
+        if not self.is_loaded():
+            return None
+        model = self.ensure_ready()
+        get_dim = getattr(model, "get_sentence_embedding_dimension", None)
+        if callable(get_dim):
+            try:
+                return int(get_dim())
+            except (TypeError, ValueError):
+                return None
+        return KNOWN_MODEL_DIMS.get(self.model_name)
+
+    def encode(self, texts: list[str], *, batch_size: int | None = None) -> Any:
+        if not texts:
+            raise VectorUnavailableError("No texts supplied for embedding.")
+        model = self.ensure_ready()
+        acquired = self._encode_lock.acquire(timeout=max(self.queue_wait_timeout, 0.0))
+        if not acquired:
+            raise VectorUnavailableError(
+                f"embedding-model busy — could not start after waiting {self.queue_wait_timeout:.1f}s"
+            )
+        try:
+            kwargs: dict[str, Any] = {}
+            if batch_size is not None:
+                kwargs["batch_size"] = batch_size
+            return model.encode(texts, **kwargs)
+        finally:
+            self._encode_lock.release()
+
+    def _load_model(self) -> Any:
+        _old_tqdm_disable = os.environ.get("TQDM_DISABLE")
+        os.environ["TQDM_DISABLE"] = "1"
+        try:
+            from sentence_transformers import SentenceTransformer
+        finally:
+            if _old_tqdm_disable is None:
+                os.environ.pop("TQDM_DISABLE", None)
+            else:
+                os.environ["TQDM_DISABLE"] = _old_tqdm_disable
+
+        if not self.allow_model_download:
+            os.environ["HF_HUB_OFFLINE"] = "1"
+
+        import time
+
+        t0 = time.monotonic()
+        try:
+            model = SentenceTransformer(self.model_name, local_files_only=True)
+            logger.info(
+                "MODEL_LOAD_CACHE: model=%r loaded from local cache in %.2fs",
+                self.model_name,
+                time.monotonic() - t0,
+            )
+            return model
+        except (OSError, ValueError):
+            if not self.allow_model_download:
+                logger.error(
+                    "MODEL_LOAD_BLOCKED: model=%r not in local cache and VECTOR_DB_ALLOW_MODEL_DOWNLOAD=0",
+                    self.model_name,
+                )
+                raise RuntimeError(
+                    f"model {self.model_name!r} not in local cache; "
+                    "set VECTOR_DB_ALLOW_MODEL_DOWNLOAD=1 to allow online download"
+                )
+            logger.warning(
+                "MODEL_LOAD_ONLINE: model=%r not in local cache — downloading from HuggingFace",
+                self.model_name,
+            )
+            model = SentenceTransformer(self.model_name)
+            logger.info(
+                "MODEL_LOAD_ONLINE: model=%r download complete in %.2fs",
+                self.model_name,
+                time.monotonic() - t0,
+            )
+            return model
