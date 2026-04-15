@@ -89,7 +89,7 @@ Fetches from `agentic_best_practices` ChromaDB + disk. URL dedup removes content
 python -c "
 import chromadb, json
 c = chromadb.PersistentClient('data/cache/chromadb')
-col = c.get_collection('curated_agent_docs')
+col = c.get_collection('ext_authority')  # or repo_evidence / ext_raw
 r = col.get(limit=3, include=['metadatas'])
 for m in r['metadatas']:
     print(json.dumps(m, indent=2))
@@ -97,36 +97,35 @@ print('Total:', col.count(), 'docs')
 "
 ```
 
-**Required fields** (all chunks must have these):
+**Required fields** (all chunks must have these — Wave B2 contract):
 
-| Field             | Expected values / type                |
-|-------------------|---------------------------------------|
-| `canonical`       | `True` (all curated sources are canonical) |
-| `authority_level` | float 0.7–1.0                         |
-| `topic_bucket`    | one of: arch_standards, orchestration, rag_retrieval, safety_eval, observability, tool_contracts |
-| `doc_family`      | one of: adr, standard, guide, reference |
-| `source_url`      | non-empty string (local path or https URL) |
-| `heading_path`    | section breadcrumb or "no-headings"   |
-| `chunk_index`     | int ≥ 0                               |
+| Field                      | Expected values / type                |
+|----------------------------|---------------------------------------|
+| `source_collection`        | `"ext_authority"` \| `"repo_evidence"` \| `"ext_raw"` |
+| `source_band`              | `"target_state_authority"` \| `"supporting_guidance"` \| `"repo_canonical"` \| `"repo_implementation"` \| `"unvetted"` |
+| `authority_tier`           | `"T2_standard"` \| `"T3_guidance"` \| `"T4_repo_canonical"` \| `"T4_implementation_evidence"` \| `"T5_unvetted"` |
+| `normative_scope`          | `"external_authority"` \| `"repo_internal"` \| `"unvetted"` |
+| `invalid_for_normative_use`| `True` \| `False` |
+| `source_url`               | `https://` URL (ext_authority) or repo-relative path (repo_evidence) |
+| `heading_path`             | section breadcrumb or `"no-headings"` |
+| `chunk_index`              | int ≥ 0 |
 
 ### 3b. Automated metadata audit
 
 ```bash
 python -c "
-import chromadb
+import chromadb, sys
 c = chromadb.PersistentClient('data/cache/chromadb')
-col = c.get_collection('curated_agent_docs')
-r = col.get(include=['metadatas'])
-required = {'canonical','authority_level','topic_bucket','doc_family','source_url','heading_path','chunk_index'}
-missing_any = [m for m in r['metadatas'] if not required.issubset(m.keys())]
-non_canonical = [m for m in r['metadatas'] if not m.get('canonical')]
-low_auth = [m for m in r['metadatas'] if float(m.get('authority_level', 0)) < 0.70]
-print(f'Total: {len(r[\"metadatas\"])} | Missing fields: {len(missing_any)} | Non-canonical: {len(non_canonical)} | Low authority: {len(low_auth)}')
-# All three should be 0 for a healthy collection.
+required = {'source_collection','source_band','authority_tier','normative_scope','invalid_for_normative_use','source_url','heading_path','chunk_index'}
+for cname in ('ext_authority', 'repo_evidence', 'ext_raw'):
+    col = c.get_collection(cname)
+    r = col.get(include=['metadatas'])
+    missing = [m for m in r['metadatas'] if not required.issubset(m.keys())]
+    print(f'{cname}: {col.count()} docs | Missing fields: {len(missing)}')
 "
 ```
 
-**Healthy output**: `Missing fields: 0 | Non-canonical: 0 | Low authority: 0`
+**Healthy output**: `Missing fields: 0` for each collection.
 
 ---
 
@@ -184,12 +183,12 @@ python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports
 **Fix**: Remove the duplicate entry from `EXT_AUTHORITY_SOURCES` or `REPO_CANONICAL_SOURCES`. The `collapse_group` field documents intentional clusters.
 
 ### F3: Redundancy rate > 0.5 in eval
-**Symptom**: `redundancy_rate` column > 0.50 for `curated_agent_docs` in eval report.  
+**Symptom**: `redundancy_rate` column > 0.50 for `ext_authority` in eval report.  
 **Cause**: Multiple sources pointing to the same URL, or very large documents producing many chunks from one source dominating top-K.  
 **Fix**: Check for duplicate paths in `EXT_AUTHORITY_SOURCES`. Consider adding a `max_chunks_per_source` guard in `ingest_ext_authority.py`.
 
-### F4: Canonical hit rate drops below 1.0
-**Symptom**: `canonical_hit_rate` < 1.000 for `curated_agent_docs`.  
+### F4: Normative-use gate incorrect
+**Symptom**: `invalid_for_normative_use=True` chunks appearing in normative bundles for `ext_authority`.  
 **Cause**: A source was added to CURATED_SOURCES with `canonical=False`.  
 **Fix (Wave B2)**: All ext_authority sources are normative by construction (`invalid_for_normative_use=False`). Remove any source with mismatched `source_band` or add it to the excluded section.
 
@@ -201,9 +200,9 @@ python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports
 **Fix B**: Check dry-run output for `Required FAIL` entries in `ingest_ext_authority.py`. Restore missing sources.
 
 ### F9: arch_docs_contamination > 0 for normative query classes
-**Symptom**: Section 6 of the v5+ report shows FAIL rows for policy, tooling, or standards queries.  
-**Cause**: arch_docs chunks with `source_collection=arch_docs` appeared in curated_agent_docs top-K. This should be impossible (separate collections) unless the collection was rebuilt from a wrong source.  
-**Fix**: Verify `ext_authority` contains only sources from `EXT_AUTHORITY_SOURCES`. Check that no `repo_evidence` chunks were accidentally ingested into `ext_authority`. Re-run ingestion if necessary.
+**Symptom**: `ext_authority` chunks from repo-evidence or ext_raw appearing in normative bundles.  
+**Fix**: Verify `ext_authority` contains only sources from `EXT_AUTHORITY_SOURCES`. Check that no `repo_evidence` or `ext_raw` chunks were accidentally ingested into `ext_authority`.
+
 
 ### F6: POLICY category wins drop (UWG / C0 / determinism queries)
 **Symptom**: arch_docs starts winning POLICY-01, POLICY-04 consistently.  

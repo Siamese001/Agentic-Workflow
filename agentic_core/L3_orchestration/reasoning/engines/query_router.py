@@ -30,10 +30,10 @@ class QueryRouter:
     def _get_target_collection(topic_domain: str, default_collection: str) -> str:
         """Map a topic domain to the canonical ChromaDB collection name."""
         _domain_to_collection: dict[str, str] = {
-            "policy": "curated_agent_docs",
-            "architecture": "arch_docs",
-            "best_practice": "curated_agent_docs",
-            "tool_contracts": "curated_agent_docs",
+            "policy": "ext_authority",
+            "architecture": "repo_evidence",
+            "best_practice": "ext_authority",
+            "tool_contracts": "ext_authority",
             "code": "code_chunks",
         }
         return _domain_to_collection.get(topic_domain, default_collection)

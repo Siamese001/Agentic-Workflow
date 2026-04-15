@@ -99,7 +99,7 @@ class EvidenceBundle:
 
 def filter_normative_sources(
     results: list[_T],
-    allowed_collections: tuple[str, ...] = ("curated_agent_docs",),
+    allowed_collections: tuple[str, ...] = ("ext_authority",),
     allowed_tiers: tuple[str, ...] = (
         "T1_vendor",
         "T2_standard",

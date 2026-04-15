@@ -95,8 +95,7 @@ ext_raw (Lane E — source_band = "unvetted"):
 | **Internal evidence — implementation** | `repo_evidence` Lane D | `repo_implementation` | **NEVER** | YES | YES |
 | **Explicitly invalid — unvetted** | `ext_raw` Lane E | `unvetted` | **NEVER** | **NO** | **NO** |
 
-`ext_knowledge` (raw web scrapes) is also **not approved normative** — it is unvetted and uncurated.
-Only `curated_agent_docs` web sources that pass the curation rubric (`score ≥ 0.85`, `required = True`) qualify as normative.
+`ext_raw` (Lane E) is **not approved normative** — it is unvetted and uncurated. Only `ext_authority` sources (Lane A/B) with `invalid_for_normative_use=False` qualify as normative.
 
 ---
 
@@ -117,8 +116,8 @@ Only `curated_agent_docs` web sources that pass the curation rubric (`score ≥ 
 
 ### Retrieval policy matrix
 
-| Query class | `curated_agent_docs` | `arch_docs` | `ext_knowledge` | `code_chunks` |
-|-------------|---------------------|-------------|----------------|--------------|
+| Query class | `ext_authority` | `repo_evidence` | `ext_raw` | `code_chunks` |
+|-------------|----------------|-----------------|-----------|---------------|
 | `normative_req` | ✅ REQUIRED | ❌ EXCLUDED | ❌ EXCLUDED | ❌ |
 | `policy` | ✅ REQUIRED | ❌ EXCLUDED | ❌ EXCLUDED | ❌ |
 | `best_practice` | ✅ REQUIRED | ❌ EXCLUDED | ❌ EXCLUDED | ❌ |
@@ -153,8 +152,8 @@ Only `curated_agent_docs` web sources that pass the curation rubric (`score ≥ 
 \bagentic\s+(policy|rule|constraint)\b
 ```
 
-**Routing**: `"policy"` → `curated_agent_docs` (same path as `best_practice` and `tool_contracts`).
-`arch_docs` is never a valid target for `policy` class queries.
+**Routing**: `"policy"` → `ext_authority` (same path as `best_practice` and `tool_contracts`).
+`repo_evidence` and `ext_raw` are never valid targets for `policy` class queries.
 
 ---
 

@@ -1,4 +1,4 @@
-"""Retrieval quality benchmark: arch_docs vs ext_knowledge vs curated_agent_docs.
+"""Retrieval quality benchmark: repo_evidence vs ext_raw vs ext_authority.
 
 Runs 40 golden queries across 8 categories, computes 9 metrics per query per
 collection, identifies worst 10 queries, and emits a markdown report.
@@ -30,7 +30,7 @@ EMBEDDING_MODEL = "BAAI/bge-m3"
 RELEVANCE_THRESH = 0.50
 HIGH_REL_THRESH = 0.35
 
-COLLECTIONS = ["arch_docs", "ext_knowledge", "curated_agent_docs"]
+COLLECTIONS = ["repo_evidence", "ext_raw", "ext_authority"]
 
 # Query categories that require normative authority (arch_docs must NOT appear in curated top-K)
 _NORMATIVE_CATS: frozenset[str] = frozenset({"policy", "tooling", "standards"})

@@ -139,7 +139,7 @@ def collect_from_chroma(chroma_path: str) -> tuple[list[dict], int, int]:
     client = chromadb.PersistentClient(path=chroma_path)
     try:
         src_col = client.get_collection(SOURCE_COLLECTION)
-    except ValueError as exc:
+    except (ValueError, chromadb.errors.NotFoundError) as exc:
         print(f"  [{SOURCE_COLLECTION}] collection not found ({exc}) — skipping")
         return [], 0, 0
 
@@ -405,7 +405,7 @@ def run(store_path: Path, dry_run: bool = False) -> None:
     print(f"After dedup: {len(ids)} unique documents")
 
     total = len(ids)
-    reporter = ProgressReporter(total=total, label="Embedding + upserting ext_knowledge")
+    reporter = ProgressReporter(total=total, label="Embedding + upserting ext_raw")
     t0 = time.time()
 
     for batch_start in range(0, total, BATCH_SIZE):
