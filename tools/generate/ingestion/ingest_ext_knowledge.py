@@ -1,29 +1,38 @@
-"""Ingest external knowledge into the canonical `ext_knowledge` ChromaDB collection.
+"""Wave B2 ingestion — ext_raw ChromaDB collection.
+
+Status  : Active (Wave B2) — replaces ext_knowledge collection.
+See     : docs/requirements/wave_b_chromadb_topology.md
+          docs/requirements/wave_b_metadata_contract.md
+
+Ingest unvetted scraped web content into the ``ext_raw`` collection (Lane E).
 
 Sources:
   1. agentic_best_practices (ChromaDB) — web-scraped external docs
        Domains: nvlpubs.nist.gov, huggingface.co, microsoft.github.io,
                 www.paulgraham.com, python.langchain.com, modelcontextprotocol.io,
                 docs.trychroma.com, docs.anthropic.com, etc.
-       Filter: skip any doc containing 'Loading...' (SPA-render failure)
-               skip any doc with body < MIN_BODY_CHARS (empty/stub)
+       Filter: skip docs whose source_url already appears in ext_authority (URL dedup).
+               skip any doc containing 'Loading...' (SPA-render failure).
+               skip any doc with body < MIN_BODY_CHARS (empty/stub).
 
   2. docs/external/ — markdown files (VSCodium extension docs)
 
   3. data/external/ — markdown + YAML + JSON files
-       data/external/openai_best_practices/api_optimization_guide.md
-       data/external/reference_playbooks/*.yaml, *.md, *.json
 
 Explicitly excluded:
   - agentic_best_practices_semantic (does not exist — confirmed absent)
   - healing_contexts_corpus.jsonl   (content-hash only, no doc body — quarantined)
+  - Any URL already present in ext_authority (deduped at run() start)
   - Any doc body containing 'Loading...' repeated pattern
+
+Metadata: Wave B Lane E fields — source_band=unvetted, authority_tier=T5_unvetted,
+          invalid_for_normative_use=True for all chunks.
 
 Usage:
     python tools/generate/ingestion/ingest_ext_knowledge.py [--store-path PATH] [--dry-run]
 
 Embedding: BAAI/bge-m3 (1024-dim, L2-normalized, cosine)
-Collection: ext_knowledge  hnsw:space=cosine
+Collection: ext_raw  hnsw:space=cosine
 """
 
 from __future__ import annotations
@@ -49,8 +58,17 @@ from tqdm import tqdm
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CANONICAL_STORE = REPO_ROOT / "data" / "cache" / "chromadb"
-COLLECTION_NAME = "ext_knowledge"
+COLLECTION_NAME = "ext_raw"
 SOURCE_COLLECTION = "agentic_best_practices"
+
+# Wave B Lane E metadata constants
+_WAVE_B_EXT_RAW_FIELDS: dict = {
+    "source_collection": "ext_raw",
+    "source_band": "unvetted",
+    "authority_tier": "T5_unvetted",
+    "normative_scope": "unvetted",
+    "invalid_for_normative_use": True,
+}
 EMBEDDING_MODEL = "BAAI/bge-m3"
 EMBEDDING_DIM = 1024
 BATCH_SIZE = 256
@@ -161,7 +179,7 @@ def collect_from_chroma(chroma_path: str) -> tuple[list[dict], int, int]:
                 {
                     "text": doc,
                     "metadata": {
-                        "artifact_type": "ext_knowledge",
+                        "artifact_type": "ext_raw",
                         "doc_type": "web",
                         "domain": domain,
                         "source_url": source_url,
@@ -170,6 +188,18 @@ def collect_from_chroma(chroma_path: str) -> tuple[list[dict], int, int]:
                         "layer": "ext",
                         "canonical_digest": canonical_digest,
                         "source": "agentic_best_practices",
+                        "source_collection": _WAVE_B_EXT_RAW_FIELDS["source_collection"],
+                        "source_band": _WAVE_B_EXT_RAW_FIELDS["source_band"],
+                        "authority_tier": _WAVE_B_EXT_RAW_FIELDS["authority_tier"],
+                        "normative_scope": _WAVE_B_EXT_RAW_FIELDS["normative_scope"],
+                        "invalid_for_normative_use": _WAVE_B_EXT_RAW_FIELDS["invalid_for_normative_use"],
+                        "topic_bucket": "unclassified",
+                        "doc_family": "web",
+                        "heading_path": "no-headings",
+                        "collapse_group": domain,
+                        "title": title[:200] if title else "",
+                        "chunk_index": 0,
+                        "version_or_date": "",
                     },
                     "id_parts": ("web", domain, content_hash[:16]),
                 }
@@ -208,7 +238,7 @@ def collect_from_disk(repo_root: Path) -> list[dict]:
                         {
                             "text": chunk,
                             "metadata": {
-                                "artifact_type": "ext_knowledge",
+                                "artifact_type": "ext_raw",
                                 "doc_type": doc_type,
                                 "domain": "local",
                                 "source_url": "",
@@ -218,6 +248,19 @@ def collect_from_disk(repo_root: Path) -> list[dict]:
                                 "chunk_index": chunk_idx,
                                 "canonical_digest": canonical_digest,
                                 "source": "disk",
+                                "source_collection": _WAVE_B_EXT_RAW_FIELDS["source_collection"],
+                                "source_band": _WAVE_B_EXT_RAW_FIELDS["source_band"],
+                                "authority_tier": _WAVE_B_EXT_RAW_FIELDS["authority_tier"],
+                                "normative_scope": _WAVE_B_EXT_RAW_FIELDS["normative_scope"],
+                                "invalid_for_normative_use": _WAVE_B_EXT_RAW_FIELDS[
+                                    "invalid_for_normative_use"
+                                ],
+                                "topic_bucket": "unclassified",
+                                "doc_family": doc_type,
+                                "heading_path": "no-headings",
+                                "collapse_group": dir_rel,
+                                "title": f.stem,
+                                "version_or_date": "",
                             },
                             "id_parts": (rel_path, str(chunk_idx)),
                         }
@@ -247,6 +290,38 @@ def validate_dim(embeddings: list[list[float]], expected: int = EMBEDDING_DIM) -
             )
 
 
+def _load_ext_authority_urls(store_path: Path) -> set[str]:
+    """Load source_url values from ext_authority for URL dedup (ext_raw skips these)."""
+    try:
+        import chromadb
+
+        client = chromadb.PersistentClient(path=str(store_path))
+        existing = {c.name for c in client.list_collections()}
+        if "ext_authority" not in existing:
+            return set()
+        col = client.get_collection("ext_authority")
+        total = col.count()
+        if total == 0:
+            return set()
+        urls: set[str] = set()
+        offset = 0
+        batch_size = 500
+        while offset < total:
+            r = col.get(limit=batch_size, offset=offset, include=["metadatas"])
+            metas = r.get("metadatas") or []
+            for m in metas:
+                url_val = m.get("source_url") if m else None
+                if isinstance(url_val, str) and url_val:
+                    urls.add(url_val)
+            offset += len(metas)
+            if not metas:
+                break
+        return urls
+    except (ValueError, ImportError, RuntimeError) as exc:
+        print(f"  [ext_authority dedup] Warning: could not load URLs — {exc}", file=sys.stderr)
+        return set()
+
+
 def run(store_path: Path, dry_run: bool = False) -> None:
     try:
         from sentence_transformers import SentenceTransformer
@@ -271,14 +346,22 @@ def run(store_path: Path, dry_run: bool = False) -> None:
         raise RuntimeError(f"Model dim mismatch: got {actual_dim}, expected {EMBEDDING_DIM}")
     print(f"Model loaded. dim={actual_dim}")
 
-    print("Collecting external knowledge documents ...")
+    print("Loading ext_authority URLs for dedup ...")
+    ext_authority_urls = _load_ext_authority_urls(store_path)
+    print(f"  ext_authority URL dedup set: {len(ext_authority_urls)} URLs")
+
+    print("Collecting ext_raw documents ...")
     chroma_docs, total_read, garbage_skipped = collect_from_chroma(str(store_path))
     print(
         f"  [{SOURCE_COLLECTION}] total_read={total_read} garbage_skipped={garbage_skipped} clean={len(chroma_docs)}"
     )
     disk_docs = collect_from_disk(REPO_ROOT)
-    all_docs = chroma_docs + disk_docs
-    print(f"Total collected: {len(all_docs)} documents")
+    all_docs_raw = chroma_docs + disk_docs
+
+    # URL dedup: remove any document whose source_url is already in ext_authority
+    all_docs = [d for d in all_docs_raw if not d["metadata"].get("source_url") in ext_authority_urls]
+    dedup_removed = len(all_docs_raw) - len(all_docs)
+    print(f"Total collected: {len(all_docs)} documents (ext_authority dedup removed {dedup_removed})")
 
     if dry_run:
         print(f"DRY RUN — stopping before Chroma write. garbage_filtered={garbage_skipped}")
@@ -296,9 +379,13 @@ def run(store_path: Path, dry_run: bool = False) -> None:
             name=COLLECTION_NAME,
             metadata={
                 "hnsw:space": "cosine",
-                "description": "Canonical external knowledge: NIST, HuggingFace, LangChain, MCP, Paul Graham, ChromaDB docs, on-disk playbooks",
+                "description": (
+                    "Wave B Lane E: unvetted scraped external knowledge. "
+                    "source_band=unvetted, invalid_for_normative_use=True for all chunks."
+                ),
                 "embedding_model": EMBEDDING_MODEL,
                 "embedding_dim": EMBEDDING_DIM,
+                "wave": "B2",
             },
         )
         print(f"Created collection '{COLLECTION_NAME}'")
@@ -336,11 +423,14 @@ def run(store_path: Path, dry_run: bool = False) -> None:
     reporter.done()
     elapsed = time.time() - t0
     print(f"\nDone. collection='{COLLECTION_NAME}' count={collection.count()} elapsed={elapsed:.1f}s")
-    print(f"Garbage excluded: {garbage_skipped} Loading.../short-body docs from {SOURCE_COLLECTION}")
+    print(
+        f"Garbage excluded: {garbage_skipped} Loading.../short-body docs from {SOURCE_COLLECTION}. "
+        f"ext_authority dedup removed: {dedup_removed}."
+    )
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Ingest ext_knowledge into canonical Chroma store")
+    parser = argparse.ArgumentParser(description="Wave B2: Ingest unvetted web scrapes into ext_raw")
     parser.add_argument(
         "--store-path",
         type=Path,

@@ -24,22 +24,27 @@ ROOT = _discover_repo_root(Path(__file__).resolve().parent)
 
 
 def _is_file_locked(filepath: Path) -> bool:
-    """Check if file is locked (Windows only).
+    """Check if a file can be deleted (Windows only).
 
-    Returns True if file cannot be opened exclusively.
+    Tests DELETE access rather than GENERIC_WRITE.  SQLite WAL-mode opens the
+    main database without FILE_SHARE_DELETE, so any opener lacking that flag
+    will block a DELETE-access request — which is exactly what unlink() needs.
+    GENERIC_WRITE + FILE_SHARE_READ|WRITE succeeds even on an open SQLite file
+    because share modes are compatible; DELETE access correctly fails.
+    Returns True if the file cannot be deleted (locked or inaccessible).
     """
     if os.name != "nt":
         return False
     try:
         import ctypes
 
-        GENERIC_WRITE = 0x40000000
+        DELETE_ACCESS = 0x00010000
         FILE_SHARE_READ = 0x00000001
         FILE_SHARE_WRITE = 0x00000002
         OPEN_EXISTING = 3
         handle = ctypes.windll.kernel32.CreateFileW(
             str(filepath),
-            GENERIC_WRITE,
+            DELETE_ACCESS,
             FILE_SHARE_READ | FILE_SHARE_WRITE,
             None,
             OPEN_EXISTING,
@@ -47,7 +52,7 @@ def _is_file_locked(filepath: Path) -> bool:
             None,
         )
         if handle == ctypes.c_void_p(-1).value:
-            return True  # Another process holds an exclusive write lock
+            return True  # Delete access denied — another opener lacks FILE_SHARE_DELETE
         ctypes.windll.kernel32.CloseHandle(handle)
         return False
     except (
@@ -89,7 +94,7 @@ def _check_locked_files(adg_dir: Path | None = None) -> None:
         if not adg_dir.exists():
             print("[ADG] No ADG artifact directory found; skipping lock check")
             return
-        sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
+        sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite")) + list(adg_dir.glob("adg_graph_*.sqlite"))
         locked_count = 0
         locked_files_list = []
 

@@ -1,3 +1,9 @@
+# RETIRED — Wave B2 (see docs/requirements/wave_b_chromadb_topology.md)
+# Web sources  → tools/generate/ingestion/ingest_ext_authority.py  (ext_authority collection)
+# Local sources → tools/generate/ingestion/ingest_repo_evidence.py  (repo_evidence collection)
+# Do NOT run this script against Wave B2 ChromaDB stores. Collection curated_agent_docs is
+# superseded by ext_authority (Lane A/B) + repo_evidence (Lane C).
+
 """Ingest a curated high-signal corpus into the ``curated_agent_docs`` ChromaDB collection.
 
 This script is the authoritative entry-point for the curated collection.  It reuses the

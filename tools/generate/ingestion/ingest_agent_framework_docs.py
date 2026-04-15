@@ -1,3 +1,8 @@
+# RETIRED — Wave B2 (see docs/requirements/wave_b_chromadb_topology.md)
+# Absorbed into: tools/generate/ingestion/ingest_ext_authority.py  (Lane B — supporting_guidance)
+# Collection ext_knowledge is superseded by ext_authority + ext_raw in the Wave B2 topology.
+# Do NOT run this script against Wave B2 ChromaDB stores.
+
 """Fetch and ingest agent-framework documentation into ext_knowledge ChromaDB collection.
 
 Targets:

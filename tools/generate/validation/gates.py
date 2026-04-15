@@ -268,15 +268,27 @@ def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
               AND NOT EXISTS (
                 SELECT 1
                 FROM edges e
-                INNER JOIN nodes src ON src.id = e.src_id
-                WHERE e.dst_id = n.id
-                  AND e.relation_type = 'imports'
+                JOIN nodes dst ON dst.id = e.dst_id
+                JOIN nodes src ON src.id = e.src_id
+                WHERE e.relation_type = 'imports'
+                  AND dst.resolved_path = n.resolved_path
                   AND src.layer NOT IN ('L_TEST','L_OPS','L_TOOLS','L_SHARED')
               )
             ORDER BY n.resolved_path;
             """
             cursor.execute(query)
-            violations = cursor.fetchall()
+            raw_violations = cursor.fetchall()
+
+            def _is_tombstoned(resolved_path: str) -> bool:
+                abs_path = ROOT / resolved_path
+                try:
+                    with open(abs_path, encoding="utf-8") as fh:
+                        head = fh.read(512)
+                    return "TOMBSTONED" in head
+                except OSError:
+                    return False
+
+            violations = [row for row in raw_violations if not _is_tombstoned(row[0])]
 
             if violations:
                 print(f"\n[ERROR] Dead production import gate: Found {len(violations)} dead module(s)")

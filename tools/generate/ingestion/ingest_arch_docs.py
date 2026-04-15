@@ -1,3 +1,8 @@
+# RETIRED — Wave B2 (see docs/requirements/wave_b_chromadb_topology.md)
+# Replaced by: tools/generate/ingestion/ingest_repo_evidence.py  (Lane D — repo_implementation)
+# Collection arch_docs is superseded by repo_evidence in the Wave B2 topology.
+# Do NOT run this script against Wave B2 ChromaDB stores.
+
 """Ingest repo architecture/design documents into the canonical `arch_docs` ChromaDB collection.
 
 Sources (in priority order):

@@ -79,8 +79,12 @@ def _connect_redis():
 
 
 def _hset_mapping(pipe: Any, key: str, mapping: dict[str, str]) -> None:
-    """Write a Redis hash using the modern hset(mapping=...) API."""
-    pipe.hset(key, mapping=mapping)
+    """Write a Redis hash compatible with Redis 3.x (HMSET) and Redis 4.x+ (HSET mapping).
+
+    Redis 3.x only supports single-field HSET; multi-field writes require HMSET.
+    hmset() is deprecated in redis-py 4.x but still functional and sends HMSET on the wire.
+    """
+    pipe.hmset(key, mapping)
 
 
 def _flush_old_snapshots(client, current_snapshot_id: str) -> int:

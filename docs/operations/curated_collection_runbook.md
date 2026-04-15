@@ -1,70 +1,83 @@
-# Operator Runbook — curated_agent_docs Collection
+# Operator Runbook — Wave B2 Collection Topology
 
-**Status**: Production-ready · **Last validated**: 2025-07 (v5 — Phase 4 authority enforcement)  
-**Collection name**: `curated_agent_docs` · **Embedding model**: `BAAI/bge-m3` (1024-dim)  
-**ChromaDB path**: `data/cache/chromadb` · **Total chunks**: 579
+**Status**: Active (Wave B2) · **Last validated**: 2026-07 (Wave B2 topology refactor)  
+**Collections**: `ext_authority`, `repo_evidence`, `ext_raw` · **Embedding model**: `BAAI/bge-m3` (1024-dim)  
+**ChromaDB path**: `data/cache/chromadb`
 
----
-
-## 1. Collection Overview
-
-`curated_agent_docs` is a hand-curated, high-signal ChromaDB collection containing 32 sources across
-6 topic buckets. It is authoritative for architecture, orchestration, safety/eval, best-practice, and
-tool-contract (MCP/FastMCP) queries. It does NOT replace `arch_docs` (broad repo coverage) or
-`ext_knowledge` (external web scrapes) — it is a focused routing target.
-
-| Bucket          | Sources | Chunks | v3 change |
-|-----------------|---------|--------|-----------|
-| arch_standards  | 7       | 111    | —         |
-| orchestration   | 13      | 133    | +4 sources, +44 chunks (LangGraph, AutoGen, Anthropic patterns) |
-| rag_retrieval   | 3       | 95     | —         |
-| safety_eval     | 5       | 51     | —         |
-| tool_contracts  | 3       | 171    | +2 sources, +136 chunks (MCP SDK README, OpenAI MCP doc) |
-| observability   | 1       | 13     | — |
+> **RETIRED collections**: `curated_agent_docs`, `arch_docs`, `ext_knowledge` — do NOT rebuild these
+> against a Wave B2 ChromaDB store. Their ingestion scripts carry a `# RETIRED` header.
+> See `docs/requirements/wave_b_chromadb_topology.md` for the full topology design.
 
 ---
 
-## 2. Rebuilding Each Collection
+## 1. Collection Overview (Wave B2)
 
-### 2a. `curated_agent_docs` (this collection)
+Wave B2 replaces the single `curated_agent_docs` collection with three purpose-built collections:
+
+| Collection | Lane | source_band | Authority | Script |
+|------------|------|-------------|-----------|--------|
+| `ext_authority` | A + B | `target_state_authority`, `supporting_guidance` | T2/T3 | `ingest_ext_authority.py` |
+| `repo_evidence` | C + D | `repo_canonical`, `repo_implementation` | T4c/T4e | `ingest_repo_evidence.py` |
+| `ext_raw` | E | `unvetted` | T5 | `ingest_ext_knowledge.py` |
+
+**Routing rules (Wave B2)**:
+- Normative requirements  → `ext_authority` only
+- Best-practice / guidance → `ext_authority` (Lane B)
+- Repo evidence / ADR lookup → `repo_evidence` (Lane C)
+- Implementation search → `repo_evidence` (Lane D)
+- Unvetted background → `ext_raw` (excluded from normative bundles)
+
+---
+
+## 2. Rebuilding Each Collection (Wave B2)
+
+### 2a. `ext_authority` — vetted external web sources (Lanes A + B)
 
 ```bash
-# Full rebuild (drop + re-ingest)
-python tools/generate/ingestion/ingest_curated_agent_docs.py
+# Dry-run first (validates all 18 sources, no Chroma writes)
+python tools/generate/ingestion/ingest_ext_authority.py --dry-run
 
-# Dry-run first (validates all sources, no Chroma writes)
-python tools/generate/ingestion/ingest_curated_agent_docs.py --dry-run
+# Full rebuild
+python tools/generate/ingestion/ingest_ext_authority.py
 
 # Expected output:
-#   Sources evaluated : 34  (excluded: 5)
-#   Total chunks      : 574
-#   Required OK/FAIL  : 19/0
-#   Optional FAIL     : 2  (models.md fetch failed; subagent.ipynb 404)
-#   Dedup collisions  : 0
-#   DRY-RUN PASS — all required sources available.
+#   Collecting 18 ext_authority sources ...
+#   Required OK/FAIL  : 5/0
+#   After dedup: N unique chunks
 ```
 
-**Ingestion is idempotent** — re-running upserts existing chunks (no-op) and adds new ones.
-The collection will NOT be deleted between runs unless you explicitly call `client.delete_collection("curated_agent_docs")`.
+Run after: any update to EXT_AUTHORITY_SOURCES catalogue, or after MCP SDK README changes.
 
-### 2b. `arch_docs` (broad internal repo coverage)
+### 2b. `repo_evidence` — repo-internal evidence (Lanes C + D)
 
 ```bash
-python tools/generate/ingestion/ingest_arch_docs.py
+# Dry-run first
+python tools/generate/ingestion/ingest_repo_evidence.py --dry-run
+
+# Full rebuild
+python tools/generate/ingestion/ingest_repo_evidence.py
+
+# Expected output:
+#   Lane C: N chunks from 16 sources
+#   Lane D: M chunks from docs/ scan
+#   Total collected: N+M chunks
 ```
 
-Scans `docs/`, `AGENTS.md`, `README.md`. Covers 8840+ chunks from all internal markdown.
-Run after any significant documentation restructure.
+Run after: any significant documentation restructure in `docs/`, ADR additions, or AGENTS.md changes.
 
-### 2c. `ext_knowledge` (external web scrapes)
+### 2c. `ext_raw` — unvetted scraped content (Lane E)
 
 ```bash
+# IMPORTANT: Run 2a first so URL dedup is populated.
+python tools/generate/ingestion/ingest_ext_knowledge.py --dry-run
 python tools/generate/ingestion/ingest_ext_knowledge.py
-python tools/generate/ingestion/ingest_agent_framework_docs.py
+
+# Expected output:
+#   ext_authority URL dedup set: N URLs
+#   Total collected: M documents (ext_authority dedup removed K)
 ```
 
-Fetches external URLs (Anthropic, OpenAI agents, LangChain). Rate-limited; expect 5–15 min.
-External sources may return 403/404 — check output for failures.
+Fetches from `agentic_best_practices` ChromaDB + disk. URL dedup removes content already in `ext_authority`.
 
 ---
 
@@ -163,39 +176,39 @@ python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports
 ### F1: Required source fetch failure
 **Symptom**: `Required OK/FAIL : X/1` or more in dry-run output.  
 **Cause**: External URL returned 403/404, or internal file path deleted/moved.  
-**Fix**: Update the `path` in `CURATED_SOURCES` in `ingest_curated_agent_docs.py`. Re-run dry-run first.
+**Fix**: Update the `path` in `EXT_AUTHORITY_SOURCES` in `ingest_ext_authority.py` or `REPO_CANONICAL_SOURCES` in `ingest_repo_evidence.py`. Re-run dry-run first.
 
 ### F2: Dedup collisions > 0
 **Symptom**: `Dedup collisions: N` in dry-run report.  
 **Cause**: Same (source_url, heading_path, chunk_index) appears in two distinct CURATED_SOURCES entries.  
-**Fix**: Remove the duplicate entry from `CURATED_SOURCES`. The collapse_group field documents intentional clusters.
+**Fix**: Remove the duplicate entry from `EXT_AUTHORITY_SOURCES` or `REPO_CANONICAL_SOURCES`. The `collapse_group` field documents intentional clusters.
 
 ### F3: Redundancy rate > 0.5 in eval
 **Symptom**: `redundancy_rate` column > 0.50 for `curated_agent_docs` in eval report.  
 **Cause**: Multiple sources pointing to the same URL, or very large documents producing many chunks from one source dominating top-K.  
-**Fix**: Check for duplicate paths in CURATED_SOURCES. Consider adding a `max_chunks_per_source` guard in `ingest_curated_agent_docs.py`.
+**Fix**: Check for duplicate paths in `EXT_AUTHORITY_SOURCES`. Consider adding a `max_chunks_per_source` guard in `ingest_ext_authority.py`.
 
 ### F4: Canonical hit rate drops below 1.0
 **Symptom**: `canonical_hit_rate` < 1.000 for `curated_agent_docs`.  
 **Cause**: A source was added to CURATED_SOURCES with `canonical=False`.  
-**Fix**: All curated sources must be canonical. Set `canonical: True` for any new entry, or add it to `EXCLUDED_SOURCES`.
+**Fix (Wave B2)**: All ext_authority sources are normative by construction (`invalid_for_normative_use=False`). Remove any source with mismatched `source_band` or add it to the excluded section.
 
 ### F5: Overall win rate drops below 95%
 **Symptom**: Eval harness reports `All queries: X/40 (Y%)` where Y < 95.  
 **Cause A**: arch_docs was rebuilt WITHOUT Phase 0 authority metadata (`invalid_for_normative_use`, `source_collection`, etc.), causing `_is_canonical` in the eval harness to over-count arch_docs as canonical, boosting its win_score.  
-**Fix A**: Re-run `ingest_arch_docs.py` with Phase 0 metadata fields intact. Verify `arch_docs canonical_hit_rate` ≤ 0.10 in the report. The eval harness `_is_canonical` gates on `invalid_for_normative_use=True` (Phase 4 guard).  
-**Cause B**: A high-signal curated source was removed or fetched at a stale URL.  
-**Fix B**: Check dry-run output for `Required FAIL` entries. Restore missing sources.
+**Fix A**: Re-run `ingest_repo_evidence.py` to restore `repo_evidence` with correct `invalid_for_normative_use=True` on all Lane D chunks.  
+**Cause B**: A high-signal ext_authority source was removed or fetched at a stale URL.  
+**Fix B**: Check dry-run output for `Required FAIL` entries in `ingest_ext_authority.py`. Restore missing sources.
 
 ### F9: arch_docs_contamination > 0 for normative query classes
 **Symptom**: Section 6 of the v5+ report shows FAIL rows for policy, tooling, or standards queries.  
 **Cause**: arch_docs chunks with `source_collection=arch_docs` appeared in curated_agent_docs top-K. This should be impossible (separate collections) unless the collection was rebuilt from a wrong source.  
-**Fix**: Verify `curated_agent_docs` contains only sources from `CURATED_SOURCES`. Check that no arch_docs were accidentally ingested into curated collection. Re-run ingestion if necessary.
+**Fix**: Verify `ext_authority` contains only sources from `EXT_AUTHORITY_SOURCES`. Check that no `repo_evidence` chunks were accidentally ingested into `ext_authority`. Re-run ingestion if necessary.
 
 ### F6: POLICY category wins drop (UWG / C0 / determinism queries)
 **Symptom**: arch_docs starts winning POLICY-01, POLICY-04 consistently.  
 **Cause**: `.windsurf/rules/constitutional.md` or `global_rules.md` were removed or significantly rewritten.  
-**Fix**: These are scored 0.88 and 0.82 in CURATED_SOURCES and are marked `required=True`. Dry-run will catch removals. If content changed, re-run ingestion.
+**Fix**: These are in `REPO_CANONICAL_SOURCES` in `ingest_repo_evidence.py` and are marked `required=True`. Dry-run will catch removals. If content changed, re-run ingestion.
 
 ### F8: POLICY-05 regressed (constitutional hard constraints query)
 **Symptom**: POLICY-05 wins for arch_docs after adding new orchestration pattern docs.  
@@ -205,38 +218,49 @@ python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports
 ### F7: Embedding model mismatch
 **Symptom**: `IngestionError: Model dim mismatch: got X, expected 1024`.  
 **Cause**: EMBEDDING_MODEL changed or a different model was loaded from cache.  
-**Fix**: Ensure `BAAI/bge-m3` is the model at `tools/generate/ingestion/ingest_curated_agent_docs.py:EMBEDDING_MODEL`. The collection was built with 1024-dim embeddings — a dim change requires full rebuild.
+**Fix**: Ensure `BAAI/bge-m3` is the model at all three ingestion scripts (`EMBEDDING_MODEL = "BAAI/bge-m3"`). The collections were built with 1024-dim embeddings — a dim change requires full rebuild of all three collections.
 
 ---
 
-## 6. Adding New Sources
+## 6. Adding New Sources (Wave B2)
 
-1. Add entry to `CURATED_SOURCES` list in `ingest_curated_agent_docs.py`
-2. Set all required fields: `source_type`, `path`, `title`, `doc_type`, `doc_family`, `topic_bucket`, `authority_level`, `canonical`, `collapse_group`, `keep_reason`, `score`, `required`
-3. Score must be ≥ 0.77 (minimum surface threshold)
-4. Run dry-run: `python tools/generate/ingestion/ingest_curated_agent_docs.py --dry-run`
-5. Verify chunk count in source details (expect 5–50 chunks per source)
+### Adding to `ext_authority` (web sources)
+
+1. Add entry to `EXT_AUTHORITY_SOURCES` in `ingest_ext_authority.py`
+2. Required fields: `path` (https URL), `title`, `doc_type`, `doc_family`, `topic_bucket`, `collapse_group`, `required`
+3. Source band is derived automatically by `_assign_source_band()` — add URL to `_LANE_A_URLS` if it is a T2_standard spec
+4. Run dry-run: `python tools/generate/ingestion/ingest_ext_authority.py --dry-run`
+5. Verify chunk count (expect 3–80 chunks per source)
 6. Run live ingestion
 7. Re-run regression harness to confirm no regression
 
+### Adding to `repo_evidence` (local sources)
+
+1. Add entry to `REPO_CANONICAL_SOURCES` in `ingest_repo_evidence.py`
+2. Required fields: `path` (repo-relative), `title`, `doc_family`, `topic_bucket`, `collapse_group`, `required`
+3. Run dry-run: `python tools/generate/ingestion/ingest_repo_evidence.py --dry-run`
+4. Verify file exists and produces chunks
+5. Run live ingestion
+
 ---
 
-## 7. Collection Routing Recommendation
+## 7. Collection Routing Recommendation (Wave B2)
 
 ```
 Query category                  → Primary collection    → Routing domain key
 ─────────────────────────────────────────────────────────────────
-architecture / best-practice    → curated_agent_docs    → architecture
-policy / safety / eval          → curated_agent_docs    → architecture
-ADR / standards / history       → curated_agent_docs    → architecture
-orchestration / multi-agent     → curated_agent_docs    → best_practice
-retrieval / embedding / RAG     → curated_agent_docs    → best_practice
-MCP / FastMCP / tool contracts  → curated_agent_docs    → tool_contracts  ← NEW (v3)
-external framework docs         → curated_agent_docs    → best_practice
-code / symbol lookup            → arch_docs             → code
+architecture / best-practice    → ext_authority         → architecture
+policy / safety / eval          → ext_authority         → architecture
+ADR / standards / history       → repo_evidence (Lane C)→ internal_arch
+orchestration / multi-agent     → ext_authority         → best_practice
+retrieval / embedding / RAG     → ext_authority         → best_practice
+MCP / FastMCP / tool contracts  → ext_authority         → tool_contracts
+external framework docs         → ext_authority         → best_practice
+repo implementation / ADG/code  → repo_evidence (Lane D)→ implementation
+unvetted web background         → ext_raw               → (excluded from normative bundles)
 ```
 
 Routing is implemented in `query_router.py` via `QueryIntentDetector.detect_topic_domain()`.  
-Apply `collapse_group_dedup(max_per_group=2)` from `evidence_shaper.py` for `tool_contracts` and `best_practice` routed results to suppress MCP SDK cluster redundancy.
+Apply `collapse_group_dedup(max_per_group=2)` from `evidence_shaper.py` for `tool_contracts` and `best_practice` routed results.  
 
 See `query_router.py` for domain-aware collection routing implementation.

@@ -101,11 +101,15 @@ def _unlink_sqlite_family(file_path: Path) -> int:
         raise OSError(f"SQLite family locked: {root_path.name}")
 
     if root_path.exists():
+        temp_conn = None
         try:
-            with sqlite3.connect(str(root_path)) as temp_conn:
-                temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+            temp_conn = sqlite3.connect(str(root_path))
+            temp_conn.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         except sqlite3.Error:
             pass
+        finally:
+            if temp_conn is not None:
+                temp_conn.close()
 
     for target in targets:
         if target.exists():
@@ -216,9 +220,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                                 print(
                                     f"[WARNING] Archive: locked SQLite family skipped {_sqlite_family_root(file_path).name}"
                                 )
-                                print(
-                                    "[WARNING]   Main database is held by another process - sidecars preserved"
-                                )
+                                print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
+                                print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
                                 continue
                             archived_count += _unlink_sqlite_family(file_path)
                         else:
@@ -246,9 +249,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                             print(
                                 f"[WARNING] Archive: locked SQLite family skipped {_sqlite_family_root(file_path).name}"
                             )
-                            print(
-                                "[WARNING]   File held by another process - family will be cleaned up on next run"
-                            )
+                            print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
+                            print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
                             continue
 
                         if file_path.name.endswith(_SQLITE_SIDE_SUFFIXES):
@@ -259,7 +261,8 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                     except OSError as e:
                         if "being used by another process" in str(e):
                             print(f"[WARNING] Archive: locked file skipped {file_path.name}")
-                            print("[WARNING]   File held by another process — will be cleaned up on next run")
+                            print("[WARNING]   MCP server holds this file open. It will NOT auto-clean.")
+                            print("[WARNING]   Fix: call adg_close_connections() MCP tool, then re-run.")
                         else:
                             print(f"[ADG] Archive: failed to delete {file_path.name}: {e}")
                         continue
