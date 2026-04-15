@@ -191,16 +191,54 @@ class HybridSearchEngine:
         collection: Any,
         query: str,
         query_embedding: list[float] | None,
+        where: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
+        kwargs: dict[str, Any] = {
+            "query_embeddings": [query_embedding] if query_embedding is not None else None,
+            "query_texts": [query],
+            "n_results": self.top_k,
+            "include": ["documents", "metadatas", "distances"],
+        }
+        if where:
+            kwargs["where"] = where
         try:
-            return collection.query(
-                query_embeddings=[query_embedding] if query_embedding is not None else None,
-                query_texts=[query],
-                n_results=self.top_k,
-                include=["documents", "metadatas", "distances"],
-            )
+            return collection.query(**kwargs)
         except TypeError:
             return collection.query(query_texts=[query], n_results=self.top_k)
+
+    @staticmethod
+    def _apply_authority_rerank(
+        results: list["HybridSearchResult"],
+        authority_bonus: float = 0.15,
+    ) -> list["HybridSearchResult"]:
+        """Boost combined_score by authority_level metadata when present.
+
+        authority_level is a float in [0.0, 1.0] stored in chunk metadata.
+        Bonus = authority_bonus * authority_level, added to combined_score.
+        Results missing authority_level receive no bonus (safe fallback).
+        """
+        reranked = []
+        for r in results:
+            level = r.metadata.get("authority_level")
+            if level is not None:
+                try:
+                    bonus = authority_bonus * float(level)
+                except (TypeError, ValueError):
+                    bonus = 0.0
+            else:
+                bonus = 0.0
+            reranked.append(
+                HybridSearchResult(
+                    chunk_id=r.chunk_id,
+                    content=r.content,
+                    metadata=r.metadata,
+                    combined_score=r.combined_score + bonus,
+                    source=r.source,
+                    vector_score=r.vector_score,
+                    lexical_score=r.lexical_score,
+                )
+            )
+        return reranked
 
     def _vector_search(
         self,
@@ -208,6 +246,7 @@ class HybridSearchEngine:
         query_embedding: list[float] | None,
         collection_name: str,
         governance_filter: dict[str, Any] | None,
+        metadata_filter: dict[str, Any] | None = None,
     ) -> list[HybridSearchResult] | dict:
         if self.chroma_client is None:
             return {}
@@ -216,9 +255,9 @@ class HybridSearchEngine:
             query_embedding = self._generate_query_embedding(normalized_query)
         try:
             collection = self.chroma_client.get_collection(collection_name)
-        except Exception:
+        except Exception:  # guardian: allow-broad-exception -- chromadb raises collection-not-found as an untyped internal exception across client versions
             return []
-        raw = self._collection_query(collection, normalized_query, query_embedding)
+        raw = self._collection_query(collection, normalized_query, query_embedding, where=metadata_filter)
         ids = self._coerce_query_payload(raw, "ids")
         docs = self._coerce_query_payload(raw, "documents")
         metas = self._coerce_query_payload(raw, "metadatas")
@@ -258,16 +297,30 @@ class HybridSearchEngine:
         query_embedding: list[float] | None = None,
         collection_name: str = "code_chunks",
         governance_filter: dict[str, Any] | None = None,
+        metadata_filter: dict[str, Any] | None = None,
+        authority_rerank: bool = False,
+        collapse_group_dedup_max: int | None = None,
     ) -> list[HybridSearchResult]:
-        vector_results = self._vector_search(query, query_embedding, collection_name, governance_filter)
+        vector_results = self._vector_search(
+            query, query_embedding, collection_name, governance_filter, metadata_filter
+        )
         if isinstance(vector_results, dict):
             return []
         deduped = self._deduplicate_results(vector_results)
-        return sorted(
+        if authority_rerank:
+            deduped = self._apply_authority_rerank(deduped)
+        results = sorted(
             deduped,
             key=lambda result: (result.combined_score, result.vector_score, result.lexical_score),
             reverse=True,
         )
+        if collapse_group_dedup_max is not None:
+            from agentic_core.L3_orchestration.reasoning.engines.evidence_shaper import (
+                collapse_group_dedup,
+            )
+
+            results = collapse_group_dedup(results, max_per_group=collapse_group_dedup_max)
+        return results
 
 
 _global_hybrid_engine: HybridSearchEngine | None = None

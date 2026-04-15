@@ -4,13 +4,16 @@ Sources (in priority order):
   1. docs/architecture/  — ADRs, design docs, architecture notes
   2. docs/              — all other .md files (guides, contracts, standards)
   3. Top-level .md files (README, AGENTS.md, etc.)
-  4. apps_*/  SVP_ENGINEERING_REVIEW.md, TECHNICAL_SPEC.md, TEST_STRATEGY.md
+
+Noisy subdirs explicitly excluded: reports, plans, evidence, windsurf, _archive, artifacts.
 
 Usage:
     python tools/generate/ingestion/ingest_arch_docs.py [--store-path PATH] [--dry-run]
 
 Embedding: BAAI/bge-m3 (1024-dim, L2-normalized, cosine)
 Collection: arch_docs  hnsw:space=cosine
+Metadata added (Phase 2): title, heading_path, authority_level, doc_family,
+    canonical, retrieval_weight, source_area.
 """
 
 from __future__ import annotations
@@ -46,19 +49,6 @@ CHUNK_OVERLAP = 200  # overlap between consecutive chunks
 
 SCAN_DIRS = [
     "docs",
-    "apps_eval",
-    "apps_exec",
-    "apps_lic",
-    "apps_research",
-    "apps_rfp",
-    "apps_rg",
-    "apps_shared",
-    "apps_underwriting_ai",
-    "infrastructure",
-    "tools",
-    "ops_scripts",
-    "agentic_core",
-    "system_learning",
 ]
 
 TOP_LEVEL_MD = [
@@ -70,12 +60,17 @@ EXCLUDE_DIRS = {
     "__pycache__",
     ".git",
     "archives",
+    "_archive",
     "node_modules",
     ".windsurf",
     "vector_store",
     "artifacts",
     ".pytest_cache",
     "data",
+    "reports",
+    "plans",
+    "evidence",
+    "windsurf",
 }
 
 # Files to skip (generated / binary-ish markdown)
@@ -125,6 +120,145 @@ def detect_layer(file_path: Path) -> str:
     if "infrastructure" in parts:
         return "infrastructure"
     return "unknown"
+
+
+_AUTHORITY_MAP: list[tuple[str, float]] = [
+    ("adr", 1.0),
+    ("architecture", 0.85),
+    ("contract", 0.75),
+    ("spec", 0.65),
+    ("standard", 0.60),
+    ("guide", 0.55),
+    ("reference", 0.50),
+    ("overview", 0.45),
+    ("doc", 0.40),
+    ("report", 0.20),
+    ("plan", 0.10),
+]
+
+_NOISY_PATH_PARTS = {"reports", "plans", "evidence", "artifacts", "windsurf", "_archive", "archives"}
+
+
+def _compute_authority_level(file_path: Path, doc_type: str) -> float:
+    """Return authority level [0.0, 1.0] based on file path and doc_type."""
+    parts_lower = {p.lower() for p in file_path.parts}
+    if parts_lower & _NOISY_PATH_PARTS:
+        return 0.10
+    for name, level in _AUTHORITY_MAP:
+        if name == doc_type:
+            return level
+    return 0.40
+
+
+def _compute_doc_family(file_path: Path) -> str:
+    """Return the doc family based on the file's parent directory hierarchy."""
+    canonical_dirs = {
+        "adr": "adr",
+        "architecture": "architecture",
+        "contracts": "contract",
+        "contract": "contract",
+        "specs": "spec",
+        "spec": "spec",
+        "standards": "standard",
+        "standard": "standard",
+        "guides": "guide",
+        "guide": "guide",
+        "reference": "reference",
+        "svp": "svp",
+        "policies": "policy",
+        "policy": "policy",
+    }
+    for part in file_path.parts:
+        mapped = canonical_dirs.get(part.lower())
+        if mapped:
+            return mapped
+    name_lower = file_path.name.lower()
+    if name_lower in ("readme.md", "agents.md"):
+        return "overview"
+    return "doc"
+
+
+def _compute_source_area(file_path: Path) -> str:
+    """Return coarse source area for filtering (arch, contract, spec, guide, etc.)."""
+    family = _compute_doc_family(file_path)
+    if family in ("adr", "architecture"):
+        return "arch"
+    if family in ("contract",):
+        return "contract"
+    if family in ("spec",):
+        return "spec"
+    if family in ("standard",):
+        return "standard"
+    if family in ("guide",):
+        return "guide"
+    if family in ("reference",):
+        return "reference"
+    if family in ("svp", "policy"):
+        return "policy"
+    if family == "overview":
+        return "overview"
+    return "doc"
+
+
+def _is_canonical(file_path: Path, doc_type: str) -> bool:
+    """Return True if the document is a canonical authority source."""
+    if doc_type in ("adr", "architecture", "contract", "spec", "standard", "overview"):
+        return True
+    parts_lower = {p.lower() for p in file_path.parts}
+    return not bool(parts_lower & _NOISY_PATH_PARTS)
+
+
+def _extract_title(source: str, file_path: Path) -> str:
+    """Extract the first H1 heading, or derive from filename."""
+    for line in source.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("# "):
+            return stripped[2:].strip()[:200]
+    return file_path.stem.replace("_", " ").replace("-", " ")[:200]
+
+
+def chunk_by_headings(
+    text: str, max_chars: int = CHUNK_CHARS, overlap: int = CHUNK_OVERLAP
+) -> list[tuple[str, str]]:
+    """Split text into section-aware chunks keyed by heading breadcrumb.
+
+    Returns a list of (heading_path, chunk_text) tuples where heading_path is
+    a " > "-delimited breadcrumb of H1/H2/H3 headings, e.g.
+    "Architecture Design > Query Routing > Fallback Strategy".
+    Falls back to character-based chunks when no headings are found.
+    """
+    heading_re = re.compile(r"^(#{1,3})\s+(.+)$", re.MULTILINE)
+    boundaries = [(m.start(), len(m.group(1)), m.group(2).strip()) for m in heading_re.finditer(text)]
+
+    if not boundaries:
+        return [("no-headings", chunk) for chunk in chunk_text(text, max_chars, overlap) if chunk]
+
+    boundaries.append((len(text), 0, ""))
+
+    stack: list[str] = ["", "", ""]
+    results: list[tuple[str, str]] = []
+
+    for i, (pos, level, title) in enumerate(boundaries[:-1]):
+        next_pos = boundaries[i + 1][0]
+
+        if level == 1:
+            stack = [title, "", ""]
+        elif level == 2:
+            stack[1] = title
+            stack[2] = ""
+        elif level == 3:
+            stack[2] = title
+
+        heading_path = " > ".join(h for h in stack if h)
+        section = text[pos:next_pos].strip()
+        if not section or len(section) < MIN_BODY_CHARS:
+            continue
+
+        for chunk in chunk_text(section, max_chars, overlap):
+            if chunk:
+                results.append((heading_path, chunk))
+
+    return results if results else [("no-headings", c) for c in chunk_text(text, max_chars, overlap) if c]
 
 
 def chunk_text(text: str, chunk_size: int = CHUNK_CHARS, overlap: int = CHUNK_OVERLAP) -> list[str]:
@@ -181,20 +315,37 @@ def collect_documents(repo_root: Path) -> list[dict]:
         canonical_digest = compute_digest(source)
         doc_type = detect_doc_type(md_file)
         layer = detect_layer(md_file)
+        doc_family = _compute_doc_family(md_file)
+        source_area = _compute_source_area(md_file)
+        authority_level = _compute_authority_level(md_file, doc_type)
+        canonical = _is_canonical(md_file, doc_type)
+        retrieval_weight = 1.0 if canonical else 0.4
+        title = _extract_title(source, md_file)
 
-        chunks = chunk_text(source)
-        for chunk_idx, chunk_text_val in tqdm(enumerate(chunks), desc="Processing", unit="item"):
+        heading_chunks = chunk_by_headings(source)
+        for chunk_idx, (heading_path, chunk_text_val) in enumerate(heading_chunks):
             docs.append(
                 {
                     "text": chunk_text_val,
                     "metadata": {
                         "artifact_type": "arch_doc",
                         "doc_type": doc_type,
+                        "doc_family": doc_family,
                         "file_path": rel_path,
                         "layer": layer,
                         "chunk_index": chunk_idx,
                         "canonical_digest": canonical_digest,
                         "source": "markdown",
+                        "title": title,
+                        "heading_path": heading_path,
+                        "authority_level": authority_level,
+                        "canonical": canonical,
+                        "retrieval_weight": retrieval_weight,
+                        "source_area": source_area,
+                        "source_collection": "arch_docs",
+                        "authority_tier": "T4_implementation_evidence",
+                        "normative_scope": "evidence_only",
+                        "invalid_for_normative_use": True,
                     },
                     "id_parts": (rel_path, str(chunk_idx)),
                 }

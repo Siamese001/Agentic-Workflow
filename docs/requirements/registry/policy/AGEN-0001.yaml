@@ -1,0 +1,23 @@
+id: AGEN-0001
+title: No bare except without guardian exemption
+domain: policy
+status: active
+authority_tier: T4_repo_canonical
+source_collection: curated_agent_docs
+normative_scope: repo_internal
+evidence_sources:
+  - path: .windsurf/rules/constitutional.md
+    section: "Hard Constraints §15"
+    quote: "Precise exception handling. Catch specific types. Bare except: FORBIDDEN."
+statement: |
+  All exception handlers in production code MUST catch specific exception types.
+  Bare `except:` or `except Exception:` without an approved guardian comment is forbidden.
+  Guardian exemptions require HITL approval and must carry the comment
+  `# guardian: allow-<type> -- <specific justification>`.
+enforcement:
+  - ci_gate: ops_scripts/ci/run_contract_gates.py
+  - pre_commit: check_guardian_exemption_gate
+rationale: |
+  Bare exception handlers swallow errors silently, making debugging impossible
+  and violating the fail-closed safety principle required for agentic systems.
+created: 2025-01-01

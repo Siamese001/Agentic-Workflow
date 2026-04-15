@@ -136,6 +136,17 @@ FETCH_URLS: list[dict] = [
         "domain": "openai.com",
         "title": "OpenAI Agents Python — running agents reference",
     },
+    # ext_knowledge backfill — source diversity for RETR and TOOL queries
+    {
+        "url": "https://raw.githubusercontent.com/chroma-core/chroma/main/README.md",
+        "domain": "docs.trychroma.com",
+        "title": "ChromaDB — Canonical README",
+    },
+    {
+        "url": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/README.md",
+        "domain": "modelcontextprotocol.io",
+        "title": "MCP Specification — Protocol Overview",
+    },
 ]
 
 GARBAGE_PATTERNS = ["Loading...", "Loading..Loading.."]

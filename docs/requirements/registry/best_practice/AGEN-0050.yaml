@@ -1,0 +1,30 @@
+id: AGEN-0050
+title: ADG-first dependency analysis — no grep for imports or blast radius
+domain: best_practice
+status: active
+authority_tier: T4_repo_canonical
+source_collection: curated_agent_docs
+normative_scope: repo_internal
+evidence_sources:
+  - path: .windsurf/rules/constitutional.md
+    section: "ADG-First Retrieval-Tool Decision Tree §3.2"
+    quote: |
+      ADG graph is the primary analysis primitive.
+      grep_search for dependency analysis is FORBIDDEN.
+  - path: AGENTS.md
+    section: "MCP Quick Reference"
+    quote: "Dependency analysis MUST use ADG MCP tools — NOT grep or text search."
+statement: |
+  All dependency, import, consumer, reference, and blast-radius queries MUST use
+  ADG MCP tools (`mcp1_adg_edge_fanin`, `mcp1_adg_edge_fanout`, `mcp1_adg_nodes_by_file`,
+  `mcp1_adg_nodes_by_layer`). `grep_search` is permitted only for literal text search
+  (TODOs, FIXMEs, string constants). Silent degraded fallback (grep without an ADG health
+  check + `DEGRADED_FALLBACK: reason=<...>` emission) is a severity:critical violation.
+enforcement:
+  - retroactive_audit: ops_scripts/ci/post_cascade_adg_audit.py
+  - violation_log: artifacts/windsurf/adg_first_violations.jsonl
+rationale: |
+  grep_search produces false positives (comments, dead code) and false negatives
+  (re-exports, aliases), has no transitive closure, and wastes 70-80% of context
+  window per OpenDev §3.1. ADG fanin/fanout gives exact, layer-aware results.
+created: 2025-01-01
