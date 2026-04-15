@@ -16,6 +16,7 @@ import queue
 import sys
 import threading
 import time
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -47,6 +48,23 @@ SEARCH_GLOBAL_TIMEOUT: float = float(os.environ.get("VECTOR_DB_SEARCH_GLOBAL_TIM
 PREWARM_QUERY_TEXT: str = os.environ.get("VECTOR_DB_PREWARM_QUERY_TEXT", "warmup")
 
 
+def _parse_float_env(name: str, default: float, min_val: float = 0.0) -> float:
+    raw = os.environ.get(name, "")
+    if not raw:
+        return default
+    try:
+        val = float(raw)
+    except ValueError:
+        logger.error("Invalid value for %s=%r — must be a number; using default %.1f", name, raw, default)
+        return default
+    if val < min_val:
+        logger.error(
+            "Invalid value for %s=%s — must be >= %.1f; using default %.1f", name, raw, min_val, default
+        )
+        return default
+    return val
+
+
 def _parse_int_env(name: str, default: int, min_val: int = 1) -> int:
     raw = os.environ.get(name, "")
     if not raw:
@@ -65,6 +83,8 @@ def _parse_int_env(name: str, default: int, min_val: int = 1) -> int:
 MAX_RESULTS: int = _parse_int_env("VECTOR_DB_MAX_QUERY_RESULTS", 100)
 MAX_EMBEDDING_BATCH_SIZE: int = _parse_int_env("VECTOR_DB_MAX_BATCH", 32)
 MAX_SEARCH_RESULTS: int = _parse_int_env("VECTOR_DB_MAX_SEARCH_RESULTS", 20)
+QUERY_EMBED_BATCH_WINDOW_MS: float = _parse_float_env("VECTOR_DB_QUERY_BATCH_WINDOW_MS", 15.0, min_val=0.0)
+QUERY_EMBED_MAX_BATCH: int = _parse_int_env("VECTOR_DB_QUERY_EMBED_MAX_BATCH", 8)
 
 _KNOWN_MODEL_DIMS: dict[str, int] = {
     "BAAI/bge-m3": 1024,
@@ -84,6 +104,94 @@ _COUNT_CACHE_TTL: float = 60.0
 _COLLECTION_LOCKS: dict[str, threading.Lock] = {}
 _COLLECTION_LOCKS_GUARD = threading.Lock()
 _PREWARM_STATE: dict[str, Any] = {"phase": "idle", "total": 0, "done": 0, "current": "", "last_error": ""}
+
+
+@dataclass
+class _QueryEmbeddingRequest:
+    text: str
+    event: threading.Event = field(default_factory=threading.Event)
+    result: Any | None = None
+    error: BaseException | None = None
+
+
+class QueryEmbeddingBatcher:
+    """Micro-batch single-query embedding requests to avoid serialized pileups."""
+
+    def __init__(
+        self,
+        *,
+        batch_window_ms: float,
+        max_batch_size: int,
+        encode_timeout_s: float,
+        queue_wait_timeout_s: float,
+    ) -> None:
+        self.batch_window_ms = max(batch_window_ms, 0.0)
+        self.max_batch_size = max(1, max_batch_size)
+        self.encode_timeout_s = encode_timeout_s
+        self.queue_wait_timeout_s = queue_wait_timeout_s
+        self._pending: list[_QueryEmbeddingRequest] = []
+        self._pending_lock = threading.Lock()
+        self._drain_active = False
+
+    def encode_one(self, text: str, *, op_name: str) -> Any:
+        request = _QueryEmbeddingRequest(text=text)
+        self._enqueue(request)
+
+        total_wait = self.queue_wait_timeout_s + self.encode_timeout_s + (self.batch_window_ms / 1000.0) + 1.0
+        if not request.event.wait(timeout=max(total_wait, 0.1)):
+            raise TimeoutError(f"{op_name} timed out after {total_wait:.1f}s waiting for batched embedding")
+
+        if request.error is not None:
+            raise request.error
+
+        return request.result
+
+    def _enqueue(self, request: _QueryEmbeddingRequest) -> None:
+        should_start_worker = False
+        with self._pending_lock:
+            self._pending.append(request)
+            if not self._drain_active:
+                self._drain_active = True
+                should_start_worker = True
+
+        if should_start_worker:
+            threading.Thread(
+                target=self._drain_loop,
+                daemon=True,
+                name="query-embedding-batcher",
+            ).start()
+
+    def _drain_loop(self) -> None:
+        if self.batch_window_ms > 0:
+            time.sleep(self.batch_window_ms / 1000.0)
+
+        while True:
+            with self._pending_lock:
+                if not self._pending:
+                    self._drain_active = False
+                    return
+                batch = self._pending[: self.max_batch_size]
+                del self._pending[: self.max_batch_size]
+
+            texts = [request.text for request in batch]
+            try:
+                embeddings = _encode_with_guard(
+                    f"encode:query_batch:{len(texts)}",
+                    texts,
+                )
+                if len(embeddings) != len(batch):
+                    raise RuntimeError(
+                        f"batched encode length mismatch: expected {len(batch)} got {len(embeddings)}"
+                    )
+            except BaseException as exc:  # guardian: allow-broad-except -- batch boundary
+                for request in batch:
+                    request.error = exc
+                    request.event.set()
+                continue
+
+            for index, request in enumerate(batch):
+                request.result = embeddings[index : index + 1]
+                request.event.set()
 
 
 def _get_named_lock(name: str) -> threading.Lock:
@@ -301,6 +409,18 @@ def _encode_with_guard(op_name: str, *args: Any, **kwargs: Any) -> Any:
         queue_wait_timeout=EMBEDDING_QUEUE_WAIT_TIMEOUT,
         op_name=op_name,
     )
+
+
+_query_embedding_batcher = QueryEmbeddingBatcher(
+    batch_window_ms=QUERY_EMBED_BATCH_WINDOW_MS,
+    max_batch_size=min(QUERY_EMBED_MAX_BATCH, MAX_EMBEDDING_BATCH_SIZE),
+    encode_timeout_s=EMBEDDING_ENCODE_TIMEOUT,
+    queue_wait_timeout_s=EMBEDDING_QUEUE_WAIT_TIMEOUT,
+)
+
+
+def _encode_query_text(query_text: str, *, op_name: str) -> Any:
+    return _query_embedding_batcher.encode_one(query_text, op_name=op_name)
 
 
 def _query_collection_with_timeout(
@@ -534,9 +654,9 @@ def query_collection(
     collection = client.get_collection(collection_name)
 
     t0 = time.time()
-    query_embedding = _encode_with_guard(
-        f"encode:query_collection:{collection_name}",
-        [query_text],
+    query_embedding = _encode_query_text(
+        query_text,
+        op_name=f"encode:query_collection:{collection_name}",
     )
     embedding_time = time.time() - t0
 
@@ -655,9 +775,9 @@ def semantic_search(
         all_cols = client.list_collections()
         collections = [col.name for col in all_cols]
 
-    query_embedding = _encode_with_guard(
-        "encode:semantic_search",
-        [query],
+    query_embedding = _encode_query_text(
+        query,
+        op_name="encode:semantic_search",
     )
 
     merged: list[dict] = []
@@ -741,6 +861,8 @@ def vector_stats() -> str:
     stats += f"Embedding dimension: {embedding_dimension}\n"
     stats += f"Encode timeout: {EMBEDDING_ENCODE_TIMEOUT:.0f}s\n"
     stats += f"Encode queue wait timeout: {EMBEDDING_QUEUE_WAIT_TIMEOUT:.0f}s\n"
+    stats += f"Query batch window: {QUERY_EMBED_BATCH_WINDOW_MS:.0f}ms\n"
+    stats += f"Query batch max size: {min(QUERY_EMBED_MAX_BATCH, MAX_EMBEDDING_BATCH_SIZE)}\n"
     stats += f"Per-collection query timeout: {QUERY_COLLECTION_TIMEOUT:.0f}s\n"
     stats += f"Per-collection semantic search timeout: {SEARCH_PER_COLLECTION_TIMEOUT:.0f}s\n"
 
@@ -786,6 +908,8 @@ def readiness() -> str:
     status += f"Chroma timeout: {CHROMA_INIT_TIMEOUT:.0f}s\n"
     status += f"Model timeout: {MODEL_LOAD_TIMEOUT:.0f}s\n"
     status += f"Encode timeout: {EMBEDDING_ENCODE_TIMEOUT:.0f}s\n"
+    status += f"Query batch window: {QUERY_EMBED_BATCH_WINDOW_MS:.0f}ms\n"
+    status += f"Query batch max size: {min(QUERY_EMBED_MAX_BATCH, MAX_EMBEDDING_BATCH_SIZE)}\n"
     status += f"Query timeout: {QUERY_COLLECTION_TIMEOUT:.0f}s\n"
     status += f"Prewarm phase: {_PREWARM_STATE['phase']}\n"
     status += f"Prewarm progress: {_PREWARM_STATE['done']}/{_PREWARM_STATE['total']}\n"

@@ -10,6 +10,7 @@ by providing a single, tested entry point for:
   3. Environment safety: TOKENIZERS_PARALLELISM, PYTHONUNBUFFERED
   4. FastMCP import with clear error on missing dependency
   5. Standardized entry point via run_server()
+  6. Optional thread-pool worker cap when supported by the installed FastMCP
 
 Usage in any MCP server::
 
@@ -39,10 +40,12 @@ caused persistent hanging on Windows stdio transport.
 
 from __future__ import annotations
 
+import inspect
 import logging
 import os
 import sys
 from pathlib import Path
+from typing import Any
 
 # ── Repo-root bootstrap — idempotent ──────────────────────────────────────
 REPO_ROOT: Path = Path(__file__).resolve().parents[2]
@@ -76,6 +79,55 @@ except ImportError:
     sys.exit(1)
 
 
+def _parse_positive_int_env(name: str) -> int | None:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return None
+    try:
+        value = int(raw)
+    except ValueError:
+        logging.getLogger("mcp_bootstrap").warning(
+            "%s=%r is invalid — expected a positive integer; ignoring", name, raw
+        )
+        return None
+    if value < 1:
+        logging.getLogger("mcp_bootstrap").warning("%s=%r is invalid — expected >= 1; ignoring", name, raw)
+        return None
+    return value
+
+
+def _resolve_fastmcp_kwargs(name: str, instructions: str) -> dict[str, Any]:
+    kwargs: dict[str, Any] = {}
+    if instructions:
+        kwargs["instructions"] = instructions
+
+    workers = _parse_positive_int_env("MCP_MAX_THREADPOOL_WORKERS")
+    if workers is None:
+        return kwargs
+
+    logger = logging.getLogger(name)
+    try:
+        params = inspect.signature(FastMCP).parameters
+    except (TypeError, ValueError):
+        logger.warning(
+            "Could not inspect FastMCP signature; MCP_MAX_THREADPOOL_WORKERS=%d will be ignored",
+            workers,
+        )
+        return kwargs
+
+    for candidate in ("workers", "thread_pool_workers", "max_workers"):
+        if candidate in params:
+            kwargs[candidate] = workers
+            logger.info("FastMCP concurrency cap enabled: %s=%d", candidate, workers)
+            return kwargs
+
+    logger.warning(
+        "MCP_MAX_THREADPOOL_WORKERS=%d is set but the installed FastMCP constructor does not expose a supported worker parameter",
+        workers,
+    )
+    return kwargs
+
+
 def create_mcp_server(name: str, instructions: str = "") -> FastMCP:
     """Create a FastMCP server instance with standardized configuration.
 
@@ -88,7 +140,7 @@ def create_mcp_server(name: str, instructions: str = "") -> FastMCP:
     """
     logger = logging.getLogger(name)
     logger.info("Creating FastMCP server: %s", name)
-    return FastMCP(name, instructions=instructions) if instructions else FastMCP(name)
+    return FastMCP(name, **_resolve_fastmcp_kwargs(name, instructions))
 
 
 def run_server(mcp: FastMCP, *, transport: str = "stdio") -> None:
