@@ -260,22 +260,25 @@ def _check_dead_production_imports(sqlite_path: Path | None = None) -> None:
             cursor = conn.cursor()
 
             query = """
-            SELECT n.resolved_path, n.layer, n.entity_type,
-                   (SELECT COUNT(e.id) FROM edges e
-                    WHERE e.relation_type = 'imports'
-                      AND e.dst_id IN (
-                        SELECT id FROM nodes nx WHERE nx.resolved_path = n.resolved_path
-                      )
-                      AND e.src_id IN (
-                        SELECT id FROM nodes WHERE layer NOT IN ('L_TEST','L_OPS','L_TOOLS','L_SHARED')
-                      )
-                   ) AS fan_in
-            FROM nodes n
-            WHERE n.entity_type = 'module'
-              AND n.layer NOT IN ('L_TEST','L_OPS','L_TOOLS','L_SHARED')
-              AND n.resolved_path LIKE 'agentic_core/L4_state/cache/%'
-            HAVING fan_in = 0
-            ORDER BY n.resolved_path;
+            SELECT sub.resolved_path, sub.layer, sub.entity_type, sub.fan_in
+            FROM (
+                SELECT n.resolved_path, n.layer, n.entity_type,
+                       (SELECT COUNT(e.id) FROM edges e
+                        WHERE e.relation_type = 'imports'
+                          AND e.dst_id IN (
+                            SELECT id FROM nodes nx WHERE nx.resolved_path = n.resolved_path
+                          )
+                          AND e.src_id IN (
+                            SELECT id FROM nodes WHERE layer NOT IN ('L_TEST','L_OPS','L_TOOLS','L_SHARED')
+                          )
+                       ) AS fan_in
+                FROM nodes n
+                WHERE n.entity_type = 'module'
+                  AND n.layer NOT IN ('L_TEST','L_OPS','L_TOOLS','L_SHARED')
+                  AND n.resolved_path LIKE 'agentic_core/L4_state/cache/%'
+            ) sub
+            WHERE sub.fan_in = 0
+            ORDER BY sub.resolved_path;
             """
             cursor.execute(query)
             violations = cursor.fetchall()

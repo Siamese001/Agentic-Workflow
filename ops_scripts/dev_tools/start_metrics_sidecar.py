@@ -31,7 +31,9 @@ _POLL_SECONDS = 30
 def main() -> None:
     try:
         from prometheus_client import start_http_server
-        from agentic_core.L6_observability.utils.metrics.prometheus_metrics import AGENTIC_REGISTRY
+        from agentic_core.L6_observability.utils.metrics.prometheus_metrics import (
+            AGENTIC_REGISTRY,
+        )  # guardian: allow-layer-violation -- ops_scripts sidecar is an observability harness; L6 import is its sole purpose
     except ImportError as exc:
         _log.critical("Cannot import prometheus_client or AGENTIC_REGISTRY: %s", exc)
         sys.exit(1)

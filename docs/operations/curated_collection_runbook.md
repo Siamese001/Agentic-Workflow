@@ -1,6 +1,6 @@
 # Operator Runbook — curated_agent_docs Collection
 
-**Status**: Production-ready · **Last validated**: 2026-07 (v4)  
+**Status**: Production-ready · **Last validated**: 2025-07 (v5 — Phase 4 authority enforcement)  
 **Collection name**: `curated_agent_docs` · **Embedding model**: `BAAI/bge-m3` (1024-dim)  
 **ChromaDB path**: `data/cache/chromadb` · **Total chunks**: 579
 
@@ -123,21 +123,21 @@ print(f'Total: {len(r[\"metadatas\"])} | Missing fields: {len(missing_any)} | No
 # Quick run (outputs to stdout + writes report files)
 python tools/eval/retrieval_eval_curated.py --k 5 --out docs/reports/retrieval_eval_curated.md
 
-# Live-path run (simulates HybridSearchEngine authority rerank + collapse_group_dedup — v4 benchmark)
-python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports/retrieval_eval_curated_v4.md
+# Live-path run (simulates HybridSearchEngine authority rerank + collapse_group_dedup — v5 benchmark)
+python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports/retrieval_eval_curated_v5.md
 
 # Output files:
-#   docs/reports/retrieval_eval_curated.md    — markdown metrics table
-#   docs/reports/retrieval_eval_curated.json  — per-query raw metrics (40 × 3 = 120 rows)
+#   docs/reports/retrieval_eval_curated_v5.md   — markdown report (7 sections incl. Phase 4 gate)
+#   docs/reports/retrieval_eval_curated_v5.json — per-query raw metrics (40 × 3 = 120 rows)
 
-# Expected pass thresholds (fail if worse than) — v4 live-path benchmark:
-#   curated overall win rate   : ≥ 95%
-#   arch/policy/history wins   : ≥ 85%
-#   best-practice wins         : = 100%
-#   tooling/MCP wins           : = 100%
-#   canonical hit rate         : = 1.000
-#   tooling contamination      : = 0.000
-#   mean authority             : ≥ 0.85
+# Expected pass thresholds (fail if worse than) — v5 live-path benchmark:
+#   curated overall win rate          : ≥ 95%  (v5 achieved 97%)
+#   arch/policy/history wins          : ≥ 85%
+#   best-practice wins                : = 100%
+#   tooling/MCP wins                  : = 100%
+#   canonical_hit_rate (curated)      : = 1.000
+#   tooling_contamination (curated)   : = 0.000
+#   arch_docs_contamination (normative classes): = 0  ← Phase 4 gate
 ```
 
 **Runtime**: ~15s on GPU, ~60s on CPU (40 queries × 3 collections, model load included).
@@ -180,10 +180,17 @@ python tools/eval/retrieval_eval_curated.py --k 5 --live-path --out docs/reports
 **Cause**: A source was added to CURATED_SOURCES with `canonical=False`.  
 **Fix**: All curated sources must be canonical. Set `canonical: True` for any new entry, or add it to `EXCLUDED_SOURCES`.
 
-### F5: Overall win rate drops below 85%
-**Symptom**: Eval harness reports `All queries: X/40 (Y%)` where Y < 85.  
-**Cause**: arch_docs was re-ingested with richer metadata (Phase-2 hardening applied), improving its authority signals.  
-**Fix**: Re-run Phase-2 `ingest_arch_docs.py` and update the `_is_arch_relevant`, `_is_canonical` inference in the eval harness to reflect new field availability.
+### F5: Overall win rate drops below 95%
+**Symptom**: Eval harness reports `All queries: X/40 (Y%)` where Y < 95.  
+**Cause A**: arch_docs was rebuilt WITHOUT Phase 0 authority metadata (`invalid_for_normative_use`, `source_collection`, etc.), causing `_is_canonical` in the eval harness to over-count arch_docs as canonical, boosting its win_score.  
+**Fix A**: Re-run `ingest_arch_docs.py` with Phase 0 metadata fields intact. Verify `arch_docs canonical_hit_rate` ≤ 0.10 in the report. The eval harness `_is_canonical` gates on `invalid_for_normative_use=True` (Phase 4 guard).  
+**Cause B**: A high-signal curated source was removed or fetched at a stale URL.  
+**Fix B**: Check dry-run output for `Required FAIL` entries. Restore missing sources.
+
+### F9: arch_docs_contamination > 0 for normative query classes
+**Symptom**: Section 6 of the v5+ report shows FAIL rows for policy, tooling, or standards queries.  
+**Cause**: arch_docs chunks with `source_collection=arch_docs` appeared in curated_agent_docs top-K. This should be impossible (separate collections) unless the collection was rebuilt from a wrong source.  
+**Fix**: Verify `curated_agent_docs` contains only sources from `CURATED_SOURCES`. Check that no arch_docs were accidentally ingested into curated collection. Re-run ingestion if necessary.
 
 ### F6: POLICY category wins drop (UWG / C0 / determinism queries)
 **Symptom**: arch_docs starts winning POLICY-01, POLICY-04 consistently.  

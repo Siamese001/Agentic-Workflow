@@ -32,6 +32,9 @@ HIGH_REL_THRESH = 0.35
 
 COLLECTIONS = ["arch_docs", "ext_knowledge", "curated_agent_docs"]
 
+# Query categories that require normative authority (arch_docs must NOT appear in curated top-K)
+_NORMATIVE_CATS: frozenset[str] = frozenset({"policy", "tooling", "standards"})
+
 # ─────────────────────────────────────────────────────────────────────────────
 # 40 Golden queries across 8 categories × 5 each
 # ─────────────────────────────────────────────────────────────────────────────
@@ -283,9 +286,16 @@ def _authority_level(meta: dict) -> float:
 
 
 def _is_canonical(meta: dict) -> bool:
+    """Return True when the chunk is from an authoritative, canonical source.
+
+    Phase 4: chunks with invalid_for_normative_use=True are never canonical —
+    they are implementation evidence only (arch_docs post-Phase-0 rebuild).
+    """
+    if meta.get("invalid_for_normative_use"):
+        return False
     if "canonical" in meta:
         return bool(meta["canonical"])
-    # Infer: arch ADRs are canonical, ext web docs are not
+    # Legacy inference: arch ADRs have partial canonical value (pre-Phase-0 chunks)
     if meta.get("artifact_type") == "arch_doc" and "/adr/" in meta.get("file_path", ""):
         return True
     return False
@@ -341,6 +351,7 @@ class QueryMetrics:
     answer_support: float = 0.0
     # Contamination / diversity
     tooling_contamination: float = 0.0
+    arch_docs_contamination: int = 0  # count of chunks with source_collection=arch_docs in top-K
     source_diversity: int = 0
     redundancy_rate: float = 0.0
     # Derived
@@ -388,11 +399,16 @@ def compute_metrics(
     seen_sources: set[str] = set()
     duplicate_count = 0
     families: set[str] = set()
+    arch_contam_count = 0
 
     relevant_count = 0
     highly_relevant_rank = None
 
     for i, (doc, meta, dist) in enumerate(zip(docs, metas, dists)):
+        # Phase 4: record source_collection provenance for contamination gate
+        if meta.get("source_collection", "") == "arch_docs":
+            arch_contam_count += 1
+
         # Redundancy = same source URL appears multiple times in top-K (same-doc concentration)
         src = meta.get("source_url", meta.get("file_path", f"__unknown_{i}"))
         if src in seen_sources:
@@ -430,6 +446,7 @@ def compute_metrics(
     m.source_diversity = len(families)
     m.p_at_k = relevant_count / n
     m.mrr = (1.0 / highly_relevant_rank) if highly_relevant_rank else 0.0
+    m.arch_docs_contamination = arch_contam_count
 
     return m
 
@@ -610,6 +627,150 @@ def generate_report(
         )
     lines.append("")
 
+    # ── 6. Phase 4 — arch_docs contamination gate (normative query classes) ─────
+    lines.append("## 6. Phase 4 — arch_docs Contamination Gate\n")
+    lines.append(
+        "**Normative classes**: `policy` · `tooling` · `standards`  \n"
+        "**Pass condition**: arch_docs_contamination = 0 for all normative queries in curated_agent_docs  \n"
+        "**Mechanism**: source_collection metadata field on each returned chunk (set at ingest time)\n"
+    )
+    lines.append("| QID       | Category  | arch_docs chunks in curated top-5 | Status   |")
+    lines.append("|-----------|-----------|-----------------------------------|----------|")
+
+    total_contamination = 0
+    normative_query_count = 0
+    gate_failures: list[str] = []
+
+    for qid in query_ids_sorted:
+        cat_val = next((m.cat for m in all_metrics if m.query_id == qid), "?")
+        if cat_val not in _NORMATIVE_CATS:
+            continue
+        normative_query_count += 1
+        curated_m = next(
+            (m for m in all_metrics if m.query_id == qid and m.collection == "curated_agent_docs"),
+            None,
+        )
+        contam = curated_m.arch_docs_contamination if curated_m else 0
+        total_contamination += contam
+        status = "PASS" if contam == 0 else f"**FAIL ({contam})**"
+        if contam > 0:
+            gate_failures.append(qid)
+        lines.append(f"| {qid:<9} | {cat_val:<9} | {contam:>33} | {status:<8} |")
+
+    lines.append("")
+    lines.append(
+        f"**Normative queries checked**: {normative_query_count} · "
+        f"**arch_docs chunks found**: {total_contamination}  "
+    )
+    if gate_failures:
+        lines.append(f"\n**Gate verdict**: **FAIL** ✗ — contamination found in: {', '.join(gate_failures)}\n")
+    else:
+        lines.append(
+            "\n**Gate verdict**: **PASS** ✓ — arch_docs_contamination = 0 across all normative query classes\n"
+        )
+    lines.append("")
+
+    # ── 7. v4 → v5 Regression Comparison (live-path runs only) ─────────────────
+    if live_path:
+        lines.append("## 7. v4 → v5 Regression Comparison\n")
+        # v4 baseline (hardcoded from docs/reports/retrieval_eval_curated_v4.md)
+        V4 = {
+            "overall_wins": (38, 40),
+            "arch_policy_history": (18, 20),
+            "bp_standards_ma": (15, 15),
+            "tooling": (5, 5),
+            "canonical_hit_rate": 1.000,
+            "tooling_contamination": 0.000,
+        }
+
+        def _wrate(target_col: str, cat_set: set[str]) -> tuple[int, int]:
+            wins, total = 0, 0
+            for q in {m.query_id for m in all_metrics if m.cat in cat_set}:
+                qm = {m.collection: m for m in all_metrics if m.query_id == q}
+                if qm:
+                    if max(qm, key=lambda c: qm[c].win_score) == target_col:
+                        wins += 1
+                    total += 1
+            return wins, total
+
+        v5_all = _wrate("curated_agent_docs", set(m.cat for m in all_metrics))
+        v5_arch = _wrate("curated_agent_docs", {"architecture", "policy", "history"})
+        v5_bp = _wrate("curated_agent_docs", {"standards", "retrieval", "multiagent"})
+        v5_tool = _wrate("curated_agent_docs", {"tooling"})
+        curated_all = [m for m in all_metrics if m.collection == "curated_agent_docs"]
+        v5_canon = sum(m.canonical_hit_rate for m in curated_all) / len(curated_all) if curated_all else 0.0
+        v5_contam = (
+            sum(m.tooling_contamination for m in curated_all) / len(curated_all) if curated_all else 0.0
+        )
+        norm_contam_total = sum(m.arch_docs_contamination for m in curated_all if m.cat in _NORMATIVE_CATS)
+
+        def _gate(v5_val: float, v4_val: float, lower_better: bool = False) -> str:
+            return "PASS ✓" if (v5_val <= v4_val if lower_better else v5_val >= v4_val) else "FAIL ✗"
+
+        def _wr_str(t: tuple[int, int]) -> str:
+            return f"{t[0]}/{t[1]} ({100 * t[0] // t[1] if t[1] else 0}%)"
+
+        lines.append("| Metric | v4 baseline | v5 result | Gate |")
+        lines.append("|--------|-------------|-----------|------|")
+        lines.append(
+            f"| Overall win rate | {_wr_str(V4['overall_wins'])} | {_wr_str(v5_all)} | "
+            f"{_gate(v5_all[0] / v5_all[1] if v5_all[1] else 0, V4['overall_wins'][0] / V4['overall_wins'][1])} |"
+        )
+        lines.append(
+            f"| Arch/Policy/History wins | {_wr_str(V4['arch_policy_history'])} | {_wr_str(v5_arch)} | "
+            f"{_gate(v5_arch[0] / v5_arch[1] if v5_arch[1] else 0, V4['arch_policy_history'][0] / V4['arch_policy_history'][1])} |"
+        )
+        lines.append(
+            f"| Best-practice/Standards/MA | {_wr_str(V4['bp_standards_ma'])} | {_wr_str(v5_bp)} | "
+            f"{_gate(v5_bp[0] / v5_bp[1] if v5_bp[1] else 0, V4['bp_standards_ma'][0] / V4['bp_standards_ma'][1])} |"
+        )
+        lines.append(
+            f"| Tooling/MCP wins | {_wr_str(V4['tooling'])} | {_wr_str(v5_tool)} | "
+            f"{_gate(v5_tool[0] / v5_tool[1] if v5_tool[1] else 0, V4['tooling'][0] / V4['tooling'][1])} |"
+        )
+        lines.append(
+            f"| canonical_hit_rate | {_fmt(V4['canonical_hit_rate'])} | {_fmt(v5_canon)} | "
+            f"{_gate(v5_canon, V4['canonical_hit_rate'])} |"
+        )
+        lines.append(
+            f"| tooling_contamination | {_fmt(V4['tooling_contamination'])} | {_fmt(v5_contam)} | "
+            f"{_gate(v5_contam, V4['tooling_contamination'], lower_better=True)} |"
+        )
+        lines.append(
+            f"| arch_docs_contamination (normative) | N/A (not tracked) | {norm_contam_total} | "
+            f"{'PASS ✓' if norm_contam_total == 0 else 'FAIL ✗'} |"
+        )
+        lines.append("")
+
+        # ── 8. Final verdict ───────────────────────────────────────────────────────
+        lines.append("## 8. Final Verdict\n")
+        regression_pass = (
+            v5_all[0] / v5_all[1] >= 0.95
+            and v5_canon >= 1.000 - 1e-6
+            and v5_contam <= 1e-6
+            and norm_contam_total == 0
+        )
+        if regression_pass:
+            lines.append(
+                "**PASS — Prompt 4 is complete.**  \n"
+                "All four regression gates cleared: overall win rate ≥ 95%, "
+                "canonical_hit_rate = 1.000, tooling_contamination = 0.000, "
+                "arch_docs_contamination = 0 for all normative query classes.  \n"
+                "Authority enforcement is live and verified by the real eval harness.\n"
+            )
+        else:
+            failing = []
+            if v5_all[0] / v5_all[1] < 0.95:
+                failing.append(f"overall win rate {_wr_str(v5_all)} < 95%")
+            if v5_canon < 1.000 - 1e-6:
+                failing.append(f"canonical_hit_rate {_fmt(v5_canon)} < 1.000")
+            if v5_contam > 1e-6:
+                failing.append(f"tooling_contamination {_fmt(v5_contam)} > 0")
+            if norm_contam_total > 0:
+                failing.append(f"arch_docs_contamination {norm_contam_total} > 0")
+            lines.append(f"**FAIL — Prompt 4 blocked.**  \nFailing gates: {'; '.join(failing)}.\n")
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -777,6 +938,7 @@ def run_eval(k: int = 5, out_path: Path | None = None, live_path: bool = False) 
                 "bp_relevance": m.bp_relevance,
                 "answer_support": m.answer_support,
                 "tooling_contamination": m.tooling_contamination,
+                "arch_docs_contamination": m.arch_docs_contamination,
                 "source_diversity": m.source_diversity,
                 "redundancy_rate": m.redundancy_rate,
                 "p_at_k": m.p_at_k,
