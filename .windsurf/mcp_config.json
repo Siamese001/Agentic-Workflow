@@ -44,7 +44,7 @@
     },
     "filesystem": {
       "_comment": "Constitutional Rule #0: filesystem MCP scope is LOCKED to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Denominator-sensitive read paths: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. NEVER reference C:\\Users\\... or .windsurf\\plans\\ in args.",
-      "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime \u2014 no version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
+      "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime, proxies stdio explicitly, waits for the filesystem readiness banner on stderr, and enforces a 15 second startup watchdog. No version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
       "command": "node",
       "args": [
         "${env:AGENTIC_REPO_ROOT}/.windsurf/scripts/filesystem_mcp_launcher.js",

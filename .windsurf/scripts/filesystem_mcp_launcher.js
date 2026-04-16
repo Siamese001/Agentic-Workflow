@@ -2,17 +2,19 @@
 /**
  * filesystem_mcp_launcher.js
  *
- * Stable, version-pin-free launcher for @modelcontextprotocol/server-filesystem.
+ * Hardened launcher for @modelcontextprotocol/server-filesystem.
  *
- * Design:
- *   - Uses process.execPath (the running node binary) — no hard-coded fnm path.
- *   - Resolves the server script via `npm prefix -g` — survives Node upgrades and
- *     fnm version switches without any config edits.
- *   - No npx, no npm registry fetch, no shell dependency.
- *   - Fails with actionable diagnostics if Node or the package is missing.
+ * Design goals:
+ *   - Uses process.execPath (the running node binary), so no hard-coded fnm path.
+ *   - Resolves the server script via `npm prefix -g`, so Node upgrades do not require config edits.
+ *   - Keeps stdout reserved for MCP JSON-RPC traffic only.
+ *   - Uses explicit stdio proxying instead of bare `inherit`, allowing readiness detection and
+ *     startup timeout enforcement for the child MCP server.
+ *   - Fails fast with actionable diagnostics if Node, npm, or the package is missing.
+ *   - Cleans up the child process deterministically on wrapper shutdown.
  *
  * Usage (invoked by Windsurf from mcp_config.json):
- *   node .windsurf/scripts/filesystem_mcp_launcher.js <allowed-directory>
+ *   node .windsurf/scripts/filesystem_mcp_launcher.js <allowed-directory> [additional-allowed-directory...]
  *
  * Operator note: docs/guides/filesystem_mcp_operations.md
  */
@@ -31,9 +33,22 @@ const PACKAGE_SUBPATH = path.join(
   "index.js"
 );
 
-function die(msg) {
+const STARTUP_TIMEOUT_MS = 15000;
+const READY_MARKER = "Secure MCP Filesystem Server running on stdio";
+
+function die(msg, exitCode = 1) {
   process.stderr.write("[filesystem_mcp_launcher] FATAL: " + msg + "\n");
-  process.exit(1);
+  process.exit(exitCode);
+}
+
+function writeStderr(msg) {
+  process.stderr.write("[filesystem_mcp_launcher] " + msg + "\n");
+}
+
+function clearTimer(timer) {
+  if (timer) {
+    clearTimeout(timer);
+  }
 }
 
 // --- Resolve global npm prefix dynamically ---
@@ -57,6 +72,7 @@ try {
     encoding: "utf8",
     timeout: 10000,
     windowsHide: true,
+    maxBuffer: 1024 * 1024,
   }).trim();
 } catch (e) {
   die(
@@ -92,21 +108,127 @@ const allowedDirs = process.argv.slice(2);
 if (allowedDirs.length === 0) {
   die(
     "No allowed directory argument provided. " +
-      "Expected: node filesystem_mcp_launcher.js <allowed-dir>"
+      "Expected: node filesystem_mcp_launcher.js <allowed-dir> [additional-allowed-dir...]"
   );
 }
 
 // --- Spawn the MCP server ---
-// Use process.execPath so the child uses exactly the same node binary.
+// Do NOT use stdio: "inherit" here.
+// We proxy stdin/stdout/stderr explicitly so we can:
+//   1) keep stdout clean for MCP traffic,
+//   2) detect child readiness from stderr,
+//   3) enforce a bounded startup timeout,
+//   4) cleanly tear down the child on parent exit.
 const child = spawn(process.execPath, [serverScript, ...allowedDirs], {
-  stdio: "inherit",
+  stdio: ["pipe", "pipe", "pipe"],
   windowsHide: true,
+  shell: false,
+  cwd: path.resolve(allowedDirs[0]),
+  env: process.env,
 });
 
+let isReady = false;
+let hasExited = false;
+let stderrBuffer = "";
+let startupTimer = null;
+
+function markReady() {
+  if (isReady) {
+    return;
+  }
+  isReady = true;
+  clearTimer(startupTimer);
+}
+
+function killChild(signal = "SIGTERM") {
+  if (hasExited || child.killed) {
+    return;
+  }
+  try {
+    child.kill(signal);
+  } catch (_) {
+    // Ignore secondary cleanup failures.
+  }
+}
+
+function hardFailStartup(msg) {
+  clearTimer(startupTimer);
+  writeStderr(msg);
+  killChild("SIGTERM");
+  setTimeout(() => killChild("SIGKILL"), 750).unref();
+  setTimeout(() => process.exit(1), 1000).unref();
+}
+
+startupTimer = setTimeout(() => {
+  if (!isReady && !hasExited) {
+    hardFailStartup(
+      "Startup timeout after " + STARTUP_TIMEOUT_MS +
+        " ms waiting for filesystem MCP readiness marker. " +
+        "The child process likely hung before fully initializing."
+    );
+  }
+}, STARTUP_TIMEOUT_MS);
+
 child.on("error", (err) => {
+  hasExited = true;
+  clearTimer(startupTimer);
   die("Failed to start server-filesystem: " + err.message);
 });
 
-child.on("exit", (code, signal) => {
+child.stderr.on("data", (chunk) => {
+  const text = chunk.toString("utf8");
+  process.stderr.write(chunk);
+
+  if (!isReady) {
+    stderrBuffer = (stderrBuffer + text).slice(-8192);
+    if (stderrBuffer.includes(READY_MARKER)) {
+      markReady();
+    }
+  }
+});
+
+child.stdout.on("data", (chunk) => {
+  process.stdout.write(chunk);
+});
+
+process.stdin.on("error", () => {
+  // Ignore stdin proxying errors that can happen during shutdown.
+});
+
+child.stdin.on("error", () => {
+  // Ignore child stdin write-after-close during shutdown races.
+});
+
+process.stdin.pipe(child.stdin);
+
+process.stdin.on("end", () => {
+  if (!hasExited) {
+    try {
+      child.stdin.end();
+    } catch (_) {
+      // Ignore shutdown races.
+    }
+  }
+});
+
+function forwardAndExit(signal, code) {
+  killChild(signal);
+  setTimeout(() => process.exit(code), 250).unref();
+}
+
+process.on("SIGINT", () => forwardAndExit("SIGINT", 130));
+process.on("SIGTERM", () => forwardAndExit("SIGTERM", 143));
+process.on("SIGHUP", () => forwardAndExit("SIGHUP", 129));
+process.on("exit", () => killChild("SIGTERM"));
+
+child.on("close", (code, signal) => {
+  hasExited = true;
+  clearTimer(startupTimer);
+
+  if (signal) {
+    process.exit(1);
+    return;
+  }
+
   process.exit(code !== null ? code : 1);
 });
