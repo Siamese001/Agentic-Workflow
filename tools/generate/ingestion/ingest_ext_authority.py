@@ -329,6 +329,47 @@ EXT_AUTHORITY_SOURCES: list[dict] = [
         "collapse_group": "openai_swarm",
         "required": False,
     },
+    # ── B6.1 gap-close additions (P9–P12) ──────────────────────────────────────
+    # P9 — Dedicated hybrid BM25+dense retrieval tutorial with score fusion (F12)
+    {
+        "path": "https://raw.githubusercontent.com/weaviate/weaviate/main/README.md",
+        "title": "Weaviate — Hybrid BM25 and Dense Vector Search with Fusion Ranking",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "retrieval_rag",
+        "collapse_group": "weaviate",
+        "required": False,
+    },
+    # P10 — Retrieval faithfulness / evidence insufficiency evaluation framework (F14)
+    {
+        "path": "https://raw.githubusercontent.com/explodinggradients/ragas/main/README.md",
+        "title": "RAGAS — RAG Evaluation: Faithfulness, Context Precision and Evidence Sufficiency",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "safety_eval",
+        "collapse_group": "ragas",
+        "required": False,
+    },
+    # P11 — Graceful fallback / abstain / validation failure routing in agent systems (F17)
+    {
+        "path": "https://raw.githubusercontent.com/guardrails-ai/guardrails/main/README.md",
+        "title": "Guardrails AI — Validation Failure Routing, Fallback Values and Abstain Handling",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "safety_eval",
+        "collapse_group": "guardrails_ai",
+        "required": False,
+    },
+    # P12 — Tiered retry / escalation ladder / workflow failure recovery (F25)
+    {
+        "path": "https://raw.githubusercontent.com/temporalio/sdk-python/main/README.md",
+        "title": "Temporal Python SDK — Retry Policies, Workflow Failure Handling and Escalation Tiers",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "orchestration",
+        "collapse_group": "temporal",
+        "required": False,
+    },
 ]
 
 
