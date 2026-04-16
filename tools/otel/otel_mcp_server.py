@@ -194,6 +194,16 @@ def _get_tracer():
     return _tracer_loader.get()
 
 
+def _get_tracer_nonblocking():
+    """Check tracer availability without blocking — returns None if still loading."""
+    return _tracer_loader.get(wait_timeout=0)
+
+
+def _get_runtime_adg_store_nonblocking():
+    """Check store availability without blocking — returns None if still loading."""
+    return _store_loader.get(wait_timeout=0)
+
+
 def _register_lifecycle_traces_once() -> None:
     global _LIFECYCLE_REGISTERED
     if _LIFECYCLE_REGISTERED or not _LIFECYCLE_AVAILABLE:
@@ -228,12 +238,19 @@ def otel_status() -> dict[str, Any]:
         Dictionary with collector status, last trace timestamp, and cache stats.
     """
     _register_lifecycle_traces_once()
-    tracer, tracer_error = _safe_loader_get(_get_tracer, "tracer")
-    store, store_error = _safe_loader_get(_get_runtime_adg_store, "runtime_adg_store")
+    # Non-blocking: check cached state instantly, don't wait for loaders
+    tracer, tracer_error = _safe_loader_get(_get_tracer_nonblocking, "tracer")
+    store, store_error = _safe_loader_get(_get_runtime_adg_store_nonblocking, "runtime_adg_store")
+
+    # Report loading state when resources aren't ready yet
+    tracer_loading = _tracer_loader.is_loading()
+    store_loading = _store_loader.is_loading()
 
     status = {
         "collector_available": tracer is not None and tracer.is_enabled(),
         "runtime_adg_store_available": store is not None,
+        "tracer_loading": tracer_loading,
+        "store_loading": store_loading,
         "last_trace_timestamp": _metrics_cache.get("last_updated", 0),
         "cached_traces": len(_trace_cache),
         "total_traces_processed": _metrics_cache.get("total_traces", 0),
@@ -844,9 +861,20 @@ def _create_mock_trace(trace_id: str) -> dict[str, Any]:
     }
 
 
+def _prewarm() -> None:
+    """Kick off deferred loaders in background before mcp.run().
+
+    Uses wait_timeout=0 so prewarm returns instantly without blocking the
+    handshake.  The daemon threads continue loading while the event loop
+    starts, same pattern that fixed the vector_db hang.
+    """
+    _tracer_loader.get(wait_timeout=0)
+    _store_loader.get(wait_timeout=0)
+    logger.info("Background prewarm started for tracer and runtime-adg-store")
+
+
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, stream=sys.stderr)
     logger.info("Starting OpenTelemetry MCP Server")
-    # NOTE: _register_lifecycle_traces() deferred to first tool call to avoid
-    # blocking MCP handshake — same pattern as other working MCP servers.
+    _prewarm()
     mcp.run(transport="stdio")
