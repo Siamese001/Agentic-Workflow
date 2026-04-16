@@ -10,8 +10,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 _raw_chroma_path = os.environ.get("VECTOR_DB_CHROMA_PATH", "")
 CHROMA_PATH: Path = Path(_raw_chroma_path) if _raw_chroma_path else REPO_ROOT / "data" / "cache" / "chromadb"
-DEFAULT_EMBEDDING_MODEL: str = os.environ.get("VECTOR_DB_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+DEFAULT_EMBEDDING_MODEL: str = os.environ.get("VECTOR_DB_EMBEDDING_MODEL", "BAAI/bge-m3")
 ALLOW_MODEL_DOWNLOAD: bool = os.environ.get("VECTOR_DB_ALLOW_MODEL_DOWNLOAD", "0").strip() == "1"
+VECTOR_DB_DEVICE: str = os.environ.get("VECTOR_DB_DEVICE", "cpu")
 MODEL_LOAD_TIMEOUT: float = float(os.environ.get("VECTOR_DB_MODEL_LOAD_TIMEOUT", "120"))
 CHROMA_INIT_TIMEOUT: float = float(os.environ.get("VECTOR_DB_CHROMA_INIT_TIMEOUT", "30"))
 EMBEDDING_ENCODE_TIMEOUT: float = float(os.environ.get("VECTOR_DB_ENCODE_TIMEOUT", "20"))

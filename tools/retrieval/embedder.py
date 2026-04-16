@@ -15,6 +15,7 @@ from .vector_config import (
     EMBEDDING_QUEUE_WAIT_TIMEOUT,
     KNOWN_MODEL_DIMS,
     MODEL_LOAD_TIMEOUT,
+    VECTOR_DB_DEVICE,
 )
 from .vector_errors import VectorUnavailableError
 
@@ -32,12 +33,14 @@ class EmbeddingRuntime:
         model_load_timeout: float = MODEL_LOAD_TIMEOUT,
         queue_wait_timeout: float = EMBEDDING_QUEUE_WAIT_TIMEOUT,
         model_override: Any | None = None,
+        device: str = VECTOR_DB_DEVICE,
     ) -> None:
         self.model_name = model_name
         self.allow_model_download = allow_model_download
         self.model_load_timeout = model_load_timeout
         self.queue_wait_timeout = queue_wait_timeout
         self._model_override = model_override
+        self.device = device
         self._encode_lock = threading.Lock()
         self._loader = DeferredLoader(
             "embedding-model",
@@ -102,6 +105,24 @@ class EmbeddingRuntime:
         finally:
             self._encode_lock.release()
 
+    def _apply_fp16_if_cuda(self, model: Any) -> None:
+        """Convert model to fp16 when device is cuda; log outcome."""
+        if self.device != "cuda":
+            return
+        try:
+            model.half()
+            logger.info(
+                "MODEL_FP16: model=%r converted to fp16 on device=%r",
+                self.model_name,
+                self.device,
+            )
+        except (AttributeError, RuntimeError) as exc:
+            logger.warning(
+                "MODEL_FP16_SKIP: fp16 unavailable for model=%r — %s",
+                self.model_name,
+                exc,
+            )
+
     def _load_model(self) -> Any:
         _old_tqdm_disable = os.environ.get("TQDM_DISABLE")
         os.environ["TQDM_DISABLE"] = "1"
@@ -120,7 +141,8 @@ class EmbeddingRuntime:
 
         t0 = time.monotonic()
         try:
-            model = SentenceTransformer(self.model_name, local_files_only=True)
+            model = SentenceTransformer(self.model_name, device=self.device, local_files_only=True)
+            self._apply_fp16_if_cuda(model)
             logger.info(
                 "MODEL_LOAD_CACHE: model=%r loaded from local cache in %.2fs",
                 self.model_name,
@@ -141,7 +163,8 @@ class EmbeddingRuntime:
                 "MODEL_LOAD_ONLINE: model=%r not in local cache — downloading from HuggingFace",
                 self.model_name,
             )
-            model = SentenceTransformer(self.model_name)
+            model = SentenceTransformer(self.model_name, device=self.device)
+            self._apply_fp16_if_cuda(model)
             logger.info(
                 "MODEL_LOAD_ONLINE: model=%r download complete in %.2fs",
                 self.model_name,

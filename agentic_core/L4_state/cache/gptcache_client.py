@@ -38,7 +38,7 @@ class NativePersistentCacheClient:
         similarity_threshold: float = 0.95,
         max_entries: int = 10000,
         embedding_provider: str = "chromadb-default",
-        embedding_model: str = "all-MiniLM-L6-v2",
+        embedding_model: str = "BAAI/bge-m3",
     ):
         """Initialize native persistent cache client.
 
@@ -72,14 +72,10 @@ class NativePersistentCacheClient:
             sqlite_path = self.cache_dir / "l2_cache.db"
             self._init_sqlite(sqlite_path)
 
-            # Initialize ChromaDB vector store (persistent) with built-in embeddings
+            # Initialize ChromaDB vector store (persistent) with BGE-M3 embedding function
             chroma_path = self.cache_dir / "chroma"
             self._chroma_client = chromadb.PersistentClient(path=str(chroma_path))
-            # ChromaDB uses default embedding function (all-MiniLM-L6-v2) automatically
-            self._chroma_collection = self._chroma_client.get_or_create_collection(
-                name="l2_semantic_cache",
-                metadata={"hnsw:space": "cosine"},
-            )
+            self._chroma_collection = self._get_or_create_bgem3_collection()
 
             self._cache = "real"
             Logger.info(
@@ -92,6 +88,45 @@ class NativePersistentCacheClient:
         except (OSError, RuntimeError) as e:
             Logger.error(f"Failed to initialize native L2 cache: {e}, using mock")
             self._cache = "mock"
+
+    def _get_or_create_bgem3_collection(self) -> Any:
+        """Get or create l2_semantic_cache with BGE-M3 EF; drops collection if dim-incompatible."""
+        col_name = "l2_semantic_cache"
+        _expected_dim = 1024
+
+        try:
+            from chromadb.utils.embedding_functions import (
+                SentenceTransformerEmbeddingFunction as _STEF,
+            )
+
+            _ef: Any = _STEF(model_name=self.embedding_model)
+        except (ImportError, AttributeError, OSError, RuntimeError, ValueError) as exc:
+            Logger.warning(
+                "L2_CACHE: SentenceTransformerEmbeddingFunction unavailable (%s) — using ChromaDB default EF",
+                exc,
+            )
+            _ef = None
+
+        # Migration guard: drop any collection with incompatible stored dimension
+        try:
+            existing = self._chroma_client.get_collection(col_name)
+            sample = existing.get(limit=1, include=["embeddings"])
+            embeddings = sample.get("embeddings") or []
+            if embeddings and len(embeddings[0]) != _expected_dim:
+                Logger.warning(
+                    "L2_CACHE_MIGRATION: dropping 'l2_semantic_cache' — stored dim=%d incompatible "
+                    "with BGE-M3 dim=%d; existing cache data is invalidated",
+                    len(embeddings[0]),
+                    _expected_dim,
+                )
+                self._chroma_client.delete_collection(col_name)
+        except ValueError:
+            pass  # Collection does not yet exist — will be created below
+
+        kwargs: dict[str, Any] = {"name": col_name, "metadata": {"hnsw:space": "cosine"}}
+        if _ef is not None:
+            kwargs["embedding_function"] = _ef
+        return self._chroma_client.get_or_create_collection(**kwargs)
 
     def _init_sqlite(self, sqlite_path: Path) -> None:
         """Initialize SQLite schema (Phase B: schema-complete) and apply safe migrations."""

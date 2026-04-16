@@ -32,8 +32,8 @@ def ephemeral() -> chromadb.EphemeralClient:
 @pytest.fixture()
 def mock_model():
     model = MagicMock()
-    model.encode.return_value = np.array([[0.1] * 384], dtype=np.float32)
-    model.get_sentence_embedding_dimension.return_value = 384
+    model.encode.side_effect = lambda texts, **kw: np.array([[0.1] * 1024] * len(texts), dtype=np.float32)
+    model.get_sentence_embedding_dimension.return_value = 1024
     return model
 
 
@@ -94,7 +94,7 @@ async def test_adapter_query_collection_formats_results(server, ephemeral, mock_
     collection.upsert(
         ids=["a1"],
         documents=["hello world"],
-        embeddings=[[0.1] * 384],
+        embeddings=[[0.1] * 1024],
         metadatas=[{"source": "unit"}],
     )
 
@@ -106,7 +106,7 @@ async def test_adapter_query_collection_formats_results(server, ephemeral, mock_
 
 
 def test_service_embed_text_return_vectors_flag(service, mock_model):
-    vec = [round(0.1 * i, 4) for i in range(384)]
+    vec = [round(0.1 * i, 4) for i in range(1024)]
     mock_model.encode.return_value = np.array([vec], dtype=np.float32)
     report = service.embed_text(["hello"], return_vectors=True)
     assert report.return_vectors is True
@@ -117,7 +117,7 @@ def test_service_embed_text_return_vectors_flag(service, mock_model):
 
 
 def test_service_embed_text_zero_duration_safe(service, mock_model, monkeypatch):
-    mock_model.encode.return_value = np.array([[0.1] * 384], dtype=np.float32)
+    mock_model.encode.return_value = np.array([[0.1] * 1024], dtype=np.float32)
 
     class _FakeTime:
         values = [0.0, 0.0]
@@ -195,7 +195,7 @@ def test_vector_stats_reports_directory_bytes(service, tmp_path, monkeypatch):
 
 
 def test_list_collections_remains_hot_path_and_placeholder_count(service, ephemeral):
-    ephemeral.create_collection("c1")
+    ephemeral.create_collection("col1")
     text = service.format_list_collections()
     assert "Count: use get_collection_info or vector_stats" in text
 
@@ -204,7 +204,7 @@ def test_list_collections_remains_hot_path_and_placeholder_count(service, epheme
 async def test_adapter_proxies_overrides(server, ephemeral, mock_model):
     new_client = chromadb.EphemeralClient()
     new_model = MagicMock()
-    new_model.encode.return_value = np.array([[0.2] * 384], dtype=np.float32)
+    new_model.encode.return_value = np.array([[0.2] * 1024], dtype=np.float32)
 
     server.chroma_client = new_client
     server.embedding_model = new_model

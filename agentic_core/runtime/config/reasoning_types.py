@@ -57,7 +57,7 @@ class RAGConfig(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
     enabled: bool = True
     vector_store_path: str = "data/vector_store"
-    embedding_model: str = "text-embedding-3-large"
+    embedding_model: str = "BAAI/bge-m3"
     max_context_documents: int = Field(default=5, ge=1, le=50)
     similarity_threshold: float = Field(
         default_factory=lambda: float(os.getenv("RAG_SIMILARITY_THRESHOLD", "0.8")),

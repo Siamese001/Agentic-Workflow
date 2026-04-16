@@ -175,8 +175,8 @@ _emit_gated_by_confidence("p1", "cache_entry_types", "confidence_gate")
 
 Logger: Any = logging.getLogger(__name__)
 SIMILARITY_THRESHOLD = 0.92
-EMBEDDING_MODEL = "text-embedding-3-small"
-EMBEDDING_DIM = 1536
+EMBEDDING_MODEL = "BAAI/bge-m3"
+EMBEDDING_DIM = 1024
 
 
 @dataclass

@@ -173,13 +173,13 @@ class EmbeddingProvider:
         self.model = model
 
     def embed(self, text: str) -> list[float]:
-        return [0.0] * 384  # Default embedding size
+        return [0.0] * 1024  # BGE-M3 embedding size
 
 
 class VectorIndex:
     """Index for vector storage and retrieval."""
 
-    def __init__(self, dimension: int = 384):
+    def __init__(self, dimension: int = 1024):
         self.dimension = dimension
         self._vectors: dict[str, list[float]] = {}
 
