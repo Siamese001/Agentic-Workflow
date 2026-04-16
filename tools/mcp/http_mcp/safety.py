@@ -5,14 +5,13 @@ from __future__ import annotations
 import ipaddress
 from urllib.parse import urlparse
 
-from tools.mcp.http_mcp.constants import ALLOWED_SCHEMES, BLOCKED_HOSTNAMES
+from tools.mcp.http_mcp.constants import ALLOWED_SCHEMES, BLOCKED_HOSTNAMES, BLOCKED_HOSTNAME_SUFFIXES
 
 
 def validate_url(url: str) -> bool:
-    """Validate URL for safety - blocks private IPs, metadata endpoints, and unsafe hostnames."""
+    """Validate URL for safety by blocking unsafe schemes and obvious private targets."""
     try:
         parsed = urlparse(url)
-
         if parsed.scheme not in ALLOWED_SCHEMES:
             return False
 
@@ -20,24 +19,21 @@ def validate_url(url: str) -> bool:
         if not hostname:
             return False
 
-        if hostname.lower() in BLOCKED_HOSTNAMES:
+        normalized = hostname.lower().strip(".")
+        if normalized in BLOCKED_HOSTNAMES:
+            return False
+        if any(normalized.endswith(suffix) for suffix in BLOCKED_HOSTNAME_SUFFIXES):
             return False
 
         try:
-            ip = ipaddress.ip_address(hostname)
-
-            if ip.version == 4:
-                if ip.is_private or ip.is_loopback or ip.is_link_local:
-                    return False
-                if ip == ipaddress.IPv4Address("169.254.169.254"):
-                    return False
-
-            if ip.version == 6:
-                if ip.is_loopback or ip.is_link_local:
-                    return False
+            ip = ipaddress.ip_address(normalized)
         except ValueError:
-            pass
+            return True
 
+        if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved or ip.is_multicast:
+            return False
+        if ip.version == 4 and ip == ipaddress.IPv4Address("169.254.169.254"):
+            return False
         return True
     except (ValueError, AttributeError):
         return False

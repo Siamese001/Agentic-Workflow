@@ -28,7 +28,7 @@ class OTelOpsService:
         self._trace_cache = trace_cache
         self._metrics = metrics
 
-    def status(self) -> dict[str, Any]:
+    def status(self, lifecycle_status: dict[str, Any] | None = None) -> dict[str, Any]:
         tracer, tracer_error = self._loaders.safe_get(self._loaders.get_tracer_nonblocking, "tracer")
         store, store_error = self._loaders.safe_get(self._loaders.get_store_nonblocking, "runtime_adg_store")
 
@@ -37,6 +37,8 @@ class OTelOpsService:
             "runtime_adg_store_available": store is not None,
             "tracer_loading": self._loaders.tracer_loading(),
             "store_loading": self._loaders.store_loading(),
+            "tracer_loaded": self._loaders.tracer_loaded(),
+            "store_loaded": self._loaders.store_loaded(),
             "last_trace_timestamp": self._metrics.last_updated,
             "cached_traces": len(self._trace_cache),
             "total_traces_processed": self._metrics.total_traces,
@@ -48,11 +50,12 @@ class OTelOpsService:
             else 0,
             "tracer_error": tracer_error,
             "store_error": store_error,
+            "lifecycle": lifecycle_status or {},
         }
         logger.info("otel_status_checked", extra=status)
         return status
 
-    def server_info(self) -> dict[str, Any]:
+    def server_info(self, lifecycle_status: dict[str, Any] | None = None) -> dict[str, Any]:
         git_sha = "unavailable"
         try:
             proc = subprocess.run(
@@ -70,7 +73,7 @@ class OTelOpsService:
             pass
 
         current_mtime = Path(self._config.source_file).stat().st_mtime
-        return {
+        result = {
             "pid": self._config.server_pid,
             "start_time_utc": int(self._config.server_start_time),
             "source_file": str(self._config.source_file),
@@ -79,4 +82,10 @@ class OTelOpsService:
             "source_is_stale": current_mtime > self._config.server_source_mtime,
             "git_sha": git_sha,
             "store_cache_populated": self._loaders.store_loaded(),
+            "lifecycle": lifecycle_status or {},
         }
+        logger.info(
+            "otel_server_info_checked",
+            extra={"pid": result["pid"], "source_is_stale": result["source_is_stale"]},
+        )
+        return result

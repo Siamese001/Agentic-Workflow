@@ -1,6 +1,6 @@
 ---
 trigger: glob
-description: Apply when reading or editing the MCP server configuration file to enforce SSOT discipline, auto-sync rules, and secret handling constraints.
+description: Apply when reading or editing the MCP server configuration file to enforce SSOT discipline, strict JSON validity, sync rules, and secret handling constraints.
 globs:
   - ".windsurf/mcp_config.json"
 ---
@@ -8,17 +8,14 @@ globs:
 
 ## Source of Truth
 
-```
-.windsurf/mcp_config.json           ← EDIT HERE (repo-local, version-controlled, Windsurf mcpServers format)
-~/.codeium/windsurf/mcp_config.json ← auto-synced on save via hook (Windsurf reads this at startup)
+```text
+.windsurf/mcp_config.json           ← EDIT HERE (repo-local, version-controlled, strict JSON)
+~/.codeium/windsurf/mcp_config.json ← auto-synced mirror that Windsurf reads at startup
+AGENTS.md                           ← auto-synced MCP Quick Reference section at repo root
 ```
 
-**`.windsurf/mcp_config.json` is the ONE SSOT.** It uses the native Windsurf `mcpServers` JSON
-format. There is no YAML layer, no sync script, no mirror anywhere else in the repo.
-
-**Auto-sync:** The `post_write_mcp_config_sync.py` hook fires automatically on every save of
-`.windsurf/mcp_config.json` and copies it to `~/.codeium/windsurf/mcp_config.json`.
-Restart Windsurf after saving to apply the new config.
+**`.windsurf/mcp_config.json` is the one repo-local SSOT.** It uses the native Windsurf `mcpServers` JSON format.  
+There is no YAML layer, no second repo-local mirror, and no hidden MCP registry file inside `.windsurf/`.
 
 ## Format
 
@@ -27,48 +24,63 @@ Restart Windsurf after saving to apply the new config.
   "mcpServers": {
     "ServerName": {
       "command": "...",
-      "args": [...],
-      "env": { "KEY": "value" },
+      "args": ["..."],
+      "env": {
+        "KEY": "${env:VAR_NAME}"
+      },
       "disabled": false
     }
   }
 }
 ```
 
-- Use `${env:VAR_NAME}` for secrets (Windsurf resolves from its secrets store)
-- Stay under the **100 tool limit** across all enabled MCP servers
-- API keys as `${env:VAR_NAME}` placeholders only — never hardcoded
+- The file must be valid **strict JSON**. No trailing commas.
+- Use `${env:VAR_NAME}` placeholders for secrets. Never hardcode tokens.
+- Keep the **server IDs** stable. They are the authoritative names used for AGENTS sync and team whitelists.
+- Live tool prefixes like `mcp0_`, `mcp1_`, and `mcp2_` are **not stable**. Resolve them from the current tool list.
+
+## Sync Contract
+
+Saving `.windsurf/mcp_config.json` triggers `.windsurf/scripts/post_write_mcp_config_sync.py`, which:
+
+1. Validates strict JSON structure
+2. Backs up and overwrites `~/.codeium/windsurf/mcp_config.json`
+3. Refreshes the repo-root `AGENTS.md` MCP Quick Reference section
+4. Optionally upserts the Notion MCP Registry when `NOTION_TOKEN` is available
+
+Manual repair path:
+
+```bash
+python .windsurf/scripts/sync_mcp_config.py
+```
 
 ## Adding / Removing MCP Servers
 
 1. Edit `.windsurf/mcp_config.json`
-2. Save — hook auto-copies to `~/.codeium/windsurf/mcp_config.json`
+2. Save and let the post-write sync run
 3. Restart Windsurf
-4. Update `docs/guides/MCP_Registry.md`
-5. Run health check: `python ops_scripts/ci/mcp_health_check.py`
+4. Confirm the AGENTS Quick Reference section was refreshed
+5. Run your normal MCP health check flow
 
 ## Hard Constraints
 
-- **NEVER** add a `config/mcp_servers.yaml` layer — archived in W5.2, do not restore
-- **NEVER** add a sync script — the YAML sync infra is archived in `tools/archive/mcp_yaml_infra_w5.2/`
-- **NEVER** create a second copy of MCP config anywhere in the repo
-- **DO NOT** exceed 100 total tools across all MCPs — Windsurf hard limit
+- **NEVER** reintroduce a YAML MCP layer
+- **NEVER** keep a second repo-local MCP config mirror
+- **NEVER** hardcode secrets into `command`, `args`, `env`, `url`, `serverUrl`, or `headers`
+- **DO NOT** exceed 100 enabled tools across all MCPs
 
 ## Enforcement
 
 | Layer | Mechanism |
-|-------|-----------|
-| Windsurf rule | This file (triggers on `.windsurf/mcp_config.json` edits) |
-| T1 hook | `post_write_mcp_config_sync.py` — auto-syncs to global on every save of mcp_config.json |
-| T1 hook | `post_write_audit.py` — JSON lint on every mcp_config.json write |
-| T1 hook | `pre_write_gate.py` — blocks deletion of mcp_config.json (DENY) |
-| Drift check | `tools/generate/integration/mcp_drift.py` — runs during ADG generation |
-| Health check | `python ops_scripts/ci/mcp_health_check.py` |
+|---|---|
+| Windsurf rule | This file (fires on `.windsurf/mcp_config.json` edits) |
+| T1 hook | `post_write_mcp_config_sync.py` — validates, syncs global config, refreshes AGENTS.md |
+| T1 hook | `post_write_audit.py` — JSON-native lint on every MCP config write |
+| T1 hook | `pre_write_gate.py` — blocks deletion of `mcp_config.json` |
+| Manual repair | `sync_mcp_config.py` — one-shot repair for global config + AGENTS quick reference |
 
 ## References
 
 - Repo SSOT: `.windsurf/mcp_config.json`
-- Global (Windsurf reads): `~/.codeium/windsurf/mcp_config.json`
-- Registry: `docs/guides/MCP_Registry.md`
-- Archive: `tools/archive/mcp_yaml_infra_w5.2/` (YAML infra + sync script — do not restore)
-- ADR: `docs/architecture/adr/ADR-002-mcp-config-single-sync-script.md`
+- Global runtime mirror: `~/.codeium/windsurf/mcp_config.json`
+- Repo guidance surface: `AGENTS.md`

@@ -4,87 +4,75 @@
       {
         "command": "python .windsurf/scripts/pre_run_gate.py",
         "working_directory": ".",
-        "show_output": true,
-        "powershell": "python .windsurf/scripts/pre_run_gate.py"
+        "show_output": true
       }
     ],
     "pre_write_code": [
       {
         "command": "python .windsurf/scripts/pre_write_gate.py",
         "working_directory": ".",
-        "show_output": true,
-        "powershell": "python .windsurf/scripts/pre_write_gate.py"
+        "show_output": true
       }
     ],
     "pre_mcp_tool_use": [
       {
         "command": "python .windsurf/scripts/pre_mcp_gate.py",
         "working_directory": ".",
-        "show_output": true,
-        "powershell": "python .windsurf/scripts/pre_mcp_gate.py"
+        "show_output": true
       }
     ],
     "pre_user_prompt": [
       {
         "command": "python .windsurf/scripts/pre_prompt_classifier.py",
         "working_directory": ".",
-        "show_output": true,
-        "powershell": "python .windsurf/scripts/pre_prompt_classifier.py"
+        "show_output": true
       }
     ],
     "post_write_code": [
       {
         "command": "python .windsurf/scripts/post_write_audit.py",
         "working_directory": ".",
-        "show_output": true,
-        "powershell": "python .windsurf/scripts/post_write_audit.py"
+        "show_output": true
       },
       {
         "command": "python .windsurf/scripts/post_write_mcp_config_sync.py",
         "working_directory": ".",
-        "show_output": true,
-        "powershell": "python .windsurf/scripts/post_write_mcp_config_sync.py"
+        "show_output": true
       }
     ],
     "post_run_command": [
       {
         "command": "python .windsurf/scripts/post_run_audit.py",
         "working_directory": ".",
-        "show_output": false,
-        "powershell": "python .windsurf/scripts/post_run_audit.py"
+        "show_output": false
       }
     ],
     "post_mcp_tool_use": [
       {
         "command": "python .windsurf/scripts/post_mcp_audit.py",
         "working_directory": ".",
-        "show_output": false,
-        "powershell": "python .windsurf/scripts/post_mcp_audit.py"
+        "show_output": false
       }
     ],
     "post_cascade_response": [
       {
         "command": "python .windsurf/scripts/post_cascade_cleanup.py",
-        "working_directory": ".",
-        "powershell": "python .windsurf/scripts/post_cascade_cleanup.py"
+        "working_directory": "."
       },
       {
         "command": "python .windsurf/scripts/post_cascade_hitl_capture.py",
-        "working_directory": ".",
-        "powershell": "python .windsurf/scripts/post_cascade_hitl_capture.py"
+        "working_directory": "."
       },
       {
         "command": "python .windsurf/scripts/post_cascade_adg_audit.py",
-        "working_directory": ".",
-        "powershell": "python .windsurf/scripts/post_cascade_adg_audit.py"
+        "working_directory": "."
       }
     ],
     "post_setup_worktree": [
       {
         "command": "python .windsurf/scripts/post_setup_worktree.py",
         "working_directory": ".",
-        "show_output": true,
-        "powershell": "python .windsurf/scripts/post_setup_worktree.py"
+        "show_output": true
       }
     ]
   }

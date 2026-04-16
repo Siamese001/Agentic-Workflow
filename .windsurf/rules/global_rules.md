@@ -8,14 +8,18 @@ These are compact, always-on policy statements covering cross-cutting concerns.
 Enforcement is at Tier 1 (hooks), Tier 4 (pre-commit), or Tier 5 (CI).
 This file is the single source of truth for these policy topics.
 
+## Tool Prefix Stability
+
+Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as `mcp0_`, `mcp1_`, and `mcp2_` can shift whenever servers are added, removed, or reordered. Prefer stable server IDs plus bare tool names in documentation, and resolve the live prefix from the current tool list.
+
 ---
 
 ## MCP Green Light
 
 Before starting ANY T2/T3 work, check ADG health in this order:
 1. **Preferred**: Check Redis hot cache — `python tools/adg/adg_redis_ingest.py --check` (exit 0 = hot, fast in-memory path)
-2. **Fallback**: If Redis is down or cache is cold, call `mcp1_adg_health`
-3. If `mcp1_adg_health` is unhealthy: run `/mcp-failure-rca` and wait for recovery.
+2. **Fallback**: If Redis is down or cache is cold, call `adg_health`
+3. If `adg_health` is unhealthy: run `/mcp-failure-rca` and wait for recovery.
 
 NEVER begin multi-file work with both Redis cold AND ADG MCP unhealthy.
 Tier 1 enforcement: `pre_prompt_classifier.py` checks Redis sentinel first, falls back to ADG MCP probe.
@@ -28,12 +32,12 @@ Dependency analysis MUST use ADG MCP tools - NOT grep or text search.
 
 | Query Need | Required Tool |
 |------------|---------------|
-| Find by layer | `mcp1_adg_nodes_by_layer` |
-| Find by file | `mcp1_adg_nodes_by_file` |
-| Outgoing deps | `mcp1_adg_edge_fanout` |
-| Incoming deps | `mcp1_adg_edge_fanin` |
-| Node details | `mcp1_adg_node` |
-| Health check (before fallback) | `mcp1_adg_health` |
+| Find by layer | `adg_nodes_by_layer` |
+| Find by file | `adg_nodes_by_file` |
+| Outgoing deps | `adg_edge_fanout` |
+| Incoming deps | `adg_edge_fanin` |
+| Node details | `adg_node` |
+| Health check (before fallback) | `adg_health` |
 | Degraded fallback | grep allowed ONLY after health red — emit `DEGRADED_FALLBACK: reason=<...>` |
 
 `grep_search` for dependency analysis is FORBIDDEN. Use it only to confirm literals.
@@ -80,10 +84,10 @@ Location SSOT: `.windsurf/plans/<name>-<6hex>.md`
 ## ADG SQLite Lock Protocol
 
 Before restarting any MCP server:
-1. Call `mcp1_adg_close_connections`
+1. Call `adg_close_connections`
 2. Restart MCP server
-3. Call `mcp1_adg_reopen_connections`
-4. Verify with `mcp1_adg_health`
+3. Call `adg_reopen_connections`
+4. Verify with `adg_health`
 
 Tier 1 enforcement: `pre_mcp_gate.py` blocks ADG calls when SQLite write lock detected.
 
@@ -95,6 +99,15 @@ Each capability has exactly ONE authoritative MCP. Overlaps documented in `docs/
 Before adding a new MCP, verify no existing MCP covers the capability.
 
 Known authority assignments:
-- File reads: `filesystem` (local), `github` (remote)
-- HTTP requests: `enhanced_http` is the **sole authority** for ALL programmatic HTTP calls. Use the `enhanced_http` tools: `http_get`, `http_post`, `http_put`, `http_delete`, `http_head`, `test_connectivity`, `batch_requests` (injected by Windsurf as `mcp{N}_<tool>` builtins; use the logical name, not the numeric prefix). Use `read_url_content` **only** when the request requires explicit user approval before the fetch executes (that native tool gates on user consent and is not for programmatic API calls). Decision rule: if the call is autonomous/programmatic → `enhanced_http`; if the user must approve the URL before fetching → `read_url_content`.
-- Project context: `adg_sqlite` (structural), `memory` (episodic)
+- **Structural dependencies**: `adg_sqlite` (live prefix varies) — sole authority for imports, consumers, blast radius, layer analysis. `grep_search` FORBIDDEN for dependency analysis.
+- **Persistent memory**: `memory` (live prefix varies) — sole authority for cross-session knowledge graph (entities, relations, observations). NOT Windsurf built-in `create_memory`.
+- **Semantic search**: `vector_db` (live prefix varies) — sole authority for meaning-based lookup, embeddings, similarity search. NOT for structural deps (→ `adg_sqlite`), NOT for episodic recall (→ `memory`).
+- **Task tracking**: `task_manager` (live prefix varies) — sole authority for structured task decomposition and status tracking.
+- **File system**: `filesystem` (live prefix varies) — local file operations. Prefer native `read_file` for normal reads; use `mcp4_` for head/tail, media files, batch reads, directory trees.
+- **Tests**: `pytest_mcp` (live prefix varies) — sole authority for test execution, discovery, coverage. Prefer over `run_command` with pytest.
+- **Git operations**: `GitKraken` (live prefix varies) — sole authority for git state, commits, branches, PRs, issues, GitLens features.
+- **Notion**: `notion` (live prefix varies) — sole authority for project management databases (plans, HITL decisions, ADRs, SC/AP violations, MCP registry, SVP reviews).
+- **Observability**: `otel_mcp` (live prefix varies) — sole authority for runtime traces, anomalies, policy decisions, healing chains, metrics.
+- **HTTP requests**: `enhanced_http` (live prefix varies) — **sole authority** for ALL programmatic HTTP calls. Use `read_url_content` ONLY when explicit user approval of the URL is required before fetching. Decision rule: autonomous/programmatic → `enhanced_http`; user must approve → `read_url_content`.
+- **Redis cache**: `redis` (live prefix varies) — sole authority for ADG hot-cache inspection, cache invalidation, and Redis health monitoring.
+- **External repo docs**: `deepwiki` (live prefix varies) — sole authority for AI-powered documentation lookup on external GitHub repositories. NOT for this repo (use `adg_sqlite` + `read_file`).

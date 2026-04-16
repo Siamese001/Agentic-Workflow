@@ -5,7 +5,7 @@ from typing import Any
 
 
 def create_mock_trace(trace_id: str) -> dict[str, Any]:
-    """Create mock trace data when explicitly enabled for local testing."""
+    """Create a mock trace for demonstration purposes."""
     now_ms = int(time.time()) * 1000
     mock_spans = [
         {
@@ -45,9 +45,12 @@ def create_mock_trace(trace_id: str) -> dict[str, Any]:
 
     adg_edges: list[dict[str, Any]] = []
     for span in mock_spans:
-        if not span["parent_span_id"]:
+        parent_span_id = span.get("parent_span_id")
+        if not parent_span_id:
             continue
-        parent_span = next((item for item in mock_spans if item["span_id"] == span["parent_span_id"]), None)
+        parent_span = next(
+            (candidate for candidate in mock_spans if candidate.get("span_id") == parent_span_id), None
+        )
         if parent_span is None:
             continue
         adg_edges.append(

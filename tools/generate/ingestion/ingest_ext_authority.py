@@ -5,8 +5,10 @@ Replaces: web-source portions of ingest_curated_agent_docs.py (RETIRED in Wave B
 See     : docs/requirements/wave_b_chromadb_topology.md
           docs/requirements/wave_b_metadata_contract.md
 
-Ingest 25 vetted external web sources into the ``ext_authority`` collection.
+Ingest 30 vetted external web sources into the ``ext_authority`` collection.
 B6 additions (7 sources) close proven blocking families F06/F08/F09/F12/F13/F14/F17/F25.
+B6.1 additions (4 sources) close F12/F14/F17; P12 (Temporal) attempted F25.
+B6.2 addition (1 source, P13) closes F25 with AI-native durable execution + human escalation.
 
 Lane A — target_state_authority / T2_standard:
     MCP Python SDK README (canonical spec source)
@@ -89,7 +91,7 @@ _LANE_A_URLS: frozenset[str] = frozenset(
 )
 
 # ── Source catalogue ──────────────────────────────────────────────────────────
-# 18 vetted external web documents.  Source band is derived by _assign_source_band().
+# 30 vetted external web documents.  Source band is derived by _assign_source_band().
 
 EXT_AUTHORITY_SOURCES: list[dict] = [
     # Lane A — target_state_authority (T2_standard)
@@ -368,6 +370,29 @@ EXT_AUTHORITY_SOURCES: list[dict] = [
         "doc_family": "reference",
         "topic_bucket": "orchestration",
         "collapse_group": "temporal",
+        "required": False,
+    },
+    # ── B6.2 gap-close addition (P13) ──────────────────────────────────────────
+    # P13 — AI-native durable execution, human-in-the-loop escalation and agent failure recovery (F25)
+    {
+        "path": "https://raw.githubusercontent.com/langchain-ai/langgraph/main/libs/langgraph/README.md",
+        "title": "LangGraph — Durable Execution, Human-in-the-Loop Escalation and Agent Failure Recovery",
+        "doc_type": "markdown",
+        "doc_family": "reference",
+        "topic_bucket": "orchestration",
+        "collapse_group": "langgraph_core",
+        "required": False,
+    },
+    # ── B6.3 gap-close addition (P14) ──────────────────────────────────────────
+    # P14 — Tiered autonomy levels, registered auto-reply (model retry), human-in-the-loop
+    #        escalation, and dynamic dispatch routing in multi-agent conversations (F25)
+    {
+        "path": "https://raw.githubusercontent.com/microsoft/autogen/0.2/website/docs/Use-Cases/agent_chat.md",
+        "title": "AutoGen — Multi-Agent Conversation: Tiered Autonomy, Human-in-the-Loop Escalation and Dynamic Dispatch Routing",
+        "doc_type": "markdown",
+        "doc_family": "guide",
+        "topic_bucket": "orchestration",
+        "collapse_group": "autogen_docs",
         "required": False,
     },
 ]

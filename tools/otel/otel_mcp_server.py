@@ -7,9 +7,8 @@ Refactored surface that preserves the tool contract while separating:
 - lifecycle registration
 - deferred resource loading
 
-This version keeps the known bug fix from the uploaded working file:
-- background prewarm before mcp.run()
-- non-blocking otel_status loader checks
+This version preserves the known non-blocking loader fix and hardens the
+health path so `otel_status` and `otel_server_info` stay side-effect free.
 """
 
 from __future__ import annotations
@@ -63,6 +62,7 @@ register_tools(
 
 def _prewarm() -> None:
     loaders.prewarm()
+    lifecycle.start_background()
 
 
 if __name__ == "__main__":

@@ -8,6 +8,37 @@ description: Use this rule when reading or writing to the persistent memory grap
 
 Define discipline for maintaining a clean, performant memory graph. Prevent accumulation of stale session data that bloats queries and burns context window.
 
+## Rule 0: Session Lifecycle (Read/Write/Maintain)
+
+Memory tools MUST be invoked at these lifecycle points — they are not optional:
+
+### Mandatory Reads
+
+| Trigger | Action |
+|---------|--------|
+| **Start of every conversation** | `mcp5_mem_recall_session_start` — load layers, constitutional rules, architectural decisions. This is the **first tool call** in any session. |
+| User asks about past context | `mcp5_search_nodes(query=...)` or `mcp5_open_nodes(names=[...])` |
+| Before HITL decisions | `mcp5_search_nodes` — check for historical precedent |
+
+### Proactive Writes
+
+| Trigger | Action |
+|---------|--------|
+| Architecture decision made | `mcp5_create_entities` with `entityType="ArchitecturalDecision"` |
+| HITL decision resolved | `mcp5_add_observations` to record chosen option + reasoning |
+| New pattern established | `mcp5_create_entities` with `entityType="ProceduralPattern"` |
+| User says "remember this" | `mcp5_create_entities` or `mcp5_add_observations` |
+| After ADG regeneration | `mcp5_mem_import_adg_context` |
+| Refactor completed | `mcp5_add_observations` with outcome and lessons learned |
+
+### Maintenance
+
+| Trigger | Action |
+|---------|--------|
+| Weekly / after milestones | `mcp5_mem_cleanup_stale(older_than_days=7)` |
+| Health check | `mcp5_mem_get_stats` |
+| After cleanup | `mcp5_mem_import_adg_context` to re-seed |
+
 ## Rule 1: Protected Types Never Deleted
 
 The following entity types are **protected** and never purged:

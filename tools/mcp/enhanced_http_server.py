@@ -14,7 +14,7 @@ from tools.mcp.mcp_bootstrap import create_mcp_server, run_server
 
 mcp = create_mcp_server(
     "http",
-    "Advanced HTTP client with auth, retries, bounded responses, and batch requests.",
+    "Resilient HTTP client with retries, proxy awareness, bounded responses, and batch requests.",
 )
 
 register_http_tools(mcp)

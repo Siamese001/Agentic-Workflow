@@ -1,114 +1,167 @@
 {
-    "_note": "VERSION-CONTROLLED REFERENCE ONLY. The authoritative Windsurf MCP config read at startup is ~/.codeium/windsurf/mcp_config.json. Changes here are synced to global by .windsurf/scripts/post_write_mcp_config_sync.py. Edit this file; the hook propagates to global.",
-    "mcpServers": {
-        "GitKraken": {
-            "command": "${env:GITKRAKEN_GK_PATH}",
-            "args": ["mcp", "--host=windsurf", "--source=gitlens", "--scheme=windsurf"],
-            "disabled": false,
-        },
-        "adg_sqlite": {
-            "command": "python",
-            "args": ["-u", "-m", "tools.adg.mcp.server"],
-            "disabled": false,
-            "env": {
-                "ADG_DIR": "${env:AGENTIC_REPO_ROOT}/artifacts/adg",
-                "ADG_REDIS_URL": "redis://localhost:6379/0",
-                "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
-                "PYTHONUNBUFFERED": "1",
-            },
-        },
-        "deepwiki": {"url": "https://mcp.deepwiki.com/mcp", "disabled": false},
-        "enhanced_http": {
-            "command": "python",
-            "args": ["-u", "${env:AGENTIC_REPO_ROOT}/tools/mcp/enhanced_http_server.py"],
-            "disabled": false,
-            "env": {"PYTHONPATH": "${env:AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1"},
-        },
-        "filesystem": {
-            "_comment": "Constitutional Rule #0: filesystem MCP scope is LOCKED to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Denominator-sensitive read paths: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. NEVER reference C:\\Users\\... or .windsurf\\plans\\ in args.",
-            "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime — no version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
-            "command": "node",
-            "args": [
-                "${env:AGENTIC_REPO_ROOT}/.windsurf/scripts/filesystem_mcp_launcher.js",
-                "${env:AGENTIC_REPO_ROOT}",
-            ],
-            "disabled": false,
-        },
-        "memory": {
-            "command": "python",
-            "args": ["-u", "${env:AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py"],
-            "disabled": false,
-            "env": {
-                "ADG_REDIS_URL": "redis://localhost:6379/0",
-                "MEMORY_DB": "${env:AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite",
-                "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
-                "PYTHONUNBUFFERED": "1",
-            },
-        },
-        "vector_db": {
-            "command": "python",
-            "args": ["-u", "${env:AGENTIC_REPO_ROOT}/tools/mcp/vector_db_server.py"],
-            "disabled": false,
-            "env": {
-                "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
-                "VECTOR_DB_CHROMA_PATH": "${env:AGENTIC_REPO_ROOT}/data/cache/chromadb",
-                "VECTOR_DB_EMBEDDING_MODEL": "BAAI/bge-m3",
-                "VECTOR_DB_ALLOW_MODEL_DOWNLOAD": "0",
-                "HF_HUB_OFFLINE": "1",
-                "VECTOR_DB_MAX_BATCH": "32",
-                "VECTOR_DB_MAX_QUERY_RESULTS": "100",
-                "VECTOR_DB_MAX_SEARCH_RESULTS": "20",
-                "VECTOR_DB_LOG_LEVEL": "INFO",
-                "VECTOR_DB_MODEL_LOAD_TIMEOUT": "120",
-                "TOKENIZERS_PARALLELISM": "false",
-                "PYTHONUNBUFFERED": "1",
-                "VECTOR_DB_ENCODE_TIMEOUT": "20",
-                "VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT": "90",
-                "VECTOR_DB_QUERY_COLLECTION_TIMEOUT": "40",
-                "VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT": "15",
-                "VECTOR_DB_SEARCH_GLOBAL_TIMEOUT": "60",
-                "VECTOR_DB_PREWARM_QUERY_TEXT": "warmup",
-                "MCP_MAX_THREADPOOL_WORKERS": "2",
-                "VECTOR_DB_QUERY_BATCH_WINDOW_MS": "15",
-                "VECTOR_DB_QUERY_EMBED_MAX_BATCH": "8",
-            },
-        },
-        "otel_mcp": {
-            "command": "python",
-            "args": ["-u", "${env:AGENTIC_REPO_ROOT}/tools/otel/otel_mcp_server.py"],
-            "disabled": false,
-            "env": {"PYTHONPATH": "${env:AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1"},
-        },
-        "task_manager": {
-            "command": "cmd",
-            "args": ["/c", "npx", "-y", "@blizzy/mcp-task-manager", "stdio"],
-            "disabled": false,
-        },
-        "redis": {
-            "command": "python",
-            "args": ["-u", "${env:AGENTIC_REPO_ROOT}/tools/mcp/redis_mcp_server.py"],
-            "disabled": false,
-            "env": {
-                "REDIS_DB": "0",
-                "REDIS_HOST": "localhost",
-                "REDIS_PORT": "6379",
-                "REDIS_TIMEOUT": "5",
-                "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
-                "PYTHONUNBUFFERED": "1",
-            },
-        },
-        "pytest_mcp": {
-            "command": "python",
-            "args": ["-u", "${env:AGENTIC_REPO_ROOT}/tools/mcp/pytest_server.py"],
-            "disabled": false,
-            "env": {"PYTHONPATH": "${env:AGENTIC_REPO_ROOT}", "PYTHONUNBUFFERED": "1"},
-        },
-        "notion": {
-            "_auth": "Requires NOTION_TOKEN set as a Windows OS environment variable (setx NOTION_TOKEN secret_...). The npx subprocess inherits it from Windsurf's process env. Without it the server starts but every API call returns HTTP 401. Create at https://www.notion.so/my-integrations (Internal integration). pre_mcp_gate blocks with an actionable message when the variable is absent.",
-            "command": "cmd",
-            "args": ["/c", "npx", "-y", "@notionhq/notion-mcp-server"],
-            "disabled": false,
-        },
+  "_note": "VERSION-CONTROLLED REFERENCE ONLY. The authoritative Windsurf MCP config read at startup is ~/.codeium/windsurf/mcp_config.json. Changes here are synced to global by .windsurf/scripts/post_write_mcp_config_sync.py. Edit this file; the hook propagates to global.",
+  "mcpServers": {
+    "GitKraken": {
+      "command": "${env:GITKRAKEN_GK_PATH}",
+      "args": [
+        "mcp",
+        "--host=windsurf",
+        "--source=gitlens",
+        "--scheme=windsurf"
+      ],
+      "disabled": false
     },
-    "_bootstrap_env": "Set AGENTIC_REPO_ROOT to your local repo root and GITKRAKEN_GK_PATH to the GitKraken CLI executable. Keep tokens in OS env vars; Windsurf supports ${env:VAR_NAME} interpolation in command/args/env/url/header fields.",
+    "adg_sqlite": {
+      "command": "python",
+      "args": [
+        "-u",
+        "-m",
+        "tools.adg.mcp.server"
+      ],
+      "disabled": false,
+      "env": {
+        "ADG_DIR": "${env:AGENTIC_REPO_ROOT}/artifacts/adg",
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "deepwiki": {
+      "url": "https://mcp.deepwiki.com/mcp",
+      "disabled": false
+    },
+    "enhanced_http": {
+      "command": "python",
+      "args": [
+        "-u",
+        "${env:AGENTIC_REPO_ROOT}/tools/mcp/enhanced_http_server.py"
+      ],
+      "disabled": false,
+      "env": {
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "filesystem": {
+      "_comment": "Constitutional Rule #0: filesystem MCP scope is LOCKED to repo root only. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Denominator-sensitive read paths: agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. NEVER reference C:\\Users\\... or .windsurf\\plans\\ in args.",
+      "_startup": "Launcher: node .windsurf/scripts/filesystem_mcp_launcher.js resolves the server script via npm prefix -g at runtime \u2014 no version-pinned paths. To upgrade package: npm install -g @modelcontextprotocol/server-filesystem@<new-version>, restart Windsurf. Operator note: docs/guides/filesystem_mcp_operations.md",
+      "command": "node",
+      "args": [
+        "${env:AGENTIC_REPO_ROOT}/.windsurf/scripts/filesystem_mcp_launcher.js",
+        "${env:AGENTIC_REPO_ROOT}"
+      ],
+      "disabled": false
+    },
+    "memory": {
+      "command": "python",
+      "args": [
+        "-u",
+        "${env:AGENTIC_REPO_ROOT}/tools/memory/adg_memory_server.py"
+      ],
+      "disabled": false,
+      "env": {
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "MEMORY_DB": "${env:AGENTIC_REPO_ROOT}/artifacts/memory/knowledge_graph.sqlite",
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "vector_db": {
+      "command": "python",
+      "args": [
+        "-u",
+        "${env:AGENTIC_REPO_ROOT}/tools/mcp/vector_db_server.py"
+      ],
+      "disabled": false,
+      "env": {
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
+        "VECTOR_DB_CHROMA_PATH": "${env:AGENTIC_REPO_ROOT}/data/cache/chromadb",
+        "VECTOR_DB_EMBEDDING_MODEL": "BAAI/bge-m3",
+        "VECTOR_DB_ALLOW_MODEL_DOWNLOAD": "0",
+        "HF_HUB_OFFLINE": "1",
+        "VECTOR_DB_MAX_BATCH": "32",
+        "VECTOR_DB_MAX_QUERY_RESULTS": "100",
+        "VECTOR_DB_MAX_SEARCH_RESULTS": "20",
+        "VECTOR_DB_LOG_LEVEL": "INFO",
+        "VECTOR_DB_MODEL_LOAD_TIMEOUT": "120",
+        "TOKENIZERS_PARALLELISM": "false",
+        "PYTHONUNBUFFERED": "1",
+        "VECTOR_DB_ENCODE_TIMEOUT": "20",
+        "VECTOR_DB_ENCODE_QUEUE_WAIT_TIMEOUT": "90",
+        "VECTOR_DB_QUERY_COLLECTION_TIMEOUT": "40",
+        "VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT": "15",
+        "VECTOR_DB_SEARCH_GLOBAL_TIMEOUT": "60",
+        "VECTOR_DB_PREWARM_QUERY_TEXT": "warmup",
+        "MCP_MAX_THREADPOOL_WORKERS": "2",
+        "VECTOR_DB_QUERY_BATCH_WINDOW_MS": "15",
+        "VECTOR_DB_QUERY_EMBED_MAX_BATCH": "8"
+      }
+    },
+    "otel_mcp": {
+      "command": "python",
+      "args": [
+        "-u",
+        "${env:AGENTIC_REPO_ROOT}/tools/otel/otel_mcp_server.py"
+      ],
+      "disabled": false,
+      "env": {
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "task_manager": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@blizzy/mcp-task-manager",
+        "stdio"
+      ],
+      "disabled": false
+    },
+    "redis": {
+      "command": "python",
+      "args": [
+        "-u",
+        "${env:AGENTIC_REPO_ROOT}/tools/mcp/redis_mcp_server.py"
+      ],
+      "disabled": false,
+      "env": {
+        "REDIS_DB": "0",
+        "REDIS_HOST": "localhost",
+        "REDIS_PORT": "6379",
+        "REDIS_TIMEOUT": "5",
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "pytest_mcp": {
+      "command": "python",
+      "args": [
+        "-u",
+        "${env:AGENTIC_REPO_ROOT}/tools/mcp/pytest_server.py"
+      ],
+      "disabled": false,
+      "env": {
+        "PYTHONPATH": "${env:AGENTIC_REPO_ROOT}",
+        "PYTHONUNBUFFERED": "1"
+      }
+    },
+    "notion": {
+      "_auth": "Requires NOTION_TOKEN set as a Windows OS environment variable (setx NOTION_TOKEN secret_...). The env block below passes it explicitly to the npx subprocess \u2014 do not rely on implicit inheritance. Create token at https://www.notion.so/my-integrations (Internal integration). pre_mcp_gate blocks with an actionable message when the variable is absent.",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@notionhq/notion-mcp-server"
+      ],
+      "disabled": false,
+      "env": {
+        "NOTION_TOKEN": "${env:NOTION_TOKEN}"
+      }
+    }
+  },
+  "_bootstrap_env": "Set AGENTIC_REPO_ROOT to your local repo root and GITKRAKEN_GK_PATH to the GitKraken CLI executable. Keep tokens in OS env vars; Windsurf supports ${env:VAR_NAME} interpolation in command/args/env/url/header fields."
 }

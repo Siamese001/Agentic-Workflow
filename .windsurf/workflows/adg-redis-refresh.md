@@ -99,28 +99,16 @@ python tools/adg/redis_health_check.py --verbose
 
 **Gate:** Must see `cache HOT` with `node_count` >= 8000 before proceeding.
 
-**Option B — custom `adg_redis` MCP tools (preferred after Windsurf restart picks up the server):**
+**Option B — current MCP servers (preferred after Windsurf restart picks up the config):**
 
-Call `adg_status` — returns structured JSON with `is_fresh`, `timestamp`, `node_count`,
-`edge_count`, `age_seconds`, `verdict`, and `sqlite_disk_mtime` comparison.
-Response also includes `cache_meta` footer on every tool call so freshness is always visible.
+Use the current `redis` and `adg_sqlite` servers together:
 
-For an authoritative disk+Redis verdict (reads HGETALL adg:meta AND stats the SQLite file):
-```
-adg_assert_fresh()
-```
+- `redis_health` or `redis_namespace_stats` for Redis liveness and namespace freshness
+- `redis_hgetall` / `redis_keys` / `redis_ttl` for low-level cache inspection
+- `adg_status` / `adg_health` for authoritative graph readiness and disk-backed status
 
-> **Why the custom server?** The marketplace `@modelcontextprotocol/server-redis` was
-> disabled — it exposes only `get/set/delete/list` (STRING-only).  All ADG cache keys
-> are HASH or SET types, making 99% of the cache inaccessible.  The custom server at
-> `tools/adg/adg_mcp_server.py` (wired as `adg_redis` in `mcp_config.json`) provides:
-> - HGETALL (`adg_meta`, `adg_node`)
-> - SMEMBERS (`adg_nodes_by_layer`, `adg_nodes_by_file`, `adg_edge_fanout`, `adg_edge_fanin`)
-> - LRANGE (`adg_violations`)
-> - TYPE / TTL / SCAN (`redis_type`, `redis_ttl`, `redis_scan`)
-> - Freshness validation baked into every response (`cache_meta` footer)
-
----
+This repo no longer treats a separate `adg_redis` server as the MCP authority.  
+The cache surface is `redis`; the structural graph authority remains `adg_sqlite`.
 
 ## STEP 5: Confirm ADG is driving queries
 

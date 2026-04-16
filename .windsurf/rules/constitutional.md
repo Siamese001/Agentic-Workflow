@@ -7,6 +7,10 @@ trigger: always_on
 
 ## Hard Constraints
 
+### Tool Prefix Stability
+
+Server IDs in `.windsurf/mcp_config.json` are stable. Live tool prefixes such as `mcp0_`, `mcp1_`, and `mcp2_` can shift whenever server order changes. In rule text, prefer stable server IDs plus bare tool names, then resolve the live prefix from the active tool list.
+
 0. **No PowerShell.** Use `subprocess.run(argv, shell=False, timeout=30)`.
 1. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`.
 2. **No editing while exploring.** All five repair gates must pass before any edit.
@@ -20,10 +24,11 @@ trigger: always_on
 10. **Zero-loss refactor.** After removing boilerplate, check for hollow files. Gate: `zero_loss_refactor_verifier.py`.
 11. **Terminal process lifecycle.** All `run_command`/subprocess calls must terminate when query completes. Gate: `check_terminal_cleanup.py`.
 12. **No imports from `archives/` in production.** CI gate: `check_no_archives_imports.py`.
-13. **MCP green light before T2/T3.** Check Redis hot cache first (`adg_redis_ingest.py --check`). Fallback: `mcp1_adg_health`. Both red = BLOCKED.
+13. **MCP green light before T2/T3.** Check Redis hot cache first (`adg_redis_ingest.py --check`). Fallback: `adg_health`. Both red = BLOCKED.
 14. **Subprocess timeout required.** `subprocess.run(argv, shell=False, timeout=30)`. No exceptions.
 15. **Precise exception handling.** Catch specific types. Bare `except:` FORBIDDEN. `except Exception` without guardian comment FORBIDDEN.
 16. **Query progress bar mandatory.** All operations >5s, loops >10 lines, or heavy-named functions (`scan_*`, `build_*`, `query_*`, etc.) >12 lines MUST display a colored progress bar. CI gate: `check_query_progress_bar.py`. See `query-progress-bar.md`.
+17. **Memory lifecycle mandatory.** At the start of every conversation, call `mem_recall_session_start` to load persistent project context. After significant architecture decisions, HITL resolutions, or new patterns, write to memory via `create_entities`/`add_observations`. See AGENTS.md Memory Lifecycle section.
 
 ## Tier Classification
 
@@ -53,17 +58,17 @@ ELSE (TODOs, FIXMEs, literal strings, non-Python content)  → grep_search OK
 
 | Observable Feature | FORBIDDEN | REQUIRED |
 |---|---|---|
-| Query contains `from X import` or `import X` | `grep_search("from X import")` | `mcp1_adg_nodes_by_file` → `mcp1_adg_edge_fanin` |
-| Query targets a function name `Y(` | `grep_search("Y(")` | `mcp1_adg_edge_fanin(tgt_id=<Y_node>, relation_type="calls")` |
-| Query targets a class name `class Y` | `grep_search("class Y")` | `mcp1_adg_node(node_id=<Y>)` → `mcp1_adg_edge_fanin` |
-| Query asks outgoing deps of file Z | `grep_search("import", SearchPath=Z)` | `mcp1_adg_edge_fanout(src_id=<Z_node>, relation_type="imports")` |
-| Query mentions blast radius / impact | `grep_search("A", Includes=["*.py"])` | `mcp1_adg_edge_fanin(tgt_id=<A_node>)` |
-| Query targets ALL_CAPS constant | `grep_search("CONSTANT_NAME")` | `mcp1_adg_edge_fanin(tgt_id=<const_node>)` |
+| Query contains `from X import` or `import X` | `grep_search("from X import")` | `adg_nodes_by_file` → `adg_edge_fanin` |
+| Query targets a function name `Y(` | `grep_search("Y(")` | `adg_edge_fanin(tgt_id=<Y_node>, relation_type="calls")` |
+| Query targets a class name `class Y` | `grep_search("class Y")` | `adg_node(node_id=<Y>)` → `adg_edge_fanin` |
+| Query asks outgoing deps of file Z | `grep_search("import", SearchPath=Z)` | `adg_edge_fanout(src_id=<Z_node>, relation_type="imports")` |
+| Query mentions blast radius / impact | `grep_search("A", Includes=["*.py"])` | `adg_edge_fanin(tgt_id=<A_node>)` |
+| Query targets ALL_CAPS constant | `grep_search("CONSTANT_NAME")` | `adg_edge_fanin(tgt_id=<const_node>)` |
 | Literal text / TODO / non-code | `grep_search` ✅ ALLOWED | — |
 
 **Why grep fails at dependency analysis**: false positives (comments, dead code), false negatives (re-exports, aliases), no transitive closure, no layer awareness, context window pollution (70-80% of tokens wasted per OpenDev §3.1).
 
-**Degraded fallback rule**: Before using `grep_search` for any graph query, call `mcp1_adg_health`. Fallback allowed only when health is red AND response contains `DEGRADED_FALLBACK: reason=<...>`. Silent fallback (no health check, no reason code) = `severity: critical` in `adg_first_violations.jsonl`.
+**Degraded fallback rule**: Before using `grep_search` for any graph query, call `adg_health`. Fallback allowed only when health is red AND response contains `DEGRADED_FALLBACK: reason=<...>`. Silent fallback (no health check, no reason code) = `severity: critical` in `adg_first_violations.jsonl`.
 
 Enforcement chain (4 layers):
 1. `graph-analysis` skill auto-invokes → loads `tool_routing_decision_tree.md` at maximum recency
@@ -86,3 +91,4 @@ Full protocol details live in focused rules — loaded on demand, not always_on:
 - `sequential-thinking-enforcement.md` — T2/T3 structured reasoning protocol
 - `global_rules.md` — subprocess, exception, MCP SSOT policy details
 - `adg-test-accelerator-enforcement.md` — ADG-driven test scope selection
+- `memory-management.md` — memory graph maintenance, purge sync, health thresholds

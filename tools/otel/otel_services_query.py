@@ -50,13 +50,14 @@ class OTelQueryService:
                     raw = store.get_by_version(version_id)
                     if raw:
                         snapshot = json.loads(raw)
+                        adg_edges = convert_snapshot_to_adg_edges(snapshot)
                         result = {
                             "trace_id": trace_id,
                             "snapshot_id": snapshot.get("snapshot_id"),
                             "timestamp": snapshot.get("started_at_utc"),
                             "node_count": len(snapshot.get("nodes", [])),
-                            "edge_count": len(convert_snapshot_to_adg_edges(snapshot)),
-                            "adg_edges": convert_snapshot_to_adg_edges(snapshot),
+                            "edge_count": len(adg_edges),
+                            "adg_edges": adg_edges,
                             "source": "file_backed_runtime_adg_store",
                         }
                         self._trace_cache.put(trace_id, result)

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Callable
 
 from tools.mcp.mcp_deferred_loader import DeferredLoader
 
@@ -57,6 +57,9 @@ class OTelLoaderBundle:
     def store_loading(self) -> bool:
         return self._store_loader.is_loading()
 
+    def tracer_loaded(self) -> bool:
+        return self._tracer_loader.is_loaded()
+
     def store_loaded(self) -> bool:
         return self._store_loader.is_loaded()
 
@@ -66,7 +69,7 @@ class OTelLoaderBundle:
         self._store_loader.get(wait_timeout=0)
         logger.info("Background prewarm started for tracer and runtime-adg-store")
 
-    def safe_get(self, getter, label: str) -> tuple[Any | None, str | None]:
+    def safe_get(self, getter: Callable[[], Any], label: str) -> tuple[Any | None, str | None]:
         try:
             return getter(), None
         except Exception as exc:  # guardian: allow-broad-exception

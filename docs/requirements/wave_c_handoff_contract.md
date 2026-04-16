@@ -1,7 +1,7 @@
 # Wave C Handoff Contract
 
-**Version**: 1.0 · **Status**: Active · **Date**: 2026-04-15  
-**Precondition**: Wave B frozen. This contract defines the boundary conditions Wave C must satisfy.  
+**Version**: 2.0 · **Status**: Active (Wave B COMPLETE) · **Date**: 2026-04-16  
+**Precondition**: Wave B complete (B7 final audit). This contract defines the boundary conditions Wave C must satisfy.  
 **Scope**: What Wave C may do, what it must not change, and what it must prove.
 
 ---
@@ -22,18 +22,22 @@ Wave C inherits the Wave B3 three-collection topology exactly. No collection ren
 
 ## 2. Allowed Target-State Sources (Wave C)
 
-Wave C may extend `ext_authority` by adding sources that cover the 6 identified gap topics. **No other new source additions are permitted** without explicit gap justification.
+**Updated for B7**: Five of the original six B5R gap topics (hybrid retrieval, reranking, parent-child expansion, abstain/refine, embedding model selection) were closed by B6.x source additions. **Normative requirements spec (TS-20)** was confirmed as repo_evidence Lane C scope and is excluded from ext_authority. **F25-int** (confidence-scored healing dispatch routing) is out of ext_authority scope by adjudication.
 
-### Permitted additions (gap-justified only)
+Wave C may extend `ext_authority` only for advisory gaps not already closed. **No source additions are permitted for topics already ADEQUATE at B7.**
+
+### Permitted additions (advisory gaps only)
 
 | Gap topic | Suggested source candidates | Constraint |
 |-----------|-----------------------------|------------|
-| Hybrid retrieval (BM25 + dense) | Anthropic contextual retrieval cookbook · LlamaIndex hybrid search docs | Must be raw.githubusercontent.com or official docs URL |
-| Cross-encoder reranking | Cohere reranker documentation · Anthropic retrieval cookbook | Must be https:// |
-| Parent-child chunk expansion | LlamaIndex parent document retriever docs · Anthropic contextual retrieval | Must not overlap with existing ext_authority URLs |
-| Abstain / refine signals | Anthropic patterns cookbook (abstain section) · general RAG best practices | Must not overlap ext_authority |
-| Embedding model selection | Model provider embedding documentation (OpenAI, Cohere, BAAI) | Must be official provider docs |
-| Normative requirements spec | If repo-specific: add to `repo_evidence` Lane C, not `ext_authority` | repo_evidence for internal requirements |
+| F02: Ingress auth / quota / schema (advisory) | OpenAI platform auth docs, agentic ingress patterns cookbook | Must be https://; advisory only — not a B7 hard gate |
+
+### Permitted repo_evidence additions (Lane C, Wave C current-state work)
+
+| Gap topic | Disposition | Constraint |
+|-----------|-------------|------------|
+| TS-20: Normative requirements spec | Add internal policy doc to `repo_evidence` Lane C | `invalid_for_normative_use=True`; no https:// URL |
+| F25-int: Confidence-scored healing dispatch routing | Add internal architecture decision to `repo_evidence` Lane C | Documents the project-internal tier architecture only; no ext_authority addition permitted |
 
 ### Forbidden additions
 
@@ -41,6 +45,8 @@ Wave C may extend `ext_authority` by adding sources that cover the 6 identified 
 - Sources not reachable via `https://`
 - Unvetted scrapes (→ `ext_raw` only, if at all)
 - Internal repo documents (→ `repo_evidence` only)
+- **New ext_authority sources for F25-int, TS-03, TS-04, TS-07, TS-09, TS-19** — these are CLOSED at B7; do not add further sources
+- **Any source framed as closing F25 healing dispatch routing** — this query is retired; the concept is grounded via F25-ext
 
 ---
 
@@ -100,19 +106,19 @@ When Wave C adds sources and rebuilds collections, all 11 Wave B freeze gates mu
 | G6 | repo_evidence: all required fields present on ALL chunks |
 | G7 | ext_raw: invalid_for_normative_use=True on ALL chunks |
 | G8 | ext_raw: no URL overlap with ext_authority |
-| G9 | ext_authority retrieval strength ≥ 75% (≥15/20 audit queries adequately grounded) — currently 70%, Wave C target |
+| G9 | ext_authority retrieval strength ≥ 75% (B7 result: ≥95% — must not regress below 75%) |
 | G10 | 0 non-ext_authority chunks in target-state audit results |
 | G11 | 0 ext_raw chunks in target-state audit results |
 
-**G9 is Wave C's primary success criterion.** Wave C closes the gap by adding sources for the 6 WEAK topics.
+**G9 passes at B7 (≥95%).** Wave C must not regress G9 below 75%. Wave C may not reopen closed topics (TS-03, TS-04, TS-07, TS-09, TS-19, F25-int) by adding further sources.
 
 ---
 
-## 7. External-Only Target-State Baseline (Inherited from Wave B)
+## 7. External-Only Target-State Baseline (B7 Final)
 
-The `docs/requirements/wave_b_target_state_registry.md` defines the current external-only target-state baseline. Wave C extends it; Wave C must not remove or contradict any entry in the registry.
+The `docs/requirements/wave_b_target_state_registry.md` (v2.0) defines the B7 external-only target-state baseline. Wave C extends it; Wave C must not remove or contradict any entry in the registry.
 
-**Currently grounded topics (14/20)**:
+**Grounded topics at B7 (≥19/20 original queries + 2 new = ≥21/22)**:
 - Orchestrator-workers pattern (STRONG, dist@1=0.349)
 - MCP tool definition and registration (STRONG, dist@1=0.277)
 - FastMCP server pattern (STRONG, dist@1=0.347)
@@ -127,9 +133,20 @@ The `docs/requirements/wave_b_target_state_registry.md` defines the current exte
 - Metadata provenance (ADEQUATE, dist@1=0.498)
 - Context engineering (ADEQUATE, dist@1=0.421)
 - Contextual retrieval (ADEQUATE, dist@1=0.500)
+- Hybrid retrieval / BM25+dense (ADEQUATE — closed by B6.x P3/P9)
+- Cross-encoder reranking (ADEQUATE — closed by B6.x P4)
+- Parent-child chunk expansion (ADEQUATE — closed by B6.x P5/P9)
+- Abstain / refine signals (ADEQUATE — closed by B6.x P6/P11)
+- Embedding model selection (ADEQUATE — closed by B6.x P7)
+- **F25-ext: Tiered escalation / HITL / durable execution** (ADEQUATE advisory — grounded by running_agents.md HITL section)
+- LLM response caching / exact cache (ADEQUATE — closed by B6 P1)
+- Semantic/vector caching (ADEQUATE — closed by B6 P2)
 
-**Gap topics Wave C must close (6/20)**:
-- Hybrid retrieval · Reranking · Parent-child expansion · Abstain/refine · Embedding model selection · Normative requirements spec
+**Out-of-scope for ext_authority (Wave C must route these to repo_evidence Lane C)**:
+- TS-20: Normative requirements spec — project-specific; repo_evidence Lane C
+- F25-int: Confidence-scored healing dispatch routing — project-internal; repo_evidence Lane C
+
+**G9 Wave C target**: G9 PASSES at B7 (≥95%). Wave C must not regress below 75%.
 
 ---
 
@@ -154,14 +171,17 @@ Wave C gap analysis MUST follow these rules:
 - Modify `evidence_shaper.py` normative filter logic without a documented blocker
 - Start any retrieval path redesign (query intent detection, hybrid fusion, reranking pipeline)
 - Delete or archive any Wave B collection without full migration evidence
+- Add new ext_authority sources targeting F25-int or the retired F25 healing dispatch query
+- Reopen the F25 adjudication (this reclassification is final per wave_b_b7_final_audit.md §3)
+- Add ext_authority sources for topics already ADEQUATE at B7 (TS-03, TS-04, TS-07, TS-09, TS-19)
 
 ---
 
 ## 10. Wave C Entry Criteria
 
-Wave C may begin only after:
+Wave C may begin. All entry criteria are satisfied as of 2026-04-16:
 
-- [ ] This handoff contract is acknowledged by the implementing party
-- [ ] `docs/reports/wave_b_closeout.md` is in final FROZEN state
-- [ ] All 11 Wave B freeze gates verified as baseline (run `tools/eval/audit_wave_b_target_state.py`)
-- [ ] A Wave C plan is drafted in `.windsurf/plans/` with source additions justified per §2
+- [x] This handoff contract is acknowledged by the implementing party
+- [x] `docs/reports/wave_b_closeout.md` is in final COMPLETE state (v2.0, 2026-04-16)
+- [x] All 11 Wave B freeze gates pass (see `docs/reports/wave_b_b7_freeze_gates.md`)
+- [ ] A Wave C plan is drafted in `.windsurf/plans/` with source additions justified per §2 (Wave C work item)

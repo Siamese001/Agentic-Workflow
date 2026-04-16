@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Iterator
 
 
 @dataclass
@@ -59,8 +59,8 @@ class TraceCache:
         while len(self._cache) > self._max_traces:
             self._cache.popitem(last=False)
 
-    def items(self):
-        return self._cache.items()
+    def items(self) -> Iterator[tuple[str, dict[str, Any]]]:
+        return iter(self._cache.items())
 
-    def values(self):
-        return self._cache.values()
+    def values(self) -> Iterator[dict[str, Any]]:
+        return iter(self._cache.values())
