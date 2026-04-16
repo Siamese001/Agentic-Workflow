@@ -1,0 +1,234 @@
+{
+  "timestamp": "2026-04-16T19:52:00Z",
+  "counts": {
+    "ext_authority": 604,
+    "repo_evidence": 3480,
+    "ext_raw": 70
+  },
+  "grounding": {
+    "STRONG": 5,
+    "ADEQUATE": 11,
+    "WEAK": 4,
+    "EMPTY": 0
+  },
+  "gates": {
+    "G1": {
+      "pass": true,
+      "detail": "0 chunks with invalid_for_normative_use != False",
+      "count": 604
+    },
+    "G2": {
+      "pass": true,
+      "detail": "0 chunks with non-https source_url",
+      "count": 604
+    },
+    "G3": {
+      "pass": true,
+      "detail": "0 chunks missing required fields",
+      "count": 604
+    },
+    "G4": {
+      "pass": true,
+      "detail": "0 chunks with invalid_for_normative_use != True",
+      "count": 3480
+    },
+    "G5": {
+      "pass": true,
+      "detail": "0 chunks with https:// source_url",
+      "count": 3480
+    },
+    "G6": {
+      "pass": true,
+      "detail": "0 chunks missing required fields",
+      "count": 3480
+    },
+    "G7": {
+      "pass": true,
+      "detail": "0 chunks with invalid_for_normative_use != True",
+      "count": 70
+    },
+    "G8": {
+      "pass": true,
+      "detail": "0 chunks with source_url already in ext_authority",
+      "count": 70
+    },
+    "G9": {
+      "pass": true,
+      "detail": "Strong=5 Adequate=11 Weak=4 Empty=0 covered=16/20",
+      "count": 20
+    },
+    "G10": {
+      "pass": true,
+      "detail": "0 non-ext_authority chunks in target-state audit top-5s",
+      "count": 100
+    },
+    "G11": {
+      "pass": true,
+      "detail": "0 ext_raw chunks in target-state audit top-5s",
+      "count": 100
+    }
+  },
+  "audit_per_query": [
+    {
+      "id": "TS-01",
+      "topic": "context_engineering",
+      "dist_at_1": 0.415,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/deepset-ai/haystack/main/README.md",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-02",
+      "topic": "contextual_retrieval",
+      "dist_at_1": 0.4335,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/zilliztech/GPTCache/main/README.md",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-03",
+      "topic": "hybrid_retrieval",
+      "dist_at_1": 0.5111,
+      "grounding": "WEAK",
+      "top1_source": "https://raw.githubusercontent.com/weaviate/weaviate/main/README.md",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-04",
+      "topic": "reranking",
+      "dist_at_1": 0.4025,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/UKPLab/sentence-transformers/master/README.md",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-05",
+      "topic": "metadata_provenance",
+      "dist_at_1": 0.4956,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/running_",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-06",
+      "topic": "chunking_strategy",
+      "dist_at_1": 0.4846,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-cookbook/main/articles/technique",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-07",
+      "topic": "parent_child_expansion",
+      "dist_at_1": 0.5136,
+      "grounding": "WEAK",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-cookbook/main/articles/technique",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-08",
+      "topic": "evidence_shaping",
+      "dist_at_1": 0.4447,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/results.",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-09",
+      "topic": "abstain_refine",
+      "dist_at_1": 0.5054,
+      "grounding": "WEAK",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/running_",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-10",
+      "topic": "routing_principles",
+      "dist_at_1": 0.473,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/anthropics/anthropic-cookbook/main/patterns/ag",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-11",
+      "topic": "agentic_architecture",
+      "dist_at_1": 0.4153,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/agents.m",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-12",
+      "topic": "orchestrator_workers",
+      "dist_at_1": 0.3485,
+      "grounding": "STRONG",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/agents.m",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-13",
+      "topic": "tool_contracts_mcp",
+      "dist_at_1": 0.2767,
+      "grounding": "STRONG",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/mcp.md",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-14",
+      "topic": "fastmcp_patterns",
+      "dist_at_1": 0.3471,
+      "grounding": "STRONG",
+      "top1_source": "https://raw.githubusercontent.com/modelcontextprotocol/python-sdk/main/README.md",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-15",
+      "topic": "agent_handoffs",
+      "dist_at_1": 0.335,
+      "grounding": "STRONG",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/handoffs",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-16",
+      "topic": "safety_guardrails",
+      "dist_at_1": 0.4558,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/guardrai",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-17",
+      "topic": "evaluator_optimizer",
+      "dist_at_1": 0.4198,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-cookbook/main/articles/technique",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-18",
+      "topic": "single_vs_multi_agent",
+      "dist_at_1": 0.3291,
+      "grounding": "STRONG",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/agents.m",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-19",
+      "topic": "embedding_model",
+      "dist_at_1": 0.4919,
+      "grounding": "ADEQUATE",
+      "top1_source": "https://raw.githubusercontent.com/zilliztech/GPTCache/main/README.md",
+      "top1_collection": "ext_authority"
+    },
+    {
+      "id": "TS-20",
+      "topic": "normative_requirements",
+      "dist_at_1": 0.5292,
+      "grounding": "WEAK",
+      "top1_source": "https://raw.githubusercontent.com/openai/openai-agents-python/main/docs/agents.m",
+      "top1_collection": "ext_authority"
+    }
+  ],
+  "all_pass": true
+}
