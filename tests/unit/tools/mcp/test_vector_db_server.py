@@ -389,6 +389,21 @@ def test_env_var_overrides_embedding_model(monkeypatch):
         importlib.reload(mod)
 
 
+def test_env_var_overrides_device(monkeypatch):
+    """VECTOR_DB_DEVICE env var must override the default device at import time."""
+    monkeypatch.setenv("VECTOR_DB_DEVICE", "cuda")
+
+    import importlib
+    import tools.retrieval.vector_config as vc_mod
+
+    importlib.reload(vc_mod)
+    try:
+        assert vc_mod.VECTOR_DB_DEVICE == "cuda"
+    finally:
+        monkeypatch.delenv("VECTOR_DB_DEVICE", raising=False)
+        importlib.reload(vc_mod)
+
+
 # ---------------------------------------------------------------------------
 # Step 3.2 — embed_text return_vectors flag
 # ---------------------------------------------------------------------------

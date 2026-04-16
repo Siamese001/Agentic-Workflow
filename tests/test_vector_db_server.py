@@ -107,10 +107,14 @@ async def test_adapter_query_collection_formats_results(server, ephemeral, mock_
 
 def test_service_embed_text_return_vectors_flag(service, mock_model):
     vec = [round(0.1 * i, 4) for i in range(1024)]
+    mock_model.encode.side_effect = None  # clear fixture side_effect so return_value is active
     mock_model.encode.return_value = np.array([vec], dtype=np.float32)
     report = service.embed_text(["hello"], return_vectors=True)
     assert report.return_vectors is True
     assert report.previews[0].full_vector is not None
+    assert len(report.previews[0].full_vector) == 1024
+    assert abs(report.previews[0].full_vector[0]) < 1e-6
+    assert abs(report.previews[0].full_vector[1] - 0.1) < 1e-3
     formatted = service.format_embed_text(["hello"], return_vectors=True)
     assert "Full vectors" in formatted
     assert "return_vectors: True" in formatted
@@ -211,3 +215,58 @@ async def test_adapter_proxies_overrides(server, ephemeral, mock_model):
 
     assert server.chroma_client is new_client
     assert server.embedding_model is new_model
+
+
+# ---------------------------------------------------------------------------
+# G1: EmbeddingRuntime device / fp16 wiring
+# ---------------------------------------------------------------------------
+
+
+def test_embedding_runtime_stores_device():
+    """EmbeddingRuntime must persist the device kwarg as self.device."""
+    rt = EmbeddingRuntime(device="cuda")
+    assert rt.device == "cuda"
+
+
+def test_apply_fp16_calls_half_on_cuda():
+    """_apply_fp16_if_cuda must call model.half() when device='cuda'."""
+    rt = EmbeddingRuntime(device="cuda")
+    mock = MagicMock()
+    rt._apply_fp16_if_cuda(mock)
+    mock.half.assert_called_once()
+
+
+def test_apply_fp16_skips_half_on_cpu():
+    """_apply_fp16_if_cuda must NOT call model.half() when device='cpu'."""
+    rt = EmbeddingRuntime(device="cpu")
+    mock = MagicMock()
+    rt._apply_fp16_if_cuda(mock)
+    mock.half.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# G4: cache_entry_types BGE-M3 constants
+# ---------------------------------------------------------------------------
+
+
+def test_cache_entry_types_embedding_constants_are_bgem3():
+    """EMBEDDING_MODEL and EMBEDDING_DIM must be 'BAAI/bge-m3' and 1024 after BGE-M3 phase."""
+    from agentic_core.runtime.types.cache_entry_types import EMBEDDING_DIM, EMBEDDING_MODEL
+
+    assert EMBEDDING_MODEL == "BAAI/bge-m3"
+    assert EMBEDDING_DIM == 1024
+
+
+# ---------------------------------------------------------------------------
+# G5: SemanticMemory BGE-M3 stub dimensions
+# ---------------------------------------------------------------------------
+
+
+def test_semantic_memory_bgem3_dimensions():
+    """EmbeddingProvider.embed() must return 1024-dim; VectorIndex must default to dimension=1024."""
+    from agentic_core.L1_cognition.reasoning.SemanticMemory import EmbeddingProvider, VectorIndex
+
+    ep = EmbeddingProvider()
+    assert len(ep.embed("any text")) == 1024
+    vi = VectorIndex()
+    assert vi.dimension == 1024

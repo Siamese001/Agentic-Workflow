@@ -5,10 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from import_helpers import ensure_project_root, import_or_skip
-
-ensure_project_root(__file__)
-SemanticCacheManager = import_or_skip(
+SemanticCacheManager = pytest.importorskip(
     "agentic_core.L4_state.utils.memory.semantic_cache_manager",
     reason="Semantic cache manager module unavailable for GPTCache integration tests",
 ).SemanticCacheManager
@@ -29,7 +26,10 @@ def test_semantic_cache_manager_initializes_gptcache() -> None:
     # Reset singleton
     SemanticCacheManager._instance = None
 
-    with patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mock_gptcache:
+    with (
+        patch.dict("os.environ", {"SEMANTIC_CACHE_D2_ENABLED": "1"}),
+        patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mock_gptcache,
+    ):
         mock_instance = MagicMock()
         mock_instance._cache = "real"  # Not mock mode
         mock_gptcache.return_value = mock_instance
@@ -79,7 +79,10 @@ def test_semantic_cache_manager_recall_uses_gptcache() -> None:
     # Reset singleton
     SemanticCacheManager._instance = None
 
-    with patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mock_gptcache:
+    with (
+        patch.dict("os.environ", {"SEMANTIC_CACHE_D2_ENABLED": "1"}),
+        patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mock_gptcache,
+    ):
         mock_instance = MagicMock()
         mock_instance._cache = "real"
         # Return JSON string with _metadata namespace to match implementation
@@ -108,7 +111,10 @@ def test_semantic_cache_manager_promote_uses_gptcache() -> None:
     # Reset singleton
     SemanticCacheManager._instance = None
 
-    with patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mock_gptcache:
+    with (
+        patch.dict("os.environ", {"SEMANTIC_CACHE_D2_ENABLED": "1"}),
+        patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mock_gptcache,
+    ):
         mock_instance = MagicMock()
         mock_instance._cache = "real"
         mock_gptcache.return_value = mock_instance
@@ -528,7 +534,10 @@ def test_invalidate_by_all_none_raises() -> None:
 def test_invalidate_cache_delegates_to_gptcache() -> None:
     """Phase C: SemanticCacheManager.invalidate_cache() delegates to _gptcache.invalidate_by()."""
     SemanticCacheManager._instance = None
-    with patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mc:
+    with (
+        patch.dict("os.environ", {"SEMANTIC_CACHE_D2_ENABLED": "1"}),
+        patch("agentic_core.L4_state.utils.memory.semantic_cache_manager.GPTCacheClient") as mc,
+    ):
         mock_l2 = MagicMock()
         mock_l2._cache = "real"
         mock_l2.invalidate_by.return_value = 3
@@ -541,15 +550,15 @@ def test_invalidate_cache_delegates_to_gptcache() -> None:
     )
 
 
-def test_native_persistent_cache_close_called() -> None:
+def test_native_persistent_cache_close_called(tmp_path) -> None:
     """Test that close() method is called on NativePersistentCacheClient to prevent resource leaks."""
     try:
         from agentic_core.L4_state.cache.gptcache_client import NativePersistentCacheClient
     except ImportError:
         pytest.skip("ChromaDB not installed")
 
-    # Create cache instance
-    cache = NativePersistentCacheClient(cache_dir="artifacts/test_gptcache_close")
+    # Create cache instance in an isolated tmp_path to avoid EF conflict with stale persistent state
+    cache = NativePersistentCacheClient(cache_dir=str(tmp_path / "test_close"))
 
     # Verify it's in real mode
     if cache._cache == "mock":
@@ -894,3 +903,77 @@ def test_prom_bridge_callable_from_lifecycle_contract() -> None:
     _record_semantic_cache_prom_event("hit", "bridge_ns")
     after = _sc_counter_value("hit", "bridge_ns")
     assert after == before + 1.0
+
+
+# ---------------------------------------------------------------------------
+# Migration guard tests — BGE-M3 standardization (Phase 1)
+# ---------------------------------------------------------------------------
+
+
+def _make_migration_target():
+    """Return a NativePersistentCacheClient instance with bypassed __init__ for migration guard tests."""
+    try:
+        from agentic_core.L4_state.cache.gptcache_client import NativePersistentCacheClient
+    except ImportError:
+        pytest.skip("ChromaDB not installed")
+    inst = object.__new__(NativePersistentCacheClient)
+    inst.embedding_model = "BAAI/bge-m3"
+    return inst
+
+
+def test_migration_guard_drops_incompatible_dim_collection() -> None:
+    """_get_or_create_bgem3_collection must delete collection when stored embedding dim != 1024."""
+    inst = _make_migration_target()
+    mock_client = MagicMock()
+    mock_existing = MagicMock()
+    mock_existing.get.return_value = {"embeddings": [[0.1] * 384]}
+    mock_client.get_collection.return_value = mock_existing
+    inst._chroma_client = mock_client
+
+    inst._get_or_create_bgem3_collection()
+
+    mock_client.delete_collection.assert_called_once_with("l2_semantic_cache")
+    mock_client.get_or_create_collection.assert_called_once()
+
+
+def test_migration_guard_preserves_compatible_dim_collection() -> None:
+    """_get_or_create_bgem3_collection must NOT delete collection when stored dim already == 1024."""
+    inst = _make_migration_target()
+    mock_client = MagicMock()
+    mock_existing = MagicMock()
+    mock_existing.get.return_value = {"embeddings": [[0.1] * 1024]}
+    mock_client.get_collection.return_value = mock_existing
+    inst._chroma_client = mock_client
+
+    inst._get_or_create_bgem3_collection()
+
+    mock_client.delete_collection.assert_not_called()
+    mock_client.get_or_create_collection.assert_called_once()
+
+
+def test_migration_guard_skips_drop_on_empty_embeddings() -> None:
+    """_get_or_create_bgem3_collection must not drop when get() returns an empty embeddings list."""
+    inst = _make_migration_target()
+    mock_client = MagicMock()
+    mock_existing = MagicMock()
+    mock_existing.get.return_value = {"embeddings": []}
+    mock_client.get_collection.return_value = mock_existing
+    inst._chroma_client = mock_client
+
+    inst._get_or_create_bgem3_collection()
+
+    mock_client.delete_collection.assert_not_called()
+    mock_client.get_or_create_collection.assert_called_once()
+
+
+def test_migration_guard_handles_missing_collection_silently() -> None:
+    """_get_or_create_bgem3_collection must not raise when collection doesn't exist yet."""
+    inst = _make_migration_target()
+    mock_client = MagicMock()
+    mock_client.get_collection.side_effect = Exception("collection not found")
+    inst._chroma_client = mock_client
+
+    inst._get_or_create_bgem3_collection()  # must not raise
+
+    mock_client.delete_collection.assert_not_called()
+    mock_client.get_or_create_collection.assert_called_once()
