@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-04-16T23:07:53Z",
+  "counts": {
+    "ext_authority": 604,
+    "repo_evidence": 3489,
+    "ext_raw": 70
+  },
+  "gates": {
+    "G4": {
+      "pass": true,
+      "count": 3489,
+      "detail": "0 chunks with invalid_for_normative_use != True"
+    },
+    "G5": {
+      "pass": true,
+      "count": 3489,
+      "detail": "0 chunks with https:// source_url"
+    },
+    "G6": {
+      "pass": true,
+      "count": 3489,
+      "detail": "0 chunks missing required fields"
+    }
+  },
+  "d71_advisory_note_chunks": 9,
+  "frozen_invariants": {
+    "ext_authority_expected": 604,
+    "ext_raw_expected": 70
+  },
+  "all_pass": true
+}

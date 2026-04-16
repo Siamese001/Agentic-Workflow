@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-04-16T19:52:00Z",
+  "timestamp": "2026-04-16T23:11:21Z",
   "counts": {
     "ext_authority": 604,
-    "repo_evidence": 3480,
+    "repo_evidence": 3489,
     "ext_raw": 70
   },
   "grounding": {
@@ -30,17 +30,17 @@
     "G4": {
       "pass": true,
       "detail": "0 chunks with invalid_for_normative_use != True",
-      "count": 3480
+      "count": 3489
     },
     "G5": {
       "pass": true,
       "detail": "0 chunks with https:// source_url",
-      "count": 3480
+      "count": 3489
     },
     "G6": {
       "pass": true,
       "detail": "0 chunks missing required fields",
-      "count": 3480
+      "count": 3489
     },
     "G7": {
       "pass": true,

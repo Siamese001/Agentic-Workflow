@@ -247,6 +247,14 @@ REPO_CANONICAL_SOURCES: list[dict] = [
         "collapse_group": "repo_standards",
         "required": False,
     },
+    {
+        "path": "docs/architecture/write_governance_note.md",
+        "title": "Write-Governance Advisory Note (F28 / WC-G04)",
+        "doc_family": "architecture",
+        "topic_bucket": "arch_standards",
+        "collapse_group": "repo_architecture",
+        "required": True,
+    },
 ]
 
 
