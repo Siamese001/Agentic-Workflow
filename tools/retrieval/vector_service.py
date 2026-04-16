@@ -209,11 +209,18 @@ class VectorRetrievalService:
         requested = _coerce_positive_int(n_results, default=10, max_value=MAX_RESULTS)
         includes = include if include is not None else ["metadatas", "documents", "distances"]
 
-        t0 = time.time()
-        query_embedding = self.embedder.encode([query_text])
-        embedding_time = time.time() - t0
+        req_id = uuid4().hex[:8]
+        t_start = time.monotonic()
 
-        t1 = time.time()
+        # Phase 1: model readiness (cold vs warm)
+        model_was_loaded = self.embedder.is_loaded()
+        ready_start = time.monotonic()
+        query_embedding = self.embedder.encode([query_text])
+        embed_total_s = time.monotonic() - ready_start
+        embedding_time = embed_total_s
+
+        # Phase 2: Chroma query
+        chroma_start = time.monotonic()
         results = self.store.query_collection(
             collection_name,
             query_embeddings=query_embedding.tolist(),
@@ -221,8 +228,11 @@ class VectorRetrievalService:
             where=where,
             include=includes,
         )
-        query_time = time.time() - t1
+        chroma_s = time.monotonic() - chroma_start
+        query_time = chroma_s
 
+        # Phase 3: response assembly
+        build_start = time.monotonic()
         documents = results.get("documents", [[]])[0] if results.get("documents") else []
         distances = results.get("distances", [[]])[0] if results.get("distances") else []
         metadatas = results.get("metadatas", [[]])[0] if results.get("metadatas") else []
@@ -239,6 +249,20 @@ class VectorRetrievalService:
                     metadata=meta,
                 )
             )
+        build_s = time.monotonic() - build_start
+        total_s = time.monotonic() - t_start
+
+        logger.info(
+            "QUERY_PHASE req=%s collection=%s model_warm=%s embed_s=%.3f chroma_s=%.3f build_s=%.3f total_s=%.3f hits=%d",
+            req_id,
+            collection_name,
+            model_was_loaded,
+            embed_total_s,
+            chroma_s,
+            build_s,
+            total_s,
+            len(hits),
+        )
 
         return QueryCollectionReport(
             collection_name=collection_name,

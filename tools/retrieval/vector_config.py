@@ -21,7 +21,7 @@ QUERY_COLLECTION_TIMEOUT: float = float(os.environ.get("VECTOR_DB_QUERY_COLLECTI
 SEARCH_PER_COLLECTION_TIMEOUT: float = float(os.environ.get("VECTOR_DB_SEARCH_PER_COLLECTION_TIMEOUT", "20"))
 SEARCH_GLOBAL_TIMEOUT: float = float(os.environ.get("VECTOR_DB_SEARCH_GLOBAL_TIMEOUT", "60"))
 COUNT_CACHE_TTL: float = float(os.environ.get("VECTOR_DB_COUNT_CACHE_TTL", "60"))
-BACKGROUND_PREWARM_ENABLED: bool = os.environ.get("VECTOR_DB_ENABLE_STARTUP_PREWARM", "0").strip() == "1"
+BACKGROUND_PREWARM_ENABLED: bool = os.environ.get("VECTOR_DB_ENABLE_STARTUP_PREWARM", "1").strip() == "1"
 
 KNOWN_MODEL_DIMS: dict[str, int] = {
     "BAAI/bge-m3": 1024,

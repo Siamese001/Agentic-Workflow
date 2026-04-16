@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 import os
-import threading
 from typing import Any
 
 from tools.mcp.mcp_deferred_loader import DeferredLoader
@@ -12,6 +11,7 @@ from tools.mcp.mcp_deferred_loader import DeferredLoader
 from .vector_config import (
     ALLOW_MODEL_DOWNLOAD,
     DEFAULT_EMBEDDING_MODEL,
+    EMBEDDING_ENCODE_TIMEOUT,
     EMBEDDING_QUEUE_WAIT_TIMEOUT,
     KNOWN_MODEL_DIMS,
     MODEL_LOAD_TIMEOUT,
@@ -32,6 +32,7 @@ class EmbeddingRuntime:
         allow_model_download: bool = ALLOW_MODEL_DOWNLOAD,
         model_load_timeout: float = MODEL_LOAD_TIMEOUT,
         queue_wait_timeout: float = EMBEDDING_QUEUE_WAIT_TIMEOUT,
+        encode_timeout: float = EMBEDDING_ENCODE_TIMEOUT,
         model_override: Any | None = None,
         device: str = VECTOR_DB_DEVICE,
     ) -> None:
@@ -39,9 +40,9 @@ class EmbeddingRuntime:
         self.allow_model_download = allow_model_download
         self.model_load_timeout = model_load_timeout
         self.queue_wait_timeout = queue_wait_timeout
+        self.encode_timeout = encode_timeout
         self._model_override = model_override
         self.device = device
-        self._encode_lock = threading.Lock()
         self._loader = DeferredLoader(
             "embedding-model",
             self._load_model,
@@ -91,19 +92,36 @@ class EmbeddingRuntime:
     def encode(self, texts: list[str], *, batch_size: int | None = None) -> Any:
         if not texts:
             raise VectorUnavailableError("No texts supplied for embedding.")
-        model = self.ensure_ready()
-        acquired = self._encode_lock.acquire(timeout=max(self.queue_wait_timeout, 0.0))
-        if not acquired:
-            raise VectorUnavailableError(
-                f"embedding-model busy — could not start after waiting {self.queue_wait_timeout:.1f}s"
-            )
-        try:
+
+        if self._model_override is not None:
+            kwargs: dict[str, Any] = {}
+            if batch_size is not None:
+                kwargs["batch_size"] = batch_size
+            return self._model_override.encode(texts, **kwargs)
+
+        def _run_encode(model: Any) -> Any:
             kwargs: dict[str, Any] = {}
             if batch_size is not None:
                 kwargs["batch_size"] = batch_size
             return model.encode(texts, **kwargs)
-        finally:
-            self._encode_lock.release()
+
+        try:
+            return self._loader.call_serialized(
+                _run_encode,
+                wait_timeout=self.model_load_timeout,
+                call_timeout=self.encode_timeout,
+                queue_wait_timeout=self.queue_wait_timeout,
+                op_name="embedding-encode",
+            )
+        except TimeoutError as exc:
+            raise VectorUnavailableError(
+                f"embedding-encode timed out after {self.encode_timeout:.1f}s"
+            ) from exc
+        except RuntimeError as exc:
+            msg = str(exc)
+            if "still loading" in msg or "unavailable" in msg or "could not start" in msg:
+                raise VectorUnavailableError(msg) from exc
+            raise
 
     def _apply_fp16_if_cuda(self, model: Any) -> None:
         """Convert model to fp16 when device is cuda; log outcome."""

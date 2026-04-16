@@ -14,12 +14,15 @@ All real retrieval/runtime behavior lives in tools.retrieval.vector_service.
 from __future__ import annotations
 
 import logging
+import threading
+import time
 from dataclasses import dataclass
 from typing import Any
 
 from tools.mcp.mcp_bootstrap import REPO_ROOT, create_mcp_server, run_server
 from tools.retrieval.vector_config import (
     ALLOW_MODEL_DOWNLOAD,
+    BACKGROUND_PREWARM_ENABLED,
     CHROMA_PATH,
     DEFAULT_EMBEDDING_MODEL,
     MAX_EMBEDDING_BATCH_SIZE,
@@ -278,5 +281,49 @@ def readiness() -> str:
     return get_vector_service().format_readiness()
 
 
+def _start_background_prewarm() -> None:
+    """Fire off ChromaDB client + embedding model loading on a daemon thread.
+
+    Without prewarm the first MCP query pays the full cold-load cost (~15-30s
+    for BAAI/bge-m3), which produces the appearance of a stall and interacts
+    badly with client-side cancellations. Prewarm makes first-query latency
+    deterministic.
+
+    Opt out with VECTOR_DB_ENABLE_STARTUP_PREWARM=0 (useful for tests).
+    """
+    if not BACKGROUND_PREWARM_ENABLED:
+        logger.info("PREWARM_SKIPPED: VECTOR_DB_ENABLE_STARTUP_PREWARM=0")
+        return
+
+    def _prewarm() -> None:
+        t0 = time.monotonic()
+        service = get_vector_service()
+        try:
+            service.store.ensure_client()
+            t_chroma = time.monotonic() - t0
+            logger.info("PREWARM_CHROMA_READY: %.2fs", t_chroma)
+        except (RuntimeError, OSError) as exc:
+            logger.warning("PREWARM_CHROMA_FAILED: %s", exc)
+
+        t1 = time.monotonic()
+        try:
+            service.embedder.ensure_ready()
+            t_model = time.monotonic() - t1
+            logger.info(
+                "PREWARM_MODEL_READY: %.2fs (cumulative %.2fs)",
+                t_model,
+                time.monotonic() - t0,
+            )
+        except (RuntimeError, OSError) as exc:
+            logger.warning("PREWARM_MODEL_FAILED: %s", exc)
+
+    threading.Thread(
+        target=_prewarm,
+        daemon=True,
+        name="vector-db-prewarm",
+    ).start()
+
+
 if __name__ == "__main__":
+    _start_background_prewarm()
     run_server(mcp)
