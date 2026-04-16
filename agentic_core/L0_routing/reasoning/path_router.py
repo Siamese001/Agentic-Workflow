@@ -9,6 +9,7 @@ import hashlib
 import json
 import logging
 from enum import Enum
+from typing import TypedDict
 
 from agentic_core.L0_routing.enforcement.routing_contract import (
     ProposalCommitter,
@@ -20,6 +21,11 @@ from agentic_core.L0_routing.utils.routing_telemetry import (
     RoutingOutcomeStatus,
     RoutingTelemetryContext,
     record_routing_telemetry,
+)
+from agentic_core.L1_cognition.reasoning.abstain_planner import (
+    DECISION_ABSTAIN,
+    DEFAULT_ABSTAIN_THRESHOLD,
+    plan_abstain,
 )
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -88,6 +94,42 @@ class Path(Enum):
     B = "B"
     C = "C"
     D = "D"
+
+
+R5_ROUTE: str = "R5"
+"""Stable route label for the D4.1 fallback / abstain outcome (WC-G08 / F17).
+
+This is intentionally a module-level string constant rather than a ``Path``
+enum value so the existing ``Path.A/B/C/D`` enum is byte-unchanged. The D3
+abstain primitive pairs ``decision="abstain"`` with ``action="emit_r5_candidate"``;
+when the router acts on that action the resulting :class:`RoutingResult`
+carries ``route=R5_ROUTE``.
+"""
+
+
+class RoutingResult(TypedDict):
+    """Serializable result emitted by :meth:`PathRouter.route_with_confidence`.
+
+    Stable public contract consumed by Wave D5 (LOW_NORMATIVE_COVERAGE
+    consumer). Every field is a primitive so the dict round-trips through
+    ``json.dumps`` / ``json.loads`` without transformation.
+
+    Fields:
+        route: ``"A"``, ``"B"``, ``"C"``, ``"D"``, or ``"R5"``.
+        reason: Human-readable justification (echoed from the D3 abstain
+            decision's ``reason`` field for both R5 and proceed branches).
+        confidence: Input confidence value in [0.0, 1.0], echoed from the D3
+            decision.
+        threshold: Floor used for the comparison, echoed from the D3 decision.
+        action: ``"emit_r5_candidate"`` when ``route == "R5"``;
+            ``"continue"`` otherwise. Downstream dispatch hint.
+    """
+
+    route: str
+    reason: str
+    confidence: float
+    threshold: float
+    action: str
 
 
 class PathRouter:
@@ -177,3 +219,66 @@ class PathRouter:
         except (ValueError, TypeError, RuntimeError) as _te:
             _log.warning("path_router: telemetry emission failed: %s", _te)
         return chosen
+
+    def route_with_confidence(
+        self,
+        payload: GovernedPayload,
+        confidence: float,
+        threshold: float = DEFAULT_ABSTAIN_THRESHOLD,
+    ) -> RoutingResult:
+        """Confidence-aware dispatch that consumes the D3 abstain primitive.
+
+        Wave D4.1 (WC-G08 / F17). Delegates the abstain / proceed decision
+        to :func:`plan_abstain` so the router NEVER re-implements confidence
+        gating inline. Behavior:
+
+        * If the D3 decision is ``"abstain"``: emit an R5 :class:`RoutingResult`
+          with ``route="R5"``. ``select_path`` is NOT called. No routing
+          contract is committed. The caller (D5 consumer) decides whether
+          to refine, retry, or surface the abstain to the user.
+        * Otherwise: delegate to :meth:`select_path` for A/B/C/D selection.
+          ``select_path``'s existing contract commit, telemetry emission,
+          and ``RoutingContractError`` semantics are UNCHANGED. The selected
+          Path is wrapped in a :class:`RoutingResult` for uniform downstream
+          consumption.
+
+        Args:
+            payload: Governed payload to route (only consulted on the proceed
+                branch).
+            confidence: Confidence / coverage score in ``[0.0, 1.0]``. Values
+                strictly below ``threshold`` trigger the R5 branch.
+            threshold: Abstain floor in ``[0.0, 1.0]``. Defaults to
+                :data:`DEFAULT_ABSTAIN_THRESHOLD`.
+
+        Returns:
+            A :class:`RoutingResult` with ``route`` in
+            ``{"A", "B", "C", "D", "R5"}``.
+
+        Raises:
+            ValueError: Propagated from :func:`plan_abstain` if ``confidence``
+                or ``threshold`` is outside ``[0.0, 1.0]``.
+            RoutingContractError: Propagated from :meth:`select_path` on
+                contract failure. The R5 branch never raises this.
+        """
+        decision = plan_abstain(confidence, threshold)
+        if decision["decision"] == DECISION_ABSTAIN:
+            _log.info(
+                "path_router: R5 abstain route fired; confidence=%.4f threshold=%.4f",
+                confidence,
+                threshold,
+            )
+            return RoutingResult(
+                route=R5_ROUTE,
+                reason=decision["reason"],
+                confidence=decision["confidence"],
+                threshold=decision["threshold"],
+                action=decision["action"],
+            )
+        chosen = self.select_path(payload)
+        return RoutingResult(
+            route=chosen.value,
+            reason=decision["reason"],
+            confidence=decision["confidence"],
+            threshold=decision["threshold"],
+            action=decision["action"],
+        )

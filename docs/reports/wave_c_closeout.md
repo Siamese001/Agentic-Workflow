@@ -56,7 +56,7 @@ All Lane C additions carry:
 ### 3.1 C2.1 — TS-20 Normative Requirements Spec
 
 - **New file**: `docs/requirements/normative_requirements_spec.md`
-- **Ingestion change**: added to `REPO_CANONICAL_SOURCES` in `tools/generate/ingestion/ingest_repo_evidence.py` — `doc_family: specification`, `topic_bucket: normative_req`, `collapse_group: repo_requirements`
+- **Ingestion change**: added to `REPO_CANONICAL_SOURCES` in `tools/generate/ingestion/ingest_repo_evidence.py` — `doc_family: spec`, `topic_bucket: arch_standards`, `collapse_group: repo_standards`
 - **Rebuild**: `repo_evidence` only; completed cleanly with 0 errors
 - **Acceptance query**: `"normative requirements specification for the agentic routing system"`
 - **Result**: new spec is **rank-1** at `dist@1 = 0.3008` (margin 0.197 below the 0.50 acceptance threshold)
