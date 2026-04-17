@@ -1,0 +1,24 @@
+id: SCORE-F04-F3
+family_id: F04
+produced_at_wave: F3
+atom_count_total: 4
+atom_count_by_status: {ACTIVE: 4}
+atom_count_by_evidence_pre_f3: {NORMATIVE: 1, WEAK_EVIDENCE: 3}
+atom_count_by_evidence_post_f3_projected: {NORMATIVE: 4}
+edge_count_total: 0
+weak_evidence_count_pre_f3: 3
+weak_evidence_count_post_f3_projected: 0
+excluded_count: 0
+unresolved_count: 0
+coverage_score_pre_f3: 0.25
+coverage_score_post_f3_projected: 1.00
+bucket_pre_f3: RED
+bucket_post_f3_projected: GREEN
+blockers: []
+notes: >
+  F04 moves RED -> GREEN via SRC-ADR-007 (context_assembly_adr).
+  F04.02 attribution: upgraded via CTX-I1.
+  F04.03 no private substitute: upgraded via CTX-I2.
+  F04.04 idempotence: upgraded via CTX-I3 (primary) + SRC-ADR-005 (supplementary).
+  OOS-003 revisit trigger is now satisfied; closure belongs to a later
+  exclusion-review pass, not to F3.

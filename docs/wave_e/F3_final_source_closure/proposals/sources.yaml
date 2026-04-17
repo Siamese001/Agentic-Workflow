@@ -1,0 +1,60 @@
+# Wave F3 - Final Source Closure - Source proposals
+# Three new ARCHITECTURAL-rank sources for remaining weak atoms.
+# Additive only. No existing source is modified.
+
+sources:
+
+  - id: SRC-ADR-007
+    subtype: ADR
+    title: "ADR-CTX-001 - Context Assembly Grounding Invariants"
+    locator: "docs/architecture/context_assembly_adr.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F3
+    version_or_rev: "v1.0 (2026-04-17)"
+    notes: >
+      Rank 4 ARCHITECTURAL. Normative scope.
+      Declares three invariants CTX-I1/CTX-I2/CTX-I3 that directly support
+      F04.02 (attribution), F04.03 (no private unattributed substitute),
+      and F04.04 (assembly idempotence for identical inputs).
+      Implementation grounding:
+      agentic_core/L1_cognition/reasoning/context_assembler.py
+      (ContextAssembler.assemble_context, _convert_to_context_items,
+      _filter_and_rank_items, _apply_diversity_filtering,
+      _apply_length_constraints, _create_context, source_distribution).
+      invalid_for_normative_use=False. Satisfies OOS-003 revisit trigger.
+
+  - id: SRC-ADR-008
+    subtype: ADR
+    title: "ADR-L3-001 - L3 Orchestration Charter"
+    locator: "docs/architecture/l3_orchestration_charter_adr.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F3
+    version_or_rev: "v1.0 (2026-04-17)"
+    notes: >
+      Rank 4 ARCHITECTURAL. Normative scope.
+      Declares invariants L3-I1/L3-I2/L3-I3 defining L3's dispatch,
+      sequencing, and escalation roles relative to L0, L1, L2, L4, L5,
+      and UWG. Directly supports F05.04 via L3-I1 step 2 ("L3 MUST
+      dispatch each plan step to L2"). Also supports F07.03 via
+      L3-I3 (unrecoverable-failure escalation handling).
+      Implementation grounding: agentic_core/L3_orchestration/ module
+      and agentic_core/L3_orchestration/core/orchestrator_state_retry.py.
+      invalid_for_normative_use=False.
+
+  - id: SRC-ADR-009
+    subtype: ADR
+    title: "ADR-ESC-001 - Unrecoverable Failure Escalation to L3"
+    locator: "docs/architecture/unrecoverable_failure_escalation_adr.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F3
+    version_or_rev: "v1.0 (2026-04-17)"
+    notes: >
+      Rank 4 ARCHITECTURAL. Normative scope.
+      Declares ESC-I1 naming L3 as the sole escalation target for
+      unrecoverable L2 task-execution failures. Directly supports F07.03.
+      Does NOT supersede ADR-F25-int (SRC-ADR-001); ADR-F25-int remains
+      invalid_for_normative_use=True by design. This ADR sits above
+      the healing-tier decision at the post-healing escalation layer.
+      Grounded in HEALER_RETRY_HARDENING_SPEC.md retry bounds and
+      ADR-L3-001 L3-I3 receiving contract.
+      invalid_for_normative_use=False.

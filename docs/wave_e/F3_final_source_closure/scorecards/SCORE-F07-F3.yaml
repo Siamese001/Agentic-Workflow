@@ -1,0 +1,25 @@
+id: SCORE-F07-F3
+family_id: F07
+produced_at_wave: F3
+atom_count_total: 4
+atom_count_by_status: {ACTIVE: 4}
+atom_count_by_evidence_pre_f3: {NORMATIVE: 3, WEAK_EVIDENCE: 1}
+atom_count_by_evidence_post_f3_projected: {NORMATIVE: 4}
+edge_count_total: 3
+weak_evidence_count_pre_f3: 1
+weak_evidence_count_post_f3_projected: 0
+excluded_count: 0
+unresolved_count: 0
+coverage_score_pre_f3: 0.75
+coverage_score_post_f3_projected: 1.00
+bucket_pre_f3: YELLOW
+bucket_post_f3_projected: GREEN
+blockers: []
+notes: >
+  F07 moves YELLOW -> GREEN via SRC-ADR-008 + SRC-ADR-009.
+  F07.03 unrecoverable-to-L3 escalation: upgraded via ESC-I1 (primary
+  escalation-target declaration in ADR-ESC-001) and L3-I3 (receiving
+  contract in ADR-L3-001).
+  SRC-ADR-001 (ADR-F25-int) remains ADVISORY and is NOT added to
+  F07.03 authority_binding. The normative half comes from the two
+  new F3 sources.

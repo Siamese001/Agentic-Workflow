@@ -1,0 +1,10 @@
+# Wave F3 - Final Source Closure - Exclusions proposal
+# No exclusion changes are made by F3 directly.
+#
+# OOS-003 (Context assembly ADR out of scope - DEFERRED) has a revisit
+# trigger that is now satisfied by SRC-ADR-007. F3 does NOT unilaterally
+# close OOS-003; that is a state transition that belongs to the
+# integration pass or a later exclusion-review wave. F3 flags OOS-003
+# as re-evaluable in the README and in final_weak_atom_closure_matrix.md.
+
+exclusion_patches: []

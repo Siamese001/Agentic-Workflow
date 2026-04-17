@@ -1,0 +1,82 @@
+# Wave F3 - Final Source Closure - Atom patch proposals
+# ONLY the 5 remaining weak atoms in scope: F04.02, F04.03, F04.04, F05.04, F07.03.
+# Each patch preserves the claim verbatim. Only evidence_class and
+# authority_binding change. status remains ACTIVE (integration pass applies).
+
+atom_patches:
+
+  # --- F04.02 ------------------------------------------------------------
+  - id: F04.02
+    family_id: F04
+    claim: "Context delivered to reasoning, orchestration, and task execution MUST carry resolvable source attribution."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-007]
+    status: ACTIVE
+    owning_layer: L1
+    rationale: >
+      SRC-ADR-007 CTX-I1 directly declares the attribution invariant:
+      every ContextItem MUST carry item_id, source_file, preserved
+      relevance_score and confidence, and RAGContext MUST expose
+      source_distribution. Implementation backing in
+      context_assembler.py._convert_to_context_items and _create_context.
+
+  # --- F04.03 ------------------------------------------------------------
+  - id: F04.03
+    family_id: F04
+    claim: "Context consumers MUST NOT substitute private, unattributed context for the grounded context set."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-007]
+    status: ACTIVE
+    owning_layer: L1
+    rationale: >
+      SRC-ADR-007 CTX-I2 directly declares the single-grounded-path
+      invariant: context MUST originate from ContextAssembler.assemble_context
+      (or a documented superseding assembler), ad-hoc RAGContext
+      construction is forbidden, attribution fields MUST be preserved.
+
+  # --- F04.04 ------------------------------------------------------------
+  - id: F04.04
+    family_id: F04
+    claim: "Context assembly MUST be idempotent for identical request inputs."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-005, SRC-ADR-007]
+    status: ACTIVE
+    owning_layer: L1
+    rationale: >
+      SRC-ADR-007 CTX-I3 declares the context-assembly idempotence
+      invariant directly: identical (RAGQuery, SearchFusionEngine state,
+      RAGConfig, GraphRAGConfig) MUST yield identical item set and
+      attribution. SRC-ADR-005 remains bound as adjacent replay-determinism
+      support; SRC-ADR-007 is the direct normative source.
+
+  # --- F05.04 ------------------------------------------------------------
+  - id: F05.04
+    family_id: F05
+    claim: "L3 MUST dispatch each plan step to L2 for task execution."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-008]
+    status: ACTIVE
+    owning_layer: L3
+    rationale: >
+      SRC-ADR-008 L3-I1 step 2 directly declares: "L3 MUST dispatch
+      each plan step to L2 for execution, passing the L0-authorized
+      route binding, the L5-validated policy envelope, and the
+      grounded context." Also L3-I1 step 3: "L3 MUST NOT invoke L2
+      for a step that lacks a resolved L0 route binding."
+
+  # --- F07.03 ------------------------------------------------------------
+  - id: F07.03
+    family_id: F07
+    claim: "Unrecoverable failures MUST surface to L3 for re-planning."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-008, SRC-ADR-009]
+    status: ACTIVE
+    owning_layer: L2
+    rationale: >
+      SRC-ADR-009 ESC-I1 directly declares the escalation target:
+      unrecoverable L2 failures MUST surface to L3. SRC-ADR-008
+      L3-I3 declares the receiving half: L3 halts dispatch and
+      emits a re-plan request to L1. The two ADRs together form
+      the complete L2->L3->L1 re-plan contract. SRC-ADR-001 is
+      NOT added to the binding because it remains
+      invalid_for_normative_use=True by design.

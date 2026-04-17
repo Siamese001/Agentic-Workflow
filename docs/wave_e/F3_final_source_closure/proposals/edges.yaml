@@ -1,0 +1,27 @@
+# Wave F3 - Final Source Closure - Edges proposal
+# No edge changes. F3 bounded scope excludes edge-evidence upgrades.
+# Follow-up D-v12-01 in v1.2 hitl_decision_ledger.md remains open for a
+# later wave. Although SRC-ADR-007/008/009 could plausibly support
+# some of the 5 dual-NORMATIVE-endpoint weak edges, per the F3 scope
+# rule ("do not touch the 8 weak-edge follow-up unless newly authored
+# source directly and unambiguously supports an existing weak edge
+# as a free byproduct") we decline to patch them here:
+#
+# - INT-F02.01-F01.05-01 DEPENDS_ON: not touched by F3 sources.
+# - INT-F08.04-F09.01-01 REQUIRES: not touched by F3 sources.
+# - INT-F09.05-F08.04-01 REQUIRES: not touched by F3 sources.
+# - INT-F12.05-F02.01-01 DEPENDS_ON: not touched by F3 sources.
+# - INT-F12.08-F08.03-01 DEPENDS_ON: not touched by F3 sources.
+# - INT-F05.04-F06.01-01 REQUIRES: F05.04 is now NORMATIVE, but the
+#     edge claim (L3 dispatch requires L2 execution precondition) is
+#     not explicitly declared in ADR-L3-001. Decline.
+# - INT-F07.03-F02.01-01 CONDITIONAL_ON: F07.03 is now NORMATIVE. The
+#     condition wording ("unrecoverable failure surfaces to L3 then to
+#     L1 re-plan") is adjacent to ADR-ESC-001 but the edge-specific
+#     authority binding needs its own source citation pass. Decline.
+# - INT-F07.03-F05.01-01 REQUIRES: same reasoning as above. Decline.
+#
+# The honest signal is: these edges are upgrade-eligible in a later
+# targeted edge-evidence wave, but not in F3's source-authoring scope.
+
+edge_patches: []
