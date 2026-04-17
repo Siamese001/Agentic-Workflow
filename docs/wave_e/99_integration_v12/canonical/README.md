@@ -1,122 +1,75 @@
 # Canonical Requirement Graph v1.2
 
-**Integration Wave:** F2 (Source Authoring for Remaining RED Families)
-**Integration Date:** 2026-04-16
-**Previous Version:** v1.1 (Wave F1 Integration)
-**Next Version:** TBD
+**Produced at wave:** F2 integration pass
+**Predecessor:** `docs/wave_e/99_integration_v11/canonical/` (v1.1)
+**Delta source:** `docs/wave_e/F2_source_authoring/proposals/`
+**Schema SSOT:** `docs/wave_e/00_schema/requirement_graph_schema.yaml`
 
-## Summary
+## Counts
 
-Canonical v1.2 merges the F2 source-discovery and atom-upgrade proposals onto canonical v1.1. F2 registered six existing repo documents as SourceAuthorityRecords and upgraded nine atoms from WEAK_EVIDENCE to NORMATIVE where those sources truly support the claim. No schema drift occurred.
+| Entity | v1.1 | v1.2 | Delta |
+|---|---:|---:|---:|
+| Families | 12 | 12 | 0 |
+| Atoms (total) | 61 | 61 | 0 |
+| Atoms (ACTIVE) | 60 | 60 | 0 |
+| Atoms (EXCLUDED) | 1 | 1 | 0 |
+| Atoms (NORMATIVE) | 46 | **55** | **+9** |
+| Atoms (WEAK_EVIDENCE) | 14 | **5** | **-9** |
+| Edges | 26 | 26 | 0 |
+| Sources | 6 | **12** | **+6** |
+| Exclusions | 3 | 3 | 0 |
 
-## Key Changes from v1.1
+## Global Coverage
 
-### Global Coverage
-- **v1.1:** 0.776 YELLOW (45 NORMATIVE + 13 WEAK_EVIDENCE + 1 EXCLUDED = 59 atoms)
-- **v1.2:** 0.931 GREEN (54 NORMATIVE + 4 WEAK_EVIDENCE + 1 EXCLUDED = 59 atoms)
-- **Delta:** +0.155, bucket flip YELLOW → GREEN
+| Metric | v1.1 | v1.2 |
+|---|---:|---:|
+| Coverage score | 0.767 YELLOW | **0.917 GREEN** |
+| GREEN families | 5 | **9** |
+| YELLOW families | 4 | **2** |
+| RED families | 3 | **1** |
 
-### Family Bucket Changes
+## What changed in v1.2
 
-| Family | v1.1 Bucket | v1.2 Bucket | Reason |
-|--------|-------------|-------------|--------|
-| F01 | YELLOW | GREEN | F01.06 upgraded NORMATIVE via SRC-ADR-004 |
-| F03 | YELLOW | GREEN | F03.04 upgraded NORMATIVE via SRC-ADR-004 |
-| F04 | RED | RED | No change (F04.04 added supplementary binding only) |
-| F07 | RED | YELLOW | F07.01, F07.02 upgraded NORMATIVE via SRC-ADR-002; F07.03 stays WEAK |
-| F08 | RED | GREEN | F08.01, F08.03, F08.04, F08.05 upgraded NORMATIVE via SRC-ADR-003 |
-| F09 | YELLOW | GREEN | F09.05 upgraded NORMATIVE via SRC-ADR-003 |
+1. **6 new SourceAuthorityRecords** registered (SRC-ADR-001 through SRC-ADR-006). All point at pre-existing canonical repo documents that prior waves missed.
+2. **9 WEAK_EVIDENCE atoms upgraded to NORMATIVE** via the new ARCHITECTURAL-rank sources: F01.06, F03.04, F07.01, F07.02, F08.01, F08.03, F08.04, F08.05, F09.05.
+3. **1 supplementary binding** added to F04.04 (SRC-ADR-005) — evidence class remains WEAK_EVIDENCE because the source is adjacent, not direct.
+4. **No new families, atoms, edges, or exclusions.**
+5. **No fabricated documents.**
+6. **No schema drift.**
 
-### Bucket Distribution
+## Bucket flips
 
-| Bucket | v1.1 Count | v1.2 Count | Families |
-|--------|------------|------------|---------|
-| GREEN | 5 | 9 | F01, F02, F03, F06, F08, F09, F10, F11, F12 |
-| YELLOW | 4 | 2 | F05, F07 |
-| RED | 3 | 1 | F04 only |
+| Family | v1.1 → v1.2 | Notes |
+|---|---|---|
+| F01 | YELLOW 0.83 → GREEN 1.00 | F01.06 closed |
+| F03 | YELLOW 0.75 → GREEN 1.00 | F03.04 closed |
+| F07 | RED 0.25 → YELLOW 0.75 | F07.01/.02 closed; F07.03 blocked by advisory-only source |
+| F08 | RED 0.20 → GREEN 1.00 | Two-level flip; eval_pipeline_acceptance was the long-missing exit-spine source |
+| F09 | YELLOW 0.80 → GREEN 1.00 | F09.05 closed |
 
-## Source Authority Records Added
+Unchanged: F02, F06, F10, F11, F12 (all GREEN); F05 (YELLOW); **F04 (RED, sole remaining)**.
 
-Six new SourceAuthorityRecords were added by F2 (all pre-existing repo documents, no new authoring):
+## Remaining blockers
 
-| ID | Title | Authority Class | Rank | Notes |
-|----|-------|----------------|------|-------|
-| SRC-ADR-001 | ADR-F25-int - Confidence-Scored Tiered Healing Dispatch Routing | ADVISORY | 6 | invalid_for_normative_use=True; ADVISORY supplement only |
-| SRC-ADR-002 | Healer Retry Hardening Specification | ARCHITECTURAL | 4 | Supports F07.01, F07.02 |
-| SRC-ADR-003 | Evaluation Pipeline Release Acceptance - Exit Control Gate | ARCHITECTURAL | 4 | Supports F08.01, F08.03, F08.04, F08.05, F09.05 |
-| SRC-ADR-004 | L0 Decomposition Specification (L0a/L0b/L0c) | ARCHITECTURAL | 4 | Supports F01.06, F03.04 |
-| SRC-ADR-005 | Replay Determinism Rules | ARCHITECTURAL | 4 | Supplementary for F04.04 |
-| SRC-ADR-006 | Authority Hierarchy Invariants | ARCHITECTURAL | 4 | Supplementary for multiple families |
+| # | Blocker | Family impact | Required action |
+|---|---|---|---|
+| **B3** | Context-assembly ADR | **F04 RED** | Author ADR defining attribution (F04.02), no-private-substitute (F04.03), context-assembly idempotence (F04.04). Also releases OOS-003 revisit trigger. **Highest remaining impact.** |
+| **F07.03** | Normative escalation-target ADR | F07 stays YELLOW | SRC-ADR-001 already describes ESCALATED-tier routing; promote via HITL review to drop `invalid_for_normative_use=True` marker. |
+| **B6** | L3 orchestration charter ADR | F05 stays YELLOW (F05.04 WEAK) | Author L3 charter explicitly defining dispatch role. |
+| **B7** | 6 deferred interaction candidates | Graph completeness | Each requires new atoms or edge-kind patches; none closable by F2's source additions. |
 
-Total sources in v1.2: 12 (6 from v1 + 6 from F2)
+## Publishability
 
-## Atom Patches Applied
+**YES — v1.2 is publishable.** Full QA pass in `integration_validation_report.md`:
+- 0 orphan references
+- 0 duplicate IDs
+- 0 binding errors
+- 0 advisory-only NORMATIVE atoms
+- All 12 sources have real resolvable locators
+- Coverage arithmetic verified
 
-Ten atom patches were merged from F2 (9 NORMATIVE upgrades + 1 supplementary binding):
-
-| Atom | v1.1 Evidence | v1.2 Evidence | Source(s) |
-|------|---------------|---------------|-----------|
-| F01.06 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-004 |
-| F03.04 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-004 |
-| F07.01 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-002 |
-| F07.02 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-002 |
-| F07.03 | WEAK_EVIDENCE | WEAK_EVIDENCE | SRC-INT-003, SRC-ADR-001 (ADVISORY only) |
-| F08.01 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-003 |
-| F08.03 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-003 |
-| F08.04 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-003 |
-| F08.05 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-003 |
-| F09.05 | WEAK_EVIDENCE | NORMATIVE | SRC-INT-003, SRC-ADR-003 |
-| F04.04 | WEAK_EVIDENCE | WEAK_EVIDENCE | SRC-INT-003, SRC-ADR-005 (supplementary) |
-
-## Edges Updated
-
-Two edges had their evidence_class upgraded from WEAK_EVIDENCE to NORMATIVE due to atom endpoint upgrades:
-
-| Edge ID | v1.1 Evidence | v1.2 Evidence | Reason |
-|---------|---------------|---------------|--------|
-| INT-F08.04-F09.01-01 | WEAK_EVIDENCE | NORMATIVE | F08.04 upgraded NORMATIVE |
-| INT-F09.05-F08.04-01 | WEAK_EVIDENCE | NORMATIVE | F09.05 upgraded NORMATIVE |
-
-## Unchanged Artifacts
-
-- **Families:** No new families, no family patches (families.yaml identical to v1.1)
-- **Exclusions:** No new exclusions, no exclusion changes (exclusions.yaml identical to v1.1)
-- **Interaction edges:** No new edges added (edges.yaml has same 26 edges as v1.1, with 2 evidence_class upgrades)
-
-## Remaining Blockers
-
-| ID | Blocker | Family Impact | Required Action |
-|----|---------|---------------|-----------------|
-| B3 | Context-assembly ADR | F04 RED 0.25 | Author dedicated ADR specifying attribution, no-private-substitute, idempotence. Highest remaining impact. |
-| B2-partial | Normative escalation-target ADR | F07.03 WEAK | Promote healing_dispatch_routing_adr to normative via HITL, or author new ADR naming L3 as escalation target. |
-| B6 | L3 orchestration charter ADR | F05.04 WEAK | Author L3 charter explicitly defining dispatch role. |
-| B7 | 6 deferred interaction candidates (C1, C2, C3, C4, C6, C9) | Graph completeness | Downstream atoms / edge-kind patches required. |
-
-## Validation Status
-
-All F2 proposals passed schema validation:
-- All SRC IDs match pattern `^SRC-(INT|EXT|ADR|RULE|CODE|DEC)-[0-9]{3}$`
-- All locators are resolvable in-repo
-- Every NORMATIVE upgrade cites ≥1 ARCHITECTURAL-rank source
-- ADVISORY source (SRC-ADR-001) correctly NOT used to support NORMATIVE evidence_class
-- No orphan family, atom, or edge references
-- No duplicate IDs
-- No advisory-only source used as sole support for NORMATIVE atom
-
-## Integration QA Results
-
-- **No orphan family references:** ✓
-- **No orphan atom references:** ✓
-- **No orphan edge endpoints:** ✓
-- **No duplicate IDs:** ✓
-- **No duplicate semantic atoms with same family_id + claim:** ✓
-- **Every ACTIVE NORMATIVE atom has at least one valid authority binding:** ✓
-- **Every EXCLUDED atom references a real OOS record:** ✓
-- **No placeholder SRC IDs in canonical v1.2:** ✓
-- **No advisory-only source used as sole support for NORMATIVE atom:** ✓
-- **No sidecar markdown content copied into canonical schema fields:** ✓
-- **No writes outside docs/wave_e/99_integration_v12/:** ✓
-
-## Publishable?
-
-**YES.** Canonical v1.2 is schema-valid, graph-integrity-verified, and ready for publication. The integration pass merged all F2 proposals without schema drift and documented all unresolved issues honestly.
+See also:
+- `../coverage_report.md` — delta-oriented coverage analysis
+- `../merge_conflicts_register.md` — merge decisions
+- `../hitl_decision_ledger.md` — non-trivial HITL decisions
+- `../integration_validation_report.md` — full QA output

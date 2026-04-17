@@ -1,128 +1,98 @@
-# Canonical v1.2 Coverage Report
+# v1.2 Coverage Report — Delta vs v1.1
 
-**Integration Wave:** F2 (Source Authoring for Remaining RED Families)
-**Integration Date:** 2026-04-16
-**Previous Version:** v1.1
+## Global
 
-## Executive Summary
+| Metric | v1.1 | v1.2 | Δ |
+|---|---:|---:|---:|
+| Atoms total | 61 | 61 | 0 |
+| Atoms ACTIVE | 60 | 60 | 0 |
+| Atoms EXCLUDED | 1 | 1 | 0 |
+| NORMATIVE | 46 | 55 | **+9** |
+| WEAK_EVIDENCE | 14 | 5 | **-9** |
+| Coverage score | 0.767 | **0.917** | **+0.150** |
+| Bucket | YELLOW | **GREEN** | **flip** |
 
-Global coverage improved from **0.776 YELLOW** to **0.931 GREEN**, a +0.155 delta. Nine atoms were upgraded from WEAK_EVIDENCE to NORMATIVE, and two edges were upgraded accordingly. F08 moved from RED 0.20 to GREEN 1.00 (full closure), F07 moved from RED 0.25 to YELLOW 0.75 (partial closure), and F01, F03, F09 all flipped from YELLOW to GREEN. F04 remains RED 0.25 unchanged.
+Coverage = NORMATIVE / (NORMATIVE + WEAK_EVIDENCE) across all ACTIVE atoms. Excludes the one EXCLUDED atom (F12.04 via OOS-001).
 
-## Global Coverage Metrics
+## Per-family
 
-| Metric | v1.1 | v1.2 | Delta |
-|--------|------|------|-------|
-| Total atoms | 59 | 59 | 0 |
-| NORMATIVE atoms | 45 | 54 | +9 |
-| WEAK_EVIDENCE atoms | 13 | 4 | -9 |
-| EXCLUDED atoms | 1 | 1 | 0 |
-| Coverage score | 0.776 | 0.931 | +0.155 |
-| Bucket | YELLOW | GREEN | FLIP |
+| Family | v1.1 coverage | v1.2 coverage | v1.1 bucket | v1.2 bucket | Change |
+|---|---:|---:|---|---|---|
+| F01 | 0.833 (5N/1W) | **1.000** (6N/0W) | YELLOW | GREEN | **flip up** |
+| F02 | 1.000 | 1.000 | GREEN | GREEN | — |
+| F03 | 0.750 (3N/1W) | **1.000** (4N/0W) | YELLOW | GREEN | **flip up** |
+| F04 | 0.250 (1N/3W) | 0.250 (1N/3W) | RED | RED | **unchanged** |
+| F05 | 0.750 (3N/1W) | 0.750 (3N/1W) | YELLOW | YELLOW | — |
+| F06 | 1.000 | 1.000 | GREEN | GREEN | — |
+| F07 | 0.250 (1N/3W) | **0.750** (3N/1W) | RED | YELLOW | **flip up** |
+| F08 | 0.200 (1N/4W) | **1.000** (5N/0W) | RED | GREEN | **flip up (two-level)** |
+| F09 | 0.800 (4N/1W) | **1.000** (5N/0W) | YELLOW | GREEN | **flip up** |
+| F10 | 1.000 | 1.000 | GREEN | GREEN | — |
+| F11 | 1.000 | 1.000 | GREEN | GREEN | — |
+| F12 | 1.000 | 1.000 | GREEN | GREEN | — |
 
-## Family-Level Coverage
+Five families flipped upward. Zero families regressed. F04 alone stayed RED.
 
-| Family | Title | v1.1 Score | v1.2 Score | v1.1 Bucket | v1.2 Bucket | Atoms (N/W/E) | Delta |
-|--------|-------|------------|------------|-------------|-------------|---------------|-------|
-| F01 | Request Intake | 0.83 | 1.00 | YELLOW | GREEN | 6/0/0 | +0.17 |
-| F02 | L1 Reasoning | 1.00 | 1.00 | GREEN | GREEN | 5/0/0 | 0.00 |
-| F03 | L0 Route | 0.75 | 1.00 | YELLOW | GREEN | 4/0/0 | +0.25 |
-| F04 | Context Assembly | 0.25 | 0.25 | RED | RED | 1/3/0 | 0.00 |
-| F05 | L3 Orchestration | 0.75 | 0.75 | YELLOW | YELLOW | 3/1/0 | 0.00 |
-| F06 | L2 Task Execution | 1.00 | 1.00 | GREEN | GREEN | 5/0/0 | 0.00 |
-| F07 | Heal/Retry/Recovery | 0.25 | 0.75 | RED | YELLOW | 3/1/0 | +0.50 |
-| F08 | Exit Spine | 0.20 | 1.00 | RED | GREEN | 5/0/0 | +0.80 |
-| F09 | Universal Write Gate | 0.80 | 1.00 | YELLOW | GREEN | 5/0/0 | +0.20 |
-| F10 | L4 Durable Archive | 1.00 | 1.00 | GREEN | GREEN | 3/0/0 | 0.00 |
-| F11 | L5 Policy/Safety | 1.00 | 1.00 | GREEN | GREEN | 7/0/0 | 0.00 |
-| F12 | L6 Observability | 1.00 | 1.00 | GREEN | GREEN | 7/0/1 | 0.00 |
+## Bucket distribution
 
-**Legend:** N = NORMATIVE, W = WEAK_EVIDENCE, E = EXCLUDED
+| Bucket | v1.1 count | v1.2 count | Δ |
+|---|---:|---:|---:|
+| GREEN (≥0.90) | 5 | **9** | +4 |
+| YELLOW (0.70–0.89) | 4 | **2** | -2 |
+| RED (<0.70) | 3 | **1** | -2 |
 
-## Bucket Distribution
+## Remaining WEAK atoms (5)
 
-| Bucket | v1.1 Count | v1.2 Count | Families |
-|--------|------------|------------|---------|
-| GREEN | 5 | 9 | F01, F02, F03, F06, F08, F09, F10, F11, F12 |
-| YELLOW | 4 | 2 | F05, F07 |
-| RED | 3 | 1 | F04 only |
+| Atom | Family | Claim | Blocker |
+|---|---|---|---|
+| F04.02 | F04 | Context MUST carry attribution | B3 context-assembly ADR |
+| F04.03 | F04 | No private unattributed substitute context | B3 context-assembly ADR |
+| F04.04 | F04 | Context assembly MUST be idempotent | B3 context-assembly ADR (SRC-ADR-005 is adjacent, not direct) |
+| F05.04 | F05 | L3 MUST dispatch each plan step to L2 | B6 L3 orchestration charter ADR |
+| F07.03 | F07 | Unrecoverable failures MUST surface to L3 | Normative escalation-target ADR (SRC-ADR-001 exists but is invalid_for_normative_use=True) |
 
-## Atom-Level Changes
+## Source contributions
 
-### Upgraded WEAK → NORMATIVE (9 atoms)
+| Source | Atoms upgraded | Families affected |
+|---|---:|---|
+| SRC-ADR-002 (HEALER_RETRY) | 2 | F07 |
+| SRC-ADR-003 (eval_pipeline_acceptance) | 5 | F08, F09 |
+| SRC-ADR-004 (L0_DECOMPOSITION) | 2 | F01, F03 |
+| SRC-ADR-005 (REPLAY_DETERMINISM) | 0 (supplementary only) | F04 |
+| SRC-ADR-006 (AUTHORITY_HIERARCHY) | 0 (archive only) | — |
+| SRC-ADR-001 (healing_dispatch_routing_adr) | 0 (ADVISORY-only) | — |
 
-| Atom | Family | v1.1 Evidence | v1.2 Evidence | Source(s) Added |
-|------|--------|---------------|---------------|-----------------|
-| F01.06 | F01 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-004 (L0_DECOMPOSITION_SPEC) |
-| F03.04 | F03 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-004 (L0_DECOMPOSITION_SPEC) |
-| F07.01 | F07 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-002 (HEALER_RETRY_HARDENING_SPEC) |
-| F07.02 | F07 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-002 (HEALER_RETRY_HARDENING_SPEC) |
-| F08.01 | F08 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-003 (eval_pipeline_acceptance) |
-| F08.03 | F08 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-003 (eval_pipeline_acceptance) |
-| F08.04 | F08 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-003 (eval_pipeline_acceptance) |
-| F08.05 | F08 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-003 (eval_pipeline_acceptance) |
-| F09.05 | F09 | WEAK_EVIDENCE | NORMATIVE | SRC-ADR-003 (eval_pipeline_acceptance) |
+SRC-ADR-003 is the single highest-value addition: four F08 atoms and one F09 atom upgraded from a single source registration.
 
-### Supplementary Binding (1 atom)
+## Rank-floor check
 
-| Atom | Family | v1.1 Evidence | v1.2 Evidence | Source(s) Added |
-|------|--------|---------------|---------------|-----------------|
-| F04.04 | F04 | WEAK_EVIDENCE | WEAK_EVIDENCE | SRC-ADR-005 (REPLAY_DETERMINISM_RULES) - adjacent but not direct |
+Every NORMATIVE upgrade cites at least one ≤ARCHITECTURAL-rank source in addition to SRC-INT-003:
 
-### Unchanged WEAK (4 atoms)
+| Atom | Authority binding | Lowest rank |
+|---|---|---:|
+| F01.06 | [SRC-INT-003, SRC-ADR-004] | 4 ✅ |
+| F03.04 | [SRC-INT-003, SRC-ADR-004] | 4 ✅ |
+| F07.01 | [SRC-INT-003, SRC-ADR-002] | 4 ✅ |
+| F07.02 | [SRC-INT-003, SRC-ADR-002] | 4 ✅ |
+| F08.01 | [SRC-INT-003, SRC-ADR-003] | 4 ✅ |
+| F08.03 | [SRC-INT-003, SRC-ADR-003] | 4 ✅ |
+| F08.04 | [SRC-INT-003, SRC-ADR-003] | 4 ✅ |
+| F08.05 | [SRC-INT-003, SRC-ADR-003] | 4 ✅ |
+| F09.05 | [SRC-INT-003, SRC-ADR-003] | 4 ✅ |
 
-| Atom | Family | Evidence | Reason |
-|------|--------|----------|--------|
-| F04.02 | F04 | WEAK_EVIDENCE | No source canonicalizes context attribution |
-| F04.03 | F04 | WEAK_EVIDENCE | No source canonicalizes no-private-substitute |
-| F05.04 | F05 | WEAK_EVIDENCE | No L3 charter ADR naming dispatch role |
-| F07.03 | F07 | WEAK_EVIDENCE | SRC-ADR-001 is ADVISORY with invalid_for_normative_use=True |
+All 9 upgrades pass.
 
-## Edge-Level Changes
+## Interaction edge evidence (unchanged)
 
-Two edges had evidence_class upgraded from WEAK_EVIDENCE to NORMATIVE due to atom endpoint upgrades:
+Five edges retain `evidence_class: WEAK_EVIDENCE` in v1.2 despite their endpoints upgrading to NORMATIVE atoms. F2 proposed no edge patches so v1.2 inherits them:
 
-| Edge ID | v1.1 Evidence | v1.2 Evidence | Reason |
-|---------|---------------|---------------|--------|
-| INT-F08.04-F09.01-01 | WEAK_EVIDENCE | NORMATIVE | F08.04 upgraded NORMATIVE |
-| INT-F09.05-F08.04-01 | WEAK_EVIDENCE | NORMATIVE | F09.05 upgraded NORMATIVE |
+- `INT-F02.01-F01.05-01` (DEPENDS_ON)
+- `INT-F05.04-F06.01-01` (REQUIRES)
+- `INT-F07.03-F02.01-01` (CONDITIONAL_ON)
+- `INT-F07.03-F05.01-01` (REQUIRES)
+- `INT-F08.04-F09.01-01` (REQUIRES)
+- `INT-F09.05-F08.04-01` (REQUIRES)
+- `INT-F12.05-F02.01-01` (DEPENDS_ON)
+- `INT-F12.08-F08.03-01` (DEPENDS_ON)
 
-## Source Authority Records Added
-
-Six new SourceAuthorityRecords added by F2 (all pre-existing repo documents):
-
-| ID | Title | Authority Class | Rank | Supports Atoms |
-|----|-------|----------------|------|----------------|
-| SRC-ADR-001 | ADR-F25-int - Healing Dispatch Routing | ADVISORY | 6 | F07.03 (supplementary only) |
-| SRC-ADR-002 | Healer Retry Hardening Spec | ARCHITECTURAL | 4 | F07.01, F07.02 |
-| SRC-ADR-003 | Evaluation Pipeline Acceptance | ARCHITECTURAL | 4 | F08.01, F08.03, F08.04, F08.05, F09.05 |
-| SRC-ADR-004 | L0 Decomposition Spec | ARCHITECTURAL | 4 | F01.06, F03.04 |
-| SRC-ADR-005 | Replay Determinism Rules | ARCHITECTURAL | 4 | F04.04 (supplementary), F03.04 |
-| SRC-ADR-006 | Authority Hierarchy Invariants | ARCHITECTURAL | 4 | Multiple families (supplementary) |
-
-Total sources in v1.2: 12 (6 from v1 + 6 from F2)
-
-## Remaining Blockers by Family
-
-### F04 (RED 0.25) - Blocker B3
-- **Missing:** Context-assembly ADR canonicalizing attribution (F04.02), no-private-substitute (F04.03), idempotence (F04.04)
-- **Impact:** F04 remains sole RED family; highest remaining blocker
-- **Required:** Author dedicated context-assembly ADR
-
-### F07 (YELLOW 0.75) - Blocker B2-partial
-- **Missing:** Normative escalation-target ADR for F07.03
-- **Impact:** F07.03 stays WEAK, preventing full GREEN
-- **Required:** Promote healing_dispatch_routing_adr to normative via HITL, or author new ADR
-
-### F05 (YELLOW 0.75) - Blocker B6
-- **Missing:** L3 orchestration charter ADR
-- **Impact:** F05.04 stays WEAK
-- **Required:** Author L3 charter explicitly defining dispatch role
-
-### Graph Completeness - Blocker B7
-- **Missing:** 6 deferred interaction candidates (C1, C2, C3, C4, C6, C9)
-- **Impact:** Graph completeness
-- **Required:** Downstream atoms / edge-kind patches
-
-## Conclusion
-
-F2 integration achieved material progress: global coverage flipped YELLOW → GREEN, three RED families (F01, F03, F08) closed to GREEN, and F07 moved RED → YELLOW. The exit-spine source (SRC-ADR-003) and healer-retry spec (SRC-ADR-002) were discovered in the repo, resolving what prior waves treated as "missing ADR" blockers. F04 remains the sole RED family, awaiting a context-assembly ADR.
+Logged as follow-up D-v12-01 in HITL ledger — candidate for a later targeted edge-evidence pass, not in F2's scope.

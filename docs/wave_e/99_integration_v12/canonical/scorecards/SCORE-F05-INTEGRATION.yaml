@@ -1,0 +1,16 @@
+id: SCORE-F05-INTEGRATION
+family_id: F05
+produced_at_wave: v1.2
+atom_count_total: 4
+atom_count_by_status: {ACTIVE: 4}
+atom_count_by_evidence: {NORMATIVE: 3, WEAK_EVIDENCE: 1}
+edge_count_total: 3
+weak_evidence_count: 1
+excluded_count: 0
+unresolved_count: 0
+coverage_score: 0.75
+bucket: YELLOW
+blockers:
+  - 'B6 L3 orchestration charter ADR still required for F05.04.'
+notes: >
+  Unchanged YELLOW 0.75.

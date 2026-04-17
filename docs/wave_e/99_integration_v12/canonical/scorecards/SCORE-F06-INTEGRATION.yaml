@@ -1,10 +1,10 @@
-id: SCORE-F09-INTEGRATION
-family_id: F09
+id: SCORE-F06-INTEGRATION
+family_id: F06
 produced_at_wave: v1.2
 atom_count_total: 5
 atom_count_by_status: {ACTIVE: 5}
 atom_count_by_evidence: {NORMATIVE: 5}
-edge_count_total: 8
+edge_count_total: 3
 weak_evidence_count: 0
 excluded_count: 0
 unresolved_count: 0
@@ -12,4 +12,4 @@ coverage_score: 1.0
 bucket: GREEN
 blockers: []
 notes: >
-  F09.05 upgraded via SRC-ADR-003. v1.1 YELLOW 0.80 -> v1.2 GREEN 1.00.
+  Unchanged from v1.1.

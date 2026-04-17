@@ -1,0 +1,15 @@
+id: SCORE-F12-INTEGRATION
+family_id: F12
+produced_at_wave: v1.2
+atom_count_total: 8
+atom_count_by_status: {ACTIVE: 7, EXCLUDED: 1}
+atom_count_by_evidence: {NORMATIVE: 7, EXCLUDED: 1}
+edge_count_total: 6
+weak_evidence_count: 0
+excluded_count: 1
+unresolved_count: 0
+coverage_score: 1.0
+bucket: GREEN
+blockers: []
+notes: >
+  Unchanged from v1.1. F12.04 EXCLUDED via OOS-001.

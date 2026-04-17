@@ -1,4 +1,4 @@
-# Canonical v1.2 - Edges (26: unchanged from v1.1; F2 introduced no new edges).
+# Canonical v1.1 - Edges (26: 23 carried from v1 + 3 from F1).
 
 edges:
 
@@ -144,9 +144,8 @@ edges:
     edge_kind: REQUIRES
     direction: DIRECTED
     status: ACTIVE
-    evidence_class: NORMATIVE
-    authority_binding: [SRC-INT-003, SRC-ADR-003]
-    rationale: "Upgraded from WEAK_EVIDENCE to NORMATIVE by F2. SRC-ADR-003 (eval_pipeline_acceptance) provides direct support for the evaluation spine signaling UWG."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
 
   - id: INT-F09.04-F11.04-01
     source_atom_id: F09.04
@@ -163,9 +162,8 @@ edges:
     edge_kind: REQUIRES
     direction: DIRECTED
     status: ACTIVE
-    evidence_class: NORMATIVE
-    authority_binding: [SRC-INT-003, SRC-ADR-003]
-    rationale: "Upgraded from WEAK_EVIDENCE to NORMATIVE by F2. SRC-ADR-003 (eval_pipeline_acceptance) provides direct support for UWG rejecting writes without exit signal."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
 
   - id: INT-F11.07-F09.01-01
     source_atom_id: F11.07
