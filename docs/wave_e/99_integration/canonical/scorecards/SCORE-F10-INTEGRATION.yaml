@@ -1,0 +1,17 @@
+id: SCORE-F10-INTEGRATION
+family_id: F10
+produced_at_wave: INTEGRATION
+atom_count_total: 4
+atom_count_by_status:
+  ACTIVE: 4
+atom_count_by_evidence:
+  NORMATIVE: 4
+edge_count_total: 1
+edge_count_by_kind:
+  REQUIRES: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers: []
+notes: "GREEN. L4 state authority fully normative. Single edge to F09 (writes-only-via-gate)."

@@ -1,0 +1,21 @@
+id: SCORE-F07-INTEGRATION
+family_id: F07
+produced_at_wave: INTEGRATION
+atom_count_total: 4
+atom_count_by_status:
+  ACTIVE: 4
+atom_count_by_evidence:
+  NORMATIVE: 1
+  WEAK_EVIDENCE: 3
+edge_count_total: 3
+edge_count_by_kind:
+  REQUIRES: 2
+  CONDITIONAL_ON: 1
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.25
+blockers:
+  - "RED: F07.01/02/03 (bounded retry, surface-to-L3) remain WEAK_EVIDENCE."
+  - "Family authority_class corrected OPERATIONAL -> CONSTITUTIONAL per schema rule (HITL-INT-F07-AUTH)."
+  - "Candidate C3 (retry budget set by L5 policy) awaits new F11 atom in Wave F."

@@ -1,0 +1,24 @@
+id: SCORE-F12-INTEGRATION
+family_id: F12
+produced_at_wave: INTEGRATION
+atom_count_total: 6
+atom_count_by_status:
+  ACTIVE: 5
+  EXCLUDED: 1
+atom_count_by_evidence:
+  NORMATIVE: 4
+  WEAK_EVIDENCE: 1
+  EXCLUDED: 1
+edge_count_total: 4
+edge_count_by_kind:
+  FORBIDS: 3
+  DEPENDS_ON: 1
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 1
+coverage_score: 0.8
+blockers:
+  - "F12.05 future-run L1 consumption remains WEAK_EVIDENCE (consumption mechanism TBD)."
+notes: >
+  Three FORBIDS edges encode L6-MUST-NOT-influence-current-run against
+  F03/F11/F09. F12.06 EXCLUDED properly references OOS-001.

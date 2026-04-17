@@ -1,0 +1,18 @@
+id: SCORE-F06-INTEGRATION
+family_id: F06
+produced_at_wave: INTEGRATION
+atom_count_total: 5
+atom_count_by_status:
+  ACTIVE: 5
+atom_count_by_evidence:
+  NORMATIVE: 5
+edge_count_total: 5
+edge_count_by_kind:
+  REQUIRES: 3
+  REFINES: 2
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers: []
+notes: "GREEN. L2 execution plane fully normative."

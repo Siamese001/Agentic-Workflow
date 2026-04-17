@@ -1,0 +1,20 @@
+id: SCORE-F04-INTEGRATION
+family_id: F04
+produced_at_wave: INTEGRATION
+atom_count_total: 4
+atom_count_by_status:
+  ACTIVE: 4
+atom_count_by_evidence:
+  NORMATIVE: 1
+  WEAK_EVIDENCE: 3
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.25
+blockers:
+  - "RED: only F04.01 is NORMATIVE after E1c layer resolution."
+  - "F04.02/03/04 remain WEAK (attribution, no-private-substitute, idempotence) - unsourced at rank <= ARCHITECTURAL."
+  - "F04 has zero interaction edges; integration candidates C2, C4, C6 require new atoms in Wave F."
+  - "OOS-003 (C0 as separate layer) is NOT_YET_DECIDED with revisit_trigger."

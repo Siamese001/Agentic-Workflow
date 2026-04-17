@@ -1,0 +1,48 @@
+# Wave E1 Integration — Canonical SourceAuthorityRecords
+# All five sources merged from E1c proposals/sources.yaml.
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+
+sources:
+
+  - id: SRC-RULE-001
+    subtype: RULE
+    title: "Constitutional Rules (Agentic Workflow)"
+    locator: ".windsurf/rules/constitutional.md"
+    authority_class: CONSTITUTIONAL
+    retrieved_at_wave: E1c
+    notes: "Rank 1. Binds all layers, all waves, all agents."
+
+  - id: SRC-RULE-002
+    subtype: RULE
+    title: "Global Rules - Tier 2 SSOT"
+    locator: ".windsurf/rules/global_rules.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-001
+    subtype: INT
+    title: "AGENTS.md - Layer Separation and Governing Intent"
+    locator: "AGENTS.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-002
+    subtype: INT
+    title: "Wave E Downstream Lane Contract - Section 1 Governing Semantics"
+    locator: "docs/wave_e/00_schema/downstream_lane_contract.md#1-governing-semantics-non-negotiable"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2. Single tightest statement of six layer governing semantics."
+
+  - id: SRC-INT-003
+    subtype: INT
+    title: "Wave E Schema Frontmatter - Governing Semantics (Non-Negotiable)"
+    locator: "docs/wave_e/00_schema/requirement_graph_schema.yaml#governing-semantics"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: E1c
+    notes: >
+      Rank 4. ARCHITECTURAL-grade source binding NORMATIVE atoms. Acts as
+      de-facto layer charter for L0..L6 + Write Gate until per-layer ADRs
+      are authored in a future wave.

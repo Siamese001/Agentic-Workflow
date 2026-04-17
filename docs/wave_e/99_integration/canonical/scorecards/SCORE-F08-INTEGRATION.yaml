@@ -1,0 +1,19 @@
+id: SCORE-F08-INTEGRATION
+family_id: F08
+produced_at_wave: INTEGRATION
+atom_count_total: 5
+atom_count_by_status:
+  ACTIVE: 5
+atom_count_by_evidence:
+  NORMATIVE: 1
+  WEAK_EVIDENCE: 4
+edge_count_total: 3
+edge_count_by_kind:
+  REQUIRES: 3
+unresolved_count: 0
+weak_evidence_count: 4
+excluded_count: 0
+coverage_score: 0.2
+blockers:
+  - "RED: F08 evaluation spine unsourced. F08.05 downgraded NORMATIVE -> WEAK by E1c."
+  - "Wave F+ MUST author a dedicated exit-spine ADR (SRC-ADR-EXIT equivalent) to lift F08 coverage."
