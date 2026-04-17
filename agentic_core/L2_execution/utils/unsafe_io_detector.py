@@ -126,13 +126,13 @@ def _make_execution_context(payload, target: str):
     )
 
 
-from agentic_core.L0_routing.config import (
+from agentic_core.L0_routing.config import (  # guardian: allow-layer-violation -- path_constants is stdlib-only build-time config SSOT, not routing logic; L2 path validation requires these directory constants
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L0_routing.config.path_constants import (
+from agentic_core.L0_routing.config.path_constants import (  # guardian: allow-layer-violation -- path_constants is stdlib-only build-time config SSOT, not routing logic; L2 path validation requires these directory constants
     TESTS_DIR,
     TOOLS_DIR,
 )

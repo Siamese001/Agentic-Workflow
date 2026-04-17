@@ -110,13 +110,15 @@ Logger: Any = logging.getLogger("L2.WriteGateway")
 _MUTATION_LEDGER_PATH: Path | None = None
 _MUTATION_SEQUENCE: int = 0
 _TRACE_ID: str | None = None
-from agentic_core.L0_routing.config.path_constants import (
+from agentic_core.L0_routing.config.path_constants import (  # guardian: allow-layer-violation -- path_constants is stdlib-only build-time config SSOT, not routing logic; L2 write gate requires these directory constants for source-root protection
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
     OPS_SCRIPTS_DIR,
     TESTS_DIR,
 )
-from agentic_core.L0_routing.enforcement.mutation_prohibition import enforce_protected_root
+from agentic_core.L0_routing.enforcement.mutation_prohibition import (  # guardian: allow-layer-violation -- L2 write gate calling L0 enforcement is an intentional enforcement chain; L2 MUST invoke L0 mutation prohibition to protect source roots
+    enforce_protected_root,
+)
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
