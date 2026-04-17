@@ -63,14 +63,14 @@ from agentic_core.L4_state.utils.context.execution_context import (
     ExecutionContext,
     GuardrailOutcome,
 )
-from agentic_core.L5_safety.audit.safety_audit_emitter import (
+from agentic_core.L5_safety.audit.safety_audit_emitter import (  # guardian: allow-layer-violation -- execution chokepoint must invoke L5 safety audit to emit guardrail decisions; this is an intentional enforcement boundary that spans L2->L5
     SafetyAuditMissingError,
     emit_guardrail_audit,
 )
-from agentic_core.L6_observability.execution.observability_recorder import (
+from agentic_core.L6_observability.execution.observability_recorder import (  # guardian: allow-layer-violation -- execution chokepoint must record observability at L6; P0 enforcement boundary requires cross-layer instrumentation
     ExecutionContext as ObservabilityExecutionContext,
 )
-from agentic_core.L6_observability.execution.observability_recorder import (
+from agentic_core.L6_observability.execution.observability_recorder import (  # guardian: allow-layer-violation -- execution chokepoint must record observability at L6; P0 enforcement boundary requires cross-layer instrumentation
     ExecutionObservabilityContext,
     ExecutionStatus,
     FailureClassification,
