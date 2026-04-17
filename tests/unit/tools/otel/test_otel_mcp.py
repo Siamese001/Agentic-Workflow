@@ -33,7 +33,8 @@ async def test_mcp_server():
     print("Testing OpenTelemetry MCP Server...")
 
     # Import the server
-    server_path = Path("tools/otel/otel_mcp_server.py")
+    repo_root = Path(__file__).resolve().parents[4]
+    server_path = repo_root / "tools" / "otel" / "otel_mcp_server.py"
     if not server_path.exists():
         print("\u274c Server file not found")
         return False

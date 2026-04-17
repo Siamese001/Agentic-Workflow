@@ -1,15 +1,19 @@
-"""E2E test suite for apps_rg enterprise workflow context."""
+"""E2E test for enterprise LIC campaign orchestration."""
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import sys
 from pathlib import Path
 
-repo_root = Path(__file__).parent.parent.parent
+repo_root = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(repo_root))
 
-from apps_rg.reasoning.RgResumeOrchestrator import RgResumeOrchestrator
+from apps_lic.reasoning.enterprise_campaign_orchestrator import (  # noqa: E402
+    EnterpriseLicOrchestrator,
+    EnterpriseLicRequest,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,14 +26,15 @@ def _assert(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
-def _assert_repo_signals(payload: dict) -> None:
-    repo_signals = payload.get("repo_signals", {})
-    _assert(bool(repo_signals), "repo_signals missing from orchestration result")
+def _assert_repo_signals(result: object) -> None:
+    repo_signals = getattr(result, "repo_signals", {})
+    _assert(bool(repo_signals), "repo_signals missing from enterprise LIC result")
 
     adg = repo_signals.get("adg", {})
     tests = repo_signals.get("tests", {})
     ci = repo_signals.get("ci", {})
     governance = repo_signals.get("governance", {})
+    lic_domain = governance.get("lic_domain", {})
 
     _assert(adg.get("available") is True, "ADG signal unavailable")
     _assert(ci.get("workflow_count", 0) > 0, "No workflow definitions discovered")
@@ -41,20 +46,25 @@ def _assert_repo_signals(payload: dict) -> None:
         governance.get("denominator_baseline_available") is True,
         "Governance denominator baseline not detected",
     )
+    _assert(lic_domain.get("agent_specs_available") is True, "LIC agent specs signal unavailable")
 
 
-def _assert_detailed_observability(payload: dict) -> None:
+def _assert_detailed_observability(result: object) -> None:
     """Assert comprehensive observability signals are present."""
-    # RG uses checkpoints for observability instead of trace_id
-    checkpoints = payload.get("checkpoints", [])
+    trace_id = getattr(result, "trace_id", "")
 
-    _assert(len(checkpoints) > 0, "Checkpoints empty - observability not wired")
-    _assert("HOP-ENRICH" in checkpoints, "HOP-ENRICH checkpoint missing - repo signal wiring not complete")
+    _assert(bool(trace_id), "Trace ID missing - distributed tracing not wired")
+    _assert(len(trace_id) >= 16, f"Trace ID too short ({len(trace_id)} chars)")
+
+    # Check provenance block for observability
+    provenance = getattr(result, "provenance_block", {})
+    _assert(bool(provenance), "Provenance block missing - observability not wired")
+    _assert(provenance.get("trace_id") == trace_id, "Provenance trace_id mismatch")
 
 
-def _assert_layer4_wiring(payload: dict) -> None:
+def _assert_layer4_wiring(result: object) -> None:
     """Assert Layer 4 (orchestration) wiring is active."""
-    repo_signals = payload.get("repo_signals", {})
+    repo_signals = getattr(result, "repo_signals", {})
 
     ci = repo_signals.get("ci", {})
     _assert(ci.get("workflow_count", 0) >= 30, "Layer 4: insufficient CI workflows")
@@ -63,16 +73,16 @@ def _assert_layer4_wiring(payload: dict) -> None:
     _assert(tests.get("inventory_entries", 0) > 1000, "Layer 4: insufficient test inventory")
 
 
-def _assert_enhanced_system_learning(payload: dict) -> None:
+def _assert_enhanced_system_learning(result: object) -> None:
     """Assert enhanced system learning signals are present."""
-    repo_signals = payload.get("repo_signals", {})
+    repo_signals = getattr(result, "repo_signals", {})
     governance = repo_signals.get("governance", {})
 
-    # Market fit (RG-specific system learning) - optional
-    market_fit = governance.get("market_fit", {})
-    if market_fit:
-        if "role_fit_score" not in market_fit:
-            print("   ⚠️  System learning: market_fit.role_fit_score missing (non-blocking)")
+    # LIC domain signals (LIC-specific system learning) - optional
+    lic_domain = governance.get("lic_domain", {})
+    if lic_domain:
+        if "agent_specs_available" not in lic_domain:
+            print("   ⚠️  System learning: lic_domain.agent_specs_available missing (non-blocking)")
 
     # ADG signals for pattern capture
     adg = repo_signals.get("adg", {})
@@ -82,34 +92,34 @@ def _assert_enhanced_system_learning(payload: dict) -> None:
             print(f"   ⚠️  System learning: ADG nodes ({nodes_count}) below threshold (non-blocking)")
 
 
-def _assert_rigorous_e2e_wiring(payload: dict) -> None:
+def _assert_rigorous_e2e_wiring(result: object) -> None:
     """Comprehensive E2E wiring validation."""
     print("\n🔍 RIGOROUS E2E WIRING VALIDATION")
     print("-" * 40)
 
     try:
-        _assert_repo_signals(payload)
+        _assert_repo_signals(result)
         print("   ✅ Repo signals: PASS")
     except AssertionError as e:
         print(f"   ❌ Repo signals: FAIL - {e}")
         raise
 
     try:
-        _assert_detailed_observability(payload)
+        _assert_detailed_observability(result)
         print("   ✅ Observability: PASS")
     except AssertionError as e:
         print(f"   ❌ Observability: FAIL - {e}")
         raise
 
     try:
-        _assert_layer4_wiring(payload)
+        _assert_layer4_wiring(result)
         print("   ✅ Layer 4 wiring: PASS")
     except AssertionError as e:
         print(f"   ❌ Layer 4 wiring: FAIL - {e}")
         raise
 
     try:
-        _assert_enhanced_system_learning(payload)
+        _assert_enhanced_system_learning(result)
         print("   ✅ System learning: PASS")
     except AssertionError as e:
         print(f"   ❌ System learning: FAIL - {e}")
@@ -120,41 +130,42 @@ def _assert_rigorous_e2e_wiring(payload: dict) -> None:
     print("-" * 40)
 
 
-def test_rg_resume_orchestrator_enrichment() -> dict:
+async def test_enterprise_lic_campaign() -> object:
     print("\n" + "=" * 60)
-    print("TEST: RG Resume Orchestrator with Repo Signal Enrichment")
+    print("TEST: Enterprise LIC Campaign Planning")
     print("=" * 60)
 
-    orchestrator = RgResumeOrchestrator(
-        master_resume={
-            "contact_info": {"name": "Candidate", "email": "candidate@example.com"},
-            "experience": [{"company": "Example Corp", "title": "Engineer"}],
-            "skills": ["Python", "Architecture", "Testing"],
-        },
-        qwen_enabled=False,
-        test_mode=True,
+    orchestrator = EnterpriseLicOrchestrator()
+    request = EnterpriseLicRequest(
+        campaign_goal="Increase response rate for principal engineer outreach",
+        audience_segment="engineering_leadership",
+        channel="linkedin",
+        output_mode="planning",
         enable_repo_signals=True,
     )
 
-    result = orchestrator.run("Senior AI Engineer role requiring deterministic systems experience")
+    result = await orchestrator.process(request)
 
-    _assert(result.get("status") == "success", "Orchestrator status should be success")
-    _assert("HOP-ENRICH" in result.get("checkpoints", []), "HOP-ENRICH checkpoint missing")
+    _assert(result.status == "complete", "Enterprise LIC status should be complete")
     _assert_repo_signals(result)
     _assert_rigorous_e2e_wiring(result)
+    _assert(bool(result.recommendations), "Expected campaign recommendations")
+    _assert(result.provenance_block.get("trace_id") == result.trace_id, "Trace mismatch in provenance block")
 
-    print("✅ Orchestrator run complete")
-    print(f"   Status: {result.get('status')}")
-    print(f"   Checkpoints: {result.get('checkpoints')}")
+    print("✅ Enterprise LIC orchestration complete")
+    print(f"   Status: {result.status}")
+    print(f"   Risk: {result.risk_summary}")
+    print(f"   Confidence: {result.confidence_summary}")
+    print(f"   Recommendations: {len(result.recommendations)}")
 
     return result
 
 
-def main() -> None:
+async def main() -> None:
     failures: list[str] = []
 
     try:
-        result = test_rg_resume_orchestrator_enrichment()
+        await test_enterprise_lic_campaign()
     except Exception as exc:
         failures.append(str(exc))
         print(f"\n❌ Test failed: {exc}")
@@ -167,12 +178,12 @@ def main() -> None:
     print("=" * 60)
 
     if failures:
-        print("❌ FAIL: apps_rg enterprise enrichment")
+        print("❌ FAIL: apps_lic enterprise campaign")
         raise SystemExit(1)
 
-    print("✅ PASS: apps_rg enterprise enrichment")
+    print("✅ PASS: apps_lic enterprise campaign")
     print("\n✨ All tests completed!")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
