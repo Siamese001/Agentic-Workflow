@@ -22,7 +22,7 @@ from agentic_core.L0_routing.utils.routing_telemetry import (
     RoutingTelemetryContext,
     record_routing_telemetry,
 )
-from agentic_core.L1_cognition.reasoning.abstain_planner import (
+from agentic_core.runtime.contracts.abstain_contract import (
     DECISION_ABSTAIN,
     DEFAULT_ABSTAIN_THRESHOLD,
     plan_abstain,
