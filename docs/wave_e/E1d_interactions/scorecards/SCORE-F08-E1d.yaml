@@ -1,0 +1,17 @@
+id: SCORE-F08-E1d
+family_id: F08
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 3
+edge_count_by_kind:
+  REQUIRES: 3
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "F08 edges inherit the SRC-ADR-EXIT under-sourcing; multiple edges are WEAK_EVIDENCE."
+  - "Future wave must author an exit-spine ADR to lift F08 edges to NORMATIVE."
+notes: "F08.02 -> F11.05 is the only NORMATIVE edge originating from F08."

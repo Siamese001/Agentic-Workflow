@@ -1,0 +1,18 @@
+id: SCORE-F03-E1d
+family_id: F03
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 4
+edge_count_by_kind:
+  REQUIRES: 1
+  REFINES: 2
+  FORBIDS: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+notes: "F03.02 is the no-route refinement target; F03.01 is a FORBIDS target for the L6 no-influence edge."

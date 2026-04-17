@@ -1,0 +1,5 @@
+# Wave E1a — Exclusions (empty; E1a proposes no exclusions)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+# Note: the canonical "L6 MUST NOT influence current-run decisions" exclusion
+#       is deferred to E1b or E1c per lane_assignments.md.
+exclusions: []

@@ -1,0 +1,82 @@
+# Wave E — ID Allocations Log (append-only)
+#
+# Purpose:
+#   Prevent ID collisions between parallel sub-waves.
+#   Each line is an atomic reservation, appended at publish time.
+#
+# Format (one reservation per line, fields separated by two spaces):
+#   <ID_OR_RANGE>  <SCOPE>  reserved_by=<LANE>  at=<ISO8601_UTC>  [note=<short_text>]
+#
+# Rules:
+#   - Append-only. Never edit or delete a prior line.
+#   - A lane MUST reserve its Family IDs or atom ID ranges BEFORE publishing
+#     proposal YAML that references them.
+#   - Family IDs may be minted ONLY by Chat 1 / integration lead.
+#   - Atom ranges MUST reference an already-minted Family ID.
+#   - Interaction, OOS, and SRC IDs are allocated monotonically at publish
+#     time and do NOT require reservation here unless a lane anticipates
+#     heavy volume and wants to claim a range.
+#
+# Field reference:
+#   <ID_OR_RANGE>  e.g. "F12", "F12  atoms 03-08", "OOS 010-015"
+#   <SCOPE>        "family", "atoms", "oos", "src", "interactions"
+#   <LANE>         "E1-Setup" (integration lead), "E1a_family_spine",
+#                  "E1b_atoms", "E1c_authority_scope", "E1d_interactions",
+#                  or a future lane label
+#   <ISO8601_UTC>  e.g. "2026-04-17T00:56:00Z"
+#
+# -----------------------------------------------------------------------------
+# Initial Family reservations (Wave E1-Setup)
+# -----------------------------------------------------------------------------
+# These Family IDs are minted and reserved for the E1 run. Downstream lanes
+# MUST reference only these IDs. See:
+#   docs/wave_e/E1_setup/family_seed_registry.md   (titles + intents)
+#   docs/wave_e/E1_setup/lane_assignments.md       (ownership matrix)
+#
+# NOTE: Downstream atom-range reservations MUST reference these pre-minted
+# Family IDs. Lanes MUST NOT reserve atoms for a Family not listed below.
+
+F01  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=Request_Intake_Envelope_Check
+F02  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L1_Reasoning_Plan_Generation
+F03  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L0_Route_Decision_Switching
+F04  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=C0_Context_Assembly_Grounding
+F05  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L3_Orchestration
+F06  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L2_Task_Execution
+F07  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L2_Heal_Retry_Recovery
+F08  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=Runtime_Exit_Control_Evaluation_Spine
+F09  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=Universal_Write_Gate
+F10  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L4_Durable_Archive_State_Authority
+F11  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L5_Policy_Safety_Authority
+F12  family  reserved_by=E1-Setup  at=2026-04-17T00:56:00Z  note=L6_Observability_Future_Run_Learning
+
+# -----------------------------------------------------------------------------
+# E1b atom-range reservations (appended by E1b_atoms lane)
+# -----------------------------------------------------------------------------
+F01  atoms 01-06  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=Intake_envelope_check_decomposition
+F02  atoms 01-05  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L1_reasoning_plan_generation
+F03  atoms 01-04  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L0_route_authority
+F04  atoms 01-04  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=Context_assembly_grounding
+F05  atoms 01-04  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L3_orchestration
+F06  atoms 01-05  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L2_task_execution
+F07  atoms 01-04  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L2_heal_retry_recovery
+F08  atoms 01-05  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=Runtime_exit_evaluation_spine
+F09  atoms 01-05  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=Universal_write_gate
+F10  atoms 01-04  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L4_durable_archive_state_authority
+F11  atoms 01-07  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L5_policy_safety_authority
+F12  atoms 01-06  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=L6_observability_future_run_learning
+OOS-001  oos  reserved_by=E1b_atoms  at=2026-04-17T00:57:00Z  note=Dynamic_L6_learning_influencing_current_run
+
+# -----------------------------------------------------------------------------
+# E1c source and exclusion reservations (appended by E1c_authority_scope lane)
+# -----------------------------------------------------------------------------
+SRC-RULE-001  src  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=constitutional_rules
+SRC-RULE-002  src  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=global_rules
+SRC-INT-001   src  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=AGENTS_md
+SRC-INT-002   src  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=downstream_lane_contract_governing_semantics
+SRC-INT-003   src  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=E0_schema_governing_semantics_frontmatter
+OOS-002  oos  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=L6_influence_on_L2_heal_retry_current_run
+OOS-003  oos  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=C0_as_separate_owning_layer_not_yet_decided
+
+# -----------------------------------------------------------------------------
+# (Future appends go below this line — atom ranges, SRC, OOS, interactions.)
+# -----------------------------------------------------------------------------

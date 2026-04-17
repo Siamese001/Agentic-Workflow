@@ -1,0 +1,165 @@
+# Wave E1a — Family Spine (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+# Status: DRAFT — integration pass promotes to ACTIVE.
+# Field set is exactly as specified by the contract for this lane.
+# ---------------------------------------------------------------------------
+
+families:
+
+  - id: F01
+    title: "Request Intake and Envelope Check"
+    intent: >
+      Every inbound request MUST be admitted only after envelope validation
+      covering request shape, authentication, and policy preconditions, and
+      MUST be rejected deterministically when any precondition fails, before
+      any downstream reasoning, routing, or execution is attempted.
+    owning_layer: L0
+    authority_class: GOVERNANCE
+    status: DRAFT
+    created_at_wave: E1a
+    notes: >
+      Provisional owning_layer L0 chosen because intake is the inbound
+      boundary. L5 policy binds F01 by edge (REQUIRES F11) rather than by
+      co-ownership. See family_boundary_notes.md.
+
+  - id: F02
+    title: "L1 Reasoning and Plan Generation"
+    intent: >
+      L1 is the sole authority that decomposes an admitted request into a
+      plan. No other layer MUST generate plans; all downstream layers
+      consume L1 plan output and MUST NOT substitute ad-hoc planning.
+    owning_layer: L1
+    authority_class: CONSTITUTIONAL
+    status: DRAFT
+    created_at_wave: E1a
+
+  - id: F03
+    title: "L0 Route Decision and Switching"
+    intent: >
+      L0 is the sole route authority. L0 MUST select the downstream
+      capability or chain that serves each plan step, and no other layer
+      MUST choose routes. L0 MUST reject any request that lacks a resolved
+      route binding.
+    owning_layer: L0
+    authority_class: CONSTITUTIONAL
+    status: DRAFT
+    created_at_wave: E1a
+
+  - id: F04
+    title: "Context Assembly and Grounding"
+    intent: >
+      Context required by reasoning, orchestration, and task execution MUST
+      be assembled through a single grounding path that produces an
+      attributable, consistent context set. Layers that consume context
+      MUST NOT assemble private, unattributed context substitutes.
+    owning_layer: L1
+    authority_class: ARCHITECTURAL
+    status: DRAFT
+    created_at_wave: E1a
+    notes: >
+      Provisional owning_layer L1 chosen because context assembly primarily
+      serves decomposition and plan generation. The seed registry labeled
+      this family "C0", which is not a value in the owning_layer enum. See
+      family_risk_flags.md for schema-drift flag and family_boundary_notes.md
+      for the L1-vs-L3 discussion.
+
+  - id: F05
+    title: "L3 Orchestration"
+    intent: >
+      L3 MUST orchestrate multi-step execution of an L1 plan, coordinating
+      L2 task executions and intra-plan sequencing. L3 MUST NOT generate
+      plans and MUST NOT choose routes.
+    owning_layer: L3
+    authority_class: ARCHITECTURAL
+    status: DRAFT
+    created_at_wave: E1a
+
+  - id: F06
+    title: "L2 Task Execution"
+    intent: >
+      L2 MUST execute individual tasks dispatched by L3 against the route
+      decided by L0. L2 MUST NOT plan, MUST NOT route, and MUST NOT mutate
+      durable state except through the Universal Write Gate.
+    owning_layer: L2
+    authority_class: ARCHITECTURAL
+    status: DRAFT
+    created_at_wave: E1a
+
+  - id: F07
+    title: "L2 Heal, Retry, and Recovery"
+    intent: >
+      Failed L2 task executions MUST be routed through a bounded
+      heal/retry/recovery path with explicit termination conditions.
+      Unrecoverable failures MUST surface to L3 for re-planning and MUST
+      NOT silently mutate durable state.
+    owning_layer: L2
+    authority_class: OPERATIONAL
+    status: DRAFT
+    created_at_wave: E1a
+
+  - id: F08
+    title: "Runtime Exit Control and Evaluation Spine"
+    intent: >
+      Runtime termination and result acceptance MUST flow through a single
+      evaluation spine that applies exit policy, records outcome, and
+      signals the Universal Write Gate. Ad-hoc exit paths are FORBIDDEN.
+    owning_layer: L5
+    authority_class: GOVERNANCE
+    status: DRAFT
+    created_at_wave: E1a
+    notes: >
+      Provisional owning_layer L5 chosen because exit control is a policy
+      concern that binds orchestration rather than an orchestration concern
+      itself. L3 cooperates by invocation. See family_boundary_notes.md.
+
+  - id: F09
+    title: "Universal Write Gate"
+    intent: >
+      The Universal Write Gate MUST be the sole durable write path to
+      authoritative state. All mutations MUST pass through it and no layer
+      MUST bypass. The gate MUST reject writes that lack required policy
+      signals from L5 or an exit signal from F08.
+    owning_layer: L4
+    authority_class: CONSTITUTIONAL
+    status: DRAFT
+    created_at_wave: E1a
+    notes: >
+      Provisional owning_layer L4 chosen because the gate is the sole
+      write path INTO L4 durable state. Policy authority (L5) binds by
+      edge, not by co-ownership. See family_boundary_notes.md.
+
+  - id: F10
+    title: "L4 Durable Archive and State Authority"
+    intent: >
+      L4 MUST be the authoritative durable state of the system. Canonical
+      reads and writes of durable state MUST be served by L4, with writes
+      only via the Universal Write Gate. Other layers MUST NOT hold
+      private durable state that shadows L4.
+    owning_layer: L4
+    authority_class: CONSTITUTIONAL
+    status: DRAFT
+    created_at_wave: E1a
+
+  - id: F11
+    title: "L5 Policy and Safety Authority"
+    intent: >
+      L5 MUST be the cross-cutting policy and safety authority. L5 policies
+      bind L0 routing, L2 execution, the Universal Write Gate, and the
+      runtime exit spine. L5 MUST NOT execute tasks and MUST NOT mutate
+      durable state directly.
+    owning_layer: L5
+    authority_class: CONSTITUTIONAL
+    status: DRAFT
+    created_at_wave: E1a
+
+  - id: F12
+    title: "L6 Observability and Future-Run Learning"
+    intent: >
+      L6 MUST observe the current run and feed learning into future runs
+      only. L6 MUST NOT influence current-run decisions, route choices, or
+      state mutations. Artifacts produced by L6 are consumed by a later
+      run's L1 reasoning, never by the current run.
+    owning_layer: L6
+    authority_class: CONSTITUTIONAL
+    status: DRAFT
+    created_at_wave: E1a

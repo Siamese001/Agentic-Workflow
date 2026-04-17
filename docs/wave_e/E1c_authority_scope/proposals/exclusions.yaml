@@ -1,0 +1,64 @@
+# Wave E1c — Exclusions (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+#
+# E1b authored OOS-001 (dynamic L6 learning influencing current-run L0).
+# E1c appends two additional exclusions that complete the scope boundary.
+
+exclusions:
+
+  - id: OOS-002
+    title: "Dynamic L6 learning influencing current-run L2 heal/retry decisions"
+    scope_statement: >
+      L6 observations and derived learning artifacts MUST NOT feed back
+      into the current run's L2 heal, retry, or recovery path. A future-run
+      L1 reasoning pass MAY consume such artifacts to re-plan a subsequent
+      run, but in-run L2 failure classification, retry-count selection,
+      and recovery dispatch MUST NOT consult L6-derived signals. This
+      exclusion is the L2-side complement to OOS-001.
+    reason: OUT_OF_CHARTER
+    decided_at_wave: E1c
+    decided_by: "E1c_authority_scope lane, extending governing semantics"
+    related_atoms:
+      - F07.01
+      - F07.02
+      - F07.03
+      - F12.02
+      - F12.03
+    related_families:
+      - F07
+      - F12
+    notes: >
+      The frequently-proposed 'adaptive retry via observed anomaly rate'
+      pattern is captured here so future reviewers see the decision
+      rather than rediscovering the debate.
+
+  - id: OOS-003
+    title: "Adding a C0 layer to the owning_layer enum"
+    scope_statement: >
+      The seed registry originally labeled F04 Context Assembly with a
+      'C0' layer prefix, which is NOT a value in the `owning_layer` enum
+      (L0..L6). E1c does NOT adopt a C0 layer for this run. F04 is
+      re-homed to L1 per scope_decision_log.md. A C0 layer may be
+      revisited only via an explicit E0 schema revision with HITL
+      approval, backed by a concrete architectural driver (e.g. a
+      requirement that context assembly MUST NOT share lifecycle with L1
+      reasoning). No such driver exists in the current run.
+    reason: NOT_YET_DECIDED
+    decided_at_wave: E1c
+    decided_by: "E1c_authority_scope lane, resolving E1a HIGH flag on F04"
+    revisit_trigger: >
+      If a future wave surfaces a concrete operational constraint that
+      L1 cannot satisfy for context grounding (e.g. multi-tenant context
+      isolation, cross-run context caching with distinct lifecycle), a
+      HITL request for an E0 schema revision is the correct path.
+    related_atoms:
+      - F04.01
+      - F04.02
+      - F04.03
+      - F04.04
+    related_families:
+      - F04
+    notes: >
+      Recording a NOT_YET_DECIDED alternative is a first-class schema
+      affordance; it prevents the C0-as-separate-layer debate from
+      recurring as prose in future waves.

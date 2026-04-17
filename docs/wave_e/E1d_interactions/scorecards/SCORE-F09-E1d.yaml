@@ -1,0 +1,22 @@
+id: SCORE-F09-E1d
+family_id: F09
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 8
+edge_count_by_kind:
+  REQUIRES: 6
+  FORBIDS: 1
+  IMPLIES: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+notes: >
+  F09 is the most-connected family in the edge graph. Seven of eight
+  edges encode the Universal Write Gate monopoly from various consumer
+  lenses (F06, F07, F10, F08, F11) plus the L6-MUST-NOT-trigger-writes
+  FORBIDS edge.

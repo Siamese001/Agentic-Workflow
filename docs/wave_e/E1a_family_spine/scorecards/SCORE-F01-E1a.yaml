@@ -1,0 +1,20 @@
+id: SCORE-F01-E1a
+family_id: F01
+produced_at_wave: E1a
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1a scope is family-only; no atoms drafted (expected; E1b owns atoms)."
+  - "owning_layer provisional L0 vs L5; E1c confirmation required."
+  - "Flagged over-broad: E1b MUST split into intake + envelope-precondition atoms."
+notes: >
+  coverage_score is 0.0 because the scoring rubric's denominator is zero
+  (no normative, weak, or unresolved atoms in this lane). This is the
+  expected E1a state, not a defect.

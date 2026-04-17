@@ -1,0 +1,19 @@
+id: SCORE-F02-E1d
+family_id: F02
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 6
+edge_count_by_kind:
+  REQUIRES: 1
+  REFINES: 2
+  DEPENDS_ON: 2
+  CONDITIONAL_ON: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+notes: "F02 is heavily targeted by refinements (no-plan rule) and escalation chains."

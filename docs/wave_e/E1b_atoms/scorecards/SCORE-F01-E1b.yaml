@@ -1,0 +1,18 @@
+id: SCORE-F01-E1b
+family_id: F01
+produced_at_wave: E1b
+atom_count_total: 6
+atom_count_by_status:
+  DRAFT: 6
+atom_count_by_evidence:
+  NORMATIVE: 5
+  WEAK_EVIDENCE: 1
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 0
+coverage_score: 0.83
+blockers:
+  - "SRC-* placeholders in authority_binding require materialization by E1c."
+  - "owning_layer L0 vs L5 still provisional (E1a flag carried forward)."

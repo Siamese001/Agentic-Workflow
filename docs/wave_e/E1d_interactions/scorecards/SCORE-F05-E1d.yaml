@@ -1,0 +1,17 @@
+id: SCORE-F05-E1d
+family_id: F05
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 5
+edge_count_by_kind:
+  REQUIRES: 3
+  REFINES: 2
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+notes: "L3 orchestration is a central hub: targets L1 plan, dispatches to L2, receives escalation."

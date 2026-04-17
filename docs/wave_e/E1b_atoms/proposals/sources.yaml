@@ -1,0 +1,5 @@
+# Wave E1b — Source Authority Records (empty; sources are E1c scope)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+# E1b cites SRC-* placeholders in atom authority_binding; E1c MUST
+# materialize those placeholders in its own proposals/sources.yaml.
+sources: []

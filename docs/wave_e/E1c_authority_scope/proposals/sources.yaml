@@ -1,0 +1,90 @@
+# Wave E1c — Source Authority Records (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+#
+# These five records materialize the authority surface cited by E1b atoms.
+# The placeholder mnemonic IDs used in E1b (SRC-ADR-L0 ... SRC-ADR-EXIT) are
+# NOT schema-valid per the `^SRC-(INT|EXT|ADR|RULE|CODE|DEC)-[0-9]{3}$`
+# regex. E1c publishes the canonical IDs below and a full placeholder-to-real
+# mapping in evidence_binding_notes.md; integration pass MUST apply the
+# mapping to every E1b atom that still cites a placeholder.
+# ---------------------------------------------------------------------------
+
+sources:
+
+  - id: SRC-RULE-001
+    subtype: RULE
+    title: "Constitutional Rules (Agentic Workflow)"
+    locator: ".windsurf/rules/constitutional.md"
+    authority_class: CONSTITUTIONAL
+    retrieved_at_wave: E1c
+    excerpt: >
+      Constitutional floor enumerating non-negotiable constraints: no
+      PowerShell, no test skipping, no editing while exploring, no agent
+      deletion without authorization, ADG-first retrieval, HITL for
+      ambiguous decisions, memory lifecycle mandatory. The Universal Write
+      Gate monopoly and L0/L1/L4/L5/L6 layer authorities derive from
+      project-wide constitutional doctrine.
+    notes: >
+      Rank 1. Binds all layers, all waves, all agents. Overridable only
+      by explicit HITL constitutional amendment.
+
+  - id: SRC-RULE-002
+    subtype: RULE
+    title: "Global Rules — Tier 2 SSOT"
+    locator: ".windsurf/rules/global_rules.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    excerpt: >
+      Tier 2 SSOT policy covering MCP authority assignments, subprocess
+      timeout discipline, exception handling, plan wave/phase summary
+      requirements, ADG lock protocol. Governs cross-cutting operational
+      behavior.
+    notes: "Rank 2. Revisable through documented governance flow."
+
+  - id: SRC-INT-001
+    subtype: INT
+    title: "AGENTS.md — Layer Separation and Governing Intent"
+    locator: "AGENTS.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    excerpt: >
+      AGENTS.md establishes the plan-first / execute-second discipline,
+      the Layer Separation table (Reasoning / Routing / Execution /
+      Verification), MCP Quick Reference, and memory lifecycle
+      requirements. Always-on for the workspace.
+    notes: "Rank 2."
+
+  - id: SRC-INT-002
+    subtype: INT
+    title: "Wave E Downstream Lane Contract — §1 Governing Semantics"
+    locator: "docs/wave_e/00_schema/downstream_lane_contract.md#1-governing-semantics-non-negotiable"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    excerpt: >
+      "L1 decomposes and plans. L0 is route authority. L5 is cross-cutting
+      policy authority. L4 is authoritative durable state. Universal
+      Write Gate is the sole durable write path. L6 supports future-run
+      learning only, not current-run mutation." Any atom, edge, or
+      exclusion that contradicts these semantics is invalid and MUST be
+      rejected by the integration pass.
+    notes: >
+      Rank 2. This is the single tightest statement of the six layer
+      governing semantics for Wave E. Cited by atoms across all 12
+      families.
+
+  - id: SRC-INT-003
+    subtype: INT
+    title: "Wave E Schema Frontmatter — Governing Semantics (Non-Negotiable)"
+    locator: "docs/wave_e/00_schema/requirement_graph_schema.yaml#governing-semantics"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: E1c
+    excerpt: >
+      YAML frontmatter enumerating the six non-negotiable layer semantics
+      that govern the entire requirement graph schema: L1 plans, L0
+      routes, L5 policy, L4 state, Universal Write Gate monopoly, L6
+      future-run-only. Serves as the architectural layer-charter surface
+      in absence of per-layer ADRs.
+    notes: >
+      Rank 4. Used as the ARCHITECTURAL-grade source for NORMATIVE atoms
+      that require rank <= 4 binding. Acts as the de-facto layer charter
+      until per-layer ADRs are authored.

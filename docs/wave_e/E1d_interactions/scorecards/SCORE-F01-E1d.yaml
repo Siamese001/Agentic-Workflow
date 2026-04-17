@@ -1,0 +1,17 @@
+id: SCORE-F01-E1d
+family_id: F01
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 2
+edge_count_by_kind:
+  REQUIRES: 1
+  DEPENDS_ON: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only; atom counts are 0 by design."
+notes: "Edges: INT-F01.03-F11.01-01 (source), INT-F02.01-F01.05-01 (target)."

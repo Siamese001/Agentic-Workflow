@@ -1,0 +1,17 @@
+id: SCORE-F11-E1b
+family_id: F11
+produced_at_wave: E1b
+atom_count_total: 7
+atom_count_by_status:
+  DRAFT: 7
+atom_count_by_evidence:
+  NORMATIVE: 7
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers:
+  - "SRC-* placeholders in authority_binding require materialization by E1c."
+  - "Seven atoms is the largest count in E1b; E1d will have many interaction edges originating here (F11 binds F01, F03, F06, F08, F09)."

@@ -1,0 +1,18 @@
+id: SCORE-F01-E1c
+family_id: F01
+produced_at_wave: E1c
+atom_count_total: 6
+atom_count_by_status:
+  DRAFT: 6
+atom_count_by_evidence:
+  NORMATIVE: 5
+  WEAK_EVIDENCE: 1
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 0
+coverage_score: 0.83
+blockers:
+  - "Placeholder SRC IDs in E1b atoms mapped to SRC-INT-003 per evidence_binding_notes.md §1; integration pass must apply."
+  - "owning_layer L0 confirmed by DEC-E1c-F01-LAYER."

@@ -1,0 +1,18 @@
+id: SCORE-F08-E1b
+family_id: F08
+produced_at_wave: E1b
+atom_count_total: 5
+atom_count_by_status:
+  DRAFT: 5
+atom_count_by_evidence:
+  NORMATIVE: 2
+  WEAK_EVIDENCE: 3
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.4
+blockers:
+  - "Evaluation spine semantics (single path, record outcome, signal WG) are currently WEAK_EVIDENCE pending SRC-ADR-EXIT materialization by E1c."
+  - "owning_layer L5 vs L3 still provisional (E1a flag carried forward)."

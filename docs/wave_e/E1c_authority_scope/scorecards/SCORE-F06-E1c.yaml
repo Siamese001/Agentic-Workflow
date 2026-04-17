@@ -1,0 +1,16 @@
+id: SCORE-F06-E1c
+family_id: F06
+produced_at_wave: E1c
+atom_count_total: 5
+atom_count_by_status:
+  DRAFT: 5
+atom_count_by_evidence:
+  NORMATIVE: 5
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers:
+  - "Placeholder SRC IDs mapped; integration pass applies mapping."

@@ -1,0 +1,17 @@
+id: SCORE-F07-E1b
+family_id: F07
+produced_at_wave: E1b
+atom_count_total: 4
+atom_count_by_status:
+  DRAFT: 4
+atom_count_by_evidence:
+  NORMATIVE: 1
+  WEAK_EVIDENCE: 3
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.25
+blockers:
+  - "F07 atoms are predominantly WEAK_EVIDENCE: operational constraints (bounded retry, surface to L3) need explicit source. E1c to materialize or E1a may revisit authority_class (OPERATIONAL -> ARCHITECTURAL)."

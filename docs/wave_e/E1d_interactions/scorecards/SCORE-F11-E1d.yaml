@@ -1,0 +1,21 @@
+id: SCORE-F11-E1d
+family_id: F11
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 5
+edge_count_by_kind:
+  REQUIRES: 3
+  FORBIDS: 1
+  IMPLIES: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+notes: >
+  F11 is the authority target for intake policy, exit policy, and gate
+  policy binding. F11.07 -> F09.01 IMPLIES encodes the L5 no-direct-mutation
+  consequence of the gate monopoly.

@@ -1,0 +1,17 @@
+id: SCORE-F06-E1d
+family_id: F06
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 5
+edge_count_by_kind:
+  REQUIRES: 3
+  REFINES: 2
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+notes: "F06.05 -> F09.01 is one of the CRIT silent-failure edges (gate monopoly from L2 lens)."

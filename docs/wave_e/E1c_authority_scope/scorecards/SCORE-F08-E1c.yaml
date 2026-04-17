@@ -1,0 +1,21 @@
+id: SCORE-F08-E1c
+family_id: F08
+produced_at_wave: E1c
+atom_count_total: 5
+atom_count_by_status:
+  DRAFT: 5
+atom_count_by_evidence:
+  NORMATIVE: 1
+  WEAK_EVIDENCE: 4
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 4
+excluded_count: 0
+coverage_score: 0.2
+blockers:
+  - "HIGH: SRC-ADR-EXIT has no real source at rank <= ARCHITECTURAL (DEC-E1c-EXIT-UNSOURCED)."
+  - "F08.05 downgraded NORMATIVE -> WEAK_EVIDENCE."
+  - "Future wave MUST author a dedicated exit-spine ADR or rule for F08 to reach full NORMATIVE."
+  - "owning_layer L5 confirmed (DEC-E1c-F08-LAYER)."
+notes: "Coverage dropped from 0.4 (E1b) to 0.2 (E1c) due to honest F08.05 downgrade."

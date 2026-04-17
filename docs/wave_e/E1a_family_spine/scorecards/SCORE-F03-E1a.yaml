@@ -1,0 +1,16 @@
+id: SCORE-F03-E1a
+family_id: F03
+produced_at_wave: E1a
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1a scope is family-only; no atoms drafted (expected)."
+  - "authority_class CONSTITUTIONAL provisional; E1c must cite a rank-1 source or downgrade."
+notes: "Denominator-zero coverage_score is expected E1a state."

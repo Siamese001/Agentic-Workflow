@@ -1,0 +1,20 @@
+id: SCORE-F12-E1d
+family_id: F12
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 4
+edge_count_by_kind:
+  FORBIDS: 3
+  DEPENDS_ON: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+notes: >
+  All three FORBIDS edges encode the L6-MUST-NOT-influence-current-run
+  governing semantic against F03 (route), F11 (policy), F09 (gate).
+  F12.05 -> F02.01 DEPENDS_ON captures the future-run feed-forward.

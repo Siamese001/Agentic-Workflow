@@ -1,0 +1,19 @@
+id: SCORE-F09-E1c
+family_id: F09
+produced_at_wave: E1c
+atom_count_total: 5
+atom_count_by_status:
+  DRAFT: 5
+atom_count_by_evidence:
+  NORMATIVE: 4
+  WEAK_EVIDENCE: 1
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 0
+coverage_score: 0.8
+blockers:
+  - "Placeholder SRC IDs mapped; F09.05 SRC-ADR-EXIT placeholder maps to SRC-INT-003 (integration pass decision)."
+  - "owning_layer L4 confirmed (DEC-E1c-F09-LAYER)."
+  - "CONSTITUTIONAL authority_class confirmed via SRC-RULE-001."

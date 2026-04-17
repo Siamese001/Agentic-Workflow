@@ -1,0 +1,266 @@
+# Wave E1d — Interaction Edges (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+# All source_atom_id and target_atom_id refer to stable IDs published by
+# E1b in docs/wave_e/E1b_atoms/proposals/atoms.yaml. No placeholder endpoints.
+# Candidate interactions whose endpoints are not yet stable live in
+# interaction_candidates.md as sidecar analysis, never as edge records.
+# ---------------------------------------------------------------------------
+
+edges:
+
+  # --- Intake -> Policy (F01 consumes L5) --------------------------------
+  - id: INT-F01.03-F11.01-01
+    source_atom_id: F01.03
+    target_atom_id: F11.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: >
+      Intake rejects on unsatisfied L5 policy precondition; F01 is a
+      consumer of F11 authority.
+
+  # --- Intake -> Reasoning (sequencing) ----------------------------------
+  - id: INT-F02.01-F01.05-01
+    source_atom_id: F02.01
+    target_atom_id: F01.05
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-002]
+    rationale: >
+      L1 reasoning/plan generation cannot begin until admission completes.
+      Sequencing follows from F01.05 but is not independently sourced.
+
+  # --- Reasoning/Routing separation (refinements) ------------------------
+  - id: INT-F05.02-F02.02-01
+    source_atom_id: F05.02
+    target_atom_id: F02.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L3-MUST-NOT-plan refines the broader non-L1-MUST-NOT-plan rule."
+
+  - id: INT-F06.03-F02.02-01
+    source_atom_id: F06.03
+    target_atom_id: F02.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L2-MUST-NOT-plan refines the broader non-L1-MUST-NOT-plan rule."
+
+  - id: INT-F05.03-F03.02-01
+    source_atom_id: F05.03
+    target_atom_id: F03.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L3-MUST-NOT-route refines the broader non-L0-MUST-NOT-route rule."
+
+  - id: INT-F06.04-F03.02-01
+    source_atom_id: F06.04
+    target_atom_id: F03.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L2-MUST-NOT-route refines the broader non-L0-MUST-NOT-route rule."
+
+  # --- Orchestration plane (F05 consumes F02, dispatches to F06) ---------
+  - id: INT-F05.01-F02.03-01
+    source_atom_id: F05.01
+    target_atom_id: F02.03
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-002, SRC-INT-003]
+    rationale: "L3 orchestrates the L1 plan; cannot do so without F02.03 consume-as-is contract."
+
+  - id: INT-F05.04-F06.01-01
+    source_atom_id: F05.04
+    target_atom_id: F06.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    rationale: "L3 dispatch presupposes an L2 executor present and accepting tasks."
+
+  # --- Execution plane (F06 consumes F03 routes) -------------------------
+  - id: INT-F06.02-F03.01-01
+    source_atom_id: F06.02
+    target_atom_id: F03.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L2 task execution uses the route decided by L0; direct consumer relationship."
+
+  # --- Write Gate monopoly (F06, F07, F10 go through F09) ----------------
+  - id: INT-F06.05-F09.01-01
+    source_atom_id: F06.05
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "Restates Universal Write Gate monopoly from L2's lens; F06.05 mandates routing mutations through F09.01."
+
+  - id: INT-F07.04-F09.01-01
+    source_atom_id: F07.04
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "Heal/retry path cannot silently mutate state; must go through the gate."
+
+  - id: INT-F10.03-F09.01-01
+    source_atom_id: F10.03
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "Writes to L4 durable state occur only via F09."
+
+  # --- Recovery chain (F07 escalation) -----------------------------------
+  - id: INT-F07.03-F02.01-01
+    source_atom_id: F07.03
+    target_atom_id: F02.01
+    edge_kind: CONDITIONAL_ON
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    condition: "Unrecoverable L2 task failure detected."
+    rationale: >
+      Re-planning triggered by unrecoverable failure ultimately depends
+      on L1 because L3 MUST NOT plan (F05.02). Conditional on the
+      failure classification.
+
+  - id: INT-F07.03-F05.01-01
+    source_atom_id: F07.03
+    target_atom_id: F05.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    rationale: >
+      Escalation from L2 to L1 routes through L3 orchestration path;
+      F05.01 is the orchestration surface that handles the surface-up.
+
+  # --- Exit Spine (F08) binds F11 and signals F09 -----------------------
+  - id: INT-F08.02-F11.05-01
+    source_atom_id: F08.02
+    target_atom_id: F11.05
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001]
+    rationale: "Evaluation spine applies L5 exit policy; direct consumer of F11.05 binding."
+
+  - id: INT-F08.04-F09.01-01
+    source_atom_id: F08.04
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    rationale: "Spine signals the gate for durable outcome writes; spine concept itself is under-sourced (see DEC-E1c-EXIT-UNSOURCED)."
+
+  # --- Gate rejects missing admission signals ----------------------------
+  - id: INT-F09.04-F11.04-01
+    source_atom_id: F09.04
+    target_atom_id: F11.04
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "Gate rejects writes lacking the L5 policy signal that F11.04 mandates."
+
+  - id: INT-F09.05-F08.04-01
+    source_atom_id: F09.05
+    target_atom_id: F08.04
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    rationale: "Gate rejects writes lacking the exit signal F08.04 issues; both atoms are WEAK_EVIDENCE after E1c exit-spine-unsourced finding."
+
+  # --- Policy (F11) no-execute / no-mutate implications ------------------
+  - id: INT-F11.07-F09.01-01
+    source_atom_id: F11.07
+    target_atom_id: F09.01
+    edge_kind: IMPLIES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L5 no-direct-mutation is a consequence of the Universal Write Gate monopoly; F11.07 implies F09.01's sole-path property."
+
+  # --- L6 no-current-run-influence (F12 forbids pathways) ---------------
+  - id: INT-F12.02-F03.01-01
+    source_atom_id: F12.02
+    target_atom_id: F03.01
+    edge_kind: FORBIDS
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: >
+      L6 observations MUST NOT influence current-run L0 route decisions.
+      OOS-001 captures the concrete rejected pattern; this edge encodes
+      the general prohibition between F12.02 and F03.01.
+
+  - id: INT-F12.02-F11.01-01
+    source_atom_id: F12.02
+    target_atom_id: F11.01
+    edge_kind: FORBIDS
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L6 observations MUST NOT influence current-run L5 policy evaluation."
+
+  - id: INT-F12.03-F09.01-01
+    source_atom_id: F12.03
+    target_atom_id: F09.01
+    edge_kind: FORBIDS
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    rationale: "L6 MUST NOT trigger current-run state mutations via the gate."
+
+  # --- Future-run feed-forward (F12 -> F02) ------------------------------
+  - id: INT-F12.05-F02.01-01
+    source_atom_id: F12.05
+    target_atom_id: F02.01
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-002]
+    rationale: >
+      L6 future-run artifacts are consumed by a later-run L1 reasoning.
+      Cross-run dependency; WEAK because consumption mechanism TBD.

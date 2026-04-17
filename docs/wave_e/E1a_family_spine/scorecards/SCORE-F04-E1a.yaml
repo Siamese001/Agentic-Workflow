@@ -1,0 +1,17 @@
+id: SCORE-F04-E1a
+family_id: F04
+produced_at_wave: E1a
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1a scope is family-only; no atoms drafted (expected)."
+  - "HIGH: seed title used 'C0' which is not in the owning_layer enum; provisional L1 assigned; E1c confirmation required."
+  - "E1b atoms whose claim depends on the layer choice MUST be marked UNRESOLVED or WEAK_EVIDENCE until E1c confirms."
+notes: "Denominator-zero coverage_score is expected E1a state."

@@ -1,0 +1,15 @@
+id: SCORE-F04-E1d
+family_id: F04
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "F04 has zero emitted edges. Candidates C2, C4, C6 (interaction_candidates.md) cover context's expected interactions with policy, audit, and route rationale but all require new atom IDs in Wave F."
+notes: "F04 is isolated in E1d's edge graph. Not a defect per se; context-grounding is largely internal to L1 in the current atom set."

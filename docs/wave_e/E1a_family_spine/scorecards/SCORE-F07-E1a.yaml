@@ -1,0 +1,17 @@
+id: SCORE-F07-E1a
+family_id: F07
+produced_at_wave: E1a
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1a scope is family-only; no atoms drafted (expected)."
+  - "authority_class OPERATIONAL provisional; E1c may upgrade if heal/retry/recovery is charter-level."
+  - "LOW flag: three sub-concerns (heal, retry, recovery) likely produce separate atoms in E1b."
+notes: "Denominator-zero coverage_score is expected E1a state."

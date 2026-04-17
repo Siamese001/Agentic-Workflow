@@ -1,0 +1,17 @@
+id: SCORE-F08-E1a
+family_id: F08
+produced_at_wave: E1a
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1a scope is family-only; no atoms drafted (expected)."
+  - "owning_layer provisional L5 vs L3; E1c confirmation required."
+  - "Flagged over-broad: E1b MUST split into termination-flow + result-acceptance + no-ad-hoc-exit atoms."
+notes: "Denominator-zero coverage_score is expected E1a state."

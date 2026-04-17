@@ -1,0 +1,23 @@
+id: SCORE-F12-E1b
+family_id: F12
+produced_at_wave: E1b
+atom_count_total: 6
+atom_count_by_status:
+  DRAFT: 5
+  EXCLUDED: 1
+atom_count_by_evidence:
+  NORMATIVE: 4
+  WEAK_EVIDENCE: 1
+  EXCLUDED: 1
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 1
+coverage_score: 0.8
+blockers:
+  - "SRC-* placeholders in authority_binding require materialization by E1c."
+  - "OOS-001 exclusion authored here; integration pass must de-duplicate if E1c also authors an equivalent record."
+notes: >
+  coverage_score denominator excludes the EXCLUDED atom per the rubric.
+  4 NORMATIVE-with-binding / (4 + 1 weak + 0 unresolved) = 0.8.

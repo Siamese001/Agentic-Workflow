@@ -1,0 +1,20 @@
+id: SCORE-F04-E1c
+family_id: F04
+produced_at_wave: E1c
+atom_count_total: 4
+atom_count_by_status:
+  DRAFT: 4
+atom_count_by_evidence:
+  NORMATIVE: 1
+  WEAK_EVIDENCE: 3
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.25
+blockers:
+  - "Layer question resolved by DEC-E1c-F04-LAYER (L1 confirmed); 2 UNRESOLVED atoms from E1b patched."
+  - "F04.04 idempotence claim remains WEAK_EVIDENCE; no dedicated source at rank <= ARCHITECTURAL."
+  - "OOS-003 (C0-as-separate-layer NOT_YET_DECIDED) logged as revisit path."
+notes: "Coverage rose from 0.0 (E1b) to 0.25 (E1c) after layer resolution and atom patches."

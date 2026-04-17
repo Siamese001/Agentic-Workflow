@@ -1,0 +1,17 @@
+id: SCORE-F02-E1b
+family_id: F02
+produced_at_wave: E1b
+atom_count_total: 5
+atom_count_by_status:
+  DRAFT: 5
+atom_count_by_evidence:
+  NORMATIVE: 5
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers:
+  - "SRC-* placeholders in authority_binding require materialization by E1c."
+  - "CONSTITUTIONAL authority_class on F02 requires rank-1 source cite by E1c."

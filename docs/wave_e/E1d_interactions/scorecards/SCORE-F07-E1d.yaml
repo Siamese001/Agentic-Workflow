@@ -1,0 +1,18 @@
+id: SCORE-F07-E1d
+family_id: F07
+produced_at_wave: E1d
+atom_count_total: 0
+atom_count_by_status: {}
+atom_count_by_evidence: {}
+edge_count_total: 3
+edge_count_by_kind:
+  REQUIRES: 2
+  CONDITIONAL_ON: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "E1d scope is edges only."
+  - "Candidate C3 (retry budget bound by L5 policy) remains sidecar; requires new F11 atom."
+notes: "F07.04 -> F09.01 is CRIT silent-failure; heal/retry bypassing gate."

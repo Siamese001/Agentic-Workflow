@@ -1,0 +1,21 @@
+id: SCORE-F12-E1c
+family_id: F12
+produced_at_wave: E1c
+atom_count_total: 6
+atom_count_by_status:
+  DRAFT: 5
+  EXCLUDED: 1
+atom_count_by_evidence:
+  NORMATIVE: 4
+  WEAK_EVIDENCE: 1
+  EXCLUDED: 1
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 1
+coverage_score: 0.8
+blockers:
+  - "Placeholder SRC IDs mapped; integration pass applies mapping."
+  - "CONSTITUTIONAL authority_class confirmed via SRC-RULE-001."
+  - "OOS-002 authored by E1c complements OOS-001 (E1b). Integration pass de-duplicates if overlap."

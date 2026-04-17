@@ -1,0 +1,19 @@
+id: SCORE-F04-E1b
+family_id: F04
+produced_at_wave: E1b
+atom_count_total: 4
+atom_count_by_status:
+  DRAFT: 2
+  UNRESOLVED: 2
+atom_count_by_evidence:
+  WEAK_EVIDENCE: 2
+  UNRESOLVED: 2
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 2
+weak_evidence_count: 2
+excluded_count: 0
+coverage_score: 0.0
+blockers:
+  - "HIGH: F04 owning_layer unresolved; seed used 'C0' (not in enum). 2 of 4 atoms marked UNRESOLVED pending E1c confirmation."
+  - "WEAK_EVIDENCE atoms need source materialization by E1c."

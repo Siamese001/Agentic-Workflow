@@ -1,0 +1,79 @@
+# Wave E1c — Atom Patches (Pass B)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+#
+# E1c re-publishes ONLY the atoms whose status, evidence_class, or
+# rationale change as a result of E1c's scope and authority decisions.
+# Integration pass applies last-writer-wins per atom ID, so these three
+# records supersede the corresponding records in
+# docs/wave_e/E1b_atoms/proposals/atoms.yaml.
+#
+# For atoms NOT republished here: their authority_binding still cites the
+# E1b placeholder mnemonic IDs (SRC-ADR-L0..L6, SRC-ADR-WG, SRC-ADR-EXIT).
+# See evidence_binding_notes.md for the canonical placeholder-to-real
+# mapping; integration pass MUST apply that mapping to all remaining E1b
+# atoms. This is blocker B1 in README.md.
+# ---------------------------------------------------------------------------
+
+atoms:
+
+  # -------------------------------------------------------------------------
+  # F04 — Context Assembly and Grounding
+  # E1a flagged C0-layer schema drift; E1c confirms owning_layer L1 per
+  # scope_decision_log.md (resolves HIGH flag). Two atoms were UNRESOLVED
+  # in E1b pending this decision and are now patched.
+  # -------------------------------------------------------------------------
+
+  - id: F04.01
+    family_id: F04
+    claim: "Context consumed by reasoning, orchestration, and task execution MUST be assembled through a single grounding path."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-002, SRC-INT-003]
+    status: DRAFT
+    owning_layer: L1
+    rationale: >
+      Layer question resolved by E1c (see scope_decision_log.md entry
+      DEC-E1c-F04-LAYER). Claim is sound under L1 ownership; binds to
+      governing semantics surface (SRC-INT-002 §1 + SRC-INT-003
+      frontmatter). Supersedes E1b's UNRESOLVED version.
+    supersedes: F04.01
+
+  - id: F04.04
+    family_id: F04
+    claim: "Context assembly MUST be idempotent for identical request inputs."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    status: DRAFT
+    owning_layer: L1
+    rationale: >
+      Layer question resolved (L1); however, the idempotence requirement
+      itself has no dedicated source at rank <= ARCHITECTURAL. Remains
+      WEAK_EVIDENCE until a concrete ADR or rule is authored for context
+      determinism. Supersedes E1b's UNRESOLVED version.
+    supersedes: F04.04
+
+  # -------------------------------------------------------------------------
+  # F08 — Runtime Exit Control and Evaluation Spine
+  # E1c could not materialize a dedicated source for the exit spine
+  # (no ADR, no rule, not in governing semantics). F08.05's sole binding
+  # was SRC-ADR-EXIT placeholder; downgrades to WEAK_EVIDENCE.
+  # -------------------------------------------------------------------------
+
+  - id: F08.05
+    family_id: F08
+    claim: "Ad-hoc runtime exit paths that bypass the evaluation spine MUST NOT exist."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    status: DRAFT
+    owning_layer: L5
+    rationale: >
+      E1b bound this atom to SRC-ADR-EXIT (placeholder). E1c could not
+      materialize a real exit-spine source at rank <= ARCHITECTURAL.
+      Downgraded from NORMATIVE to WEAK_EVIDENCE with binding to
+      SRC-INT-003 governing semantics as the nearest available source.
+      A future wave MUST author a dedicated exit-spine ADR or rule for
+      F08 to reach NORMATIVE across the board. Supersedes E1b's NORMATIVE
+      version.
+    counter_examples:
+      - "A task subsystem calling sys.exit() or process-terminating primitives directly."
+      - "An orchestration path that writes outcome without invoking the spine."
+    supersedes: F08.05

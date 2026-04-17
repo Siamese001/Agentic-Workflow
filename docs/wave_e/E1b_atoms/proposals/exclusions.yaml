@@ -1,0 +1,29 @@
+# Wave E1b — Exclusions (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+# E1b authors OOS records only for EXCLUDED atoms it has drafted; broader
+# out-of-scope modeling remains available to other lanes.
+
+exclusions:
+
+  - id: OOS-001
+    title: "Dynamic L6 learning influencing current-run L0 route selection"
+    scope_statement: >
+      L6 observations and derived learning artifacts MUST NOT feed back
+      into the current run's L0 route decisions. Any proposal to bias
+      current-run routing based on L6 signals is out of charter for this
+      program. Future-run influence via L1 reasoning of a subsequent run
+      is permitted per F12.04 and F12.05.
+    reason: OUT_OF_CHARTER
+    decided_at_wave: E1b
+    decided_by: "E1b_atoms lane, per governing semantics in E0 schema frontmatter"
+    related_atoms:
+      - F12.02
+      - F12.03
+      - F12.06
+    related_families:
+      - F12
+      - F03
+    notes: >
+      This exclusion is the concrete canonical rejection of the most
+      frequently-proposed L6 enhancement pattern (dynamic route bias).
+      E1c/E1d may author additional exclusions as their scopes demand.

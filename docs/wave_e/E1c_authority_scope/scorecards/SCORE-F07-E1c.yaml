@@ -1,0 +1,19 @@
+id: SCORE-F07-E1c
+family_id: F07
+produced_at_wave: E1c
+atom_count_total: 4
+atom_count_by_status:
+  DRAFT: 4
+atom_count_by_evidence:
+  NORMATIVE: 1
+  WEAK_EVIDENCE: 3
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.25
+blockers:
+  - "Family authority_class OPERATIONAL conflicts with F07.04 rank-1 binding; recommend E1a revise to ARCHITECTURAL (DEC-E1c-F07-AUTH-CLASS)."
+  - "F07.01/F07.02/F07.03 WEAK_EVIDENCE: bounded-retry claims have no dedicated ARCHITECTURAL-rank source in this run."
+  - "OOS-002 added (L6 MUST NOT feed current-run heal/retry)."
