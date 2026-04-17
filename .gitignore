@@ -95,3 +95,4 @@
 .coverage.*/
 /Thumbs.db/
 /runtime_adg//
+adg_audit_*.zip

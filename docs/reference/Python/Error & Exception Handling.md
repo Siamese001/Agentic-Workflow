@@ -51,3 +51,19 @@ CONTINUE PROGRAM                                                            CONT
 (system continues normally                                                  (system continues as a zombie         (Test suite shows "all green"         (system recovers appropriately
  librarian continues assisting                                               library report shows "0 errors"       but production crashes on missing)   librarian informs the reader,
  patrons seamlessly)                                                         but resource is 'ghosted')                                                      safely assists next patron)
+
+MENTAL MODEL
+
+PATRON REQUEST
+    ↓
+"Please get me this book"
+    ↓
+BOOK PROBLEM HAPPENS
+    ↓
+EXCEPTION HANDLING
+"Ah, I see the exact problem"
+(book missing, damaged, wrong catalog entry)
+    ↓
+ERROR HANDLING
+"What should I do about it?"
+(retry, reorder, redirect, escalate, stop safely)
