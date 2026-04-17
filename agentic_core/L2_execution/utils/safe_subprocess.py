@@ -6,7 +6,9 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import enforce_protected_root
+from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+    enforce_protected_root,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402

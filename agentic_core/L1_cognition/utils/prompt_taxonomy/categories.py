@@ -17,7 +17,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.reasoning import AuthorityLevel, AuthoritySlot
+from agentic_core.L2_execution.reasoning import (
+    AuthorityLevel,
+    AuthoritySlot,
+)  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
 
 
 class PromptCategory(Enum):

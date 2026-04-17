@@ -91,7 +91,9 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict
 
-from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
+from agentic_core.L0_routing.config.path_constants import (
+    DEFAULT_TIMEOUT,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,

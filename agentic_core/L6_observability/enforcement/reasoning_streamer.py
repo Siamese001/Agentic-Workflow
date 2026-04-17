@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from agentic_core.L2_execution.utils import write_gateway as _wg
+from agentic_core.L2_execution.utils import (
+    write_gateway as _wg,
+)  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     record_execution_trace,

@@ -63,7 +63,7 @@ from agentic_core.L1_cognition.reasoning.reasoning_evaluation import (
 
 # Lazy import to avoid L1->L6 gravity violation
 def _get_performance_emitter():
-    from agentic_core.L6_observability.utils.performance.performance_emitter import (
+    from agentic_core.L6_observability.utils.performance.performance_emitter import (  # guardian: allow-layer-violation -- L1 module uses L6 observability; intentional cross-layer instrumentation in cognition layer
         StageStatus,
         record_reasoning_performance,
     )

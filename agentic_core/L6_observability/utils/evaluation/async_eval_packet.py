@@ -15,10 +15,14 @@ import threading
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.L2_execution.utils.providers import (
+    get_clock,
+)  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 
 if TYPE_CHECKING:
-    from agentic_core.L2_execution.types.sealed_l2_artifact import SealedL2Artifact
+    from agentic_core.L2_execution.types.sealed_l2_artifact import (
+        SealedL2Artifact,
+    )  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
     from agentic_core.L5_safety.types.exit_disposition_types import CurrentRunEvaluationResult
 
 _log = logging.getLogger(__name__)

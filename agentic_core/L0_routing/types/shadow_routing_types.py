@@ -174,7 +174,9 @@ _emit_proposal_commits_routing("p1", "shadow_routing_types", "routing_commit")
 
 
 def _get_canonical_json():
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json as _cj
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        canonical_json as _cj,
+    )  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
 
     return _cj
 

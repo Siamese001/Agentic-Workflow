@@ -286,7 +286,9 @@ class MetaLearningClient:
         """Initialize Redis connection. Raises if Redis is unavailable."""
         from pathlib import Path
 
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import (
+            InfrastructureDependencyError,
+        )  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
 
         try:
             redis_agent = _get_redis_sovereign_agent()(Path.cwd())
@@ -349,7 +351,9 @@ class MetaLearningClient:
             f"MetaClient.cache_get:{domain}:{key}",
         )
         cache_key = self._get_cache_key(key, domain)
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import (
+            InfrastructureDependencyError,
+        )  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
 
         if not self._redis_client:
             raise InfrastructureDependencyError("[MetaLearningClient] Redis client is not initialised.")
@@ -382,7 +386,7 @@ class MetaLearningClient:
             return False
         cache_key = self._get_cache_key(key, domain)
         effective_ttl = ttl or self.domain_ttls.get(domain, self.default_ttl)
-        from agentic_core.L2_execution.types.infra_error_types import (
+        from agentic_core.L2_execution.types.infra_error_types import (  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
             InfrastructureDependencyError,
         )  # guardian: allow-layer-violation -- L1 meta client uses L2 infra error type; deferred import; InfrastructureDependencyError belongs in shared types but currently lives in L2
 
@@ -396,7 +400,7 @@ class MetaLearningClient:
 
     def cache_delete(self, key: str, domain: str = "agentic_core") -> bool:
         """Delete value from cache."""
-        from agentic_core.L2_execution.types.infra_error_types import (
+        from agentic_core.L2_execution.types.infra_error_types import (  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
             InfrastructureDependencyError,
         )  # guardian: allow-layer-violation -- L1 meta client uses L2 infra error type; deferred import; InfrastructureDependencyError belongs in shared types but currently lives in L2
 

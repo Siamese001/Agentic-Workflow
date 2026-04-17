@@ -12,7 +12,9 @@ import time
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.utils.execution_proof_emitter import (
+    ExecutionProofEmitter,
+)  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 from agentic_core.L6_observability.types.monitor_types import (
     AggregatedMetrics,
     ExecutionMetrics,

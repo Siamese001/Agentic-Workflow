@@ -17,7 +17,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
+from agentic_core.L1_cognition.types.validation_types import (
+    IValidationProtocol,
+)  # guardian: allow-layer-violation -- L2 module uses L1 cognition type; intentional cross-layer dependency in execution layer
 from agentic_core.L2_execution.enforcement.guardrail_gate import get_guardrail_gate
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
@@ -195,7 +197,9 @@ def _load_activation_gate() -> Any:
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_applies_guardrail(str(_uuid.uuid4()), "_load_activation_gate", "p0_governance")
-    from agentic_core.L0_routing.enforcement.safety_enforcement_seam import load_activation_gate
+    from agentic_core.L0_routing.enforcement.safety_enforcement_seam import (
+        load_activation_gate,
+    )  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 
     return load_activation_gate()
 

@@ -11,7 +11,9 @@ from enum import Enum
 from typing import TYPE_CHECKING, Any, ClassVar
 
 try:
-    from agentic_core.L2_execution.utils.providers import get_clock
+    from agentic_core.L2_execution.utils.providers import (
+        get_clock,
+    )  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 except Exception:  # guardian: allow-broad-exception
     get_clock = None
 

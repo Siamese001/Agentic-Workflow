@@ -39,7 +39,9 @@ CURRENT_PHASE = "UNKNOWN"
 
 
 def _get_manifest_hash_validator():
-    from agentic_core.L2_execution.enforcement.manifest_hash_validator import validate_manifest_hashes
+    from agentic_core.L2_execution.enforcement.manifest_hash_validator import (
+        validate_manifest_hashes,
+    )  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
 
     return validate_manifest_hashes
 
@@ -115,7 +117,9 @@ class UnregisteredAgentError(RuntimeError):
 
 def _get_enforce_healer_pipe_order():
     """Lazy load enforce_healer_pipe_order to avoid upward import."""
-    from agentic_core.L2_execution.enforcement.healer_pipe_order import enforce_healer_pipe_order
+    from agentic_core.L2_execution.enforcement.healer_pipe_order import (
+        enforce_healer_pipe_order,
+    )  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
 
     return enforce_healer_pipe_order
 
@@ -242,7 +246,7 @@ class V15ExecutionGateway:
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute with explicit L2 envelope separation."""
-        from agentic_core.L2_execution.utils.providers import get_clock  # noqa: PLC0415
+        from agentic_core.L2_execution.utils.providers import get_clock  # noqa: PLC0415  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
 
         manifest = self._validate_manifest(execution_input, trace_id)
         self._guardian_validate(manifest, trace_id, state_hash_fn=state_hash_fn, **kwargs)

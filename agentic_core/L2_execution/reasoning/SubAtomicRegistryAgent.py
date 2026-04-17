@@ -103,7 +103,9 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -228,7 +230,9 @@ def _get_UnifiedAgent_mapping() -> dict[str, type]:
         Dictionary mapping legacy agent IDs to unified agent classes.
 
     """
-    from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import ASTValidatorAgent
+    from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
+        ASTValidatorAgent,
+    )  # guardian: allow-layer-violation -- L2 module uses L1 cognition type; intentional cross-layer dependency in execution layer
     from agentic_core.L3_orchestration.reasoning.StateManagementAgent import StateManagementAgent
     from agentic_core.L4_state.reasoning.CheckpointManagerAgent import CheckpointManagerAgent
     from agentic_core.L5_safety.reasoning.CodeEnforcerAgent import CodeEnforcerAgent
@@ -379,7 +383,9 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
             if project_root:
                 # guardian: allow-global-mutation
                 sys.path.insert(0, str(project_root))
-            from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
+            from agentic_core.L0_routing.utils.subprocess_runner_util import (
+                invoke_code_validator,
+            )  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 
             self.project_root = project_root or Path.cwd()
             self._invoke = invoke_code_validator

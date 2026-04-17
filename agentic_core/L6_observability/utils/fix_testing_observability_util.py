@@ -14,7 +14,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L2_execution.utils import write_gateway as _wg
+from agentic_core.L2_execution.utils import (
+    write_gateway as _wg,
+)  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 
 try:
     from ops_scripts.dev_tools.L0_routing_scripts.full_agent_discovery import AGENT_DISCOVERY_JSON

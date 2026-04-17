@@ -250,7 +250,7 @@ def _build_record(
 def _publish_to_bus_t(record: ObservabilityRecord, signal_type: str) -> None:
     """Publish observability record to BUS T for async learning and exit analysis."""
     try:
-        from agentic_core.L2_execution.audit.telemetry_bus import (  # noqa: PLC0415
+        from agentic_core.L2_execution.audit.telemetry_bus import (  # noqa: PLC0415  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
             BusType,
             get_telemetry_bus,
         )

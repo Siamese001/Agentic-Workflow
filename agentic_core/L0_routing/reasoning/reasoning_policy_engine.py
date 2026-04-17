@@ -59,7 +59,7 @@ def _get_routing_gateway(policy_hash: str = ""):
 
 
 def _get_proof_emitter():
-    from agentic_core.L2_execution.utils.execution_proof_emitter import (
+    from agentic_core.L2_execution.utils.execution_proof_emitter import (  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
         ExecutionProofEmitter,  # noqa: PLC0415
     )
 

@@ -80,7 +80,7 @@ def _get_routing_gateway():
 
 
 def _get_proof_emitter():
-    from agentic_core.L2_execution.utils.execution_proof_emitter import (
+    from agentic_core.L2_execution.utils.execution_proof_emitter import (  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
         ExecutionProofEmitter,  # noqa: PLC0415
     )
 
@@ -160,7 +160,7 @@ class PathRouter:
         emit_replay_key(_trace_id, f"rk:path:{_trace_id[:16]}")
         emit_determinism_digest(_trace_id, f"dd:path:{_trace_id[:16]}")
 
-        from agentic_core.L2_execution.utils.providers import get_clock as _get_clock  # noqa: PLC0415
+        from agentic_core.L2_execution.utils.providers import get_clock as _get_clock  # noqa: PLC0415  # guardian: allow-layer-violation -- L0 module uses L2 type/utility; intentional cross-layer dependency in enforcement/routing layer
 
         _path_start_tick = _get_clock().now_epoch()
         if not payload.check_ids:

@@ -16,12 +16,14 @@ import os
 from pathlib import Path
 
 from agentic_core.agents.types.agent_registry import registry_digest
-from agentic_core.L0_routing.config import (
+from agentic_core.L0_routing.config import (  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import (
+    SemanticClockSnapshot,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.L2_execution.enforcement.provider_binding_determinism import compute_provider_binding_digest
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     _emit_records_execution_trace,  # noqa: E402

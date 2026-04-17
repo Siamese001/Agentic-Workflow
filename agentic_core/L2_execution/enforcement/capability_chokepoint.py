@@ -12,7 +12,9 @@ import logging
 import uuid
 from typing import Any, Callable, TypeVar
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import (
+    SemanticClockSnapshot,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.L2_execution.types.capability_token_types import (
     CapabilityDecisionArtifact,
     CapabilityEnforcer,

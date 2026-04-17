@@ -10,8 +10,12 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, Optional
 
-from agentic_core.L0_routing.config import GLOBAL_EXCLUDED_DIRS
-from agentic_core.L0_routing.utils.path_util import is_path_allowed
+from agentic_core.L0_routing.config import (
+    GLOBAL_EXCLUDED_DIRS,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
+from agentic_core.L0_routing.utils.path_util import (
+    is_path_allowed,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

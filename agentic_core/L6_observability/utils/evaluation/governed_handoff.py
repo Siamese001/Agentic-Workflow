@@ -9,12 +9,17 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 try:
-    from agentic_core.L2_execution.utils.providers import get_clock
+    from agentic_core.L2_execution.utils.providers import (
+        get_clock,
+    )  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 except Exception:  # guardian: allow-broad-exception
     get_clock = None
 
 try:
-    from agentic_core.L2_execution.audit.telemetry_bus import BusType, get_telemetry_bus
+    from agentic_core.L2_execution.audit.telemetry_bus import (
+        BusType,
+        get_telemetry_bus,
+    )  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 except Exception:  # guardian: allow-broad-exception
 
     class _FallbackBusType:

@@ -95,7 +95,10 @@ _emit_updates_meta_learning_state("p4", "durable_write_wrapper", "meta_learning"
 _emit_links_execution_to_snapshot("p4", "durable_write_wrapper", "exec_snapshot_link")
 
 Logger = logging.getLogger(__name__)
-from agentic_core.L0_routing.enforcement.execution_gateway import CURRENT_PHASE, MUTATION_COUNTER
+from agentic_core.L0_routing.enforcement.execution_gateway import (
+    CURRENT_PHASE,
+    MUTATION_COUNTER,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

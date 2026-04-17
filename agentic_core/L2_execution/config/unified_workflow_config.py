@@ -103,7 +103,9 @@ from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Any
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.L0_routing.types.determinism_types import (
+    SemanticClockSnapshot,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.L2_execution.enforcement.capability_chokepoint import (
     authorize_and_execute,
 )

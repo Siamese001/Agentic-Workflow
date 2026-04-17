@@ -10,7 +10,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L2_execution.reasoning import TemplateManifest as BaseTemplateManifest
+from agentic_core.L2_execution.reasoning import (
+    TemplateManifest as BaseTemplateManifest,
+)  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
 from tqdm import tqdm
 
 

@@ -92,7 +92,9 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
+from agentic_core.L0_routing.enforcement.runtime_guard import (
+    runtime_guard,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -404,7 +406,9 @@ class MCPToolServer:
                 semantic_clock=enforcer_legacy.token.semantic_clock,
             )
         else:
-            from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+            from agentic_core.L0_routing.types.determinism_types import (
+                SemanticClockSnapshot,
+            )  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 
             deny_clock = SemanticClockSnapshot(tick=0, vector_clock={})
             build_capability_decision(
@@ -436,7 +440,9 @@ class MCPToolServer:
             modified_args_hash=modified_hash,
         )
         try:
-            from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
+            from agentic_core.L0_routing.types.routing_contracts_types import (
+                TelemetryEmitter,
+            )  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 
             emitter = TelemetryEmitter()
             emitter.emit_typed_artifact("TOOL_ENFORCEMENT", artifact)

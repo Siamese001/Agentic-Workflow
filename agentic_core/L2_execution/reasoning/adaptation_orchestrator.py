@@ -23,7 +23,9 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import get_routing_gateway
+from agentic_core.L0_routing.reasoning.deterministic_routing_gateway import (
+    get_routing_gateway,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.L2_execution.reasoning.execution_adaptation import (
     ExecutionAdaptationError,
     ExecutionAdaptationRecord,

@@ -303,10 +303,10 @@ class SemanticRetriever:
         import hashlib as _hashlib
         import uuid as _uuid
 
-        from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (
+        from agentic_core.L3_orchestration.reasoning.engines.hybrid_search_engine import (  # guardian: allow-layer-violation -- L1 module uses L3 orchestration; intentional cross-layer dependency in cognition layer
             get_global_hybrid_engine,
         )
-        from agentic_core.L3_orchestration.types.c0_evidence_contract_types import (
+        from agentic_core.L3_orchestration.types.c0_evidence_contract_types import (  # guardian: allow-layer-violation -- L1 module uses L3 orchestration; intentional cross-layer dependency in cognition layer
             C0EvidenceContract,
             CitedSpan,
         )

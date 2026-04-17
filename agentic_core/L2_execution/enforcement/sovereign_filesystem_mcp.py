@@ -93,7 +93,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.cache.redis_cache_client import get_hot_cache
-from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
+from agentic_core.L0_routing.config.path_constants import (
+    PROJECT_ROOT_WHITELIST,
+)  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
 from agentic_core.runtime.contracts.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,

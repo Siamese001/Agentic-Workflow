@@ -622,6 +622,9 @@ def generate_full_adg(
     if os.environ.get("ADG_SKIP_REDIS", "").strip().lower() not in ("1", "true", "yes"):
         _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
 
+    # --- Fail-fast: Repo state change check (before auto-commit so ADG's own commit is excluded) ---
+    end_repo_state_hash = _git_rev_parse("HEAD^{tree}")
+
     # --- Auto-commit artifacts to git ---
     if os.environ.get("ADG_SKIP_GIT", "").strip().lower() not in ("1", "true", "yes"):
         _auto_commit_artifacts(
@@ -630,9 +633,6 @@ def generate_full_adg(
             node_count=len(result.modules),
             edge_count=len(result.edges),
         )
-
-    # --- Fail-fast: Repo state change check ---
-    end_repo_state_hash = _git_rev_parse("HEAD^{tree}")
 
     if repo_state_hash and end_repo_state_hash and repo_state_hash != end_repo_state_hash:
         print("\n[ERROR] Repository state changed during ADG generation")

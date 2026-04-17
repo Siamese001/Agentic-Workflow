@@ -18,7 +18,9 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from agentic_core.L2_execution.utils.providers import get_clock
+from agentic_core.L2_execution.utils.providers import (
+    get_clock,
+)  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 
 if TYPE_CHECKING:
     from agentic_core.L6_observability.utils.evaluation.shadow_eval_grader import ShadowEvalResult

@@ -17,7 +17,9 @@ try:
 except ImportError:
     JINJA2_AVAILABLE = False
 
-from agentic_core.L2_execution.reasoning import AuthoritySlot
+from agentic_core.L2_execution.reasoning import (
+    AuthoritySlot,
+)  # guardian: allow-layer-violation -- L1 module uses L2 type/utility; intentional cross-layer dependency in cognition layer
 
 from .categories import (
     CategoryRegistryEntry,

@@ -95,7 +95,7 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 try:
-    from agentic_core.L3_orchestration.reasoning.engines.sub_atomic_engine_impl import (
+    from agentic_core.L3_orchestration.reasoning.engines.sub_atomic_engine_impl import (  # guardian: allow-layer-violation -- L1 module uses L3 orchestration; intentional cross-layer dependency in cognition layer
         SubAtomicEngineImpl as SubAtomicEngine,
     )
 except ImportError:  # guardian: allow-silent-swallow

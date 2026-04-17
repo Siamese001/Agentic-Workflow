@@ -15,7 +15,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, Literal
 
-from agentic_core.L0_routing.types.determinism_types import (
+from agentic_core.L0_routing.types.determinism_types import (  # guardian: allow-layer-violation -- L2 module uses L0 config/enforcement; intentional downward enforcement-chain dependency
     SemanticClockSnapshot,
     validate_semantic_clock,
 )

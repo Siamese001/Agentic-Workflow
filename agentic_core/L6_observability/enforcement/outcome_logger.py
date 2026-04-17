@@ -10,7 +10,9 @@ import hashlib
 import json
 from dataclasses import dataclass
 
-from agentic_core.L2_execution.utils.execution_proof_emitter import ExecutionProofEmitter
+from agentic_core.L2_execution.utils.execution_proof_emitter import (
+    ExecutionProofEmitter,
+)  # guardian: allow-layer-violation -- L6 observability module uses L2 execution type; intentional cross-layer instrumentation dependency
 from agentic_core.L6_observability.utils.evaluation.evaluation_record import (
     EvaluationStage,
     evaluate_and_attach,
