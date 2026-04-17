@@ -319,8 +319,8 @@ _DEFAULT_SC_AP_CONFIG_PATH = ROOT / "artifacts" / "adg" / "sc_ap_config.json"
 _DEFAULT_SC_AP_CONFIG: dict[str, dict[str, Any]] = {
     "SC-1": {
         "enabled": True,
-        "audit_mode": True,
-        "promoted_date": None,
+        "audit_mode": False,
+        "promoted_date": "2026-04-17",
         "label": "Gravity import / illegal layer reach",
     },
     "SC-2": {
