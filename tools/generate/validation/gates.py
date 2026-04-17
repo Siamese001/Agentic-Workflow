@@ -565,7 +565,20 @@ def _query_sc1_gravity(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     ).fetchall()
     for src_file, line_no, src_layer, dst_layer, rel_type in rows:
         forbidden = _GRAVITY_FORBIDDEN.get(src_layer, set())
-        if dst_layer in forbidden:
+        if dst_layer not in forbidden:
+            continue
+        # Check for guardian exemption in source file at the import line
+        exempted = False
+        if src_file and line_no and line_no > 0:
+            try:
+                src_path = ROOT / src_file
+                if src_path.exists():
+                    lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+                    check_lines = lines[max(0, line_no - 2) : line_no]
+                    exempted = any("guardian: allow-layer-violation" in ln for ln in check_lines)
+            except (OSError, UnicodeDecodeError, ValueError):
+                pass
+        if not exempted:
             violations.append(
                 {
                     "source_file": src_file or "",
