@@ -1,0 +1,19 @@
+id: SCORE-F04-F2
+family_id: F04
+produced_at_wave: F2
+atom_count_total: 4
+atom_count_by_status: {DRAFT: 4}
+atom_count_by_evidence: {NORMATIVE: 1, WEAK_EVIDENCE: 3}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.25
+blockers:
+  - "RED (unchanged). F04.02 attribution, F04.03 no-private-substitute still have no dedicated source."
+  - "F04.04 idempotence has SRC-ADR-005 (REPLAY_DETERMINISM_RULES) as supplementary WEAK support but no direct claim."
+  - "Blocker B3 remains: dedicated context-assembly ADR is still needed."
+notes: >
+  Unchanged RED. F2 refused to fabricate an ADR. Supplementary
+  binding added for F04.04 only.

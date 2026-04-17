@@ -1,0 +1,19 @@
+id: SCORE-F07-F2
+family_id: F07
+produced_at_wave: F2
+atom_count_total: 4
+atom_count_by_status: {DRAFT: 4}
+atom_count_by_evidence: {NORMATIVE: 3, WEAK_EVIDENCE: 1}
+edge_count_total: 3
+edge_count_by_kind: {REQUIRES: 2, CONDITIONAL_ON: 1}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 0
+coverage_score: 0.75
+blockers:
+  - "F07.03 escalation-to-L3 remains WEAK because SRC-ADR-001 (healing_dispatch_routing_adr) is explicitly invalid_for_normative_use=True."
+  - "Blocker B2-partial: normative escalation-target ADR still needed (must name L3 as re-planning target and carry normative authority, not invalid_for_normative_use)."
+notes: >
+  Projected bucket flip RED 0.25 -> YELLOW 0.75. F07.01 and F07.02
+  upgraded via SRC-ADR-002 (HEALER_RETRY_HARDENING_SPEC). F07.04
+  was already NORMATIVE.

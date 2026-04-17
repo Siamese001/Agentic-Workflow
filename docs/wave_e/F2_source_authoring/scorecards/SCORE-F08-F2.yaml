@@ -1,0 +1,20 @@
+id: SCORE-F08-F2
+family_id: F08
+produced_at_wave: F2
+atom_count_total: 5
+atom_count_by_status: {DRAFT: 5}
+atom_count_by_evidence: {NORMATIVE: 5}
+edge_count_total: 4
+edge_count_by_kind: {REQUIRES: 3, DEPENDS_ON: 1}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers: []
+notes: >
+  Projected bucket flip RED 0.20 -> GREEN 1.00. The long-"missing"
+  exit-spine source was already in the repo: eval_pipeline_acceptance.md
+  with Exit Control Gate, GovernedHandoffAgent, and six explicit
+  architectural invariants. F08.01, F08.03, F08.04, F08.05 all
+  upgraded WEAK -> NORMATIVE via SRC-ADR-003. F08.02 was already
+  NORMATIVE.

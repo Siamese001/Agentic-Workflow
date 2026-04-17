@@ -1,0 +1,6 @@
+# Wave F2 - Exclusions (empty)
+# OOS-001/002/003 remain intact. F2 does not propose any exclusion changes.
+# OOS-003 (C0-as-separate-layer NOT_YET_DECIDED) is unaffected because F2
+# did not uncover operational constraints that L1 cannot satisfy for
+# context grounding - the revisit trigger remains unfulfilled.
+exclusions: []

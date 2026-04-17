@@ -1,0 +1,14 @@
+id: SCORE-F03-INTEGRATION
+family_id: F03
+produced_at_wave: INTEGRATION
+atom_count_total: 4
+atom_count_by_status: {ACTIVE: 4}
+atom_count_by_evidence: {NORMATIVE: 3, WEAK_EVIDENCE: 1}
+edge_count_total: 4
+edge_count_by_kind: {REQUIRES: 1, REFINES: 2, FORBIDS: 1}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 0
+coverage_score: 0.75
+blockers: ["F03.04 one-route-per-step determinism unsourced"]
+notes: "Unchanged from v1. YELLOW."

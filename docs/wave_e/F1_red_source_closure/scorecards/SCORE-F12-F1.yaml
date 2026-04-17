@@ -1,0 +1,29 @@
+id: SCORE-F12-F1
+family_id: F12
+produced_at_wave: F1
+# This scorecard represents the PROJECTED post-F1-integration state for F12.
+# F1 publishes DRAFT proposals; integration pass promotes to ACTIVE.
+atom_count_total: 8
+atom_count_by_status:
+  DRAFT: 7
+  EXCLUDED: 1
+atom_count_by_evidence:
+  NORMATIVE: 7
+  EXCLUDED: 1
+edge_count_total: 6
+edge_count_by_kind:
+  FORBIDS: 3
+  DEPENDS_ON: 2
+  REFINES: 1
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 1
+coverage_score: 1.0
+blockers:
+  - "INT-F12.08-F08.03-01 is WEAK_EVIDENCE because F08.03 itself remains WEAK (exit-spine ADR absent). The edge inherits F08's weakness."
+notes: >
+  F12 projected post-F1: coverage rises from 0.80 (YELLOW) to 1.00 (GREEN).
+  F12.05 patched NORMATIVE via SRC-RULE-001 + SRC-INT-001 + SRC-INT-004;
+  F12.07 and F12.08 added as NORMATIVE. Two new edges (REFINES F12.05
+  to F12.07; REQUIRES F02.01 from F12.07) plus one DEPENDS_ON edge
+  inheriting F08 weakness (F12.08 -> F08.03).

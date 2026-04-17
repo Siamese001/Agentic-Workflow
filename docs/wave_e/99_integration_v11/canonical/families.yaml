@@ -1,0 +1,115 @@
+# Canonical v1.1 - Families (unchanged from v1; F1 introduced no family changes).
+
+families:
+
+  - id: F01
+    title: "Request Intake and Envelope Check"
+    intent: >
+      Every inbound request MUST be admitted only after envelope validation
+      covering request shape, authentication, and policy preconditions, and
+      MUST be rejected deterministically when any precondition fails.
+    owning_layer: L0
+    authority_class: GOVERNANCE
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F02
+    title: "L1 Reasoning and Plan Generation"
+    intent: >
+      L1 is the sole authority that decomposes an admitted request into a plan.
+    owning_layer: L1
+    authority_class: CONSTITUTIONAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F03
+    title: "L0 Route Decision and Switching"
+    intent: >
+      L0 is the sole route authority for downstream capability dispatch.
+    owning_layer: L0
+    authority_class: CONSTITUTIONAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F04
+    title: "Context Assembly and Grounding"
+    intent: >
+      Context MUST be assembled through a single attributable grounding path.
+    owning_layer: L1
+    authority_class: ARCHITECTURAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F05
+    title: "L3 Orchestration"
+    intent: >
+      L3 MUST orchestrate multi-step execution of an L1 plan.
+    owning_layer: L3
+    authority_class: ARCHITECTURAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F06
+    title: "L2 Task Execution"
+    intent: >
+      L2 MUST execute tasks dispatched by L3 against the route decided by L0.
+    owning_layer: L2
+    authority_class: ARCHITECTURAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F07
+    title: "L2 Heal, Retry, and Recovery"
+    intent: >
+      Failed L2 task executions MUST be routed through a bounded
+      heal/retry/recovery path with explicit termination conditions.
+    owning_layer: L2
+    authority_class: CONSTITUTIONAL
+    status: ACTIVE
+    created_at_wave: E1a
+    notes: "authority_class corrected OPERATIONAL -> CONSTITUTIONAL per schema rule in v1 integration (HITL-INT-F07-AUTH)."
+
+  - id: F08
+    title: "Runtime Exit Control and Evaluation Spine"
+    intent: >
+      Runtime termination MUST flow through a single evaluation spine.
+    owning_layer: L5
+    authority_class: GOVERNANCE
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F09
+    title: "Universal Write Gate"
+    intent: >
+      The Universal Write Gate MUST be the sole durable write path.
+    owning_layer: L4
+    authority_class: CONSTITUTIONAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F10
+    title: "L4 Durable Archive and State Authority"
+    intent: >
+      L4 MUST be the authoritative durable state of the system.
+    owning_layer: L4
+    authority_class: CONSTITUTIONAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F11
+    title: "L5 Policy and Safety Authority"
+    intent: >
+      L5 MUST be the cross-cutting policy and safety authority.
+    owning_layer: L5
+    authority_class: CONSTITUTIONAL
+    status: ACTIVE
+    created_at_wave: E1a
+
+  - id: F12
+    title: "L6 Observability and Future-Run Learning"
+    intent: >
+      L6 MUST observe the current run and feed learning into future runs only.
+    owning_layer: L6
+    authority_class: CONSTITUTIONAL
+    status: ACTIVE
+    created_at_wave: E1a

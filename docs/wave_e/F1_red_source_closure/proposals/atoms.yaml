@@ -1,0 +1,73 @@
+# Wave F1 — Atom Patches and Additions (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+#
+# Two additions (F12.07, F12.08) under existing family F12.
+# One patch (F12.05) upgrading WEAK_EVIDENCE to NORMATIVE with richer
+# authority_binding now that SRC-INT-004 exists.
+# No new Family IDs. All records status DRAFT.
+
+atoms:
+
+  # -------------------------------------------------------------------------
+  # PATCH: F12.05 — upgrade WEAK_EVIDENCE -> NORMATIVE
+  # Original authority_binding cited SRC-INT-003 alone. F1 adds SRC-RULE-001
+  # (constitutional memory lifecycle, §17) and SRC-INT-001 + SRC-INT-004
+  # (AGENTS.md Memory Lifecycle section), which collectively anchor the
+  # future-run-consumption claim to GOVERNANCE/CONSTITUTIONAL sources.
+  # Last-writer-wins at integration pass per Wave E1 precedent.
+  # -------------------------------------------------------------------------
+  - id: F12.05
+    family_id: F12
+    claim: "Future-run learning artifacts MUST be consumed only by L1 reasoning of a later run."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-003, SRC-INT-004]
+    status: DRAFT
+    owning_layer: L6
+    rationale: >
+      Upgraded from WEAK_EVIDENCE per F1 closure. Constitutional §17
+      "Memory Lifecycle mandatory" plus AGENTS.md memory lifecycle section
+      establish that future-run consumption of prior-run artifacts occurs
+      through a bounded session-start protocol invoked by L1 reasoning.
+      F12.07 refines the concrete mechanism.
+
+  # -------------------------------------------------------------------------
+  # NEW: F12.07 — concrete consumption mechanism
+  # -------------------------------------------------------------------------
+  - id: F12.07
+    family_id: F12
+    claim: "Future-run L1 reasoning MUST consume prior-run L6 artifacts via the memory-lifecycle session-start protocol."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-004]
+    status: DRAFT
+    owning_layer: L6
+    rationale: >
+      Clarifies F12.05 by naming the concrete protocol. The memory
+      lifecycle section of AGENTS.md specifies session-start recall as
+      the vehicle by which persistent observations survive and influence
+      subsequent runs. Satisfies interaction candidate C5 implicitly and
+      gives edge INT-F12.07-F02.01-01 a defensible REQUIRES relationship.
+    counter_examples:
+      - "Future-run L1 reasoning that reads in-memory L6 state directly without invoking the memory MCP session-start protocol."
+      - "Future-run L2 or L3 consuming L6 artifacts in place of L1 (violates F12.05 scope)."
+
+  # -------------------------------------------------------------------------
+  # NEW: F12.08 — L6 records F08 outcomes for future-run consumption
+  # -------------------------------------------------------------------------
+  - id: F12.08
+    family_id: F12
+    claim: "L6 MUST record run outcomes produced by the F08 evaluation spine into persistent memory for future-run reasoning."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-004]
+    status: DRAFT
+    owning_layer: L6
+    rationale: >
+      Closes interaction candidate C5 from E1d (exit spine produces
+      observation material consumed by future learning). The memory
+      lifecycle mandates that significant outcomes be written to memory
+      after resolution; F12.08 restates this specifically for the exit
+      spine's recorded outcome (F08.03). Does NOT violate L6
+      no-current-run-influence because the write is observation-for-
+      future-run, not mutation-of-current-run.
+    counter_examples:
+      - "L6 writing outcomes into current-run state surfaces (would breach F12.03)."
+      - "Exit spine outcomes remaining only in ephemeral runtime logs (would break the future-run feed-forward contract)."

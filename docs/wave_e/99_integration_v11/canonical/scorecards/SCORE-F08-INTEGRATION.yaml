@@ -1,0 +1,16 @@
+id: SCORE-F08-INTEGRATION
+family_id: F08
+produced_at_wave: INTEGRATION
+atom_count_total: 5
+atom_count_by_status: {ACTIVE: 5}
+atom_count_by_evidence: {NORMATIVE: 1, WEAK_EVIDENCE: 4}
+edge_count_total: 4
+edge_count_by_kind: {REQUIRES: 3, DEPENDS_ON: 1}
+unresolved_count: 0
+weak_evidence_count: 4
+excluded_count: 0
+coverage_score: 0.2
+blockers:
+  - "RED (unchanged from v1). Exit-spine ADR still missing (Blocker B1)."
+  - "New DEPENDS_ON edge from F12.08 does not strengthen F08; it inherits F08.03 weakness."
+notes: "Atoms unchanged. Edge count 3 -> 4 via F1 INT-F12.08-F08.03-01 (inbound DEPENDS_ON target)."

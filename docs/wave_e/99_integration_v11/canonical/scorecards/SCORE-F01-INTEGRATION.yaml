@@ -1,0 +1,14 @@
+id: SCORE-F01-INTEGRATION
+family_id: F01
+produced_at_wave: INTEGRATION
+atom_count_total: 6
+atom_count_by_status: {ACTIVE: 6}
+atom_count_by_evidence: {NORMATIVE: 5, WEAK_EVIDENCE: 1}
+edge_count_total: 2
+edge_count_by_kind: {REQUIRES: 1, DEPENDS_ON: 1}
+unresolved_count: 0
+weak_evidence_count: 1
+excluded_count: 0
+coverage_score: 0.83
+blockers: ["F01.06 structured reason code unsourced"]
+notes: "Unchanged from v1. YELLOW."

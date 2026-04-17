@@ -1,0 +1,14 @@
+id: SCORE-F11-INTEGRATION
+family_id: F11
+produced_at_wave: INTEGRATION
+atom_count_total: 7
+atom_count_by_status: {ACTIVE: 7}
+atom_count_by_evidence: {NORMATIVE: 7}
+edge_count_total: 5
+edge_count_by_kind: {REQUIRES: 3, FORBIDS: 1, IMPLIES: 1}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers: []
+notes: "Unchanged from v1. GREEN. F11 preserved at 1.00 because F1 correctly rejected the F11.08 WEAK candidate."

@@ -1,0 +1,16 @@
+id: SCORE-F04-INTEGRATION
+family_id: F04
+produced_at_wave: INTEGRATION
+atom_count_total: 4
+atom_count_by_status: {ACTIVE: 4}
+atom_count_by_evidence: {NORMATIVE: 1, WEAK_EVIDENCE: 3}
+edge_count_total: 0
+edge_count_by_kind: {}
+unresolved_count: 0
+weak_evidence_count: 3
+excluded_count: 0
+coverage_score: 0.25
+blockers:
+  - "RED (unchanged from v1). F1 attempted closure; no real sources for F04.02 attribution, F04.03 no-private-substitute, or F04.04 idempotence."
+  - "Blocker B3 from F1 README: dedicated context-assembly ADR required."
+notes: "Unchanged from v1."

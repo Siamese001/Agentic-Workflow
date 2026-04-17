@@ -1,0 +1,17 @@
+id: SCORE-F09-F2
+family_id: F09
+produced_at_wave: F2
+atom_count_total: 5
+atom_count_by_status: {DRAFT: 5}
+atom_count_by_evidence: {NORMATIVE: 5}
+edge_count_total: 8
+edge_count_by_kind: {REQUIRES: 6, FORBIDS: 1, IMPLIES: 1}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers: []
+notes: >
+  Projected bucket flip YELLOW 0.80 -> GREEN 1.00. F09.05 upgraded
+  WEAK -> NORMATIVE via SRC-ADR-003 (GovernedHandoffAgent rejection
+  semantics on missing approval).

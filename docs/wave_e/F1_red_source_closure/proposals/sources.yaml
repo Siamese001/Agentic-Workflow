@@ -1,0 +1,26 @@
+# Wave F1 — New Sources (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+#
+# Only one new source is proposed in F1: a section-level anchor into
+# AGENTS.md for the Memory Lifecycle content. Dedicated so F12.05, F12.07,
+# and F12.08 can cite the specific section rather than the whole file.
+
+sources:
+
+  - id: SRC-INT-004
+    subtype: INT
+    title: "AGENTS.md - Memory Lifecycle"
+    locator: "AGENTS.md#memory-lifecycle"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: F1
+    excerpt: >
+      Memory lifecycle: at the start of every conversation, call
+      mem_recall_session_start. After significant architecture decisions,
+      HITL resolutions, or new patterns, write to memory. Entities survive
+      across IDE restarts. The memory server is the persistent
+      knowledge-graph surface that L6 future-run learning feeds into.
+    notes: >
+      Rank 2 GOVERNANCE. Provides a precise locator for the memory
+      lifecycle protocol, which is the in-project mechanism by which L6
+      future-run artifacts are consumed by a later run's L1 reasoning
+      (per F12.05 / F12.07 / F12.08).

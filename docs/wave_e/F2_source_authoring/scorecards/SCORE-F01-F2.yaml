@@ -1,0 +1,17 @@
+id: SCORE-F01-F2
+family_id: F01
+produced_at_wave: F2
+# Projected post-F2-integration state. F2 publishes DRAFT.
+atom_count_total: 6
+atom_count_by_status: {DRAFT: 6}
+atom_count_by_evidence: {NORMATIVE: 6}
+edge_count_total: 2
+edge_count_by_kind: {REQUIRES: 1, DEPENDS_ON: 1}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers: []
+notes: >
+  Projected bucket flip YELLOW 0.83 -> GREEN 1.00. F01.06 upgraded
+  WEAK -> NORMATIVE via SRC-ADR-004 (L0_DECOMPOSITION_SPEC).

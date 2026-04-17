@@ -1,0 +1,188 @@
+# Wave F2 - Atom Patches (DRAFT)
+# No new atoms; nine patches upgrading WEAK_EVIDENCE -> NORMATIVE where
+# real existing repo sources truly support the claim. Three atoms remain
+# WEAK and two stay WEAK with supplemental support only (see rationale).
+
+atoms:
+
+  # -------------------------------------------------------------------------
+  # F07 Heal / Retry / Recovery - bounded retry closure
+  # -------------------------------------------------------------------------
+
+  - id: F07.01
+    family_id: F07
+    claim: "Failed L2 task executions MUST be routed through a bounded heal/retry/recovery path."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-002]
+    status: DRAFT
+    owning_layer: L2
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. HEALER_RETRY_HARDENING_SPEC
+      (SRC-ADR-002) explicitly defines HealerRetryManager.execute_with_retry()
+      with max_attempts=3 and strictness escalation [0.70, 0.85, 0.95]. The
+      bounded-heal-path invariant is directly stated in the spec.
+
+  - id: F07.02
+    family_id: F07
+    claim: "Retry MUST terminate within a declared attempt count or duration bound."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-002]
+    status: DRAFT
+    owning_layer: L2
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. HEALER_RETRY spec
+      (SRC-ADR-002) defines max_attempts=3 and timeout_escalation=[30, 20, 10]
+      seconds per attempt. _should_retry() returns False when
+      attempt >= max_attempts-1. "Max retries exhausted" is an explicit
+      invariant.
+
+  - id: F07.03
+    family_id: F07
+    claim: "Unrecoverable failures MUST surface to L3 for re-planning."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003, SRC-ADR-001]
+    status: DRAFT
+    owning_layer: L2
+    rationale: >
+      NOT upgraded to NORMATIVE. SRC-ADR-001 (healing_dispatch_routing_adr)
+      does describe ESCALATED tier routing to HITL or deterministic abort
+      but explicitly carries invalid_for_normative_use=True and so cannot
+      provide NORMATIVE support. The HEALER_RETRY spec (SRC-ADR-002) does
+      not name L3 as the re-planning target. Held as WEAK with SRC-ADR-001
+      as ADVISORY supplement. Blocker carried forward: need a normative
+      ADR that explicitly names L3 as the escalation target for
+      unrecoverable healing failures.
+
+  # -------------------------------------------------------------------------
+  # F08 Exit Spine - all four WEAK atoms upgraded via eval_pipeline_acceptance
+  # -------------------------------------------------------------------------
+
+  - id: F08.01
+    family_id: F08
+    claim: "Runtime termination MUST flow through a single evaluation spine."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: DRAFT
+    owning_layer: L5
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. eval_pipeline_acceptance
+      (SRC-ADR-003) names evidence_eval_bridge.evaluate_and_emit() as the
+      "Sole canonical choke point" and ExitControlGate.evaluate_sealed()
+      as the "only live gate call per request" (Invariant #2).
+
+  - id: F08.03
+    family_id: F08
+    claim: "The evaluation spine MUST record run outcome."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: DRAFT
+    owning_layer: L5
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. The spine records outcome
+      through evaluate_and_emit() -> AsyncEvalIngester + ShadowEvalIngester
+      (queue-backed, enqueue_count tracked). build_shadow_eval_packet()
+      emits the CURRENT_RUN -> FUTURE_RUN recorded outcome.
+
+  - id: F08.04
+    family_id: F08
+    claim: "The evaluation spine MUST signal the Universal Write Gate for durable outcome writes."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: DRAFT
+    owning_layer: L5
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. Invariant #4 of
+      eval_pipeline_acceptance explicitly states "Durable writes behind
+      governed handoff only - GovernedHandoffAgent.handoff() is the sole
+      durable-write seam; all others are read-only or in-memory", which
+      calls PromotionAuthority.update_pointer_via_gateway() (UWG).
+
+  - id: F08.05
+    family_id: F08
+    claim: "Ad-hoc runtime exit paths that bypass the evaluation spine MUST NOT exist."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: DRAFT
+    owning_layer: L5
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. Invariant #5 of
+      eval_pipeline_acceptance: "Deferred paths do not masquerade as
+      canonical - NON_CANONICAL_EVAL_LAB marker in all three fenced
+      modules." Rule: "Do not add canonical pipeline wiring to these
+      modules." The three fenced modules are enumerated explicitly
+      (eval_spine.py, execution_adapter.py, eval_spine_adapter.py).
+
+  # -------------------------------------------------------------------------
+  # F09 Write Gate - F09.05 exit-signal rejection closure
+  # -------------------------------------------------------------------------
+
+  - id: F09.05
+    family_id: F09
+    claim: "The Universal Write Gate MUST reject writes that lack an exit signal from the evaluation spine."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: DRAFT
+    owning_layer: L4
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. eval_pipeline_acceptance
+      documents that GovernedHandoffAgent.handoff(approved=True) returns
+      HandoffRecord(committed=False, error=...) when packet.approval_state
+      is not APPROVED, i.e., when the exit-spine has not signaled approval.
+      HandoffRecord.committed==True is the only evidence that a durable
+      write occurred. Prior edge INT-F09.05-F08.04-01 stays valid.
+
+  # -------------------------------------------------------------------------
+  # F01 Request Intake - F01.06 structured rejection closure
+  # -------------------------------------------------------------------------
+
+  - id: F01.06
+    family_id: F01
+    claim: "Rejection responses MUST include a structured reason code identifying the failing precondition."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-004]
+    status: DRAFT
+    owning_layer: L0
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. L0_DECOMPOSITION_SPEC
+      (SRC-ADR-004) defines IngressValidationResult with an explicit
+      rejection_reason field. L0a invariants state "Reject invalid
+      requests" and failure modes table enumerates structured reasons
+      (schema_invalid, auth_failed, budget_exhausted, etc.).
+
+  # -------------------------------------------------------------------------
+  # F03 L0 Route - F03.04 one-route-per-step closure
+  # -------------------------------------------------------------------------
+
+  - id: F03.04
+    family_id: F03
+    claim: "L0 MUST select exactly one route per plan step."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-004]
+    status: DRAFT
+    owning_layer: L0
+    rationale: >
+      Upgraded WEAK_EVIDENCE -> NORMATIVE per F2. L0_DECOMPOSITION_SPEC
+      (SRC-ADR-004) L0b Route Logic invariant: "Final path selection is
+      deterministic in L0b" and "ML routing NEVER directly selects final
+      path. Only L0b deterministic logic selects path." L0b returns a
+      single RoutingDecision.path value from the set {A, B, C, D}.
+
+  # -------------------------------------------------------------------------
+  # F04.04 - supplementary support only, stays WEAK_EVIDENCE
+  # -------------------------------------------------------------------------
+
+  - id: F04.04
+    family_id: F04
+    claim: "Context assembly MUST be idempotent for identical request inputs."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003, SRC-ADR-005]
+    status: DRAFT
+    owning_layer: L1
+    rationale: >
+      NOT upgraded to NORMATIVE. REPLAY_DETERMINISM_RULES (SRC-ADR-005)
+      mandates deterministic replay for mutations (mutation_hash over
+      actor_id, run_id, operation, path, data_hash) but does not
+      explicitly state that context assembly itself must be idempotent.
+      Adjacent but not direct. Held as WEAK with SRC-ADR-005 as
+      supplementary binding. Blocker carried forward: need a dedicated
+      ADR on context-assembly idempotence.

@@ -1,0 +1,6 @@
+# Wave F2 - Edges (empty)
+# F2 upgraded atoms via new source bindings; no new edges are needed.
+# Existing canonical v1.1 edges remain valid. Deferred interaction
+# candidates C1/C2/C3/C4/C6/C9 were re-evaluated and still cannot be
+# cleanly supported (see interaction_revisit_log.md).
+edges: []

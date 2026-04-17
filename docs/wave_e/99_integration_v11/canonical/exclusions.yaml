@@ -1,0 +1,39 @@
+# Canonical v1.1 - Exclusions (unchanged from v1).
+
+exclusions:
+
+  - id: OOS-001
+    title: "Dynamic L6 learning influencing current-run L0 route selection"
+    scope_statement: >
+      L6 observations MUST NOT feed back into the current run's L0 route
+      decisions. Future-run influence via a later run's L1 is permitted.
+    reason: OUT_OF_CHARTER
+    decided_at_wave: E1b
+    decided_by: "E1b_atoms lane"
+    related_atoms: [F12.02, F12.03, F12.06]
+    related_families: [F12, F03]
+
+  - id: OOS-002
+    title: "Dynamic L6 learning influencing current-run L2 heal/retry decisions"
+    scope_statement: >
+      L6 observations MUST NOT feed back into the current run's L2 heal,
+      retry, or recovery path.
+    reason: OUT_OF_CHARTER
+    decided_at_wave: E1c
+    decided_by: "E1c_authority_scope lane"
+    related_atoms: [F07.01, F07.02, F07.03, F12.02, F12.03]
+    related_families: [F07, F12]
+
+  - id: OOS-003
+    title: "Adding a C0 layer to the owning_layer enum"
+    scope_statement: >
+      F04 is re-homed to L1 per DEC-E1c-F04-LAYER. A C0 layer may be
+      revisited only via an explicit E0 schema revision with HITL approval.
+    reason: NOT_YET_DECIDED
+    decided_at_wave: E1c
+    decided_by: "E1c_authority_scope lane"
+    revisit_trigger: >
+      Future wave surfaces a concrete operational constraint that L1 cannot
+      satisfy for context grounding.
+    related_atoms: [F04.01, F04.02, F04.03, F04.04]
+    related_families: [F04]

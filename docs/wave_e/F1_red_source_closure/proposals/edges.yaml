@@ -1,0 +1,44 @@
+# Wave F1 — Interaction Edges (DRAFT proposals)
+# Schema: docs/wave_e/00_schema/requirement_graph_schema.yaml
+# Three new edges, all with stable endpoints in canonical v1 or F1 additions.
+
+edges:
+
+  - id: INT-F12.05-F12.07-01
+    source_atom_id: F12.05
+    target_atom_id: F12.07
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-004]
+    rationale: >
+      F12.07 refines F12.05 by naming the memory-lifecycle session-start
+      protocol as the concrete consumption mechanism.
+
+  - id: INT-F12.07-F02.01-01
+    source_atom_id: F12.07
+    target_atom_id: F02.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001]
+    rationale: >
+      The future-run consumption mechanism (F12.07) requires a later
+      run's L1 reasoning (F02.01) as the sole valid consumer, tying
+      F12.05's scope constraint to the L1 authorship atom.
+
+  - id: INT-F12.08-F08.03-01
+    source_atom_id: F12.08
+    target_atom_id: F08.03
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: DRAFT
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-004]
+    rationale: >
+      F12.08's outcome-recording depends on the exit spine actually
+      recording an outcome (F08.03). WEAK_EVIDENCE because F08.03 itself
+      is WEAK_EVIDENCE pending the exit-spine ADR; this edge inherits
+      that weakness until F08 closure lands.

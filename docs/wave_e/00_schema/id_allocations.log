@@ -78,5 +78,21 @@ OOS-002  oos  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=L6_
 OOS-003  oos  reserved_by=E1c_authority_scope  at=2026-04-17T00:58:00Z  note=C0_as_separate_owning_layer_not_yet_decided
 
 # -----------------------------------------------------------------------------
+# F1 red-family and weak-source closure reservations (appended by F1 lane)
+# -----------------------------------------------------------------------------
+F12  atoms 07-08  reserved_by=F1_red_source_closure  at=2026-04-17T01:50:00Z  note=memory_lifecycle_consumption_plus_L6_outcome_observation
+SRC-INT-004  src  reserved_by=F1_red_source_closure  at=2026-04-17T01:50:00Z  note=AGENTS_md_memory_lifecycle_section
+
+# -----------------------------------------------------------------------------
+# F2 source authoring for RED families (appended by F2 lane)
+# -----------------------------------------------------------------------------
+SRC-ADR-001  src  reserved_by=F2_source_authoring  at=2026-04-17T08:05:00Z  note=healing_dispatch_routing_adr_F25_int_ADVISORY_invalid_for_normative_use
+SRC-ADR-002  src  reserved_by=F2_source_authoring  at=2026-04-17T08:05:00Z  note=healer_retry_hardening_spec_ARCHITECTURAL
+SRC-ADR-003  src  reserved_by=F2_source_authoring  at=2026-04-17T08:05:00Z  note=eval_pipeline_acceptance_exit_control_gate_ARCHITECTURAL
+SRC-ADR-004  src  reserved_by=F2_source_authoring  at=2026-04-17T08:05:00Z  note=L0_decomposition_spec_ARCHITECTURAL
+SRC-ADR-005  src  reserved_by=F2_source_authoring  at=2026-04-17T08:05:00Z  note=replay_determinism_rules_ARCHITECTURAL
+SRC-ADR-006  src  reserved_by=F2_source_authoring  at=2026-04-17T08:05:00Z  note=authority_hierarchy_invariants_ARCHITECTURAL
+
+# -----------------------------------------------------------------------------
 # (Future appends go below this line — atom ranges, SRC, OOS, interactions.)
 # -----------------------------------------------------------------------------

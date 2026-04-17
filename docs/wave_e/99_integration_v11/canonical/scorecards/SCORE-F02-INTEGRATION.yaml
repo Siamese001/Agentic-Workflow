@@ -1,0 +1,14 @@
+id: SCORE-F02-INTEGRATION
+family_id: F02
+produced_at_wave: INTEGRATION
+atom_count_total: 5
+atom_count_by_status: {ACTIVE: 5}
+atom_count_by_evidence: {NORMATIVE: 5}
+edge_count_total: 7
+edge_count_by_kind: {REQUIRES: 2, REFINES: 2, DEPENDS_ON: 2, CONDITIONAL_ON: 1}
+unresolved_count: 0
+weak_evidence_count: 0
+excluded_count: 0
+coverage_score: 1.0
+blockers: []
+notes: "GREEN. Edge count 6 -> 7 via F1 INT-F12.07-F02.01-01 REQUIRES (new inbound)."

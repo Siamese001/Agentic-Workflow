@@ -1,0 +1,240 @@
+# Canonical v1.1 - Edges (26: 23 carried from v1 + 3 from F1).
+
+edges:
+
+  - id: INT-F01.03-F11.01-01
+    source_atom_id: F01.03
+    target_atom_id: F11.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F02.01-F01.05-01
+    source_atom_id: F02.01
+    target_atom_id: F01.05
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-002]
+
+  - id: INT-F05.02-F02.02-01
+    source_atom_id: F05.02
+    target_atom_id: F02.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F06.03-F02.02-01
+    source_atom_id: F06.03
+    target_atom_id: F02.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F05.03-F03.02-01
+    source_atom_id: F05.03
+    target_atom_id: F03.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F06.04-F03.02-01
+    source_atom_id: F06.04
+    target_atom_id: F03.02
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F05.01-F02.03-01
+    source_atom_id: F05.01
+    target_atom_id: F02.03
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-002, SRC-INT-003]
+
+  - id: INT-F05.04-F06.01-01
+    source_atom_id: F05.04
+    target_atom_id: F06.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+
+  - id: INT-F06.02-F03.01-01
+    source_atom_id: F06.02
+    target_atom_id: F03.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F06.05-F09.01-01
+    source_atom_id: F06.05
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F07.04-F09.01-01
+    source_atom_id: F07.04
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F10.03-F09.01-01
+    source_atom_id: F10.03
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F07.03-F02.01-01
+    source_atom_id: F07.03
+    target_atom_id: F02.01
+    edge_kind: CONDITIONAL_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    condition: "Unrecoverable L2 task failure detected."
+
+  - id: INT-F07.03-F05.01-01
+    source_atom_id: F07.03
+    target_atom_id: F05.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+
+  - id: INT-F08.02-F11.05-01
+    source_atom_id: F08.02
+    target_atom_id: F11.05
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001]
+
+  - id: INT-F08.04-F09.01-01
+    source_atom_id: F08.04
+    target_atom_id: F09.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+
+  - id: INT-F09.04-F11.04-01
+    source_atom_id: F09.04
+    target_atom_id: F11.04
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F09.05-F08.04-01
+    source_atom_id: F09.05
+    target_atom_id: F08.04
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+
+  - id: INT-F11.07-F09.01-01
+    source_atom_id: F11.07
+    target_atom_id: F09.01
+    edge_kind: IMPLIES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F12.02-F03.01-01
+    source_atom_id: F12.02
+    target_atom_id: F03.01
+    edge_kind: FORBIDS
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F12.02-F11.01-01
+    source_atom_id: F12.02
+    target_atom_id: F11.01
+    edge_kind: FORBIDS
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F12.03-F09.01-01
+    source_atom_id: F12.03
+    target_atom_id: F09.01
+    edge_kind: FORBIDS
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+
+  - id: INT-F12.05-F02.01-01
+    source_atom_id: F12.05
+    target_atom_id: F02.01
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-002]
+
+  # === F1 additions ========================================================
+
+  - id: INT-F12.05-F12.07-01
+    source_atom_id: F12.05
+    target_atom_id: F12.07
+    edge_kind: REFINES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-004]
+
+  - id: INT-F12.07-F02.01-01
+    source_atom_id: F12.07
+    target_atom_id: F02.01
+    edge_kind: REQUIRES
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001]
+
+  - id: INT-F12.08-F08.03-01
+    source_atom_id: F12.08
+    target_atom_id: F08.03
+    edge_kind: DEPENDS_ON
+    direction: DIRECTED
+    status: ACTIVE
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-004]
