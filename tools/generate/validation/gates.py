@@ -56,13 +56,23 @@ def _fail_closed_gate(gate_name: str, exc: Exception) -> None:
     sys.exit(1)
 
 
-def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | None = None) -> None:
-    """Fail if P0 layer violations, circular imports, or dynamic_exec are present (unconditional fail-fast).
+def _check_p0_violations(
+    routing_summary: dict[str, int],
+    sqlite_path: Path | None = None,
+    plan_path: Path | None = None,
+) -> None:
+    """Fail if P0 layer violations, circular imports, or dynamic_exec are present.
 
     Args:
         routing_summary: Dictionary with by_severity counts
         sqlite_path: Path to SQLite database for in_cycle/dynamic_exec queries
+        plan_path: Optional emitted remediation-wave artifact to surface on failure
     """
+
+    def _print_plan_hint() -> None:
+        if plan_path is not None:
+            print(f"[ERROR] See remediation wave plan: {plan_path}")
+
     if sqlite_path is not None and sqlite_path.exists():
         try:
             with sqlite3.connect(str(sqlite_path)) as conn:
@@ -71,28 +81,28 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                 violation_rows = cursor.fetchall()
 
             unapproved = []
-            for source_file, line_no in violation_rows:  # progress_bar: bounded by violation_rows
+            for source_file, line_no in violation_rows:
                 try:
-                    # Skip archived files in tools/archive/ directory
-                    if "tools/archive/" in source_file:
-                        print(f"[INFO] Skipping archived file: {source_file}")
+                    normalized_source_file = source_file or ""
+                    if "tools/archive/" in normalized_source_file:
+                        print(f"[INFO] Skipping archived file: {normalized_source_file}")
                         continue
 
-                    src_path = ROOT / source_file
+                    src_path = ROOT / normalized_source_file
                     if src_path.exists() and line_no and line_no > 0:
                         lines = src_path.read_text(encoding="utf-8", errors="ignore").splitlines()
                         check_lines = lines[max(0, line_no - 2) : line_no]
                         exempted = any("guardian: allow-layer-violation" in ln for ln in check_lines)
                         if not exempted:
-                            unapproved.append((source_file, line_no))
+                            unapproved.append((normalized_source_file, line_no))
                     else:
                         print(
-                            f"[DEBUG] Guardian check: file not found or invalid line_no: {source_file}:{line_no}"
+                            f"[DEBUG] Guardian check: file not found or invalid line_no: {normalized_source_file}:{line_no}"
                         )
-                        unapproved.append((source_file, line_no))
+                        unapproved.append((normalized_source_file, line_no))
                 except (OSError, UnicodeDecodeError, ValueError) as e:
                     print(f"[DEBUG] Guardian check exception for {source_file}:{line_no}: {e}")
-                    unapproved.append((source_file, line_no))
+                    unapproved.append((source_file or "", line_no))
 
             p0_count = len(unapproved)
             if p0_count > 0:
@@ -101,6 +111,7 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                     print(f"[ERROR]   {sf}:{ln}")
                 print("[ERROR] ADG generation failed - P0 layer violations present")
                 print("[ERROR] Fix layer violations before regenerating ADG")
+                _print_plan_hint()
                 sys.exit(1)
         except SystemExit:
             raise
@@ -112,6 +123,7 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
             print(f"\n[ERROR] P0 layer violations detected: {p0_count}")
             print("[ERROR] ADG generation failed - P0 layer violations present")
             print("[ERROR] Fix layer violations before regenerating ADG")
+            _print_plan_hint()
             sys.exit(1)
 
     if sqlite_path is not None and sqlite_path.exists():
@@ -124,6 +136,7 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                     print(f"\n[ERROR] P0 Tier 1A: Circular imports detected: {in_cycle_count}")
                     print("[ERROR] ADG generation failed - graph topology corrupted by cycles")
                     print("[ERROR] Fix circular imports before regenerating ADG")
+                    _print_plan_hint()
                     sys.exit(1)
         except sqlite3.Error as exc:
             _fail_closed_gate("P0 Tier 1A circular import query", exc)
@@ -138,6 +151,7 @@ def _check_p0_violations(routing_summary: dict[str, int], sqlite_path: Path | No
                     print(f"\n[ERROR] P0 Tier 1B: Dynamic execution detected: {dynamic_exec_count}")
                     print("[ERROR] ADG generation failed - graph is provably incomplete")
                     print("[ERROR] Replace eval/exec/dynamic imports with static alternatives")
+                    _print_plan_hint()
                     sys.exit(1)
         except sqlite3.Error as exc:
             _fail_closed_gate("P0 Tier 1B dynamic execution query", exc)

@@ -17,10 +17,26 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.adg.report_parsers import CompositeReportParser
-
 from tools.adg.repair import ADGRepairOrchestrator, RuleEngine
 from tools.adg.repair.git_integration import GitIntegration
+
+
+def _timestamp_sort_key(value: str) -> tuple[int, ...]:
+    """Sort MMDDYYYY[_HHMM] timestamps chronologically instead of lexically."""
+    raw = value.strip()
+    if not raw:
+        return (0,)
+
+    date_part, _, time_part = raw.partition("_")
+    if len(date_part) != 8 or not date_part.isdigit():
+        return (0, raw)
+
+    month = int(date_part[0:2])
+    day = int(date_part[2:4])
+    year = int(date_part[4:8])
+    hour = int(time_part[0:2]) if len(time_part) >= 2 and time_part[:2].isdigit() else 0
+    minute = int(time_part[2:4]) if len(time_part) >= 4 and time_part[2:4].isdigit() else 0
+    return (year, month, day, hour, minute)
 
 
 def find_latest_timestamp(adg_dir: Path) -> str | None:
@@ -48,7 +64,7 @@ def find_latest_timestamp(adg_dir: Path) -> str | None:
         return None
 
     # Sort and return latest
-    timestamps.sort()
+    timestamps.sort(key=_timestamp_sort_key)
     return timestamps[-1]
 
 
@@ -57,7 +73,10 @@ def find_latest_sqlite(adg_dir: Path) -> Path | None:
     if not adg_dir.exists():
         return None
 
-    files = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
+    files = sorted(
+        adg_dir.glob("adg_indexed_*.sqlite"),
+        key=lambda p: _timestamp_sort_key(p.stem.replace("adg_indexed_", "")),
+    )
     return files[-1] if files else None
 
 
@@ -86,7 +105,6 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     """Analyze ADG reports and show deficiencies."""
     adg_dir = Path(args.adg_dir) if args.adg_dir else ROOT / "artifacts" / "adg"
 
-    # Determine timestamp
     if args.latest:
         timestamp = find_latest_timestamp(adg_dir)
         if not timestamp:
@@ -100,22 +118,37 @@ def cmd_analyze(args: argparse.Namespace) -> int:
         print("Error: No timestamp specified (use --timestamp or --latest)")
         return 1
 
-    # Load and analyze reports
+    sqlite_path = find_latest_sqlite(adg_dir)
+    if sqlite_path:
+        print(f"Using SQLite: {sqlite_path.name}")
+
     print(f"\nLoading ADG reports from {adg_dir}...")
-    parser = CompositeReportParser(adg_dir, timestamp)
+    orchestrator = ADGRepairOrchestrator(
+        adg_dir=adg_dir,
+        timestamp=timestamp,
+        repo_root=ROOT,
+        sqlite_path=sqlite_path,
+    )
+    reports = orchestrator.load_reports()
+    deficiencies = orchestrator.detect_deficiencies(reports=reports)
 
-    summary = parser.get_summary()
-    print(f"\nReports available: {summary['available_reports']}/{summary['total_reports']}")
-
-    # Extract deficiencies
-    deficiencies = parser.extract_all_deficiencies()
+    print(f"\nReports available: {len(reports)}/7")
 
     if not deficiencies:
         print("\n✓ No deficiencies found! ADG is in good shape.")
         return 0
 
-    # Count by category
-    counts = parser.get_deficiency_counts_by_category()
+    counts = {
+        "auto_fix": sum(
+            1 for d in deficiencies if getattr(d.category, "value", str(d.category)) == "auto_fix"
+        ),
+        "suggest_fix": sum(
+            1 for d in deficiencies if getattr(d.category, "value", str(d.category)) == "suggest_fix"
+        ),
+        "block_fix": sum(
+            1 for d in deficiencies if getattr(d.category, "value", str(d.category)) == "block_fix"
+        ),
+    }
 
     print(f"\nDeficiencies Found: {len(deficiencies)}")
     print(f"  AUTO_FIX (can auto-fix):     {counts['auto_fix']}")
@@ -125,13 +158,13 @@ def cmd_analyze(args: argparse.Namespace) -> int:
     if args.verbose:
         print("\nDetailed Deficiencies:")
         print("=" * 60)
-        for d in deficiencies[:20]:  # Show first 20
-            category_str = d["category"].value if hasattr(d["category"], "value") else str(d["category"])
-            print(f"\n  [{category_str.upper()}] {d['issue_type']}")
-            print(f"  File: {d['file_path']}")
-            print(f"  Description: {d['description']}")
-            if d.get("suggested_fix"):
-                print(f"  Suggested Fix: {d['suggested_fix']}")
+        for d in deficiencies[:20]:
+            category = d.category.value if hasattr(d.category, "value") else str(d.category)
+            print(f"\n  [{category.upper()}] {d.issue_type}")
+            print(f"  File: {d.file_path}")
+            print(f"  Description: {d.description}")
+            if d.suggested_fix:
+                print(f"  Suggested Fix: {d.suggested_fix}")
 
         if len(deficiencies) > 20:
             print(f"\n  ... and {len(deficiencies) - 20} more")

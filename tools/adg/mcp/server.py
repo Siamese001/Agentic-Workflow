@@ -22,6 +22,13 @@ mcp = FastMCP(
     ),
 )
 LOG.info("FastMCP instance created")
+_log = LOG
+
+
+def _init_service() -> None:
+    """Eagerly initialize the singleton runtime service for legacy launchers."""
+    runtime = handlers.runtime
+    _ = runtime.service
 
 
 @mcp.tool()
@@ -99,6 +106,12 @@ def adg_violations(limit: int = 100) -> dict[str, Any]:
     This is a SQLite-only query.
     """
     return handlers.adg_violations(limit)
+
+
+@mcp.tool()
+def adg_p0_wave_plan(limit: int = 100) -> dict[str, Any]:
+    """Build a wave-based remediation plan for current P0 defects."""
+    return handlers.adg_p0_wave_plan(limit)
 
 
 @mcp.tool()

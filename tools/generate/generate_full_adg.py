@@ -96,6 +96,7 @@ from tools.generate.integration import (  # noqa: E402  # M.5 modularization
     _check_mcp_config_drift,
     _persist_adg_to_memory,
     _run_p1_p2_auto_fix,
+    _emit_p0_remediation_wave_plan,
 )
 from tools.generate.reporting import (  # noqa: E402  # M.4 modularization
     _generate_standardized_reports,
@@ -284,8 +285,13 @@ def generate_full_adg(
     # Orchestrator runs inline here. No SQLite contention with temp directory.
     production_sqlite = sorted(adg_artifacts_dir.glob("adg_indexed_*.sqlite"))
     prod_sqlite_path = production_sqlite[-1] if production_sqlite else None
+    p0_wave_plan = _emit_p0_remediation_wave_plan(adg_artifacts_dir, ts, prod_sqlite_path)
 
-    _check_p0_violations(routing_summary, sqlite_path=prod_sqlite_path)
+    _check_p0_violations(
+        routing_summary,
+        sqlite_path=prod_sqlite_path,
+        plan_path=p0_wave_plan.get("markdown_path"),
+    )
     _check_p1_ratchet(sqlite_path=prod_sqlite_path)
     _check_dead_production_imports(sqlite_path=prod_sqlite_path)
 
@@ -330,8 +336,7 @@ def generate_full_adg(
         with ADGGraphWatchlistBuilder(paths.sqlite) as builder:
             graph_watchlist_items = builder.build_graph_watchlist()
             graph_watchlist_path = builder.emit_artifact(graph_watchlist_items, adg_artifacts_dir)
-            if print_summary:
-                print(builder.emit_terminal_summary(graph_watchlist_items, top_n=10))
+            print(builder.emit_terminal_summary(graph_watchlist_items, top_n=10))
         print(f"[ADG] P5 graph watchlist artifact: {graph_watchlist_path.name}")
     except Exception as e:  # guardian: allow-silent-swallow -- graph watchlist is non-critical intelligence
         print(f"[ADG] P5 graph watchlist skipped: {e}")
@@ -578,6 +583,11 @@ def generate_full_adg(
     if extra_files:
         artifact_files.extend(extra_files)
         print(f"[ADG] Adding {len(extra_files)} extra artifacts to zip archive (burndown/watchlists)")
+
+    for _plan_key in ("json_path", "markdown_path"):
+        _plan_path = p0_wave_plan.get(_plan_key)
+        if _plan_path and Path(_plan_path).exists():
+            artifact_files.append(Path(_plan_path))
 
     # --- Create zip archive (always enabled) ---
     zip_created = False

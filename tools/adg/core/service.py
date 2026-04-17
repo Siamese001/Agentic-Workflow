@@ -341,6 +341,15 @@ class ADGService:
             backend_used="projection",
         )
 
+    def get_p0_remediation_wave_plan(self, limit: int = 100) -> ADGResponse:
+        """Return a wave-based P0 remediation plan from the canonical SQLite snapshot."""
+        plan = self._sqlite.get_p0_remediation_wave_plan(limit=limit)
+        return ADGResponse(
+            status="ok",
+            data=plan,
+            backend_used="sqlite",
+        )
+
     def get_diff(
         self,
         metric: str | None = None,

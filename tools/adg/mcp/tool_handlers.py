@@ -156,6 +156,21 @@ def adg_violations(limit: int = 100) -> JsonDict:
     return _run_tool("Violations query", operation)
 
 
+def adg_p0_wave_plan(limit: int = 100) -> JsonDict:
+    """Build a wave-based remediation plan for current P0 defects."""
+
+    def operation() -> JsonDict:
+        cleaned_limit = require_positive_limit(limit)
+        response = runtime.service.get_p0_remediation_wave_plan(cleaned_limit)
+        return {
+            "status": response.status,
+            "data": response.data,
+            "backend_used": response.backend_used,
+        }
+
+    return _run_tool("P0 wave plan query", operation)
+
+
 def adg_close_connections() -> JsonDict:
     """Close ADG backend connections to release SQLite file locks."""
     return _run_tool("Close connections", runtime.close_connections)

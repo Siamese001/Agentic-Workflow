@@ -18,6 +18,7 @@ from tqdm import tqdm
 
 from tools.adg.core.graph_projection_backend import GraphProjectionBackend
 from tools.adg.core.models import ADGEdge, ADGNode
+from tools.adg.core.p0_wave_plan import build_p0_remediation_wave_plan
 from tools.adg.shared_modules.path_resolver import get_adg_dir
 
 logger = logging.getLogger(__name__)
@@ -378,6 +379,13 @@ class SQLiteBackend:
         if self._graph_store:
             return self._graph_store.get_violations_with_impact(layer=layer, severity=severity, limit=limit)
         return []
+
+    def get_p0_remediation_wave_plan(self, limit: int = 100) -> dict[str, Any]:
+        """Return a wave-based P0 remediation plan from the canonical SQLite snapshot."""
+        if self._sqlite_path is None:
+            raise RuntimeError("No ADG SQLite snapshot available for P0 remediation planning")
+        safe_limit = self._normalize_limit(limit, default=100)
+        return build_p0_remediation_wave_plan(self._sqlite_path, limit=safe_limit)
 
     def get_diff(
         self,
