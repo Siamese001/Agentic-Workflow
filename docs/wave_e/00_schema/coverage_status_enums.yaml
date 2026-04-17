@@ -1,0 +1,128 @@
+# Wave E0 — Status and Evidence Enums (FROZEN)
+# Version: 1.0.0
+# Status: FROZEN — downstream lanes MUST use these enums verbatim.
+# ---------------------------------------------------------------------------
+
+schema_version: "1.0.0"
+frozen: true
+
+# ===========================================================================
+# EvidenceClass — applies to RequirementAtom and InteractionEdge
+# ---------------------------------------------------------------------------
+# Answers: "What kind of claim is this, and how strong is the support?"
+# ===========================================================================
+EvidenceClass:
+  values:
+    - id: NORMATIVE
+      meaning: >
+        Binding requirement. Supported by >=1 authority source of rank
+        <= ARCHITECTURAL. Violations are defects.
+      requires_authority_binding: true
+
+    - id: ADVISORY
+      meaning: >
+        Recommended but not binding. May cite ADVISORY-rank sources.
+        Violations are not defects but SHOULD be justified.
+      requires_authority_binding: true
+
+    - id: INTERNAL_ONLY
+      meaning: >
+        Applies inside a single module / private contract. Not visible to
+        cross-layer consumers. Not counted in cross-cutting coverage.
+      requires_authority_binding: false
+
+    - id: EXCLUDED
+      meaning: >
+        Deliberately out of scope. MUST reference an Exclusion (OOS-*).
+        Kept in the graph so that future reviewers can see the decision.
+      requires_authority_binding: false
+
+    - id: UNRESOLVED
+      meaning: >
+        Claim identified but not yet decided. MUST appear in a scorecard's
+        blockers list. Cannot be the target of a REQUIRES edge from an
+        ACTIVE normative atom without being itself blocked.
+      requires_authority_binding: false
+
+    - id: WEAK_EVIDENCE
+      meaning: >
+        Claim has support but the support is thin, stale, or contested.
+        Counted against coverage_score. MUST be reviewed before integration.
+      requires_authority_binding: true
+
+  forbidden_synonyms:
+    - "binding"         # use NORMATIVE
+    - "recommended"     # use ADVISORY
+    - "tbd"             # use UNRESOLVED
+    - "oos"             # use EXCLUDED + an Exclusion record
+    - "maybe"           # not a class; split into atoms or mark UNRESOLVED
+
+# ===========================================================================
+# FamilyStatus
+# ===========================================================================
+FamilyStatus:
+  values:
+    - id: DRAFT
+      meaning: "Proposed in a sub-wave; not yet merged by integration pass."
+    - id: ACTIVE
+      meaning: "Merged and in force."
+    - id: DEPRECATED
+      meaning: "Retained for history; no new atoms may be added."
+    - id: SUPERSEDED
+      meaning: "Replaced by another family. MUST reference the successor."
+    - id: BLOCKED
+      meaning: "Cannot proceed due to unresolved dependency or HITL gate."
+
+# ===========================================================================
+# AtomStatus
+# ===========================================================================
+AtomStatus:
+  values:
+    - id: DRAFT
+      meaning: "Proposed in a sub-wave; not yet merged."
+    - id: ACTIVE
+      meaning: "Merged and in force."
+    - id: DEPRECATED
+      meaning: "No longer in force; kept for history."
+    - id: SUPERSEDED
+      meaning: "Replaced by another atom; superseded_by MUST be set."
+    - id: UNRESOLVED
+      meaning: "Under decision; counted as blocker in scorecards."
+    - id: EXCLUDED
+      meaning: "Out of scope; references an Exclusion record."
+
+# ===========================================================================
+# EdgeStatus
+# ===========================================================================
+EdgeStatus:
+  values:
+    - id: DRAFT
+      meaning: "Proposed in a sub-wave."
+    - id: ACTIVE
+      meaning: "Merged and in force."
+    - id: DEPRECATED
+      meaning: "No longer in force."
+    - id: UNRESOLVED
+      meaning: "Edge existence or direction not yet confirmed."
+
+# ===========================================================================
+# Cross-enum validation
+# ===========================================================================
+validation_rules:
+  - "A Family with status ACTIVE MUST have >=1 atom with status ACTIVE."
+  - "A Family with status SUPERSEDED MUST have no atoms with status ACTIVE."
+  - "An atom with evidence_class EXCLUDED MUST have status EXCLUDED."
+  - "An atom with evidence_class UNRESOLVED MUST have status UNRESOLVED."
+  - "An edge MUST NOT have status ACTIVE if either endpoint atom has status
+     UNRESOLVED, DRAFT, or EXCLUDED — except for edges of kind SUPERSEDES
+     and REFINES which MAY connect to DRAFT atoms during a sub-wave."
+  - "coverage_score in CoverageScorecard is computed only over atoms with
+     status ACTIVE or DRAFT; DEPRECATED, SUPERSEDED, EXCLUDED are omitted."
+
+# ===========================================================================
+# Scorecard severity thresholds (advisory defaults for integration pass)
+# ===========================================================================
+scorecard_thresholds:
+  green:   ">= 0.90 and unresolved_count == 0 and weak_evidence_count == 0"
+  yellow:  ">= 0.75"
+  red:     "< 0.75 or unresolved_count > 0"

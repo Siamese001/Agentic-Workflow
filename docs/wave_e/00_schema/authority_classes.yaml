@@ -1,0 +1,127 @@
+# Wave E0 — Source Authority Taxonomy (FROZEN)
+# Version: 1.0.0
+# Status: FROZEN — downstream lanes MUST use these classes verbatim.
+#
+# authority_class is a property of both Family and SourceAuthorityRecord.
+# It answers: "How binding is this source, and who can overturn it?"
+# ---------------------------------------------------------------------------
+
+schema_version: "1.0.0"
+frozen: true
+
+authority_classes:
+
+  - id: CONSTITUTIONAL
+    rank: 1
+    binds_whom: "All layers, all waves, all agents."
+    overridable_by: "Explicit HITL constitutional amendment only."
+    typical_sources:
+      - ".windsurf/rules/constitutional.md"
+      - "AGENTS.md always-on sections"
+    notes: >
+      Highest authority. Violations are CI-blocking. A Family bound to
+      CONSTITUTIONAL cannot be downgraded by a sub-wave.
+
+  - id: GOVERNANCE
+    rank: 2
+    binds_whom: "All production code and plans."
+    overridable_by: "ADR superseding the prior ADR, with HITL approval."
+    typical_sources:
+      - ".windsurf/rules/*.md (non-constitutional)"
+      - "ADR Registry entries"
+      - "HITL decision ledger entries"
+    notes: >
+      Strong authority. Can be revised through documented governance flow
+      (new ADR, amended rule) but never silently.
+
+  - id: EXTERNAL_STANDARD
+    rank: 3
+    binds_whom: "Code paths that interoperate with the external contract."
+    overridable_by: "Adoption of a superseding external standard, or an
+                     explicit ADR carving out a local deviation."
+    typical_sources:
+      - "IETF RFCs"
+      - "ISO / IEC standards"
+      - "Vendor API contracts"
+    notes: >
+      Version-sensitive. SourceAuthorityRecord.version_or_rev SHOULD be
+      populated for entries in this class.
+
+  - id: ARCHITECTURAL
+    rank: 4
+    binds_whom: "Layer owners and anyone implementing against the layer."
+    overridable_by: "New ADR promoted to GOVERNANCE or CONSTITUTIONAL."
+    typical_sources:
+      - "Layer charters"
+      - "Design docs adopted by the team"
+      - "Canonical diagrams under docs/architecture/"
+    notes: >
+      Describes structural invariants (layer boundaries, write-gate
+      monopoly, etc.). Sub-waves propose refinements; the integration pass
+      merges.
+
+  - id: OPERATIONAL
+    rank: 5
+    binds_whom: "Runtime behavior of a specific subsystem."
+    overridable_by: "A subsystem-scoped decision record, or promotion to
+                     ARCHITECTURAL."
+    typical_sources:
+      - "Runbooks"
+      - "CI configuration"
+      - "MCP server contracts"
+    notes: >
+      Governs how a running system behaves but does not by itself redefine
+      architecture.
+
+  - id: ADVISORY
+    rank: 6
+    binds_whom: "Nobody normatively. Guidance only."
+    overridable_by: "Any ACTIVE atom of equal or higher authority."
+    typical_sources:
+      - "Style guides"
+      - "Design notes marked draft"
+      - "Retrospective recommendations"
+    notes: >
+      Use sparingly. ADVISORY authority MUST NOT be used to justify an
+      atom whose evidence_class is NORMATIVE.
+
+  - id: INTERNAL_ONLY
+    rank: 7
+    binds_whom: "Internal implementation details not exposed outside a module."
+    overridable_by: "Module owner, without cross-layer review."
+    typical_sources:
+      - "Private helper contracts"
+      - "Intra-module invariants"
+    notes: >
+      Visible to the graph for completeness, but never cited as authority
+      for cross-cutting claims.
+
+# ---------------------------------------------------------------------------
+# Rank semantics:
+#   - Lower rank number = higher authority.
+#   - An atom's authority_binding SHOULD include at least one source whose
+#     authority_class rank is <= the atom's own evidence_class requirement:
+#       NORMATIVE       -> rank <= 4 (CONSTITUTIONAL .. ARCHITECTURAL)
+#       ADVISORY        -> rank <= 6
+#       INTERNAL_ONLY   -> rank <= 7 (any)
+#       WEAK_EVIDENCE   -> any, but flagged in coverage scorecard
+#       EXCLUDED        -> authority bindings not required
+#       UNRESOLVED      -> authority bindings not required, blocker recorded
+# ---------------------------------------------------------------------------
+
+rank_to_evidence_floor:
+  NORMATIVE:      4   # must cite >= ARCHITECTURAL
+  ADVISORY:       6
+  INTERNAL_ONLY:  7
+  WEAK_EVIDENCE:  7
+  EXCLUDED:       null
+  UNRESOLVED:     null
+
+validation_rules:
+  - "authority_class MUST be exactly one of the ids above."
+  - "A Family's authority_class MUST be the MINIMUM rank number across its
+     atoms' authority bindings (i.e. the strongest authority governing it)."
+  - "An atom whose evidence_class is NORMATIVE MUST cite at least one
+     SourceAuthorityRecord with rank <= 4."
+  - "An atom citing only ADVISORY sources MUST have evidence_class
+     ADVISORY or WEAK_EVIDENCE."

@@ -1,0 +1,319 @@
+# Wave E0 — Requirement Graph Schema (FROZEN)
+# Version: 1.0.0
+# Status: FROZEN — downstream Wave E lanes MUST NOT invent new fields, enums,
+#         or ID formats. Any change requires a new E0 revision and HITL review.
+#
+# Purpose:
+#   Canonical data model for families, requirement atoms, interaction edges,
+#   source authority bindings, exclusions, and coverage scorecards.
+#
+# Governing semantics (non-negotiable):
+#   - L1 decomposes and plans
+#   - L0 is route authority
+#   - L5 is cross-cutting policy authority
+#   - L4 is authoritative durable state
+#   - Universal Write Gate is the sole durable write path
+#   - L6 supports future-run learning only, never current-run mutation
+#
+# Representation note:
+#   This file is a descriptive schema (not executable JSON Schema). A JSON
+#   Schema or Pydantic model MAY be generated from this in a later wave, but
+#   this YAML is the canonical source.
+# ---------------------------------------------------------------------------
+
+schema_version: "1.0.0"
+frozen: true
+frozen_at_wave: "E0"
+
+# ===========================================================================
+# ENTITY: Family
+# ---------------------------------------------------------------------------
+# A Family groups requirement atoms that share a single coherent concern
+# (e.g. "Route Authority", "Durable Write Gate"). Exactly one layer owner.
+# ===========================================================================
+Family:
+  id_pattern: "^F[0-9]{2}$"
+  id_example: "F12"
+  required_fields:
+    - id                    # string, matches id_pattern
+    - title                 # short human-readable noun phrase
+    - intent                # one paragraph, normative, no hedging
+    - owning_layer          # enum: L0 | L1 | L2 | L3 | L4 | L5 | L6
+    - authority_class       # see authority_classes.yaml
+    - status                # see coverage_status_enums.yaml (FamilyStatus)
+    - created_at_wave       # e.g. "E0", "E1a"
+  optional_fields:
+    - summary               # longer prose description
+    - related_adrs          # list of ADR IDs
+    - related_rules         # list of rule filenames in .windsurf/rules/
+    - notes                 # free-form, never normative
+  forbidden_fields:
+    - status_ad_hoc         # no ad-hoc enums
+  validation_rules:
+    - "owning_layer MUST be exactly one value"
+    - "intent MUST be declarative; no 'may', 'might', 'could' in normative text"
+    - "A Family with status=ACTIVE MUST have >=1 requirement_atom"
+    - "A Family MUST NOT span two authority_class values"
+
+# ===========================================================================
+# ENTITY: RequirementAtom
+# ---------------------------------------------------------------------------
+# Smallest normative unit. Exactly ONE normative claim. If you need to say
+# two things, produce two atoms.
+# ===========================================================================
+RequirementAtom:
+  id_pattern: "^F[0-9]{2}\\.[0-9]{2}$"
+  id_example: "F12.03"
+  required_fields:
+    - id
+    - family_id             # MUST match Family.id prefix
+    - claim                 # single normative sentence
+    - evidence_class        # see coverage_status_enums.yaml (EvidenceClass)
+    - authority_binding     # list of SRC-* ids; >=1 unless evidence_class
+                            # is INTERNAL_ONLY or UNRESOLVED
+    - status                # see coverage_status_enums.yaml (AtomStatus)
+    - owning_layer          # inherited default = Family.owning_layer,
+                            # override allowed for cross-cutting atoms
+  optional_fields:
+    - rationale             # why this claim exists
+    - counter_examples      # concrete anti-patterns this forbids
+    - test_hooks            # CI gate scripts, test names, or test paths
+    - adr_refs              # list of ADR IDs
+    - superseded_by         # atom id that replaces this one
+    - supersedes            # atom id this one replaces
+  forbidden_fields:
+    - multi_claim           # never merge claims into one atom
+  validation_rules:
+    - "claim MUST contain exactly one normative verb (MUST / MUST NOT / SHALL / SHALL NOT / REQUIRED / FORBIDDEN)"
+    - "family_id MUST equal the Family prefix of id"
+    - "If evidence_class in {NORMATIVE, WEAK_EVIDENCE}, authority_binding length >=1"
+    - "If evidence_class == EXCLUDED, the atom MUST reference an Exclusion id in rationale"
+    - "If status == SUPERSEDED, superseded_by MUST be set"
+    - "An atom MUST NOT both supersede and be superseded in the same revision"
+
+# ===========================================================================
+# ENTITY: InteractionEdge
+# ---------------------------------------------------------------------------
+# First-class edge capturing a required, forbidden, or conditional
+# interaction between two requirement atoms (possibly across families).
+# ===========================================================================
+InteractionEdge:
+  id_pattern: "^INT-F[0-9]{2}\\.[0-9]{2}-F[0-9]{2}\\.[0-9]{2}-[0-9]{2}$"
+  id_example: "INT-F12.03-F16.02-01"
+  required_fields:
+    - id
+    - source_atom_id        # F##.##
+    - target_atom_id        # F##.##
+    - edge_kind             # enum: REQUIRES | FORBIDS | IMPLIES | CONFLICTS_WITH
+                            #       | REFINES | SUPERSEDES | DEPENDS_ON
+                            #       | CONDITIONAL_ON | CO_REQUIRES
+    - direction             # enum: DIRECTED | BIDIRECTIONAL
+    - status                # see coverage_status_enums.yaml (EdgeStatus)
+    - evidence_class        # see coverage_status_enums.yaml (EvidenceClass)
+  optional_fields:
+    - condition             # predicate text when edge_kind=CONDITIONAL_ON
+    - authority_binding     # SRC-* ids justifying the interaction
+    - rationale
+    - notes
+  forbidden_fields:
+    - edge_as_comment       # edges MUST be entities, never prose
+  validation_rules:
+    - "source_atom_id != target_atom_id"
+    - "(source_atom_id, target_atom_id, edge_kind) MUST be unique per revision"
+    - "If edge_kind == CONFLICTS_WITH, at least one endpoint status MUST be UNRESOLVED or DEPRECATED"
+    - "If edge_kind == CONDITIONAL_ON, condition MUST be set"
+    - "BIDIRECTIONAL only valid with edge_kind in {CONFLICTS_WITH, CO_REQUIRES}"
+
+# ===========================================================================
+# ENTITY: SourceAuthorityRecord
+# ---------------------------------------------------------------------------
+# Binds a requirement atom or edge to a concrete, inspectable source of
+# authority (rule file, ADR, external standard, internal decision log, etc.)
+# ===========================================================================
+SourceAuthorityRecord:
+  id_pattern: "^SRC-(INT|EXT|ADR|RULE|CODE|DEC)-[0-9]{3}$"
+  id_example: "SRC-EXT-007"
+  subtype_meaning:
+    INT:  "Internal project artifact (AGENTS.md, plan, design note)"
+    EXT:  "External standard (RFC, ISO, vendor spec)"
+    ADR:  "Architectural Decision Record"
+    RULE: "A file under .windsurf/rules/"
+    CODE: "A specific code location (path + symbol)"
+    DEC:  "HITL or governance decision log entry"
+  required_fields:
+    - id
+    - subtype               # INT | EXT | ADR | RULE | CODE | DEC
+    - title                 # human-readable
+    - locator               # path, URL, ADR id, or code reference
+    - authority_class       # see authority_classes.yaml
+    - retrieved_at_wave     # e.g. "E0"
+  optional_fields:
+    - version_or_rev        # git SHA, version tag, publication date
+    - excerpt               # short quoted span (<=300 chars)
+    - notes
+  validation_rules:
+    - "locator MUST be resolvable at time of retrieval"
+    - "If subtype == EXT, version_or_rev SHOULD be set"
+    - "If subtype == CODE, locator MUST be of form 'path::symbol' or 'path:line'"
+
+# ===========================================================================
+# ENTITY: Exclusion
+# ---------------------------------------------------------------------------
+# Explicit out-of-scope record. First-class. Never a prose footnote.
+# ===========================================================================
+Exclusion:
+  id_pattern: "^OOS-[0-9]{3}$"
+  id_example: "OOS-014"
+  required_fields:
+    - id
+    - title
+    - scope_statement       # what is excluded, precisely
+    - reason                # enum: OUT_OF_CHARTER | DEFERRED | SUPERSEDED
+                            #       | UNSAFE | DUPLICATE | NOT_YET_DECIDED
+    - decided_at_wave
+    - decided_by            # role or decision record id
+  optional_fields:
+    - revisit_trigger       # concrete event that should force re-evaluation
+    - related_atoms         # atom ids that were considered and excluded
+    - related_families
+    - notes
+  validation_rules:
+    - "reason MUST be from the fixed enum above"
+    - "If reason == DEFERRED, revisit_trigger SHOULD be set"
+    - "An Exclusion MUST NOT be referenced by any ACTIVE atom as authority"
+
+# ===========================================================================
+# ENTITY: CoverageScorecard
+# ---------------------------------------------------------------------------
+# Per-family roll-up computed from atoms, edges, and exclusions. Downstream
+# sub-waves produce proposals; only the integration pass writes the merged
+# canonical scorecard set.
+# ===========================================================================
+CoverageScorecard:
+  id_pattern: "^SCORE-F[0-9]{2}-(E[0-9]+[a-z]?|INTEGRATION)$"
+  id_example: "SCORE-F12-E1a"
+  required_fields:
+    - id
+    - family_id
+    - produced_at_wave
+    - atom_count_total
+    - atom_count_by_status     # map of AtomStatus -> int
+    - atom_count_by_evidence   # map of EvidenceClass -> int
+    - edge_count_total
+    - edge_count_by_kind       # map of edge_kind -> int
+    - unresolved_count
+    - weak_evidence_count
+    - excluded_count
+    - coverage_score           # float in [0.0, 1.0], see scoring_rubric
+    - blockers                 # list of free-text blocker strings
+  optional_fields:
+    - trend_vs_prev_wave       # delta struct
+    - notes
+  scoring_rubric:
+    description: >
+      coverage_score = (normative_atoms_with_binding /
+                        (normative_atoms_with_binding
+                         + weak_evidence_count
+                         + unresolved_count)).
+      Excluded and INTERNAL_ONLY atoms are NOT counted in the denominator.
+    floor: 0.0
+    ceiling: 1.0
+  validation_rules:
+    - "atom_count_total MUST equal sum(atom_count_by_status)"
+    - "atom_count_total MUST equal sum(atom_count_by_evidence)"
+    - "edge_count_total MUST equal sum(edge_count_by_kind)"
+    - "If blockers is non-empty, coverage_score MUST be reported but MUST NOT be rounded up"
+
+# ===========================================================================
+# GLOBAL VALIDATION GUIDANCE
+# ===========================================================================
+validation_guidance:
+  tooling_expectation: >
+    A downstream lane MAY generate a JSON Schema or Pydantic model from this
+    YAML. The YAML remains the source of truth; generated artifacts are
+    derivative and MUST be regenerated on every E0 revision.
+  required_checks:
+    - "All ids match their declared id_pattern (regex)."
+    - "All cross-references (family_id, source_atom_id, target_atom_id,
+       authority_binding, superseded_by) resolve to existing entities."
+    - "No duplicate ids across the entire graph."
+    - "No atom claims the same (family_id, claim) as another atom."
+    - "No edge duplicates (source, target, edge_kind)."
+    - "Every NORMATIVE atom has >=1 SRC-* binding."
+    - "Every EXCLUDED atom references an OOS-* exclusion."
+    - "No Family spans multiple authority_class values."
+  severity_levels:
+    ERROR:    "Blocks integration pass."
+    WARNING:  "Allowed in a sub-wave proposal; MUST be resolved before integration."
+    INFO:     "Advisory only."
+
+# ===========================================================================
+# EXAMPLES (illustrative, not normative)
+# ===========================================================================
+examples:
+  family:
+    id: "F12"
+    title: "Route Authority"
+    intent: >
+      L0 is the sole authority that decides routing of a request to a
+      downstream capability. No other layer MAY select routes.
+    owning_layer: "L0"
+    authority_class: "CONSTITUTIONAL"
+    status: "ACTIVE"
+    created_at_wave: "E0"
+
+  requirement_atom:
+    id: "F12.03"
+    family_id: "F12"
+    claim: "L0 MUST reject any inbound request that lacks a resolved route binding."
+    evidence_class: "NORMATIVE"
+    authority_binding: ["SRC-RULE-012", "SRC-ADR-004"]
+    status: "ACTIVE"
+    owning_layer: "L0"
+    rationale: "Prevents undefined downstream dispatch."
+    test_hooks: ["ops_scripts/ci/check_route_binding.py"]
+
+  interaction_edge:
+    id: "INT-F12.03-F16.02-01"
+    source_atom_id: "F12.03"
+    target_atom_id: "F16.02"
+    edge_kind: "REQUIRES"
+    direction: "DIRECTED"
+    status: "ACTIVE"
+    evidence_class: "NORMATIVE"
+    rationale: "Route rejection requires a durable audit write via F16.02."
+    authority_binding: ["SRC-ADR-004"]
+
+  source_authority_record:
+    id: "SRC-EXT-007"
+    subtype: "EXT"
+    title: "RFC 7807 Problem Details for HTTP APIs"
+    locator: "https://datatracker.ietf.org/doc/html/rfc7807"
+    authority_class: "EXTERNAL_STANDARD"
+    retrieved_at_wave: "E0"
+    version_or_rev: "2016-03"
+
+  exclusion:
+    id: "OOS-014"
+    title: "Dynamic route learning from L6"
+    scope_statement: >
+      L6 observations MUST NOT influence L0 route decisions within the
+      current run. Future-run learning only.
+    reason: "OUT_OF_CHARTER"
+    decided_at_wave: "E0"
+    decided_by: "DEC-E0-001"
+
+  coverage_scorecard:
+    id: "SCORE-F12-E1a"
+    family_id: "F12"
+    produced_at_wave: "E1a"
+    atom_count_total: 7
+    atom_count_by_status: {ACTIVE: 5, DRAFT: 1, UNRESOLVED: 1}
+    atom_count_by_evidence: {NORMATIVE: 5, ADVISORY: 1, UNRESOLVED: 1}
+    edge_count_total: 4
+    edge_count_by_kind: {REQUIRES: 3, FORBIDS: 1}
+    unresolved_count: 1
+    weak_evidence_count: 0
+    excluded_count: 0
+    coverage_score: 0.83
+    blockers: []
