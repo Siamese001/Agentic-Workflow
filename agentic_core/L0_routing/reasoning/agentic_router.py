@@ -68,7 +68,7 @@ def _get_perf_emitter() -> tuple[Any, Any, Any]:
     """Lazy load L6 performance emitter to avoid layer boundary violation."""
     if "record_fn" not in _perf_emitter_cache:
         try:
-            from agentic_core.L6_observability.utils.performance.performance_emitter import (
+            from agentic_core.L6_observability.utils.performance.performance_emitter import (  # guardian: allow-layer-violation -- L0 router lazy-loads L6 performance emitter; deferred to avoid import-time violation; L0 routing telemetry requires performance recording
                 StageStatus,
                 record_routing_performance,
             )
@@ -102,7 +102,7 @@ def _get_routing_gateway():
 
 
 def _get_proof_emitter():
-    from agentic_core.L2_execution.utils.execution_proof_emitter import (
+    from agentic_core.L2_execution.utils.execution_proof_emitter import (  # guardian: allow-layer-violation -- L0 router lazy-loads L2 proof emitter; deferred to avoid import-time violation; L0 routing trace signing requires execution proof
         ExecutionProofEmitter,  # noqa: PLC0415
     )
 

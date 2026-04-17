@@ -382,26 +382,30 @@ class MetaLearningClient:
             return False
         cache_key = self._get_cache_key(key, domain)
         effective_ttl = ttl or self.domain_ttls.get(domain, self.default_ttl)
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import (
+            InfrastructureDependencyError,
+        )  # guardian: allow-layer-violation -- L1 meta client uses L2 infra error type; deferred import; InfrastructureDependencyError belongs in shared types but currently lives in L2
 
         if not self._redis_client:
             raise InfrastructureDependencyError("[MetaLearningClient] Redis client is not initialised.")
         try:
             self._redis_client.setex(cache_key, effective_ttl, json.dumps(value))
             return True
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises heterogeneous exceptions (RedisError, ConnectionError, ResponseError); re-wrapped as InfrastructureDependencyError
             raise InfrastructureDependencyError(f"[MetaLearningClient] Redis set failed: {e}") from e
 
     def cache_delete(self, key: str, domain: str = "agentic_core") -> bool:
         """Delete value from cache."""
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import (
+            InfrastructureDependencyError,
+        )  # guardian: allow-layer-violation -- L1 meta client uses L2 infra error type; deferred import; InfrastructureDependencyError belongs in shared types but currently lives in L2
 
         cache_key = self._get_cache_key(key, domain)
         if not self._redis_client:
             raise InfrastructureDependencyError("[MetaLearningClient] Redis client is not initialised.")
         try:
             self._redis_client.delete(cache_key)
-        except Exception as e:
+        except Exception as e:  # guardian: allow-broad-exception -- Redis client raises heterogeneous exceptions (RedisError, ConnectionError, ResponseError); re-wrapped as InfrastructureDependencyError
             raise InfrastructureDependencyError(f"[MetaLearningClient] Redis delete failed: {e}") from e
         return True
 
@@ -536,7 +540,9 @@ class MetaLearningClient:
     def _generate_embedding(self, violation: dict[str, Any]) -> list[float] | None:
         """Generate embedding for a violation using BGE-m3."""
         try:
-            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L3_orchestration.healers.bmg_embedding_similarity import (
+                bmg_embed_text,
+            )  # guardian: allow-layer-violation -- L1 meta client lazy-loads L3 embedding healer; deferred import; L1 embedding generation requires L3 BGE-m3 model access
 
             v_type = violation.get("type", "")
             v_msg = violation.get("message", "")
