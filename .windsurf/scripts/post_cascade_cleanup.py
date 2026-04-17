@@ -12,7 +12,7 @@ Behavior (ADVISORY ONLY — always exits 0):
     (line counts for each audit log = lightweight session health indicator)
 
 Fail policy: OPEN — any error → exit 0 silently.
-Zero hardcoded paths — REPO_ROOT resolved from __file__.
+Zero hardcoded paths — repo_root resolved from __file__.
 """
 
 import json
@@ -20,20 +20,20 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-FAIL_POLICY = "open"
+fail_policy = "open"
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-WINDSURF_DIR = REPO_ROOT / "artifacts" / "windsurf"
+repo_root = Path(__file__).resolve().parents[2]
+windsurf_dir = repo_root / "artifacts" / "windsurf"
 
-PROCESS_LOG = WINDSURF_DIR / "spawned_processes.jsonl"
-MCP_TOOL_LOG = WINDSURF_DIR / "mcp_tool_audit.jsonl"
-MCP_LINT_LOG = WINDSURF_DIR / "mcp_lint_audit.jsonl"
-SESSION_SUMMARY = WINDSURF_DIR / "session_summary.json"
+process_log = windsurf_dir / "spawned_processes.jsonl"
+mcp_tool_log = windsurf_dir / "mcp_tool_audit.jsonl"
+mcp_lint_log = windsurf_dir / "mcp_lint_audit.jsonl"
+session_summary = windsurf_dir / "session_summary.json"
 
-LOG_LIMITS = {
-    str(PROCESS_LOG): 500,
-    str(MCP_TOOL_LOG): 500,
-    str(MCP_LINT_LOG): 200,
+log_limits = {
+    str(process_log): 500,
+    str(mcp_tool_log): 500,
+    str(mcp_lint_log): 200,
 }
 
 
@@ -64,16 +64,16 @@ def _count_lines(log_path: Path) -> int:
         return 0
 
 
-def run_cleanup(windsurf_dir: Path) -> dict:
+def run_cleanup(ws_dir: Path) -> dict:
     """Rotate logs and return session summary dict."""
-    process_log = windsurf_dir / "spawned_processes.jsonl"
-    mcp_tool_log = windsurf_dir / "mcp_tool_audit.jsonl"
-    mcp_lint_log = windsurf_dir / "mcp_lint_audit.jsonl"
+    _process_log = ws_dir / "spawned_processes.jsonl"
+    _mcp_tool_log = ws_dir / "mcp_tool_audit.jsonl"
+    _mcp_lint_log = ws_dir / "mcp_lint_audit.jsonl"
 
     limits = {
-        process_log: 500,
-        mcp_tool_log: 500,
-        mcp_lint_log: 200,
+        _process_log: 500,
+        _mcp_tool_log: 500,
+        _mcp_lint_log: 200,
     }
 
     kept_counts = {}
@@ -89,9 +89,9 @@ def run_cleanup(windsurf_dir: Path) -> dict:
 
 def main() -> int:
     try:
-        WINDSURF_DIR.mkdir(parents=True, exist_ok=True)
-        summary = run_cleanup(WINDSURF_DIR)
-        SESSION_SUMMARY.write_text(json.dumps(summary, indent=2), encoding="utf-8")
+        windsurf_dir.mkdir(parents=True, exist_ok=True)
+        summary = run_cleanup(windsurf_dir)
+        session_summary.write_text(json.dumps(summary, indent=2), encoding="utf-8")
     except OSError:
         pass
 

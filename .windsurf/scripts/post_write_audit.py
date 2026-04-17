@@ -16,7 +16,7 @@ Behavior (ADVISORY ONLY — always exits 0):
   - Logs results to artifacts/windsurf/mcp_lint_audit.jsonl
 
 Fail policy: OPEN — any error → exit 0 silently (never breaks Cascade).
-Zero hardcoded paths — REPO_ROOT resolved from __file__.
+Zero hardcoded paths — repo_root resolved from __file__.
 """
 
 import json
@@ -25,11 +25,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-FAIL_POLICY = "open"
+fail_policy = "open"
 MCP_CONFIG_SUFFIX = "mcp_config.json"
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-AUDIT_LOG = REPO_ROOT / "artifacts" / "windsurf" / "mcp_lint_audit.jsonl"
+repo_root = Path(__file__).resolve().parents[2]
+audit_log = repo_root / "artifacts" / "windsurf" / "mcp_lint_audit.jsonl"
 
 _SHELL_ENV_VAR_RE = re.compile(r"\$\{[A-Z_][A-Z0-9_]*:-[^}]*\}")
 _WINDSURF_ENV_VAR_RE = re.compile(r"\$\{env:[A-Z_][A-Z0-9_]*\}")
@@ -37,8 +37,8 @@ _WINDSURF_ENV_VAR_RE = re.compile(r"\$\{env:[A-Z_][A-Z0-9_]*\}")
 
 def _append_audit(record: dict) -> None:
     try:
-        AUDIT_LOG.parent.mkdir(parents=True, exist_ok=True)
-        with open(AUDIT_LOG, "a", encoding="utf-8") as f:
+        audit_log.parent.mkdir(parents=True, exist_ok=True)
+        with open(audit_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
     except OSError:
         pass

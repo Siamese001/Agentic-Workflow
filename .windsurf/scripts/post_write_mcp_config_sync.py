@@ -33,9 +33,9 @@ from sync_mcp_config import (
     sync_global_config,
 )
 
-_NOTION_API = "https://api.notion.com/v1"
-_NOTION_VERSION = "2022-06-28"
-_DEFAULT_DB_ID = "59693bbc71b14c63bc9fb31eb8b08a0e"
+_notion_api = "https://api.notion.com/v1"
+_notion_version = "2022-06-28"
+_default_db_id = "59693bbc71b14c63bc9fb31eb8b08a0e"
 
 
 def _was_recent_write(path: Path, window_seconds: int = 10) -> bool:
@@ -47,14 +47,14 @@ def _was_recent_write(path: Path, window_seconds: int = 10) -> bool:
 def _notion_request(
     method: str, path: str, token: str, payload: dict[str, Any] | None = None
 ) -> dict[str, Any]:
-    url = f"{_NOTION_API}{path}"
+    url = f"{_notion_api}{path}"
     data = json.dumps(payload).encode("utf-8") if payload is not None else None
     req = urllib.request.Request(
         url,
         data=data,
         headers={
             "Authorization": f"Bearer {token}",
-            "Notion-Version": _NOTION_VERSION,
+            "Notion-Version": _notion_version,
             "Content-Type": "application/json",
         },
         method=method,
@@ -81,7 +81,7 @@ def _find_existing_row(token: str, db_id: str, server_name: str) -> str | None:
         result = _notion_request("POST", f"/databases/{db_id}/query", token, payload)
         results = result.get("results", [])
         return results[0]["id"] if results else None
-    except Exception:
+    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError, KeyError):
         return None
 
 
@@ -98,7 +98,7 @@ def _upsert_server_row(token: str, db_id: str, name: str, transport: str, status
         try:
             _notion_request("PATCH", f"/pages/{page_id}", token, payload)
             return "updated"
-        except Exception as exc:
+        except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError) as exc:
             print(f"[mcp_sync] Notion update failed for '{name}': {exc}", flush=True)
             return "skipped"
     payload = {
@@ -114,7 +114,7 @@ def _upsert_server_row(token: str, db_id: str, name: str, transport: str, status
     try:
         _notion_request("POST", "/pages", token, payload)
         return "created"
-    except Exception as exc:
+    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError) as exc:
         print(f"[mcp_sync] Notion create failed for '{name}': {exc}", flush=True)
         return "skipped"
 
@@ -142,7 +142,7 @@ def main() -> int:
         return 0
     try:
         data = load_repo_config()
-    except Exception as exc:
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
         print(f"[mcp_sync] VALIDATION FAILED — JSON parse error: {exc}", flush=True)
         return 0
 
@@ -156,7 +156,7 @@ def main() -> int:
     try:
         sync_global_config(data)
         print(f"[mcp_sync] Synced {len(data['mcpServers'])} servers to global config.", flush=True)
-    except Exception as exc:
+    except (OSError, ValueError) as exc:
         print(f"[mcp_sync] WARNING: global sync failed: {exc}", flush=True)
 
     try:
@@ -164,15 +164,15 @@ def main() -> int:
             print(f"[mcp_sync] Refreshed AGENTS.md MCP Quick Reference at {AGENTS_MD}", flush=True)
         else:
             print("[mcp_sync] AGENTS.md not found — skipped AGENTS sync.", flush=True)
-    except Exception as exc:
+    except (OSError, ValueError) as exc:
         print(f"[mcp_sync] WARNING: AGENTS sync failed: {exc}", flush=True)
 
     token = os.environ.get("NOTION_TOKEN", "").strip()
     if token:
-        db_id = os.environ.get("NOTION_MCP_DATABASE_ID", _DEFAULT_DB_ID).strip()
+        db_id = os.environ.get("NOTION_MCP_DATABASE_ID", _default_db_id).strip()
         try:
             _sync_notion_mcp_registry(data.get("mcpServers", {}), token, db_id)
-        except Exception as exc:
+        except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError) as exc:
             print(f"[mcp_sync] WARNING: Notion sync failed: {exc}", flush=True)
     else:
         print("[mcp_sync] Notion sync skipped: NOTION_TOKEN not set.", flush=True)

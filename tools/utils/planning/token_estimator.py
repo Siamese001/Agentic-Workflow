@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 # Import from YAML SSOT
-from agentic_core.config.token_budget_loader import DEFAULT_TOKEN_BUDGET
+from agentic_core.config.token_budget_loader import get_default_token_budget
 from tqdm import tqdm
 
 # Configure logging
@@ -27,14 +27,15 @@ class TokenBudget:
     """Token budget configuration for Kimi K2.5"""
 
     # Load defaults from YAML SSOT
-    HARD_MAX_CONTEXT: int = DEFAULT_TOKEN_BUDGET.hard_max_context
-    SAFE_OPERATING_CAP: int = DEFAULT_TOKEN_BUDGET.safe_operating_cap
-    WARNING_THRESHOLD: int = DEFAULT_TOKEN_BUDGET.warning_threshold
-    DEFAULT_RESERVED_OUTPUT: int = DEFAULT_TOKEN_BUDGET.default_reserved_output
-    DEFAULT_SAFETY_BUFFER: int = DEFAULT_TOKEN_BUDGET.default_safety_buffer
-    DEFAULT_MAX_INPUT_TARGET: int = DEFAULT_TOKEN_BUDGET.warning_threshold
+    def __init__(self):
+        budget = get_default_token_budget()
+        self.HARD_MAX_CONTEXT = budget.hard_max_context
+        self.SAFE_OPERATING_CAP = budget.safe_operating_cap
+        self.WARNING_THRESHOLD = budget.warning_threshold
+        self.DEFAULT_RESERVED_OUTPUT = budget.default_reserved_output
+        self.DEFAULT_SAFETY_BUFFER = budget.default_safety_buffer
+        self.DEFAULT_MAX_INPUT_TARGET = budget.warning_threshold
 
-    def __post_init__(self) -> None:
         if self.HARD_MAX_CONTEXT <= 0:
             raise ValueError("HARD_MAX_CONTEXT must be > 0")
         if not (0 < self.WARNING_THRESHOLD <= self.SAFE_OPERATING_CAP <= self.HARD_MAX_CONTEXT):

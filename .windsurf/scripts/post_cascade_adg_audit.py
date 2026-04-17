@@ -23,7 +23,7 @@ Behavior (ADVISORY — always exits 0):
     - Writes summary to stderr (show_output: false — won't clutter user view)
 
 Fail policy: OPEN — any error → exit 0 silently.
-Zero hardcoded paths — REPO_ROOT resolved from __file__.
+Zero hardcoded paths — repo_root resolved from __file__.
 """
 
 import json
@@ -32,10 +32,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-FAIL_POLICY = "open"
+fail_policy = "open"
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-VIOLATIONS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "adg_first_violations.jsonl"
+repo_root = Path(__file__).resolve().parents[2]
+violations_log = repo_root / "artifacts" / "windsurf" / "adg_first_violations.jsonl"
 
 # ---------------------------------------------------------------------------
 # Detection patterns
@@ -53,7 +53,7 @@ _DEP_ANALYSIS_QUERY_PATTERNS = [
 ]
 
 # Patterns that indicate the grep was for literal confirmation (allowed)
-_LITERAL_CONFIRM_PATTERNS = [
+_literal_confirm_patterns = [
     re.compile(r"TODO|FIXME|HACK|NOTE|XXX", re.IGNORECASE),
     re.compile(r"guardian:|noqa|type:\s*ignore", re.IGNORECASE),
     re.compile(r"^#"),  # comment searches
@@ -104,22 +104,22 @@ _GREP_DEP_HEURISTIC_PATTERNS = [
 ]
 
 # Check if ADG MCP calls were also present (mitigating factor)
-_ADG_MCP_CALL_RE = re.compile(
+_adg_mcp_call_re = re.compile(
     r"mcp1_adg_(?:nodes_by_file|edge_fanin|edge_fanout|node|nodes_by_layer)",
     re.IGNORECASE,
 )
 
 # Check if adg_health was called (required before any grep degraded fallback)
-_ADG_HEALTH_CALL_RE = re.compile(r"mcp1_adg_health", re.IGNORECASE)
+_adg_health_call_re = re.compile(r"mcp1_adg_health", re.IGNORECASE)
 
 # Check if a DEGRADED_FALLBACK reason was emitted (required when falling back from adg_sqlite)
-_DEGRADED_FALLBACK_RE = re.compile(r"DEGRADED_FALLBACK\s*:", re.IGNORECASE)
+_degraded_fallback_re = re.compile(r"DEGRADED_FALLBACK\s*:", re.IGNORECASE)
 
 
 def _is_dep_analysis_query(query: str) -> bool:
     """Return True if the query looks like dependency analysis, not literal confirmation."""
     # Check if it's a literal confirmation pattern (allowed)
-    for pattern in _LITERAL_CONFIRM_PATTERNS:
+    for pattern in _literal_confirm_patterns:
         if pattern.search(query):
             return False
 
@@ -167,9 +167,9 @@ def detect_violations(response_text: str) -> list[dict]:
     violations = []
 
     # Check if ADG MCP was also used (mitigating factor)
-    adg_mcp_used = bool(_ADG_MCP_CALL_RE.search(response_text))
-    adg_health_checked = bool(_ADG_HEALTH_CALL_RE.search(response_text))
-    degraded_fallback_declared = bool(_DEGRADED_FALLBACK_RE.search(response_text))
+    adg_mcp_used = bool(_adg_mcp_call_re.search(response_text))
+    adg_health_checked = bool(_adg_health_call_re.search(response_text))
+    degraded_fallback_declared = bool(_degraded_fallback_re.search(response_text))
 
     # Heuristic detection: grep_search near dependency-analysis terms
     # Check all patterns; deduplicate by start position
@@ -181,7 +181,7 @@ def detect_violations(response_text: str) -> list[dict]:
             if match.start() not in seen_starts:
                 match_text = match.group(0)
                 # Skip if the matched region contains literal confirmation patterns
-                is_literal = any(lp.search(match_text) for lp in _LITERAL_CONFIRM_PATTERNS)
+                is_literal = any(lp.search(match_text) for lp in _literal_confirm_patterns)
                 if not is_literal:
                     seen_starts.add(match.start())
                     all_matches.append(match)
@@ -247,8 +247,8 @@ def detect_violations(response_text: str) -> list[dict]:
 def _append_violations(violations: list[dict]) -> None:
     """Append violation records to the JSONL log."""
     try:
-        VIOLATIONS_LOG.parent.mkdir(parents=True, exist_ok=True)
-        with open(VIOLATIONS_LOG, "a", encoding="utf-8") as f:
+        violations_log.parent.mkdir(parents=True, exist_ok=True)
+        with open(violations_log, "a", encoding="utf-8") as f:
             for v in violations:
                 f.write(json.dumps(v) + "\n")
     except OSError:

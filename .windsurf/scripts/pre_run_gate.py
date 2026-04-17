@@ -21,9 +21,9 @@ import os
 import re
 import sys
 
-FAIL_POLICY = "closed"
+fail_policy = "closed"
 
-POWERSHELL_PATTERNS = ("powershell", "pwsh")
+powershell_patterns = ("powershell", "pwsh")
 
 # Matches pytest invocations that run the full unit test suite.
 # Handles: trailing slash, Windows backslash, optional trailing args.
@@ -31,7 +31,7 @@ _FULL_SUITE_RE = re.compile(r"pytest\s+tests[/\\]unit[/\\]?(\s|$)")
 
 # Script paths that are allowed to reference "powershell" in their name
 # because they are *about* PowerShell (checkers, RCA docs, etc.)
-_ALLOWED_SCRIPT_SUFFIXES = (
+_allowed_script_suffixes = (
     "check_powershell_ban.py",
     "pre_run_gate.py",
 )
@@ -76,14 +76,14 @@ def check_command(command_line: str) -> int:
     if _POWERSHELL_EXEC_RE.search(command_line):
         leading_token = lower.lstrip().split()[0] if lower.strip() else ""
         is_allowed_script = any(
-            lower.endswith(s) or ("/" + s) in lower or ("\\" + s) in lower for s in _ALLOWED_SCRIPT_SUFFIXES
+            lower.endswith(s) or ("/" + s) in lower or ("\\" + s) in lower for s in _allowed_script_suffixes
         )
         # Exempt only when the leading token is NOT powershell/pwsh itself,
         # i.e. a python invocation of a checker that mentions powershell by name.
-        if is_allowed_script and not any(pat in leading_token for pat in POWERSHELL_PATTERNS):
+        if is_allowed_script and not any(pat in leading_token for pat in powershell_patterns):
             pass  # allowed: python script whose path references powershell
         else:
-            matched = next(pat for pat in POWERSHELL_PATTERNS if pat in command_line.lower())
+            matched = next(pat for pat in powershell_patterns if pat in command_line.lower())
             return _exit_block(
                 f"PowerShell is forbidden (matched '{matched}'). "
                 "Use argv list with shell=False per constitutional §0.",
@@ -101,7 +101,7 @@ def check_command(command_line: str) -> int:
 def main() -> int:
     raw = sys.stdin.read()
     if not raw.strip():
-        if FAIL_POLICY == "closed":
+        if fail_policy == "closed":
             print("[pre_run_gate] BLOCKED: empty stdin payload.", file=sys.stderr)
             return 2
         return 0
@@ -109,7 +109,7 @@ def main() -> int:
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError as exc:
-        if FAIL_POLICY == "closed":
+        if fail_policy == "closed":
             print(f"[pre_run_gate] BLOCKED: malformed JSON payload — {exc}", file=sys.stderr)
             return 2
         return 0

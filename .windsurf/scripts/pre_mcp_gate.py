@@ -27,7 +27,7 @@ Behavior:
   - All other MCPs → exit 0 (FAIL-OPEN).
 
 Fail policy: CLOSED for ADG and filesystem-write calls, OPEN for everything else.
-Zero hardcoded paths — REPO_ROOT resolved from __file__.
+Zero hardcoded paths — repo_root resolved from __file__.
 """
 
 import importlib.util
@@ -40,8 +40,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-FAIL_POLICY = "closed"
-ADG_SERVER_NAME = "adg_sqlite"
+fail_policy = "closed"
+adg_server_name = "adg_sqlite"
 
 # Additional MCP servers requiring health gates
 # These names MUST match the keys in .windsurf/mcp_config.json exactly.
@@ -52,8 +52,8 @@ TASK_MANAGER_SERVER_NAME = "task_manager"
 VECTOR_DB_SERVER_NAME = "vector_db"
 OTEL_MCP_SERVER_NAME = "otel_mcp"
 DEEPWIKI_SERVER_NAME = "deepwiki"
-GITKRAKEN_SERVER_NAME = "GitKraken"
-NOTION_SERVER_NAME = "notion"
+gitkraken_server_name = "GitKraken"
+notion_server_name = "notion"
 
 # Recovery tools that MUST pass even when MCP is unhealthy.
 # Without this whitelist, the gate blocks the very tools needed to recover.
@@ -98,18 +98,18 @@ OTEL_MCP_RECOVERY_TOOLS = {
 
 # Write-affecting ADG tools that mutate DB state.
 # These require a BEGIN IMMEDIATE probe to detect real write contention.
-ADG_WRITE_TOOLS = {
+adg_write_tools = {
     "adg_rebuild",
     "adg_checkpoint",
     "adg_compact",
 }
 
-SQLITE_PROBE_TIMEOUT_MS = 500  # busy_timeout for probe connections
+sqlite_probe_timeout_ms = 500  # busy_timeout for probe connections
 
 # Module-level cache: subprocess probes are run once per process lifetime.
 # Gate checks (pytest, node, chromadb, otel) are expensive if re-run on every
 # tool call — cache the result for the lifetime of the hook process.
-_PROBE_CACHE: dict[str, bool] = {}
+_probe_cache: dict[str, bool] = {}
 
 FILESYSTEM_SERVER_NAME = "filesystem"
 # Write tools on the filesystem MCP that bypass pre_write_code. Blocked here
@@ -123,8 +123,8 @@ FILESYSTEM_WRITE_TOOLS = {
     "move_file",  # mcp4_move_file  — rename/relocate; mutates filesystem
 }
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
+repo_root = Path(__file__).resolve().parents[2]
+ARTIFACTS_ADG = repo_root / "artifacts" / "adg"
 # Session-state isolation boundary
 #
 # Current isolation unit: one IDE window / one VS Code process.
@@ -143,19 +143,19 @@ ARTIFACTS_ADG = REPO_ROOT / "artifacts" / "adg"
 # replace VSCODE_PID in the _SESSION_ID derivation and keep the rest of the
 # session-state mechanism unchanged.
 _SESSION_ID = os.environ.get("VSCODE_PID") or str(os.getppid())
-SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
+session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
 
 # After this many consecutive blocks without a successful memory recall,
 # the gate degrades to open so Cascade is never permanently stuck.
 MAX_MEMORY_BLOCK_ATTEMPTS = 3
 
 # Stale session-state files older than this are removed on each gate startup.
-_SESSION_STATE_MAX_AGE_HOURS = 24
+_session_state_max_age_hours = 24
 
 # Launcher script path — validated by check_filesystem_startup_gate() on first use.
 # The launcher resolves node + npm global prefix dynamically; no version-pinned paths.
-_FS_LAUNCHER = REPO_ROOT / ".windsurf" / "scripts" / "filesystem_mcp_launcher.js"
-_FS_ALLOWED_DIR = REPO_ROOT
+_fs_launcher = repo_root / ".windsurf" / "scripts" / "filesystem_mcp_launcher.js"
+_fs_allowed_dir = repo_root
 
 # ---------------------------------------------------------------------------
 # GitKraken MCP hardening constants
@@ -163,7 +163,7 @@ _FS_ALLOWED_DIR = REPO_ROOT
 
 # Canonical workspace root — GitKraken tool `directory` args must resolve
 # to this path or a subdirectory of it. Blocks cross-repo accidental mutation.
-GITKRAKEN_WORKSPACE_ROOT = REPO_ROOT
+gitkraken_workspace_root = repo_root
 
 # Tools that mutate LOCAL git state (stage, commit, checkout, stash, worktree add, branch create)
 GITKRAKEN_LOCAL_WRITE_TOOLS: set[str] = {
@@ -200,8 +200,8 @@ def _exit_block(reason: str) -> int:
 def _read_session_state() -> dict:
     """Read session_state.json and return its contents. Return {} on any error (fail-open)."""
     try:
-        if SESSION_STATE.exists():
-            data = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        if session_state.exists():
+            data = json.loads(session_state.read_text(encoding="utf-8"))
             return data if isinstance(data, dict) else {}
     except (OSError, json.JSONDecodeError):
         pass
@@ -218,8 +218,8 @@ def _increment_memory_block_attempts() -> int:
         state = _read_session_state()
         count = int(state.get("max_memory_block_attempts", 0)) + 1
         state["max_memory_block_attempts"] = count
-        SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
-        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+        session_state.parent.mkdir(parents=True, exist_ok=True)
+        session_state.write_text(json.dumps(state), encoding="utf-8")
         return count
     except (OSError, json.JSONDecodeError):
         return MAX_MEMORY_BLOCK_ATTEMPTS  # fail-open: treat counter as exhausted
@@ -231,8 +231,8 @@ def _mark_memory_recalled() -> None:
         state = _read_session_state()
         state["memory_recalled"] = True
         state["max_memory_block_attempts"] = 0
-        SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
-        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+        session_state.parent.mkdir(parents=True, exist_ok=True)
+        session_state.write_text(json.dumps(state), encoding="utf-8")
     except (OSError, json.JSONDecodeError):
         pass  # fail-open: worst case we block again next call
 
@@ -289,7 +289,7 @@ def check_memory_first_gate(server_name: str, tool_name: str) -> int:
         return 0
 
     # Rule 3: degrade-open if memory MCP is unhealthy (SQLite inaccessible)
-    if check_memory_gate(REPO_ROOT) != 0:
+    if check_memory_gate(repo_root) != 0:
         print(
             "[pre_mcp_gate] memory-first gate: memory MCP unhealthy — degrading to open "
             "(auto-marking recalled to prevent retry burn).",
@@ -390,7 +390,7 @@ def _probe_sqlite_read(db_path: Path) -> tuple[bool, str]:
         conn = sqlite3.connect(
             f"file:{canonical}?mode=ro",
             uri=True,
-            timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0,
+            timeout=sqlite_probe_timeout_ms / 1000.0,
         )
         try:
             conn.execute("SELECT 1")
@@ -414,7 +414,7 @@ def _probe_sqlite_write(db_path: Path) -> tuple[bool, str]:
     try:
         conn = sqlite3.connect(
             canonical,
-            timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0,
+            timeout=sqlite_probe_timeout_ms / 1000.0,
         )
         try:
             conn.execute("BEGIN IMMEDIATE")
@@ -463,7 +463,7 @@ def _check_sqlite_access(repo_root: Path, needs_write: bool) -> tuple[bool, str]
     # Determine journal_mode for diagnostics
     journal_mode = "unknown"
     try:
-        c = sqlite3.connect(str(canonical), timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0)
+        c = sqlite3.connect(str(canonical), timeout=sqlite_probe_timeout_ms / 1000.0)
         row = c.execute("PRAGMA journal_mode").fetchone()
         journal_mode = row[0] if row else "unknown"
         c.close()
@@ -525,7 +525,7 @@ def check_filesystem_startup_gate() -> int:
     Returns 0 (allow) or 2 (block with actionable message).
     """
     cache_key = "filesystem_startup_ok"
-    if cache_key not in _PROBE_CACHE:
+    if cache_key not in _probe_cache:
         # Probe 1: node in PATH
         node_ok = False
         try:
@@ -540,12 +540,12 @@ def check_filesystem_startup_gate() -> int:
             node_ok = False
 
         # Probe 2: launcher script exists in repo
-        launcher_ok = _FS_LAUNCHER.exists()
+        launcher_ok = _fs_launcher.exists()
 
         # Probe 3: allowed directory exists
-        allowed_ok = _FS_ALLOWED_DIR.exists()
+        allowed_ok = _fs_allowed_dir.exists()
 
-        _PROBE_CACHE[cache_key] = node_ok and launcher_ok and allowed_ok
+        _probe_cache[cache_key] = node_ok and launcher_ok and allowed_ok
 
         if not node_ok:
             print(
@@ -558,7 +558,7 @@ def check_filesystem_startup_gate() -> int:
         if not launcher_ok:
             print(
                 f"[pre_mcp_gate] Filesystem MCP startup check FAILED: "
-                f"launcher not found at {_FS_LAUNCHER}. "
+                f"launcher not found at {_fs_launcher}. "
                 "Ensure the repo is intact (git status). "
                 "Operator note: docs/guides/filesystem_mcp_operations.md",
                 file=sys.stderr,
@@ -566,11 +566,11 @@ def check_filesystem_startup_gate() -> int:
         if not allowed_ok:
             print(
                 f"[pre_mcp_gate] Filesystem MCP startup check FAILED: "
-                f"allowed directory not found: {_FS_ALLOWED_DIR}.",
+                f"allowed directory not found: {_fs_allowed_dir}.",
                 file=sys.stderr,
             )
 
-    if not _PROBE_CACHE["filesystem_startup_ok"]:
+    if not _probe_cache["filesystem_startup_ok"]:
         return _exit_block(
             "Filesystem MCP cannot start — node, launcher, or allowed directory check failed. "
             "See stderr above for which check failed. "
@@ -611,7 +611,7 @@ def check_adg_gate(repo_root: Path, tool_name: str = "") -> int:
                 "Run 'python tools/generate_full_adg.py' manually to bootstrap ADG.",
             )
 
-    needs_write = tool_name in ADG_WRITE_TOOLS
+    needs_write = tool_name in adg_write_tools
     blocked, reason = _check_sqlite_access(repo_root, needs_write=needs_write)
     if blocked:
         if needs_write:
@@ -645,7 +645,7 @@ def check_pytest_gate(repo_root: Path) -> int:
     """
     print("[pre_mcp_gate] PYTEST_MCP_TRACE: entered check_pytest_gate", file=sys.stderr)
     cache_key = "pytest_importable"
-    if cache_key not in _PROBE_CACHE:
+    if cache_key not in _probe_cache:
         try:
             result = subprocess.run(
                 [sys.executable, "-c", "import pytest"],
@@ -655,11 +655,11 @@ def check_pytest_gate(repo_root: Path) -> int:
                 timeout=10,
                 check=False,
             )
-            _PROBE_CACHE[cache_key] = result.returncode == 0
+            _probe_cache[cache_key] = result.returncode == 0
         except (subprocess.TimeoutExpired, OSError):
-            _PROBE_CACHE[cache_key] = False
+            _probe_cache[cache_key] = False
 
-    if not _PROBE_CACHE[cache_key]:
+    if not _probe_cache[cache_key]:
         print(
             "[pre_mcp_gate] PYTEST_MCP_TRACE: REJECT reason=pytest_not_importable",
             file=sys.stderr,
@@ -786,7 +786,7 @@ def check_memory_gate(repo_root: Path) -> int:
     try:
         conn = sqlite3.connect(
             str(memory_db),
-            timeout=SQLITE_PROBE_TIMEOUT_MS / 1000.0,
+            timeout=sqlite_probe_timeout_ms / 1000.0,
         )
         try:
             conn.execute("SELECT 1")
@@ -810,7 +810,7 @@ def check_task_manager_gate() -> int:
     Return 0 (allow) or 2 (block).
     """
     cache_key = "node_available"
-    if cache_key not in _PROBE_CACHE:
+    if cache_key not in _probe_cache:
         try:
             result = subprocess.run(
                 ["node", "--version"],
@@ -820,11 +820,11 @@ def check_task_manager_gate() -> int:
                 timeout=10,
                 check=False,
             )
-            _PROBE_CACHE[cache_key] = result.returncode == 0
+            _probe_cache[cache_key] = result.returncode == 0
         except (FileNotFoundError, subprocess.TimeoutExpired, OSError):
-            _PROBE_CACHE[cache_key] = False
+            _probe_cache[cache_key] = False
 
-    if not _PROBE_CACHE[cache_key]:
+    if not _probe_cache[cache_key]:
         return _exit_block(
             "Task Manager MCP health check failed: Node.js not found in PATH. "
             "Task Manager requires Node.js (npx @blizzy/mcp-task-manager).",
@@ -870,7 +870,7 @@ def check_otel_gate() -> int:
 
     # Stage 1: SDK importable? (cached)
     cache_key = "otel_importable"
-    if cache_key not in _PROBE_CACHE:
+    if cache_key not in _probe_cache:
         try:
             result = subprocess.run(
                 [sys.executable, "-c", "from opentelemetry import trace"],
@@ -880,11 +880,11 @@ def check_otel_gate() -> int:
                 timeout=10,
                 check=False,
             )
-            _PROBE_CACHE[cache_key] = result.returncode == 0
+            _probe_cache[cache_key] = result.returncode == 0
         except (subprocess.TimeoutExpired, OSError):
-            _PROBE_CACHE[cache_key] = False
+            _probe_cache[cache_key] = False
 
-    if not _PROBE_CACHE[cache_key]:
+    if not _probe_cache[cache_key]:
         return _exit_block(
             "OpenTelemetry MCP health check failed: opentelemetry SDK not installed. "
             "Install with: pip install opentelemetry-api opentelemetry-sdk",
@@ -941,13 +941,13 @@ def _resolve_gitkraken_repo(payload: dict) -> Path:  # pylint: disable=unused-ar
     GitKraken tools pass the repo root as a `directory` field in tool arguments.
     Windsurf's pre_mcp_tool_use hook does NOT expose tool arguments, so we
     cannot read the `directory` value directly. We resolve the workspace root
-    from GITKRAKEN_WORKSPACE_ROOT (= REPO_ROOT from mcp_config.json cwd binding).
+    from gitkraken_workspace_root (= repo_root from mcp_config.json cwd binding).
 
     Returns the canonical workspace root Path.
     """
     # Tool arguments are not available in pre_mcp_tool_use hooks. Fall back to
     # the workspace root anchored by the cwd setting in mcp_config.json.
-    return GITKRAKEN_WORKSPACE_ROOT.resolve()
+    return gitkraken_workspace_root.resolve()
 
 
 def _check_gitkraken_repo_confinement(repo: Path) -> tuple[bool, str]:
@@ -955,7 +955,7 @@ def _check_gitkraken_repo_confinement(repo: Path) -> tuple[bool, str]:
     Verify `repo` is a git repository and is confined to the workspace root.
     Returns (blocked, reason). blocked=True → deny.
     """
-    workspace = GITKRAKEN_WORKSPACE_ROOT.resolve()
+    workspace = gitkraken_workspace_root.resolve()
 
     # Ensure repo resolves within the workspace (prevents cross-repo drift)
     try:
@@ -1128,11 +1128,11 @@ def check_deepwiki_gate() -> int:
 
 
 def _purge_stale_session_states() -> None:
-    """Delete session_state_{pid}.json files older than _SESSION_STATE_MAX_AGE_HOURS."""
-    windsurf_dir = REPO_ROOT / "artifacts" / "windsurf"
+    """Delete session_state_{pid}.json files older than _session_state_max_age_hours."""
+    windsurf_dir = repo_root / "artifacts" / "windsurf"
     if not windsurf_dir.exists():
         return
-    cutoff = time.time() - _SESSION_STATE_MAX_AGE_HOURS * 3600
+    cutoff = time.time() - _session_state_max_age_hours * 3600
     for f in windsurf_dir.glob("session_state_*.json"):
         try:
             if f.stat().st_mtime < cutoff:
@@ -1179,11 +1179,11 @@ def main() -> int:
         return check_filesystem_write_gate(tool_name)
 
     # ADG SQLite MCP: health, lock, and staleness checks
-    if server_name == ADG_SERVER_NAME:
+    if server_name == adg_server_name:
         if tool_name in ADG_RECOVERY_TOOLS:
             # Always allow recovery probes — blocking them creates a dead loop
             return 0
-        return check_adg_gate(REPO_ROOT, tool_name)
+        return check_adg_gate(repo_root, tool_name)
 
     # Pytest MCP: verify pytest is available
     if server_name == PYTEST_SERVER_NAME:
@@ -1198,19 +1198,19 @@ def main() -> int:
                 file=sys.stderr,
             )
             return 0
-        return check_pytest_gate(REPO_ROOT)
+        return check_pytest_gate(repo_root)
 
     # Redis MCP: verify Redis connectivity with ADG SQLite fallback
     if server_name == REDIS_SERVER_NAME:
         if tool_name in REDIS_RECOVERY_TOOLS:
             return 0
-        return check_redis_gate(REPO_ROOT)
+        return check_redis_gate(repo_root)
 
     # Memory MCP: verify SQLite DB is accessible
     if server_name == MEMORY_SERVER_NAME:
         if tool_name in MEMORY_RECOVERY_TOOLS:
             return 0
-        return check_memory_gate(REPO_ROOT)
+        return check_memory_gate(repo_root)
 
     # Task Manager MCP: verify Node.js is available
     if server_name == TASK_MANAGER_SERVER_NAME:
@@ -1235,11 +1235,11 @@ def main() -> int:
         return check_deepwiki_gate()
 
     # GitKraken MCP: write-tool preflight + repo confinement
-    if server_name == GITKRAKEN_SERVER_NAME:
+    if server_name == gitkraken_server_name:
         return check_gitkraken_gate(tool_name, payload)
 
     # Notion MCP: verify NOTION_TOKEN is set in OS env before any API call
-    if server_name == NOTION_SERVER_NAME:
+    if server_name == notion_server_name:
         return check_notion_gate()
 
     # All other MCPs (enhanced_http, etc.): fail-open

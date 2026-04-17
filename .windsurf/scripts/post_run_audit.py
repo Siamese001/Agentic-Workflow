@@ -12,7 +12,7 @@ Behavior (ADVISORY ONLY — always exits 0):
   - Windsurf does NOT provide a native PID in the post_run_command payload
 
 Fail policy: OPEN — any error → exit 0 silently.
-Zero hardcoded paths — REPO_ROOT resolved from __file__.
+Zero hardcoded paths — repo_root resolved from __file__.
 """
 
 import json
@@ -20,10 +20,10 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-FAIL_POLICY = "open"
+fail_policy = "open"
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-PROCESS_LOG = REPO_ROOT / "artifacts" / "windsurf" / "spawned_processes.jsonl"
+repo_root = Path(__file__).resolve().parents[2]
+process_log = repo_root / "artifacts" / "windsurf" / "spawned_processes.jsonl"
 
 
 def _get_pid_best_effort(command_line: str, cwd: str) -> int | None:
@@ -55,8 +55,8 @@ def _get_pid_best_effort(command_line: str, cwd: str) -> int | None:
 
 def _append_log(record: dict) -> None:
     try:
-        PROCESS_LOG.parent.mkdir(parents=True, exist_ok=True)
-        with open(PROCESS_LOG, "a", encoding="utf-8") as f:
+        process_log.parent.mkdir(parents=True, exist_ok=True)
+        with open(process_log, "a", encoding="utf-8") as f:
             f.write(json.dumps(record) + "\n")
     except OSError:
         pass

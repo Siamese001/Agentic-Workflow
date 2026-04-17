@@ -25,14 +25,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-FAIL_POLICY = "closed_for_t2t3_adg"
+fail_policy = "closed_for_t2t3_adg"
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[2]
 # Namespaced per logical session — matches pre_mcp_gate.py and post_mcp_audit.py.
 _SESSION_ID = os.environ.get("VSCODE_PID") or str(os.getppid())
-SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
+session_state = repo_root / "artifacts" / "windsurf" / f"session_state_{_SESSION_ID}.json"
 
-T3_KEYWORDS = {
+t3_keywords = {
     "architecture",
     "architectural",
     "cross-layer",
@@ -50,7 +50,7 @@ T3_KEYWORDS = {
     "blast radius",
 }
 
-T2_KEYWORDS = {
+t2_keywords = {
     "update",
     "modify",
     "fix",
@@ -66,7 +66,7 @@ T2_KEYWORDS = {
     "write",
 }
 
-T1_KEYWORDS = {
+t1_keywords = {
     "typo",
     "docstring",
     "comment",
@@ -78,7 +78,7 @@ T1_KEYWORDS = {
     "trivial",
 }
 
-T0_KEYWORDS = {
+t0_keywords = {
     "explain",
     "what is",
     "how does",
@@ -93,7 +93,7 @@ T0_KEYWORDS = {
 
 # Tight keyword set — only prompts explicitly about Notion workspace trigger the hint.
 # Single-word trigger is sufficient; all notion-intent prompts contain "notion".
-NOTION_KEYWORDS: frozenset[str] = frozenset({"notion"})
+notion_keywords: frozenset[str] = frozenset({"notion"})
 
 # Keywords that indicate runtime observability intent — route to otel_mcp.
 _OTEL_SIGNALS: frozenset[str] = frozenset(
@@ -231,7 +231,7 @@ def _detect_semantic_retrieval(prompt: str) -> bool:
 
 # Structured reasoning mandate injected into Cascade context for every T2/T3 prompt.
 # show_output: true ensures Cascade sees this output before responding.
-_SR_MANDATE = """
+_sr_mandate = """
 [pre_prompt_classifier] STRUCTURED REASONING REQUIRED ({tier}):
   BEFORE making any edits or tool calls:
   0. ADG-FIRST TOOL ROUTING (MANDATORY — check BEFORE every grep_search call):
@@ -259,7 +259,7 @@ _SR_MANDATE = """
 """.strip()
 
 
-_MEMORY_MANDATE = (
+_memory_mandate = (
     "[pre_prompt_classifier] memory: mem_recall_session_start not yet called this session"
     " (human diagnostic — pre_mcp_gate enforces via exit 2)."
 )
@@ -274,15 +274,15 @@ def _should_emit_memory_mandate() -> bool:
     is False (not yet called this turn).  Fail-open on any I/O or parse error.
     """
     try:
-        if not SESSION_STATE.exists():
+        if not session_state.exists():
             return True
-        state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        state = json.loads(session_state.read_text(encoding="utf-8"))
         return not state.get("memory_recalled", False)
     except (OSError, json.JSONDecodeError):
         return True  # fail-open: emit mandate if state unreadable
 
 
-_ADG_GRAPH_SR_HINT = (
+_adg_graph_sr_hint = (
     "  ADG GRAPH INTENT DETECTED: adg_sqlite tools REQUIRED for this query.\n"
     "    Routing matrix:\n"
     "      imports/consumers/blast-radius/fanin/fanout → mcp1_adg_edge_fanin / mcp1_adg_edge_fanout\n"
@@ -294,14 +294,14 @@ _ADG_GRAPH_SR_HINT = (
     "  Silent grep-for-graph (no health check, no reason code) is a POLICY VIOLATION."
 )
 
-_NOTION_SR_HINT = (
+_notion_sr_hint = (
     "  NOTION INTENT DETECTED: use the notion MCP directly for Notion workspace operations.\n"
     "    Read  \u2192 mcp6_API-retrieve-a-page(page_id=...)  /  mcp6_API-post-search(query=...)\n"
     "    Write \u2192 mcp6_API-post-page(parent=..., properties=...)  /  mcp6_API-patch-page(page_id=...)\n"
     "  Auth: NOTION_TOKEN must be set in OS env (pre_mcp_gate blocks with setup instructions if absent)."
 )
 
-_OTEL_SR_HINT = (
+_otel_sr_hint = (
     "  OTEL INTENT DETECTED: use otel_mcp tools for runtime observability.\n"
     "    Health / freshness  \u2192 mcp7_otel_status()\n"
     "    Fetch trace         \u2192 mcp7_otel_trace(trace_id=...)\n"
@@ -313,7 +313,7 @@ _OTEL_SR_HINT = (
     "  Note: mcp7_ prefix may shift on server add/remove — server name otel_mcp is the SSOT."
 )
 
-_PYTEST_SR_HINT = (
+_pytest_sr_hint = (
     "  PYTEST INTENT DETECTED: use pytest_mcp tools instead of run_command for test operations.\n"
     "    Run tests       \u2192 mcp8_run_tests(path=..., keywords=..., verbose=True)\n"
     '    Discover tests  \u2192 mcp8_discover_tests(path="tests")\n'
@@ -345,13 +345,13 @@ def _write_session_state(tier: str) -> None:
     tasks are not orphaned mid-session.
     """
     try:
-        SESSION_STATE.parent.mkdir(parents=True, exist_ok=True)
+        session_state.parent.mkdir(parents=True, exist_ok=True)
         if tier in ("T0", "T1"):
             # Independent non-task prompt — task lifecycle reset is safe.
             # Preserve memory_recalled: it is a session-level flag, not a task flag.
             try:
                 _prior = (
-                    json.loads(SESSION_STATE.read_text(encoding="utf-8")) if SESSION_STATE.exists() else {}
+                    json.loads(session_state.read_text(encoding="utf-8")) if session_state.exists() else {}
                 )
             except (OSError, json.JSONDecodeError):
                 _prior = {}
@@ -370,7 +370,7 @@ def _write_session_state(tier: str) -> None:
             # T2/T3 or continuation — preserve existing lifecycle fields.
             try:
                 existing = (
-                    json.loads(SESSION_STATE.read_text(encoding="utf-8")) if SESSION_STATE.exists() else {}
+                    json.loads(session_state.read_text(encoding="utf-8")) if session_state.exists() else {}
                 )
             except (OSError, json.JSONDecodeError):
                 existing = {}
@@ -378,7 +378,7 @@ def _write_session_state(tier: str) -> None:
             for field in _TASK_LIFECYCLE_FIELDS:
                 default = 0 if field in ("update_task_count", "max_memory_block_attempts") else False
                 state[field] = existing.get(field, default)
-        SESSION_STATE.write_text(json.dumps(state), encoding="utf-8")
+        session_state.write_text(json.dumps(state), encoding="utf-8")
     except OSError:
         pass  # fail-open: don't block on state file write failure
 
@@ -390,9 +390,9 @@ def _warn_open_task(tier: str) -> None:
     never blocks.
     """
     try:
-        if not SESSION_STATE.exists():
+        if not session_state.exists():
             return
-        state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        state = json.loads(session_state.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return
     if not state.get("task_created", False):
@@ -409,10 +409,10 @@ def _warn_open_task(tier: str) -> None:
 def classify_tier(prompt: str) -> str:
     lower = prompt.lower()
 
-    t3_hits = sum(1 for kw in T3_KEYWORDS if kw in lower)
-    t2_hits = sum(1 for kw in T2_KEYWORDS if kw in lower)
-    t1_hits = sum(1 for kw in T1_KEYWORDS if kw in lower)
-    t0_hits = sum(1 for kw in T0_KEYWORDS if kw in lower)
+    t3_hits = sum(1 for kw in t3_keywords if kw in lower)
+    t2_hits = sum(1 for kw in t2_keywords if kw in lower)
+    t1_hits = sum(1 for kw in t1_keywords if kw in lower)
+    t0_hits = sum(1 for kw in t0_keywords if kw in lower)
 
     if t3_hits >= 1:
         return "T3"
@@ -440,7 +440,7 @@ def check_plan_exists(tier: str) -> bool:
     """Return True if a plan file exists in .windsurf/plans/ for T2/T3."""
     if tier not in ("T2", "T3"):
         return True
-    plans_dir = REPO_ROOT / ".windsurf" / "plans"
+    plans_dir = repo_root / ".windsurf" / "plans"
     if not plans_dir.exists():
         return False
     return any(plans_dir.glob("*.md"))
@@ -616,7 +616,7 @@ def main() -> int:
     # Human diagnostic (exit 0 stderr — not injected into Cascade context).
     # Gate enforces recall via exit 2 in pre_mcp_gate.py.
     if emit_memory_mandate:
-        print(_MEMORY_MANDATE, file=sys.stderr)
+        print(_memory_mandate, file=sys.stderr)
 
     if tier in ("T2", "T3"):
         if not check_plan_exists(tier):
@@ -641,7 +641,7 @@ def main() -> int:
                     "Run: python tools/adg/adg_redis_ingest.py --force",
                     file=sys.stderr,
                 )
-                if check_adg_health_red(REPO_ROOT):
+                if check_adg_health_red(repo_root):
                     print(
                         f"[pre_prompt_classifier] BLOCKED: {tier} prompt — adg_sqlite MCP is also red. "
                         "Run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
@@ -654,7 +654,7 @@ def main() -> int:
                 f"[pre_prompt_classifier] WARNING: {tier}: Redis is down — falling back to adg_sqlite MCP probe.",
                 file=sys.stderr,
             )
-            if check_adg_health_red(REPO_ROOT):
+            if check_adg_health_red(repo_root):
                 print(
                     f"[pre_prompt_classifier] BLOCKED: {tier} prompt — Redis is down AND adg_sqlite MCP is red. "
                     "Start Redis or run mcp1_adg_health and /mcp-failure-rca before proceeding (constitutional §13).",
@@ -664,15 +664,15 @@ def main() -> int:
 
         # Infrastructure healthy — inject structured reasoning mandate into Cascade context.
         # show_output: true in hooks.json ensures Cascade sees this before responding.
-        mandate = _SR_MANDATE.format(tier=tier)
-        if any(kw in prompt.lower() for kw in NOTION_KEYWORDS):
-            mandate = mandate + "\n" + _NOTION_SR_HINT
+        mandate = _sr_mandate.format(tier=tier)
+        if any(kw in prompt.lower() for kw in notion_keywords):
+            mandate = mandate + "\n" + _notion_sr_hint
         if _detect_otel_intent(prompt):
-            mandate = mandate + "\n" + _OTEL_SR_HINT
+            mandate = mandate + "\n" + _otel_sr_hint
         if _detect_pytest_intent(prompt):
-            mandate = mandate + "\n" + _PYTEST_SR_HINT
+            mandate = mandate + "\n" + _pytest_sr_hint
         if _detect_adg_graph_intent(prompt):
-            mandate = mandate + "\n" + _ADG_GRAPH_SR_HINT
+            mandate = mandate + "\n" + _adg_graph_sr_hint
         print(mandate, file=sys.stderr)
 
     return 0

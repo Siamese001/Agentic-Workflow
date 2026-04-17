@@ -20,7 +20,7 @@ Behavior (ADVISORY — always exits 0):
     - No user data is sent anywhere — purely local.
 
 Fail policy: OPEN — any error exits 0 silently.
-Zero hardcoded paths — REPO_ROOT resolved from __file__.
+Zero hardcoded paths — repo_root resolved from __file__.
 """
 
 import hashlib
@@ -33,11 +33,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-FAIL_POLICY = "open"
+fail_policy = "open"
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_DIR = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions"
-DB_PATH = DB_DIR / "refactor_decision_ledger.sqlite"
+repo_root = Path(__file__).resolve().parents[2]
+DB_DIR = repo_root / ".windsurf" / "state" / "refactor_decisions"
+db_path = DB_DIR / "refactor_decision_ledger.sqlite"
 _LOG_PATH = DB_DIR / "hitl_capture.log"
 
 
@@ -56,7 +56,7 @@ def _debug_log(msg: str) -> None:
 # Detection patterns
 # ---------------------------------------------------------------------------
 
-_PACKET_HEADER_RE = re.compile(
+_packet_header_re = re.compile(
     r"Recommended:\s*(.+?)\n"
     r".*?Why it wins:\s*(.+?)\n"
     r".*?Candidates evaluated:\s*(\d+)",
@@ -65,7 +65,7 @@ _PACKET_HEADER_RE = re.compile(
 
 # Structured capture marker emitted by Cascade post-HITL:
 # DECISION_CAPTURED: type=<type>, repo_area=<path>, selected=<label>, outcome=<status>
-_CAPTURE_MARKER_RE = re.compile(
+_capture_marker_re = re.compile(
     r"DECISION_CAPTURED:\s*type=(?P<dtype>[\w_]+),\s*"
     r"repo_area=(?P<area>[^,]+),\s*"
     r"selected=(?P<selected>[^,]+),\s*"
@@ -158,7 +158,7 @@ CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts USING fts5(
 def _init_db() -> Optional[sqlite3.Connection]:
     try:
         DB_DIR.mkdir(parents=True, exist_ok=True)
-        conn = sqlite3.connect(str(DB_PATH), timeout=10)
+        conn = sqlite3.connect(str(db_path), timeout=10)
         conn.executescript(_DDL)
         conn.commit()
         return conn
@@ -175,7 +175,7 @@ def _get_git_info() -> tuple[str, str]:
             capture_output=True,
             text=True,
             timeout=5,
-            cwd=str(REPO_ROOT),
+            cwd=str(repo_root),
             shell=False,
             check=False,
         )
@@ -189,7 +189,7 @@ def _get_git_info() -> tuple[str, str]:
             capture_output=True,
             text=True,
             timeout=5,
-            cwd=str(REPO_ROOT),
+            cwd=str(repo_root),
             shell=False,
             check=False,
         )
@@ -317,12 +317,12 @@ def detect_and_capture(text: str, conn: sqlite3.Connection) -> bool:
     Tries structured marker first, falls back to HITL packet header heuristic.
     """
     # Path 1: structured DECISION_CAPTURED marker (reliable, emitted by Cascade post-HITL)
-    marker = _CAPTURE_MARKER_RE.search(text)
+    marker = _capture_marker_re.search(text)
     if marker:
         return _capture_from_marker(marker, text, conn)
 
     # Path 2: heuristic HITL packet header in prose (fallback)
-    m = _PACKET_HEADER_RE.search(text)
+    m = _packet_header_re.search(text)
     if not m:
         return False
 
@@ -403,7 +403,7 @@ def main() -> int:
             _debug_log("no_text_extracted")
             return 0
 
-        marker_found = bool(_CAPTURE_MARKER_RE.search(text))
+        marker_found = bool(_capture_marker_re.search(text))
         _debug_log(f"text_len={len(text)} marker={marker_found}")
 
         conn = _init_db()

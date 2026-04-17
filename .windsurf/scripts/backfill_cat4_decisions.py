@@ -12,8 +12,8 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-DB_PATH = REPO_ROOT / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
+repo_root = Path(__file__).resolve().parents[2]
+db_path = repo_root / ".windsurf" / "state" / "refactor_decisions" / "refactor_decision_ledger.sqlite"
 DDL = """
 PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS decisions (
@@ -188,7 +188,7 @@ def make_id(key: str) -> str:
 
 
 def main() -> None:
-    conn = sqlite3.connect(str(DB_PATH), timeout=10)
+    conn = sqlite3.connect(str(db_path), timeout=10)
     conn.executescript(DDL)
 
     ts_base = datetime(2026, 4, 10, 11, 30, 0, tzinfo=timezone.utc)
@@ -254,7 +254,7 @@ def main() -> None:
     conn.close()
 
     # Verify
-    conn2 = sqlite3.connect(str(DB_PATH))
+    conn2 = sqlite3.connect(str(db_path))
     count = conn2.execute("SELECT COUNT(*) FROM decisions").fetchone()[0]
     conn2.close()
     print(f"\nTotal decisions in ledger: {count}")

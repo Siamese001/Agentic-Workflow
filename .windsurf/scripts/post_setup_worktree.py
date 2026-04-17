@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[2]
 
 
 def _get_worktree_root(payload: dict) -> Path | None:
@@ -30,9 +30,9 @@ def _get_worktree_root(payload: dict) -> Path | None:
     return None
 
 
-def _copy_env(repo_root: Path, worktree: Path) -> None:
+def _copy_env(src_root: Path, worktree: Path) -> None:
     """Copy .env from repo root to worktree if absent."""
-    src = repo_root / ".env"
+    src = src_root / ".env"
     dst = worktree / ".env"
     if not src.exists():
         print("[worktree_bootstrap] No .env in repo root — skipping copy.", flush=True)
@@ -90,7 +90,7 @@ def main() -> int:
     worktree = _get_worktree_root(payload)
 
     if worktree and worktree.exists():
-        _copy_env(REPO_ROOT, worktree)
+        _copy_env(repo_root, worktree)
     else:
         print(
             "[worktree_bootstrap] No worktree path in payload or path does not exist — skipping .env copy.",

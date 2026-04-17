@@ -29,10 +29,10 @@ import re
 import sys
 from pathlib import Path
 
-FAIL_POLICY = "closed"
+fail_policy = "closed"
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-SESSION_STATE = REPO_ROOT / "artifacts" / "windsurf" / "session_state.json"
+repo_root = Path(__file__).resolve().parents[2]
+session_state = repo_root / "artifacts" / "windsurf" / "session_state.json"
 
 _BARE_EXCEPT_RE = re.compile(r"^\s*except\s*:", re.MULTILINE)
 _BROAD_EXCEPT_RE = re.compile(r"except\s+Exception(\s*:|\s+as\s+\w+\s*:)")
@@ -71,9 +71,9 @@ def check_task_exists(file_path: str) -> str | None:
         return None
 
     try:
-        if not SESSION_STATE.exists():
+        if not session_state.exists():
             return None  # fail-open: no state file yet
-        state = json.loads(SESSION_STATE.read_text(encoding="utf-8"))
+        state = json.loads(session_state.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         return None  # fail-open
 
@@ -259,7 +259,7 @@ def main() -> int:
 
     raw = sys.stdin.read()
     if not raw.strip():
-        if FAIL_POLICY == "closed":
+        if fail_policy == "closed":
             print("[pre_write_gate] BLOCKED: empty stdin payload.", file=sys.stderr)
             return 2
         return 0
@@ -267,13 +267,13 @@ def main() -> int:
     try:
         payload = json.loads(raw)
     except json.JSONDecodeError as exc:
-        if FAIL_POLICY == "closed":
+        if fail_policy == "closed":
             print(f"[pre_write_gate] BLOCKED: malformed JSON payload — {exc}", file=sys.stderr)
             return 2
         return 0
 
     if not isinstance(payload, dict):
-        if FAIL_POLICY == "closed":
+        if fail_policy == "closed":
             print("[pre_write_gate] BLOCKED: payload is not a JSON object.", file=sys.stderr)
             return 2
         return 0
