@@ -1,0 +1,176 @@
+# Wave E1 + F1 + F2 Integration - Canonical SourceAuthorityRecords (v1.2)
+# v1 had 5 sources. F1 added SRC-INT-004. F2 adds SRC-ADR-001 through SRC-ADR-006.
+# Total: 12 sources.
+
+sources:
+
+  - id: SRC-RULE-001
+    subtype: RULE
+    title: "Constitutional Rules (Agentic Workflow)"
+    locator: ".windsurf/rules/constitutional.md"
+    authority_class: CONSTITUTIONAL
+    retrieved_at_wave: E1c
+    notes: "Rank 1."
+
+  - id: SRC-RULE-002
+    subtype: RULE
+    title: "Global Rules - Tier 2 SSOT"
+    locator: ".windsurf/rules/global_rules.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-001
+    subtype: INT
+    title: "AGENTS.md - Layer Separation and Governing Intent"
+    locator: "AGENTS.md"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-002
+    subtype: INT
+    title: "Wave E Downstream Lane Contract - Section 1 Governing Semantics"
+    locator: "docs/wave_e/00_schema/downstream_lane_contract.md#1-governing-semantics-non-negotiable"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: E1c
+    notes: "Rank 2."
+
+  - id: SRC-INT-003
+    subtype: INT
+    title: "Wave E Schema Frontmatter - Governing Semantics (Non-Negotiable)"
+    locator: "docs/wave_e/00_schema/requirement_graph_schema.yaml#governing-semantics"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: E1c
+    notes: "Rank 4."
+
+  - id: SRC-INT-004
+    subtype: INT
+    title: "AGENTS.md - Memory Lifecycle"
+    locator: "AGENTS.md#memory-lifecycle"
+    authority_class: GOVERNANCE
+    retrieved_at_wave: F1
+    excerpt: >
+      Memory lifecycle mandatory. At session start, call mem_recall_session_start
+      to load persistent project context. After architecture decisions, HITL
+      resolutions, or new patterns, write to memory. Entities survive across
+      IDE restarts.
+    notes: "Rank 2. Precise anchor for F12.05, F12.07, F12.08 citations."
+
+  # === F2 additions: 6 new ADR sources ======================================
+
+  - id: SRC-ADR-001
+    subtype: ADR
+    title: "ADR-F25-int - Confidence-Scored Tiered Healing Dispatch Routing"
+    locator: "docs/architecture/healing_dispatch_routing_adr.md"
+    authority_class: ADVISORY
+    retrieved_at_wave: F2
+    excerpt: >
+      Defines three healing tiers (LOCAL_AGENT, COORDINATED, ESCALATED)
+      with strictness bands 0.70 / 0.85 / 0.95 and fallback chain
+      local rule -> model retry -> human escalation. Explicitly carries
+      invalid_for_normative_use=True and is described as repo-internal
+      architecture only.
+    notes: >
+      Rank 6 ADVISORY. Explicitly labeled invalid_for_normative_use=True
+      so CANNOT support NORMATIVE evidence_class. Used only as
+      ADVISORY supplement (e.g., F07.03 escalation context).
+
+  - id: SRC-ADR-002
+    subtype: ADR
+    title: "Healer Retry Hardening Specification"
+    locator: "docs/specs/hardening/HEALER_RETRY_HARDENING_SPEC.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    excerpt: >
+      Defines RetryConfig.max_attempts=3, strictness_escalation=[0.70,
+      0.85, 0.95], timeout_escalation=[30, 20, 10] seconds, and
+      scope_lock=True. HealerRetryManager invariants: strictness
+      increases per retry, scope cannot widen, abort on plan
+      divergence. Invariants section explicitly lists:
+      "Max retries exhausted" as the terminal condition, and
+      "scope must not widen across retries".
+    notes: >
+      Rank 4 ARCHITECTURAL. Directly supports F07.01 bounded heal path
+      and F07.02 bounded attempt count / duration. Does NOT explicitly
+      address escalation-to-L3 semantics, so F07.03 remains WEAK.
+
+  - id: SRC-ADR-003
+    subtype: ADR
+    title: "Evaluation Pipeline Release Acceptance - Exit Control Gate"
+    locator: "docs/architecture/eval_pipeline_acceptance.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    excerpt: >
+      Names canonical exit-spine owners: ExitControlGate in
+      L5_safety/enforcement/exit_control_gate.py (live gate),
+      evidence_eval_bridge.evaluate_and_emit() (sole choke point),
+      GovernedHandoffAgent (sole durable-write seam via UWG).
+      Invariants: (1) single live disposition per request
+      (ExitControlGate.evaluate_sealed); (2) all durable writes pass
+      through GovernedHandoffAgent; (3) deferred/fenced paths carry
+      NON_CANONICAL_EVAL_LAB marker and MUST NOT be wired into the
+      canonical pipeline. Release-accepted 2026-04-13 with 135/135
+      tests passing.
+    notes: >
+      Rank 4 ARCHITECTURAL. This is the long-"missing" exit-spine
+      source. Directly supports F08.01 single spine, F08.03 record
+      outcome, F08.04 signal UWG, F08.05 no ad-hoc exit paths,
+      F09.05 reject writes without exit signal.
+
+  - id: SRC-ADR-004
+    subtype: ADR
+    title: "L0 Decomposition Specification (L0a/L0b/L0c)"
+    locator: "docs/specs/hardening/L0_DECOMPOSITION_SPEC.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    excerpt: >
+      Decomposes L0 into L0a (ingress validation with rejection_reason),
+      L0b (deterministic routing with rule-table-first, ML-advisory-
+      only), L0c (dispatch sealing with HMAC and DAG). Invariants:
+      ML routing NEVER directly selects final path; only L0b
+      deterministic logic selects path. All dispatches must be sealed.
+      IngressValidationResult carries structured rejection_reason.
+    notes: >
+      Rank 4 ARCHITECTURAL. Supports F01.06 structured rejection
+      reason code, F03.04 one-route-per-step determinism.
+
+  - id: SRC-ADR-005
+    subtype: ADR
+    title: "Replay Determinism Rules"
+    locator: "docs/specs/hardening/REPLAY_DETERMINISM_RULES.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    excerpt: >
+      Defines ReplayModeGuard preventing UWG bypass in replay mode,
+      ExecutionTraceValidator for signed-trace verification,
+      UWGMutationGate requiring signed ExecutionTrace for any
+      mutation, and trace-ID monotonicity. Invariants: no mutation
+      without signed ExecutionTrace; mutation_hash derived from
+      (actor_id, run_id, operation, path, data_hash); replay mode
+      rejects any mutation not matching the original trace.
+    notes: >
+      Rank 4 ARCHITECTURAL. Supports F03.04 determinism as
+      supplementary binding. Context-assembly idempotence (F04.04)
+      is adjacent but not directly stated; F04.04 stays WEAK.
+
+  - id: SRC-ADR-006
+    subtype: ADR
+    title: "Authority Hierarchy Invariants"
+    locator: "docs/specs/hardening/AUTHORITY_HIERARCHY_INVARIANTS.md"
+    authority_class: ARCHITECTURAL
+    retrieved_at_wave: F2
+    excerpt: >
+      Formal authority matrix: L1 proposes, L0 authorizes, L5 blocks,
+      L2 executes, UWG mutates, L4 records, L6 observes, meta-learning
+      optimizes (never executes, never authorizes). Required execution
+      flow: L1_PROPOSE -> L0_AUTHORIZE -> L5_VALIDATE -> L2_EXECUTE
+      -> UWG_MUTATE. L4 records + L6 observes in parallel. All
+      layers have explicit ALLOWED_OPERATIONS and FORBIDDEN_OPERATIONS.
+      Violations are hard failures.
+    notes: >
+      Rank 4 ARCHITECTURAL. Supplementary support for F02.01 L1 plan
+      authority, F02.04 L1 no execution, F05.02/.03 L3 no plan/route,
+      F06 L2 execution scope, F09 UWG monopoly, F10 L4 recording,
+      F12 L6 observation. This spec does NOT name L3 as a distinct
+      authority, so F05.04 L3-dispatch-to-L2 remains WEAK.

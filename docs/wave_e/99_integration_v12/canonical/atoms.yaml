@@ -1,0 +1,475 @@
+# Canonical v1.2 - Atoms (61 records: 54 ACTIVE NORMATIVE + 4 ACTIVE WEAK_EVIDENCE + 1 EXCLUDED + 2 DRAFT)
+# Delta from v1.1: F2 merged 10 atom patches (9 NORMATIVE upgrades + 1 supplementary binding).
+# NORMATIVE upgrades: F01.06, F03.04, F07.01, F07.02, F08.01, F08.03, F08.04, F08.05, F09.05.
+# Supplementary binding: F04.04 added SRC-ADR-005 (stays WEAK_EVIDENCE).
+# F07.03 remains WEAK_EVIDENCE with SRC-ADR-001 ADVISORY supplement (respects invalid_for_normative_use).
+
+atoms:
+
+  # === F01 =================================================================
+  - id: F01.01
+    family_id: F01
+    claim: "Inbound requests MUST be rejected if the request envelope fails shape validation."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F01.02
+    family_id: F01
+    claim: "Inbound requests MUST be rejected if authentication cannot be verified."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F01.03
+    family_id: F01
+    claim: "Inbound requests MUST be rejected if any L5 policy precondition is unsatisfied."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F01.04
+    family_id: F01
+    claim: "Intake rejection MUST be deterministic for identical envelope inputs."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F01.05
+    family_id: F01
+    claim: "Downstream reasoning, routing, and execution MUST NOT be invoked before admission completes."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F01.06
+    family_id: F01
+    claim: "Rejection responses MUST include a structured reason code identifying the failing precondition."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-004]
+    status: ACTIVE
+    owning_layer: L0
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. L0_DECOMPOSITION_SPEC (SRC-ADR-004) defines IngressValidationResult with explicit rejection_reason field and enumerates structured reasons."
+
+  # === F02 =================================================================
+  - id: F02.01
+    family_id: F02
+    claim: "L1 MUST be the sole authority that decomposes an admitted request into a plan."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L1
+  - id: F02.02
+    family_id: F02
+    claim: "Layers other than L1 MUST NOT produce plans."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001]
+    status: ACTIVE
+    owning_layer: L1
+  - id: F02.03
+    family_id: F02
+    claim: "Downstream layers MUST consume L1 plan output without substitution."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L1
+  - id: F02.04
+    family_id: F02
+    claim: "L1 MUST NOT execute plan steps."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L1
+  - id: F02.05
+    family_id: F02
+    claim: "L1 MUST NOT choose routes."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L1
+
+  # === F03 =================================================================
+  - id: F03.01
+    family_id: F03
+    claim: "L0 MUST be the sole route authority for dispatching plan steps to downstream capabilities."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F03.02
+    family_id: F03
+    claim: "Layers other than L0 MUST NOT choose routes."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F03.03
+    family_id: F03
+    claim: "L0 MUST reject any plan step that lacks a resolved route binding."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L0
+  - id: F03.04
+    family_id: F03
+    claim: "L0 MUST select exactly one route per plan step."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-004]
+    status: ACTIVE
+    owning_layer: L0
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. L0_DECOMPOSITION_SPEC (SRC-ADR-004) L0b invariant: final path selection is deterministic and ML routing NEVER directly selects final path."
+
+  # === F04 =================================================================
+  - id: F04.01
+    family_id: F04
+    claim: "Context consumed by reasoning, orchestration, and task execution MUST be assembled through a single grounding path."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-002, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L1
+  - id: F04.02
+    family_id: F04
+    claim: "Assembled context MUST carry attribution that traces each element to its source."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L1
+  - id: F04.03
+    family_id: F04
+    claim: "Context consumers MUST NOT substitute private, unattributed context for the grounded context set."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L1
+  - id: F04.04
+    family_id: F04
+    claim: "Context assembly MUST be idempotent for identical request inputs."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003, SRC-ADR-005]
+    status: ACTIVE
+    owning_layer: L1
+    rationale: "Supplementary binding added by F2. REPLAY_DETERMINISM_RULES (SRC-ADR-005) mandates deterministic replay for mutations but does not explicitly state context-assembly idempotence. Adjacent but not direct. Stays WEAK_EVIDENCE."
+
+  # === F05 =================================================================
+  - id: F05.01
+    family_id: F05
+    claim: "L3 MUST orchestrate multi-step execution of an L1 plan."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L3
+  - id: F05.02
+    family_id: F05
+    claim: "L3 MUST NOT generate plans."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L3
+  - id: F05.03
+    family_id: F05
+    claim: "L3 MUST NOT choose routes."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L3
+  - id: F05.04
+    family_id: F05
+    claim: "L3 MUST dispatch each plan step to L2 for task execution."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L3
+
+  # === F06 =================================================================
+  - id: F06.01
+    family_id: F06
+    claim: "L2 MUST execute individual tasks dispatched by L3."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L2
+  - id: F06.02
+    family_id: F06
+    claim: "L2 MUST use the route decided by L0 for each task invocation."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L2
+  - id: F06.03
+    family_id: F06
+    claim: "L2 MUST NOT produce plans."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L2
+  - id: F06.04
+    family_id: F06
+    claim: "L2 MUST NOT choose routes."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L2
+  - id: F06.05
+    family_id: F06
+    claim: "L2 MUST NOT initiate durable writes directly."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L2
+
+  # === F07 =================================================================
+  - id: F07.01
+    family_id: F07
+    claim: "Failed L2 task executions MUST be routed through a bounded heal/retry/recovery path."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-002]
+    status: ACTIVE
+    owning_layer: L2
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. HEALER_RETRY_HARDENING_SPEC (SRC-ADR-002) explicitly defines HealerRetryManager.execute_with_retry() with max_attempts=3 and strictness escalation [0.70, 0.85, 0.95]."
+  - id: F07.02
+    family_id: F07
+    claim: "Retry MUST terminate within a declared attempt count or duration bound."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-002]
+    status: ACTIVE
+    owning_layer: L2
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. HEALER_RETRY spec defines max_attempts=3 and timeout_escalation=[30, 20, 10] seconds per attempt."
+  - id: F07.03
+    family_id: F07
+    claim: "Unrecoverable failures MUST surface to L3 for re-planning."
+    evidence_class: WEAK_EVIDENCE
+    authority_binding: [SRC-INT-003, SRC-ADR-001]
+    status: ACTIVE
+    owning_layer: L2
+    rationale: "NOT upgraded to NORMATIVE by F2. SRC-ADR-001 (healing_dispatch_routing_adr) carries invalid_for_normative_use=True and cannot provide NORMATIVE support. Held as WEAK with SRC-ADR-001 as ADVISORY supplement only. Blocker: need normative escalation-target ADR."
+  - id: F07.04
+    family_id: F07
+    claim: "Healing and retry paths MUST NOT bypass the Universal Write Gate for durable mutations."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L2
+
+  # === F08 =================================================================
+  - id: F08.01
+    family_id: F08
+    claim: "Runtime termination MUST flow through a single evaluation spine."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: ACTIVE
+    owning_layer: L5
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. eval_pipeline_acceptance (SRC-ADR-003) names evidence_eval_bridge.evaluate_and_emit() as the sole canonical choke point and ExitControlGate.evaluate_sealed() as the only live gate call per request."
+  - id: F08.02
+    family_id: F08
+    claim: "The evaluation spine MUST apply L5 exit policy."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003]
+    status: ACTIVE
+    owning_layer: L5
+  - id: F08.03
+    family_id: F08
+    claim: "The evaluation spine MUST record run outcome."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: ACTIVE
+    owning_layer: L5
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. The spine records outcome through evaluate_and_emit() -> AsyncEvalIngester + ShadowEvalIngester with enqueue_count tracking."
+  - id: F08.04
+    family_id: F08
+    claim: "The evaluation spine MUST signal the Universal Write Gate for durable outcome writes."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: ACTIVE
+    owning_layer: L5
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. Invariant #4 of eval_pipeline_acceptance: durable writes behind governed handoff only - GovernedHandoffAgent.handoff() is the sole durable-write seam."
+  - id: F08.05
+    family_id: F08
+    claim: "Ad-hoc runtime exit paths that bypass the evaluation spine MUST NOT exist."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: ACTIVE
+    owning_layer: L5
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. Invariant #5: deferred paths carry NON_CANONICAL_EVAL_LAB marker in three fenced modules and must not be wired into canonical pipeline."
+
+  # === F09 =================================================================
+  - id: F09.01
+    family_id: F09
+    claim: "The Universal Write Gate MUST be the sole durable write path."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L4
+  - id: F09.02
+    family_id: F09
+    claim: "Durable writes MUST be signed with an execution trace."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L4
+  - id: F09.03
+    family_id: F09
+    claim: "Durable writes MUST validate policy hash before committing."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L4
+  - id: F09.04
+    family_id: F09
+    claim: "The Universal Write Gate MUST enforce write governance."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L4
+  - id: F09.05
+    family_id: F09
+    claim: "The Universal Write Gate MUST reject writes that lack an exit signal from the evaluation spine."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-003, SRC-ADR-003]
+    status: ACTIVE
+    owning_layer: L4
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F2. eval_pipeline_acceptance documents that GovernedHandoffAgent.handoff() returns HandoffRecord(committed=False) when packet.approval_state is not APPROVED, i.e., when exit-spine has not signaled approval."
+
+  # === F10 =================================================================
+  - id: F10.01
+    family_id: F10
+    claim: "L4 MUST be the authoritative durable state of the system."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L4
+  - id: F10.02
+    family_id: F10
+    claim: "L4 MUST maintain a complete audit trail of durable mutations."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L4
+  - id: F10.03
+    family_id: F10
+    claim: "L4 MUST support pointer-based state promotion."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L4
+
+  # === F11 =================================================================
+  - id: F11.01
+    family_id: F11
+    claim: "L5 MUST be the cross-cutting policy and safety authority."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L5
+  - id: F11.02
+    family_id: F11
+    claim: "L5 MUST validate all mutations before they reach the Universal Write Gate."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L5
+  - id: F11.03
+    family_id: F11
+    claim: "L5 MUST block violations of constitutional rules."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L5
+  - id: F11.04
+    family_id: F11
+    claim: "L5 MUST NOT execute or authorize mutations."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L5
+  - id: F11.05
+    family_id: F11
+    claim: "L5 MUST enforce policy boundaries across all layers."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L5
+  - id: F11.06
+    family_id: F11
+    claim: "L5 MUST define policy epochs."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L5
+  - id: F11.07
+    family_id: F11
+    claim: "L5 policy violations MUST hard-fail execution."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L5
+
+  # === F12 =================================================================
+  - id: F12.01
+    family_id: F12
+    claim: "L6 MUST observe the current run."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L6
+  - id: F12.02
+    family_id: F12
+    claim: "L6 MUST NOT influence current-run L0 route selection."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L6
+  - id: F12.03
+    family_id: F12
+    claim: "L6 MUST NOT influence current-run L2 heal/retry decisions."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L6
+  - id: F12.04
+    family_id: F12
+    claim: "L6 MUST NOT execute or authorize mutations."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L6
+  - id: F12.05
+    family_id: F12
+    claim: "L6 MUST feed learning into future runs only."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-INT-002, SRC-INT-003, SRC-INT-004]
+    status: ACTIVE
+    owning_layer: L6
+    rationale: "Upgraded WEAK_EVIDENCE -> NORMATIVE by F1. SRC-INT-004 (AGENTS.md memory lifecycle) provides precise anchor for session-start recall protocol."
+  - id: F12.06
+    family_id: F12
+    claim: "L6 MUST NOT influence current-run L1 plan generation."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-002]
+    status: ACTIVE
+    owning_layer: L6
+  - id: F12.07
+    family_id: F12
+    claim: "L6 MUST load persistent project context at session start via a recall protocol."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-004]
+    status: ACTIVE
+    owning_layer: L6
+    rationale: "Added by F1. Refines F12.05 by naming the session-start recall protocol."
+  - id: F12.08
+    family_id: F12
+    claim: "L6 MUST record run outcomes produced by the F08 evaluation spine into persistent memory for future-run reasoning."
+    evidence_class: NORMATIVE
+    authority_binding: [SRC-RULE-001, SRC-INT-001, SRC-INT-004]
+    status: ACTIVE
+    owning_layer: L6
+    rationale: "Added by F1. Closes interaction candidate C5 from E1d (exit-spine outcome consumption)."
+
+  # === EXCLUDED (OOS-001) ==================================================
+  - id: F12.09
+    family_id: F12
+    claim: "L6 MAY feed observations back into current-run L2 heal/retry decisions."
+    evidence_class: EXCLUDED
+    authority_binding: []
+    status: EXCLUDED
+    owning_layer: L6
+    rationale: "Excluded by OOS-002. L6 observations MUST NOT feed back into current-run L2 heal, retry, or recovery path."
